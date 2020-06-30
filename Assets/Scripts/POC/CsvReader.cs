@@ -50,7 +50,7 @@ public class CsvReader : MonoBehaviour
             string[] row = fileRows[i].Split(';');
             if (row[0].ToUpper() == _site)
             {
-                GenerateRacks.SRackInfos data = new GenerateRacks.SRackInfos();
+                SRackInfos data = new SRackInfos();
                 data.name = row[13];
                 data.orient = row[6];
                 data.pos = new Vector2(float.Parse(row[8]), float.Parse(row[7]));

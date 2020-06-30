@@ -4,32 +4,16 @@ using UnityEngine;
 
 public class GenerateRacks : MonoBehaviour
 {
+    [Header("Auto Generate racks")]
     public bool autoGenRacks = true;
-
-    [Header("Racks")]
-    [SerializeField] private GameObject rackModel = null;
     public int xNb;
     public int zNb;
-
-    [Header("Servers")]
-    [SerializeField] private GameObject serverModel = null;
     public int nbPerRack;
 
     [Header("Room data")]
     public Vector2 margin = new Vector2(3, 3); // tile
     public Transform root = null;
     private float tileU = 0.6f;
-
-    public struct SRackInfos
-    {
-        public string name;
-        public string orient;
-        public Vector2 pos; // tile
-        public Vector2 size; // cm 
-        public int height; // U = 44.5mm
-        public string comment;
-        public string row;
-    }
 
     private void Start()
     {
@@ -40,8 +24,8 @@ public class GenerateRacks : MonoBehaviour
 
     private void AutoRacks()
     {
-        float xUnit = rackModel.transform.GetChild(0).transform.localScale.x;
-        float zUnit = rackModel.transform.GetChild(0).transform.localScale.z;
+        float xUnit = GameManager.gm.rackModel.transform.GetChild(0).transform.localScale.x;
+        float zUnit = GameManager.gm.rackModel.transform.GetChild(0).transform.localScale.z;
         Debug.Log($"[GenerateRacks] xUnit:{xUnit} / zUnit:{zUnit}");
 
         for (int z = 0; z < zNb; z++)
@@ -49,16 +33,16 @@ public class GenerateRacks : MonoBehaviour
             for (int x = 0; x < xNb; x++)
             {
                 Vector3 pos = new Vector3(tileU + x * (tileU + xUnit), 0, tileU + z * (tileU + zUnit));
-                GameObject tmpRack = Instantiate(rackModel, pos, Quaternion.identity, transform);
+                GameObject tmpRack = Instantiate(GameManager.gm.rackModel, pos, Quaternion.identity, transform);
                 for (int i = 0; i < nbPerRack; i++)
-                    Instantiate(serverModel, tmpRack.transform);
+                    Instantiate(GameManager.gm.serverModel, tmpRack.transform);
             }
         }
     }
 
     public void CreateRack(SRackInfos data)
     {
-        GameObject newRack = Instantiate(rackModel, root);
+        GameObject newRack = Instantiate(GameManager.gm.rackModel, root);
         Object obj = newRack.GetComponent<Object>();
 
         newRack.name = data.name;

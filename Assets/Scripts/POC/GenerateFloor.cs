@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GenerateFloor : MonoBehaviour
 {
-    [SerializeField] private GameObject model = null;
     public int length;
     public int width;
     public EOrientation orientation;
@@ -20,14 +19,14 @@ public class GenerateFloor : MonoBehaviour
 
     public void CreateFloor(Vector2 _size)
     {
-        float u = model.transform.GetChild(0).transform.localScale.x * 10;
+        float u = GameManager.gm.tileModel.transform.GetChild(0).transform.localScale.x * 10;
         // Debug.Log($"[GenerateFloor] tile unit:{u}");
 
         for (int z = 0; z < _size.y; z++)
         {
             for (int x = 0; x < _size.x; x++)
             {
-                Instantiate(model, new Vector3(x * u, 0, z * u), Quaternion.identity, tilesRoot);
+                Instantiate(GameManager.gm.tileModel, new Vector3(x * u, 0, z * u), Quaternion.identity, tilesRoot);
                 if (x % 3 == 0 && z % 2 == 0)
                 {
                     GameObject tmp = new GameObject("Light");

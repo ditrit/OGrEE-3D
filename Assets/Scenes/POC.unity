@@ -540,7 +540,6 @@ GameObject:
   - component: {fileID: 320645137}
   - component: {fileID: 320645136}
   - component: {fileID: 320645135}
-  - component: {fileID: 320645139}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -634,20 +633,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &320645139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 320645134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 847790fdfe9ba56419475bbbb08d7664, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fpsCam: {fileID: 0}
-  overviewCam: {fileID: 0}
 --- !u!1 &342043256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1126,12 +1111,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoGenRacks: 0
-  rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
-    type: 3}
   xNb: 11
   zNb: 10
-  serverModel: {fileID: 2144772260202333176, guid: 8a61eab47d4df4e4bafb0b338ffc5583,
-    type: 3}
   nbPerRack: 42
   margin: {x: 3, y: 3}
   root: {fileID: 1380382404}
@@ -2212,7 +2193,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcebebb25b8dc384d92f6cd471a2eebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 405515581002141253, guid: 3b592caa0a7c9eb46bf459b9aac5d520, type: 3}
   length: 30
   width: 60
   orientation: 0
@@ -3075,6 +3055,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5447b5235de7964f812eef949d8a5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tileModel: {fileID: 405515581002141253, guid: 3b592caa0a7c9eb46bf459b9aac5d520,
+    type: 3}
+  rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
+    type: 3}
+  serverModel: {fileID: 2144772260202333176, guid: 8a61eab47d4df4e4bafb0b338ffc5583,
+    type: 3}
 --- !u!4 &1595579782
 Transform:
   m_ObjectHideFlags: 0
