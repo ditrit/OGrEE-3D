@@ -14,7 +14,6 @@ public class GenerateFloor : MonoBehaviour
     {
         tilesRoot = transform.Find("TilesRoot");
         CreateFloor(new Vector2(length, width));
-
     }
 
     public void CreateFloor(Vector2 _size)
@@ -22,19 +21,24 @@ public class GenerateFloor : MonoBehaviour
         float u = GameManager.gm.tileModel.transform.GetChild(0).transform.localScale.x * 10;
         // Debug.Log($"[GenerateFloor] tile unit:{u}");
 
+        GameObject tile = Instantiate(GameManager.gm.tileModel, tilesRoot);
+        Vector3 originalSize = tile.transform.localScale;
+        tile.transform.localScale = new Vector3(originalSize.x * _size.x, originalSize.y, originalSize.z * _size.y);
+
         for (int z = 0; z < _size.y; z++)
         {
             for (int x = 0; x < _size.x; x++)
             {
-                Instantiate(GameManager.gm.tileModel, new Vector3(x * u, 0, z * u), Quaternion.identity, tilesRoot);
+                // Instantiate(GameManager.gm.tileModel, new Vector3(x * u, 0, z * u), Quaternion.identity, tilesRoot);
                 if (x % 3 == 0 && z % 2 == 0)
                 {
                     GameObject tmp = new GameObject("Light");
-                    tmp.transform.localPosition = new Vector3(x * u, 3, z * u);
+                    tmp.transform.localPosition = new Vector3(x * u + 1, 3, z * u);
                     tmp.transform.parent = tilesRoot;
                     Light light = tmp.AddComponent<Light>();
                     light.type = LightType.Point;
-                    light.intensity = 0.3f;
+                    light.intensity = 0.5f;
+                    light.shadows = LightShadows.Hard;
                 }
             }
         }
@@ -64,7 +68,6 @@ public class GenerateFloor : MonoBehaviour
     {
         foreach (Transform child in tilesRoot)
             Destroy(child.gameObject);
-
     }
 
 }
