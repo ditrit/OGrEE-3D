@@ -1075,10 +1075,12 @@ GameObject:
   m_Component:
   - component: {fileID: 764830556}
   - component: {fileID: 764830557}
+  - component: {fileID: 764830561}
   - component: {fileID: 764830558}
+  - component: {fileID: 764830560}
   - component: {fileID: 764830559}
   m_Layer: 0
-  m_Name: GenerateRacks
+  m_Name: GenerateObjects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1123,7 +1125,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 764830555}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b31d3656366729547b03eacd7d194420, type: 3}
   m_Name: 
@@ -1146,6 +1148,80 @@ MonoBehaviour:
   racks: []
   rackRows: []
   dropdownRackRows: {fileID: 1626904237}
+--- !u!114 &764830560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764830555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aed7902b28e0e4a42b8b78fd221bb515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rack:
+    id: 0
+    name: 
+    facility_id: 0
+    display_name: 
+    site:
+      id: 0
+      url: 
+      name: 
+      slug: 
+    group:
+      id: 0
+      url: 
+      name: 
+      slug: 
+    tenant: 
+    status:
+      value: 
+      label: 
+      id: 0
+    role:
+      id: 0
+      url: 
+      name: 
+      slug: 
+    serial: 
+    asset_tag: 
+    type: 
+    width:
+      value: 0
+      lavel: 
+    u_height: 0
+    desc_units: 
+    outer_width: 0
+    outer_depth: 0
+    outer_unit:
+      value: 
+      label: 
+      id: 0
+    comments: 
+    tags: []
+    created: 
+    last_updated: 
+    device_count: 0
+    powerfeed_count: 0
+  devices:
+    count: 0
+    next: 
+    previous: 
+    results: []
+--- !u!114 &764830561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764830555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be011ce87de3ef24aaaf5194fcf41c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &791440100
 GameObject:
   m_ObjectHideFlags: 0
@@ -3060,6 +3136,8 @@ MonoBehaviour:
   rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
     type: 3}
   serverModel: {fileID: 2144772260202333176, guid: 8a61eab47d4df4e4bafb0b338ffc5583,
+    type: 3}
+  deviceModel: {fileID: 1711373508126017459, guid: cf9e8d7782295a5439d321f4eff6d17a,
     type: 3}
 --- !u!4 &1595579782
 Transform:

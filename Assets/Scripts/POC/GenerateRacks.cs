@@ -40,25 +40,25 @@ public class GenerateRacks : MonoBehaviour
         }
     }
 
-    public void CreateRack(SRackInfos data)
+    public void CreateRack(SRackInfos _data)
     {
         GameObject newRack = Instantiate(GameManager.gm.rackModel, root);
         Object obj = newRack.GetComponent<Object>();
 
-        newRack.name = data.name;
-        newRack.transform.GetChild(0).localScale = new Vector3(data.size.x / 100, data.height * 0.0445f, data.size.y / 100);
+        newRack.name = _data.name;
+        newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * 0.0445f, _data.size.y / 100);
         newRack.transform.localPosition = newRack.transform.GetChild(0).localScale / 2;
-        newRack.transform.localPosition += new Vector3((data.pos.x - 1 + margin.x) * tileU, 0, (data.pos.y - 1 + margin.y) * tileU);
+        newRack.transform.localPosition += new Vector3((_data.pos.x - 1 + margin.x) * tileU, 0, (_data.pos.y - 1 + margin.y) * tileU);
 
-        obj.description = data.comment;
-        obj.row = data.row;
-        obj.pos = data.pos;
+        obj.description = _data.comment;
+        obj.row = _data.row;
+        obj.pos = _data.pos;
         obj.posUnit = EUnit.tile;
-        obj.size = new Vector2(data.size.x, data.size.y);
+        obj.size = new Vector2(_data.size.x, _data.size.y);
         obj.sizeUnit = EUnit.cm;
-        obj.height = data.height;
+        obj.height = _data.height;
         obj.heightUnit = EUnit.U;
-        switch (data.orient)
+        switch (_data.orient)
         {
             case "front":
                 obj.orient = EObjOrient.Frontward;
@@ -74,9 +74,9 @@ public class GenerateRacks : MonoBehaviour
         rf.AddIfUnknowned(rf.racks, newRack);
     }
 
-    public void CreateRack(string rackJson)
+    public void CreateRack(string _rackJson)
     {
-        SRackInfos data = JsonUtility.FromJson<SRackInfos>(rackJson);
+        SRackInfos data = JsonUtility.FromJson<SRackInfos>(_rackJson);
         CreateRack(data);
     }
 

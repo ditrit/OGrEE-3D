@@ -13,3 +13,18 @@ public struct SRackInfos
     public string comment;
     public string row;
 }
+
+[System.Serializable]
+public struct SDeviceInfos
+{
+    public string name;
+    public string parentName;
+    public Vector3 pos; // mm? U ?
+    public Vector3 size; // mm? U ?
+    public string type;
+    public string orient;
+    public string model;
+    public string serial; // ?
+    public string vendor;
+    public string comment;
+}

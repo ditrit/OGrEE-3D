@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject tileModel;
     public GameObject rackModel;
     public GameObject serverModel;
+    public GameObject deviceModel;
 
     private void Awake()
     {
