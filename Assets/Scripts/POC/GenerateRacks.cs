@@ -72,6 +72,10 @@ public class GenerateRacks : MonoBehaviour
 
         RackFilter rf = GetComponent<RackFilter>();
         rf.AddIfUnknowned(rf.racks, newRack);
+        rf.AddIfUnknowned(rf.rackRows, _data.row);
+        rf.UpdateDropdownFromList(rf.dropdownRackRows, rf.rackRows);
+
+        newRack.GetComponent<DisplayRackData>().FillTexts();
     }
 
     public void CreateRack(string _rackJson)

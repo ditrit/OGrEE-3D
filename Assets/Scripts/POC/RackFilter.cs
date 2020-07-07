@@ -16,6 +16,11 @@ public class RackFilter : MonoBehaviour
     public List<string> rackRows;
     public TMP_Dropdown dropdownRackRows = null;
 
+    private void Awake()
+    {
+        DefaultList(rackRows, "All");
+    }
+
     private void Start()
     {
         siteSizes.Add("ALPHA", new Vector2(30, 60));

@@ -7,12 +7,15 @@ public class GenerateDevices : MonoBehaviour
     public void CreateDevice(SDeviceInfos _data)
     {
         GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
-        Object obj = newDevice.GetComponent<Object>();
-
         newDevice.name = _data.name;
-        newDevice.transform.localScale = _data.size;
-        newDevice.transform.localPosition = _data.pos;
+        Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * 0.0445f, _data.size.y / 100);
+        newDevice.transform.localScale = size;
+        Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
+        newDevice.transform.localPosition =  origin;
+        Vector3 pos = new Vector3(_data.pos.x, _data.pos.z * 0.0445f, _data.pos.y);
+        newDevice.transform.localPosition += pos;
 
+        Object obj = newDevice.GetComponent<Object>();
         switch (_data.type)
         {
             case "powerpanel":
@@ -34,7 +37,6 @@ public class GenerateDevices : MonoBehaviour
                 obj.type = EObjectType.Container;
                 break;
         }
-
         switch (_data.orient)
         {
             case "front":
@@ -46,9 +48,10 @@ public class GenerateDevices : MonoBehaviour
                 newDevice.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
         }
-
         obj.model = _data.model;
+        obj.serial = _data.serial;
         obj.vendor = _data.vendor;
+        obj.description = _data.comment;
     }
 
     public void CreateDevice(string _deviceJson)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.EventSystems;
 
 public class OverviewControl : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class OverviewControl : MonoBehaviour
     {
         // if (Input.GetAxis("Mouse ScrollWheel") != 0)
         //     transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * moveSpeed);
+
+        if (EventSystem.current.currentSelectedGameObject)
+            return;
 
         if (Input.GetAxis("Vertical") != 0)
             transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime * moveSpeed/*, Space.World*/);

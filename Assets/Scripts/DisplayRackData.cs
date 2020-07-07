@@ -11,13 +11,13 @@ public class DisplayRackData : MonoBehaviour
     
     private Object obj;
 
-    private void Start()
+    private void Awake()
     {
         obj = GetComponent<Object>();
-        FillTexts();
+        // FillTexts();
     }
 
-    private void FillTexts()
+    public void FillTexts()
     {
         textName.text = obj.name;
         textDesc.text = obj.description;

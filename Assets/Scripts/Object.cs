@@ -5,7 +5,7 @@ using UnityEngine;
 public class Object : MonoBehaviour
 {
     public EObjectType type;
-    
+
     [Header("Common fields")]
     public string description;
     public string row;
@@ -42,14 +42,29 @@ public class Object : MonoBehaviour
     public float amperage;
 
 
-
-    private void Start()
+    public void UpdateField(string _param, string _value)
     {
-        // Debug.Log("Object.Start");
-    }
+        switch (_param)
+        {
+            case "comment":
+                description = _value;
+                break;
+            case "vendor":
+                vendor = _value;
+                break;
+            case "model":
+                model = _value;
+                break;
+            case "serial":
+                serial = _value;
+                break;
+            default:
+                Debug.LogWarning($"{name}: unknowed field to update.");
+                break;
+        }
 
-    private void Update()
-    {
-
+        DisplayRackData drd = GetComponent<DisplayRackData>();
+        if (drd)
+            drd.FillTexts();
     }
 }
