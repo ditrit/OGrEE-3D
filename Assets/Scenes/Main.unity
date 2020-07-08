@@ -677,6 +677,7 @@ GameObject:
   - component: {fileID: 320645137}
   - component: {fileID: 320645136}
   - component: {fileID: 320645135}
+  - component: {fileID: 320645139}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -767,6 +768,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &320645139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320645134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68cbbecac62d53a49940f48833694a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itRoomsList: []
+  itRooms: []
+  dropdownItRooms: {fileID: 1039380108}
+  rackRowsList: []
+  racks: []
+  dropdownRackRows: {fileID: 1626904237}
 --- !u!1 &342043256
 GameObject:
   m_ObjectHideFlags: 0
@@ -1488,10 +1507,10 @@ GameObject:
   m_Component:
   - component: {fileID: 764830556}
   - component: {fileID: 764830562}
+  - component: {fileID: 764830558}
   - component: {fileID: 764830560}
   - component: {fileID: 764830557}
   - component: {fileID: 764830561}
-  - component: {fileID: 764830559}
   m_Layer: 0
   m_Name: GenerateObjects
   m_TagString: Untagged
@@ -1530,8 +1549,7 @@ MonoBehaviour:
   zNb: 10
   nbPerRack: 42
   margin: {x: 3, y: 3}
-  root: {fileID: 1380382404}
---- !u!114 &764830559
+--- !u!114 &764830558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1540,14 +1558,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 764830555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e9a91178f1a61240a08ba7ae1015cc5, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ad2437b1be09bf4ca751da94e997096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sites: []
-  dropdownSites: {fileID: 1039380108}
-  racks: []
-  rackRows: []
-  dropdownRackRows: {fileID: 1626904237}
 --- !u!114 &764830560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1585,8 +1598,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugLines:
-  - create:itroom:ALPHA:30;60:3;3
-  - create:rack:B05:60;100;42:1;1:rear:B:test
+  - "create:datacenter:ALPHA:15 all L\xE9on Gambetta:92110:Clichy:France:site de test"
+  - create:itroom:C8:ALPHA:30;60:3;3
+  - create:rack:B05:C8:60;100;42:1;1:rear:B:test
   - update:B05:comment=This is a test.
   - create:device:chassis:ch001:B05:60;100;2:0;0;0:front:First chassis created!
   - create:device:chassis:ch002:B05:60;100;2:0;0;2:front:Second chassis created!
@@ -1957,8 +1971,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 764830559}
-        m_MethodName: GenerateNewSite
+      - m_Target: {fileID: 320645139}
+        m_MethodName: FilterItRooms
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2650,7 +2664,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1195327066
 Transform:
   m_ObjectHideFlags: 0
@@ -3854,7 +3868,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 764830559}
+      - m_Target: {fileID: 320645139}
         m_MethodName: FilterRackRows
         m_Mode: 1
         m_Arguments:

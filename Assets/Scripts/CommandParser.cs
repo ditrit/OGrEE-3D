@@ -8,12 +8,35 @@ public class CommandParser : MonoBehaviour
 {
     public List<string> debugLines = new List<string>();
 
+    private GenerateDataCenter gDataCenter;
     private GenerateItRoom gItRoom;
     private GenerateRacks gRacks;
     private GenerateDevices gDevices;
 
+    // create:datacenter:[name]:[address]:[zipcode]:[city]:[country]:[desc]
+    // create:datacenter:ALPHA:15 all Léon Gambetta:92110:Clichy:France:site de test
+
+    // create:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]
+    // create:itroom:C8:ALPHA:30;60:3;3
+
+    // create:rack:[name]:[parent]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]
+    // create:rack:B05:C8:60;100;42:1;1:rear:B:test
+    // create:rack:B06:C8:60;100;40:2;1:rear:B:Lindemann
+
+    // create:device:[type]:[name]:[parent]:[v3size(cm;cm;u)]:[v3pos(cm:cm:u)]:[orient]:[comment]
+    // create:device:chassis:ch001:B05:60;100;2:0;0;0:front:First chassis created!
+    // create:device:chassis:ch002:B05:60;100;2:0;0;2:front:Second chassis created!
+
+    // update:[name]:[field]=[value]
+    // update:B05:comment=This is a test.
+    // update:ch001:serial=ABC-0042-XYZ
+
+    // delete:[name]:[keepChildren(true|false)]
+    // delete:B05:true
+
     private void OnEnable()
     {
+        gDataCenter = GetComponent<GenerateDataCenter>();
         gItRoom = GetComponent<GenerateItRoom>();
         gRacks = GetComponent<GenerateRacks>();
         gDevices = GetComponent<GenerateDevices>();
@@ -21,24 +44,6 @@ public class CommandParser : MonoBehaviour
 
     private void Start()
     {
-        // create:itroom:[name]:[v2pos(tile)]:[v2margin(tile)]
-        // create:itroom:ALPHA:30;60:3;3
-
-        // create:rack:[name]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]
-        // create:rack:B05:60;100;42:1;1:rear:B:test
-        // create:rack:B06:60;100;40:2;1:rear:B:Lindemann
-
-        // create:device:[type]:[name]:[parent]:[v3size(cm;cm;u)]:[v3pos(cm:cm:u)]:[orient]:[comment]
-        // create:device:chassis:ch001:B05:60;100;2:0;0;0:front:First chassis created!
-        // create:device:chassis:ch002:B05:60;100;2:0;0;2:front:Second chassis created!
-
-        // update:[name]:[field]=[value]
-        // update:B05:comment=This is a test.
-        // update:ch001:serial=ABC-0042-XYZ
-
-        // delete:[name]:[keepChildren(true|false)]
-        // delete:B05:true
-
         foreach (string str in debugLines)
         {
             if (!string.IsNullOrEmpty(str))
@@ -71,8 +76,9 @@ public class CommandParser : MonoBehaviour
 
     private void ParseCreate(string _input)
     {
-        // Debug.Log($"[ParseCreate] {_input}");
-        if (_input.StartsWith("itroom"))
+        if (_input.StartsWith("datacenter"))
+            CreateDataCenter(_input);
+        else if (_input.StartsWith("itroom"))
             CreateItRoom(_input);
         else if (_input.StartsWith("rack"))
             CreateRack(_input);
@@ -82,40 +88,72 @@ public class CommandParser : MonoBehaviour
             Debug.LogWarning("Unknowed object to create\nitroom / rack");
     }
 
+    private void CreateDataCenter(string _input)
+    {
+        string regex = "datacenter:[^\\s:]+:[^:]+:[0-9]+:[a-zA-Z -]+:[a-zA-Z]+:[^:]*$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split(':');
+            if (AlreadyExists(data[1]))
+                return;
+
+            SDataCenterInfos infos = new SDataCenterInfos();
+            infos.name = data[1];
+            infos.address = data[2];
+            infos.zipcode = data[3];
+            infos.city = data[4];
+            infos.country = data[5];
+            infos.description = data[6];
+            gDataCenter.GenerateDC(infos);
+        }
+        else
+            Debug.LogWarning("[CreateDataCenter] Syntax Error\ncreate:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");
+    }
+
     private void CreateItRoom(string _input)
     {
-        string regex = "itroom:[^\\s:]+:[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+$";
+        string regex = "itroom:[^\\s:]+:[^\\s:]+:[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(':', ';');
-            gItRoom.CreateItRoom(data[1], new Vector2(float.Parse(data[2]), float.Parse(data[3])),
-                                    new Vector2(float.Parse(data[4]), float.Parse(data[5])));
+            if (AlreadyExists(data[1]))
+                return;
 
-            gRacks.margin = new Vector2(float.Parse(data[4]), float.Parse(data[5]));
-            gRacks.root = GameObject.Find(data[1]).transform;
+            SItRoomInfos infos = new SItRoomInfos();
+            infos.name = data[1];
+            infos.parentName = data[2];
+            infos.size = new Vector2(float.Parse(data[3]), float.Parse(data[4]));
+            infos.margin = new Vector2(float.Parse(data[5]), float.Parse(data[6]));
+            gItRoom.CreateItRoom(infos);
+
+            gRacks.margin = infos.margin;
         }
         else
-            Debug.LogWarning("[CreateItRoom] Syntax Error\ncreate:itroom:[name]:[v2pos(tile)]:[v2margin(tile)]");
+            Debug.LogWarning("[CreateItRoom] Syntax Error\nitroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");
     }
 
     private void CreateRack(string _input)
     {
-        string regex = "rack:[^\\s:]+:[0-9.]+;[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+:(front|rear):[A-Z]:[^:]*$";
+        string regex = "rack:[^\\s:]+:[^\\s:]+:[0-9.]+;[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+:(front|rear):[A-Z]:[^:]*$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(':', ';');
+            if (AlreadyExists(data[1]))
+                return;
+
             SRackInfos infos = new SRackInfos();
             infos.name = data[1];
-            infos.orient = data[7];
-            infos.pos = new Vector2(float.Parse(data[5]), float.Parse(data[6]));
-            infos.size = new Vector2(float.Parse(data[2]), float.Parse(data[3]));
-            infos.height = int.Parse(data[4]);
-            infos.comment = data[9];
-            infos.row = data[8];
+            infos.parentName = data[2];
+            infos.orient = data[8];
+            infos.pos = new Vector2(float.Parse(data[6]), float.Parse(data[7]));
+            infos.size = new Vector2(float.Parse(data[3]), float.Parse(data[4]));
+            infos.height = int.Parse(data[5]);
+            infos.comment = data[10];
+            infos.row = data[9];
             gRacks.CreateRack(infos);
         }
         else
-            Debug.LogWarning("[CreateRack] Syntax Error\ncreate:rack:[name]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]");
+            Debug.LogWarning("[CreateRack] Syntax Error\ncreate:rack:[name]:[parent]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]");
     }
 
     private void CreateDevice(string _input)
@@ -124,6 +162,9 @@ public class CommandParser : MonoBehaviour
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(':', ';');
+            if (AlreadyExists(data[2]))
+                return;
+
             SDeviceInfos infos = new SDeviceInfos();
             infos.type = data[1];
             infos.name = data[2];
@@ -144,9 +185,9 @@ public class CommandParser : MonoBehaviour
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(':', '=');
-            Object objToUpdate = GameObject.Find(data[0]).GetComponent<Object>();
+            GameObject objToUpdate = GameObject.Find(data[0]);
             if (objToUpdate)
-                objToUpdate.UpdateField(data[1], data[2]);
+                objToUpdate.GetComponent<Object>().UpdateField(data[1], data[2]);
             else
                 Debug.LogWarning($"{data[0]} doesn't exists.");
         }
@@ -179,5 +220,16 @@ public class CommandParser : MonoBehaviour
         }
         else
             Debug.LogWarning("[DeleteObject] Syntax Error\ndelete:[name]:[keepChildren(true|false)]");
+    }
+
+    private bool AlreadyExists(string _name)
+    {
+        GameObject go = GameObject.Find(_name);
+        if (go)
+        {
+            Debug.LogWarning($"{_name} already exists.");
+            return true;
+        }
+        return false;
     }
 }

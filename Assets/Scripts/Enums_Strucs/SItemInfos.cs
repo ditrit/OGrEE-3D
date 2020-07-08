@@ -6,6 +6,7 @@ using UnityEngine;
 public struct SRackInfos
 {
     public string name;
+    public string parentName;
     public string orient;
     public Vector2 pos; // tile
     public Vector2 size; // cm 
@@ -27,4 +28,24 @@ public struct SDeviceInfos
     public string serial; // ?
     public string vendor;
     public string comment;
+}
+
+[System.Serializable]
+public struct SDataCenterInfos
+{
+    public string name;
+    public string address;
+    public string zipcode;
+    public string city;
+    public string country;
+    public string description;
+}
+
+[System.Serializable]
+public struct SItRoomInfos
+{
+    public string name;
+    public string parentName;
+    public Vector2 size;
+    public Vector2 margin;
 }

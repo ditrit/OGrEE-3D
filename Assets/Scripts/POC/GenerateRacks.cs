@@ -12,7 +12,7 @@ public class GenerateRacks : MonoBehaviour
 
     [Header("Room data")]
     public Vector2 margin = new Vector2(3, 3); // tile
-    public Transform root = null;
+    // public Transform root = null;
     private float tileU = 0.6f;
 
     private void Start()
@@ -42,14 +42,14 @@ public class GenerateRacks : MonoBehaviour
 
     public void CreateRack(SRackInfos _data)
     {
-        GameObject newRack = Instantiate(GameManager.gm.rackModel, root);
-        Object obj = newRack.GetComponent<Object>();
-
+        GameObject newRack = Instantiate(GameManager.gm.rackModel);
         newRack.name = _data.name;
+        newRack.transform.parent = GameObject.Find(_data.parentName).transform;
         newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * 0.0445f, _data.size.y / 100);
         newRack.transform.localPosition = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.localPosition += new Vector3((_data.pos.x - 1 + margin.x) * tileU, 0, (_data.pos.y - 1 + margin.y) * tileU);
 
+        Object obj = newRack.GetComponent<Object>();
         obj.description = _data.comment;
         obj.row = _data.row;
         obj.pos = _data.pos;
@@ -70,10 +70,13 @@ public class GenerateRacks : MonoBehaviour
                 break;
         }
 
-        RackFilter rf = GetComponent<RackFilter>();
-        rf.AddIfUnknowned(rf.racks, newRack);
-        rf.AddIfUnknowned(rf.rackRows, _data.row);
-        rf.UpdateDropdownFromList(rf.dropdownRackRows, rf.rackRows);
+        // RackFilter rf = GetComponent<RackFilter>();
+        // rf.AddIfUnknowned(rf.racks, newRack);
+        // rf.AddIfUnknowned(rf.rackRows, _data.row);
+        // rf.UpdateDropdownFromList(rf.dropdownRackRows, rf.rackRows);
+        Filters.instance.AddIfUnknowned(Filters.instance.racks, newRack);
+        Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, obj.row);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
         newRack.GetComponent<DisplayRackData>().FillTexts();
     }

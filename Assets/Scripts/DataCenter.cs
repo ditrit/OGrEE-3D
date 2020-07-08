@@ -5,19 +5,10 @@ using UnityEngine;
 public class DataCenter : MonoBehaviour
 {
     public string description;
-    public string country;
-    public string zipcode;
     public string address;
+    public string zipcode;
     public string city;
+    public string country;
     public EOrientation orientation;
 
-    private void Start()
-    {
-
-    }
-
-    private void Update()
-    {
-
-    }
 }
