@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GenerateItRoom : MonoBehaviour
 {
+    private float tileU = 0.6f;
+
     public void CreateItRoom(SItRoomInfos _data)
     {
         float u = GameManager.gm.tileModel.transform.GetChild(0).transform.localScale.x * 10;
@@ -16,7 +18,7 @@ public class GenerateItRoom : MonoBehaviour
         Vector3 originalSize = tile.transform.GetChild(0).localScale;
         tile.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.y);
         Vector3 tmpPos = tile.transform.GetChild(0).localScale / 0.2f;
-        tile.transform.GetChild(0).localPosition = new Vector3(tmpPos.x, 0, tmpPos.z);
+        tile.transform.GetChild(0).localPosition = new Vector3(tmpPos.x + _data.pos.x * tileU, 0, tmpPos.z + _data.pos.y * tileU);
 
         Object obj = tile.AddComponent<Object>();
         obj.type = EObjectType.Itroom;
@@ -24,6 +26,26 @@ public class GenerateItRoom : MonoBehaviour
         obj.sizeUnit = EUnit.tile;
         obj.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
         obj.reserved = new SMargin();
+
+        switch (_data.orient)
+        {
+            case "front":
+                obj.orient = EObjOrient.Frontward;
+                tile.transform.localEulerAngles = new Vector3(0, 0, 0);
+                break;
+            case "rear":
+                obj.orient = EObjOrient.Backward;
+                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            case "left":
+                obj.orient = EObjOrient.Left;
+                tile.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            case "right":
+                obj.orient = EObjOrient.Right;
+                tile.transform.localEulerAngles = new Vector3(0, -90, 0);
+                break;
+        }
 
         // Lights
         // GameObject lightsRoot = new GameObject("lightsRoot");

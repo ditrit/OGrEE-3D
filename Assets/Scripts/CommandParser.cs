@@ -16,8 +16,9 @@ public class CommandParser : MonoBehaviour
     // create:datacenter:[name]:[address]:[zipcode]:[city]:[country]:[desc]
     // create:datacenter:ALPHA:15 all Léon Gambetta:92110:Clichy:France:site de test
 
-    // create:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]
-    // create:itroom:C8:ALPHA:30;60:3;3
+    // create:itroom:[name]:[parent]:[v2size(tile)]:[v2margin(tile)]:[v2pos(tile)]:[orient]
+    // create:itroom:C8:ALPHA:30;60:3;3:0;0:front
+    // create:itroom:C9:ALPHA:20;25:1;2:35;0:left
 
     // create:rack:[name]:[parent]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]
     // create:rack:B05:C8:60;100;42:1;1:rear:B:test
@@ -112,7 +113,7 @@ public class CommandParser : MonoBehaviour
 
     private void CreateItRoom(string _input)
     {
-        string regex = "itroom:[^\\s:]+:[^\\s:]+:[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+$";
+        string regex = "itroom:[^\\s:]+:[^\\s:]+:[0-9]+;[0-9]+:[0-9.]+;[0-9.]+:[0-9.]+;[0-9.]+:(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(':', ';');
@@ -124,12 +125,14 @@ public class CommandParser : MonoBehaviour
             infos.parentName = data[2];
             infos.size = new Vector2(float.Parse(data[3]), float.Parse(data[4]));
             infos.margin = new Vector2(float.Parse(data[5]), float.Parse(data[6]));
+            infos.pos = new Vector2(float.Parse(data[7]), float.Parse(data[8]));
+            infos.orient = data[9];
             gItRoom.CreateItRoom(infos);
 
             gRacks.margin = infos.margin;
         }
         else
-            Debug.LogWarning("[CreateItRoom] Syntax Error\nitroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");
+            Debug.LogWarning("[CreateItRoom] Syntax Error\ncreate:itroom:[name]:[parent]:[v2size(tile)]:[v2margin(tile)]:[v2pos(tile)]:[orient]");
     }
 
     private void CreateRack(string _input)

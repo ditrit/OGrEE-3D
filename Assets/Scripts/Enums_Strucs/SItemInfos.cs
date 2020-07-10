@@ -46,6 +46,8 @@ public struct SItRoomInfos
 {
     public string name;
     public string parentName;
-    public Vector2 size;
-    public Vector2 margin;
+    public Vector2 size; // tile
+    public Vector2 margin; // tile
+    public Vector2 pos; // tile
+    public string orient;
 }

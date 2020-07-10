@@ -456,7 +456,7 @@ GameObject:
   - component: {fileID: 173453499}
   - component: {fileID: 173453498}
   m_Layer: 5
-  m_Name: TextSites
+  m_Name: TextItRooms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,7 +499,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Filter by site:'
+  m_text: 'Filter by IT Room:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -568,10 +568,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 173453498}
-    characterCount: 15
+    characterCount: 18
     spriteCount: 0
-    spaceCount: 2
-    wordCount: 3
+    spaceCount: 3
+    wordCount: 4
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -1599,7 +1599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugLines:
   - "create:datacenter:ALPHA:15 all L\xE9on Gambetta:92110:Clichy:France:site de test"
-  - create:itroom:C8:ALPHA:30;60:3;3
+  - create:itroom:C8:ALPHA:30;60:3;3:0;0:front
   - create:rack:B05:C8:60;100;42:1;1:rear:B:test
   - update:B05:comment=This is a test.
   - create:device:chassis:ch001:B05:60;100;2:0;0;0:front:First chassis created!
@@ -1886,7 +1886,7 @@ GameObject:
   - component: {fileID: 1039380109}
   - component: {fileID: 1039380108}
   m_Layer: 5
-  m_Name: DropdownSite
+  m_Name: DropdownItRooms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

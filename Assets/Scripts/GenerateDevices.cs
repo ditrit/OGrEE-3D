@@ -11,7 +11,7 @@ public class GenerateDevices : MonoBehaviour
         Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * 0.0445f, _data.size.y / 100);
         newDevice.transform.localScale = size;
         Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
-        newDevice.transform.localPosition =  origin;
+        newDevice.transform.localPosition = origin;
         Vector3 pos = new Vector3(_data.pos.x, _data.pos.z * 0.0445f, _data.pos.y);
         newDevice.transform.localPosition += pos;
 
@@ -46,6 +46,14 @@ public class GenerateDevices : MonoBehaviour
             case "rear":
                 obj.orient = EObjOrient.Backward;
                 newDevice.transform.localEulerAngles = new Vector3(0, 0, 0);
+                break;
+            case "left":
+                obj.orient = EObjOrient.Left;
+                newDevice.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            case "right":
+                obj.orient = EObjOrient.Right;
+                newDevice.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
         }
         obj.model = _data.model;

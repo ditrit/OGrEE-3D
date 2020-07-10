@@ -68,6 +68,14 @@ public class GenerateRacks : MonoBehaviour
                 obj.orient = EObjOrient.Backward;
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
+            case "left":
+                obj.orient = EObjOrient.Left;
+                newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+            case "right":
+                obj.orient = EObjOrient.Right;
+                newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
+                break;
         }
 
         // RackFilter rf = GetComponent<RackFilter>();
