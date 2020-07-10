@@ -4,21 +4,19 @@ using UnityEngine;
 
 public class GenerateItRoom : MonoBehaviour
 {
-    private float tileU = 0.6f;
 
     public void CreateItRoom(SItRoomInfos _data)
     {
-        float u = GameManager.gm.tileModel.transform.GetChild(0).transform.localScale.x * 10;
-        // Debug.Log($"[GenerateFloor] tile unit:{u}");
-
         GameObject tile = Instantiate(GameManager.gm.tileModel);
         tile.name = _data.name;
         tile.transform.parent = GameObject.Find(_data.parentName).transform;
 
         Vector3 originalSize = tile.transform.GetChild(0).localScale;
         tile.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.y);
-        Vector3 tmpPos = tile.transform.GetChild(0).localScale / 0.2f;
-        tile.transform.GetChild(0).localPosition = new Vector3(tmpPos.x + _data.pos.x * tileU, 0, tmpPos.z + _data.pos.y * tileU);
+        
+        Vector3 origin = tile.transform.GetChild(0).localScale / 0.2f;
+        tile.transform.localPosition = new Vector3(origin.x, 0, origin.z);
+        tile.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
 
         Object obj = tile.AddComponent<Object>();
         obj.type = EObjectType.Itroom;

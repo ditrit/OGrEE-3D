@@ -13,7 +13,6 @@ public class GenerateRacks : MonoBehaviour
     [Header("Room data")]
     public Vector2 margin = new Vector2(3, 3); // tile
     // public Transform root = null;
-    private float tileU = 0.6f;
 
     private void Start()
     {
@@ -24,6 +23,8 @@ public class GenerateRacks : MonoBehaviour
 
     private void AutoRacks()
     {
+        float tileU = GameManager.gm.tileSize;
+
         float xUnit = GameManager.gm.rackModel.transform.GetChild(0).transform.localScale.x;
         float zUnit = GameManager.gm.rackModel.transform.GetChild(0).transform.localScale.z;
         Debug.Log($"[GenerateRacks] xUnit:{xUnit} / zUnit:{zUnit}");
@@ -44,10 +45,16 @@ public class GenerateRacks : MonoBehaviour
     {
         GameObject newRack = Instantiate(GameManager.gm.rackModel);
         newRack.name = _data.name;
-        newRack.transform.parent = GameObject.Find(_data.parentName).transform;
+
+        Transform parent = GameObject.Find(_data.parentName).transform;
+        newRack.transform.parent = parent;
+        
         newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * 0.0445f, _data.size.y / 100);
-        newRack.transform.localPosition = newRack.transform.GetChild(0).localScale / 2;
-        newRack.transform.localPosition += new Vector3((_data.pos.x - 1 + margin.x) * tileU, 0, (_data.pos.y - 1 + margin.y) * tileU);
+        
+        Vector3 origin = parent.GetChild(0).localScale / -0.2f;
+        newRack.transform.localPosition = new Vector3(origin.x, 0, origin.z);
+        newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
+        newRack.transform.localPosition += new Vector3(_data.pos.x - 1 + margin.x, 0, _data.pos.y - 1 + margin.y) * GameManager.gm.tileSize;
 
         Object obj = newRack.GetComponent<Object>();
         obj.description = _data.comment;

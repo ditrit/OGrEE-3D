@@ -6,6 +6,11 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
 
+    [Header("Custom units")]
+    public float tileSize = 0.6f;
+    public float uSize = 0.045f;
+    public float ouSize = 0.048f;
+
     [Header("Models")]
     public GameObject tileModel;
     public GameObject rackModel;
