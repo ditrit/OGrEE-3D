@@ -30,7 +30,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.localPosition += new Vector3(_data.pos.x - 1 + margin.x, 0, _data.pos.y - 1 + margin.y) * GameManager.gm.tileSize;
 
-        Rack rack = newRack.AddComponent<Rack>();
+        Rack rack = newRack.GetComponent<Rack>();
         rack.description = _data.comment;
         rack.posXY = _data.pos;
         rack.posXYUnit = EUnit.tile;

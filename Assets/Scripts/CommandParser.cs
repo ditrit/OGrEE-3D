@@ -8,10 +8,10 @@ public class CommandParser : MonoBehaviour
 {
     public List<string> debugLines = new List<string>();
 
-    private GenerateDataCenter gDataCenter;
+    // private GenerateDataCenter gDataCenter;
     private GenerateItRoom gItRoom;
-    private GenerateRacks gRacks;
-    private GenerateDevices gDevices;
+    // private GenerateRacks gRacks;
+    // private GenerateDevices gDevices;
 
     // create:datacenter:[name]:[address]:[zipcode]:[city]:[country]:[desc]
     // create:datacenter:ALPHA:15 all Léon Gambetta:92110:Clichy:France:site de test
@@ -37,10 +37,10 @@ public class CommandParser : MonoBehaviour
 
     private void OnEnable()
     {
-        gDataCenter = GetComponent<GenerateDataCenter>();
+        // gDataCenter = GetComponent<GenerateDataCenter>();
         gItRoom = GetComponent<GenerateItRoom>();
-        gRacks = GetComponent<GenerateRacks>();
-        gDevices = GetComponent<GenerateDevices>();
+        // gRacks = GetComponent<GenerateRacks>();
+        // gDevices = GetComponent<GenerateDevices>();
     }
 
     private void Start()
@@ -105,7 +105,8 @@ public class CommandParser : MonoBehaviour
             infos.city = data[4];
             infos.country = data[5];
             infos.description = data[6];
-            gDataCenter.GenerateDC(infos);
+            // gDataCenter.GenerateDC(infos);
+            CustomerGenerator.instance.CreateDatacenter(infos);
         }
         else
             Debug.LogWarning("[CreateDataCenter] Syntax Error\ncreate:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");
@@ -129,7 +130,7 @@ public class CommandParser : MonoBehaviour
             infos.orient = data[9];
             gItRoom.CreateItRoom(infos);
 
-            gRacks.margin = infos.margin;
+            // gRacks.margin = infos.margin;
         }
         else
             Debug.LogWarning("[CreateItRoom] Syntax Error\ncreate:itroom:[name]:[parent]:[v2size(tile)]:[v2margin(tile)]:[v2pos(tile)]:[orient]");

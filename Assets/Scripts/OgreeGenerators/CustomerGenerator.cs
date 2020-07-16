@@ -23,8 +23,13 @@ public class CustomerGenerator : MonoBehaviour
     public void CreateDatacenter(SDataCenterInfos _data)
     {
         GameObject newDC = new GameObject(_data.name);
-        newDC.transform.parent = GameObject.Find(_data.customer).transform;
-        
+
+        GameObject parent = GameObject.Find(_data.customer);
+        if (parent)
+            newDC.transform.parent = parent.transform;
+        // else
+        //     Debug.LogError("");
+
         Datacenter dc = newDC.AddComponent<Datacenter>();
         dc.address = _data.address;
         dc.zipcode = _data.zipcode;
