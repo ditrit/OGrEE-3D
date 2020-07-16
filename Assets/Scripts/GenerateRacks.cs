@@ -58,9 +58,8 @@ public class GenerateRacks : MonoBehaviour
 
         Object obj = newRack.GetComponent<Object>();
         obj.description = _data.comment;
-        obj.row = _data.row;
-        obj.pos = _data.pos;
-        obj.posUnit = EUnit.tile;
+        obj.posXY = _data.pos;
+        obj.posXYUnit = EUnit.tile;
         obj.size = new Vector2(_data.size.x, _data.size.y);
         obj.sizeUnit = EUnit.cm;
         obj.height = _data.height;
@@ -90,7 +89,7 @@ public class GenerateRacks : MonoBehaviour
         // rf.AddIfUnknowned(rf.rackRows, _data.row);
         // rf.UpdateDropdownFromList(rf.dropdownRackRows, rf.rackRows);
         Filters.instance.AddIfUnknowned(Filters.instance.racks, newRack);
-        Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, obj.row);
+        Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, newRack.name[0].ToString());
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
         newRack.GetComponent<DisplayRackData>().FillTexts();

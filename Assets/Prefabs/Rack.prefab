@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5362207936512041789}
-  - component: {fileID: -4321737718716988454}
   - component: {fileID: 777670014700511597}
   m_Layer: 0
   m_Name: Rack
@@ -33,50 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-4321737718716988454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382823270839367371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c19af5f9c93072648a43b6627637b446, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 3
-  description: 
-  row: 
-  pos: {x: 0, y: 0}
-  posUnit: 0
-  size: {x: 0, y: 0}
-  sizeUnit: 0
-  height: 0
-  heightUnit: 0
-  orient: 0
-  floorHeight: 100
-  floorUnit: 0
-  technical:
-    left: 5
-    right: 5
-    top: 0
-    bottom: 0
-  reserved:
-    left: 3
-    right: 1
-    top: 2
-    bottom: 5
-  vendor: 
-  model: 
-  serial: 
-  componentType: 0
-  role: 0
-  nbCiruit: 0
-  nbPhase: 0
-  nbOutlet: 0
-  voltage: 0
-  amperage: 0
 --- !u!114 &777670014700511597
 MonoBehaviour:
   m_ObjectHideFlags: 0

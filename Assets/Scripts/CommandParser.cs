@@ -153,7 +153,8 @@ public class CommandParser : MonoBehaviour
             infos.height = int.Parse(data[5]);
             infos.comment = data[10];
             infos.row = data[9];
-            gRacks.CreateRack(infos);
+            // gRacks.CreateRack(infos);
+            ObjectGenerator.instance.CreateRack(infos);
         }
         else
             Debug.LogWarning("[CreateRack] Syntax Error\ncreate:rack:[name]:[parent]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]");
@@ -176,7 +177,8 @@ public class CommandParser : MonoBehaviour
             infos.pos = new Vector3(float.Parse(data[7]), float.Parse(data[8]), float.Parse(data[9]));
             infos.orient = data[10];
             infos.comment = data[11];
-            gDevices.CreateDevice(infos);
+            // gDevices.CreateDevice(infos);
+            ObjectGenerator.instance.CreateChassis(infos);
         }
         else
             Debug.LogWarning(("[CreateDevice] Syntex Error\ncreate:device:[type]:[name]:[parent]:[v3size(cm;cm;u)]:[v3pos(cm:cm:u)]:[orient]:[comment]"));

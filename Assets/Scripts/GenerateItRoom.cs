@@ -18,29 +18,28 @@ public class GenerateItRoom : MonoBehaviour
         tile.transform.localPosition = new Vector3(origin.x, 0, origin.z);
         tile.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
 
-        Object obj = tile.AddComponent<Object>();
-        obj.type = EObjectType.Itroom;
-        obj.size = _data.size;
-        obj.sizeUnit = EUnit.tile;
-        obj.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
-        obj.reserved = new SMargin();
+        Room room = tile.AddComponent<Room>();
+        room.size = _data.size;
+        room.sizeUnit = EUnit.tile;
+        room.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
+        room.reserved = new SMargin();
 
         switch (_data.orient)
         {
             case "front":
-                obj.orient = EObjOrient.Frontward;
+                room.orientation = EOrientation.N;
                 tile.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "rear":
-                obj.orient = EObjOrient.Backward;
+                room.orientation = EOrientation.S;
                 tile.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "left":
-                obj.orient = EObjOrient.Left;
+                room.orientation = EOrientation.W;
                 tile.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
             case "right":
-                obj.orient = EObjOrient.Right;
+                room.orientation = EOrientation.E;
                 tile.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
         }

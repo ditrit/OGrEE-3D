@@ -7,7 +7,7 @@ public class GenerateDataCenter : MonoBehaviour
     public void GenerateDC(SDataCenterInfos _data)
     {
         GameObject newDC = new GameObject(_data.name);
-        DataCenter dc = newDC.AddComponent<DataCenter>();
+        Datacenter dc = newDC.AddComponent<Datacenter>();
         dc.address = _data.address;
         dc.zipcode = _data.zipcode;
         dc.city = _data.city;

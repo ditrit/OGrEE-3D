@@ -62,7 +62,7 @@ public class RackFilter : MonoBehaviour
         else
         {
             foreach (GameObject rack in racks)
-                rack.SetActive(rack.GetComponent<Object>().row == txt);
+                rack.SetActive(rack.name[0].ToString() == txt);
         }
     }
 

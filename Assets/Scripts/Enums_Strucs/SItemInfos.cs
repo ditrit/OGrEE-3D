@@ -34,6 +34,7 @@ public struct SDeviceInfos
 public struct SDataCenterInfos
 {
     public string name;
+    public string customer;
     public string address;
     public string zipcode;
     public string city;

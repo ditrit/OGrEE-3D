@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(Object))]
+// [RequireComponent(typeof(Object))]
 public class DisplayRackData : MonoBehaviour
 {
     [SerializeField] private  TextMeshPro textName = null;
@@ -11,14 +11,15 @@ public class DisplayRackData : MonoBehaviour
     
     private Object obj;
 
-    private void Awake()
-    {
-        obj = GetComponent<Object>();
-        // FillTexts();
-    }
+    // private void Awake()
+    // {
+    //     obj = GetComponent<Object>();
+    //     // FillTexts();
+    // }
 
     public void FillTexts()
     {
+        obj = GetComponent<Object>();
         textName.text = obj.name;
         textDesc.text = obj.description;
     }

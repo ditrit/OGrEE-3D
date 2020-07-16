@@ -27,7 +27,6 @@ public enum EUnit
 {
     m,
     cm,
-    mm,
     inch,
     feet,
     tile,
@@ -36,42 +35,73 @@ public enum EUnit
 }
 
 ///<summary>
-/// The type of object: Datacenter / Room / Itroom / Rack / Powerpanel / Airconditionner / Chassis / Device / Pdu / Container
+/// The role of a device: parent / child
 ///</summary>
-public enum EObjectType
+public enum ERole
 {
-    Datacenter,
-    Room,
-    Itroom,
-    Rack,
-    Powerpanel,
-    Airconditionner,
-    Chassis,
-    Device,
-    Pdu,
-    Container
+    parent,
+    child
 }
+
+///<summary>
+/// The family of object: Datacenter / Room / Itroom / Rack / Powerpanel / Airconditionner / Chassis / Device / Pdu / Container
+///</summary>
+public enum EObjFamily
+{
+    rack,
+    powerpanel,
+    airconditionner,
+    chassis,
+    device,
+    pdu,
+    container
+}
+
+// public enum EObjectType
+// {
+//     Datacenter,
+//     Room,
+//     Itroom,
+//     Rack,
+//     Powerpanel,
+//     Airconditionner,
+//     Chassis,
+//     Device,
+//     Pdu,
+//     Container
+// }
 
 ///<summary>
 /// Role: parent / child
 ///</summary>
-public enum ERole
+public enum EDeviceRole
 {
-    Parent,
-    Child
+    parent,
+    child
 }
 
 ///<summary>
 /// ComponentType: processor / psu / fan / adapter / enclosure / memory / disk
 ///</summary>
-public enum EComponentType
+public enum ECompCategory
 {
-    NA,
     processor,
     psu,
     fan,
     adapter,
-    enclosure,
     memory,
     disk
+
 }
+
+// public enum EComponentType
+// {
+//     NA,
+//     processor,
+//     psu,
+//     fan,
+//     adapter,
+//     enclosure,
+//     memory,
+//     disk
+// }
