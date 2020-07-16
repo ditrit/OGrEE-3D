@@ -9,7 +9,7 @@ public class CommandParser : MonoBehaviour
     public List<string> debugLines = new List<string>();
 
     // private GenerateDataCenter gDataCenter;
-    private GenerateItRoom gItRoom;
+    // private GenerateItRoom gItRoom;
     // private GenerateRacks gRacks;
     // private GenerateDevices gDevices;
 
@@ -35,13 +35,13 @@ public class CommandParser : MonoBehaviour
     // delete:[name]:[keepChildren(true|false)]
     // delete:B05:true
 
-    private void OnEnable()
-    {
+    // private void OnEnable()
+    // {
         // gDataCenter = GetComponent<GenerateDataCenter>();
-        gItRoom = GetComponent<GenerateItRoom>();
+        // gItRoom = GetComponent<GenerateItRoom>();
         // gRacks = GetComponent<GenerateRacks>();
         // gDevices = GetComponent<GenerateDevices>();
-    }
+    // }
 
     private void Start()
     {
@@ -121,14 +121,15 @@ public class CommandParser : MonoBehaviour
             if (AlreadyExists(data[1]))
                 return;
 
-            SItRoomInfos infos = new SItRoomInfos();
+            SRoomInfos infos = new SRoomInfos();
             infos.name = data[1];
             infos.parentName = data[2];
             infos.size = new Vector2(float.Parse(data[3]), float.Parse(data[4]));
             infos.margin = new Vector2(float.Parse(data[5]), float.Parse(data[6]));
             infos.pos = new Vector2(float.Parse(data[7]), float.Parse(data[8]));
             infos.orient = data[9];
-            gItRoom.CreateItRoom(infos);
+            // gItRoom.CreateItRoom(infos);
+            BuildingGenerator.instance.CreateRoom(infos);
 
             // gRacks.margin = infos.margin;
         }

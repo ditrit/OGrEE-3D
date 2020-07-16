@@ -43,7 +43,7 @@ public struct SDataCenterInfos
 }
 
 [System.Serializable]
-public struct SItRoomInfos
+public struct SRoomInfos
 {
     public string name;
     public string parentName;

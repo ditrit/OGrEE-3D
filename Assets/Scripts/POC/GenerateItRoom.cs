@@ -5,7 +5,7 @@ using UnityEngine;
 public class GenerateItRoom : MonoBehaviour
 {
 
-    public void CreateItRoom(SItRoomInfos _data)
+    public void CreateItRoom(SRoomInfos _data)
     {
         GameObject tile = Instantiate(GameManager.gm.tileModel);
         tile.name = _data.name;

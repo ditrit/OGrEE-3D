@@ -23,7 +23,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.parent = parent;
         Vector2 margin = new Vector2(parent.GetComponent<Room>().technical.left, parent.GetComponent<Room>().technical.bottom);
 
-        newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * 0.0445f, _data.size.y / 100);
+        newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
         
         Vector3 origin = parent.GetChild(0).localScale / -0.2f;
         newRack.transform.localPosition = new Vector3(origin.x, 0, origin.z);
@@ -69,7 +69,7 @@ public class ObjectGenerator : MonoBehaviour
     {
         GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
         newDevice.name = _data.name;
-        Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * 0.0445f, _data.size.y / 100);
+        Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * GameManager.gm.uSize, _data.size.y / 100);
         newDevice.transform.localScale = size;
         Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
         newDevice.transform.localPosition = origin;
