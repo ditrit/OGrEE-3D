@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataCenter : MonoBehaviour
+public class Datacenter : MonoBehaviour
 {
     public string description;
     public string address;
@@ -10,5 +10,8 @@ public class DataCenter : MonoBehaviour
     public string city;
     public string country;
     public EOrientation orientation;
+    public string gpsX;
+    public string gpsY;
+    public string gpsZ;
 
 }

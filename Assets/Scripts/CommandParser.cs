@@ -8,10 +8,10 @@ public class CommandParser : MonoBehaviour
 {
     public List<string> debugLines = new List<string>();
 
-    private GenerateDataCenter gDataCenter;
-    private GenerateItRoom gItRoom;
-    private GenerateRacks gRacks;
-    private GenerateDevices gDevices;
+    // private GenerateDataCenter gDataCenter;
+    // private GenerateItRoom gItRoom;
+    // private GenerateRacks gRacks;
+    // private GenerateDevices gDevices;
 
     // create:datacenter:[name]:[address]:[zipcode]:[city]:[country]:[desc]
     // create:datacenter:ALPHA:15 all Léon Gambetta:92110:Clichy:France:site de test
@@ -35,13 +35,13 @@ public class CommandParser : MonoBehaviour
     // delete:[name]:[keepChildren(true|false)]
     // delete:B05:true
 
-    private void OnEnable()
-    {
-        gDataCenter = GetComponent<GenerateDataCenter>();
-        gItRoom = GetComponent<GenerateItRoom>();
-        gRacks = GetComponent<GenerateRacks>();
-        gDevices = GetComponent<GenerateDevices>();
-    }
+    // private void OnEnable()
+    // {
+        // gDataCenter = GetComponent<GenerateDataCenter>();
+        // gItRoom = GetComponent<GenerateItRoom>();
+        // gRacks = GetComponent<GenerateRacks>();
+        // gDevices = GetComponent<GenerateDevices>();
+    // }
 
     private void Start()
     {
@@ -105,7 +105,8 @@ public class CommandParser : MonoBehaviour
             infos.city = data[4];
             infos.country = data[5];
             infos.description = data[6];
-            gDataCenter.GenerateDC(infos);
+            // gDataCenter.GenerateDC(infos);
+            CustomerGenerator.instance.CreateDatacenter(infos);
         }
         else
             Debug.LogWarning("[CreateDataCenter] Syntax Error\ncreate:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");
@@ -120,16 +121,17 @@ public class CommandParser : MonoBehaviour
             if (AlreadyExists(data[1]))
                 return;
 
-            SItRoomInfos infos = new SItRoomInfos();
+            SRoomInfos infos = new SRoomInfos();
             infos.name = data[1];
             infos.parentName = data[2];
             infos.size = new Vector2(float.Parse(data[3]), float.Parse(data[4]));
             infos.margin = new Vector2(float.Parse(data[5]), float.Parse(data[6]));
             infos.pos = new Vector2(float.Parse(data[7]), float.Parse(data[8]));
             infos.orient = data[9];
-            gItRoom.CreateItRoom(infos);
+            // gItRoom.CreateItRoom(infos);
+            BuildingGenerator.instance.CreateRoom(infos);
 
-            gRacks.margin = infos.margin;
+            // gRacks.margin = infos.margin;
         }
         else
             Debug.LogWarning("[CreateItRoom] Syntax Error\ncreate:itroom:[name]:[parent]:[v2size(tile)]:[v2margin(tile)]:[v2pos(tile)]:[orient]");
@@ -153,7 +155,8 @@ public class CommandParser : MonoBehaviour
             infos.height = int.Parse(data[5]);
             infos.comment = data[10];
             infos.row = data[9];
-            gRacks.CreateRack(infos);
+            // gRacks.CreateRack(infos);
+            ObjectGenerator.instance.CreateRack(infos);
         }
         else
             Debug.LogWarning("[CreateRack] Syntax Error\ncreate:rack:[name]:[parent]:[v3size(cm;cm;u)]:[v2pos(tile)]:[orient]:[row]:[comment]");
@@ -176,7 +179,8 @@ public class CommandParser : MonoBehaviour
             infos.pos = new Vector3(float.Parse(data[7]), float.Parse(data[8]), float.Parse(data[9]));
             infos.orient = data[10];
             infos.comment = data[11];
-            gDevices.CreateDevice(infos);
+            // gDevices.CreateDevice(infos);
+            ObjectGenerator.instance.CreateChassis(infos);
         }
         else
             Debug.LogWarning(("[CreateDevice] Syntex Error\ncreate:device:[type]:[name]:[parent]:[v3size(cm;cm;u)]:[v3pos(cm:cm:u)]:[orient]:[comment]"));

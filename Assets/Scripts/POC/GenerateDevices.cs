@@ -16,27 +16,27 @@ public class GenerateDevices : MonoBehaviour
         newDevice.transform.localPosition += pos;
 
         Object obj = newDevice.GetComponent<Object>();
-        switch (_data.type)
-        {
-            case "powerpanel":
-                obj.type = EObjectType.Powerpanel;
-                break;
-            case "airconditionner":
-                obj.type = EObjectType.Airconditionner;
-                break;
-            case "chassis":
-                obj.type = EObjectType.Chassis;
-                break;
-            case "compute":
-                obj.type = EObjectType.Device;
-                break;
-            case "pdu":
-                obj.type = EObjectType.Pdu;
-                break;
-            case "container":
-                obj.type = EObjectType.Container;
-                break;
-        }
+        // switch (_data.type)
+        // {
+        //     case "powerpanel":
+        //         obj.type = EObjectType.Powerpanel;
+        //         break;
+        //     case "airconditionner":
+        //         obj.type = EObjectType.Airconditionner;
+        //         break;
+        //     case "chassis":
+        //         obj.type = EObjectType.Chassis;
+        //         break;
+        //     case "compute":
+        //         obj.type = EObjectType.Device;
+        //         break;
+        //     case "pdu":
+        //         obj.type = EObjectType.Pdu;
+        //         break;
+        //     case "container":
+        //         obj.type = EObjectType.Container;
+        //         break;
+        // }
         switch (_data.orient)
         {
             case "front":
