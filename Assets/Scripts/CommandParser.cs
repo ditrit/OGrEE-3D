@@ -106,7 +106,7 @@ public class CommandParser : MonoBehaviour
             infos.country = data[5];
             infos.description = data[6];
             // gDataCenter.GenerateDC(infos);
-            CustomerGenerator.instance.CreateDatacenter(infos);
+            CustomerGenerator.instance.CreateDatacenter(infos, false);
         }
         else
             Debug.LogWarning("[CreateDataCenter] Syntax Error\ncreate:itroom:[name]:[parent]:[v2pos(tile)]:[v2margin(tile)]");

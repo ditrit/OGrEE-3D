@@ -63,6 +63,8 @@ public class ObjectGenerator : MonoBehaviour
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
         newRack.GetComponent<DisplayRackData>().FillTexts();
+        
+        newRack.AddComponent<HierarchyName>();
     }
 
     public void CreateChassis(SDeviceInfos _data)
@@ -101,6 +103,8 @@ public class ObjectGenerator : MonoBehaviour
         obj.serial = _data.serial;
         obj.vendor = _data.vendor;
         obj.description = _data.comment;
+        
+        newDevice.AddComponent<HierarchyName>();
     }
 
     public void CreateAirconditionner()

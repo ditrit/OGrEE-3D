@@ -34,12 +34,22 @@ public struct SDeviceInfos
 public struct SDataCenterInfos
 {
     public string name;
-    public string customer;
+    public Transform parent;
+    public string orient;
     public string address;
     public string zipcode;
     public string city;
     public string country;
     public string description;
+}
+
+[System.Serializable]
+public struct SBuildingInfos
+{
+    public string name;
+    public Transform parent;
+    public Vector3 pos;
+    public Vector3 size;
 }
 
 [System.Serializable]

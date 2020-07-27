@@ -14,9 +14,32 @@ public class BuildingGenerator : MonoBehaviour
             Destroy(this);
     }
 
-    public void CreateBuilding()
+    public void CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
     {
+        if (_data.parent.GetComponent<Datacenter>() == null)
+        {
+            Debug.LogWarning("Building must be child of a datacenter");
+            return;
+        }
+        // GameObject newBD = new GameObject(_data.name);
+        GameObject newBD = Instantiate(GameManager.gm.tileModel);
+        newBD.name = _data.name;
+        newBD.transform.parent = _data.parent;
 
+        // originalSize
+        Vector3 originalSize = newBD.transform.GetChild(0).localScale;
+        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        
+        Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
+        newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
+        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z) * GameManager.gm.tileSize;
+       
+        Building bd = newBD.AddComponent<Building>();
+        // fill bd infos...
+
+        newBD.AddComponent<HierarchyName>();
+        if (_changeHierarchy)
+            GameManager.gm.currentItem = newBD;
     }
 
     public void CreateRoom(SRoomInfos _data)
@@ -62,5 +85,6 @@ public class BuildingGenerator : MonoBehaviour
         Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, tile.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
 
+        tile.AddComponent<HierarchyName>();
     }
 }
