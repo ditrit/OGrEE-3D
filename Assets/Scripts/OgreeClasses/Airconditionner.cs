@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Airconditionner : Object
 {
-    private void Awake()
+    public Airconditionner()
     {
         family = EObjFamily.airconditionner;
     }

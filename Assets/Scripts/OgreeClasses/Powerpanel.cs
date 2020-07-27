@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Powerpanel : Object
 {
-    private void Awake()
+    public Powerpanel()
     {
         family = EObjFamily.powerpanel;
     }

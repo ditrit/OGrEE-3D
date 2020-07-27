@@ -6,7 +6,7 @@ public class Device : Object
 {
     public EDeviceRole role;
 
-    private void Awake()
+    public Device()
     {
         family = EObjFamily.device;
     }

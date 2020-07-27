@@ -12,7 +12,7 @@ public class Pdu : Object
     public string installation; // vertical | horizontal
     public string position; //  U<#> | L(eft)<#> | R(ight)<#>
 
-    private void Awake()
+    public Pdu()
     {
         family = EObjFamily.pdu;
     }

@@ -7,7 +7,7 @@ public class OComponent : Device
     public ECompCategory category;
     public string location; // logical name of the component
 
-    private void Awake()
+    public OComponent()
     {
         role = EDeviceRole.child;
     }

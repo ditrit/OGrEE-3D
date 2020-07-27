@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rack : Object
 {
-    private void Awake()
+    public Rack()
     {
         family = EObjFamily.rack;
     }
