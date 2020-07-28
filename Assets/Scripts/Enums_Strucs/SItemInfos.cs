@@ -56,9 +56,9 @@ public struct SBuildingInfos
 public struct SRoomInfos
 {
     public string name;
-    public string parentName;
-    public Vector2 size; // tile
-    public Vector2 margin; // tile
-    public Vector2 pos; // tile
+    public Transform parent;
+    public Vector3 pos; // tile
+    public Vector3 size; // tile
+    public Vector2 margin; // tile, should be deleted
     public string orient;
 }

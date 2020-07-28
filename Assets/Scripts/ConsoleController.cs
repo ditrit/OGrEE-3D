@@ -21,11 +21,10 @@ using UnityEngine;
 +building:/DEMO.BETA.B@[0,20,0]@[20,30,4]
 +bd:C@[30,0,0]@[60,120,5]
 
-+room:[name]@[pos]@[size]
-+room:R1@[0,15,0]@[60,60,5]
-+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]
-
-+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]
++room:[name]@[pos]@[size]@[orientation]
++room:R1@[0,15,0]@[60,60,5]@W
++room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W
++ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N
 
 */
 
@@ -91,6 +90,8 @@ public class ConsoleController
             CreateDataCenter(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
             CreateBuilding(str[1]);
+        else if (str[0] == "room" || str[0] == "ro")
+            CreateRoom(str[1]);
         else
             AppendLogLine("Unknowned command");
 
@@ -196,17 +197,65 @@ public class ConsoleController
 
     }
 
+    private void CreateRoom(string _input)
+    {
+        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(N|S|W|E)$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split('@');
 
-    private Vector3 ParseVector3(string _input)
+            SRoomInfos infos = new SRoomInfos();
+            infos.pos = ParseVector3(data[1]);
+            infos.size = ParseVector3(data[2]);
+            infos.orient = data[3];
+
+            if (data[0].StartsWith("/"))
+            {
+                data[0] = data[0].Substring(1);
+                string[] path = data[0].Split('.');
+                string parentPath = "";
+                for (int i = 0; i < path.Length - 1; i++)
+                    parentPath += $"{path[i]}.";
+                parentPath = parentPath.Remove(parentPath.Length - 1);
+                GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
+                if (tmp)
+                {
+                    infos.name = path[path.Length - 1];
+                    infos.parent = tmp.transform;
+                    BuildingGenerator.instance.CreateRoom(infos, false);
+                }
+                else
+                    AppendLogLine("Error: path doesn't exist");
+            }
+            else
+            {
+                infos.name = data[0];
+                infos.parent = GameManager.gm.currentItem.transform;
+                BuildingGenerator.instance.CreateRoom(infos, true);
+            }
+        }
+        else
+            AppendLogLine("Syntax error");
+
+    }
+
+    private Vector3 ParseVector3(string _input, bool _YUp = true)
     {
         Vector3 res = new Vector3();
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
         res.x = float.Parse(parts[0]);
-        res.y = float.Parse(parts[2]);
-        res.z = float.Parse(parts[1]);
-
+        if (_YUp)
+        {
+            res.y = float.Parse(parts[2]);
+            res.z = float.Parse(parts[1]);
+        }
+        else
+        {
+            res.y = float.Parse(parts[1]);
+            res.z = float.Parse(parts[2]);
+        }
         return res;
     }
 

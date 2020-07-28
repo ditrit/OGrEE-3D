@@ -21,7 +21,6 @@ public class BuildingGenerator : MonoBehaviour
             Debug.LogWarning("Building must be child of a datacenter");
             return;
         }
-        // GameObject newBD = new GameObject(_data.name);
         GameObject newBD = Instantiate(GameManager.gm.tileModel);
         newBD.name = _data.name;
         newBD.transform.parent = _data.parent;
@@ -42,49 +41,68 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.currentItem = newBD;
     }
 
-    public void CreateRoom(SRoomInfos _data)
+    public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
-        GameObject tile = Instantiate(GameManager.gm.tileModel);
-        tile.name = _data.name;
-        tile.transform.parent = GameObject.Find(_data.parentName).transform;
+        if (_data.parent.GetComponent<Building>() == null)
+        {
+            Debug.LogWarning("Room must be child of a Building");
+            return;
+        }
 
-        Vector3 originalSize = tile.transform.GetChild(0).localScale;
-        tile.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.y);
-        
-        Vector3 origin = tile.transform.GetChild(0).localScale / 0.2f;
-        tile.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        tile.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
+        GameObject newRoom = Instantiate(GameManager.gm.roomModel);
+        newRoom.name = _data.name;
+        newRoom.transform.parent = _data.parent;
 
-        Room room = tile.AddComponent<Room>();
-        room.size = _data.size;
+        Transform usable = newRoom.transform.GetChild(0);
+        Transform reserved = newRoom.transform.GetChild(1);
+        Transform technical = newRoom.transform.GetChild(2);
+
+        Vector3 originalSize = usable.localScale;
+        usable.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        reserved.localScale = Vector3.zero;
+        technical.localScale = Vector3.zero;
+
+        Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
+        Vector3 roOrigin = usable.localScale / 0.2f;
+        newRoom.transform.localPosition = new Vector3(bdOrigin.x, 0, bdOrigin.z);
+        newRoom.transform.localPosition += new Vector3(roOrigin.x, 0, roOrigin.z);
+        newRoom.transform.localPosition += _data.pos * GameManager.gm.tileSize;
+
+        Room room = newRoom.AddComponent<Room>();
+        room.size = new Vector2(_data.size.x, _data.size.z);
         room.sizeUnit = EUnit.tile;
-        room.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
-        room.reserved = new SMargin();
+        room.floorHeight = _data.size.y;
+        room.floorUnit = EUnit.cm;
+        
+        // room.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
+        // room.reserved = new SMargin();
 
         switch (_data.orient)
         {
-            case "front":
+            case "N":
                 room.orientation = EOrientation.N;
-                tile.transform.localEulerAngles = new Vector3(0, 0, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
-            case "rear":
+            case "S":
                 room.orientation = EOrientation.S;
-                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case "left":
+            case "W":
                 room.orientation = EOrientation.W;
-                tile.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
-            case "right":
+            case "E":
                 room.orientation = EOrientation.E;
-                tile.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
         }
 
-        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, tile);
-        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, tile.name);
+        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, newRoom);
+        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
 
-        tile.AddComponent<HierarchyName>();
+        newRoom.AddComponent<HierarchyName>();
+        if (_changeHierarchy)
+            GameManager.gm.currentItem = newRoom;
     }
 }

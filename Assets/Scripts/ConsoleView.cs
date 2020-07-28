@@ -64,7 +64,10 @@ public class ConsoleView : MonoBehaviour
         cmds.Add("+datacenter:BETA@N");
         cmds.Add("+building:/DEMO.BETA.A@[0,80,0]@[20,30,4]");
         cmds.Add("+building:/DEMO.BETA.B@[0,20,0]@[20,30,4]");
-        cmds.Add("+bd:C@[30,0,0]@[60,120,5]");
+        cmds.Add("+bd:C@[30,0,0]@[60,135,5]");
+        cmds.Add("+room:R1@[0,15,0]@[60,60,5]@W");
+        cmds.Add("+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W");
+        cmds.Add("+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N");
 
         foreach (string cmd in cmds)
         {
