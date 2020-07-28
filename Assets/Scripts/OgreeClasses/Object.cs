@@ -22,6 +22,7 @@ public class Object : MonoBehaviour
     public string model;
     public string serial;
 
+    public Dictionary<string, string> extras;
 
     public void UpdateField(string _param, string _value)
     {
