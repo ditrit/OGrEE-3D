@@ -54,11 +54,11 @@ public class CustomerGenerator : MonoBehaviour
                 break;
             case "W":
                 dc.orientation = EOrientation.W;
-                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "E":
                 dc.orientation = EOrientation.E;
-                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
 

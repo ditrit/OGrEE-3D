@@ -26,6 +26,9 @@ using UnityEngine;
 +room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W
 +ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N
 
++zones:[reserved N,S,E,W]@[technical N,S,E,W]
++zones:[2,1,3,3]@[4,4,4,4]
+
 */
 
 public class ConsoleController
@@ -92,6 +95,8 @@ public class ConsoleController
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             CreateRoom(str[1]);
+        else if (str[0] == "zones")
+            SetRoomZones(str[1]);
         else
             AppendLogLine("Unknowned command");
 
@@ -238,6 +243,30 @@ public class ConsoleController
             AppendLogLine("Syntax error");
 
     }
+
+    private void SetRoomZones(string _input)
+    {
+        if (!GameManager.gm.currentItem.GetComponent<Room>())
+        {
+            AppendLogLine("Current object must be a room");
+            return;
+        }
+        string regex = "\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            _input = _input.Replace("[", "");
+            _input = _input.Replace("]", "");
+            string[] data = _input.Split('@',',');
+            SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]), 
+                                        float.Parse(data[2]), float.Parse(data[3]));
+            SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]), 
+                                        float.Parse(data[6]), float.Parse(data[7]));
+            GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+        }
+        else
+            AppendLogLine("Syntax error");
+    }
+
 
     private Vector3 ParseVector3(string _input, bool _YUp = true)
     {

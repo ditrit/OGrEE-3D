@@ -59,8 +59,11 @@ public class BuildingGenerator : MonoBehaviour
 
         Vector3 originalSize = usable.localScale;
         usable.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
-        reserved.localScale = Vector3.zero;
-        technical.localScale = Vector3.zero;
+        usable.localPosition += Vector3.up * 0.003f;
+        reserved.localScale = usable.localScale;
+        reserved.localPosition += Vector3.up * 0.002f;
+        technical.localScale = usable.localScale;
+        technical.localPosition += Vector3.up * 0.001f;
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = usable.localScale / 0.2f;
@@ -89,11 +92,11 @@ public class BuildingGenerator : MonoBehaviour
                 break;
             case "W":
                 room.orientation = EOrientation.W;
-                newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "E":
                 room.orientation = EOrientation.E;
-                newRoom.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
 

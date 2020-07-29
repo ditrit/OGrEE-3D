@@ -68,7 +68,7 @@ public class ConsoleView : MonoBehaviour
         cmds.Add("+room:R1@[0,15,0]@[60,60,5]@W");
         cmds.Add("+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W");
         cmds.Add("+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N");
-
+        cmds.Add("+zones:[2,1,3,3]@[4,4,4,4]");
         foreach (string cmd in cmds)
         {
             console.RunCommandString(cmd);
