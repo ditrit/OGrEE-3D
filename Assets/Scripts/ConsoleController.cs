@@ -251,17 +251,35 @@ public class ConsoleController
             AppendLogLine("Current object must be a room");
             return;
         }
-        string regex = "\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+
+        string regex = "^(\\/[^:]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
         if (Regex.IsMatch(_input, regex))
         {
             _input = _input.Replace("[", "");
             _input = _input.Replace("]", "");
-            string[] data = _input.Split('@',',');
-            SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]), 
-                                        float.Parse(data[2]), float.Parse(data[3]));
-            SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]), 
-                                        float.Parse(data[6]), float.Parse(data[7]));
-            GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+            string[] data = _input.Split('@', ',');
+            if (data.Length == 8) // No path -> On current object
+            {
+                SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
+                                            float.Parse(data[2]), float.Parse(data[3]));
+                SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
+                                            float.Parse(data[6]), float.Parse(data[7]));
+                GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+            }
+            else // There is an object path
+            {
+                GameObject room = GameManager.gm.FindAbsPath(data[0].Substring(1));
+                if (room)
+                {
+                    SMargin resDim = new SMargin(float.Parse(data[1]), float.Parse(data[2]),
+                                                float.Parse(data[3]), float.Parse(data[4]));
+                    SMargin techDim = new SMargin(float.Parse(data[5]), float.Parse(data[6]),
+                                                float.Parse(data[7]), float.Parse(data[8]));
+                    room.GetComponent<Room>().SetZones(resDim, techDim);
+                }
+                else
+                    AppendLogLine("Error: path doesn't exist");
+            }
         }
         else
             AppendLogLine("Syntax error");
