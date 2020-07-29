@@ -37,4 +37,4 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 
 ## Controls
 - Right clic : rotate camera
-- wasd or arrow keys : move camera
+- zsqd or arrow keys : move camera
