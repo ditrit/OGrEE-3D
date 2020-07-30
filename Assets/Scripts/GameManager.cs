@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
 
-    public GameObject currentItem = null;
+    [Header("Current Item")]
+    [SerializeField] private TextMeshProUGUI currentItemText = null;
+    public GameObject currentItem {get; private set;} = null;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -46,5 +49,14 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void SetCurrentItem(GameObject _obj)
+    {
+        currentItem = _obj;
+        if (_obj)
+            currentItemText.text = currentItem.GetComponent<HierarchyName>().fullname;
+        else
+            currentItemText.text = "Ogree3D";
     }
 }

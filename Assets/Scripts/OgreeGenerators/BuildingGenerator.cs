@@ -38,7 +38,7 @@ public class BuildingGenerator : MonoBehaviour
 
         newBD.AddComponent<HierarchyName>();
         if (_changeHierarchy)
-            GameManager.gm.currentItem = newBD;
+            GameManager.gm.SetCurrentItem(newBD);
     }
 
     public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
@@ -106,6 +106,6 @@ public class BuildingGenerator : MonoBehaviour
 
         newRoom.AddComponent<HierarchyName>();
         if (_changeHierarchy)
-            GameManager.gm.currentItem = newRoom;
+            GameManager.gm.SetCurrentItem(newRoom);
     }
 }

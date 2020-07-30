@@ -79,9 +79,48 @@ public class ConsoleController
         AppendLogLine("$ " + _input);
         if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
+        else if (_input == "..")
+            SelectParent();
+        else if (_input[0] == '=')
+            SelectItem(_input.Substring(1));
         else
             AppendLogLine("Unknowned command");
     }
+
+    #region HierarchyMethods()
+
+    private void SelectParent()
+    {
+        if (!GameManager.gm.currentItem)
+            return;
+        else if (GameManager.gm.currentItem.GetComponent<Customer>())
+            GameManager.gm.SetCurrentItem(null);
+        else
+        {
+            GameObject parent = GameManager.gm.currentItem.transform.parent.gameObject;
+            if (parent)
+                GameManager.gm.SetCurrentItem(parent);
+        }
+
+    }
+
+    private void SelectItem(string _input)
+    {
+        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
+        foreach (HierarchyName obj in allObjects)
+        {
+            if (obj.fullname == _input)
+            {
+                GameManager.gm.SetCurrentItem(obj.gameObject);
+                return;
+            }
+        }
+        AppendLogLine("Error: Object does not exist");
+    }
+
+    #endregion
+
+    #region CreateMethods
 
     private void ParseCreate(string _input)
     {
@@ -97,6 +136,8 @@ public class ConsoleController
             CreateRoom(str[1]);
         else if (str[0] == "zones")
             SetRoomZones(str[1]);
+        else if (str[0] == "rack" || str[0] == "rk")
+            CreateRack(str[1]);
         else
             AppendLogLine("Unknowned command");
 
@@ -244,14 +285,23 @@ public class ConsoleController
 
     }
 
+    private void CreateRack(string _input)
+    {
+        string regex = "";
+        if (Regex.IsMatch(_input, regex))
+        {
+
+        }
+        else
+            AppendLogLine("Syntax error");
+    }
+
+    #endregion
+
+    #region SetMethods
+
     private void SetRoomZones(string _input)
     {
-        if (!GameManager.gm.currentItem.GetComponent<Room>())
-        {
-            AppendLogLine("Current object must be a room");
-            return;
-        }
-
         string regex = "^(\\/[^:]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
         if (Regex.IsMatch(_input, regex))
         {
@@ -260,11 +310,17 @@ public class ConsoleController
             string[] data = _input.Split('@', ',');
             if (data.Length == 8) // No path -> On current object
             {
-                SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
-                                            float.Parse(data[2]), float.Parse(data[3]));
-                SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
-                                            float.Parse(data[6]), float.Parse(data[7]));
-                GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+                if (GameManager.gm.currentItem.GetComponent<Room>())
+                {
+                    SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
+                                                float.Parse(data[2]), float.Parse(data[3]));
+                    SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
+                                                float.Parse(data[6]), float.Parse(data[7]));
+                    GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+                }
+                else
+                    AppendLogLine("Current object must be a room");
+
             }
             else // There is an object path
             {
@@ -285,6 +341,9 @@ public class ConsoleController
             AppendLogLine("Syntax error");
     }
 
+    #endregion
+
+    #region Utils
 
     private Vector3 ParseVector3(string _input, bool _YUp = true)
     {
@@ -305,5 +364,7 @@ public class ConsoleController
         }
         return res;
     }
+
+    #endregion
 
 }

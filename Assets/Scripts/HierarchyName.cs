@@ -6,7 +6,7 @@ public class HierarchyName : MonoBehaviour
 {
     public string fullname;
     
-    private void Start()
+    private void OnEnable()
     {
         UpdateHierarchyName();
     }

@@ -21,7 +21,7 @@ public class CustomerGenerator : MonoBehaviour
 
         customer.AddComponent<HierarchyName>();
         if (_changeHierarchy)
-            GameManager.gm.currentItem = customer;
+            GameManager.gm.SetCurrentItem(customer);
     }
 
     public void CreateDatacenter(SDataCenterInfos _data, bool _changeHierarchy)
@@ -64,6 +64,6 @@ public class CustomerGenerator : MonoBehaviour
 
         newDC.AddComponent<HierarchyName>();
         if (_changeHierarchy)
-            GameManager.gm.currentItem = newDC;
+            GameManager.gm.SetCurrentItem(newDC);
     }
 }

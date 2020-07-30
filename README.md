@@ -16,7 +16,17 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 [reserved] is a vector4: [N,S,E,W]  
 [technical] is a vector4: [N,S,E,W]  
 
-### Commands
+### Commands  
+- Select an object  
+```
+=[full name]
+```
+
+- Select parent object
+```
+..
+```
+
 - Create a new Customer at root.  
 ```
 +customer:[name]  
