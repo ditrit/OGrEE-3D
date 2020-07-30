@@ -29,6 +29,9 @@ using UnityEngine;
 +zones:[reserved N,S,E,W]@[technical N,S,E,W]
 +zones:[2,1,3,3]@[4,4,4,4]
 
++rack:[name]@[pos]@[size]@orient
++rack:[name]@[pos]@[preset]@orient
+
 */
 
 public class ConsoleController
@@ -216,20 +219,22 @@ public class ConsoleController
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
-                string[] path = data[0].Split('.');
-                string parentPath = "";
-                for (int i = 0; i < path.Length - 1; i++)
-                    parentPath += $"{path[i]}.";
-                parentPath = parentPath.Remove(parentPath.Length - 1);
-                GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
-                if (tmp)
-                {
-                    infos.name = path[path.Length - 1];
-                    infos.parent = tmp.transform;
+                IsolateParent(data[0], out infos.parent, out infos.name);
+                if (infos.parent)
+                    // string[] path = data[0].Split('.');
+                    // string parentPath = "";
+                    // for (int i = 0; i < path.Length - 1; i++)
+                    //     parentPath += $"{path[i]}.";
+                    // parentPath = parentPath.Remove(parentPath.Length - 1);
+                    // GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
+                    // if (tmp)
+                    // {
+                    //     infos.name = path[path.Length - 1];
+                    //     infos.parent = tmp.transform;
                     BuildingGenerator.instance.CreateBuilding(infos, false);
-                }
-                else
-                    AppendLogLine("Error: path doesn't exist");
+                // }
+                // else
+                //     AppendLogLine("Error: path doesn't exist");
             }
             else
             {
@@ -287,9 +292,32 @@ public class ConsoleController
 
     private void CreateRack(string _input)
     {
-        string regex = "";
+        string regex = "^[^:]+@\\[[0-9]+,[0-9]+\\]@\\[[0-9.]+,[0-9.]+,[0-9]+\\]@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
+            string[] data = _input.Split('@');
+
+            SRackInfos infos = new SRackInfos();
+            infos.pos = ParseVector2(data[1]);
+            data[2] = data[2].Trim('[', ']');
+            string[] vector = data[2].Split(',');
+            infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
+            infos.height = int.Parse(vector[2]);
+            infos.orient = data[3];
+
+            if (data[0].StartsWith("/"))
+            {
+                data[0] = data[0].Substring(1);
+                IsolateParent(data[0], out infos.parent, out infos.name);
+                if (infos.parent)
+                    ObjectGenerator.instance.CreateRack(infos, false);
+            }
+            else
+            {
+                infos.name = data[0];
+                infos.parent = GameManager.gm.currentItem.transform;
+                ObjectGenerator.instance.CreateRack(infos, true);
+            }
 
         }
         else
@@ -345,6 +373,17 @@ public class ConsoleController
 
     #region Utils
 
+    private Vector2 ParseVector2(string _input)
+    {
+        Vector2 res = new Vector2();
+
+        _input = _input.Trim('[', ']');
+        string[] parts = _input.Split(',');
+        res.x = float.Parse(parts[0]);
+        res.y = float.Parse(parts[1]);
+        return res;
+    }
+
     private Vector3 ParseVector3(string _input, bool _YUp = true)
     {
         Vector3 res = new Vector3();
@@ -363,6 +402,27 @@ public class ConsoleController
             res.z = float.Parse(parts[2]);
         }
         return res;
+    }
+
+    private void IsolateParent(string _input, out Transform parent, out string name)
+    {
+        string[] path = _input.Split('.');
+        string parentPath = "";
+        for (int i = 0; i < path.Length - 1; i++)
+            parentPath += $"{path[i]}.";
+        parentPath = parentPath.Remove(parentPath.Length - 1);
+        GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
+        if (tmp)
+        {
+            name = path[path.Length - 1];
+            parent = tmp.transform;
+        }
+        else
+        {
+            parent = null;
+            name = "";
+            AppendLogLine("Error: path doesn't exist");
+        }
     }
 
     #endregion

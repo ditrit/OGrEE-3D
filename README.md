@@ -57,6 +57,14 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 +zones:[full name]@[reserved]@[technical]
 ```
 
+- Create a rack, child of a room  
+*[pos] is a Vector2 (tile,tile)  
+[size] is a Vector3 (cm,cm,u)  
+[orientation] is front|rear|left|right*  
+```
++rack:[name]@[pos]@[size]@[orientation]
+```
+
 ### Examples
 ```
 +customer:DEMO

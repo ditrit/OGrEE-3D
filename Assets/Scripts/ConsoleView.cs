@@ -70,6 +70,11 @@ public class ConsoleView : MonoBehaviour
         cmds.Add("+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N");
         cmds.Add("+zones:[2,1,3,3]@[4,4,4,4]");
         cmds.Add("+zones:/DEMO.BETA.C.R2@[3,3,3,3]@[5,0,0,0]");
+        cmds.Add("+rack:A01@[1,1]@[60,120,42]@rear");
+        cmds.Add("+rack:/DEMO.BETA.C.R1.A02@[2,1]@[60,120,42]@rear");
+        cmds.Add("+rack:/DEMO.BETA.C.R1.B01@[1,3]@[60,120,42]@front");
+        cmds.Add("+rack:/DEMO.BETA.C.R1.B02@[2,3]@[60,120,42]@front");
+        cmds.Add("+rack:/DEMO.BETA.C.R2.A01@[1,1]@[60,120,42]@rear");
         foreach (string cmd in cmds)
         {
             console.RunCommandString(cmd);
