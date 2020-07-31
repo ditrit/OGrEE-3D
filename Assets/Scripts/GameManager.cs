@@ -6,6 +6,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
+    private ConsoleController consoleController;
 
     [Header("Current Item")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
+        consoleController = GameObject.FindObjectOfType<ConsoleView>().console;
     }
 
     private void Update()
@@ -58,5 +60,10 @@ public class GameManager : MonoBehaviour
             currentItemText.text = currentItem.GetComponent<HierarchyName>().fullname;
         else
             currentItemText.text = "Ogree3D";
+    }
+
+    public void AppendLogLine(string line, string color = "white")
+    {
+        consoleController.AppendLogLine(line, color);
     }
 }

@@ -18,7 +18,7 @@ public class ObjectGenerator : MonoBehaviour
     {
         if (_data.parent.GetComponent<Room>() == null)
         {
-            Debug.LogWarning("Rack must be child of a Room");
+            GameManager.gm.AppendLogLine("Rack must be child of a Room", "yellow");
             return;
         }
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class ConsoleView : MonoBehaviour
 {
-    private ConsoleController console = new ConsoleController();
+    public ConsoleController console {get; private set;} = new ConsoleController();
 
     public GameObject viewContainer;
     public TextMeshProUGUI logTextArea;

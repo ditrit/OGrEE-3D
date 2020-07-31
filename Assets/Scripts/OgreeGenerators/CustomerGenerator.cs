@@ -28,7 +28,7 @@ public class CustomerGenerator : MonoBehaviour
     {
         if (_data.parent.GetComponent<Customer>() == null)
         {
-            Debug.LogWarning("Datacenter must be child of a customer");
+            GameManager.gm.AppendLogLine("Datacenter must be child of a customer", "yellow");
             return;
         }
 

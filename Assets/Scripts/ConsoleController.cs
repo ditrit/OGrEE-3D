@@ -1,9 +1,4 @@
-﻿/// <summary>
-/// Handles parsing and execution of console commands, as well as collecting log output.
-/// Copyright (c) 2014-2015 Eliot Lash
-/// </summary>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -57,9 +52,13 @@ public class ConsoleController
     //     createMethods.Add("customer", CreateCustomer());
     // }
 
-    public void AppendLogLine(string line)
+    /// <summary>
+    /// Collecting log output by Eliot Lash
+    /// </summary>
+    public void AppendLogLine(string line, string color = "white")
     {
         Debug.Log(line);
+        line = $"<color={color}>{line}</color>";
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -87,7 +86,7 @@ public class ConsoleController
         else if (_input[0] == '=')
             SelectItem(_input.Substring(1));
         else
-            AppendLogLine("Unknowned command");
+            AppendLogLine("Unknowned command", "red");
     }
 
     #region HierarchyMethods()
@@ -142,7 +141,7 @@ public class ConsoleController
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
         else
-            AppendLogLine("Unknowned command");
+            AppendLogLine("Unknowned command", "red");
 
         // createMethods[str[0]](str[1]);
 
@@ -162,7 +161,7 @@ public class ConsoleController
                 CustomerGenerator.instance.CreateCustomer(_input, true);
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
     }
 
     private void CreateDataCenter(string _input)
@@ -192,7 +191,7 @@ public class ConsoleController
                     CustomerGenerator.instance.CreateDatacenter(infos, false);
                 }
                 else
-                    AppendLogLine("Error: customer doesn't exist");
+                    AppendLogLine("Error: customer doesn't exist", "red");
             }
             else
             {
@@ -202,7 +201,7 @@ public class ConsoleController
             }
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
     }
 
     private void CreateBuilding(string _input)
@@ -221,20 +220,7 @@ public class ConsoleController
                 data[0] = data[0].Substring(1);
                 IsolateParent(data[0], out infos.parent, out infos.name);
                 if (infos.parent)
-                    // string[] path = data[0].Split('.');
-                    // string parentPath = "";
-                    // for (int i = 0; i < path.Length - 1; i++)
-                    //     parentPath += $"{path[i]}.";
-                    // parentPath = parentPath.Remove(parentPath.Length - 1);
-                    // GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
-                    // if (tmp)
-                    // {
-                    //     infos.name = path[path.Length - 1];
-                    //     infos.parent = tmp.transform;
                     BuildingGenerator.instance.CreateBuilding(infos, false);
-                // }
-                // else
-                //     AppendLogLine("Error: path doesn't exist");
             }
             else
             {
@@ -244,7 +230,7 @@ public class ConsoleController
             }
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
 
     }
 
@@ -276,7 +262,7 @@ public class ConsoleController
                     BuildingGenerator.instance.CreateRoom(infos, false);
                 }
                 else
-                    AppendLogLine("Error: path doesn't exist");
+                    AppendLogLine("Error: path doesn't exist", "red");
             }
             else
             {
@@ -286,7 +272,7 @@ public class ConsoleController
             }
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
 
     }
 
@@ -321,7 +307,7 @@ public class ConsoleController
 
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
     }
 
     #endregion
@@ -421,7 +407,7 @@ public class ConsoleController
         {
             parent = null;
             name = "";
-            AppendLogLine("Error: path doesn't exist");
+            AppendLogLine("Error: path doesn't exist", "red");
         }
     }
 
