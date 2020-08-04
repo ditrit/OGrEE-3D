@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ public class ConsoleController
     /// How many log lines should be retained?
     /// Note that strings submitted to AppendLogLine with embedded newlines will be counted as a single line.
     /// </summary>
-    const int scrollbackSize = 20;
+    const int scrollbackSize = 50;
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
@@ -79,12 +80,14 @@ public class ConsoleController
             return;
 
         AppendLogLine("$ " + _input);
-        if (_input[0] == '+')
-            ParseCreate(_input.Substring(1));
-        else if (_input == "..")
+        if (_input == "..")
             SelectParent();
+        else if (_input[0] == '.')
+            ParseLoad(_input.Substring(1));
         else if (_input[0] == '=')
             SelectItem(_input.Substring(1));
+        else if (_input[0] == '+')
+            ParseCreate(_input.Substring(1));
         else
             AppendLogLine("Unknowned command", "red");
     }
@@ -121,6 +124,30 @@ public class ConsoleController
     }
 
     #endregion
+
+    private void ParseLoad(string _input)
+    {
+        string[] str = _input.Split(new char[] { ':' }, 2);
+        if (str[0] == "cmds")
+            LoadCmdsFile(str[1]);
+        else
+            AppendLogLine("Unknowned command", "red");
+
+    }
+
+    private void LoadCmdsFile(string _input)
+    {
+        try
+        {
+            string[] lines = File.ReadAllLines(_input);
+            foreach (string cmd in lines)
+                RunCommandString(cmd);
+        }
+        catch (System.Exception)
+        {
+            AppendLogLine("Files doesn't exist", "red");
+        }
+    }
 
     #region CreateMethods
 

@@ -22,7 +22,8 @@ public class ConsoleView : MonoBehaviour
         UpdateLogStr(console.log);
 
 #if DEBUG
-        StartCoroutine(Debug());
+        console.RunCommandString(".cmds:C:\\Users\\Cedrok\\Desktop\\testCmds.txt");
+        // StartCoroutine(Debug());
 #endif
     }
 
@@ -57,29 +58,29 @@ public class ConsoleView : MonoBehaviour
         inputField.text = "";
     }
 
-    private IEnumerator Debug()
-    {
-        List<string> cmds = new List<string>();
-        cmds.Add("+customer:DEMO");
-        cmds.Add("+datacenter:BETA@N");
-        cmds.Add("+building:/DEMO.BETA.A@[0,80,0]@[20,30,4]");
-        cmds.Add("+building:/DEMO.BETA.B@[0,20,0]@[20,30,4]");
-        cmds.Add("+bd:C@[30,0,0]@[60,135,5]");
-        cmds.Add("+room:R1@[0,15,0]@[60,60,5]@W");
-        cmds.Add("+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W");
-        cmds.Add("+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N");
-        cmds.Add("+zones:[2,1,3,3]@[4,4,4,4]");
-        cmds.Add("+zones:/DEMO.BETA.C.R2@[3,3,3,3]@[5,0,0,0]");
-        cmds.Add("+rack:A01@[1,1]@[60,120,42]@rear");
-        cmds.Add("+rack:/DEMO.BETA.C.R1.A02@[2,1]@[60,120,42]@rear");
-        cmds.Add("+rack:/DEMO.BETA.C.R1.B01@[1,3]@[60,120,42]@front");
-        cmds.Add("+rack:/DEMO.BETA.C.R1.B02@[2,3]@[60,120,42]@front");
-        cmds.Add("+rack:/DEMO.BETA.C.R2.A01@[1,1]@[60,120,42]@rear");
-        foreach (string cmd in cmds)
-        {
-            console.RunCommandString(cmd);
-            yield return new WaitForEndOfFrame();
-        }
-    }
+    // private IEnumerator Debug()
+    // {
+    //     List<string> cmds = new List<string>();
+    //     cmds.Add("+customer:DEMO");
+    //     cmds.Add("+datacenter:BETA@N");
+    //     cmds.Add("+building:/DEMO.BETA.A@[0,80,0]@[20,30,4]");
+    //     cmds.Add("+building:/DEMO.BETA.B@[0,20,0]@[20,30,4]");
+    //     cmds.Add("+bd:C@[30,0,0]@[60,135,5]");
+    //     cmds.Add("+room:R1@[0,15,0]@[60,60,5]@W");
+    //     cmds.Add("+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W");
+    //     cmds.Add("+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N");
+    //     cmds.Add("+zones:[2,1,3,3]@[4,4,4,4]");
+    //     cmds.Add("+zones:/DEMO.BETA.C.R2@[3,3,3,3]@[5,0,0,0]");
+    //     cmds.Add("+rack:A01@[1,1]@[60,120,42]@rear");
+    //     cmds.Add("+rack:/DEMO.BETA.C.R1.A02@[2,1]@[60,120,42]@rear");
+    //     cmds.Add("+rack:/DEMO.BETA.C.R1.B01@[1,3]@[60,120,42]@front");
+    //     cmds.Add("+rack:/DEMO.BETA.C.R1.B02@[2,3]@[60,120,42]@front");
+    //     cmds.Add("+rack:/DEMO.BETA.C.R2.A01@[1,1]@[60,120,42]@rear");
+    //     foreach (string cmd in cmds)
+    //     {
+    //         console.RunCommandString(cmd);
+    //         yield return new WaitForEndOfFrame();
+    //     }
+    // }
 
 }

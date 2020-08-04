@@ -17,6 +17,11 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 [technical] is a vector4: [N,S,E,W]  
 
 ### Commands  
+- Read commands from a text file  
+```
+.cmds:[path]  
+```
+
 - Select an object  
 ```
 =[full name]
@@ -67,6 +72,8 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 
 ### Examples
 ```
+.cmds:C:\Users\Cedrok\Desktop\testCmds.txt
+
 +customer:DEMO
 +datacenter:BETA@N
 +building:/DEMO.BETA.A@[0,80,0]@[20,30,4]
