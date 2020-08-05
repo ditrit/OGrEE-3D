@@ -9,17 +9,21 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ## Build in CLI
 
 ### Glossary  
-[name] can include the whole path of the object if starting with a '/'  
-[pos] is a Vector3: [x,y,z]  
-[size] is a Vector3: [x,y,z]  
+[name] can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
 [orientation] is a cardinal point: N, S, E, W  
-[reserved] is a vector4: [N,S,E,W]  
-[technical] is a vector4: [N,S,E,W]  
 
 ### Commands  
-- Read commands from a text file  
+- Load commands from a text file  
+*[path] path of the file*  
 ```
 .cmds:[path]  
+```
+
+- Load template from JSON  
+*[type] type of template: rack (more to come)  
+[path] path of the file*  
+```
+.template:[type]@[path]
 ```
 
 - Select an object  
@@ -32,47 +36,57 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ..
 ```
 
-- Create a new Customer at root.  
+- Create a new Customer at root  
 ```
 +customer:[name]  
 +cu:[name]
 ```
 
-- Create a datacenter child of a customer.  
+- Create a datacenter child of a customer  
 ```
 +datacenter:[name]@[orientation]  
 +dc:[name]@[orientation]
 ```
 
-- Create a buiding child of a datacenter.  
+- Create a buiding child of a datacenter  
+*[pos] is a Vector3 [x,y,z] (m,m,m)  
+[size] is a Vector3 [x,y,z] (m,m,m)*  
 ```
 +building:[name]@[pos]@[size]  
 +bd:[name]@[pos]@[size]
 ```
 
 - Create a room child of a building  
+*[pos] is a Vector3 [x,y,z] (m,m,m)  
+[size] is a Vector3 [x,y,z] (m,m,m)*  
 ```
 +room:[name]@[pos]@[size]@[orientation]  
 +ro:[name]@[pos]@[size]@[orientation]
 ```
 
-- Set reserved and technical zones of a room.  
+- Set reserved and technical zones of a room  
+*[reserved] is a vector4: [N,S,E,W] (tile,tile,tile,tile)  
+[technical] is a vector4: [N,S,E,W] (tile,tile,tile,tile)*  
 ```
 +zones:[reserved]@[technical]  
 +zones:[full name]@[reserved]@[technical]
 ```
 
 - Create a rack, child of a room  
-*[pos] is a Vector2 (tile,tile)  
-[size] is a Vector3 (cm,cm,u)  
+*[pos] is a Vector2 [x,y] (tile,tile)  
+[size] is a Vector3 [x,y,z] (cm,cm,u)
+[template] is the name of the rack template  
 [orientation] is front|rear|left|right*  
 ```
-+rack:[name]@[pos]@[size]@[orientation]
++rack:[name]@[pos]@[size]@[orientation]  
++rack:[name]@[pos]@[template]@[orientation]
 ```
 
 ### Examples
 ```
 .cmds:C:\Users\Cedrok\Desktop\testCmds.txt
+
+.template:rack@K:\IBM Rack 1410-PRB\ibm-rack.json
 
 +customer:DEMO
 +datacenter:BETA@N
@@ -84,6 +98,18 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 +ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N
 +zones:[2,1,3,3]@[4,4,4,4]
 +zones:/DEMO.BETA.C.R2@[3,3,3,3]@[5,0,0,0]
+
++rack:A01@[1,1]@[60,120,42]@rear
++rack:/DEMO.BETA.C.R1.A02@[2,1]@[60,120,42]@rear
++rack:/DEMO.BETA.C.R1.B01@[1,3]@[60,120,42]@front
++rack:/DEMO.BETA.C.R1.B02@[2,3]@[60,120,42]@front
++rack:/DEMO.BETA.C.R2.A01@[1,1]@[60,120,42]@rear
+
++rack:/DEMO.BETA.C.R1.C01@[1,6]@ibm-rack42u@rear
++rack:/DEMO.BETA.C.R1.C02@[2,6]@ibm-rack42u@rear
++rack:/DEMO.BETA.C.R1.C03@[3,6]@ibm-rack42u@rear
++rack:/DEMO.BETA.C.R1.C04@[4,6]@ibm-rack42u@rear
++rack:/DEMO.BETA.C.R1.C05@[5,6]@ibm-rack42u@rear
 ```
 
 ## Controls
