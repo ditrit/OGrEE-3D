@@ -22,7 +22,7 @@ public class ConsoleView : MonoBehaviour
         UpdateLogStr(console.log);
 
 #if DEBUG
-        console.RunCommandString(".cmds:C:\\Users\\Cedrok\\Desktop\\testCmds.txt");
+        console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\testCmds.txt");
         // StartCoroutine(Debug());
 #endif
     }

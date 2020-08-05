@@ -17,14 +17,7 @@ public class ReadFromJson
         public string side;
         public string fulllength;
         public int[] sizeWDHmm;
-        public STmp[] components;
-    }
-
-    [System.Serializable]
-    private struct STmp
-    {
-        public string name;
-        public SComponent component;
+        public SComponent[] components;
     }
 
     [System.Serializable]
@@ -55,15 +48,15 @@ public class ReadFromJson
         Rack rack = GameObject.Find(rackData.slug).GetComponent<Rack>();
         rack.vendor = rackData.vendor;
         rack.model = rackData.model;
-        foreach (STmp comp in rackData.components)
+        foreach (SComponent comp in rackData.components)
         {
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.name = comp.name;
+            go.name = comp.location;
             go.transform.parent = rack.transform;
-            go.transform.localScale = new Vector3(comp.component.elemSize[0], comp.component.elemSize[2], comp.component.elemSize[1]) / 1000;
+            go.transform.localScale = new Vector3(comp.elemSize[0], comp.elemSize[2], comp.elemSize[1]) / 1000;
             go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
             go.transform.localPosition += go.transform.localScale / 2;
-            go.transform.localPosition += new Vector3(comp.component.elemPos[0], comp.component.elemPos[2], comp.component.elemPos[1]) / 1000;
+            go.transform.localPosition += new Vector3(comp.elemPos[0], comp.elemPos[2], comp.elemPos[1]) / 1000;
         }
 
         Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
