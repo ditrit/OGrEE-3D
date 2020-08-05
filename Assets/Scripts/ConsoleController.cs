@@ -45,6 +45,8 @@ public class ConsoleController
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
+    public ReadFromJson rfJson = new ReadFromJson();
+
     // private Dictionary<string, System.Action> createMethods;
 
     // public ConsoleController()
@@ -130,24 +132,62 @@ public class ConsoleController
         string[] str = _input.Split(new char[] { ':' }, 2);
         if (str[0] == "cmds")
             LoadCmdsFile(str[1]);
+        else if (str[0] == "template" || str[0] == "t")
+            LoadTemplateFile(str[1]);
         else
             AppendLogLine("Unknowned command", "red");
 
     }
 
+    #region LoadMethods
+
     private void LoadCmdsFile(string _input)
     {
+        string[] lines = new string[0];
         try
         {
-            string[] lines = File.ReadAllLines(_input);
-            foreach (string cmd in lines)
-                RunCommandString(cmd);
+            using (StreamReader sr = File.OpenText(_input))
+            {
+                lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
+                // string[] lines = File.ReadAllLines(_input);
+            }
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            AppendLogLine("Files doesn't exist", "red");
+            AppendLogLine(e.Message, "red");
+            // AppendLogLine("Files doesn't exist", "red");
         }
+        foreach (string cmd in lines)
+            RunCommandString(cmd);
     }
+
+    private void LoadTemplateFile(string _input)
+    {
+        string[] str = _input.Split('@');
+        if (str[0] == "rack")
+        {
+            string json = "";
+            try
+            {
+                using (StreamReader sr = File.OpenText(str[1]))
+                {
+                    json = sr.ReadToEnd();
+                    // json = File.ReadAllText(str[1]);
+                }
+            }
+            catch (System.Exception e)
+            {
+                AppendLogLine(e.Message, "red");
+                // AppendLogLine("Files doesn't exist", "red");
+            }
+            if (!string.IsNullOrEmpty(json))
+                rfJson.CreateRackTemplate(json);
+        }
+        else
+            AppendLogLine("Unkowned template type", "red");
+    }
+
+    #endregion
 
     #region CreateMethods
 
@@ -305,17 +345,24 @@ public class ConsoleController
 
     private void CreateRack(string _input)
     {
-        string regex = "^[^:]+@\\[[0-9]+,[0-9]+\\]@\\[[0-9.]+,[0-9.]+,[0-9]+\\]@(front|rear|left|right)$";
+        string regex = "^[^:]+@\\[[0-9]+,[0-9]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
 
             SRackInfos infos = new SRackInfos();
             infos.pos = ParseVector2(data[1]);
-            data[2] = data[2].Trim('[', ']');
-            string[] vector = data[2].Split(',');
-            infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
-            infos.height = int.Parse(vector[2]);
+
+            if (data[2].StartsWith("[")) // if vector
+            {
+                data[2] = data[2].Trim('[', ']');
+                string[] vector = data[2].Split(',');
+                infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
+                infos.height = int.Parse(vector[2]);
+            }
+            else // else: is template name
+                infos.template = data[2];
+
             infos.orient = data[3];
 
             if (data[0].StartsWith("/"))
@@ -360,7 +407,7 @@ public class ConsoleController
                     GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
                 }
                 else
-                    AppendLogLine("Current object must be a room");
+                    AppendLogLine("Current object must be a room", "yellow");
 
             }
             else // There is an object path
@@ -375,11 +422,11 @@ public class ConsoleController
                     room.GetComponent<Room>().SetZones(resDim, techDim);
                 }
                 else
-                    AppendLogLine("Error: path doesn't exist");
+                    AppendLogLine("Error: path doesn't exist", "red");
             }
         }
         else
-            AppendLogLine("Syntax error");
+            AppendLogLine("Syntax error", "red");
     }
 
     #endregion

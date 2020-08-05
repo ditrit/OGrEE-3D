@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     public GameObject serverModel;
     public GameObject deviceModel;
 
+    public Transform templatePlaceholder;
+    public Dictionary <string, GameObject> rackPresets = new Dictionary<string, GameObject>();
+
     private void Awake()
     {
         if (!gm)

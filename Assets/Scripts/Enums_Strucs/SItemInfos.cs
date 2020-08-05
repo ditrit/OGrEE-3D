@@ -14,6 +14,7 @@ public struct SRackInfos
     public int height; // U = 44.5mm
     public string comment; // To be deleted
     public string row; // To be deleted
+    public string template;
 }
 
 [System.Serializable]

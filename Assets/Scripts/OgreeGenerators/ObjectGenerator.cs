@@ -22,11 +22,22 @@ public class ObjectGenerator : MonoBehaviour
             return;
         }
 
-        GameObject newRack = Instantiate(GameManager.gm.rackModel);
+        GameObject newRack;
+        if (string.IsNullOrEmpty(_data.template))
+            newRack = Instantiate(GameManager.gm.rackModel);
+        else
+        {
+            newRack = Instantiate(GameManager.gm.rackPresets[_data.template]);
+            Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+        }
+
         newRack.name = _data.name;
         newRack.transform.parent = _data.parent;
-        
-        newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
+
+        if (string.IsNullOrEmpty(_data.template))
+            newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
 
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
