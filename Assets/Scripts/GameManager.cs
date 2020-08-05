@@ -65,6 +65,15 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
     }
 
+    public void DeleteItem(GameObject _toDel)
+    {
+        if (_toDel == currentItem || _toDel.transform.Find(currentItem.name))
+            SetCurrentItem(null);
+
+        // Should count type of deleted objects
+        Destroy(_toDel);
+    }
+
     public void AppendLogLine(string line, string color = "white")
     {
         consoleController.AppendLogLine(line, color);

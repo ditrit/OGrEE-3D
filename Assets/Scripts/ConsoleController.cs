@@ -90,6 +90,8 @@ public class ConsoleController
             SelectItem(_input.Substring(1));
         else if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
+        else if (_input[0] == '-')
+            DeleteItem(_input.Substring(1));
         else
             AppendLogLine("Unknowned command", "red");
     }
@@ -113,6 +115,12 @@ public class ConsoleController
 
     private void SelectItem(string _input)
     {
+        if (string.IsNullOrEmpty(_input))
+        {
+            GameManager.gm.SetCurrentItem(null);
+            return;
+        }
+        
         HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
         foreach (HierarchyName obj in allObjects)
         {
@@ -122,10 +130,26 @@ public class ConsoleController
                 return;
             }
         }
-        AppendLogLine("Error: Object does not exist");
+        AppendLogLine("Error: Object does not exist", "yellow");
+    }
+
+    private void DeleteItem(string _input)
+    {
+        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
+        foreach (HierarchyName obj in allObjects)
+        {
+            if (obj.fullname == _input)
+            {
+                GameManager.gm.DeleteItem(obj.gameObject);
+                return;
+            }
+        }
+        AppendLogLine("Error: Object does not exist", "yellow");
     }
 
     #endregion
+
+    #region LoadMethods
 
     private void ParseLoad(string _input)
     {
@@ -138,8 +162,6 @@ public class ConsoleController
             AppendLogLine("Unknowned command", "red");
 
     }
-
-    #region LoadMethods
 
     private void LoadCmdsFile(string _input)
     {

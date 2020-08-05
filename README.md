@@ -27,6 +27,7 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ```
 
 - Select an object  
+*If [full name] is empty, go back to root*  
 ```
 =[full name]
 ```
@@ -35,6 +36,11 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ```
 ..
 ```
+
+- Delete object  
+```
+-[full name]  
+```  
 
 - Create a new Customer at root  
 ```
