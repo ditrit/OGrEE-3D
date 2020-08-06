@@ -78,7 +78,7 @@ public class ConsoleController
 
     public void RunCommandString(string _input)
     {
-        if (string.IsNullOrEmpty(_input))
+        if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
 
         AppendLogLine("$ " + _input);
