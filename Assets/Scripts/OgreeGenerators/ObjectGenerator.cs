@@ -80,6 +80,10 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
         newRack.AddComponent<HierarchyName>();
+
+        rack.tenant = _data.parent.GetComponent<Room>().tenant;
+        rack.UpdateColor();
+
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRack);
     }

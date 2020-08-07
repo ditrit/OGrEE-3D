@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Current Item")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
-    public GameObject currentItem {get; private set;} = null;
+    public GameObject currentItem { get; private set; } = null;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -25,7 +25,8 @@ public class GameManager : MonoBehaviour
     public GameObject deviceModel;
 
     public Transform templatePlaceholder;
-    public Dictionary <string, GameObject> rackPresets = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> rackPresets = new Dictionary<string, GameObject>();
+    public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
     private void Awake()
     {

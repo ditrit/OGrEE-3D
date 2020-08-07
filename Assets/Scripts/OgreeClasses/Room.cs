@@ -9,6 +9,7 @@ public class Room : Building
 
     public EOrientation orientation;
 
+    public Tenant tenant;
     public SMargin reserved;
     public SMargin technical;
     public float floorHeight;

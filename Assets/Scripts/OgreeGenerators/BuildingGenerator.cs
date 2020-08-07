@@ -101,6 +101,11 @@ public class BuildingGenerator : MonoBehaviour
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
 
         newRoom.AddComponent<HierarchyName>();
+
+        int index = _data.parent.GetComponent<HierarchyName>().fullname.IndexOf(".");
+        string rootName = _data.parent.GetComponent<HierarchyName>().fullname.Substring(0, index);
+        room.tenant = GameManager.gm.tenants[rootName];
+
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
     }
