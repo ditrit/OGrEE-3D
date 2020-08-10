@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -8,9 +9,9 @@ public class GameManager : MonoBehaviour
     static public GameManager gm;
     private ConsoleController consoleController;
 
-    [Header("Current Item")]
+    [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
-    public GameObject currentItem { get; private set; } = null;
+    [SerializeField] private Button reloadBtn;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -24,7 +25,10 @@ public class GameManager : MonoBehaviour
     public GameObject serverModel;
     public GameObject deviceModel;
 
+    [Header("Runtime data")]
+    public string lastCmdFilePath;
     public Transform templatePlaceholder;
+    public GameObject currentItem { get; private set; } = null;
     public Dictionary<string, GameObject> rackPresets = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
@@ -78,5 +82,21 @@ public class GameManager : MonoBehaviour
     public void AppendLogLine(string line, string color = "white")
     {
         consoleController.AppendLogLine(line, color);
+    }
+
+    public void SetReloadBtn(string _lastPath)
+    {
+        lastCmdFilePath = _lastPath;
+        reloadBtn.interactable = (!string.IsNullOrEmpty(lastCmdFilePath));
+
+    }
+
+    public void ReloadFile()
+    {
+        Customer[] customers = FindObjectsOfType<Customer>();
+        tenants.Clear();
+        foreach (Customer cu in customers)
+            Destroy(cu.gameObject);
+        consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
 }

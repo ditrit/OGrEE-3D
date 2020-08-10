@@ -174,11 +174,13 @@ public class ConsoleController
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
                 // string[] lines = File.ReadAllLines(_input);
             }
+            GameManager.gm.SetReloadBtn(_input);
         }
         catch (System.Exception e)
         {
             AppendLogLine(e.Message, "red");
             // AppendLogLine("Files doesn't exist", "red");
+            GameManager.gm.SetReloadBtn(null);
         }
         foreach (string cmd in lines)
             RunCommandString(cmd);
