@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -367,7 +368,7 @@ public class ConsoleController
 
     private void CreateRack(string _input)
     {
-        string regex = "^[^:]+@\\[[0-9]+,[0-9]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        string regex = "^[^:]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
@@ -461,8 +462,8 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = float.Parse(parts[0]);
-        res.y = float.Parse(parts[1]);
+        res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         return res;
     }
 
@@ -472,16 +473,16 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = float.Parse(parts[0]);
+        res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         if (_YUp)
         {
-            res.y = float.Parse(parts[2]);
-            res.z = float.Parse(parts[1]);
+            res.y = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            res.z = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
         else
         {
-            res.y = float.Parse(parts[1]);
-            res.z = float.Parse(parts[2]);
+            res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            res.z = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
         return res;
     }
