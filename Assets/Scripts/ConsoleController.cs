@@ -370,7 +370,7 @@ public class ConsoleController
 
     private void CreateRack(string _input)
     {
-        string regex = "^[^:]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        string regex = "^[^:]+@\\[[0-9.]+(\\/[0-9.]+)*,[0-9.]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
@@ -378,14 +378,17 @@ public class ConsoleController
             SRackInfos infos = new SRackInfos();
             infos.pos = ParseVector2(data[1]);
 
-            if (data[2].StartsWith("[")) // if vector
+            if (data[2].StartsWith("[")) // if vector to parse...
             {
-                data[2] = data[2].Trim('[', ']');
-                string[] vector = data[2].Split(',');
-                infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
-                infos.height = int.Parse(vector[2]);
+                // data[2] = data[2].Trim('[', ']');
+                // string[] vector = data[2].Split(',');
+                // infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
+                // infos.height = int.Parse(vector[2]);
+                Vector3 tmp = ParseVector3(data[2], false);
+                infos.size = new Vector2(tmp.x, tmp.y);
+                infos.height = (int)tmp.z;
             }
-            else // else: is template name
+            else // ...else: is template name
                 infos.template = data[2];
 
             infos.orient = data[3];
@@ -464,8 +467,10 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-        res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        // res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        // res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        res.x = ParseDecFrac(parts[0]);
+        res.y = ParseDecFrac(parts[1]);
         return res;
     }
 
@@ -475,18 +480,36 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        // res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+        res.x = ParseDecFrac(parts[0]);
         if (_YUp)
         {
-            res.y = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            res.z = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            // res.y = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            // res.z = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            res.y = ParseDecFrac(parts[2]);
+            res.z = ParseDecFrac(parts[1]);
         }
         else
         {
-            res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            res.z = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            // res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            // res.z = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            res.y = ParseDecFrac(parts[1]);
+            res.z = ParseDecFrac(parts[2]);
         }
         return res;
+    }
+
+    private float ParseDecFrac(string _input)
+    {
+        if (_input.Contains("/"))
+        {
+            string[] div = _input.Split('/');
+            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            return a / b;
+        }
+        else
+            return float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
     }
 
     private void IsolateParent(string _input, out Transform parent, out string name)
