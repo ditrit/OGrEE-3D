@@ -81,19 +81,19 @@ public class BuildingGenerator : MonoBehaviour
         {
             case "EN":
                 room.orientation = EOrientation.N;
-                newRoom.transform.localEulerAngles = new Vector3(0, 0, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
                 room.orientation = EOrientation.S;
-                newRoom.transform.localEulerAngles = new Vector3(0, 180, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
                 room.orientation = EOrientation.W;
-                newRoom.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
                 room.orientation = EOrientation.E;
-                newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 break;
         }
 
