@@ -14,21 +14,36 @@ public class ObjectGenerator : MonoBehaviour
             Destroy(this);
     }
 
-    public void CreateRack(SRackInfos _data)
+    public void CreateRack(SRackInfos _data, bool _changeHierarchy)
     {
-        GameObject newRack = Instantiate(GameManager.gm.rackModel);
+        if (_data.parent.GetComponent<Room>() == null)
+        {
+            GameManager.gm.AppendLogLine("Rack must be child of a Room", "yellow");
+            return;
+        }
+
+        GameObject newRack;
+        if (string.IsNullOrEmpty(_data.template))
+            newRack = Instantiate(GameManager.gm.rackModel);
+        else
+        {
+            newRack = Instantiate(GameManager.gm.rackPresets[_data.template]);
+            Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+        }
+
         newRack.name = _data.name;
+        newRack.transform.parent = _data.parent;
 
-        Transform parent = GameObject.Find(_data.parentName).transform;
-        newRack.transform.parent = parent;
-        Vector2 margin = new Vector2(parent.GetComponent<Room>().technical.left, parent.GetComponent<Room>().technical.bottom);
+        if (string.IsNullOrEmpty(_data.template))
+            newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
 
-        newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
-        
-        Vector3 origin = parent.GetChild(0).localScale / -0.2f;
-        newRack.transform.localPosition = new Vector3(origin.x, 0, origin.z);
+        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
+        newRack.transform.position = newRack.transform.parent.GetChild(0).position;
+        newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
         newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
-        newRack.transform.localPosition += new Vector3(_data.pos.x - 1 + margin.x, 0, _data.pos.y - 1 + margin.y) * GameManager.gm.tileSize;
+        newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.description = _data.comment;
@@ -63,6 +78,14 @@ public class ObjectGenerator : MonoBehaviour
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
         newRack.GetComponent<DisplayRackData>().FillTexts();
+
+        newRack.AddComponent<HierarchyName>();
+
+        rack.tenant = _data.parent.GetComponent<Room>().tenant;
+        rack.UpdateColor();
+
+        if (_changeHierarchy)
+            GameManager.gm.SetCurrentItem(newRack);
     }
 
     public void CreateChassis(SDeviceInfos _data)
@@ -101,6 +124,8 @@ public class ObjectGenerator : MonoBehaviour
         obj.serial = _data.serial;
         obj.vendor = _data.vendor;
         obj.description = _data.comment;
+
+        newDevice.AddComponent<HierarchyName>();
     }
 
     public void CreateAirconditionner()

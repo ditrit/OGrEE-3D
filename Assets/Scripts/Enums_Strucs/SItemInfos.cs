@@ -6,13 +6,15 @@ using UnityEngine;
 public struct SRackInfos
 {
     public string name;
-    public string parentName;
+    public string parentName; // To be deleted
+    public Transform parent;
     public string orient;
     public Vector2 pos; // tile
     public Vector2 size; // cm 
     public int height; // U = 44.5mm
-    public string comment;
-    public string row;
+    public string comment; // To be deleted
+    public string row; // To be deleted
+    public string template;
 }
 
 [System.Serializable]
@@ -34,7 +36,8 @@ public struct SDeviceInfos
 public struct SDataCenterInfos
 {
     public string name;
-    public string customer;
+    public Transform parent;
+    public string orient;
     public string address;
     public string zipcode;
     public string city;
@@ -43,12 +46,21 @@ public struct SDataCenterInfos
 }
 
 [System.Serializable]
+public struct SBuildingInfos
+{
+    public string name;
+    public Transform parent;
+    public Vector3 pos;
+    public Vector3 size;
+}
+
+[System.Serializable]
 public struct SRoomInfos
 {
     public string name;
-    public string parentName;
-    public Vector2 size; // tile
-    public Vector2 margin; // tile
-    public Vector2 pos; // tile
+    public Transform parent;
+    public Vector3 pos; // tile
+    public Vector3 size; // tile
+    public Vector2 margin; // tile, should be deleted
     public string orient;
 }

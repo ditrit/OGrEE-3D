@@ -14,53 +14,100 @@ public class BuildingGenerator : MonoBehaviour
             Destroy(this);
     }
 
-    public void CreateBuilding()
+    public void CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
     {
+        if (_data.parent.GetComponent<Datacenter>() == null)
+        {
+            GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
+            return;
+        }
+        GameObject newBD = Instantiate(GameManager.gm.tileModel);
+        newBD.name = _data.name;
+        newBD.transform.parent = _data.parent;
+        newBD.transform.localEulerAngles = Vector3.zero;
 
+        // originalSize
+        Vector3 originalSize = newBD.transform.GetChild(0).localScale;
+        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+
+        Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
+        newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
+        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
+
+        Building bd = newBD.AddComponent<Building>();
+        // fill bd infos...
+
+        newBD.AddComponent<HierarchyName>();
+        if (_changeHierarchy)
+            GameManager.gm.SetCurrentItem(newBD);
     }
 
-    public void CreateRoom(SRoomInfos _data)
+    public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
-        GameObject tile = Instantiate(GameManager.gm.tileModel);
-        tile.name = _data.name;
-        tile.transform.parent = GameObject.Find(_data.parentName).transform;
+        if (_data.parent.GetComponent<Building>() == null)
+        {
+            GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
+            return;
+        }
 
-        Vector3 originalSize = tile.transform.GetChild(0).localScale;
-        tile.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.y);
-        
-        Vector3 origin = tile.transform.GetChild(0).localScale / 0.2f;
-        tile.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        tile.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
+        GameObject newRoom = Instantiate(GameManager.gm.roomModel);
+        newRoom.name = _data.name;
+        newRoom.transform.parent = _data.parent;
 
-        Room room = tile.AddComponent<Room>();
-        room.size = _data.size;
+        Transform usable = newRoom.transform.GetChild(0);
+        Transform reserved = newRoom.transform.GetChild(1);
+        Transform technical = newRoom.transform.GetChild(2);
+
+        Vector3 originalSize = usable.localScale;
+        usable.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        usable.localPosition += Vector3.up * 0.003f;
+        reserved.localScale = usable.localScale;
+        reserved.localPosition += Vector3.up * 0.002f;
+        technical.localScale = usable.localScale;
+        technical.localPosition += Vector3.up * 0.001f;
+
+        Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
+        Vector3 roOrigin = usable.localScale / 0.2f;
+        newRoom.transform.localPosition = new Vector3(bdOrigin.x, 0, bdOrigin.z);
+        newRoom.transform.localPosition += new Vector3(roOrigin.x, 0, roOrigin.z);
+        newRoom.transform.localPosition += _data.pos;
+
+        Room room = newRoom.AddComponent<Room>();
+        room.size = new Vector2(_data.size.x, _data.size.z);
         room.sizeUnit = EUnit.tile;
-        room.technical = new SMargin(_data.margin.x, 0, 0, _data.margin.y);
-        room.reserved = new SMargin();
-
+        room.floorHeight = _data.size.y;
+        room.floorUnit = EUnit.cm;
         switch (_data.orient)
         {
-            case "front":
+            case "EN":
                 room.orientation = EOrientation.N;
-                tile.transform.localEulerAngles = new Vector3(0, 0, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 break;
-            case "rear":
+            case "WS":
                 room.orientation = EOrientation.S;
-                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
-            case "left":
+            case "NW":
                 room.orientation = EOrientation.W;
-                tile.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 break;
-            case "right":
+            case "SE":
                 room.orientation = EOrientation.E;
-                tile.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 break;
         }
 
-        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, tile);
-        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, tile.name);
+        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, newRoom);
+        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
 
+        newRoom.AddComponent<HierarchyName>();
+
+        int index = _data.parent.GetComponent<HierarchyName>().fullname.IndexOf(".");
+        string rootName = _data.parent.GetComponent<HierarchyName>().fullname.Substring(0, index);
+        room.tenant = GameManager.gm.tenants[rootName];
+
+        if (_changeHierarchy)
+            GameManager.gm.SetCurrentItem(newRoom);
     }
 }

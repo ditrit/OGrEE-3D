@@ -9,7 +9,8 @@ public class GenerateItRoom : MonoBehaviour
     {
         GameObject tile = Instantiate(GameManager.gm.tileModel);
         tile.name = _data.name;
-        tile.transform.parent = GameObject.Find(_data.parentName).transform;
+        // tile.transform.parent = GameObject.Find(_data.parentName).transform;
+        tile.transform.parent = _data.parent;
 
         Vector3 originalSize = tile.transform.GetChild(0).localScale;
         tile.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.y);

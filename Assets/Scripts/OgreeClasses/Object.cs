@@ -17,11 +17,13 @@ public class Object : MonoBehaviour
     public EUnit heightUnit;
     public EObjOrient orient;
     
+    public Tenant tenant;
     public string vendor;
     public string type;
     public string model;
     public string serial;
 
+    public Dictionary<string, string> extras;
 
     public void UpdateField(string _param, string _value)
     {

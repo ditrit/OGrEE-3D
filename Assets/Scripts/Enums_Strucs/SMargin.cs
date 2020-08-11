@@ -10,11 +10,19 @@ public struct SMargin
     public float top;
     public float bottom;
 
-    public SMargin(float _left, float _right, float _top, float _bottom)
+    public SMargin(SMargin _data)
     {
-        left = _left;
-        right = _right;
-        top = _top;
-        bottom = _bottom;
+        top = _data.top;
+        bottom = _data.bottom;
+        right = _data.right;
+        left = _data.left;
+    }
+
+    public SMargin(float _N, float _S, float _E, float _W)
+    {
+        top = _N;
+        bottom = _S;
+        right = _E;
+        left = _W;
     }
 }
