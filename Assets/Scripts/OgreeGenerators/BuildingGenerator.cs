@@ -24,6 +24,7 @@ public class BuildingGenerator : MonoBehaviour
         GameObject newBD = Instantiate(GameManager.gm.tileModel);
         newBD.name = _data.name;
         newBD.transform.parent = _data.parent;
+        newBD.transform.localEulerAngles = Vector3.zero;
 
         // originalSize
         Vector3 originalSize = newBD.transform.GetChild(0).localScale;
@@ -31,7 +32,7 @@ public class BuildingGenerator : MonoBehaviour
 
         Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z) * GameManager.gm.tileSize;
+        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
 
         Building bd = newBD.AddComponent<Building>();
         // fill bd infos...
@@ -69,7 +70,7 @@ public class BuildingGenerator : MonoBehaviour
         Vector3 roOrigin = usable.localScale / 0.2f;
         newRoom.transform.localPosition = new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += new Vector3(roOrigin.x, 0, roOrigin.z);
-        newRoom.transform.localPosition += _data.pos * GameManager.gm.tileSize;
+        newRoom.transform.localPosition += _data.pos;
 
         Room room = newRoom.AddComponent<Room>();
         room.size = new Vector2(_data.size.x, _data.size.z);

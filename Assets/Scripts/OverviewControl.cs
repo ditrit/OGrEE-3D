@@ -11,12 +11,6 @@ public class OverviewControl : MonoBehaviour
     [Range(20, 100)]
     public float rotationSpeed = 50;
 
-
-    private void Start()
-    {
-        GetComponent<ParentConstraint>().enabled = false;
-    }
-
     private void Update()
     {
         // if (Input.GetAxis("Mouse ScrollWheel") != 0)
