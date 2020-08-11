@@ -5,32 +5,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-/*
-
-+customer:[name]
-+customer:DEMO
-
-+datacenter:[name]@[orientation]
-+datacenter:BETA@N
-
-+building:[name]@[pos]@[size]
-+building:/DEMO.BETA.A@[0,80,0]@[20,30,4]
-+building:/DEMO.BETA.B@[0,20,0]@[20,30,4]
-+bd:C@[30,0,0]@[60,120,5]
-
-+room:[name]@[pos]@[size]@[orientation]
-+room:R1@[0,15,0]@[60,60,5]@W
-+room:/DEMO.BETA.C.R2@[0,75,0]@[60,60,5]@W
-+ro:/DEMO.BETA.C.Office@[60,0,0]@[20,75,4]@N
-
-+zones:[reserved N,S,E,W]@[technical N,S,E,W]
-+zones:[2,1,3,3]@[4,4,4,4]
-
-+rack:[name]@[pos]@[size]@orient
-+rack:[name]@[pos]@[preset]@orient
-
-*/
-
 public class ConsoleController
 {
 
@@ -380,10 +354,6 @@ public class ConsoleController
 
             if (data[2].StartsWith("[")) // if vector to parse...
             {
-                // data[2] = data[2].Trim('[', ']');
-                // string[] vector = data[2].Split(',');
-                // infos.size = new Vector2(float.Parse(vector[0]), float.Parse(vector[1]));
-                // infos.height = int.Parse(vector[2]);
                 Vector3 tmp = ParseVector3(data[2], false);
                 infos.size = new Vector2(tmp.x, tmp.y);
                 infos.height = (int)tmp.z;
@@ -467,8 +437,6 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        // res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-        // res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         res.x = ParseDecFrac(parts[0]);
         res.y = ParseDecFrac(parts[1]);
         return res;
@@ -480,19 +448,14 @@ public class ConsoleController
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        // res.x = float.Parse(parts[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         res.x = ParseDecFrac(parts[0]);
         if (_YUp)
         {
-            // res.y = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            // res.z = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             res.y = ParseDecFrac(parts[2]);
             res.z = ParseDecFrac(parts[1]);
         }
         else
         {
-            // res.y = float.Parse(parts[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            // res.z = float.Parse(parts[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             res.y = ParseDecFrac(parts[1]);
             res.z = ParseDecFrac(parts[2]);
         }
