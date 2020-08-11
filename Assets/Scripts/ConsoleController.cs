@@ -232,7 +232,7 @@ public class ConsoleController
 
     private void CreateDataCenter(string _input)
     {
-        string regex = "^[^:]+@(N|S|W|E)$";
+        string regex = "^[^:]+@(EN|NW|WS|SE)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
@@ -302,7 +302,7 @@ public class ConsoleController
 
     private void CreateRoom(string _input)
     {
-        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(N|S|W|E)$";
+        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');

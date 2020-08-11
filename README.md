@@ -10,7 +10,7 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 
 ### Glossary  
 [name] can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
-[orientation] is a cardinal point: N, S, E, W  
+[orientation] is a definition of an orthonormal with cardinal points (+x,+y): EN, NW, WS, SE  
 
 ### Commands  
 - Load commands from a text file  
@@ -71,8 +71,8 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ```
 
 - Set reserved and technical zones of a room  
-*[reserved] is a vector4: [N,S,E,W] (tile,tile,tile,tile)  
-[technical] is a vector4: [N,S,E,W] (tile,tile,tile,tile)*  
+*[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
+[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```
 +zones:[reserved]@[technical]  
 +zones:[full name]@[reserved]@[technical]

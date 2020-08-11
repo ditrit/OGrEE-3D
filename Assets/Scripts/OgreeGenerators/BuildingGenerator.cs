@@ -79,19 +79,19 @@ public class BuildingGenerator : MonoBehaviour
         room.floorUnit = EUnit.cm;
         switch (_data.orient)
         {
-            case "N":
+            case "EN":
                 room.orientation = EOrientation.N;
                 newRoom.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
-            case "S":
+            case "WS":
                 room.orientation = EOrientation.S;
                 newRoom.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case "W":
+            case "NW":
                 room.orientation = EOrientation.W;
                 newRoom.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
-            case "E":
+            case "SE":
                 room.orientation = EOrientation.E;
                 newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;

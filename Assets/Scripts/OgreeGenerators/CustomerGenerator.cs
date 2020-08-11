@@ -48,19 +48,19 @@ public class CustomerGenerator : MonoBehaviour
 
         switch (_data.orient)
         {
-            case "N":
+            case "EN":
                 dc.orientation = EOrientation.N;
                 newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
-            case "S":
+            case "WS":
                 dc.orientation = EOrientation.S;
                 newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
-            case "W":
+            case "NW":
                 dc.orientation = EOrientation.W;
                 newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
-            case "E":
+            case "SE":
                 dc.orientation = EOrientation.E;
                 newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
