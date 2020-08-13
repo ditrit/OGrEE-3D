@@ -42,7 +42,6 @@ public class ObjectGenerator : MonoBehaviour
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
         newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
@@ -58,18 +57,25 @@ public class ObjectGenerator : MonoBehaviour
             case "front":
                 rack.orient = EObjOrient.Frontward;
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
+                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
                 break;
             case "rear":
                 rack.orient = EObjOrient.Backward;
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
+                newRack.transform.localPosition += new Vector3(newRack.transform.GetChild(0).localScale.x,
+                                                               newRack.transform.GetChild(0).localScale.y,
+                                                               -newRack.transform.GetChild(0).localScale.z) / 2;
+                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
             case "left":
                 rack.orient = EObjOrient.Left;
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
+                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
                 break;
             case "right":
                 rack.orient = EObjOrient.Right;
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
+                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
                 break;
         }
 
