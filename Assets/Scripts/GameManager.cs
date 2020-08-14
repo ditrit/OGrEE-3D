@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
-    public GameObject currentItem { get; private set; } = null;
+    public GameObject currentItem /*{ get; private set; }*/ = null;
     public Dictionary<string, GameObject> rackPresets = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
@@ -72,7 +72,8 @@ public class GameManager : MonoBehaviour
 
     public void DeleteItem(GameObject _toDel)
     {
-        if (_toDel == currentItem || _toDel.transform.Find(currentItem.name))
+        // Debug.Log($"Try to delete {_toDel.name}");
+        // if (_toDel == currentItem || _toDel?.transform.Find(currentItem.name))
             SetCurrentItem(null);
 
         // Should count type of deleted objects
@@ -94,9 +95,14 @@ public class GameManager : MonoBehaviour
     public void ReloadFile()
     {
         Customer[] customers = FindObjectsOfType<Customer>();
-        tenants.Clear();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+    }
+
+    public void DictionaryAddIfUnknowned<T>(Dictionary<string, T> _dictionary, string _key, T _value)
+    {
+        if (!_dictionary.ContainsKey(_key))
+            _dictionary.Add(_key, _value);
     }
 }

@@ -18,6 +18,6 @@ public class Rack : Object
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString(tenant.color, out myColor);
         mat.color = myColor;
-        Debug.Log($"{tenant.color} => {myColor}");
+        // Debug.Log($"{tenant.color} => {myColor}");
     }
 }

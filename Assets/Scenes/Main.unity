@@ -1331,7 +1331,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -2686,8 +2686,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2071767878}
   m_HandleRect: {fileID: 2071767877}
   m_Direction: 2
-  m_Value: 0.000000058698937
-  m_Size: 0.063074425
+  m_Value: 0
+  m_Size: 0.06307442
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3740,6 +3740,7 @@ MonoBehaviour:
     type: 3}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
+  currentItem: {fileID: 0}
 --- !u!4 &1595579782
 Transform:
   m_ObjectHideFlags: 0

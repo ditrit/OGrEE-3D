@@ -57,14 +57,15 @@ public class BuildingGenerator : MonoBehaviour
         Transform usable = newRoom.transform.GetChild(0);
         Transform reserved = newRoom.transform.GetChild(1);
         Transform technical = newRoom.transform.GetChild(2);
+        Transform edges = newRoom.transform.GetChild(3);
 
         Vector3 originalSize = usable.localScale;
         usable.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
-        usable.localPosition += Vector3.up * 0.003f;
         reserved.localScale = usable.localScale;
-        reserved.localPosition += Vector3.up * 0.002f;
         technical.localScale = usable.localScale;
-        technical.localPosition += Vector3.up * 0.001f;
+
+        edges.localScale = usable.localScale;
+        edges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = usable.localScale / 0.2f;

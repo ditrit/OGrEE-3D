@@ -21,7 +21,7 @@ public class CustomerGenerator : MonoBehaviour
 
         // Create default tenant
         Tenant newTenant = new Tenant(_name, "#ffffff");
-        GameManager.gm.tenants.Add(_name, newTenant);
+        GameManager.gm.DictionaryAddIfUnknowned(GameManager.gm.tenants, _name, newTenant);
 
         customer.AddComponent<HierarchyName>();
         if (_changeHierarchy)

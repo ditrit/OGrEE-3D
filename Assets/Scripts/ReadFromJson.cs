@@ -71,6 +71,8 @@ public class ReadFromJson
     public void CreateRackTemplate(string _json)
     {
         SRackFromJson rackData = JsonUtility.FromJson<SRackFromJson>(_json);
+        if (GameManager.gm.rackPresets.ContainsKey(rackData.slug))
+            return;
 
         SRackInfos infos = new SRackInfos();
         infos.name = rackData.slug;
