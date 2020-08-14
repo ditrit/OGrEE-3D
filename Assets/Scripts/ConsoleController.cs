@@ -95,7 +95,7 @@ public class ConsoleController
             GameManager.gm.SetCurrentItem(null);
             return;
         }
-        
+
         HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
         foreach (HierarchyName obj in allObjects)
         {
@@ -344,7 +344,7 @@ public class ConsoleController
 
     private void CreateRack(string _input)
     {
-        string regex = "^[^:]+@\\[[0-9.]+(\\/[0-9.]+)*,[0-9.]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        string regex = "^[^\\s:]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
@@ -467,12 +467,12 @@ public class ConsoleController
         if (_input.Contains("/"))
         {
             string[] div = _input.Split('/');
-            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
             return a / b;
         }
         else
-            return float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            return float.Parse(_input, NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
     }
 
     private void IsolateParent(string _input, out Transform parent, out string name)

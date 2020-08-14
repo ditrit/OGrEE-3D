@@ -79,13 +79,15 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ```
 
 - Create a rack, child of a room  
-*[pos] is a Vector2 [x,y] (tile,tile) can be decimal or fraction 
-[size] is a Vector3 [x,y,z] (cm,cm,u)
+*[pos] is a Vector2 [x,y] (tile,tile) can be decimal or fraction. Can also be negative  
+[size] is a Vector3 [x,y,z] (cm,cm,u)  
 [template] is the name of the rack template  
 [orientation] is front|rear|left|right*  
 ```
 +rack:[name]@[pos]@[size]@[orientation]  
-+rack:[name]@[pos]@[template]@[orientation]
++rack:[name]@[pos]@[template]@[orientation]  
++rk:[name]@[pos]@[size]@[orientation]  
++rk:[name]@[pos]@[template]@[orientation]
 ```
 
 ### Examples
