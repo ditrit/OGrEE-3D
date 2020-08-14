@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
-    [SerializeField] private Button reloadBtn;
+    [SerializeField] private Button reloadBtn = null;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public GameObject rackModel;
     public GameObject serverModel;
     public GameObject deviceModel;
+    public GameObject tileNameModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
@@ -31,6 +32,8 @@ public class GameManager : MonoBehaviour
     public GameObject currentItem /*{ get; private set; }*/ = null;
     public Dictionary<string, GameObject> rackPresets = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
+
+    #region UnityMethods
 
     private void Awake()
     {
@@ -46,7 +49,14 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
+    
+    #endregion
 
+    ///<summary>
+    /// Find a GameObject by its HierarchyName.
+    ///</summary>
+    ///<param name="_path">Which hierarchy name to look for</param>
+    ///<returns>The GameObject looked for</returns>
     public GameObject FindAbsPath(string _path)
     {
         HierarchyName[] objs = FindObjectsOfType<HierarchyName>();
@@ -61,6 +71,10 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    ///<summary>
+    /// Save current object and change the CLI idle text.
+    ///</summary>
+    ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
         currentItem = _obj;
@@ -70,21 +84,34 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
     }
 
+    ///<summary>
+    /// Delete a GameObject, set currentItem to null.
+    ///</summary>
+    ///<param name="_toDel">The object to delete</param>
     public void DeleteItem(GameObject _toDel)
     {
         // Debug.Log($"Try to delete {_toDel.name}");
         // if (_toDel == currentItem || _toDel?.transform.Find(currentItem.name))
-            SetCurrentItem(null);
+        SetCurrentItem(null);
 
         // Should count type of deleted objects
         Destroy(_toDel);
     }
 
-    public void AppendLogLine(string line, string color = "white")
+    ///<summary>
+    /// Display a message in the CLI.
+    ///</summary>
+    ///<param name="_line">The text to display</param>
+    ///<param name="_color">The color of the text. Default is white</param>
+    public void AppendLogLine(string _line, string _color = "white")
     {
-        consoleController.AppendLogLine(line, color);
+        consoleController.AppendLogLine(_line, _color);
     }
 
+    ///<summary>
+    /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
+    ///</summary>
+    ///<param name="_lastPath">The command file path to store</param>
     public void SetReloadBtn(string _lastPath)
     {
         lastCmdFilePath = _lastPath;
@@ -92,6 +119,9 @@ public class GameManager : MonoBehaviour
 
     }
 
+    ///<summary>
+    /// Called by GUI button: Delete all Customers and reload last loaded file.
+    ///</summary>
     public void ReloadFile()
     {
         Customer[] customers = FindObjectsOfType<Customer>();
@@ -100,6 +130,27 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
 
+    ///<summary>
+    /// Called by GUI button: If currentItem is a room, toggle tiles name.
+    ///</summary>
+    public void ToggleTileNames()
+    {
+        Room currentRoom = currentItem.GetComponent<Room>();
+        if (currentRoom)
+        {
+            currentRoom.ToggleTilesName();
+            AppendLogLine($"Tiles names toggled for {currentItem.name}.", "yellow");
+        }
+        else
+            AppendLogLine("Current item must be a room", "red");
+    }
+
+    ///<summary>
+    /// Add a key/value pair in a dictionary only of the key doesn't exists.
+    ///</summary>
+    ///<param name="_dictionary">The dictionary to modify</param>
+    ///<param name="_key">The key to check/add</param>
+    ///<param name="_value">The value to add</param>
     public void DictionaryAddIfUnknowned<T>(Dictionary<string, T> _dictionary, string _key, T _value)
     {
         if (!_dictionary.ContainsKey(_key))

@@ -23,7 +23,7 @@ public class ConsoleView : MonoBehaviour
 
 #if DEBUG
         // console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\testCmds.txt");
-        console.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\3_Unity\\EDF.NOE_rtk.ocli");
+        console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\EDF.NOE_Ced.ocli");
 #endif
     }
 
