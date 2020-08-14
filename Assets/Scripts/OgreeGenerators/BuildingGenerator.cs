@@ -93,6 +93,9 @@ public class BuildingGenerator : MonoBehaviour
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 break;
         }
+        
+        room.nameText.text = newRoom.name;
+        room.nameText.rectTransform.sizeDelta = room.size;
 
         Filters.instance.AddIfUnknowned(Filters.instance.itRooms, newRoom);
         Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, newRoom.name);

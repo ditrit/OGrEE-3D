@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Room : Building
@@ -21,6 +22,7 @@ public class Room : Building
     public Transform technicalZone;
     public Transform tilesEdges;
     public Transform walls;
+    public TextMeshPro nameText;
 
 
     public void SetZones(SMargin _resDim, SMargin _techDim)
