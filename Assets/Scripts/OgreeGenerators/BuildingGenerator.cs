@@ -54,26 +54,22 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.name = _data.name;
         newRoom.transform.parent = _data.parent;
 
-        Transform usable = newRoom.transform.GetChild(0);
-        Transform reserved = newRoom.transform.GetChild(1);
-        Transform technical = newRoom.transform.GetChild(2);
-        Transform edges = newRoom.transform.GetChild(3);
+        Room room = newRoom.GetComponent<Room>();
 
-        Vector3 originalSize = usable.localScale;
-        usable.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
-        reserved.localScale = usable.localScale;
-        technical.localScale = usable.localScale;
-
-        edges.localScale = usable.localScale;
-        edges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
+        Vector3 originalSize = room.usableZone.localScale;
+        room.usableZone.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        room.reservedZone.localScale = room.usableZone.localScale;
+        room.technicalZone.localScale = room.usableZone.localScale;
+        room.tilesEdges.localScale = room.usableZone.localScale;
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
+        room.walls.localScale = new Vector3(room.usableZone.localScale.x * 10, 1, room.usableZone.localScale.z * 10);
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
-        Vector3 roOrigin = usable.localScale / 0.2f;
+        Vector3 roOrigin = room.usableZone.localScale / 0.2f;
         newRoom.transform.localPosition = new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += new Vector3(roOrigin.x, 0, roOrigin.z);
         newRoom.transform.localPosition += _data.pos;
 
-        Room room = newRoom.AddComponent<Room>();
         room.size = new Vector2(_data.size.x, _data.size.z);
         room.sizeUnit = EUnit.tile;
         room.floorHeight = _data.size.y;

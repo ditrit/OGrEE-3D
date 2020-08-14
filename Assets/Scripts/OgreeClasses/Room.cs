@@ -15,17 +15,20 @@ public class Room : Building
     public float floorHeight;
     public EUnit floorUnit;
 
+    [Header("References")]
+    public Transform usableZone;
+    public Transform reservedZone;
+    public Transform technicalZone;
+    public Transform tilesEdges;
+    public Transform walls;
+
 
     public void SetZones(SMargin _resDim, SMargin _techDim)
     {
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);
 
-        Transform usableZone = transform.GetChild(0);
-        Transform reservedZone = transform.GetChild(1);
-        Transform technicalZone = transform.GetChild(2);
-
-        // Reset  -  techzone is always full size of a room
+        // Reset  ->  techzone is always full size of a room
         usableZone.localScale = technicalZone.localScale;
         usableZone.localPosition = new Vector3(technicalZone.localPosition.x,
                                                 usableZone.localPosition.y, technicalZone.localPosition.z);
