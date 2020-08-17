@@ -94,6 +94,7 @@ public class ObjectGenerator : MonoBehaviour
         Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, newRack.name[0].ToString());
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
+        newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
         newRack.AddComponent<HierarchyName>();
