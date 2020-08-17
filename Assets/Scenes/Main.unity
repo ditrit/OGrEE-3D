@@ -2984,6 +2984,7 @@ MonoBehaviour:
   sizeUnit: 0
   height: 0
   heightUnit: 0
+  walls: {fileID: 0}
   orientation: 0
   tenant:
     name: 
@@ -3007,9 +3008,7 @@ MonoBehaviour:
   reservedZone: {fileID: 0}
   technicalZone: {fileID: 0}
   tilesEdges: {fileID: 0}
-  walls: {fileID: 0}
   nameText: {fileID: 0}
-  triggerTilesName: 0
 --- !u!1 &1354763861
 GameObject:
   m_ObjectHideFlags: 0
@@ -4095,6 +4094,8 @@ MonoBehaviour:
   uSize: 0.045
   ouSize: 0.048
   tileModel: {fileID: 405515581002141253, guid: 3b592caa0a7c9eb46bf459b9aac5d520,
+    type: 3}
+  buildingModel: {fileID: 405515581002141253, guid: 8fa8fbf8aabdd8e4eb025a0613eca6e6,
     type: 3}
   roomModel: {fileID: 405515581002141253, guid: 5c330afaa8095c64882bca4febdda99d,
     type: 3}

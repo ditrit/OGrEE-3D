@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Models")]
     public GameObject tileModel;
+    public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
     public GameObject serverModel;
