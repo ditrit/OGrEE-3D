@@ -68,10 +68,14 @@ public class ReadFromJson
     #endregion
 
 
+    ///<summary>
+    /// Create a rack from _json data and add it to GameManager.rackTemplates.
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
     public void CreateRackTemplate(string _json)
     {
         SRackFromJson rackData = JsonUtility.FromJson<SRackFromJson>(_json);
-        if (GameManager.gm.rackPresets.ContainsKey(rackData.slug))
+        if (GameManager.gm.rackTemplates.ContainsKey(rackData.slug))
             return;
 
         SRackInfos infos = new SRackInfos();
@@ -170,7 +174,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.rackPresets.Add(rack.name, rack.gameObject);
+        GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
     }
 
 }

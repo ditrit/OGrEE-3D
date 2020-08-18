@@ -29,19 +29,21 @@ public class ConsoleController
     //     createMethods.Add("customer", CreateCustomer());
     // }
 
-    /// <summary>
-    /// Collecting log output by Eliot Lash
-    /// </summary>
-    public void AppendLogLine(string line, string color = "white")
+    ///<summary>
+    /// Collecting log output by Eliot Lash.
+    ///</summary>
+    ///<param name="_line">The line to display</param>
+    ///<param name="_color">The color of the line, white by default</param>
+    public void AppendLogLine(string _line, string _color = "white")
     {
-        Debug.Log(line);
-        line = $"<color={color}>{line}</color>";
+        Debug.Log(_line);
+        _line = $"<color={_color}>{_line}</color>";
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
             scrollback.Dequeue();
         }
-        scrollback.Enqueue(line);
+        scrollback.Enqueue(_line);
 
         log = scrollback.ToArray();
         if (logChanged != null)

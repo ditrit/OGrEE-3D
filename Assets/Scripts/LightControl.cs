@@ -5,6 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightControl : MonoBehaviour
 {
+    ///<summary>
+    /// Called by a GUI Checkbox.
+    /// Change type of shadows according to _value.
+    ///</summary>
+    ///<param name="_value">The checkbox value</param>
     public void ToggleShadows(bool _value)
     {
         if (_value)

@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public GameObject currentItem /*{ get; private set; }*/ = null;
-    public Dictionary<string, GameObject> rackPresets = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
     #region UnityMethods

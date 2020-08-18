@@ -16,6 +16,9 @@ public class Rack : Object
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
     }
 
+    ///<summary>
+    /// Update rack's color according to its Tenant.
+    ///</summary>
     public void UpdateColor()
     {
         if (tenant == null)

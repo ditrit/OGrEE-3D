@@ -32,7 +32,7 @@ public class ObjectGenerator : MonoBehaviour
             newRack = Instantiate(GameManager.gm.rackModel);
         else
         {
-            newRack = Instantiate(GameManager.gm.rackPresets[_data.template]);
+            newRack = Instantiate(GameManager.gm.rackTemplates[_data.template]);
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
