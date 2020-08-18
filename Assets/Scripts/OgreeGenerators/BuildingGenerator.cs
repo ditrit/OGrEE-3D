@@ -108,9 +108,9 @@ public class BuildingGenerator : MonoBehaviour
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = room.size;
 
-        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, newRoom);
-        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, newRoom.name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
+        Filters.instance.AddIfUnknowned(Filters.instance.rooms, newRoom);
+        Filters.instance.AddIfUnknowned(Filters.instance.roomsList, newRoom.name);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
         newRoom.AddComponent<HierarchyName>();
 

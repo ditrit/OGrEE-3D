@@ -7,10 +7,10 @@ public class Filters : MonoBehaviour
 {
     public static Filters instance;
 
-    [Header("ItRooms")]
-    public List<string> itRoomsList;
-    public List<GameObject> itRooms;
-    public TMP_Dropdown dropdownItRooms = null;
+    [Header("Rooms")]
+    public List<string> roomsList;
+    public List<GameObject> rooms;
+    public TMP_Dropdown dropdownRooms = null;
 
     [Header("Rack rows")]
     public List<string> rackRowsList;
@@ -24,8 +24,8 @@ public class Filters : MonoBehaviour
         else
             Destroy(this);
         
-        DefaultList(itRoomsList, "All");
-        UpdateDropdownFromList(dropdownItRooms, itRoomsList);
+        DefaultList(roomsList, "All");
+        UpdateDropdownFromList(dropdownRooms, roomsList);
         DefaultList(rackRowsList, "All");
         UpdateDropdownFromList(dropdownRackRows, rackRowsList);
     }
@@ -51,17 +51,17 @@ public class Filters : MonoBehaviour
 
     }
 
-    public void FilterItRooms()
+    public void FilterRooms()
     {
-        string txt = dropdownItRooms.GetComponentInChildren<TMP_Text>().text;
+        string txt = dropdownRooms.GetComponentInChildren<TMP_Text>().text;
         if (txt == "All")
         {
-            foreach (GameObject itRoom in itRooms)
+            foreach (GameObject itRoom in rooms)
                 itRoom.SetActive(true);
         }
         else
         {
-            foreach (GameObject itRoom in itRooms)
+            foreach (GameObject itRoom in rooms)
                 itRoom.SetActive(itRoom.name == txt);
         }
     }

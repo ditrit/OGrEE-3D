@@ -23,6 +23,12 @@ public class Room : Building
     public Transform tilesEdges;
     public TextMeshPro nameText;
 
+    private void OnDestroy()
+    {
+        Filters.instance.roomsList.Remove(name);
+        Filters.instance.rooms.Remove(gameObject);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
+    }
 
     ///<summary>
     /// Set usable/reserved/technical zones.

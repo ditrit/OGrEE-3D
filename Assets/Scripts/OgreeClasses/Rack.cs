@@ -9,6 +9,13 @@ public class Rack : Object
         family = EObjFamily.rack;
     }
 
+    private void OnDestroy()
+    {
+        Filters.instance.rackRowsList.Remove(name[0].ToString());
+        Filters.instance.racks.Remove(gameObject);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
+    }
+
     public void UpdateColor()
     {
         if (tenant == null)

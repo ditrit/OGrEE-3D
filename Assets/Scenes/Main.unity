@@ -1113,9 +1113,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68cbbecac62d53a49940f48833694a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itRoomsList: []
-  itRooms: []
-  dropdownItRooms: {fileID: 1039380108}
+  roomsList: []
+  rooms: []
+  dropdownRooms: {fileID: 1039380108}
   rackRowsList: []
   racks: []
   dropdownRackRows: {fileID: 1626904237}
@@ -2365,7 +2365,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 320645139}
-        m_MethodName: FilterItRooms
+        m_MethodName: FilterRooms
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
