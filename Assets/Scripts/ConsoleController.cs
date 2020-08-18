@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class ConsoleController
 {
-
     // Used to communicate with ConsoleView
     public delegate void LogChangedHandler(string[] log);
     public event LogChangedHandler logChanged;
@@ -51,6 +50,10 @@ public class ConsoleController
         }
     }
 
+    ///<summary>
+    /// Execute a command line. Look for the first char to call the corresponding method.
+    ///</summary>
+    ///<param name="_input">Command line to parse</param>
     public void RunCommandString(string _input)
     {
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
@@ -73,6 +76,9 @@ public class ConsoleController
 
     #region HierarchyMethods()
 
+    ///<summary>
+    /// Set GameManager.currentItem as the parent of it in Ogree objects hierarchy.
+    ///</summary>
     private void SelectParent()
     {
         if (!GameManager.gm.currentItem)
@@ -88,6 +94,10 @@ public class ConsoleController
 
     }
 
+    ///<summary>
+    /// Look in all HierarchyNames for _input, set it as GameManager.currentItem.
+    ///</summary>
+    ///<param name="_input">HierarchyName of the object to select</param>
     private void SelectItem(string _input)
     {
         if (string.IsNullOrEmpty(_input))
@@ -108,6 +118,10 @@ public class ConsoleController
         AppendLogLine("Error: Object does not exist", "yellow");
     }
 
+    ///<summary>
+    /// Look in all HierarchyNames for _input, Delete it with GameManager.DeleteItem().
+    ///</summary>
+    ///<param name="_input">HierarchyName of the object to delete</param>
     private void DeleteItem(string _input)
     {
         HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
@@ -126,6 +140,10 @@ public class ConsoleController
 
     #region LoadMethods
 
+    ///<summary>
+    /// Look at the first word of a "load" command and call the corresponding Load method.
+    ///</summary>
+    ///<param name="_input">Command line to parse</param>
     private void ParseLoad(string _input)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
@@ -138,28 +156,32 @@ public class ConsoleController
 
     }
 
+    ///<summary>
+    /// Open given file and call RunCommandString() for each line in it.
+    ///</summary>
+    ///<param name="_input">Path of the file to load</param>
     private void LoadCmdsFile(string _input)
     {
         string[] lines = new string[0];
         try
         {
             using (StreamReader sr = File.OpenText(_input))
-            {
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
-                // string[] lines = File.ReadAllLines(_input);
-            }
             GameManager.gm.SetReloadBtn(_input);
         }
         catch (System.Exception e)
         {
             AppendLogLine(e.Message, "red");
-            // AppendLogLine("Files doesn't exist", "red");
             GameManager.gm.SetReloadBtn(null);
         }
         foreach (string cmd in lines)
             RunCommandString(cmd);
     }
 
+    ///<summary>
+    /// Look at the first word, Open given file and call corresponding ReadFromJson.CreateTemplate method.
+    ///</summary>
+    ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
         string[] str = _input.Split('@');
@@ -169,15 +191,11 @@ public class ConsoleController
             try
             {
                 using (StreamReader sr = File.OpenText(str[1]))
-                {
                     json = sr.ReadToEnd();
-                    // json = File.ReadAllText(str[1]);
-                }
             }
             catch (System.Exception e)
             {
                 AppendLogLine(e.Message, "red");
-                // AppendLogLine("Files doesn't exist", "red");
             }
             if (!string.IsNullOrEmpty(json))
                 rfJson.CreateRackTemplate(json);
@@ -190,6 +208,10 @@ public class ConsoleController
 
     #region CreateMethods
 
+    ///<summary>
+    /// Look at the first word of a "create" command and call the corresponding Create method.
+    ///</summary>
+    ///<param name="_input">Command line to parse</param>
     private void ParseCreate(string _input)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
@@ -213,6 +235,10 @@ public class ConsoleController
 
     }
 
+    ///<summary>
+    /// Parse a "create customer" command and call CustomerGenerator.CreateCustomer().
+    ///</summary>
+    ///<param name="_input">Name of the customer</param>
     private void CreateCustomer(string _input)
     {
         string regex = "^[^.]+$";
@@ -230,6 +256,10 @@ public class ConsoleController
             AppendLogLine("Syntax error", "red");
     }
 
+    ///<summary>
+    /// Parse a "create datacenter" command and call CustomerGenerator.CreateDatacenter().
+    ///</summary>
+    ///<param name="_input">String with datacenter data to parse</param>
     private void CreateDataCenter(string _input)
     {
         string regex = "^[^:]+@(EN|NW|WS|SE)$";
@@ -239,25 +269,12 @@ public class ConsoleController
 
             SDataCenterInfos infos = new SDataCenterInfos();
             infos.orient = data[1];
-            // infos.address = data[2];
-            // infos.zipcode = data[3];
-            // infos.city = data[4];
-            // infos.country = data[5];
-            // infos.description = data[6];
-
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
-                string[] path = data[0].Split('.');
-                infos.name = path[1];
-                GameObject tmp = GameObject.Find(path[0]);
-                if (tmp)
-                {
-                    infos.parent = tmp.transform;
+                IsolateParent(data[0], out infos.parent, out infos.name);
+                if (infos.parent)
                     CustomerGenerator.instance.CreateDatacenter(infos, false);
-                }
-                else
-                    AppendLogLine("Error: customer doesn't exist", "red");
             }
             else
             {
@@ -270,6 +287,10 @@ public class ConsoleController
             AppendLogLine("Syntax error", "red");
     }
 
+    ///<summary>
+    /// Parse a "create building" command and call BuildingGenerator.CreateBuilding().
+    ///</summary>
+    ///<param name="_input">String with building data to parse</param>
     private void CreateBuilding(string _input)
     {
         string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
@@ -280,7 +301,6 @@ public class ConsoleController
             SBuildingInfos infos = new SBuildingInfos();
             infos.pos = ParseVector3(data[1]);
             infos.size = ParseVector3(data[2]);
-
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
@@ -297,9 +317,12 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax error", "red");
-
     }
 
+    ///<summary>
+    /// Parse a "create room" command and call BuildingGenerator.CreateRoom().
+    ///</summary>
+    ///<param name="_input">String with room data to parse</param>
     private void CreateRoom(string _input)
     {
         string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
@@ -311,24 +334,12 @@ public class ConsoleController
             infos.pos = ParseVector3(data[1]);
             infos.size = ParseVector3(data[2]);
             infos.orient = data[3];
-
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
-                string[] path = data[0].Split('.');
-                string parentPath = "";
-                for (int i = 0; i < path.Length - 1; i++)
-                    parentPath += $"{path[i]}.";
-                parentPath = parentPath.Remove(parentPath.Length - 1);
-                GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
-                if (tmp)
-                {
-                    infos.name = path[path.Length - 1];
-                    infos.parent = tmp.transform;
+                IsolateParent(data[0], out infos.parent, out infos.name);
+                if (infos.parent)
                     BuildingGenerator.instance.CreateRoom(infos, false);
-                }
-                else
-                    AppendLogLine("Error: path doesn't exist", "red");
             }
             else
             {
@@ -339,9 +350,12 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax error", "red");
-
     }
 
+    ///<summary>
+    /// Parse a "create rack" command and call ObjectGenerator.CreateRack().
+    ///</summary>
+    ///<param name="_input">String with rack data to parse</param>
     private void CreateRack(string _input)
     {
         string regex = "^[^\\s:]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
@@ -351,7 +365,6 @@ public class ConsoleController
 
             SRackInfos infos = new SRackInfos();
             infos.pos = ParseVector2(data[1]);
-
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = ParseVector3(data[2], false);
@@ -360,9 +373,7 @@ public class ConsoleController
             }
             else // ...else: is template name
                 infos.template = data[2];
-
             infos.orient = data[3];
-
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
@@ -386,6 +397,10 @@ public class ConsoleController
 
     #region SetMethods
 
+    ///<summary>
+    /// Parse a "set zone" command and call corresponding Room.SetZones().
+    ///</summary>
+    ///<param name="_input">String with zones data to parse</param>
     private void SetRoomZones(string _input)
     {
         string regex = "^(\\/[^:]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
@@ -406,7 +421,6 @@ public class ConsoleController
                 }
                 else
                     AppendLogLine("Current object must be a room", "yellow");
-
             }
             else // There is an object path
             {
@@ -431,6 +445,10 @@ public class ConsoleController
 
     #region Utils
 
+    ///<summary>
+    /// Parse a string with format "[x,y]" into a Vector2.
+    ///</summary>
+    ///<param name="_input">String with format "[x,y]"</param>
     private Vector2 ParseVector2(string _input)
     {
         Vector2 res = new Vector2();
@@ -442,14 +460,19 @@ public class ConsoleController
         return res;
     }
 
-    private Vector3 ParseVector3(string _input, bool _YUp = true)
+    ///<summary>
+    /// Parse a string with format "[x,y,z]" into a Vector3. The vector can be given in Y axis or Z axis up.
+    ///</summary>
+    ///<param name="_input">String with format "[x,y,z]"</param>
+    ///<param name="_ZUp">Is the coordinates given are in Z axis up or Y axis up ? </param>
+    private Vector3 ParseVector3(string _input, bool _ZUp = true)
     {
         Vector3 res = new Vector3();
 
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
         res.x = ParseDecFrac(parts[0]);
-        if (_YUp)
+        if (_ZUp)
         {
             res.y = ParseDecFrac(parts[2]);
             res.z = ParseDecFrac(parts[1]);
@@ -462,19 +485,29 @@ public class ConsoleController
         return res;
     }
 
+    ///<summary>
+    /// Parse a string into a float. Can be decimal, a fraction and/or negative.
+    ///</summary>
+    ///<param name="_input">The string which contains the float</param>
     private float ParseDecFrac(string _input)
     {
         if (_input.Contains("/"))
         {
             string[] div = _input.Split('/');
-            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
             return a / b;
         }
         else
-            return float.Parse(_input, NumberStyles.AllowDecimalPoint|NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            return float.Parse(_input, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
     }
 
+    ///<summary>
+    /// Take a hierarchy name and give the parent's transform and the child's name.
+    ///</summary>
+    ///<param name="_input">The hierarchy name to parse in format "aaa.bbb.ccc"</param>
+    ///<param name="parent">The Transform to assign with the found parent's transform</param>
+    ///<param name="name">The name to assign with the found child's name</param>
     private void IsolateParent(string _input, out Transform parent, out string name)
     {
         string[] path = _input.Split('.');
