@@ -230,6 +230,8 @@ public class ConsoleController
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
+        else if (str[0] == "tenant" || str[0] == "tn")
+            CreateTenant(str[1]);
         else
             AppendLogLine("Unknowned command", "red");
 
@@ -389,7 +391,22 @@ public class ConsoleController
                 infos.parent = GameManager.gm.currentItem.transform;
                 ObjectGenerator.instance.CreateRack(infos, true);
             }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
 
+    ///<summary>
+    /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
+    ///</summary>
+    ///<param name="String with tenant data to parse"></param>
+    private void CreateTenant(string _input)
+    {
+        string regex = "^[^\\s:]+@[0-9a-f]{6}$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split('@');
+            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax error", "red");

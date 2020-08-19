@@ -25,6 +25,12 @@ public class Object : MonoBehaviour
 
     public Dictionary<string, string> extras;
 
+
+    ///<summary>
+    /// Check for a _param attribute and assign _value to it.
+    ///</summary>
+    ///<param name="_param">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
     public void UpdateField(string _param, string _value)
     {
         switch (_param)
@@ -41,13 +47,32 @@ public class Object : MonoBehaviour
             case "serial":
                 serial = _value;
                 break;
+            case "tenant":
+                AssignTenant(_value);
+                break;
             default:
-                Debug.LogWarning($"{name}: unknowed field to update.");
+                GameManager.gm.AppendLogLine($"{name}: unknowed field to update.", "yellow");
                 break;
         }
 
         DisplayRackData drd = GetComponent<DisplayRackData>();
         if (drd)
             drd.FillTexts();
+    }
+
+    ///<summary>
+    /// If Tenant exists, assign it to the object. If object is a Rack, call Rack.UpdateColor().
+    ///</summary>
+    ///<param name="_tenantName">The name of the tenant</param>
+    private void AssignTenant(string _tenantName)
+    {
+        if (GameManager.gm.tenants.ContainsKey(_tenantName))
+        {
+            tenant = GameManager.gm.tenants[_tenantName];
+            if (family == EObjFamily.rack)
+                GetComponent<Rack>().UpdateColor();
+        }
+        else
+            GameManager.gm.AppendLogLine($"Tenant \"{_tenantName}\" doesn't exists. Please create it before assign it.", "yellow");
     }
 }

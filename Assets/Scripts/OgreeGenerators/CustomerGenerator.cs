@@ -25,8 +25,7 @@ public class CustomerGenerator : MonoBehaviour
         customer.AddComponent<Customer>();
 
         // Create default tenant
-        Tenant newTenant = new Tenant(_name, "#ffffff");
-        GameManager.gm.DictionaryAddIfUnknowned(GameManager.gm.tenants, _name, newTenant);
+        CreateTenant(_name, "ffffff");
 
         customer.AddComponent<HierarchyName>();
         if (_changeHierarchy)
@@ -50,11 +49,11 @@ public class CustomerGenerator : MonoBehaviour
         newDC.transform.parent = _data.parent;
 
         Datacenter dc = newDC.AddComponent<Datacenter>();
-        dc.address = _data.address;
-        dc.zipcode = _data.zipcode;
-        dc.city = _data.city;
-        dc.country = _data.country;
-        dc.description = _data.description;
+        // dc.address = _data.address;
+        // dc.zipcode = _data.zipcode;
+        // dc.city = _data.city;
+        // dc.country = _data.country;
+        // dc.description = _data.description;
 
         switch (_data.orient)
         {
@@ -79,5 +78,16 @@ public class CustomerGenerator : MonoBehaviour
         newDC.AddComponent<HierarchyName>();
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newDC);
+    }
+
+    ///<summary>
+    /// Create a Tenant and apply _data to it and store it in GameManager.tenants.
+    ///</summary>
+    ///<param name="_name">Name of the tenant</param>
+    ///<param name="_color">Color of the tenant in hexadecimal format (xxxxxx)</param>
+    public void CreateTenant(string _name, string _color)
+    {
+        Tenant newTenant = new Tenant(_name, $"#{_color}");
+        GameManager.gm.DictionaryAddIfUnknowned(GameManager.gm.tenants, _name, newTenant);
     }
 }
