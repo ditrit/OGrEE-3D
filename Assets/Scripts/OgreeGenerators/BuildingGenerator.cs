@@ -14,6 +14,11 @@ public class BuildingGenerator : MonoBehaviour
             Destroy(this);
     }
 
+    ///<summary>
+    /// Instantiate a buildingModel (from GameManager) and apply _data to it.
+    ///</summary>
+    ///<param name="_data">Informations about the building</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Datacenter>() == null)
@@ -21,7 +26,7 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
             return;
         }
-        GameObject newBD = Instantiate(GameManager.gm.tileModel);
+        GameObject newBD = Instantiate(GameManager.gm.buildingModel);
         newBD.name = _data.name;
         newBD.transform.parent = _data.parent;
         newBD.transform.localEulerAngles = Vector3.zero;
@@ -34,7 +39,8 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
         newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
 
-        Building bd = newBD.AddComponent<Building>();
+        Building bd = newBD.GetComponent<Building>();
+        BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10));
         // fill bd infos...
 
         newBD.AddComponent<HierarchyName>();
@@ -42,6 +48,11 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.SetCurrentItem(newBD);
     }
 
+    ///<summary>
+    /// Instantiate a roomModel (from GameManager) and apply _data to it.
+    ///</summary>
+    ///<param name="_data">Informations about the room</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Building>() == null)
@@ -62,7 +73,7 @@ public class BuildingGenerator : MonoBehaviour
         room.technicalZone.localScale = room.usableZone.localScale;
         room.tilesEdges.localScale = room.usableZone.localScale;
         room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
-        room.walls.localScale = new Vector3(room.usableZone.localScale.x * 10, 1, room.usableZone.localScale.z * 10);
+        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, _data.size.y, room.usableZone.localScale.z * 10));
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
@@ -97,9 +108,9 @@ public class BuildingGenerator : MonoBehaviour
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = room.size;
 
-        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, newRoom);
-        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, newRoom.name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
+        Filters.instance.AddIfUnknowned(Filters.instance.rooms, newRoom);
+        Filters.instance.AddIfUnknowned(Filters.instance.roomsList, newRoom.name);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
         newRoom.AddComponent<HierarchyName>();
 
@@ -109,5 +120,28 @@ public class BuildingGenerator : MonoBehaviour
 
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
+    }
+
+    ///<summary>
+    /// Set walls children of _root. They have to be in Front/Back/Right/Left order.
+    ///</summary>
+    ///<param name="_root">The root of walls.</param>
+    ///<param name="_dim">The dimensions of the building/room</param>
+    private void BuildWalls(Transform _root, Vector3 _dim)
+    {
+        Transform wallFront = _root.GetChild(0);
+        Transform wallBack = _root.GetChild(1);
+        Transform wallRight = _root.GetChild(2);
+        Transform wallLeft = _root.GetChild(3);
+
+        wallFront.localScale = new Vector3(_dim.x, _dim.y, 0.01f);
+        wallBack.localScale = new Vector3(_dim.x, _dim.y, 0.01f);
+        wallRight.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
+        wallLeft.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
+        
+        wallFront.localPosition = new Vector3(0, wallFront.localScale.y / 2, _dim.z / 2);
+        wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -_dim.z / 2);
+        wallRight.localPosition = new Vector3(_dim.x / 2, wallFront.localScale.y / 2, 0);
+        wallLeft.localPosition = new Vector3(-_dim.x / 2, wallFront.localScale.y / 2, 0);
     }
 }

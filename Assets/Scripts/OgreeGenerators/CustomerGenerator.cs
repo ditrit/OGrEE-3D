@@ -14,6 +14,11 @@ public class CustomerGenerator : MonoBehaviour
             Destroy(this);
     }
 
+    ///<summary>
+    /// Create a Customer with given name. Also create a default Tenant corresponding to the Customer.
+    ///</summary>
+    ///<param name="_name">The customer's name</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateCustomer(string _name, bool _changeHierarchy)
     {
         GameObject customer = new GameObject(_name);
@@ -28,6 +33,11 @@ public class CustomerGenerator : MonoBehaviour
             GameManager.gm.SetCurrentItem(customer);
     }
 
+    ///<summary>
+    /// Create a Datacenter and apply _data to it.
+    ///</summary>
+    ///<param name="_data">Informations about the datacenter</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateDatacenter(SDataCenterInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Customer>() == null)

@@ -16,15 +16,25 @@ public class Room : Building
     public float floorHeight;
     public EUnit floorUnit;
 
-    [Header("References")]
+    [Header("RO References")]
     public Transform usableZone;
     public Transform reservedZone;
     public Transform technicalZone;
     public Transform tilesEdges;
-    public Transform walls;
     public TextMeshPro nameText;
 
+    private void OnDestroy()
+    {
+        Filters.instance.roomsList.Remove(name);
+        Filters.instance.rooms.Remove(gameObject);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
+    }
 
+    ///<summary>
+    /// Set usable/reserved/technical zones.
+    ///</summary>
+    ///<param name="_resDim">The dimensions of the reserved zone</param>
+    ///<param name="_techDim">The dimensions of the technical zone</param>
     public void SetZones(SMargin _resDim, SMargin _techDim)
     {
         reserved = new SMargin(_resDim);
@@ -45,7 +55,7 @@ public class Room : Building
     }
 
     ///<summary>
-    /// If a root is finded, delete it. Else instantiate one TileText per usable tile in the room. 
+    /// If a root is finded, delete it. Otherwise instantiate one TileText per usable tile in the room. 
     ///</summary>
     public void ToggleTilesName()
     {
@@ -80,6 +90,11 @@ public class Room : Building
         }
     }
 
+    ///<summary>
+    /// Remove tiles from a zone.
+    ///</summary>
+    ///<param name ="_zone">The zone to reduce</param>
+    ///<param name="_dim">The dimensions of the reduction</param>
     private void ReduceZone(Transform _zone, SMargin _dim)
     {
         _zone.localScale -= new Vector3(0, 0, _dim.top) * GameManager.gm.tileSize / 10;

@@ -14,6 +14,11 @@ public class ObjectGenerator : MonoBehaviour
             Destroy(this);
     }
 
+    ///<summary>
+    /// Instantiate a rackModel or a rackPreset (from GameManager) and apply _data to it.
+    ///</summary>
+    ///<param name="_data">Informations about the rack</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateRack(SRackInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Room>() == null)
@@ -27,7 +32,7 @@ public class ObjectGenerator : MonoBehaviour
             newRack = Instantiate(GameManager.gm.rackModel);
         else
         {
-            newRack = Instantiate(GameManager.gm.rackPresets[_data.template]);
+            newRack = Instantiate(GameManager.gm.rackTemplates[_data.template]);
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
@@ -70,12 +75,18 @@ public class ObjectGenerator : MonoBehaviour
             case "left":
                 rack.orient = EObjOrient.Left;
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
-                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
+                newRack.transform.localPosition += new Vector3(-newRack.transform.GetChild(0).localScale.z,
+                                                               newRack.transform.GetChild(0).localScale.y,
+                                                               newRack.transform.GetChild(0).localScale.x) / 2;
+                newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
                 break;
             case "right":
                 rack.orient = EObjOrient.Right;
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
-                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
+                newRack.transform.localPosition += new Vector3(newRack.transform.GetChild(0).localScale.z,
+                                                               newRack.transform.GetChild(0).localScale.y,
+                                                               -newRack.transform.GetChild(0).localScale.x) / 2;
+                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
         }
 
@@ -83,6 +94,7 @@ public class ObjectGenerator : MonoBehaviour
         Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, newRack.name[0].ToString());
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
 
+        newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
         newRack.AddComponent<HierarchyName>();

@@ -11,6 +11,9 @@ public class HierarchyName : MonoBehaviour
         UpdateHierarchyName();
     }
 
+    ///<summary>
+    /// Build fullname with all the parents
+    ///</summary>
     public void UpdateHierarchyName()
     {
         fullname = name;

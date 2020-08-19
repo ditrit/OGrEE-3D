@@ -66,9 +66,9 @@ public class GenerateItRoom : MonoBehaviour
         //     }
         // }
 
-        Filters.instance.AddIfUnknowned(Filters.instance.itRooms, tile);
-        Filters.instance.AddIfUnknowned(Filters.instance.itRoomsList, tile.name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownItRooms, Filters.instance.itRoomsList);
+        Filters.instance.AddIfUnknowned(Filters.instance.rooms, tile);
+        Filters.instance.AddIfUnknowned(Filters.instance.roomsList, tile.name);
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
 
     }

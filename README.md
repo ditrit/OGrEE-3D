@@ -65,6 +65,7 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 - Create a room child of a building  
 *[pos] is a Vector3 [x,y,z] (m,m,m)  
 [size] is a Vector3 [x,y,z] (m,m,m)*  
+Its name will be displayed in its local coordinates system.  
 ```
 +room:[name]@[pos]@[size]@[orientation]  
 +ro:[name]@[pos]@[size]@[orientation]

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class ConsoleView : MonoBehaviour
 {
-    public ConsoleController console {get; private set;} = new ConsoleController();
+    public ConsoleController console { get; private set; } = new ConsoleController();
 
     public GameObject viewContainer;
     public TextMeshProUGUI logTextArea;
@@ -32,20 +32,28 @@ public class ConsoleView : MonoBehaviour
         console.logChanged -= OnLogChanged;
     }
 
-    void OnLogChanged(string[] newLog)
+    ///<summary>
+    /// Called when logChanged event is called: Call UpdateLogStr
+    ///</summary>
+    ///<param name="_newLog">Log to display</param>
+    private void OnLogChanged(string[] _newLog)
     {
-        UpdateLogStr(newLog);
+        UpdateLogStr(_newLog);
     }
 
-    void UpdateLogStr(string[] newLog)
+    ///<summary>
+    /// Display log in logTextArea 
+    ///</summary>
+    ///<param name="_newLog">Log to display</param>
+    private void UpdateLogStr(string[] _newLog)
     {
-        if (newLog == null)
+        if (_newLog == null)
         {
             logTextArea.text = "";
         }
         else
         {
-            logTextArea.text = string.Join("\n", newLog);
+            logTextArea.text = string.Join("\n", _newLog);
         }
     }
 

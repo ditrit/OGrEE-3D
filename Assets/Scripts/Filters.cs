@@ -7,10 +7,10 @@ public class Filters : MonoBehaviour
 {
     public static Filters instance;
 
-    [Header("ItRooms")]
-    public List<string> itRoomsList;
-    public List<GameObject> itRooms;
-    public TMP_Dropdown dropdownItRooms = null;
+    [Header("Rooms")]
+    public List<string> roomsList;
+    public List<GameObject> rooms;
+    public TMP_Dropdown dropdownRooms = null;
 
     [Header("Rack rows")]
     public List<string> rackRowsList;
@@ -23,25 +23,40 @@ public class Filters : MonoBehaviour
             instance = this;
         else
             Destroy(this);
-        
-        DefaultList(itRoomsList, "All");
-        UpdateDropdownFromList(dropdownItRooms, itRoomsList);
+
+        DefaultList(roomsList, "All");
+        UpdateDropdownFromList(dropdownRooms, roomsList);
         DefaultList(rackRowsList, "All");
         UpdateDropdownFromList(dropdownRackRows, rackRowsList);
     }
 
+    ///<summary>
+    /// Add an item to a list if it isn't already in it.
+    ///</summary>
+    ///<param name="_list">The list to check and to complete</param>
+    ///<param name="_item">The item to add</param>
     public void AddIfUnknowned<T>(List<T> _list, T _item)
     {
         if (!_list.Contains(_item))
             _list.Add(_item);
     }
 
+    ///<summary>
+    /// Clear a list and add a value in it.
+    ///</summary>
+    ///<param name="_list">The list to clear</param>
+    ///<param name="_item">The item to add</param>
     public void DefaultList<T>(List<T> _list, T _item)
     {
         _list.Clear();
         _list.Add(_item);
     }
 
+    ///<summary>
+    /// Update a dropdown values from a list.
+    ///</summary>
+    ///<param name="_dropdown">The dropdown to update</param>
+    ///<param name="_lst">The list to put as values of _dropdown</param>
     public void UpdateDropdownFromList(TMP_Dropdown _dropdown, List<string> _lst)
     {
         _dropdown.ClearOptions();
@@ -51,21 +66,29 @@ public class Filters : MonoBehaviour
 
     }
 
-    public void FilterItRooms()
+    ///<summary>
+    /// Called by a GUI dropdown.
+    /// Display the selected room.
+    ///</summary>
+    public void FilterRooms()
     {
-        string txt = dropdownItRooms.GetComponentInChildren<TMP_Text>().text;
+        string txt = dropdownRooms.GetComponentInChildren<TMP_Text>().text;
         if (txt == "All")
         {
-            foreach (GameObject itRoom in itRooms)
-                itRoom.SetActive(true);
+            foreach (GameObject room in rooms)
+                room.SetActive(true);
         }
         else
         {
-            foreach (GameObject itRoom in itRooms)
-                itRoom.SetActive(itRoom.name == txt);
+            foreach (GameObject room in rooms)
+                room.SetActive(room.name == txt);
         }
     }
 
+    ///<summary>
+    /// Called by a GUI dropdown.
+    /// Display the selected rack row.
+    ///</summary>
     public void FilterRackRows()
     {
         string txt = dropdownRackRows.GetComponentInChildren<TMP_Text>().text;

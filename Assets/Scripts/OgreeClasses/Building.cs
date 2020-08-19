@@ -15,5 +15,8 @@ public class Building : MonoBehaviour
     public EUnit sizeUnit;
     public float height;
     public EUnit heightUnit;
-    
+
+    [Header("BD References")]    
+    public Transform walls;
+
 }
