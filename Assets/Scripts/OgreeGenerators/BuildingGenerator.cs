@@ -83,8 +83,8 @@ public class BuildingGenerator : MonoBehaviour
 
         room.size = new Vector2(_data.size.x, _data.size.z);
         room.sizeUnit = EUnit.tile;
-        room.floorHeight = _data.size.y;
-        room.floorUnit = EUnit.cm;
+        room.height = _data.size.y;
+        room.heightUnit = EUnit.m;
         switch (_data.orient)
         {
             case "EN":
