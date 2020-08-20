@@ -129,6 +129,7 @@ public class ConsoleController
     ///<param name="_input">HierarchyName of the object to delete</param>
     private void DeleteItem(string _input)
     {
+        // Try to delete an Ogree object
         HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
         foreach (HierarchyName obj in allObjects)
         {
@@ -137,6 +138,12 @@ public class ConsoleController
                 GameManager.gm.DeleteItem(obj.gameObject);
                 return;
             }
+        }
+        // Try to delete a tenant
+        if (GameManager.gm.tenants.ContainsKey(_input))
+        {
+            GameManager.gm.tenants.Remove(_input);
+            return;
         }
         AppendLogLine("Error: Object does not exist", "yellow");
     }
