@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -297,7 +297,7 @@ public class ConsoleController
     ///<param name="_input">String with building data to parse</param>
     private void CreateBuilding(string _input)
     {
-        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        string regex = "^[^@]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
