@@ -31,15 +31,18 @@ public class Object : MonoBehaviour
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public void UpdateField(string _param, string _value)
+    public void SetAttribute(string _param, string _value)
     {
         switch (_param)
         {
-            case "comment":
+            case "description":
                 description = _value;
                 break;
             case "vendor":
                 vendor = _value;
+                break;
+            case "type":
+                type = _value;
                 break;
             case "model":
                 model = _value;
@@ -51,7 +54,7 @@ public class Object : MonoBehaviour
                 AssignTenant(_value);
                 break;
             default:
-                GameManager.gm.AppendLogLine($"{name}: unknowed field to update.", "yellow");
+                GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
 

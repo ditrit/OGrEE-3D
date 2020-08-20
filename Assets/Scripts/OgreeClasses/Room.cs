@@ -82,7 +82,7 @@ public class Room : Building
                 {
                     GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
                     tileText.transform.SetParent(root.transform);
-                    tileText.transform.localPosition = new Vector3(i, +  0, j) * GameManager.gm.tileSize;
+                    tileText.transform.localPosition = new Vector3(i, 0, j) * GameManager.gm.tileSize;
                     tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
                     tileText.GetComponent<TextMeshPro>().text = $"{i + 1}/{j + 1}";
                 }
@@ -108,6 +108,28 @@ public class Room : Building
 
         _zone.localScale -= new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 10;
         _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 2;
+    }
+
+    public override void SetAttribute(string _param, string _value)
+    {
+        switch (_param)
+        {
+            case "description":
+                description = _value;
+                break;
+            case "nbfloors":
+                nbFloors = _value;
+                break;
+            case "tenant":
+                if (GameManager.gm.tenants.ContainsKey(_value))
+                    tenant = GameManager.gm.tenants[_value];
+                else
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");
+                break;
+            default:
+                GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");
+                break;
+        }
     }
 
 }

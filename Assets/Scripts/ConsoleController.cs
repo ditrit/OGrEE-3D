@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -72,6 +73,8 @@ public class ConsoleController
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             DeleteItem(_input.Substring(1));
+        else if (_input.Contains(".") && _input.Contains("="))
+            SetAttribute(_input);
         else
             AppendLogLine("Unknowned command", "red");
     }
@@ -454,6 +457,50 @@ public class ConsoleController
                 }
                 else
                     AppendLogLine("Error: path doesn't exist", "red");
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "set attribute" command and call corresponding SetAttribute() method according to target class
+    ///</summary>
+    ///<param name="input">String with attribute to modify data</param>
+    private void SetAttribute(string _input)
+    {
+        string regex = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split('=');
+
+            // Can be a tenant or a Customer...
+            if (data[0].Count(f => (f == '.')) == 1)
+            {
+                string[] attr = data[0].Split('.');
+                if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
+                {
+                    GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
+                    return;
+                }
+            }
+            // ...is an OgreeObject
+            Transform obj;
+            string attrName;
+            IsolateParent(data[0], out obj, out attrName);
+            if (obj)
+            {
+                obj.GetType();
+                if (obj.GetComponent<Customer>())
+                    obj.GetComponent<Customer>().SetAttribute(attrName, data[1]);
+                else if (obj.GetComponent<Datacenter>())
+                    obj.GetComponent<Datacenter>().SetAttribute(attrName, data[1]);
+                else if (obj.GetComponent<Building>())
+                    obj.GetComponent<Building>().SetAttribute(attrName, data[1]);
+                else if (obj.GetComponent<Object>())
+                    obj.GetComponent<Object>().SetAttribute(attrName, data[1]);
+                else
+                    AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
         }
         else
