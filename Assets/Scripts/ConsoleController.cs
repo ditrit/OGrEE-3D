@@ -412,7 +412,7 @@ public class ConsoleController
     ///<param name="String with tenant data to parse"></param>
     private void CreateTenant(string _input)
     {
-        string regex = "^[^\\s:]+@[0-9a-f]{6}$";
+        string regex = "^[^\\s:]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
