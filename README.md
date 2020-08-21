@@ -9,7 +9,7 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ## Build in CLI
 
 ### Glossary  
-[name] can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
+[name] is case sensitive. It can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
 [orientation] is a definition of an orthonormal with cardinal points (+x,+y): EN, NW, WS, SE  
 
 ### Commands  

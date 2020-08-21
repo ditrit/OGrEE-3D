@@ -49,12 +49,6 @@ public class CustomerGenerator : MonoBehaviour
         newDC.transform.parent = _data.parent;
 
         Datacenter dc = newDC.AddComponent<Datacenter>();
-        // dc.address = _data.address;
-        // dc.zipcode = _data.zipcode;
-        // dc.city = _data.city;
-        // dc.country = _data.country;
-        // dc.description = _data.description;
-
         switch (_data.orient)
         {
             case "EN":
