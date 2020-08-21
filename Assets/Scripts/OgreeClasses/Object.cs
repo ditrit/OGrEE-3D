@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Object : MonoBehaviour
@@ -16,7 +18,7 @@ public class Object : MonoBehaviour
     public int height;
     public EUnit heightUnit;
     public EObjOrient orient;
-    
+
     public Tenant tenant;
     public string vendor;
     public string type;
@@ -53,6 +55,9 @@ public class Object : MonoBehaviour
             case "tenant":
                 AssignTenant(_value);
                 break;
+            case "alpha":
+                UpdateAlpha(_value);
+                break;
             default:
                 GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
@@ -77,5 +82,23 @@ public class Object : MonoBehaviour
         }
         else
             GameManager.gm.AppendLogLine($"Tenant \"{_tenantName}\" doesn't exists. Please create it before assign it.", "yellow");
+    }
+
+    ///<summary>
+    /// Update object's alpha according to _input, from 0 to 100.
+    ///</summary>
+    ///<param name="_input">Alpha wanted for the rack</param>
+    public void UpdateAlpha(string _input)
+    {
+        string regex = "^[0-9]+$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            float a = float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            a = Mathf.Clamp(a, 0, 100);
+            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
+        }
+        else
+            GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
     }
 }

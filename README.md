@@ -101,7 +101,7 @@ Its name will be displayed in its local coordinates system.
 *[datacenter].[attribute] can be comment / address / zipcode / city / country / gps(format:[x,y,z])  
 [building].[attribute] can be description / nbfloors  
 [room].[attribute] can be description / nbfloors / tenant  
-[object].[attribute] can be description / vendor / type / model / serial / tenant  
+[object].[attribute] can be description / vendor / type / model / serial / tenant / alpha 
 [tenant].[attribute] can be mainContact / mainPhone / mainEmail*  
 ```  
 [full name].[attribute]=[value]

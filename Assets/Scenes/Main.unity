@@ -3208,7 +3208,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2071767877}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.06307443
+  m_Size: 0.063074425
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3389,6 +3389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   description: Templates placeholder
+  nbFloors: 
   posXY: {x: 0, y: 0}
   posXYUnit: 0
   posZ: 0
@@ -4504,6 +4505,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentItemText: {fileID: 1510264671}
   reloadBtn: {fileID: 1890827699}
+  defaultMat: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
+  defaultAlphaMat: {fileID: 2100000, guid: 99e4ed4ac2ef8f149a015da16573b4fc, type: 2}
   tileSize: 0.6
   uSize: 0.045
   ouSize: 0.048
