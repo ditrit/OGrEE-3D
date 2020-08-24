@@ -497,15 +497,8 @@ public class ConsoleController
             IsolateParent(data[0], out obj, out attrName);
             if (obj)
             {
-                obj.GetType();
-                if (obj.GetComponent<Customer>())
-                    obj.GetComponent<Customer>().SetAttribute(attrName, data[1]);
-                else if (obj.GetComponent<Datacenter>())
-                    obj.GetComponent<Datacenter>().SetAttribute(attrName, data[1]);
-                else if (obj.GetComponent<Building>())
-                    obj.GetComponent<Building>().SetAttribute(attrName, data[1]);
-                else if (obj.GetComponent<Object>())
-                    obj.GetComponent<Object>().SetAttribute(attrName, data[1]);
+                if (obj.GetComponent<IAttributeModif>() != null)
+                    obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }

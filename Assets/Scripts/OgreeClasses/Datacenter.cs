@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Datacenter : MonoBehaviour
+public class Datacenter : MonoBehaviour, IAttributeModif
 {
     public string comment;
     public string address;

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : MonoBehaviour
+public class Object : MonoBehaviour, IAttributeModif
 {
     public string description;
     public EObjFamily family;
