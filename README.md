@@ -107,6 +107,13 @@ Its name will be displayed in its local coordinates system.
 [full name].[attribute]=[value]
 ```  
 
+- Wireframe mode  
+```
+wireframe:on
+wireframe:off
+```  
+
+
 ### Examples
 ```
 .cmds:C:\Users\Cedrok\Desktop\testCmds.txt

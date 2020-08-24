@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
+    public Material defaultMat;
+    public Material wireframeMat;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
