@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
-    
+
     #endregion
 
     ///<summary>
@@ -147,6 +147,27 @@ public class GameManager : MonoBehaviour
         else
             AppendLogLine("Current item must be a room", "red");
     }
+
+    ///<summary>
+    /// Called by GUI checkbox.
+    /// Change material of all Racks.
+    ///</summary>
+    ///<param name="_value">The checkbox value</param>
+    public void ToggleRacksMaterials(bool _value)
+    {
+        Rack[] racks = GameObject.FindObjectsOfType<Rack>();
+        foreach (Rack rack in racks)
+        {
+            Renderer r = rack.transform.GetChild(0).GetComponent<Renderer>();
+            Color color = r.material.color;
+            if (_value)
+                r.material = GameManager.gm.wireframeMat;
+            else
+                r.material = GameManager.gm.defaultMat;
+            r.material.color = color;
+        }
+    }
+
 
     ///<summary>
     /// Add a key/value pair in a dictionary only of the key doesn't exists.

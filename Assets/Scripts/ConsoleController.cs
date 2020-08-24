@@ -75,8 +75,6 @@ public class ConsoleController
             DeleteItem(_input.Substring(1));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
-        else if (_input.StartsWith("wireframe"))
-            ToggleRacksMaterials(_input);
         else
             AppendLogLine("Unknowned command", "red");
     }
@@ -510,29 +508,6 @@ public class ConsoleController
                     obj.GetComponent<Object>().SetAttribute(attrName, data[1]);
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
-            }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
-
-    private void ToggleRacksMaterials(string _input)
-    {
-        string regex = "^wireframe:(on|off)$";
-        if (Regex.IsMatch(_input, regex))
-        {
-            _input = _input.Substring(_input.IndexOf(':') + 1);
-            Rack[] racks = GameObject.FindObjectsOfType<Rack>();
-            foreach (Rack rack in racks)
-            {
-                Renderer r = rack.transform.GetChild(0).GetComponent<Renderer>();
-                Color color = r.material.color;
-                if (_input == "on")
-                    r.material = GameManager.gm.wireframeMat;
-                else
-                    r.material = GameManager.gm.defaultMat;
-                r.material.color = color;
             }
         }
         else
