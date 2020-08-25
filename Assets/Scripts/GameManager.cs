@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
+    [SerializeField] private Camera currentCam = null;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -51,6 +52,17 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+            if (hit.collider && hit.collider.tag == "Selectable")
+            {
+                // Debug.Log(hit.collider.transform.parent.name);
+                SetCurrentItem(hit.collider.transform.parent.gameObject);
+            }
+        }
     }
 
     #endregion

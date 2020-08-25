@@ -36,6 +36,7 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
+            Destroy(newRack.GetComponent<HierarchyName>());
         }
 
         newRack.name = _data.name;
