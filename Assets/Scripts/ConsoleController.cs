@@ -502,6 +502,8 @@ public class ConsoleController
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
+            else
+                AppendLogLine($"{obj.name} doesn't exist.", "yellow");
         }
         else
             AppendLogLine("Syntax error", "red");

@@ -69,6 +69,9 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
+        // By default, tenant is customer's one
+        dc.tenant = GameManager.gm.tenants[_data.parent.name];
+
         newDC.AddComponent<HierarchyName>();
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newDC);

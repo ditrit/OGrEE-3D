@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Tenant
+public class Tenant : IAttributeModif
 {
     public string name;
     public string color; // or public Color color;

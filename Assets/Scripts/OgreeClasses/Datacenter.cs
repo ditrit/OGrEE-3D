@@ -13,6 +13,7 @@ public class Datacenter : MonoBehaviour, IAttributeModif
     public string gpsX;
     public string gpsY;
     public string gpsZ;
+    public Tenant tenant;
 
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
@@ -44,6 +45,12 @@ public class Datacenter : MonoBehaviour, IAttributeModif
                 gpsX = coords[0];
                 gpsY = coords[1];
                 gpsZ = coords[2];
+                break;
+            case "tenant":
+                if (GameManager.gm.tenants.ContainsKey(_value))
+                    tenant = GameManager.gm.tenants[_value];
+                else
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Datacenter] {name}: unknowed attribute to update.", "yellow");

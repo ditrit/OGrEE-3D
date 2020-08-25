@@ -118,9 +118,8 @@ public class BuildingGenerator : MonoBehaviour
 
         newRoom.AddComponent<HierarchyName>();
 
-        int index = _data.parent.GetComponent<HierarchyName>().fullname.IndexOf(".");
-        string rootName = _data.parent.GetComponent<HierarchyName>().fullname.Substring(0, index);
-        room.tenant = GameManager.gm.tenants[rootName];
+        // Get tenant from related Datacenter
+        room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
 
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
