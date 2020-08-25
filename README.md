@@ -9,7 +9,7 @@ For DitRit members, demo builds are available in Nextcloud (Windows only).
 ## Build in CLI
 
 ### Glossary  
-[name] can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
+[name] is case sensitive. It can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
 [orientation] is a definition of an orthonormal with cardinal points (+x,+y): EN, NW, WS, SE  
 
 ### Commands  
@@ -89,7 +89,24 @@ Its name will be displayed in its local coordinates system.
 +rack:[name]@[pos]@[template]@[orientation]  
 +rk:[name]@[pos]@[size]@[orientation]  
 +rk:[name]@[pos]@[template]@[orientation]
+```  
+
+- Create a tenant  
+*[color] is a hexadecimal code (ffffff)*  
 ```
++tenant:[name]@[color]
+```  
+
+- Modify an object's attribute  
+*[datacenter].[attribute] can be comment / address / zipcode / city / country / gps(format:[x,y,z])  
+[building].[attribute] can be description / nbfloors  
+[room].[attribute] can be description / nbfloors / tenant  
+[object].[attribute] can be description / vendor / type / model / serial / tenant / alpha 
+[tenant].[attribute] can be mainContact / mainPhone / mainEmail*  
+```  
+[full name].[attribute]=[value]
+```  
+
 
 ### Examples
 ```

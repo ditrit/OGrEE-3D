@@ -45,12 +45,13 @@ public class ObjectGenerator : MonoBehaviour
             newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
 
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
+        Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
         newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
         newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.description = _data.comment;
+        // rack.description = _data.comment;
         rack.posXY = _data.pos;
         rack.posXYUnit = EUnit.tile;
         rack.size = new Vector2(_data.size.x, _data.size.y);
@@ -62,30 +63,24 @@ public class ObjectGenerator : MonoBehaviour
             case "front":
                 rack.orient = EObjOrient.Frontward;
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
-                newRack.transform.localPosition += newRack.transform.GetChild(0).localScale / 2;
+                newRack.transform.localPosition += boxOrigin;
                 break;
             case "rear":
                 rack.orient = EObjOrient.Backward;
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
-                newRack.transform.localPosition += new Vector3(newRack.transform.GetChild(0).localScale.x,
-                                                               newRack.transform.GetChild(0).localScale.y,
-                                                               -newRack.transform.GetChild(0).localScale.z) / 2;
+                newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
             case "left":
                 rack.orient = EObjOrient.Left;
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
-                newRack.transform.localPosition += new Vector3(-newRack.transform.GetChild(0).localScale.z,
-                                                               newRack.transform.GetChild(0).localScale.y,
-                                                               newRack.transform.GetChild(0).localScale.x) / 2;
+                newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
                 break;
             case "right":
                 rack.orient = EObjOrient.Right;
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
-                newRack.transform.localPosition += new Vector3(newRack.transform.GetChild(0).localScale.z,
-                                                               newRack.transform.GetChild(0).localScale.y,
-                                                               -newRack.transform.GetChild(0).localScale.x) / 2;
+                newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
         }
@@ -108,42 +103,37 @@ public class ObjectGenerator : MonoBehaviour
 
     public void CreateChassis(SDeviceInfos _data)
     {
-        GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
-        newDevice.name = _data.name;
-        Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * GameManager.gm.uSize, _data.size.y / 100);
-        newDevice.transform.localScale = size;
-        Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
-        newDevice.transform.localPosition = origin;
-        Vector3 pos = new Vector3(_data.pos.x, _data.pos.z * 0.0445f, _data.pos.y);
-        newDevice.transform.localPosition += pos;
+        // GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
+        // newDevice.name = _data.name;
+        // Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * GameManager.gm.uSize, _data.size.y / 100);
+        // newDevice.transform.localScale = size;
+        // Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
+        // newDevice.transform.localPosition = origin;
+        // Vector3 pos = new Vector3(_data.pos.x, _data.pos.z * 0.0445f, _data.pos.y);
+        // newDevice.transform.localPosition += pos;
 
-        Object obj = newDevice.GetComponent<Object>();
-        obj.family = EObjFamily.chassis;
-        switch (_data.orient)
-        {
-            case "front":
-                obj.orient = EObjOrient.Frontward;
-                newDevice.transform.localEulerAngles = new Vector3(0, 180, 0);
-                break;
-            case "rear":
-                obj.orient = EObjOrient.Backward;
-                newDevice.transform.localEulerAngles = new Vector3(0, 0, 0);
-                break;
-            case "left":
-                obj.orient = EObjOrient.Left;
-                newDevice.transform.localEulerAngles = new Vector3(0, 90, 0);
-                break;
-            case "right":
-                obj.orient = EObjOrient.Right;
-                newDevice.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
-        }
-        obj.model = _data.model;
-        obj.serial = _data.serial;
-        obj.vendor = _data.vendor;
-        obj.description = _data.comment;
-
-        newDevice.AddComponent<HierarchyName>();
+        // Object obj = newDevice.GetComponent<Object>();
+        // obj.family = EObjFamily.chassis;
+        // switch (_data.orient)
+        // {
+        //     case "front":
+        //         obj.orient = EObjOrient.Frontward;
+        //         newDevice.transform.localEulerAngles = new Vector3(0, 180, 0);
+        //         break;
+        //     case "rear":
+        //         obj.orient = EObjOrient.Backward;
+        //         newDevice.transform.localEulerAngles = new Vector3(0, 0, 0);
+        //         break;
+        //     case "left":
+        //         obj.orient = EObjOrient.Left;
+        //         newDevice.transform.localEulerAngles = new Vector3(0, 90, 0);
+        //         break;
+        //     case "right":
+        //         obj.orient = EObjOrient.Right;
+        //         newDevice.transform.localEulerAngles = new Vector3(0, -90, 0);
+        //         break;
+        // }
+        // newDevice.AddComponent<HierarchyName>();
     }
 
     public void CreateAirconditionner()

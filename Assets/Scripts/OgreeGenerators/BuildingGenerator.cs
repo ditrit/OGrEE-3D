@@ -77,34 +77,38 @@ public class BuildingGenerator : MonoBehaviour
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-        newRoom.transform.localPosition = new Vector3(bdOrigin.x, 0, bdOrigin.z);
-        newRoom.transform.localPosition += new Vector3(roOrigin.x, 0, roOrigin.z);
+        newRoom.transform.position = _data.parent.position;
+        newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += _data.pos;
 
         room.size = new Vector2(_data.size.x, _data.size.z);
         room.sizeUnit = EUnit.tile;
-        room.floorHeight = _data.size.y;
-        room.floorUnit = EUnit.cm;
+        room.height = _data.size.y;
+        room.heightUnit = EUnit.m;
         switch (_data.orient)
         {
             case "EN":
                 room.orientation = EOrientation.N;
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+                newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
                 room.orientation = EOrientation.S;
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+                newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
                 room.orientation = EOrientation.W;
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
                 room.orientation = EOrientation.E;
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;
         }
-        
+
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = room.size;
 
@@ -114,9 +118,8 @@ public class BuildingGenerator : MonoBehaviour
 
         newRoom.AddComponent<HierarchyName>();
 
-        int index = _data.parent.GetComponent<HierarchyName>().fullname.IndexOf(".");
-        string rootName = _data.parent.GetComponent<HierarchyName>().fullname.Substring(0, index);
-        room.tenant = GameManager.gm.tenants[rootName];
+        // Get tenant from related Datacenter
+        room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
 
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
@@ -138,7 +141,7 @@ public class BuildingGenerator : MonoBehaviour
         wallBack.localScale = new Vector3(_dim.x, _dim.y, 0.01f);
         wallRight.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
         wallLeft.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
-        
+
         wallFront.localPosition = new Vector3(0, wallFront.localScale.y / 2, _dim.z / 2);
         wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -_dim.z / 2);
         wallRight.localPosition = new Vector3(_dim.x / 2, wallFront.localScale.y / 2, 0);

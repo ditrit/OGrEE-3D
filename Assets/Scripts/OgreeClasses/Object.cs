@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : MonoBehaviour
+public class Object : MonoBehaviour, IAttributeModif
 {
     public string description;
     public EObjFamily family;
@@ -16,7 +18,7 @@ public class Object : MonoBehaviour
     public int height;
     public EUnit heightUnit;
     public EObjOrient orient;
-    
+
     public Tenant tenant;
     public string vendor;
     public string type;
@@ -25,15 +27,24 @@ public class Object : MonoBehaviour
 
     public Dictionary<string, string> extras;
 
-    public void UpdateField(string _param, string _value)
+
+    ///<summary>
+    /// Check for a _param attribute and assign _value to it.
+    ///</summary>
+    ///<param name="_param">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
+    public void SetAttribute(string _param, string _value)
     {
         switch (_param)
         {
-            case "comment":
+            case "description":
                 description = _value;
                 break;
             case "vendor":
                 vendor = _value;
+                break;
+            case "type":
+                type = _value;
                 break;
             case "model":
                 model = _value;
@@ -41,13 +52,53 @@ public class Object : MonoBehaviour
             case "serial":
                 serial = _value;
                 break;
+            case "tenant":
+                AssignTenant(_value);
+                break;
+            case "alpha":
+                UpdateAlpha(_value);
+                break;
             default:
-                Debug.LogWarning($"{name}: unknowed field to update.");
+                GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
 
         DisplayRackData drd = GetComponent<DisplayRackData>();
         if (drd)
             drd.FillTexts();
+    }
+
+    ///<summary>
+    /// If Tenant exists, assign it to the object. If object is a Rack, call Rack.UpdateColor().
+    ///</summary>
+    ///<param name="_tenantName">The name of the tenant</param>
+    private void AssignTenant(string _tenantName)
+    {
+        if (GameManager.gm.tenants.ContainsKey(_tenantName))
+        {
+            tenant = GameManager.gm.tenants[_tenantName];
+            if (family == EObjFamily.rack)
+                GetComponent<Rack>().UpdateColor();
+        }
+        else
+            GameManager.gm.AppendLogLine($"Tenant \"{_tenantName}\" doesn't exists. Please create it before assign it.", "yellow");
+    }
+
+    ///<summary>
+    /// Update object's alpha according to _input, from 0 to 100.
+    ///</summary>
+    ///<param name="_input">Alpha wanted for the rack</param>
+    public void UpdateAlpha(string _input)
+    {
+        string regex = "^[0-9]+$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            float a = float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            a = Mathf.Clamp(a, 0, 100);
+            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
+        }
+        else
+            GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
     }
 }

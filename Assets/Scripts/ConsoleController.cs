@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -72,6 +73,8 @@ public class ConsoleController
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             DeleteItem(_input.Substring(1));
+        else if (_input.Contains(".") && _input.Contains("="))
+            SetAttribute(_input);
         else
             AppendLogLine("Unknowned command", "red");
     }
@@ -126,6 +129,7 @@ public class ConsoleController
     ///<param name="_input">HierarchyName of the object to delete</param>
     private void DeleteItem(string _input)
     {
+        // Try to delete an Ogree object
         HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
         foreach (HierarchyName obj in allObjects)
         {
@@ -134,6 +138,12 @@ public class ConsoleController
                 GameManager.gm.DeleteItem(obj.gameObject);
                 return;
             }
+        }
+        // Try to delete a tenant
+        if (GameManager.gm.tenants.ContainsKey(_input))
+        {
+            GameManager.gm.tenants.Remove(_input);
+            return;
         }
         AppendLogLine("Error: Object does not exist", "yellow");
     }
@@ -230,6 +240,8 @@ public class ConsoleController
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
+        else if (str[0] == "tenant" || str[0] == "tn")
+            CreateTenant(str[1]);
         else
             AppendLogLine("Unknowned command", "red");
 
@@ -295,7 +307,7 @@ public class ConsoleController
     ///<param name="_input">String with building data to parse</param>
     private void CreateBuilding(string _input)
     {
-        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        string regex = "^[^@]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split('@');
@@ -389,7 +401,22 @@ public class ConsoleController
                 infos.parent = GameManager.gm.currentItem.transform;
                 ObjectGenerator.instance.CreateRack(infos, true);
             }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
 
+    ///<summary>
+    /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
+    ///</summary>
+    ///<param name="String with tenant data to parse"></param>
+    private void CreateTenant(string _input)
+    {
+        string regex = "^[^\\s:]+@[0-9a-fA-F]{6}$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split('@');
+            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -438,6 +465,45 @@ public class ConsoleController
                 else
                     AppendLogLine("Error: path doesn't exist", "red");
             }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "set attribute" command and call corresponding SetAttribute() method according to target class
+    ///</summary>
+    ///<param name="input">String with attribute to modify data</param>
+    private void SetAttribute(string _input)
+    {
+        string regex = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split('=');
+
+            // Can be a tenant or a Customer...
+            if (data[0].Count(f => (f == '.')) == 1)
+            {
+                string[] attr = data[0].Split('.');
+                if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
+                {
+                    GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
+                    return;
+                }
+            }
+            // ...is an OgreeObject
+            Transform obj;
+            string attrName;
+            IsolateParent(data[0], out obj, out attrName);
+            if (obj)
+            {
+                if (obj.GetComponent<IAttributeModif>() != null)
+                    obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
+                else
+                    AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+            }
+            else
+                AppendLogLine($"{obj.name} doesn't exist.", "yellow");
         }
         else
             AppendLogLine("Syntax error", "red");
