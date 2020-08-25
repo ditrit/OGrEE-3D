@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
+    [SerializeField] private GUIObjectInfos objInfos = null;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -97,6 +98,7 @@ public class GameManager : MonoBehaviour
             currentItemText.text = currentItem.GetComponent<HierarchyName>().fullname;
         else
             currentItemText.text = "Ogree3D";
+        objInfos.UpdateFields(currentItem);
     }
 
     ///<summary>
