@@ -20,6 +20,11 @@ public class Building : MonoBehaviour, IAttributeModif
     [Header("BD References")]
     public Transform walls;
 
+    protected virtual void OnDestroy()
+    {
+        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>

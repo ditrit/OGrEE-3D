@@ -9,8 +9,9 @@ public class Rack : Object
         family = EObjFamily.rack;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Filters.instance.rackRowsList.Remove(name[0].ToString());
         Filters.instance.racks.Remove(gameObject);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);

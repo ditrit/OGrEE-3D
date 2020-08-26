@@ -148,10 +148,22 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ReloadFile()
     {
+        Debug.LogWarning("GM.ReloadFile()...");
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
-        allItems.Clear();
+        tenants.Clear();
+        // allItems.Clear();
+        // consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+        StartCoroutine(LoadFile());
+    }
+
+    ///<summary>
+    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file
+    ///</summary>
+    private IEnumerator LoadFile()
+    {
+        yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
 

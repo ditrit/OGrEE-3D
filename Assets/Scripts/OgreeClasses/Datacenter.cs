@@ -15,6 +15,11 @@ public class Datacenter : MonoBehaviour, IAttributeModif
     public string gpsZ;
     public Tenant tenant;
 
+    private void OnDestroy()
+    {
+        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>

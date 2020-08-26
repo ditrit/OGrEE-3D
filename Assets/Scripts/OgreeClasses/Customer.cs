@@ -6,6 +6,11 @@ public class Customer : MonoBehaviour
 {
     public string contact;
 
+    private void OnDestroy()
+    {
+        GameManager.gm.allItems.Remove(name);
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>

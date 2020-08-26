@@ -23,11 +23,13 @@ public class Room : Building
     public Transform tilesEdges;
     public TextMeshPro nameText;
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         Filters.instance.roomsList.Remove(name);
         Filters.instance.rooms.Remove(gameObject);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
+        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
 
     ///<summary>
