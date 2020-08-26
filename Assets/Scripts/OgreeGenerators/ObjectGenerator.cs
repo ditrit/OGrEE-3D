@@ -26,6 +26,12 @@ public class ObjectGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine("Rack must be child of a Room", "yellow");
             return;
         }
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return;
+        }
 
         GameObject newRack;
         if (string.IsNullOrEmpty(_data.template))
@@ -98,6 +104,7 @@ public class ObjectGenerator : MonoBehaviour
         rack.tenant = _data.parent.GetComponent<Room>().tenant;
         rack.UpdateColor();
 
+        GameManager.gm.allItems.Add(hierarchyName, newRack);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRack);
     }

@@ -21,6 +21,12 @@ public class CustomerGenerator : MonoBehaviour
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateCustomer(string _name, bool _changeHierarchy)
     {
+        if (GameManager.gm.allItems.Contains(_name))
+        {
+            GameManager.gm.AppendLogLine($"{_name} already exists.", "yellow");
+            return;
+        }
+
         GameObject customer = new GameObject(_name);
         customer.AddComponent<Customer>();
 
@@ -28,6 +34,8 @@ public class CustomerGenerator : MonoBehaviour
         CreateTenant(_name, "ffffff");
 
         customer.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_name, customer);
+
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(customer);
     }
@@ -42,6 +50,12 @@ public class CustomerGenerator : MonoBehaviour
         if (_data.parent.GetComponent<Customer>() == null)
         {
             GameManager.gm.AppendLogLine("Datacenter must be child of a customer", "yellow");
+            return;
+        }
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return;
         }
 
@@ -73,6 +87,8 @@ public class CustomerGenerator : MonoBehaviour
         dc.tenant = GameManager.gm.tenants[_data.parent.name];
 
         newDC.AddComponent<HierarchyName>();
+
+        GameManager.gm.allItems.Add(hierarchyName, newDC);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newDC);
     }

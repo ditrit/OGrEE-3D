@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public GameObject currentItem /*{ get; private set; }*/ = null;
+    public Hashtable allItems = new Hashtable();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
@@ -75,18 +76,21 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_path">Which hierarchy name to look for</param>
     ///<returns>The GameObject looked for</returns>
-    public GameObject FindAbsPath(string _path)
+    public GameObject FindByAbsPath(string _path)
     {
-        HierarchyName[] objs = FindObjectsOfType<HierarchyName>();
+        if (allItems.Contains(_path))
+            return (GameObject)allItems[_path];
+        else
+            return null;
+        // HierarchyName[] objs = FindObjectsOfType<HierarchyName>();
         // Debug.Log($"Looking for {_path} in {objs.Length} objects");
-        for (int i = 0; i < objs.Length; i++)
-        {
+        // for (int i = 0; i < objs.Length; i++)
+        // {
             // Debug.Log($"'{objs[i].fullname}' vs '{_path}'");
-            if (objs[i].fullname == _path)
-                return objs[i].gameObject;
-        }
-
-        return null;
+        //     if (objs[i].fullname == _path)
+        //         return objs[i].gameObject;
+        // }
+        // return null;
     }
 
     ///<summary>
@@ -114,6 +118,7 @@ public class GameManager : MonoBehaviour
         SetCurrentItem(null);
 
         // Should count type of deleted objects
+        allItems.Remove(_toDel.GetComponent<HierarchyName>().fullname);
         Destroy(_toDel);
     }
 
@@ -146,6 +151,7 @@ public class GameManager : MonoBehaviour
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
+        allItems.Clear();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
 

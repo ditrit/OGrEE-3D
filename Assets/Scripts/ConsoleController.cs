@@ -112,16 +112,19 @@ public class ConsoleController
             return;
         }
 
-        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-        foreach (HierarchyName obj in allObjects)
-        {
-            if (obj.fullname == _input)
-            {
-                GameManager.gm.SetCurrentItem(obj.gameObject);
-                return;
-            }
-        }
-        AppendLogLine("Error: Object does not exist", "yellow");
+        if (GameManager.gm.allItems.Contains(_input))
+            GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
+        else
+            // HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
+            // foreach (HierarchyName obj in allObjects)
+            // {
+            //     if (obj.fullname == _hierarchyName)
+            //     {
+            //         GameManager.gm.SetCurrentItem(obj.gameObject);
+            //         return;
+            //     }
+            // }
+            AppendLogLine("Error: Object does not exist", "yellow");
     }
 
     ///<summary>
@@ -131,22 +134,25 @@ public class ConsoleController
     private void DeleteItem(string _input)
     {
         // Try to delete an Ogree object
-        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-        foreach (HierarchyName obj in allObjects)
-        {
-            if (obj.fullname == _input)
-            {
-                GameManager.gm.DeleteItem(obj.gameObject);
-                return;
-            }
-        }
+        if (GameManager.gm.allItems.Contains(_input))
+            GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
+        // HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
+        // foreach (HierarchyName obj in allObjects)
+        // {
+        //     if (obj.fullname == _input)
+        //     {
+        //         GameManager.gm.DeleteItem(obj.gameObject);
+        //         return;
+        //     }
+        // }
         // Try to delete a tenant
-        if (GameManager.gm.tenants.ContainsKey(_input))
-        {
+        else if (GameManager.gm.tenants.ContainsKey(_input))
+            // {
             GameManager.gm.tenants.Remove(_input);
-            return;
-        }
-        AppendLogLine("Error: Object does not exist", "yellow");
+        // return;
+        // }
+        else
+            AppendLogLine("Error: Object does not exist", "yellow");
     }
 
     #endregion
@@ -458,7 +464,7 @@ public class ConsoleController
             }
             else // There is an object path
             {
-                GameObject room = GameManager.gm.FindAbsPath(data[0].Substring(1));
+                GameObject room = GameManager.gm.FindByAbsPath(data[0].Substring(1));
                 if (room)
                 {
                     SMargin resDim = new SMargin(float.Parse(data[1]), float.Parse(data[2]),
@@ -588,7 +594,7 @@ public class ConsoleController
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
-        GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
+        GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {
             name = path[path.Length - 1];
