@@ -57,7 +57,8 @@ public class ConsoleController
     /// Execute a command line. Look for the first char to call the corresponding method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    public void RunCommandString(string _input)
+    ///<param name="_saveCmd">If ".cmds", save it in GameManager ? true by default</param>
+    public void RunCommandString(string _input, bool _saveCmd = true)
     {
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
@@ -66,7 +67,7 @@ public class ConsoleController
         if (_input == "..")
             SelectParent();
         else if (_input[0] == '.')
-            ParseLoad(_input.Substring(1));
+            ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '=')
             SelectItem(_input.Substring(1));
         else if (_input[0] == '+')
@@ -156,11 +157,12 @@ public class ConsoleController
     /// Look at the first word of a "load" command and call the corresponding Load method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void ParseLoad(string _input)
+    ///<param name="_saveCmd">If "cmds", save it in GameManager ?</param>
+    private void ParseLoad(string _input, bool _saveCmd)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
         if (str[0] == "cmds")
-            LoadCmdsFile(str[1]);
+            LoadCmdsFile(str[1], _saveCmd);
         else if (str[0] == "template" || str[0] == "t")
             LoadTemplateFile(str[1]);
         else
@@ -172,22 +174,25 @@ public class ConsoleController
     /// Open given file and call RunCommandString() for each line in it.
     ///</summary>
     ///<param name="_input">Path of the file to load</param>
-    private void LoadCmdsFile(string _input)
+    ///<param name="_saveCmd">Save _input it in GameManager ?</param>
+    private void LoadCmdsFile(string _input, bool _saveCmd)
     {
         string[] lines = new string[0];
         try
         {
             using (StreamReader sr = File.OpenText(_input))
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
-            GameManager.gm.SetReloadBtn(_input);
+            if (_saveCmd)
+                GameManager.gm.SetReloadBtn(_input);
         }
         catch (System.Exception e)
         {
             AppendLogLine(e.Message, "red");
-            GameManager.gm.SetReloadBtn(null);
+            if (_saveCmd)
+                GameManager.gm.SetReloadBtn(null);
         }
         foreach (string cmd in lines)
-            RunCommandString(cmd);
+            RunCommandString(cmd, false);
     }
 
     ///<summary>
