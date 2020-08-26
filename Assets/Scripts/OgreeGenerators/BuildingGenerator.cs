@@ -64,7 +64,7 @@ public class BuildingGenerator : MonoBehaviour
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
-        if (_data.parent.GetComponent<Building>() == null)
+        if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
         {
             GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
             return;
