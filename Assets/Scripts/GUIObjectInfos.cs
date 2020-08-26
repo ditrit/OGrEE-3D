@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class GUIObjectInfos : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI tmpName;
-    [SerializeField] private TextMeshProUGUI tmpTenantName;
-    [SerializeField] private TextMeshProUGUI tmpTenantContact;
-    [SerializeField] private TextMeshProUGUI tmpTenantPhone;
-    [SerializeField] private TextMeshProUGUI tmpTenantEmail;
-    [SerializeField] private TextMeshProUGUI tmpVendor;
-    [SerializeField] private TextMeshProUGUI tmpType;
-    [SerializeField] private TextMeshProUGUI tmpModel;
-    [SerializeField] private TextMeshProUGUI tmpSerial;
-    [SerializeField] private TextMeshProUGUI tmpDesc;
+    [SerializeField] private TextMeshProUGUI tmpName = null;
+    [SerializeField] private TextMeshProUGUI tmpTenantName = null;
+    [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
+    [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
+    [SerializeField] private TextMeshProUGUI tmpTenantEmail = null;
+    [SerializeField] private TextMeshProUGUI tmpVendor = null;
+    [SerializeField] private TextMeshProUGUI tmpType = null;
+    [SerializeField] private TextMeshProUGUI tmpModel = null;
+    [SerializeField] private TextMeshProUGUI tmpSerial = null;
+    [SerializeField] private TextMeshProUGUI tmpDesc = null;
 
     public void UpdateFields(GameObject _obj)
     {
