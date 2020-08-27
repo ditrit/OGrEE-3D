@@ -148,7 +148,6 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ReloadFile()
     {
-        Debug.LogWarning("GM.ReloadFile()...");
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);

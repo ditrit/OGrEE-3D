@@ -174,6 +174,8 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
+        Filters.instance.rackRowsList.Remove(infos.name[0].ToString());
+        Filters.instance.racks.Remove(rack.gameObject);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
     }
 
