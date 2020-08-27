@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class GUIObjectInfos : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI tmpBtnName = null;
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
     [SerializeField] private TextMeshProUGUI tmpName = null;
@@ -17,7 +18,7 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tmpModel = null;
     [SerializeField] private TextMeshProUGUI tmpSerial = null;
     [SerializeField] private TextMeshProUGUI tmpDesc = null;
-    
+
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
     [SerializeField] private TextMeshProUGUI objList = null;
@@ -28,6 +29,10 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_obj">The object whose information are displayed</param>
     public void UpdateSingleFields(GameObject _obj)
     {
+        if (_obj)
+            tmpBtnName.text = _obj.name;
+        else
+            tmpBtnName.text = "Infos";
         singlePanel.SetActive(true);
         multiPanel.SetActive(false);
 
@@ -59,11 +64,12 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="The objects whose name are displayed"></param>
     public void UpdateMultiFields(List<GameObject> _objects)
     {
+        tmpBtnName.text = "Multi";
         singlePanel.SetActive(false);
         multiPanel.SetActive(true);
 
         objList.text = "";
-        foreach(GameObject obj in _objects)
+        foreach (GameObject obj in _objects)
             objList.text += $"{obj.GetComponent<HierarchyName>().fullname}\n";
     }
 
@@ -73,7 +79,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_rack">The rack whose information are displayed</param>
     private void UpdateFields(Rack _rack)
     {
-        tmpName.text = _rack.name;
+        tmpName.text = _rack.GetComponent<HierarchyName>().fullname;
         tmpTenantName.text = _rack.tenant.name;
         tmpTenantContact.text = _rack.tenant.mainContact;
         tmpTenantPhone.text = _rack.tenant.mainPhone;
@@ -91,7 +97,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_room">The room whose information are displayed</param>
     private void UpdateFields(Room _room)
     {
-        tmpName.text = _room.name;
+        tmpName.text = _room.GetComponent<HierarchyName>().fullname;
         tmpTenantName.text = _room.tenant.name;
         tmpTenantContact.text = _room.tenant.mainContact;
         tmpTenantPhone.text = _room.tenant.mainPhone;

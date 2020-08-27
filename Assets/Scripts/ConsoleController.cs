@@ -479,6 +479,7 @@ public class ConsoleController
                 if (attr[0] == "current")
                 {
                     SetMultiAttribute(attr[1], data[1]);
+                    GameManager.gm.UpdateGuiInfos();
                     return;
                 }
                 if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
@@ -494,7 +495,10 @@ public class ConsoleController
             if (obj)
             {
                 if (obj.GetComponent<IAttributeModif>() != null)
+                {
                     obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
+                    GameManager.gm.UpdateGuiInfos();
+                }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }

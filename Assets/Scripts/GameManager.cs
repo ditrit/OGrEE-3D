@@ -69,6 +69,8 @@ public class GameManager : MonoBehaviour
                 else
                     SetCurrentItem(hit.collider.transform.parent.gameObject);
             }
+            else if (hit.collider == null)
+                SetCurrentItem(null);
         }
     }
 
@@ -85,15 +87,6 @@ public class GameManager : MonoBehaviour
             return (GameObject)allItems[_path];
         else
             return null;
-        // HierarchyName[] objs = FindObjectsOfType<HierarchyName>();
-        // Debug.Log($"Looking for {_path} in {objs.Length} objects");
-        // for (int i = 0; i < objs.Length; i++)
-        // {
-        // Debug.Log($"'{objs[i].fullname}' vs '{_path}'");
-        //     if (objs[i].fullname == _path)
-        //         return objs[i].gameObject;
-        // }
-        // return null;
     }
 
     ///<summary>
@@ -161,7 +154,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Call GUIObjectInfos 'UpdateFields' method according to currentItems.Count
     ///</summary>
-    private void UpdateGuiInfos()
+    public void UpdateGuiInfos()
     {
         if (currentItems.Count == 0)
             objInfos.UpdateSingleFields(null);
