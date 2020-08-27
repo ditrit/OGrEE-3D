@@ -87,13 +87,13 @@ public class ConsoleController
     ///</summary>
     private void SelectParent()
     {
-        if (!GameManager.gm.currentItem)
+        if (!GameManager.gm.currentItems[0])
             return;
-        else if (GameManager.gm.currentItem.GetComponent<Customer>())
+        else if (GameManager.gm.currentItems[0].GetComponent<Customer>())
             GameManager.gm.SetCurrentItem(null);
         else
         {
-            GameObject parent = GameManager.gm.currentItem.transform.parent.gameObject;
+            GameObject parent = GameManager.gm.currentItems[0].transform.parent.gameObject;
             if (parent)
                 GameManager.gm.SetCurrentItem(parent);
         }
@@ -115,15 +115,6 @@ public class ConsoleController
         if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
-            // HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-            // foreach (HierarchyName obj in allObjects)
-            // {
-            //     if (obj.fullname == _hierarchyName)
-            //     {
-            //         GameManager.gm.SetCurrentItem(obj.gameObject);
-            //         return;
-            //     }
-            // }
             AppendLogLine("Error: Object does not exist", "yellow");
     }
 
@@ -136,21 +127,9 @@ public class ConsoleController
         // Try to delete an Ogree object
         if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
-        // HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-        // foreach (HierarchyName obj in allObjects)
-        // {
-        //     if (obj.fullname == _input)
-        //     {
-        //         GameManager.gm.DeleteItem(obj.gameObject);
-        //         return;
-        //     }
-        // }
         // Try to delete a tenant
         else if (GameManager.gm.tenants.ContainsKey(_input))
-            // {
             GameManager.gm.tenants.Remove(_input);
-        // return;
-        // }
         else
             AppendLogLine("Error: Object does not exist", "yellow");
     }
@@ -304,7 +283,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 CustomerGenerator.instance.CreateDatacenter(infos, true);
             }
         }
@@ -336,7 +315,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 BuildingGenerator.instance.CreateBuilding(infos, true);
             }
         }
@@ -369,7 +348,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 BuildingGenerator.instance.CreateRoom(infos, true);
             }
         }
@@ -409,7 +388,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 ObjectGenerator.instance.CreateRack(infos, true);
             }
         }
@@ -451,13 +430,14 @@ public class ConsoleController
             string[] data = _input.Split('@', ',');
             if (data.Length == 8) // No path -> On current object
             {
-                if (GameManager.gm.currentItem.GetComponent<Room>())
+                Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+                if (currentRoom)
                 {
                     SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
                                                 float.Parse(data[2]), float.Parse(data[3]));
                     SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
                                                 float.Parse(data[6]), float.Parse(data[7]));
-                    GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+                    currentRoom.SetZones(resDim, techDim);
                 }
                 else
                     AppendLogLine("Current object must be a room", "yellow");
@@ -496,6 +476,11 @@ public class ConsoleController
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
+                if (attr[0] == "current")
+                {
+                    SetMultiAttribute(attr[1], data[1]);
+                    return;
+                }
                 if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
                 {
                     GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
@@ -518,6 +503,22 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Go through GameManager.currentItems and try to SetAttribute each object.
+    ///</summary>
+    ///<param name="_attr">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
+    private void SetMultiAttribute(string _attr, string _value)
+    {
+        foreach (GameObject obj in GameManager.gm.currentItems)
+        {
+            if (obj.GetComponent<IAttributeModif>() != null)
+                obj.GetComponent<IAttributeModif>().SetAttribute(_attr, _value);
+            else
+                AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+        }
     }
 
     #endregion
