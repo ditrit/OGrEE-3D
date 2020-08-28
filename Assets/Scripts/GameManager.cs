@@ -95,10 +95,27 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
+        foreach (GameObject item in currentItems)
+        {
+            if (item && item.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = item.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = true;
+            }
+        }
         currentItems.Clear();
-        currentItems.Add(_obj);
         if (_obj)
+        {
+            currentItems.Add(_obj);
             currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = false;
+            }
+        }
         else
             currentItemText.text = "Ogree3D";
         UpdateGuiInfos();
@@ -119,11 +136,23 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Remove {_obj.name} from selection.", "green");
             currentItems.Remove(_obj);
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = true;
+            }
         }
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
             currentItems.Add(_obj);
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = false;
+            }
         }
 
         if (currentItems.Count > 1)
