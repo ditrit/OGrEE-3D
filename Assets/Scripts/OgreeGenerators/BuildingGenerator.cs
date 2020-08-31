@@ -26,6 +26,13 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
             return;
         }
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return;
+        }
+
         GameObject newBD = Instantiate(GameManager.gm.buildingModel);
         newBD.name = _data.name;
         newBD.transform.parent = _data.parent;
@@ -44,6 +51,8 @@ public class BuildingGenerator : MonoBehaviour
         // fill bd infos...
 
         newBD.AddComponent<HierarchyName>();
+
+        GameManager.gm.allItems.Add(hierarchyName, newBD);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newBD);
     }
@@ -55,9 +64,15 @@ public class BuildingGenerator : MonoBehaviour
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
-        if (_data.parent.GetComponent<Building>() == null)
+        if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
         {
             GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
+            return;
+        }
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return;
         }
 
@@ -121,6 +136,7 @@ public class BuildingGenerator : MonoBehaviour
         // Get tenant from related Datacenter
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
 
+        GameManager.gm.allItems.Add(hierarchyName, newRoom);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
     }

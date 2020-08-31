@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
@@ -12,6 +14,8 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
+    [SerializeField] private Camera currentCam = null;
+    [SerializeField] private GUIObjectInfos objInfos = null;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -32,7 +36,8 @@ public class GameManager : MonoBehaviour
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
-    public GameObject currentItem /*{ get; private set; }*/ = null;
+    public List<GameObject> currentItems /*{ get; private set; }*/ = new List<GameObject>();
+    public Hashtable allItems = new Hashtable();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
 
@@ -51,6 +56,26 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+
+        if (!EventSystem.current.IsPointerOverGameObject()
+            && Input.GetMouseButtonUp(0))
+        {
+            if (GetComponent<MoveObject>().hasDrag)
+                return;
+
+            RaycastHit hit;
+            Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+            if (hit.collider && hit.collider.tag == "Selectable")
+            {
+                // Debug.Log(hit.collider.transform.parent.name);
+                if (Input.GetKey(KeyCode.LeftControl))
+                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                else
+                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+            }
+            else if (hit.collider == null)
+                SetCurrentItem(null);
+        }
     }
 
     #endregion
@@ -60,18 +85,12 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_path">Which hierarchy name to look for</param>
     ///<returns>The GameObject looked for</returns>
-    public GameObject FindAbsPath(string _path)
+    public GameObject FindByAbsPath(string _path)
     {
-        HierarchyName[] objs = FindObjectsOfType<HierarchyName>();
-        // Debug.Log($"Looking for {_path} in {objs.Length} objects");
-        for (int i = 0; i < objs.Length; i++)
-        {
-            // Debug.Log($"'{objs[i].fullname}' vs '{_path}'");
-            if (objs[i].fullname == _path)
-                return objs[i].gameObject;
-        }
-
-        return null;
+        if (allItems.Contains(_path))
+            return (GameObject)allItems[_path];
+        else
+            return null;
     }
 
     ///<summary>
@@ -80,11 +99,74 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
-        currentItem = _obj;
+        foreach (GameObject item in currentItems)
+        {
+            if (item && item.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = item.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = true;
+            }
+        }
+        currentItems.Clear();
         if (_obj)
-            currentItemText.text = currentItem.GetComponent<HierarchyName>().fullname;
+        {
+            currentItems.Add(_obj);
+            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = false;
+            }
+        }
         else
             currentItemText.text = "Ogree3D";
+        UpdateGuiInfos();
+    }
+
+    ///<summary>
+    /// Add selected object to currentItems if not in it, else remove it.
+    ///</summary>
+    private void UpdateCurrentItems(GameObject _obj)
+    {
+        if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
+            || (currentItems[0].GetComponent<Object>() && !_obj.GetComponent<Object>()))
+        {
+            AppendLogLine("Multiple selection should be same type of objects.", "yellow");
+            return;
+        }
+        if (currentItems.Contains(_obj))
+        {
+            AppendLogLine($"Remove {_obj.name} from selection.", "green");
+            currentItems.Remove(_obj);
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = true;
+            }
+        }
+        else
+        {
+            AppendLogLine($"Add {_obj.name} to selection.", "green");
+            currentItems.Add(_obj);
+            if (_obj.GetComponent<Object>())
+            {
+                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+                if (ol)
+                    ol.eraseRenderer = false;
+            }
+        }
+
+        if (currentItems.Count > 1)
+            currentItemText.text = $"{currentItems[0].GetComponent<HierarchyName>().fullname} + others";
+        else if (currentItems.Count == 1)
+            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+        else
+            currentItemText.text = "Ogree3D";
+
+        UpdateGuiInfos();
     }
 
     ///<summary>
@@ -98,7 +180,21 @@ public class GameManager : MonoBehaviour
         SetCurrentItem(null);
 
         // Should count type of deleted objects
+        allItems.Remove(_toDel.GetComponent<HierarchyName>().fullname);
         Destroy(_toDel);
+    }
+
+    ///<summary>
+    /// Call GUIObjectInfos 'UpdateFields' method according to currentItems.Count
+    ///</summary>
+    public void UpdateGuiInfos()
+    {
+        if (currentItems.Count == 0)
+            objInfos.UpdateSingleFields(null);
+        else if (currentItems.Count == 1)
+            objInfos.UpdateSingleFields(currentItems[0]);
+        else
+            objInfos.UpdateMultiFields(currentItems);
     }
 
     ///<summary>
@@ -130,6 +226,18 @@ public class GameManager : MonoBehaviour
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
+        tenants.Clear();
+        // allItems.Clear();
+        // consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+        StartCoroutine(LoadFile());
+    }
+
+    ///<summary>
+    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file
+    ///</summary>
+    private IEnumerator LoadFile()
+    {
+        yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
 
@@ -138,11 +246,11 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ToggleTileNames()
     {
-        Room currentRoom = currentItem.GetComponent<Room>();
+        Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
-            AppendLogLine($"Tiles names toggled for {currentItem.name}.", "yellow");
+            AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
         }
         else
             AppendLogLine("Current item must be a room", "red");

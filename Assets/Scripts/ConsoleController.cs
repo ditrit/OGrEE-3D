@@ -57,7 +57,8 @@ public class ConsoleController
     /// Execute a command line. Look for the first char to call the corresponding method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    public void RunCommandString(string _input)
+    ///<param name="_saveCmd">If ".cmds", save it in GameManager ? true by default</param>
+    public void RunCommandString(string _input, bool _saveCmd = true)
     {
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
@@ -66,7 +67,7 @@ public class ConsoleController
         if (_input == "..")
             SelectParent();
         else if (_input[0] == '.')
-            ParseLoad(_input.Substring(1));
+            ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '=')
             SelectItem(_input.Substring(1));
         else if (_input[0] == '+')
@@ -86,13 +87,13 @@ public class ConsoleController
     ///</summary>
     private void SelectParent()
     {
-        if (!GameManager.gm.currentItem)
+        if (!GameManager.gm.currentItems[0])
             return;
-        else if (GameManager.gm.currentItem.GetComponent<Customer>())
+        else if (GameManager.gm.currentItems[0].GetComponent<Customer>())
             GameManager.gm.SetCurrentItem(null);
         else
         {
-            GameObject parent = GameManager.gm.currentItem.transform.parent.gameObject;
+            GameObject parent = GameManager.gm.currentItems[0].transform.parent.gameObject;
             if (parent)
                 GameManager.gm.SetCurrentItem(parent);
         }
@@ -111,16 +112,10 @@ public class ConsoleController
             return;
         }
 
-        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-        foreach (HierarchyName obj in allObjects)
-        {
-            if (obj.fullname == _input)
-            {
-                GameManager.gm.SetCurrentItem(obj.gameObject);
-                return;
-            }
-        }
-        AppendLogLine("Error: Object does not exist", "yellow");
+        if (GameManager.gm.allItems.Contains(_input))
+            GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
+        else
+            AppendLogLine("Error: Object does not exist", "yellow");
     }
 
     ///<summary>
@@ -130,22 +125,13 @@ public class ConsoleController
     private void DeleteItem(string _input)
     {
         // Try to delete an Ogree object
-        HierarchyName[] allObjects = GameObject.FindObjectsOfType<HierarchyName>();
-        foreach (HierarchyName obj in allObjects)
-        {
-            if (obj.fullname == _input)
-            {
-                GameManager.gm.DeleteItem(obj.gameObject);
-                return;
-            }
-        }
+        if (GameManager.gm.allItems.Contains(_input))
+            GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
         // Try to delete a tenant
-        if (GameManager.gm.tenants.ContainsKey(_input))
-        {
+        else if (GameManager.gm.tenants.ContainsKey(_input))
             GameManager.gm.tenants.Remove(_input);
-            return;
-        }
-        AppendLogLine("Error: Object does not exist", "yellow");
+        else
+            AppendLogLine("Error: Object does not exist", "yellow");
     }
 
     #endregion
@@ -156,11 +142,12 @@ public class ConsoleController
     /// Look at the first word of a "load" command and call the corresponding Load method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void ParseLoad(string _input)
+    ///<param name="_saveCmd">If "cmds", save it in GameManager ?</param>
+    private void ParseLoad(string _input, bool _saveCmd)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
         if (str[0] == "cmds")
-            LoadCmdsFile(str[1]);
+            LoadCmdsFile(str[1], _saveCmd);
         else if (str[0] == "template" || str[0] == "t")
             LoadTemplateFile(str[1]);
         else
@@ -172,22 +159,25 @@ public class ConsoleController
     /// Open given file and call RunCommandString() for each line in it.
     ///</summary>
     ///<param name="_input">Path of the file to load</param>
-    private void LoadCmdsFile(string _input)
+    ///<param name="_saveCmd">Save _input it in GameManager ?</param>
+    private void LoadCmdsFile(string _input, bool _saveCmd)
     {
         string[] lines = new string[0];
         try
         {
             using (StreamReader sr = File.OpenText(_input))
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
-            GameManager.gm.SetReloadBtn(_input);
+            if (_saveCmd)
+                GameManager.gm.SetReloadBtn(_input);
         }
         catch (System.Exception e)
         {
             AppendLogLine(e.Message, "red");
-            GameManager.gm.SetReloadBtn(null);
+            if (_saveCmd)
+                GameManager.gm.SetReloadBtn(null);
         }
         foreach (string cmd in lines)
-            RunCommandString(cmd);
+            RunCommandString(cmd, false);
     }
 
     ///<summary>
@@ -293,7 +283,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 CustomerGenerator.instance.CreateDatacenter(infos, true);
             }
         }
@@ -325,7 +315,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 BuildingGenerator.instance.CreateBuilding(infos, true);
             }
         }
@@ -358,7 +348,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 BuildingGenerator.instance.CreateRoom(infos, true);
             }
         }
@@ -398,7 +388,7 @@ public class ConsoleController
             else
             {
                 infos.name = data[0];
-                infos.parent = GameManager.gm.currentItem.transform;
+                infos.parent = GameManager.gm.currentItems[0].transform;
                 ObjectGenerator.instance.CreateRack(infos, true);
             }
         }
@@ -440,20 +430,21 @@ public class ConsoleController
             string[] data = _input.Split('@', ',');
             if (data.Length == 8) // No path -> On current object
             {
-                if (GameManager.gm.currentItem.GetComponent<Room>())
+                Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+                if (currentRoom)
                 {
                     SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
                                                 float.Parse(data[2]), float.Parse(data[3]));
                     SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
                                                 float.Parse(data[6]), float.Parse(data[7]));
-                    GameManager.gm.currentItem.GetComponent<Room>().SetZones(resDim, techDim);
+                    currentRoom.SetZones(resDim, techDim);
                 }
                 else
                     AppendLogLine("Current object must be a room", "yellow");
             }
             else // There is an object path
             {
-                GameObject room = GameManager.gm.FindAbsPath(data[0].Substring(1));
+                GameObject room = GameManager.gm.FindByAbsPath(data[0].Substring(1));
                 if (room)
                 {
                     SMargin resDim = new SMargin(float.Parse(data[1]), float.Parse(data[2]),
@@ -485,6 +476,12 @@ public class ConsoleController
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
+                if (attr[0] == "current")
+                {
+                    SetMultiAttribute(attr[1], data[1]);
+                    GameManager.gm.UpdateGuiInfos();
+                    return;
+                }
                 if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
                 {
                     GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
@@ -498,7 +495,10 @@ public class ConsoleController
             if (obj)
             {
                 if (obj.GetComponent<IAttributeModif>() != null)
+                {
                     obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
+                    GameManager.gm.UpdateGuiInfos();
+                }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
@@ -507,6 +507,22 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Go through GameManager.currentItems and try to SetAttribute each object.
+    ///</summary>
+    ///<param name="_attr">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
+    private void SetMultiAttribute(string _attr, string _value)
+    {
+        foreach (GameObject obj in GameManager.gm.currentItems)
+        {
+            if (obj.GetComponent<IAttributeModif>() != null)
+                obj.GetComponent<IAttributeModif>().SetAttribute(_attr, _value);
+            else
+                AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+        }
     }
 
     #endregion
@@ -583,7 +599,7 @@ public class ConsoleController
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
-        GameObject tmp = GameManager.gm.FindAbsPath(parentPath);
+        GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {
             name = path[path.Length - 1];
