@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
@@ -57,8 +58,11 @@ public class GameManager : MonoBehaviour
             Application.Quit();
 
         if (!EventSystem.current.IsPointerOverGameObject()
-            && Input.GetMouseButtonDown(0))
+            && Input.GetMouseButtonUp(0))
         {
+            if (GetComponent<MoveObject>().hasDrag)
+                return;
+
             RaycastHit hit;
             Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
             if (hit.collider && hit.collider.tag == "Selectable")

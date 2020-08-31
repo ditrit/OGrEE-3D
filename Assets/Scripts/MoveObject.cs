@@ -6,7 +6,7 @@ public class MoveObject : MonoBehaviour
 {
     [SerializeField] private Vector3 origin;
     [SerializeField] private Vector3 dest;
-    [SerializeField] private bool hasDrag = false;
+    public bool hasDrag = false;
 
 
     private void Update()
@@ -37,7 +37,8 @@ public class MoveObject : MonoBehaviour
     }
 
     ///<summary>
-    /// Compute a vector from origin to dest and call currentItems[0] Rack.MoveRack().
+    /// Compute a vector from origin to dest and call currentItems's Rack.MoveRack().
+    /// If multi selection, move only racks in the same room than currentItems[0].
     ///</summary>
     private void Move()
     {
@@ -50,6 +51,15 @@ public class MoveObject : MonoBehaviour
             GameObject obj = GameManager.gm.currentItems[0];
             if (obj.GetComponent<Rack>())
                 obj.GetComponent<Rack>().MoveRack(new Vector2(x, y));
+        }
+        else if (GameManager.gm.currentItems.Count > 1)
+        {
+            Transform targetRoom = GameManager.gm.currentItems[0].transform.parent;
+            foreach (GameObject obj in GameManager.gm.currentItems)
+            {
+                if (obj.transform.parent == targetRoom && obj.GetComponent<Rack>())
+                    obj.GetComponent<Rack>().MoveRack(new Vector2(x, y));
+            }
         }
     }
 
