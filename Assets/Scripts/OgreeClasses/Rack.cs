@@ -43,19 +43,19 @@ public class Rack : Object
         {
             case EOrientation.N:
                 transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
-                room.posXY += new Vector2(_v.x, _v.y);
+                posXY += new Vector2(_v.x, _v.y);
                 break;
             case EOrientation.W:
                 transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
-                room.posXY += new Vector2(_v.y, -_v.x);
+                posXY += new Vector2(_v.y, -_v.x);
                 break;
             case EOrientation.S:
                 transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
-                room.posXY += new Vector2(-_v.x, -_v.y);
+                posXY += new Vector2(-_v.x, -_v.y);
                 break;
             case EOrientation.E:
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
-                room.posXY += new Vector2(-_v.y, _v.x);
+                posXY += new Vector2(-_v.y, _v.x);
                 break;
         }
     }
