@@ -103,6 +103,7 @@ public class ObjectGenerator : MonoBehaviour
 
         rack.tenant = _data.parent.GetComponent<Room>().tenant;
         rack.UpdateColor();
+        GameManager.gm.SetRackMaterial(newRack.transform);
 
         GameManager.gm.allItems.Add(hierarchyName, newRack);
         if (_changeHierarchy)

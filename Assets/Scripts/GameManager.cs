@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
+    public bool isWireframe;
 
     #region UnityMethods
 
@@ -263,17 +264,25 @@ public class GameManager : MonoBehaviour
     ///<param name="_value">The checkbox value</param>
     public void ToggleRacksMaterials(bool _value)
     {
+        isWireframe = _value;
         Rack[] racks = GameObject.FindObjectsOfType<Rack>();
         foreach (Rack rack in racks)
-        {
-            Renderer r = rack.transform.GetChild(0).GetComponent<Renderer>();
-            Color color = r.material.color;
-            if (_value)
-                r.material = GameManager.gm.wireframeMat;
-            else
-                r.material = GameManager.gm.defaultMat;
-            r.material.color = color;
-        }
+            SetRackMaterial(rack.transform);
+    }
+
+    ///<summary>
+    /// Set material of a rack according to isWireframe value.
+    ///</summary>
+    ///<param name="_rack">The rack to set the material</param>
+    public void SetRackMaterial(Transform _rack)
+    {
+        Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
+        Color color = r.material.color;
+        if (isWireframe)
+            r.material = GameManager.gm.wireframeMat;
+        else
+            r.material = GameManager.gm.defaultMat;
+        r.material.color = color;
     }
 
 
