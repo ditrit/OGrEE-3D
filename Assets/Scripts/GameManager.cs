@@ -265,9 +265,15 @@ public class GameManager : MonoBehaviour
     public void ToggleRacksMaterials(bool _value)
     {
         isWireframe = _value;
-        Rack[] racks = GameObject.FindObjectsOfType<Rack>();
-        foreach (Rack rack in racks)
-            SetRackMaterial(rack.transform);
+        // Rack[] racks = GameObject.FindObjectsOfType<Rack>();
+        // foreach (Rack rack in racks)
+            // SetRackMaterial(rack.transform);
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        {
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+                SetRackMaterial(obj.transform);
+        }
     }
 
     ///<summary>

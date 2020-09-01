@@ -9,12 +9,12 @@ public class Filters : MonoBehaviour
 
     [Header("Rooms")]
     public List<string> roomsList;
-    public List<GameObject> rooms;
+    // public List<GameObject> rooms;
     public TMP_Dropdown dropdownRooms = null;
 
     [Header("Rack rows")]
     public List<string> rackRowsList;
-    public List<GameObject> racks;
+    // public List<GameObject> racks;
     public TMP_Dropdown dropdownRackRows = null;
 
     private void Awake()
@@ -73,15 +73,27 @@ public class Filters : MonoBehaviour
     public void FilterRooms()
     {
         string txt = dropdownRooms.GetComponentInChildren<TMP_Text>().text;
-        if (txt == "All")
+        // if (txt == "All")
+        // {
+        //     foreach (GameObject room in rooms)
+        //         room.SetActive(true);
+        // }
+        // else
+        // {
+        //     foreach (GameObject room in rooms)
+        //         room.SetActive(room.name == txt);
+        // }
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            foreach (GameObject room in rooms)
-                room.SetActive(true);
-        }
-        else
-        {
-            foreach (GameObject room in rooms)
-                room.SetActive(room.name == txt);
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Room>())
+            {
+                if (txt == "All" || obj.GetComponent<Room>().name == txt)
+                    obj.SetActive(true);
+                else
+                    obj.SetActive(false);
+            }
+
         }
     }
 
@@ -92,15 +104,44 @@ public class Filters : MonoBehaviour
     public void FilterRackRows()
     {
         string txt = dropdownRackRows.GetComponentInChildren<TMP_Text>().text;
-        if (txt == "All")
+        // if (txt == "All")
+        // {
+        //     foreach (GameObject rack in racks)
+        //         rack.SetActive(true);
+        // }
+        // else
+        // {
+        //     foreach (GameObject rack in racks)
+        //         rack.SetActive(rack.name[0].ToString() == txt);
+        // }
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            foreach (GameObject rack in racks)
-                rack.SetActive(true);
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+            {
+                if (txt == "All" || obj.GetComponent<Rack>().name[0].ToString() == txt)
+                    obj.SetActive(true);
+                else
+                    obj.SetActive(false);
+            }
+
         }
-        else
+    }
+
+    public void FilterRackTenant()
+    {
+        string txt = dropdownRackRows.GetComponentInChildren<TMP_Text>().text;//
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            foreach (GameObject rack in racks)
-                rack.SetActive(rack.name[0].ToString() == txt);
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+            {
+                if (txt == "All" || obj.GetComponent<Rack>().tenant.name == txt)
+                    obj.SetActive(true);
+                else
+                    obj.SetActive(false);
+            }
+
         }
     }
 
