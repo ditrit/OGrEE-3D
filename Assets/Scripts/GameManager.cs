@@ -228,8 +228,9 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
+        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         // allItems.Clear();
-        // consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
         StartCoroutine(LoadFile());
     }
 
@@ -265,9 +266,6 @@ public class GameManager : MonoBehaviour
     public void ToggleRacksMaterials(bool _value)
     {
         isWireframe = _value;
-        // Rack[] racks = GameObject.FindObjectsOfType<Rack>();
-        // foreach (Rack rack in racks)
-            // SetRackMaterial(rack.transform);
         foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
             GameObject obj = (GameObject)de.Value;
