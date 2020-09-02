@@ -134,4 +134,15 @@ public class Room : Building
         }
     }
 
+    ///<summary>
+    /// Set usable/reserved/technical zones color according to parented Datacenter
+    ///</summary>
+    public void UpdateZonesColor()
+    {
+        Datacenter dc = transform.parent.GetComponentInParent<Datacenter>();
+        usableZone.GetComponent<Renderer>().material.color = dc.usableColor;
+        reservedZone.GetComponent<Renderer>().material.color = dc.reservedColor;
+        technicalZone.GetComponent<Renderer>().material.color = dc.technicalColor;
+    }
+
 }

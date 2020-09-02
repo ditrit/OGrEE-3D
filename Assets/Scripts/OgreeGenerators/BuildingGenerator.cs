@@ -135,6 +135,7 @@ public class BuildingGenerator : MonoBehaviour
 
         // Get tenant from related Datacenter
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
+        room.UpdateZonesColor();
 
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
         if (_changeHierarchy)
