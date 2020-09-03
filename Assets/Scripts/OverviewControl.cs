@@ -36,7 +36,7 @@ public class OverviewControl : MonoBehaviour
             transform.Rotate(v, 0, 0);
         }
 
-        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("0")},{transform.localPosition.y.ToString("0")},{transform.localPosition.z.ToString("0")}]";
+        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("F2")},{transform.localPosition.y.ToString("F2")},{transform.localPosition.z.ToString("F2")}]";
         float rot;
         if (0 <= transform.localEulerAngles.x && transform.localEulerAngles.x < 180)
             rot = transform.localEulerAngles.x;

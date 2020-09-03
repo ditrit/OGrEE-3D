@@ -146,3 +146,4 @@ current.[attribute]=[value]
   
 - Left click: select an object (Room or Rack)
 - LeftControl + LeftClick: Add/Remove object from selection  
+- Alt + drag: Move selected rack(s)  
