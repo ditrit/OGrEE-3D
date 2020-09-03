@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
-    [SerializeField] private GameObject menu;
+    [SerializeField] private GameObject menu = null;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour
     public float ouSize = 0.048f;
 
     [Header("Models")]
-    public GameObject tileModel;
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
@@ -37,7 +36,7 @@ public class GameManager : MonoBehaviour
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
-    public List<GameObject> currentItems /*{ get; private set; }*/ = new List<GameObject>();
+    public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
@@ -62,21 +61,21 @@ public class GameManager : MonoBehaviour
         if (!EventSystem.current.IsPointerOverGameObject()
             && Input.GetMouseButtonUp(0))
         {
-            if (GetComponent<MoveObject>().hasDrag)
-                return;
-
-            RaycastHit hit;
-            Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-            if (hit.collider && hit.collider.tag == "Selectable")
+            if (!GetComponent<MoveObject>().hasDrag)
             {
-                // Debug.Log(hit.collider.transform.parent.name);
-                if (Input.GetKey(KeyCode.LeftControl))
-                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
-                else
-                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+                RaycastHit hit;
+                Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+                if (hit.collider && hit.collider.tag == "Selectable")
+                {
+                    // Debug.Log(hit.collider.transform.parent.name);
+                    if (Input.GetKey(KeyCode.LeftControl))
+                        UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                    else
+                        SetCurrentItem(hit.collider.transform.parent.gameObject);
+                }
+                else if (hit.collider == null)
+                    SetCurrentItem(null);
             }
-            else if (hit.collider == null)
-                SetCurrentItem(null);
         }
     }
 
@@ -177,8 +176,6 @@ public class GameManager : MonoBehaviour
     ///<param name="_toDel">The object to delete</param>
     public void DeleteItem(GameObject _toDel)
     {
-        // Debug.Log($"Try to delete {_toDel.name}");
-        // if (_toDel == currentItem || _toDel?.transform.Find(currentItem.name))
         SetCurrentItem(null);
 
         // Should count type of deleted objects
@@ -231,7 +228,6 @@ public class GameManager : MonoBehaviour
         tenants.Clear();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        // allItems.Clear();
         StartCoroutine(LoadFile());
     }
 

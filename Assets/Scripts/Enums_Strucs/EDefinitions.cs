@@ -57,20 +57,6 @@ public enum EObjFamily
     container
 }
 
-// public enum EObjectType
-// {
-//     Datacenter,
-//     Room,
-//     Itroom,
-//     Rack,
-//     Powerpanel,
-//     Airconditionner,
-//     Chassis,
-//     Device,
-//     Pdu,
-//     Container
-// }
-
 ///<summary>
 /// Role: parent / child
 ///</summary>
@@ -93,15 +79,3 @@ public enum ECompCategory
     disk
 
 }
-
-// public enum EComponentType
-// {
-//     NA,
-//     processor,
-//     psu,
-//     fan,
-//     adapter,
-//     enclosure,
-//     memory,
-//     disk
-// }

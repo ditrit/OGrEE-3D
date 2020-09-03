@@ -46,7 +46,6 @@ public class MoveObject : MonoBehaviour
         Vector3 moveVect = dest - origin;
         int x = Mathf.RoundToInt(moveVect.x / GameManager.gm.tileSize);
         int y = Mathf.RoundToInt(moveVect.z / GameManager.gm.tileSize);
-        // Debug.LogWarning($"[{x},{y}]");
         if (GameManager.gm.currentItems.Count == 1)
         {
             GameObject obj = GameManager.gm.currentItems[0];
