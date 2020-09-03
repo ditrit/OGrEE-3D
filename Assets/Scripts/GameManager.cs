@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
+    [SerializeField] private GameObject menu;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -56,7 +57,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+            menu.SetActive(!menu.activeSelf);
 
         if (!EventSystem.current.IsPointerOverGameObject()
             && Input.GetMouseButtonUp(0))
@@ -289,6 +290,13 @@ public class GameManager : MonoBehaviour
         r.material.color = color;
     }
 
+    ///<summary>
+    /// Quit the application
+    ///</summary>
+    public void QuitApp()
+    {
+        Application.Quit();
+    }
 
     ///<summary>
     /// Add a key/value pair in a dictionary only of the key doesn't exists.
