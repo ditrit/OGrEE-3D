@@ -15,6 +15,7 @@ public class Room : Building
     public SMargin technical;
     public float floorHeight;
     public EUnit floorUnit;
+    public string floor;
 
     [Header("RO References")]
     public Transform usableZone;
@@ -118,14 +119,17 @@ public class Room : Building
             case "description":
                 description = _value;
                 break;
-            case "nbfloors":
-                nbFloors = _value;
-                break;
+            // case "nbfloors":
+            //     nbFloors = _value;
+            //     break;
             case "tenant":
                 if (GameManager.gm.tenants.ContainsKey(_value))
                     tenant = GameManager.gm.tenants[_value];
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");
+                break;
+            case "floor":
+                floor = _value;
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");

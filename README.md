@@ -1,6 +1,11 @@
 # OGREE-3D
 OGREE 3D is a data-center viewer  
-- Unity version: *2019.2.11*
+- Build windows in v1
+- Build to come : macOS / Android
+- Gamer gpu needed
+- VR version to come  
+
+*Unity version: 2019.2.11*  
 
 # Table of Contents
 - [Getting started](#Getting-Started)
@@ -139,8 +144,8 @@ Rack must be child of a room
 ```  
 
 ### Set reserved and technical zones of a room  
-*[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
-[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
+*`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
+`[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```
 +zones:[reserved]@[technical]  
 +zones:[full name]@[reserved]@[technical]
@@ -151,7 +156,7 @@ Rack must be child of a room
 *`[full name]` can be `current` for modifying selected objects attributes  
 `[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
-`[room].[attribute]` can be description / nbfloors / tenant  
+`[room].[attribute]` can be description / floors / tenant  
 `[object].[attribute]` can be description / vendor / type / model / serial / tenant / alpha  
 `[tenant].[attribute]` can be mainContact / mainPhone / mainEmail*  
 ```  
@@ -184,7 +189,7 @@ DEMO.ALPHA.usableColor=5BDCFF
 DEMO.ALPHA.reservedColor=AAAAAA
 DEMO.ALPHA.technicalColor=D0FF78
 
-// Building A
+// Building A ( with full path only)
 
 +building:/DEMO.ALPHA.A@[0,0,0]@[12,12,5]
 DEMO.ALPHA.A.description=Building A
@@ -199,12 +204,13 @@ DEMO.ALPHA.A.nbFloors=1
 +rk:/DEMO.ALPHA.A.R0_WS.TEST_WS@[1, 1]@[60,120,42]@front
 +rk:/DEMO.ALPHA.A.R0_SE.TEST_SE@[1,1 ]@[60,120,42]@front
 
-// Building B (will stay selected object)
+// Building B (with relative path)
 
 +bd:B@[-30,10,0]@[25,29.4,5]
 DEMO.ALPHA.B.description=Building B
 DEMO.ALPHA.B.nbFloors=1
 
+// R1 will be current object
 +room:R1@[0,0,0]@[22.8,19.8,4]@NW
 +zones:[2,1,5,2]@[3,3,1,1]
 DEMO.ALPHA.B.R1.description=First room
