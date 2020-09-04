@@ -27,7 +27,6 @@ public class Room : Building
     {
         base.OnDestroy();
         Filters.instance.roomsList.Remove(name);
-        Filters.instance.rooms.Remove(gameObject);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
         GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
@@ -132,6 +131,17 @@ public class Room : Building
                 GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
+    }
+
+    ///<summary>
+    /// Set usable/reserved/technical zones color according to parented Datacenter
+    ///</summary>
+    public void UpdateZonesColor()
+    {
+        Datacenter dc = transform.parent.GetComponentInParent<Datacenter>();
+        usableZone.GetComponent<Renderer>().material.color = dc.usableColor;
+        reservedZone.GetComponent<Renderer>().material.color = dc.reservedColor;
+        technicalZone.GetComponent<Renderer>().material.color = dc.technicalColor;
     }
 
 }

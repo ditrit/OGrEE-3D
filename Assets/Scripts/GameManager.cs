@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
+    [SerializeField] private GameObject menu = null;
     public Material defaultMat;
     public Material wireframeMat;
 
@@ -25,7 +26,6 @@ public class GameManager : MonoBehaviour
     public float ouSize = 0.048f;
 
     [Header("Models")]
-    public GameObject tileModel;
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
@@ -36,10 +36,11 @@ public class GameManager : MonoBehaviour
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
-    public List<GameObject> currentItems /*{ get; private set; }*/ = new List<GameObject>();
+    public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
+    public bool isWireframe;
 
     #region UnityMethods
 
@@ -55,26 +56,26 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+            menu.SetActive(!menu.activeSelf);
 
         if (!EventSystem.current.IsPointerOverGameObject()
             && Input.GetMouseButtonUp(0))
         {
-            if (GetComponent<MoveObject>().hasDrag)
-                return;
-
-            RaycastHit hit;
-            Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-            if (hit.collider && hit.collider.tag == "Selectable")
+            if (!GetComponent<MoveObject>().hasDrag)
             {
-                // Debug.Log(hit.collider.transform.parent.name);
-                if (Input.GetKey(KeyCode.LeftControl))
-                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
-                else
-                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+                RaycastHit hit;
+                Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+                if (hit.collider && hit.collider.tag == "Selectable")
+                {
+                    // Debug.Log(hit.collider.transform.parent.name);
+                    if (Input.GetKey(KeyCode.LeftControl))
+                        UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                    else
+                        SetCurrentItem(hit.collider.transform.parent.gameObject);
+                }
+                else if (hit.collider == null)
+                    SetCurrentItem(null);
             }
-            else if (hit.collider == null)
-                SetCurrentItem(null);
         }
     }
 
@@ -175,8 +176,6 @@ public class GameManager : MonoBehaviour
     ///<param name="_toDel">The object to delete</param>
     public void DeleteItem(GameObject _toDel)
     {
-        // Debug.Log($"Try to delete {_toDel.name}");
-        // if (_toDel == currentItem || _toDel?.transform.Find(currentItem.name))
         SetCurrentItem(null);
 
         // Should count type of deleted objects
@@ -227,8 +226,8 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
-        // allItems.Clear();
-        // consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         StartCoroutine(LoadFile());
     }
 
@@ -263,19 +262,37 @@ public class GameManager : MonoBehaviour
     ///<param name="_value">The checkbox value</param>
     public void ToggleRacksMaterials(bool _value)
     {
-        Rack[] racks = GameObject.FindObjectsOfType<Rack>();
-        foreach (Rack rack in racks)
+        isWireframe = _value;
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            Renderer r = rack.transform.GetChild(0).GetComponent<Renderer>();
-            Color color = r.material.color;
-            if (_value)
-                r.material = GameManager.gm.wireframeMat;
-            else
-                r.material = GameManager.gm.defaultMat;
-            r.material.color = color;
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+                SetRackMaterial(obj.transform);
         }
     }
 
+    ///<summary>
+    /// Set material of a rack according to isWireframe value.
+    ///</summary>
+    ///<param name="_rack">The rack to set the material</param>
+    public void SetRackMaterial(Transform _rack)
+    {
+        Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
+        Color color = r.material.color;
+        if (isWireframe)
+            r.material = GameManager.gm.wireframeMat;
+        else
+            r.material = GameManager.gm.defaultMat;
+        r.material.color = color;
+    }
+
+    ///<summary>
+    /// Quit the application
+    ///</summary>
+    public void QuitApp()
+    {
+        Application.Quit();
+    }
 
     ///<summary>
     /// Add a key/value pair in a dictionary only of the key doesn't exists.

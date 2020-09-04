@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -9,13 +10,12 @@ public class Filters : MonoBehaviour
 
     [Header("Rooms")]
     public List<string> roomsList;
-    public List<GameObject> rooms;
     public TMP_Dropdown dropdownRooms = null;
 
-    [Header("Rack rows")]
-    public List<string> rackRowsList;
-    public List<GameObject> racks;
-    public TMP_Dropdown dropdownRackRows = null;
+    [Header("Tenants")]
+    public List<string> tenantsList;
+    public TMP_Dropdown dropdownTenants = null;
+    
 
     private void Awake()
     {
@@ -26,8 +26,8 @@ public class Filters : MonoBehaviour
 
         DefaultList(roomsList, "All");
         UpdateDropdownFromList(dropdownRooms, roomsList);
-        DefaultList(rackRowsList, "All");
-        UpdateDropdownFromList(dropdownRackRows, rackRowsList);
+        DefaultList(tenantsList, "All");
+        UpdateDropdownFromList(dropdownTenants, tenantsList);
     }
 
     ///<summary>
@@ -73,34 +73,37 @@ public class Filters : MonoBehaviour
     public void FilterRooms()
     {
         string txt = dropdownRooms.GetComponentInChildren<TMP_Text>().text;
-        if (txt == "All")
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            foreach (GameObject room in rooms)
-                room.SetActive(true);
-        }
-        else
-        {
-            foreach (GameObject room in rooms)
-                room.SetActive(room.name == txt);
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Room>())
+            {
+                if (txt == "All" || obj.GetComponent<Room>().name == txt)
+                    obj.SetActive(true);
+                else
+                    obj.SetActive(false);
+            }
         }
     }
 
     ///<summary>
     /// Called by a GUI dropdown.
-    /// Display the selected rack row.
+    /// Display racks wiith the selected tenant.
     ///</summary>
-    public void FilterRackRows()
+    public void FilterRackTenant()
     {
-        string txt = dropdownRackRows.GetComponentInChildren<TMP_Text>().text;
-        if (txt == "All")
+        string txt = dropdownTenants.GetComponentInChildren<TMP_Text>().text;
+        txt = Regex.Replace(txt, "<\\/*[a-zA-Z0-9=#]+>", "");
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            foreach (GameObject rack in racks)
-                rack.SetActive(true);
-        }
-        else
-        {
-            foreach (GameObject rack in racks)
-                rack.SetActive(rack.name[0].ToString() == txt);
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+            {
+                if (txt == "All" || obj.GetComponent<Rack>().tenant.name == txt)
+                    obj.SetActive(true);
+                else
+                    obj.SetActive(false);
+            }
         }
     }
 

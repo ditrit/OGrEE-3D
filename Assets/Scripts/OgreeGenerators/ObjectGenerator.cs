@@ -58,7 +58,6 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
-        // rack.description = _data.comment;
         rack.posXY = _data.pos;
         rack.posXYUnit = EUnit.tile;
         rack.size = new Vector2(_data.size.x, _data.size.y);
@@ -92,10 +91,6 @@ public class ObjectGenerator : MonoBehaviour
                 break;
         }
 
-        Filters.instance.AddIfUnknowned(Filters.instance.racks, newRack);
-        Filters.instance.AddIfUnknowned(Filters.instance.rackRowsList, newRack.name[0].ToString());
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
-
         newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
@@ -103,6 +98,7 @@ public class ObjectGenerator : MonoBehaviour
 
         rack.tenant = _data.parent.GetComponent<Room>().tenant;
         rack.UpdateColor();
+        GameManager.gm.SetRackMaterial(newRack.transform);
 
         GameManager.gm.allItems.Add(hierarchyName, newRack);
         if (_changeHierarchy)

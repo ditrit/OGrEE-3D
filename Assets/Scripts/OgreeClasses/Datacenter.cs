@@ -15,6 +15,10 @@ public class Datacenter : MonoBehaviour, IAttributeModif
     public string gpsZ;
     public Tenant tenant;
 
+    public Color usableColor = new Color(0.86f, 0.93f, 0.95f);
+    public Color reservedColor = new Color(0.95f, 0.95f, 0.95f);
+    public Color technicalColor = new Color(0.92f, 0.95f, 0.87f);
+
     private void OnDestroy()
     {
         GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
@@ -57,10 +61,32 @@ public class Datacenter : MonoBehaviour, IAttributeModif
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
+            case "usableColor":
+                SetColor(_value, out usableColor);
+                break;
+            case "reservedColor":
+                SetColor(_value, out reservedColor);
+                break;
+            case "technicalColor":
+                SetColor(_value, out technicalColor);
+                break;
             default:
                 GameManager.gm.AppendLogLine($"[Datacenter] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
+    }
+
+    ///<summary>
+    /// Set a Color with an hexadecimal value
+    ///</summary>
+    ///<param name="_color">The color to set</param>
+    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    private void SetColor(string _hex, out Color _color)
+    {
+        ColorUtility.TryParseHtmlString($"#{_hex}", out _color);
+        Room[] rooms = transform.GetComponentsInChildren<Room>();
+        foreach (Room r in rooms)
+            r.UpdateZonesColor();
     }
 
 }

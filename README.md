@@ -99,7 +99,7 @@ Its name will be displayed in its local coordinates system.
 
 - Modify an object's attribute  
 *[full name] can be current for modifying selected objects attributes  
-[datacenter].[attribute] can be comment / address / zipcode / city / country / gps(format:[x,y,z])  
+[datacenter].[attribute] can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / usableColor / reservedColor / technicalColor  
 [building].[attribute] can be description / nbfloors  
 [room].[attribute] can be description / nbfloors / tenant  
 [object].[attribute] can be description / vendor / type / model / serial / tenant / alpha 
@@ -146,3 +146,4 @@ current.[attribute]=[value]
   
 - Left click: select an object (Room or Rack)
 - LeftControl + LeftClick: Add/Remove object from selection  
+- Alt + drag: Move selected rack(s)  

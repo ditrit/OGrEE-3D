@@ -9,13 +9,10 @@ public class Rack : Object
         family = EObjFamily.rack;
     }
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        Filters.instance.rackRowsList.Remove(name[0].ToString());
-        Filters.instance.racks.Remove(gameObject);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRackRows, Filters.instance.rackRowsList);
-    }
+    // protected override void OnDestroy()
+    // {
+    //     base.OnDestroy();
+    // }
 
     ///<summary>
     /// Update rack's color according to its Tenant.
@@ -29,7 +26,6 @@ public class Rack : Object
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString(tenant.color, out myColor);
         mat.color = myColor;
-        // Debug.Log($"{tenant.color} => {myColor}");
     }
 
     ///<summary>

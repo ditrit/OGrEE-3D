@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.EventSystems;
 
 public class OverviewControl : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI infosTMP = null;
+
     [Range(1, 15)]
     public float moveSpeed = 10;
     [Range(20, 100)]
@@ -32,5 +35,13 @@ public class OverviewControl : MonoBehaviour
             float v = -Input.GetAxis("Mouse Y") * Time.deltaTime * rotationSpeed;
             transform.Rotate(v, 0, 0);
         }
+
+        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("F2")},{transform.localPosition.y.ToString("F2")},{transform.localPosition.z.ToString("F2")}]";
+        float rot;
+        if (0 <= transform.localEulerAngles.x && transform.localEulerAngles.x < 180)
+            rot = transform.localEulerAngles.x;
+        else
+            rot = transform.localEulerAngles.x - 360;
+        infosTMP.text += $"\nCamera angle: {rot.ToString("0")}°";
     }
 }

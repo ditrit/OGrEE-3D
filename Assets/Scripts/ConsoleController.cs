@@ -266,6 +266,7 @@ public class ConsoleController
     ///<param name="_input">String with datacenter data to parse</param>
     private void CreateDataCenter(string _input)
     {
+        _input = Regex.Replace(_input, " ", "");
         string regex = "^[^:]+@(EN|NW|WS|SE)$";
         if (Regex.IsMatch(_input, regex))
         {
@@ -297,6 +298,7 @@ public class ConsoleController
     ///<param name="_input">String with building data to parse</param>
     private void CreateBuilding(string _input)
     {
+        _input = Regex.Replace(_input, " ", "");
         string regex = "^[^@]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, regex))
         {
@@ -329,6 +331,7 @@ public class ConsoleController
     ///<param name="_input">String with room data to parse</param>
     private void CreateRoom(string _input)
     {
+        _input = Regex.Replace(_input, " ", "");
         string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
         if (Regex.IsMatch(_input, regex))
         {
@@ -362,6 +365,7 @@ public class ConsoleController
     ///<param name="_input">String with rack data to parse</param>
     private void CreateRack(string _input)
     {
+        _input = Regex.Replace(_input, " ", "");
         string regex = "^[^\\s:]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
         if (Regex.IsMatch(_input, regex))
         {
