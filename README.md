@@ -35,15 +35,15 @@ Customer
         |_ Room
             |_ Rack
 ```
-You have to create each object either with the build in CLI or by loading a file containing these commands.
-You can assign a tenant to a Datacenter, a room or a rack. If so, all children will have the same tenant by default.
+You have to create each object either with the build in CLI or by loading a file containing these commands.  
+You can assign a tenant to a Datacenter, a room or a rack. If so, all children will have the same tenant by default.  
 More levels will come in next releases.
 
 # Build in CLI
 
 ## Glossary
 `[name]` is case sensitive. It can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
-`[full name]` is the full name containing the path of an object: `cu.dc.bd.ro.rk` 
+`[full name]` is the full name containing the path of an object: `cu.dc.bd.ro.rk`  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y): **EN**, **NW**, **WS**, **SE**  
 `[color]` is a hexadecimal code (*ffffff*)  
 
@@ -152,7 +152,7 @@ Rack must be child of a room
 `[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
 `[room].[attribute]` can be description / nbfloors / tenant  
-`[object].[attribute]` can be description / vendor / type / model / serial / tenant / alpha 
+`[object].[attribute]` can be description / vendor / type / model / serial / tenant / alpha  
 `[tenant].[attribute]` can be mainContact / mainPhone / mainEmail*  
 ```  
 [full name].[attribute]=[value]
