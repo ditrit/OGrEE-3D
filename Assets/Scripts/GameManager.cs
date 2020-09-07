@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
+        consoleController.variables.Clear();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         StartCoroutine(LoadFile());

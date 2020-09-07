@@ -1,6 +1,6 @@
 # OGREE-3D
 OGREE 3D is a data-center viewer  
-- Build windows in v1
+- Build windows in v1.1
 - Build to come : macOS / Android
 - Gamer gpu needed
 - VR version to come  
@@ -11,6 +11,9 @@ OGREE 3D is a data-center viewer
 - [Getting started](#Getting-Started)
 - [Build in CLI](#Build-in-CLI)
     - [Glossary](#Glossary)
+    - [Variable](#Variable)
+        - [Set a variable](#Set-a-variable)
+        - [Use a variable](#Use-a-variable)
     - [Loading commands](#Loading-commands)
         - [Load commands from a text file](#Load-commands-from-a-text-file)
         - [Load template from JSON](#Load-template-from-JSON)
@@ -51,6 +54,16 @@ More levels will come in next releases.
 `[full name]` is the full name containing the path of an object: `cu.dc.bd.ro.rk`  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y): **EN**, **NW**, **WS**, **SE**  
 `[color]` is a hexadecimal code (*ffffff*)  
+
+## Variables
+### Set a variable:  
+```
+.var:[name]=[value]
+```  
+### Use a variable:  
+```
+${[name]}
+```  
 
 ## Loading commands
 ### Load commands from a text file

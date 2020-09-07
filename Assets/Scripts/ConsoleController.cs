@@ -21,6 +21,7 @@ public class ConsoleController
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
     public ReadFromJson rfJson = new ReadFromJson();
+    public Dictionary<string, string> variables = new Dictionary<string, string>();
 
     // private Dictionary<string, System.Action> createMethods;
 
@@ -62,6 +63,8 @@ public class ConsoleController
     {
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
+
+        _input = ApplyVariables(_input);
 
         AppendLogLine("$ " + _input);
         if (_input == "..")
@@ -150,6 +153,8 @@ public class ConsoleController
             LoadCmdsFile(str[1], _saveCmd);
         else if (str[0] == "template" || str[0] == "t")
             LoadTemplateFile(str[1]);
+        else if (str[0] == "var")
+            SaveVariable(str[1]);
         else
             AppendLogLine("Unknowned command", "red");
 
@@ -204,6 +209,22 @@ public class ConsoleController
         }
         else
             AppendLogLine("Unkowned template type", "red");
+    }
+
+    ///<summary>
+    /// Save a given variable in Dictionnary.
+    ///</summary>
+    ///<param name="_input">The variable to save in "[key]=[value]" format</param>
+    private void SaveVariable(string _input)
+    {
+        string regex = "";
+        if (Regex.IsMatch(_input, regex))
+        {
+            string[] data = _input.Split(new char[] { '=' }, 2);
+            variables.Add(data[0], data[1]);
+        }
+        else
+            AppendLogLine("Syntax Error on variable creation", "red");
     }
 
     #endregion
@@ -615,6 +636,23 @@ public class ConsoleController
             name = "";
             AppendLogLine("Error: path doesn't exist", "red");
         }
+    }
+
+    ///<summary>
+    /// Replace variables in a string by their corresponding value
+    ///</summary>
+    ///<param name="_input">The string with the variables to replace</param>
+    private string ApplyVariables(string _input)
+    {
+        string patern = "\\$\\{[a-zA-Z0-9]+\\}";
+        MatchCollection matches = Regex.Matches(_input, patern);
+        foreach (Match match in matches)
+        {
+            string key = Regex.Replace(match.Value, "[\\$\\{\\}]", "");
+            _input = _input.Replace(match.Value, variables[key]);
+            Debug.Log($"[{variables[key]}] {_input}");
+        }
+        return _input;
     }
 
     #endregion
