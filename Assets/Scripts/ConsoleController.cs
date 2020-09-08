@@ -80,7 +80,7 @@ public class ConsoleController
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
     }
 
     #region HierarchyMethods()
@@ -156,7 +156,7 @@ public class ConsoleController
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
 
     }
 
@@ -208,7 +208,7 @@ public class ConsoleController
                 rfJson.CreateRackTemplate(json);
         }
         else
-            AppendLogLine("Unkowned template type", "red");
+            AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -254,7 +254,7 @@ public class ConsoleController
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
 
         // createMethods[str[0]](str[1]);
 

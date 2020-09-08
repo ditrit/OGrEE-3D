@@ -301,7 +301,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_dictionary">The dictionary to modify</param>
     ///<param name="_key">The key to check/add</param>
     ///<param name="_value">The value to add</param>
-    public void DictionaryAddIfUnknowned<T>(Dictionary<string, T> _dictionary, string _key, T _value)
+    public void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
     {
         if (!_dictionary.ContainsKey(_key))
             _dictionary.Add(_key, _value);

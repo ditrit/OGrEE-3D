@@ -35,7 +35,7 @@ public class Filters : MonoBehaviour
     ///</summary>
     ///<param name="_list">The list to check and to complete</param>
     ///<param name="_item">The item to add</param>
-    public void AddIfUnknowned<T>(List<T> _list, T _item)
+    public void AddIfUnknown<T>(List<T> _list, T _item)
     {
         if (!_list.Contains(_item))
             _list.Add(_item);
