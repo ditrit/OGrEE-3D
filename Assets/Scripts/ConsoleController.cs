@@ -191,7 +191,7 @@ public class ConsoleController
     ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
-        string[] str = _input.Split('@');
+        string[] str = _input.Split(new char[] { '@' }, 2);
         if (str[0] == "rack")
         {
             string json = "";
@@ -217,7 +217,7 @@ public class ConsoleController
     ///<param name="_input">The variable to save in "[key]=[value]" format</param>
     private void SaveVariable(string _input)
     {
-        string regex = "";
+        string regex = "^[a-zA-Z0-9]+=.+$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
@@ -266,8 +266,8 @@ public class ConsoleController
     ///<param name="_input">Name of the customer</param>
     private void CreateCustomer(string _input)
     {
-        string regex = "^[^.]+$";
-        if (Regex.IsMatch(_input, regex))
+        string pattern = "^[^@\\s.]+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             if (_input.StartsWith("/"))
             {
@@ -288,8 +288,8 @@ public class ConsoleController
     private void CreateDataCenter(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^:]+@(EN|NW|WS|SE)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@(EN|NW|WS|SE)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -320,8 +320,8 @@ public class ConsoleController
     private void CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^@]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -353,8 +353,8 @@ public class ConsoleController
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -387,8 +387,8 @@ public class ConsoleController
     private void CreateRack(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^\\s:]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -427,8 +427,8 @@ public class ConsoleController
     ///<param name="String with tenant data to parse"></param>
     private void CreateTenant(string _input)
     {
-        string regex = "^[^\\s:]+@[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
             CustomerGenerator.instance.CreateTenant(data[0], data[1]);
@@ -447,8 +447,8 @@ public class ConsoleController
     ///<param name="_input">String with zones data to parse</param>
     private void SetRoomZones(string _input)
     {
-        string regex = "^(\\/[^:]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^(\\/[^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
         {
             _input = _input.Replace("[", "");
             _input = _input.Replace("]", "");
@@ -492,8 +492,8 @@ public class ConsoleController
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string regex = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('=');
 
