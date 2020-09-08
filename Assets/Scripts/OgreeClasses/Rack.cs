@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Rack : Object
 {
+    Vector3 originalLocalPos;
+    Vector3 originalPosXY;
+
     public Rack()
     {
         family = EObjFamily.rack;
@@ -13,6 +16,18 @@ public class Rack : Object
     // {
     //     base.OnDestroy();
     // }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponent<Rack>() && GameManager.gm.currentItems.Contains(gameObject))
+        {
+            // Debug.Log($"{name}.OnTriggerEnter() with {other.name}");
+            GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
+            transform.localPosition = originalLocalPos;
+            posXY = originalPosXY;
+        }
+    }
+
 
     ///<summary>
     /// Update rack's color according to its Tenant.
@@ -34,6 +49,14 @@ public class Rack : Object
     ///<param name="_v">The translation vector</param>
     public void MoveRack(Vector2 _v)
     {
+        originalLocalPos = transform.localPosition;
+        originalPosXY = posXY;
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<Collider>())
+                child.GetComponent<Collider>().enabled = false;
+        }
+
         Room room = transform.parent.GetComponent<Room>();
         switch (room.orientation)
         {
@@ -53,6 +76,22 @@ public class Rack : Object
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.y, _v.x);
                 break;
+        }
+        StartCoroutine(ReactiveCollider());
+    }
+
+    ///<summary>
+    /// Coroutine: enable Rack's Collider after finish move (end of next frame)
+    ///</summary>
+    private IEnumerator ReactiveCollider()
+    {
+        // yield return new WaitForSeconds(1);
+        yield return new WaitForEndOfFrame(); // end of current frame
+        yield return new WaitForEndOfFrame(); // end of next frame
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<Collider>())
+                child.GetComponent<Collider>().enabled = true;
         }
     }
 }
