@@ -64,7 +64,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="The objects whose name are displayed"></param>
     public void UpdateMultiFields(List<GameObject> _objects)
     {
-        tmpBtnName.text = "Multi";
+        tmpBtnName.text = "Selection";
         singlePanel.SetActive(false);
         multiPanel.SetActive(true);
 

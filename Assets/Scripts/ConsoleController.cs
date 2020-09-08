@@ -501,7 +501,7 @@ public class ConsoleController
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
-                if (attr[0] == "current")
+                if (attr[0] == "selection")
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();

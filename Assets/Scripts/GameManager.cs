@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (currentItems.Count > 1)
-            currentItemText.text = $"{currentItems[0].GetComponent<HierarchyName>().fullname} + others";
+            currentItemText.text = "Selection";
         else if (currentItems.Count == 1)
             currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
         else

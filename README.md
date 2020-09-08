@@ -166,7 +166,7 @@ Rack must be child of a room
 
 ### Modify an object's attribute
 
-*`[full name]` can be `current` for modifying selected objects attributes  
+*`[full name]` can be `selection` for modifying selected objects attributes  
 `[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
 `[room].[attribute]` can be description / floors / tenant  
@@ -174,7 +174,7 @@ Rack must be child of a room
 `[tenant].[attribute]` can be mainContact / mainPhone / mainEmail*  
 ```  
 [full name].[attribute]=[value]
-current.[attribute]=[value]
+selection.[attribute]=[value]
 ```  
 
 ## Examples
