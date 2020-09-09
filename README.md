@@ -19,6 +19,7 @@ OGREE 3D is a data-center viewer
         - [Load template from JSON](#Load-template-from-JSON)
     - [Hierarchy commands](#Hierarchy-commands)
         - [Select an object](#Select-an-object)
+        - [Select several children](#Select-several-children)
         - [Select parent object](#Select-parent-object)
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
@@ -85,6 +86,13 @@ ${[name]}
 ```
 =[full name]
 ```
+
+### Select several children
+Select several children of current selected object.
+*`[name]` is the "short" name of the object: without '/' and hierarchy*  
+```
+={[name],[name],...}
+```  
 
 ### Select parent object
 ```
