@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Rack : Object
 {
-    Vector3 originalLocalPos;
-    Vector3 originalPosXY;
+    private Vector3 originalLocalPos;
+    private Vector3 originalPosXY;
 
     public Rack()
     {

@@ -31,8 +31,10 @@ OGREE 3D is a data-center viewer
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
-        - [Modify an object’s attribute](#Modify-an-object’s-attribute)
+        - [Modify object’s attribute](#Modify-object’s-attribute)
     - [Examples](#Examples)
+- [Templates definition](#Templates-definition)
+    - [Rack template](#Rack-template)
 - [Controls](#Controls)
 
 # Getting started
@@ -88,7 +90,7 @@ ${[name]}
 ```
 
 ### Select several children
-Select several children of current selected object.
+Select several children of current selected object.  
 *`[name]` is the "short" name of the object: without '/' and hierarchy*  
 ```
 ={[name],[name],...}
@@ -172,8 +174,8 @@ Rack must be child of a room
 +zones:[full name]@[reserved]@[technical]
 ```
 
-### Modify an object's attribute
-
+### Modify object's attribute
+Works with single or multi selection.  
 *`[full name]` can be `selection` for modifying selected objects attributes  
 `[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
@@ -231,7 +233,7 @@ DEMO.ALPHA.A.nbFloors=1
 DEMO.ALPHA.B.description=Building B
 DEMO.ALPHA.B.nbFloors=1
 
-// R1 will be current object
+// R1 will stay the selected object
 +room:R1@[0,0,0]@[22.8,19.8,4]@NW
 +zones:[2,1,5,2]@[3,3,1,1]
 DEMO.ALPHA.B.R1.description=First room
@@ -293,7 +295,35 @@ DEMO.ALPHA.B.R1.E03.tenant=Marcus
 +rk:/DEMO.ALPHA.B.R2.B01@[1,5]@[60,120,42]@front
 DEMO.ALPHA.B.R2.B01.tenant=Billy
 DEMO.ALPHA.B.R2.B01.alpha=50
+
+// Edit description of several racks in R1
+={B05,B09,B10,B11,B12}
+selection.description=Row B
 ```
+
+# Templates definition
+Templates are json files describing an object  
+
+## Rack template
+```
+{ 
+ "name"       : "Name",
+ "slug"       : "Slug",
+ "vendor"     : "Vendor",
+ "model"      : "Model",
+ "type"       : "rack",
+ "role"       : "parent",
+ "orientation": "horizontal",      
+ "side"       : "top",
+ "fulllength" : "yes/no",
+ "sizeWDHmm"  : [width ,depth ,height],
+ "components" : [
+   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left" },
+    ...
+  ]
+}
+
+```  
 
 # Controls  
 - Right click: rotate camera
