@@ -120,6 +120,7 @@ public class GameManager : MonoBehaviour
                 if (ol)
                     ol.eraseRenderer = false;
             }
+            AppendLogLine($"Select {_obj.name}.", "green");
         }
         else
             currentItemText.text = "Ogree3D";
@@ -129,7 +130,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
-    private void UpdateCurrentItems(GameObject _obj)
+    public void UpdateCurrentItems(GameObject _obj)
     {
         if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
             || (currentItems[0].GetComponent<Object>() && !_obj.GetComponent<Object>()))
@@ -151,7 +152,7 @@ public class GameManager : MonoBehaviour
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
-            currentItems.Add(_obj);
+            currentItems.Add(_obj) ;
             if (_obj.GetComponent<Object>())
             {
                 cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
@@ -161,7 +162,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (currentItems.Count > 1)
-            currentItemText.text = $"{currentItems[0].GetComponent<HierarchyName>().fullname} + others";
+            currentItemText.text = "Selection";
         else if (currentItems.Count == 1)
             currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
         else
@@ -301,7 +302,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_dictionary">The dictionary to modify</param>
     ///<param name="_key">The key to check/add</param>
     ///<param name="_value">The value to add</param>
-    public void DictionaryAddIfUnknowned<T>(Dictionary<string, T> _dictionary, string _key, T _value)
+    public void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
     {
         if (!_dictionary.ContainsKey(_key))
             _dictionary.Add(_key, _value);

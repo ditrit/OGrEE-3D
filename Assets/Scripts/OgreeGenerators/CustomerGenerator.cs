@@ -101,8 +101,8 @@ public class CustomerGenerator : MonoBehaviour
     public void CreateTenant(string _name, string _color)
     {
         Tenant newTenant = new Tenant(_name, $"#{_color}");
-        GameManager.gm.DictionaryAddIfUnknowned(GameManager.gm.tenants, _name, newTenant);
-        Filters.instance.AddIfUnknowned(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
+        GameManager.gm.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
     }
 }

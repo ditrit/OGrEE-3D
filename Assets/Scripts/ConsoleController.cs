@@ -80,7 +80,7 @@ public class ConsoleController
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
     }
 
     #region HierarchyMethods()
@@ -114,11 +114,34 @@ public class ConsoleController
             GameManager.gm.SetCurrentItem(null);
             return;
         }
-
-        if (GameManager.gm.allItems.Contains(_input))
+        if (_input.StartsWith("{") && _input.EndsWith("}"))
+        {
+            Transform root = GameManager.gm.currentItems[0].transform;
+            GameManager.gm.SetCurrentItem(null);
+            _input = _input.Trim('{', '}');
+            string[] items = _input.Split(',');
+            foreach (string item in items)
+            {
+                bool found = false;
+                foreach (Transform child in root)
+                {
+                    if (child.name == item)
+                    {
+                        if (GameManager.gm.currentItems.Count == 0)
+                            GameManager.gm.SetCurrentItem(child.gameObject);
+                        else
+                            GameManager.gm.UpdateCurrentItems(child.gameObject);
+                        found = true;
+                    }
+                }
+                if (!found)
+                    AppendLogLine($"Error: \"{item}\" is not a child of {root.name} or does not exist", "yellow");
+            }
+        }
+        else if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
-            AppendLogLine("Error: Object does not exist", "yellow");
+            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
     }
 
     ///<summary>
@@ -134,7 +157,7 @@ public class ConsoleController
         else if (GameManager.gm.tenants.ContainsKey(_input))
             GameManager.gm.tenants.Remove(_input);
         else
-            AppendLogLine("Error: Object does not exist", "yellow");
+            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
     }
 
     #endregion
@@ -156,7 +179,7 @@ public class ConsoleController
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
 
     }
 
@@ -191,7 +214,7 @@ public class ConsoleController
     ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
-        string[] str = _input.Split('@');
+        string[] str = _input.Split(new char[] { '@' }, 2);
         if (str[0] == "rack")
         {
             string json = "";
@@ -208,7 +231,7 @@ public class ConsoleController
                 rfJson.CreateRackTemplate(json);
         }
         else
-            AppendLogLine("Unkowned template type", "red");
+            AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -217,7 +240,7 @@ public class ConsoleController
     ///<param name="_input">The variable to save in "[key]=[value]" format</param>
     private void SaveVariable(string _input)
     {
-        string regex = "";
+        string regex = "^[a-zA-Z0-9]+=.+$";
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
@@ -254,7 +277,7 @@ public class ConsoleController
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
         else
-            AppendLogLine("Unknowned command", "red");
+            AppendLogLine("Unknown command", "red");
 
         // createMethods[str[0]](str[1]);
 
@@ -266,8 +289,8 @@ public class ConsoleController
     ///<param name="_input">Name of the customer</param>
     private void CreateCustomer(string _input)
     {
-        string regex = "^[^.]+$";
-        if (Regex.IsMatch(_input, regex))
+        string pattern = "^[^@\\s.]+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             if (_input.StartsWith("/"))
             {
@@ -288,8 +311,8 @@ public class ConsoleController
     private void CreateDataCenter(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^:]+@(EN|NW|WS|SE)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@(EN|NW|WS|SE)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -320,8 +343,8 @@ public class ConsoleController
     private void CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^@]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -353,8 +376,8 @@ public class ConsoleController
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^@]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -387,8 +410,8 @@ public class ConsoleController
     private void CreateRack(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string regex = "^[^\\s:]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
@@ -427,8 +450,8 @@ public class ConsoleController
     ///<param name="String with tenant data to parse"></param>
     private void CreateTenant(string _input)
     {
-        string regex = "^[^\\s:]+@[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
             CustomerGenerator.instance.CreateTenant(data[0], data[1]);
@@ -447,8 +470,8 @@ public class ConsoleController
     ///<param name="_input">String with zones data to parse</param>
     private void SetRoomZones(string _input)
     {
-        string regex = "^(\\/[^:]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^(\\/[^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
         {
             _input = _input.Replace("[", "");
             _input = _input.Replace("]", "");
@@ -465,7 +488,7 @@ public class ConsoleController
                     currentRoom.SetZones(resDim, techDim);
                 }
                 else
-                    AppendLogLine("Current object must be a room", "yellow");
+                    AppendLogLine("Selected object must be a room", "yellow");
             }
             else // There is an object path
             {
@@ -492,8 +515,8 @@ public class ConsoleController
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string regex = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
-        if (Regex.IsMatch(_input, regex))
+        string patern = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('=');
 
@@ -501,7 +524,7 @@ public class ConsoleController
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
-                if (attr[0] == "current")
+                if (attr[0] == "selection")
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();
