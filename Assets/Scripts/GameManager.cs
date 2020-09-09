@@ -120,6 +120,7 @@ public class GameManager : MonoBehaviour
                 if (ol)
                     ol.eraseRenderer = false;
             }
+            AppendLogLine($"Select {_obj.name}.", "green");
         }
         else
             currentItemText.text = "Ogree3D";
@@ -129,7 +130,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
-    private void UpdateCurrentItems(GameObject _obj)
+    public void UpdateCurrentItems(GameObject _obj)
     {
         if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
             || (currentItems[0].GetComponent<Object>() && !_obj.GetComponent<Object>()))
@@ -151,7 +152,7 @@ public class GameManager : MonoBehaviour
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
-            currentItems.Add(_obj);
+            currentItems.Add(_obj) ;
             if (_obj.GetComponent<Object>())
             {
                 cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();

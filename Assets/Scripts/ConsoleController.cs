@@ -114,11 +114,34 @@ public class ConsoleController
             GameManager.gm.SetCurrentItem(null);
             return;
         }
-
-        if (GameManager.gm.allItems.Contains(_input))
+        if (_input.StartsWith("{") && _input.EndsWith("}"))
+        {
+            Transform root = GameManager.gm.currentItems[0].transform;
+            GameManager.gm.SetCurrentItem(null);
+            _input = _input.Trim('{', '}');
+            string[] items = _input.Split(',');
+            foreach (string item in items)
+            {
+                bool found = false;
+                foreach (Transform child in root)
+                {
+                    if (child.name == item)
+                    {
+                        if (GameManager.gm.currentItems.Count == 0)
+                            GameManager.gm.SetCurrentItem(child.gameObject);
+                        else
+                            GameManager.gm.UpdateCurrentItems(child.gameObject);
+                        found = true;
+                    }
+                }
+                if (!found)
+                    AppendLogLine($"Error: \"{item}\" is not a child of {root.name} or does not exist", "yellow");
+            }
+        }
+        else if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
-            AppendLogLine("Error: Object does not exist", "yellow");
+            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
     }
 
     ///<summary>
@@ -134,7 +157,7 @@ public class ConsoleController
         else if (GameManager.gm.tenants.ContainsKey(_input))
             GameManager.gm.tenants.Remove(_input);
         else
-            AppendLogLine("Error: Object does not exist", "yellow");
+            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
     }
 
     #endregion
@@ -465,7 +488,7 @@ public class ConsoleController
                     currentRoom.SetZones(resDim, techDim);
                 }
                 else
-                    AppendLogLine("Current object must be a room", "yellow");
+                    AppendLogLine("Selected object must be a room", "yellow");
             }
             else // There is an object path
             {
