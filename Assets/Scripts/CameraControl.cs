@@ -10,7 +10,6 @@ public class CameraControl : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private TextMeshProUGUI infosTMP = null;
-    // [SerializeField] private Toggle cameraSwitch = null;
 
     [Header("Parameters")]
     [Range(5, 20)]
@@ -24,7 +23,6 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
-
         if (EventSystem.current.currentSelectedGameObject)
             return;
 
@@ -33,15 +31,9 @@ public class CameraControl : MonoBehaviour
         else
             FreeModeControls();
 
-        // Update GUI infos about the camera
-        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("F2")},{transform.localPosition.y.ToString("F2")},{transform.localPosition.z.ToString("F2")}]";
-        float rot;
-        if (0 <= transform.localEulerAngles.x && transform.localEulerAngles.x < 180)
-            rot = transform.localEulerAngles.x;
-        else
-            rot = transform.localEulerAngles.x - 360;
-        infosTMP.text += $"\nCamera angle: {rot.ToString("0")}°";
+        UpdateGUIInfos();
     }
+
 
     ///<summary>
     /// Linked to cameraSwitch Toggle.
@@ -55,6 +47,9 @@ public class CameraControl : MonoBehaviour
             transform.localPosition = new Vector3(transform.localPosition.x, humanHeight, transform.localPosition.z);
             transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
         }
+        else
+            transform.GetChild(0).localEulerAngles = Vector3.zero;
+        UpdateGUIInfos();
     }
 
     ///<summary>
@@ -72,7 +67,6 @@ public class CameraControl : MonoBehaviour
         {
             float h = Input.GetAxis("Mouse X") * Time.deltaTime * rotationSpeed;
             transform.Rotate(0, h, 0, Space.World);
-
             float v = -Input.GetAxis("Mouse Y") * Time.deltaTime * rotationSpeed;
             transform.Rotate(v, 0, 0);
         }
@@ -90,14 +84,34 @@ public class CameraControl : MonoBehaviour
     private void FPSControls()
     {
         if (Input.GetAxis("Vertical") != 0)
-            transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime * moveSpeed);
+            transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime * (moveSpeed / 2));
         if (Input.GetAxis("Horizontal") != 0)
-            transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * Time.deltaTime * moveSpeed);
+            transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * Time.deltaTime * (moveSpeed / 2));
 
         if (Input.GetMouseButton(1))
         {
             float h = Input.GetAxis("Mouse X") * Time.deltaTime * rotationSpeed;
             transform.Rotate(0, h, 0);
+            float v = -Input.GetAxis("Mouse Y") * Time.deltaTime * rotationSpeed;
+            transform.GetChild(0).Rotate(v, 0, 0);
         }
+    }
+
+    ///<summary>
+    /// Update GUI infos about the camera
+    ///</summary>
+    private void UpdateGUIInfos()
+    {
+        float rot;
+        if (humanMode)
+            rot = transform.GetChild(0).localEulerAngles.x;
+        else
+            rot = transform.localEulerAngles.x;
+
+        if (rot < 0 || rot > 180)
+            rot -= 360;
+        
+        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("F2")},{transform.localPosition.y.ToString("F2")},{transform.localPosition.z.ToString("F2")}]";
+        infosTMP.text += $"\nCamera angle: {rot.ToString("0")}°";
     }
 }
