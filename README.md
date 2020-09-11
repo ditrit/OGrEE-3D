@@ -336,8 +336,10 @@ Templates are json files describing an object
 - Right click + drag: rotate camera
 - Middle click + drag: move camera on X & Z local axis
 - Scroll wheel: move camera on Y local axis
-- zsqd or arrow keys: move camera on X & Y local axis 
+- zsqd / arrow keys: move camera on X & Y local axis 
+- Left shift + zsqd / arrow keys: rotate camera
 
 ## Human mode movement
 - Right click + drag: rotate camera
-- zsqd or arrow keys: move camera on X & Y axis 
+- zsqd / arrow keys: move camera on X & Y axis 
+- Left shift + zsqd / arrow keys: rotate camera
