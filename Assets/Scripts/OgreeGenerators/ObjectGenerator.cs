@@ -60,10 +60,13 @@ public class ObjectGenerator : MonoBehaviour
         Rack rack = newRack.GetComponent<Rack>();
         rack.posXY = _data.pos;
         rack.posXYUnit = EUnit.tile;
-        rack.size = new Vector2(_data.size.x, _data.size.y);
-        rack.sizeUnit = EUnit.cm;
-        rack.height = _data.height;
-        rack.heightUnit = EUnit.U;
+        if (string.IsNullOrEmpty(_data.template))
+        {
+            rack.size = new Vector2(_data.size.x, _data.size.y);
+            rack.sizeUnit = EUnit.cm;
+            rack.height = _data.height;
+            rack.heightUnit = EUnit.U;
+        }
         switch (_data.orient)
         {
             case "front":
