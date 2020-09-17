@@ -19,18 +19,19 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the building</param>
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
-    public void CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
+    ///<returns>The created Building</returns>
+    public Building CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Datacenter>() == null)
         {
             GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
-            return;
+            return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return;
+            return null;
         }
 
         GameObject newBD = Instantiate(GameManager.gm.buildingModel);
@@ -62,6 +63,8 @@ public class BuildingGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hierarchyName, newBD);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newBD);
+        
+        return bd;
     }
 
     ///<summary>
@@ -69,18 +72,19 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the room</param>
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
-    public void CreateRoom(SRoomInfos _data, bool _changeHierarchy)
+    ///<returns>The created Room</returns>
+    public Room CreateRoom(SRoomInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
         {
             GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
-            return;
+            return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return;
+            return null;
         }
 
         GameObject newRoom = Instantiate(GameManager.gm.roomModel);
@@ -150,6 +154,8 @@ public class BuildingGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRoom);
+
+        return room;
     }
 
     ///<summary>
