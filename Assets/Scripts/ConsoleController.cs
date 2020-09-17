@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class ConsoleController
+public class ConsoleController : MonoBehaviour
 {
     // Used to communicate with ConsoleView
     public delegate void LogChangedHandler(string[] log);
@@ -16,20 +17,15 @@ public class ConsoleController
     /// How many log lines should be retained?
     /// Note that strings submitted to AppendLogLine with embedded newlines will be counted as a single line.
     /// </summary>
-    const int scrollbackSize = 50;
+    const int scrollbackSize = 150;
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
     public ReadFromJson rfJson = new ReadFromJson();
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
-    // private Dictionary<string, System.Action> createMethods;
+    [SerializeField] private bool isReady = true;
 
-    // public ConsoleController()
-    // {
-    //     createMethods = new Dictionary<string, System.Action>();
-    //     createMethods.Add("customer", CreateCustomer());
-    // }
 
     ///<summary>
     /// Collecting log output by Eliot Lash.
@@ -38,7 +34,13 @@ public class ConsoleController
     ///<param name="_color">The color of the line, white by default</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
-        Debug.Log(_line);
+        if (_color == "yellow")
+            Debug.LogWarning(_line);
+        else if (_color == "red")
+            Debug.LogError(_line);
+        else
+            Debug.Log(_line);
+        
         _line = $"<color={_color}>{_line}</color>";
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
@@ -64,19 +66,31 @@ public class ConsoleController
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
 
-        _input = ApplyVariables(_input);
+        StartCoroutine(WaitAndRunCmdStr(_input, _saveCmd));
+    }
 
+    ///<summary>
+    /// Wait until ConsoleController.isReady for jumping to next command string.
+    ///</summary>
+    ///<param name="_input">Command line to parse</param>
+    ///<param name="_saveCmd">If ".cmds", save it in GameManager ?</param>
+    private IEnumerator WaitAndRunCmdStr(string _input, bool _saveCmd)
+    {
+        yield return new WaitUntil(() => isReady == true);
+        isReady = false;
+
+        _input = ApplyVariables(_input);
         AppendLogLine("$ " + _input);
         if (_input == "..")
             SelectParent();
-        else if (_input[0] == '.')
-            ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '=')
             SelectItem(_input.Substring(1));
+        else if (_input[0] == '.')
+            ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
-            DeleteItem(_input.Substring(1));
+            StartCoroutine(DeleteItem(_input.Substring(1)));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -91,7 +105,10 @@ public class ConsoleController
     private void SelectParent()
     {
         if (!GameManager.gm.currentItems[0])
+        {
+            isReady = true;
             return;
+        }
         else if (GameManager.gm.currentItems[0].GetComponent<Customer>())
             GameManager.gm.SetCurrentItem(null);
         else
@@ -101,6 +118,7 @@ public class ConsoleController
                 GameManager.gm.SetCurrentItem(parent);
         }
 
+        isReady = true;
     }
 
     ///<summary>
@@ -112,6 +130,7 @@ public class ConsoleController
         if (string.IsNullOrEmpty(_input))
         {
             GameManager.gm.SetCurrentItem(null);
+            isReady = true;
             return;
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
@@ -142,13 +161,15 @@ public class ConsoleController
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
+       
+        isReady = true;
     }
 
     ///<summary>
     /// Look in all HierarchyNames for _input, Delete it with GameManager.DeleteItem().
     ///</summary>
     ///<param name="_input">HierarchyName of the object to delete</param>
-    private void DeleteItem(string _input)
+    private IEnumerator DeleteItem(string _input)
     {
         // Try to delete an Ogree object
         if (GameManager.gm.allItems.Contains(_input))
@@ -158,6 +179,9 @@ public class ConsoleController
             GameManager.gm.tenants.Remove(_input);
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
+
+        yield return new WaitForEndOfFrame();
+        isReady = true;
     }
 
     #endregion
@@ -181,6 +205,7 @@ public class ConsoleController
         else
             AppendLogLine("Unknown command", "red");
 
+        isReady = true;
     }
 
     ///<summary>
@@ -248,6 +273,8 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax Error on variable creation", "red");
+        
+        isReady = true;
     }
 
     #endregion
@@ -279,8 +306,7 @@ public class ConsoleController
         else
             AppendLogLine("Unknown command", "red");
 
-        // createMethods[str[0]](str[1]);
-
+        isReady = true;
     }
 
     ///<summary>
@@ -528,11 +554,13 @@ public class ConsoleController
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();
+                    isReady = true;
                     return;
                 }
                 if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
                 {
                     GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
+                    isReady = true;
                     return;
                 }
             }
@@ -555,6 +583,8 @@ public class ConsoleController
         }
         else
             AppendLogLine("Syntax error", "red");
+        
+        isReady = true;
     }
 
     ///<summary>

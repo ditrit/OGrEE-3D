@@ -13,6 +13,8 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
     [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
     [SerializeField] private TextMeshProUGUI tmpTenantEmail = null;
+    [SerializeField] private TextMeshProUGUI tmpPosXY = null;
+    [SerializeField] private TextMeshProUGUI tmpSize = null;
     [SerializeField] private TextMeshProUGUI tmpVendor = null;
     [SerializeField] private TextMeshProUGUI tmpType = null;
     [SerializeField] private TextMeshProUGUI tmpModel = null;
@@ -50,6 +52,8 @@ public class GUIObjectInfos : MonoBehaviour
             tmpTenantContact.text = "-";
             tmpTenantPhone.text = "-";
             tmpTenantEmail.text = "-";
+            tmpPosXY.text = "-";
+            tmpSize.text = "-";
             tmpVendor.text = "-";
             tmpType.text = "-";
             tmpModel.text = "-";
@@ -84,6 +88,8 @@ public class GUIObjectInfos : MonoBehaviour
         tmpTenantContact.text = _rack.tenant.mainContact;
         tmpTenantPhone.text = _rack.tenant.mainPhone;
         tmpTenantEmail.text = _rack.tenant.mainEmail;
+        tmpPosXY.text = $"Tile {_rack.posXY.x.ToString("0.##")}/{_rack.posXY.y.ToString("0.##")}";
+        tmpSize.text = $"{_rack.size.x}{_rack.sizeUnit} x {_rack.size.y}{_rack.sizeUnit} x {_rack.height}{_rack.heightUnit}";
         tmpVendor.text = _rack.vendor;
         tmpType.text = _rack.type;
         tmpModel.text = _rack.model;
@@ -102,6 +108,8 @@ public class GUIObjectInfos : MonoBehaviour
         tmpTenantContact.text = _room.tenant.mainContact;
         tmpTenantPhone.text = _room.tenant.mainPhone;
         tmpTenantEmail.text = _room.tenant.mainEmail;
+        tmpPosXY.text = "-";
+        tmpSize.text = $"{_room.size.x}{_room.sizeUnit} x {_room.size.y}{_room.sizeUnit}";
         tmpVendor.text = "-";
         tmpType.text = "-";
         tmpModel.text = "-";

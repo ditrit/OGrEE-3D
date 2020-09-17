@@ -36,6 +36,8 @@ OGREE 3D is a data-center viewer
 - [Templates definition](#Templates-definition)
     - [Rack template](#Rack-template)
 - [Controls](#Controls)
+    - [Free mode movement](#Free-mode-movement)
+    - [Human mode movement](#Human-mode-movement)
 
 # Getting started
 Object hierarchy, each level is mandatory
@@ -326,8 +328,18 @@ Templates are json files describing an object
 ```  
 
 # Controls  
-- Right click: rotate camera
-- zsqd or arrow keys: move camera  
 - Left click: select an object (Room or Rack)
-- LeftControl + LeftClick: Add/Remove object from selection  
+- Left control + Left click: Add/Remove object from selection  
 - Alt + drag: Move selected rack(s)  
+
+## Free mode movement 
+- Right click + drag: rotate camera
+- Middle click + drag: move camera on X & Z local axis
+- Scroll wheel: move camera on Y local axis
+- zsqd / arrow keys: move camera on X & Y local axis 
+- Left shift + zsqd / arrow keys: rotate camera
+
+## Human mode movement
+- Right click + drag: rotate camera
+- zsqd / arrow keys: move camera on X & Y axis 
+- Left shift + zsqd / arrow keys: rotate camera

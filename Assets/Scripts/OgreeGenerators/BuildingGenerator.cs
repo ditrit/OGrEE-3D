@@ -47,7 +47,7 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
 
         Building bd = newBD.GetComponent<Building>();
-        BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10));
+        BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
         bd.posXY = new Vector2(_data.pos.x,_data.pos.y);
         bd.posXYUnit = EUnit.m;
         bd.posZ = _data.pos.z;
@@ -95,7 +95,7 @@ public class BuildingGenerator : MonoBehaviour
         room.technicalZone.localScale = room.usableZone.localScale;
         room.tilesEdges.localScale = room.usableZone.localScale;
         room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
-        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, _data.size.y, room.usableZone.localScale.z * 10));
+        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, _data.size.y, room.usableZone.localScale.z * 10), -0.001f);
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
@@ -157,7 +157,8 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_root">The root of walls.</param>
     ///<param name="_dim">The dimensions of the building/room</param>
-    private void BuildWalls(Transform _root, Vector3 _dim)
+    ///<param name="_offset">The offset for avoiding walls overlaping</param>
+    private void BuildWalls(Transform _root, Vector3 _dim, float _offset)
     {
         Transform wallFront = _root.GetChild(0);
         Transform wallBack = _root.GetChild(1);
@@ -169,9 +170,9 @@ public class BuildingGenerator : MonoBehaviour
         wallRight.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
         wallLeft.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
 
-        wallFront.localPosition = new Vector3(0, wallFront.localScale.y / 2, _dim.z / 2);
-        wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -_dim.z / 2);
-        wallRight.localPosition = new Vector3(_dim.x / 2, wallFront.localScale.y / 2, 0);
-        wallLeft.localPosition = new Vector3(-_dim.x / 2, wallFront.localScale.y / 2, 0);
+        wallFront.localPosition = new Vector3(0, wallFront.localScale.y / 2, _dim.z / 2 + _offset);
+        wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -(_dim.z / 2 + _offset));
+        wallRight.localPosition = new Vector3(_dim.x / 2 + _offset, wallFront.localScale.y / 2, 0);
+        wallLeft.localPosition = new Vector3(-(_dim.x / 2 + _offset), wallFront.localScale.y / 2, 0);
     }
 }
