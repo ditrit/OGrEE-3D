@@ -7,13 +7,13 @@ using System.Collections.Generic;
 
 public class ConsoleView : MonoBehaviour
 {
-    public ConsoleController console { get; private set; } = new ConsoleController();
+    public ConsoleController console;
 
     public GameObject viewContainer;
     public TextMeshProUGUI logTextArea;
     public TMP_InputField inputField;
 
-    void Start()
+    private void Start()
     {
         if (console != null)
         {
@@ -24,6 +24,7 @@ public class ConsoleView : MonoBehaviour
 #if DEBUG
         console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\testCmds.txt");
         // console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\EDF.NOE_Ced.ocli");
+        // console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\Exaion\\EDF_EXAION.ocli");
 #endif
     }
 

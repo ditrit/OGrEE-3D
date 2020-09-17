@@ -50,13 +50,16 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
-        consoleController = GameObject.FindObjectOfType<ConsoleView>().console;
+        consoleController = GameObject.FindObjectOfType<ConsoleController>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
+
+        if (Input.GetKeyDown(KeyCode.C))
+            Debug.Log(allItems.Count);
 
         if (!EventSystem.current.IsPointerOverGameObject()
             && Input.GetMouseButtonUp(0))
@@ -152,7 +155,7 @@ public class GameManager : MonoBehaviour
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
-            currentItems.Add(_obj) ;
+            currentItems.Add(_obj);
             if (_obj.GetComponent<Object>())
             {
                 cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
