@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -94,7 +94,10 @@ public class ConsoleController : MonoBehaviour
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
+        {
             AppendLogLine("Unknown command", "red");
+            isReady = true;
+        }
     }
 
     #region HierarchyMethods()
@@ -273,8 +276,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             AppendLogLine("Syntax Error on variable creation", "red");
-        
-        isReady = true;
     }
 
     #endregion
@@ -579,11 +580,11 @@ public class ConsoleController : MonoBehaviour
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
             else
-                AppendLogLine($"{obj.name} doesn't exist.", "yellow");
+                AppendLogLine($"Object doesn't exist.", "yellow");
         }
         else
             AppendLogLine("Syntax error", "red");
-        
+
         isReady = true;
     }
 
