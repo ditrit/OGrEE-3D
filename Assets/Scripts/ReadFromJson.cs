@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -33,6 +33,7 @@ public class ReadFromJson
         public int[] elemSize;
         public string mandatory;
         public string labelPos;
+        public string color;
     }
     #endregion
 
@@ -86,7 +87,7 @@ public class ReadFromJson
         infos.height = (int)(rackData.sizeWDHmm[2] / GameManager.gm.uSize / 1000);
         ObjectGenerator.instance.CreateRack(infos, false);
 
-        Rack rack = GameObject.Find(rackData.slug).GetComponent<Rack>();
+        rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
         rack.model = rackData.model;
         foreach (SRackSlot comp in rackData.components)
@@ -166,6 +167,12 @@ public class ReadFromJson
                     textBis.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
                     break;
             }
+
+            // go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+            Material mat = go.GetComponent<Renderer>().material;
+            Color myColor = new Color();
+            ColorUtility.TryParseHtmlString($"#{comp.color}", out myColor);
+            mat.color = myColor;
         }
 
 #if !DEBUG
