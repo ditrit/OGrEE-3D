@@ -50,6 +50,7 @@ public struct SRoomInfos
     public Vector3 pos; // tile
     public Vector3 size; // tile
     public string orient;
+    public string template;
 }
 
 [System.Serializable]

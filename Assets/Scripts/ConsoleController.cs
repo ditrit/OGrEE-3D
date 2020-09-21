@@ -412,15 +412,20 @@ public class ConsoleController : MonoBehaviour
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
             SRoomInfos infos = new SRoomInfos();
             infos.pos = ParseVector3(data[1]);
-            infos.size = ParseVector3(data[2]);
-            infos.orient = data[3];
+            if (data[2].StartsWith("["))
+            {
+                infos.size = ParseVector3(data[2]);
+                infos.orient = data[3];
+            }
+            else
+                infos.template = data[2];
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);

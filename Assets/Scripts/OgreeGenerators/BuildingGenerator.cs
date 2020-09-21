@@ -49,7 +49,7 @@ public class BuildingGenerator : MonoBehaviour
 
         Building bd = newBD.GetComponent<Building>();
         BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
-        bd.posXY = new Vector2(_data.pos.x,_data.pos.y);
+        bd.posXY = new Vector2(_data.pos.x, _data.pos.y);
         bd.posXYUnit = EUnit.m;
         bd.posZ = _data.pos.z;
         bd.posZUnit = EUnit.m;
@@ -63,7 +63,7 @@ public class BuildingGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hierarchyName, newBD);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newBD);
-        
+
         return bd;
     }
 
@@ -91,15 +91,29 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.name = _data.name;
         newRoom.transform.parent = _data.parent;
 
+        Vector3 size;
+        string orient;
+        if (string.IsNullOrEmpty(_data.template))
+        {
+            size = _data.size;
+            orient = _data.orient;
+        }
+        else
+        {
+            Vector3 tmp = GameManager.gm.roomTemplates[_data.template].infos.size;
+            size = new Vector3(tmp.x, tmp.z, tmp.y);
+            orient = GameManager.gm.roomTemplates[_data.template].infos.orient;
+        }
+
         Room room = newRoom.GetComponent<Room>();
 
         Vector3 originalSize = room.usableZone.localScale;
-        room.usableZone.localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.z);
         room.reservedZone.localScale = room.usableZone.localScale;
         room.technicalZone.localScale = room.usableZone.localScale;
         room.tilesEdges.localScale = room.usableZone.localScale;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(_data.size.x, _data.size.z) / 0.6f;
-        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, _data.size.y, room.usableZone.localScale.z * 10), -0.001f);
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(size.x, size.z) / 0.6f;
+        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, size.y, room.usableZone.localScale.z * 10), -0.001f);
 
         Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
@@ -111,11 +125,11 @@ public class BuildingGenerator : MonoBehaviour
         room.posXYUnit = EUnit.m;
         room.posZ = _data.pos.z;
         room.posZUnit = EUnit.m;
-        room.size = new Vector2(_data.size.x, _data.size.z);
+        room.size = new Vector2(size.x, size.z);
         room.sizeUnit = EUnit.m;
-        room.height = _data.size.y;
+        room.height = size.y;
         room.heightUnit = EUnit.m;
-        switch (_data.orient)
+        switch (orient)
         {
             case "EN":
                 room.orientation = EOrientation.N;
@@ -139,9 +153,11 @@ public class BuildingGenerator : MonoBehaviour
                 break;
         }
 
+        // Set UI room's name
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = room.size;
 
+        // Add room to GUI room filter
         Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
@@ -150,6 +166,10 @@ public class BuildingGenerator : MonoBehaviour
         // Get tenant from related Datacenter
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
         room.UpdateZonesColor();
+
+        if (!string.IsNullOrEmpty(_data.template))
+            room.SetZones(GameManager.gm.roomTemplates[_data.template].reserved,
+                            GameManager.gm.roomTemplates[_data.template].technical);
 
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
         if (_changeHierarchy)

@@ -41,7 +41,7 @@ public class ReadFromJson
     private struct SAisles
     {
         public string name;
-        public string location; // should be posY
+        public string locationY; // should be posY
         public string orientation;
     }
     #endregion
