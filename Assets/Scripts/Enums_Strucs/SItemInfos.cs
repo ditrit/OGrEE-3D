@@ -51,3 +51,11 @@ public struct SRoomInfos
     public Vector3 size; // tile
     public string orient;
 }
+
+[System.Serializable]
+public struct SRoomTemplate
+{
+    public SRoomInfos infos;
+    public SMargin reserved;
+    public SMargin technical;
+}

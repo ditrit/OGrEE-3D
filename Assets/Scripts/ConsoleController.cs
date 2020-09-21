@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,7 +40,7 @@ public class ConsoleController : MonoBehaviour
             Debug.LogError(_line);
         else
             Debug.Log(_line);
-        
+
         _line = $"<color={_color}>{_line}</color>";
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
@@ -164,7 +164,7 @@ public class ConsoleController : MonoBehaviour
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
-       
+
         isReady = true;
     }
 
@@ -243,7 +243,8 @@ public class ConsoleController : MonoBehaviour
     private void LoadTemplateFile(string _input)
     {
         string[] str = _input.Split(new char[] { '@' }, 2);
-        if (str[0] == "rack")
+        // if (str[0] == "rack" || str[0] == "room")
+        if (str.Length == 2)
         {
             string json = "";
             try
@@ -256,10 +257,18 @@ public class ConsoleController : MonoBehaviour
                 AppendLogLine(e.Message, "red");
             }
             if (!string.IsNullOrEmpty(json))
-                rfJson.CreateRackTemplate(json);
+            {
+                if (str[0] == "rack")
+                    rfJson.CreateRackTemplate(json);
+                else if (str[0] == "room")
+                    rfJson.CreateRoomTemplate(json);
+                else
+                    AppendLogLine("Unknown template type", "red");
+            }
         }
         else
-            AppendLogLine("Unknown template type", "red");
+            AppendLogLine("Syntax error", "red");
+        //     AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -704,7 +713,7 @@ public class ConsoleController : MonoBehaviour
         {
             string key = Regex.Replace(match.Value, "[\\$\\{\\}]", "");
             _input = _input.Replace(match.Value, variables[key]);
-            Debug.Log($"[{variables[key]}] {_input}");
+            // Debug.Log($"[{variables[key]}] {_input}");
         }
         return _input;
     }

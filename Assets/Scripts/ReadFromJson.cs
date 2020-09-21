@@ -1,10 +1,51 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class ReadFromJson
 {
+    #region Room
+    [System.Serializable]
+    private struct SRoomFromJson
+    {
+        public string slug;
+        public string orientation;
+        public int[] sizeWDHm;
+        public int[] technicalArea;
+        public int[] reservedArea;
+        public SSeparator[] separators;
+        public STiles[] tiles;
+        public SAisles[] aisles;
+    }
+
+    [System.Serializable]
+    private struct SSeparator
+    {
+        public string name;
+        public int[] pos1XYm;
+        public int[] pos2XYm;
+    }
+
+    [System.Serializable]
+    private struct STiles
+    {
+        public string location;
+        public string name;
+        public string label;
+        public string type;
+        public string color;
+    }
+
+    [System.Serializable]
+    private struct SAisles
+    {
+        public string name;
+        public string location; // should be posY
+        public string orientation;
+    }
+    #endregion
+
     #region Rack
     [System.Serializable]
     private struct SRackFromJson
@@ -85,7 +126,7 @@ public class ReadFromJson
         infos.orient = "front";
         infos.size = new Vector2(rackData.sizeWDHmm[0] / 10, rackData.sizeWDHmm[1] / 10);
         infos.height = (int)(rackData.sizeWDHmm[2] / GameManager.gm.uSize / 1000);
-        ObjectGenerator.instance.CreateRack(infos, false);
+        Rack rack = ObjectGenerator.instance.CreateRack(infos, false);
 
         rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
@@ -183,6 +224,41 @@ public class ReadFromJson
 
         GameManager.gm.allItems.Remove(rack.GetComponent<HierarchyName>().fullname);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
+    }
+
+    ///<summary>
+    /// Create a room from _json data...
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateRoomTemplate(string _json)
+    {
+        SRoomFromJson roomData = JsonUtility.FromJson<SRoomFromJson>(_json);
+        if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
+            return;
+
+        SRoomInfos infos = new SRoomInfos();
+        infos.name = roomData.slug;
+        infos.parent = GameManager.gm.templatePlaceholder;
+        infos.pos = Vector3.zero;
+        infos.size = new Vector3(roomData.sizeWDHm[0], roomData.sizeWDHm[1], roomData.sizeWDHm[2]);
+        infos.orient = roomData.orientation; // Should be here ?
+
+        // Room room = BuildingGenerator.instance.CreateRoom(infos, false);
+        SMargin reserved = new SMargin(roomData.reservedArea[0], roomData.reservedArea[1], roomData.reservedArea[2], roomData.reservedArea[3]);
+        SMargin technical = new SMargin(roomData.technicalArea[0], roomData.technicalArea[1], roomData.technicalArea[2], roomData.technicalArea[3]);
+        // room.SetZones(reserved, technical);
+
+        SRoomTemplate template = new SRoomTemplate();
+        template.infos = infos;
+        template.reserved = reserved;
+        template.technical = technical;
+
+        GameManager.gm.roomTemplates.Add(infos.name, template);
+
+        // store tiles data in Room
+
+        // generate aisles ?
+
     }
 
 }
