@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     public Transform templatePlaceholder;
     public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
-    public Dictionary<string, SRoomTemplate> roomTemplates = new Dictionary<string, SRoomTemplate>();
+    public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;

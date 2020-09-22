@@ -100,9 +100,10 @@ public class BuildingGenerator : MonoBehaviour
         }
         else
         {
-            Vector3 tmp = GameManager.gm.roomTemplates[_data.template].infos.size;
-            size = new Vector3(tmp.x, tmp.z, tmp.y);
-            orient = GameManager.gm.roomTemplates[_data.template].infos.orient;
+            size = new Vector3(GameManager.gm.roomTemplates[_data.template].sizeWDHm[0],
+                                GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
+                                GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
+            orient = GameManager.gm.roomTemplates[_data.template].orientation;
         }
 
         Room room = newRoom.GetComponent<Room>();
@@ -168,8 +169,10 @@ public class BuildingGenerator : MonoBehaviour
         room.UpdateZonesColor();
 
         if (!string.IsNullOrEmpty(_data.template))
-            room.SetZones(GameManager.gm.roomTemplates[_data.template].reserved,
-                            GameManager.gm.roomTemplates[_data.template].technical);
+        {
+            room.SetZones(new SMargin(GameManager.gm.roomTemplates[_data.template].reservedArea),
+                            new SMargin(GameManager.gm.roomTemplates[_data.template].technicalArea));
+        }
 
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
         if (_changeHierarchy)

@@ -7,7 +7,7 @@ public class ReadFromJson
 {
     #region Room
     [System.Serializable]
-    private struct SRoomFromJson
+    public struct SRoomFromJson
     {
         public string slug;
         public string orientation;
@@ -20,7 +20,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    private struct SSeparator
+    public struct SSeparator
     {
         public string name;
         public int[] pos1XYm;
@@ -28,7 +28,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    private struct STiles
+    public struct STiles
     {
         public string location;
         public string name;
@@ -38,7 +38,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    private struct SAisles
+    public struct SAisles
     {
         public string name;
         public string locationY; // should be posY
@@ -236,29 +236,7 @@ public class ReadFromJson
         if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
             return;
 
-        SRoomInfos infos = new SRoomInfos();
-        infos.name = roomData.slug;
-        infos.parent = GameManager.gm.templatePlaceholder;
-        infos.pos = Vector3.zero;
-        infos.size = new Vector3(roomData.sizeWDHm[0], roomData.sizeWDHm[1], roomData.sizeWDHm[2]);
-        infos.orient = roomData.orientation; // Should be here ?
-
-        // Room room = BuildingGenerator.instance.CreateRoom(infos, false);
-        SMargin reserved = new SMargin(roomData.reservedArea[0], roomData.reservedArea[1], roomData.reservedArea[2], roomData.reservedArea[3]);
-        SMargin technical = new SMargin(roomData.technicalArea[0], roomData.technicalArea[1], roomData.technicalArea[2], roomData.technicalArea[3]);
-        // room.SetZones(reserved, technical);
-
-        SRoomTemplate template = new SRoomTemplate();
-        template.infos = infos;
-        template.reserved = reserved;
-        template.technical = technical;
-
-        GameManager.gm.roomTemplates.Add(infos.name, template);
-
-        // store tiles data in Room
-
-        // generate aisles ?
-
+        GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
     }
 
 }

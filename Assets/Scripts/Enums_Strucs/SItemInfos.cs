@@ -53,10 +53,3 @@ public struct SRoomInfos
     public string template;
 }
 
-[System.Serializable]
-public struct SRoomTemplate
-{
-    public SRoomInfos infos;
-    public SMargin reserved;
-    public SMargin technical;
-}
