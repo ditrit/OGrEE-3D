@@ -196,6 +196,12 @@ Works with single or multi selection.
 selection.[attribute]=[value]
 ```  
 
+### Display U location of a rack
+Display or hide U location dummies to simply identify objects in a rack.  
+```
+[rack].displayU=[true|false]
+```  
+
 ## Examples
 ```
 +customer:DEMO

@@ -119,6 +119,11 @@ public class Room : Building
         _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 2;
     }
 
+    ///<summary>
+    /// Check for a _param attribute and assign _value to it.
+    ///</summary>
+    ///<param name="_param">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
         switch (_param)

@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public GameObject serverModel;
     public GameObject deviceModel;
     public GameObject tileNameModel;
+    public GameObject uLocationModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
