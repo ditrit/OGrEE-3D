@@ -11,7 +11,7 @@ public class ReadFromJson
     {
         public string slug;
         public string orientation;
-        public int[] sizeWDHm;
+        public float[] sizeWDHm;
         public int[] technicalArea;
         public int[] reservedArea;
         public SSeparator[] separators;
@@ -23,8 +23,8 @@ public class ReadFromJson
     public struct SSeparator
     {
         public string name;
-        public int[] pos1XYm;
-        public int[] pos2XYm;
+        public float[] pos1XYm;
+        public float[] pos2XYm;
     }
 
     [System.Serializable]
