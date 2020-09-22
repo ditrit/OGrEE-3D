@@ -174,6 +174,8 @@ You have to modify an object in the same file than its creation.
 ```  
 
 ### Set reserved and technical zones of a room  
+Enables tiles edges display.  
+You can modify areas only if the room has no racks in it.  
 *`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
 `[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```

@@ -39,6 +39,13 @@ public class Room : Building
     ///<param name="_techDim">The dimensions of the technical zone</param>
     public void SetZones(SMargin _resDim, SMargin _techDim)
     {
+        if (transform.GetComponentInChildren<Rack>())
+        {
+            GameManager.gm.AppendLogLine("Can't modify areas if room has a rack in it.", "yellow");
+            return;
+        }
+        tilesEdges.gameObject.SetActive(true);
+
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);
 
