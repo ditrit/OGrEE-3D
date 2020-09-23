@@ -66,7 +66,7 @@ public class ConsoleController : MonoBehaviour
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
 
-        StartCoroutine(WaitAndRunCmdStr(_input, _saveCmd));
+        StartCoroutine(WaitAndRunCmdStr(_input.Trim(), _saveCmd));
     }
 
     ///<summary>
