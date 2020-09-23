@@ -44,7 +44,7 @@ public enum ERole
 }
 
 ///<summary>
-/// The family of object: Datacenter / Room / Itroom / Rack / Powerpanel / Airconditionner / Chassis / Device / Pdu / Container
+/// The family of object: Rack / Powerpanel / Airconditionner / Chassis / Device / Pdu / Container
 ///</summary>
 public enum EObjFamily
 {

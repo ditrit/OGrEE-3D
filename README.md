@@ -203,7 +203,7 @@ _.[attribute]=[value]
 ### Display U location of a rack
 Display or hide U location dummies to simply identify objects in a rack.  
 ```
-[rack].displayU=[true|false]
+[rack].U=[true|false]
 ```  
 
 ## Examples

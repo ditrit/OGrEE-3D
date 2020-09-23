@@ -60,7 +60,7 @@ public class Rack : Object
             case "alpha":
                 UpdateAlpha(_value);
                 break;
-            case "displayU":
+            case "U":
                 ToggleU(_value);
                 break;
             default:
