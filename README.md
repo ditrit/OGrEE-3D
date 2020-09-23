@@ -28,6 +28,7 @@ OGREE 3D is a data-center viewer
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Rack](#Create-a-Rack)
+        - [Create a Tenant](#Create-a-Tenant)
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
