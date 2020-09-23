@@ -39,6 +39,13 @@ public class Room : Building
     ///<param name="_techDim">The dimensions of the technical zone</param>
     public void SetZones(SMargin _resDim, SMargin _techDim)
     {
+        if (transform.GetComponentInChildren<Rack>())
+        {
+            GameManager.gm.AppendLogLine("Can't modify areas if room has a rack in it.", "yellow");
+            return;
+        }
+        tilesEdges.gameObject.SetActive(true);
+
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);
 
@@ -112,6 +119,11 @@ public class Room : Building
         _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 2;
     }
 
+    ///<summary>
+    /// Check for a _param attribute and assign _value to it.
+    ///</summary>
+    ///<param name="_param">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
         switch (_param)

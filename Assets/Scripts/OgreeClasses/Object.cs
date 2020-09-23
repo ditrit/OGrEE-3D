@@ -37,7 +37,7 @@ public class Object : MonoBehaviour, IAttributeModif
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public void SetAttribute(string _param, string _value)
+    public virtual void SetAttribute(string _param, string _value)
     {
         switch (_param)
         {
@@ -76,7 +76,7 @@ public class Object : MonoBehaviour, IAttributeModif
     /// If Tenant exists, assign it to the object. If object is a Rack, call Rack.UpdateColor().
     ///</summary>
     ///<param name="_tenantName">The name of the tenant</param>
-    private void AssignTenant(string _tenantName)
+    protected void AssignTenant(string _tenantName)
     {
         if (GameManager.gm.tenants.ContainsKey(_tenantName))
         {
@@ -92,7 +92,7 @@ public class Object : MonoBehaviour, IAttributeModif
     /// Update object's alpha according to _input, from 0 to 100.
     ///</summary>
     ///<param name="_input">Alpha wanted for the rack</param>
-    public void UpdateAlpha(string _input)
+    protected void UpdateAlpha(string _input)
     {
         string regex = "^[0-9]+$";
         if (Regex.IsMatch(_input, regex))

@@ -79,6 +79,7 @@ MonoBehaviour:
     bottom: 0
   floorHeight: 0
   floorUnit: 0
+  floor: 
   usableZone: {fileID: 1754386266534505231}
   reservedZone: {fileID: 18736379438063463}
   technicalZone: {fileID: 2859817786028861529}
@@ -228,7 +229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9208373176663619532
 Transform:
   m_ObjectHideFlags: 0

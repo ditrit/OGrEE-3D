@@ -32,12 +32,14 @@ public class GameManager : MonoBehaviour
     public GameObject serverModel;
     public GameObject deviceModel;
     public GameObject tileNameModel;
+    public GameObject uLocationModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
+    public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
@@ -58,8 +60,8 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 
-        if (Input.GetKeyDown(KeyCode.C))
-            Debug.Log(allItems.Count);
+        // if (Input.GetKeyDown(KeyCode.C))
+        //     Debug.Log(allItems.Count);
 
         if (!EventSystem.current.IsPointerOverGameObject()
             && Input.GetMouseButtonUp(0))
@@ -230,6 +232,8 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
+        rackTemplates.Clear();
+        roomTemplates.Clear();
         consoleController.variables.Clear();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);

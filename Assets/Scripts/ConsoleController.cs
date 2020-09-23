@@ -40,7 +40,7 @@ public class ConsoleController : MonoBehaviour
             Debug.LogError(_line);
         else
             Debug.Log(_line);
-        
+
         _line = $"<color={_color}>{_line}</color>";
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
@@ -66,7 +66,7 @@ public class ConsoleController : MonoBehaviour
         if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
             return;
 
-        StartCoroutine(WaitAndRunCmdStr(_input, _saveCmd));
+        StartCoroutine(WaitAndRunCmdStr(_input.Trim(), _saveCmd));
     }
 
     ///<summary>
@@ -94,7 +94,10 @@ public class ConsoleController : MonoBehaviour
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
+        {
             AppendLogLine("Unknown command", "red");
+            isReady = true;
+        }
     }
 
     #region HierarchyMethods()
@@ -161,7 +164,7 @@ public class ConsoleController : MonoBehaviour
             GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
-       
+
         isReady = true;
     }
 
@@ -171,8 +174,16 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">HierarchyName of the object to delete</param>
     private IEnumerator DeleteItem(string _input)
     {
+        if (_input == "selection")
+        {
+            List<string> itemsToDel = new List<string>();
+            foreach (GameObject item in GameManager.gm.currentItems)
+                itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
+            foreach (string item in itemsToDel)
+                GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item]);
+        }
         // Try to delete an Ogree object
-        if (GameManager.gm.allItems.Contains(_input))
+        else if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
         // Try to delete a tenant
         else if (GameManager.gm.tenants.ContainsKey(_input))
@@ -240,7 +251,8 @@ public class ConsoleController : MonoBehaviour
     private void LoadTemplateFile(string _input)
     {
         string[] str = _input.Split(new char[] { '@' }, 2);
-        if (str[0] == "rack")
+        // if (str[0] == "rack" || str[0] == "room")
+        if (str.Length == 2)
         {
             string json = "";
             try
@@ -253,10 +265,18 @@ public class ConsoleController : MonoBehaviour
                 AppendLogLine(e.Message, "red");
             }
             if (!string.IsNullOrEmpty(json))
-                rfJson.CreateRackTemplate(json);
+            {
+                if (str[0] == "rack")
+                    rfJson.CreateRackTemplate(json);
+                else if (str[0] == "room")
+                    rfJson.CreateRoomTemplate(json);
+                else
+                    AppendLogLine("Unknown template type", "red");
+            }
         }
         else
-            AppendLogLine("Unknown template type", "red");
+            AppendLogLine("Syntax error", "red");
+        //     AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -273,8 +293,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             AppendLogLine("Syntax Error on variable creation", "red");
-        
-        isReady = true;
     }
 
     #endregion
@@ -402,15 +420,20 @@ public class ConsoleController : MonoBehaviour
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)$";
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
 
             SRoomInfos infos = new SRoomInfos();
             infos.pos = ParseVector3(data[1]);
-            infos.size = ParseVector3(data[2]);
-            infos.orient = data[3];
+            if (data[2].StartsWith("["))
+            {
+                infos.size = ParseVector3(data[2]);
+                infos.orient = data[3];
+            }
+            else
+                infos.template = data[2];
             if (data[0].StartsWith("/"))
             {
                 data[0] = data[0].Substring(1);
@@ -541,7 +564,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string patern = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        string patern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('=');
@@ -550,7 +573,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
-                if (attr[0] == "selection")
+                if (attr[0] == "selection" || attr[0] == "_")
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();
@@ -579,11 +602,11 @@ public class ConsoleController : MonoBehaviour
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
             else
-                AppendLogLine($"{obj.name} doesn't exist.", "yellow");
+                AppendLogLine($"Object doesn't exist.", "yellow");
         }
         else
             AppendLogLine("Syntax error", "red");
-        
+
         isReady = true;
     }
 
@@ -703,7 +726,7 @@ public class ConsoleController : MonoBehaviour
         {
             string key = Regex.Replace(match.Value, "[\\$\\{\\}]", "");
             _input = _input.Replace(match.Value, variables[key]);
-            Debug.Log($"[{variables[key]}] {_input}");
+            // Debug.Log($"[{variables[key]}] {_input}");
         }
         return _input;
     }

@@ -5,6 +5,47 @@ using TMPro;
 
 public class ReadFromJson
 {
+    #region Room
+    [System.Serializable]
+    public struct SRoomFromJson
+    {
+        public string slug;
+        public string orientation;
+        public float[] sizeWDHm;
+        public int[] technicalArea;
+        public int[] reservedArea;
+        public SSeparator[] separators;
+        public STiles[] tiles;
+        public SAisles[] aisles;
+    }
+
+    [System.Serializable]
+    public struct SSeparator
+    {
+        public string name;
+        public float[] pos1XYm;
+        public float[] pos2XYm;
+    }
+
+    [System.Serializable]
+    public struct STiles
+    {
+        public string location;
+        public string name;
+        public string label;
+        public string type;
+        public string color;
+    }
+
+    [System.Serializable]
+    public struct SAisles
+    {
+        public string name;
+        public string locationY; // should be posY
+        public string orientation;
+    }
+    #endregion
+
     #region Rack
     [System.Serializable]
     private struct SRackFromJson
@@ -33,6 +74,7 @@ public class ReadFromJson
         public int[] elemSize;
         public string mandatory;
         public string labelPos;
+        public string color;
     }
     #endregion
 
@@ -84,9 +126,9 @@ public class ReadFromJson
         infos.orient = "front";
         infos.size = new Vector2(rackData.sizeWDHmm[0] / 10, rackData.sizeWDHmm[1] / 10);
         infos.height = (int)(rackData.sizeWDHmm[2] / GameManager.gm.uSize / 1000);
-        ObjectGenerator.instance.CreateRack(infos, false);
+        Rack rack = ObjectGenerator.instance.CreateRack(infos, false);
 
-        Rack rack = GameObject.Find(rackData.slug).GetComponent<Rack>();
+        rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
         rack.model = rackData.model;
         foreach (SRackSlot comp in rackData.components)
@@ -166,6 +208,12 @@ public class ReadFromJson
                     textBis.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
                     break;
             }
+
+            // go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+            Material mat = go.GetComponent<Renderer>().material;
+            Color myColor = new Color();
+            ColorUtility.TryParseHtmlString($"#{comp.color}", out myColor);
+            mat.color = myColor;
         }
 
 #if !DEBUG
@@ -176,6 +224,19 @@ public class ReadFromJson
 
         GameManager.gm.allItems.Remove(rack.GetComponent<HierarchyName>().fullname);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
+    }
+
+    ///<summary>
+    /// Create a room from _json data...
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateRoomTemplate(string _json)
+    {
+        SRoomFromJson roomData = JsonUtility.FromJson<SRoomFromJson>(_json);
+        if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
+            return;
+
+        GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
     }
 
 }

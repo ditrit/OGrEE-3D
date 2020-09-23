@@ -19,18 +19,19 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the rack</param>
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
-    public void CreateRack(SRackInfos _data, bool _changeHierarchy)
+    ///<returns>The created Rack</returns>
+    public Rack CreateRack(SRackInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Room>() == null)
         {
             GameManager.gm.AppendLogLine("Rack must be child of a Room", "yellow");
-            return;
+            return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return;
+            return null;
         }
 
         GameObject newRack;
@@ -106,6 +107,8 @@ public class ObjectGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hierarchyName, newRack);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newRack);
+
+        return rack;
     }
 
     public void CreateChassis(SDeviceInfos _data)

@@ -34,6 +34,7 @@ OGREE 3D is a data-center viewer
         - [Modify object’s attribute](#Modify-object’s-attribute)
     - [Examples](#Examples)
 - [Templates definition](#Templates-definition)
+    - [Room template](#Room-template)
     - [Rack template](#Rack-template)
 - [Controls](#Controls)
     - [Free mode movement](#Free-mode-movement)
@@ -104,8 +105,10 @@ Select several children of current selected object.
 ```
 
 ### Delete object
+Works with single or multi selection.  
 ```
 -[full name]  
+-selection
 ```  
 
 ## Create commands
@@ -136,10 +139,13 @@ Building must be child of a Datacenter.
 Room must be child of a building.
 Its name will be displayed in the center of the room in its local coordinates system.  
 *`[pos]` is a Vector3 [x,y,z] (m,m,m)  
-`[size]` is a Vector3 [width,length,height] (m,m,m)*  
+`[size]` is a Vector3 [width,length,height] (m,m,m)
+`[template]` is the name of the room template*  
 ```
 +room:[name]@[pos]@[size]@[orientation]  
 +ro:[name]@[pos]@[size]@[orientation]
++room:[name]@[pos]@[template]  
++ro:[name]@[pos]@[template]
 ```
 
 ### Create a Rack
@@ -160,7 +166,8 @@ Rack must be child of a room
 +tenant:[name]@[color]
 ```  
 
-## Set commands
+## Set commands  
+You have to modify an object in the same file than its creation.   
 ### Set colors for zones of all rooms in a datacenter
 ```
 [datacenter].usableColor=[color]
@@ -169,6 +176,8 @@ Rack must be child of a room
 ```  
 
 ### Set reserved and technical zones of a room  
+Enables tiles edges display.  
+You can modify areas only if the room has no racks in it.  
 *`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
 `[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```
@@ -186,7 +195,15 @@ Works with single or multi selection.
 `[tenant].[attribute]` can be mainContact / mainPhone / mainEmail*  
 ```  
 [full name].[attribute]=[value]
+
 selection.[attribute]=[value]
+_.[attribute]=[value]
+```  
+
+### Display U location of a rack
+Display or hide U location dummies to simply identify objects in a rack.  
+```
+[rack].displayU=[true|false]
 ```  
 
 ## Examples
@@ -304,7 +321,30 @@ selection.description=Row B
 ```
 
 # Templates definition
-Templates are json files describing an object  
+Templates are json files describing an object.  
+
+## Room template
+```
+{
+  "slug"          : "Slug",
+  "orientation"   : "EN|NW|WS|SE",
+  "sizeWDHm"      : [width,depth,height],
+  "technicalArea" : [front,back,right,left],
+  "reservedArea"  : [front,back,right,left],
+  "separators"    : [
+      { "name" : "Name", "pos1XYm" : [x,y], pos2XYm : [x,y] },
+      ...
+  ],
+  "tiles" : [
+      { "location": "x/y",   "name": "Name", "label" : "Label", "type" : "plain|perf30|perf50", "color": "standard|color", "comment": "Comment"},
+      ...
+  ],
+  "aisles" : [
+      { "name" : "Name", "locationY" : y, "orientation" : "rear|front" },
+      ...
+  ]
+}
+```  
 
 ## Rack template
 ```
