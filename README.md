@@ -309,8 +309,8 @@ Templates are json files describing an object
 ## Rack template
 ```
 { 
- "name"       : "Name",
- "slug"       : "Slug",
+ "name"       : "Name can have spaces",
+ "slug"       : "slug-is-lowercase-with-no-space",
  "vendor"     : "Vendor",
  "model"      : "Model",
  "type"       : "rack",
@@ -319,8 +319,9 @@ Templates are json files describing an object
  "side"       : "top",
  "fulllength" : "yes/no",
  "sizeWDHmm"  : [width ,depth ,height],
+ "sizeWDU"  : [width ,depth ,heightU],
  "components" : [
-   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left" },
+   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear/front/left/right/rearleft/rearright",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left" },
     ...
   ]
 }
