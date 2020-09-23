@@ -105,8 +105,10 @@ Select several children of current selected object.
 ```
 
 ### Delete object
+Works with single or multi selection.  
 ```
 -[full name]  
+-selection
 ```  
 
 ## Create commands
@@ -193,7 +195,9 @@ Works with single or multi selection.
 `[tenant].[attribute]` can be mainContact / mainPhone / mainEmail*  
 ```  
 [full name].[attribute]=[value]
+
 selection.[attribute]=[value]
+_.[attribute]=[value]
 ```  
 
 ### Display U location of a rack

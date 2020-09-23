@@ -174,8 +174,16 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">HierarchyName of the object to delete</param>
     private IEnumerator DeleteItem(string _input)
     {
+        if (_input == "selection")
+        {
+            List<string> itemsToDel = new List<string>();
+            foreach (GameObject item in GameManager.gm.currentItems)
+                itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
+            foreach (string item in itemsToDel)
+                GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item]);
+        }
         // Try to delete an Ogree object
-        if (GameManager.gm.allItems.Contains(_input))
+        else if (GameManager.gm.allItems.Contains(_input))
             GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
         // Try to delete a tenant
         else if (GameManager.gm.tenants.ContainsKey(_input))
@@ -556,7 +564,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string patern = "^[a-zA-Z0-9.]+\\.[a-zA-Z0-9.]+=.+$";
+        string patern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('=');
@@ -565,7 +573,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
-                if (attr[0] == "selection")
+                if (attr[0] == "selection" || attr[0] == "_")
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();
