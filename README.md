@@ -177,7 +177,10 @@ You have to modify an object in the same file than its creation.
 
 ### Set reserved and technical zones of a room  
 Enables tiles edges display.  
-You can modify areas only if the room has no racks in it.  
+You can modify areas only if the room has no racks in it.
+**Technical** area : typically a restricted zone where power panels and AC systems are installed. separated from "IT space" with either a wall or a wire mesh
+**Reserved** area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)
+
 *`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
 `[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```
