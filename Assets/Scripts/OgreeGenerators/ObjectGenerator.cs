@@ -154,13 +154,14 @@ public class ObjectGenerator : MonoBehaviour
             {
                 newChassis = Instantiate(GameManager.gm.chassisModel);
 
-                newChassis.transform.parent = slot;
-                newChassis.transform.localScale = Vector3.one;
-                newChassis.transform.GetChild(0).localScale = new Vector3(1, _data.sizeU, 1);
-                newChassis.transform.localPosition = Vector3.zero;
+                newChassis.transform.parent = _data.parent;
+                // newChassis.transform.localScale = Vector3.one;
+                newChassis.transform.GetChild(0).localScale = new Vector3(slot.localScale.x, _data.sizeU * GameManager.gm.uSize, slot.localScale.z);
+                newChassis.transform.localPosition = slot.localPosition;
                 newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2, 0);
                 newChassis.transform.localEulerAngles = Vector3.zero;
-
+                
+                // Should hide slot
             }
             else
             {
@@ -193,6 +194,9 @@ public class ObjectGenerator : MonoBehaviour
 
         }
         newChassis.name = _data.name;
+
+        newChassis.GetComponent<DisplayObjectData>().PlaceTexts();
+        newChassis.GetComponent<DisplayObjectData>().UpdateLabels();
 
         newChassis.AddComponent<HierarchyName>();
 
