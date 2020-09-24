@@ -209,11 +209,11 @@ public class ReadFromJson
                     break;
             }
 
-            // go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+            go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
             Material mat = go.GetComponent<Renderer>().material;
             Color myColor = new Color();
             ColorUtility.TryParseHtmlString($"#{comp.color}", out myColor);
-            mat.color = myColor;
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
         }
 
 #if !DEBUG

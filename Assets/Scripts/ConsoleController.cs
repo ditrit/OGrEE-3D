@@ -732,6 +732,7 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
+        Debug.Log(parentPath);
         GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {

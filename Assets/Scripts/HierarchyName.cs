@@ -12,6 +12,16 @@ public class HierarchyName : MonoBehaviour
     }
 
     ///<summary>
+    /// Update hierarchyName and returns it
+    ///</summary>
+    ///<returns>The updated hierarchy name</returns>
+    public string GetHierarchyName()
+    {
+        UpdateHierarchyName();
+        return fullname;
+    }
+
+    ///<summary>
     /// Build fullname with all the parents
     ///</summary>
     public void UpdateHierarchyName()
@@ -23,11 +33,12 @@ public class HierarchyName : MonoBehaviour
         if (!parent)
             return;
 
-        parentsName.Add(parent.name);
+        if (parent.GetComponent<HierarchyName>())
+            parentsName.Add(parent.name);
         while (parent)
         {
             parent = parent.parent;
-            if (parent)
+            if (parent && parent.GetComponent<HierarchyName>())
                 parentsName.Add(parent.name);
         }
         

@@ -112,45 +112,37 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///
-    public void CreateChassis(SChassisInfos _data, bool _changeHierarchy)
+    public Object CreateChassis(SChassisInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Rack>() == null)
         {
             GameManager.gm.AppendLogLine("Chassis must be child of a Rack", "yellow");
-            return;
+            return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_data.name}";
+        Debug.Log("Create " + hierarchyName);
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
         }
 
         GameObject newChassis;
-        if (string.IsNullOrEmpty(_data.template))
+        //+chassis:[name]@[posU]@[sizeU]
+        if (string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
         {
             newChassis = Instantiate(GameManager.gm.chassisModel);
             newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
                                                             _data.sizeU * GameManager.gm.uSize,
                                                             _data.parent.GetChild(0).localScale.z);
-        }
-        else
-        {
-            newChassis = Instantiate(GameManager.gm.rackTemplates[_data.template]);
-            Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
-            foreach (Renderer r in renderers)
-                r.enabled = true;
-            Destroy(newChassis.GetComponent<HierarchyName>());
-        }
-        newChassis.name = _data.name;
 
-        if (string.IsNullOrEmpty(_data.slot))
-        {
             newChassis.transform.parent = _data.parent;
             newChassis.transform.localEulerAngles = Vector3.zero;
             newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
             newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
         }
-        else
+        //+chassis:[name]@[slot]@[sizeU]
+        else if (string.IsNullOrEmpty(_data.template) && !string.IsNullOrEmpty(_data.slot))
         {
             Transform slot = null;
             foreach (Transform child in _data.parent)
@@ -160,12 +152,47 @@ public class ObjectGenerator : MonoBehaviour
             }
             if (slot != null)
             {
+                newChassis = Instantiate(GameManager.gm.chassisModel);
+
                 newChassis.transform.parent = slot;
-                newChassis.transform.position = Vector3.zero;
+                newChassis.transform.localScale = Vector3.one;
+                newChassis.transform.GetChild(0).localScale = new Vector3(1, _data.sizeU, 1);
+                newChassis.transform.localPosition = Vector3.zero;
+                newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2, 0);
                 newChassis.transform.localEulerAngles = Vector3.zero;
+
+            }
+            else
+            {
+                GameManager.gm.AppendLogLine("Slot doesn't exist", "red");
+                return null;
             }
         }
+        //+chassis:[name]@[posU]@[template]
+        else if (!string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
+        {
+            newChassis = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+            Destroy(newChassis.GetComponent<HierarchyName>());
 
+            newChassis.transform.parent = _data.parent;
+            newChassis.transform.localEulerAngles = Vector3.zero;
+            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
+            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
+        }
+        //+chassis:[name]@[slot]@[template]
+        else
+        {
+            newChassis = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+            Destroy(newChassis.GetComponent<HierarchyName>());
+
+        }
+        newChassis.name = _data.name;
 
         newChassis.AddComponent<HierarchyName>();
 
@@ -173,37 +200,7 @@ public class ObjectGenerator : MonoBehaviour
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newChassis);
 
-        // GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
-        // newDevice.name = _data.name;
-        // Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * GameManager.gm.uSize, _data.size.y / 100);
-        // newDevice.transform.localScale = size;
-        // Vector3 origin = new Vector3(0, -newDevice.transform.parent.GetChild(0).localScale.y + newDevice.transform.localScale.y, 0) / 2;
-        // newDevice.transform.localPosition = origin;
-        // Vector3 pos = new Vector3(_data.pos.x, _data.pos.z * 0.0445f, _data.pos.y);
-        // newDevice.transform.localPosition += pos;
-
-        // Object obj = newDevice.GetComponent<Object>();
-        // obj.family = EObjFamily.chassis;
-        // switch (_data.orient)
-        // {
-        //     case "front":
-        //         obj.orient = EObjOrient.Frontward;
-        //         newDevice.transform.localEulerAngles = new Vector3(0, 180, 0);
-        //         break;
-        //     case "rear":
-        //         obj.orient = EObjOrient.Backward;
-        //         newDevice.transform.localEulerAngles = new Vector3(0, 0, 0);
-        //         break;
-        //     case "left":
-        //         obj.orient = EObjOrient.Left;
-        //         newDevice.transform.localEulerAngles = new Vector3(0, 90, 0);
-        //         break;
-        //     case "right":
-        //         obj.orient = EObjOrient.Right;
-        //         newDevice.transform.localEulerAngles = new Vector3(0, -90, 0);
-        //         break;
-        // }
-        // newDevice.AddComponent<HierarchyName>();
+        return newChassis.GetComponent<Object>();
     }
 
     public void CreateAirconditionner()
