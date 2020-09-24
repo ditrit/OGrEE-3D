@@ -111,8 +111,68 @@ public class ObjectGenerator : MonoBehaviour
         return rack;
     }
 
-    public void CreateChassis(SDeviceInfos _data)
+    ///
+    public void CreateChassis(SChassisInfos _data, bool _changeHierarchy)
     {
+        if (_data.parent.GetComponent<Rack>() == null)
+        {
+            GameManager.gm.AppendLogLine("Chassis must be child of a Rack", "yellow");
+            return;
+        }
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+        }
+
+        GameObject newChassis;
+        if (string.IsNullOrEmpty(_data.template))
+        {
+            newChassis = Instantiate(GameManager.gm.chassisModel);
+            newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
+                                                            _data.sizeU * GameManager.gm.uSize,
+                                                            _data.parent.GetChild(0).localScale.z);
+        }
+        else
+        {
+            newChassis = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+            Destroy(newChassis.GetComponent<HierarchyName>());
+        }
+        newChassis.name = _data.name;
+
+        if (string.IsNullOrEmpty(_data.slot))
+        {
+            newChassis.transform.parent = _data.parent;
+            newChassis.transform.localEulerAngles = Vector3.zero;
+            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
+            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
+        }
+        else
+        {
+            Transform slot = null;
+            foreach (Transform child in _data.parent)
+            {
+                if (child.name == _data.slot)
+                    slot = child;
+            }
+            if (slot != null)
+            {
+                newChassis.transform.parent = slot;
+                newChassis.transform.position = Vector3.zero;
+                newChassis.transform.localEulerAngles = Vector3.zero;
+            }
+        }
+
+
+        newChassis.AddComponent<HierarchyName>();
+
+        GameManager.gm.allItems.Add(hierarchyName, newChassis);
+        if (_changeHierarchy)
+            GameManager.gm.SetCurrentItem(newChassis);
+
         // GameObject newDevice = Instantiate(GameManager.gm.deviceModel, GameObject.Find(_data.parentName).transform);
         // newDevice.name = _data.name;
         // Vector3 size = new Vector3(_data.size.x / 100, _data.size.z * GameManager.gm.uSize, _data.size.y / 100);

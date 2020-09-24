@@ -28,6 +28,7 @@ OGREE 3D is a data-center viewer
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Rack](#Create-a-Rack)
+        - [Create a Chassis](#Create-a-Chassis)
         - [Create a Tenant](#Create-a-Tenant)
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
@@ -160,6 +161,19 @@ Rack must be child of a room
 +rack:[name]@[pos]@[template]@[orientation]  
 +rk:[name]@[pos]@[size]@[orientation]  
 +rk:[name]@[pos]@[template]@[orientation]
+```  
+
+### Create a Chassis
+A chassis is a *parent* device racked at a defined U position.  
+If the parent rack has slots:  
+```
++chassis:[name]@[posU]@[sizeU]
++chassis:[name]@[posU]@[template]
+```
+If the parent rack doesn't have slots:
+```
++chassis:[name]@[slot]@[sizeU]
++chassis:[name]@[slot]@[template]
 ```  
 
 ### Create a Tenant  

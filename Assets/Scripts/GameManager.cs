@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
-    public GameObject serverModel;
+    public GameObject chassisModel;
     public GameObject deviceModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
@@ -40,7 +40,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
+    // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> chassisTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 

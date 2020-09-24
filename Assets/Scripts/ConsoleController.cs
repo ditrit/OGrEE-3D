@@ -319,6 +319,8 @@ public class ConsoleController : MonoBehaviour
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
+        else if (str[0] == "chassis")
+            CreateChassis(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
         else
@@ -487,6 +489,36 @@ public class ConsoleController : MonoBehaviour
                 infos.name = data[0];
                 infos.parent = GameManager.gm.currentItems[0].transform;
                 ObjectGenerator.instance.CreateRack(infos, true);
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    private void CreateChassis(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+$";
+        if (Regex.IsMatch(_input, patern))
+        {
+            string[] data = _input.Split('@');
+            SChassisInfos infos = new SChassisInfos();
+
+            if (int.TryParse(data[1], out infos.posU) == false)
+                infos.slot = data[1];
+            if (float.TryParse(data[2], out infos.sizeU) == false)
+                infos.template = data[2];
+            if (data[0].StartsWith("/"))
+            {
+                IsolateParent(data[0].Substring(1), out infos.parent, out infos.name);
+                if (infos.parent)
+                    ObjectGenerator.instance.CreateChassis(infos, false);
+            }
+            else
+            {
+                infos.name = data[0];
+                infos.parent = GameManager.gm.currentItems[0].transform;
+                ObjectGenerator.instance.CreateChassis(infos, true);
             }
         }
         else

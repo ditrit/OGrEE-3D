@@ -59,6 +59,9 @@ public class Object : MonoBehaviour, IAttributeModif
             case "tenant":
                 AssignTenant(_value);
                 break;
+            case "color":
+                SetColor(_value);
+                break;
             case "alpha":
                 UpdateAlpha(_value);
                 break;
@@ -104,5 +107,17 @@ public class Object : MonoBehaviour, IAttributeModif
         }
         else
             GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
+    }
+
+    ///<summary>
+    /// Set a Color with an hexadecimal value
+    ///</summary>
+    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    protected void SetColor(string _hex)
+    {
+        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
+        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 }

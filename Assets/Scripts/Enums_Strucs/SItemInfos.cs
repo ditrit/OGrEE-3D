@@ -15,6 +15,18 @@ public struct SRackInfos
 }
 
 [System.Serializable]
+public struct SChassisInfos
+{
+    public string name;
+    public Transform parent;
+    public int posU;
+    public string slot;
+    public float sizeU;
+    public string template;
+
+}
+
+[System.Serializable]
 public struct SDeviceInfos
 {
     public string name;
