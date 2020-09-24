@@ -15,8 +15,8 @@ public class DisplayObjectData : MonoBehaviour
     public void PlaceTexts()
     {
         Vector3 boxSize = transform.GetChild(0).localScale;
-        labelFront.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / -2;
-        labelRear.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / 2;
+        labelFront.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / 2;
+        labelRear.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / -2;
 
         labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
         labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
