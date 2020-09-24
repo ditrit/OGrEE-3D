@@ -69,10 +69,6 @@ public class Object : MonoBehaviour, IAttributeModif
                 GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
-
-        DisplayRackData drd = GetComponent<DisplayRackData>();
-        if (drd)
-            drd.FillTexts();
     }
 
     ///<summary>

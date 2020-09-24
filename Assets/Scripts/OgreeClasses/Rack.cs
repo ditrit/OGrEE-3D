@@ -67,6 +67,9 @@ public class Rack : Object
                 GameManager.gm.AppendLogLine($"[Rack] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
+        DisplayRackData drd = GetComponent<DisplayRackData>();
+        if (drd)
+            drd.FillTexts();
     }
 
     ///<summary>
