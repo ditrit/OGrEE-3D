@@ -132,11 +132,13 @@ public class ObjectGenerator : MonoBehaviour
         if (string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
         {
             newChassis = Instantiate(GameManager.gm.chassisModel);
+            newChassis.transform.parent = _data.parent;
+
             newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
                                                             _data.sizeU * GameManager.gm.uSize,
                                                             _data.parent.GetChild(0).localScale.z);
+            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
 
-            newChassis.transform.parent = _data.parent;
             newChassis.transform.localEulerAngles = Vector3.zero;
             newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
             newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
@@ -144,24 +146,31 @@ public class ObjectGenerator : MonoBehaviour
         //+chassis:[name]@[slot]@[sizeU]
         else if (string.IsNullOrEmpty(_data.template) && !string.IsNullOrEmpty(_data.slot))
         {
-            Transform slot = null;
+            List<Slot> takenSlots = new List<Slot>();
+            int i = 0;
             foreach (Transform child in _data.parent)
             {
-                if (child.name == _data.slot)
-                    slot = child;
+                if (child.name == _data.slot || (i > 0 && i < _data.sizeU))
+                {
+                    takenSlots.Add(child.GetComponent<Slot>());
+                    i++;
+                }
             }
-            if (slot != null)
+            if (takenSlots.Count > 0)
             {
+                foreach (Slot s in takenSlots)
+                    s.SlotTaken(true);
                 newChassis = Instantiate(GameManager.gm.chassisModel);
-
                 newChassis.transform.parent = _data.parent;
-                // newChassis.transform.localScale = Vector3.one;
-                newChassis.transform.GetChild(0).localScale = new Vector3(slot.localScale.x, _data.sizeU * GameManager.gm.uSize, slot.localScale.z);
+
+                Transform slot = takenSlots[0].transform;
+                newChassis.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
+                newChassis.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
+
                 newChassis.transform.localPosition = slot.localPosition;
-                newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2, 0);
+                if (_data.sizeU > 1)
+                    newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
                 newChassis.transform.localEulerAngles = Vector3.zero;
-                
-                // Should hide slot
             }
             else
             {
@@ -173,6 +182,7 @@ public class ObjectGenerator : MonoBehaviour
         else if (!string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
         {
             newChassis = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
             Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
@@ -190,13 +200,13 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
+            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
             Destroy(newChassis.GetComponent<HierarchyName>());
 
         }
         newChassis.name = _data.name;
+        newChassis.GetComponent<DisplayObjectData>().UpdateLabels(newChassis.name);
 
-        newChassis.GetComponent<DisplayObjectData>().PlaceTexts();
-        newChassis.GetComponent<DisplayObjectData>().UpdateLabels();
 
         newChassis.AddComponent<HierarchyName>();
 

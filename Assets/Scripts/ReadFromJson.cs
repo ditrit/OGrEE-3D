@@ -142,6 +142,11 @@ public class ReadFromJson
             go.transform.localPosition += new Vector3(comp.elemPos[0], comp.elemPos[2], comp.elemPos[1]) / 1000;
             go.transform.localEulerAngles = Vector3.zero;
 
+            Slot s = go.AddComponent<Slot>();
+            s.installed = comp.installed;
+            s.mandatory = comp.mandatory;
+            s.labelPos = comp.labelPos;
+
             GameObject textHolder = new GameObject();
             textHolder.name = "textHolder";
 
