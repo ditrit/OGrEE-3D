@@ -111,7 +111,12 @@ public class ObjectGenerator : MonoBehaviour
         return rack;
     }
 
-    ///
+    ///<summary>
+    /// Instantiate a chassisModel or a chassisTemplate (from GameManager) and apply _data to it.
+    ///</summary>
+    ///<param name="_data">Informations about the chassis</param>
+    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
+    ///<returns>The created Chassis</returns>
     public Object CreateChassis(SChassisInfos _data, bool _changeHierarchy)
     {
         if (_data.parent.GetComponent<Rack>() == null)
@@ -120,7 +125,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_data.name}";
-        Debug.Log("Create " + hierarchyName);
+        // Debug.Log("Create " + hierarchyName);
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -128,78 +133,41 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         GameObject newChassis;
-        //+chassis:[name]@[posU]@[sizeU]
-        if (string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
+        if (string.IsNullOrEmpty(_data.slot))
         {
-            newChassis = Instantiate(GameManager.gm.chassisModel);
-            newChassis.transform.parent = _data.parent;
-
-            newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
-                                                            _data.sizeU * GameManager.gm.uSize,
-                                                            _data.parent.GetChild(0).localScale.z);
-            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-
-            newChassis.transform.localEulerAngles = Vector3.zero;
-            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
-            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
-        }
-        //+chassis:[name]@[posU]@[template]
-        else if (!string.IsNullOrEmpty(_data.template) && string.IsNullOrEmpty(_data.slot))
-        {
-            newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
-            newChassis.transform.parent = _data.parent;
-            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-            Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
-            foreach (Renderer r in renderers)
-                r.enabled = true;
-            Destroy(newChassis.GetComponent<HierarchyName>());
-
-            newChassis.transform.localEulerAngles = Vector3.zero;
-            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
-            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
-        }
-        //+chassis:[name]@[slot]@[sizeU]
-        else if (string.IsNullOrEmpty(_data.template) && !string.IsNullOrEmpty(_data.slot))
-        {
-            List<Slot> takenSlots = new List<Slot>();
-            int i = 0;
-            foreach (Transform child in _data.parent)
+            //+chassis:[name]@[posU]@[sizeU]
+            if (string.IsNullOrEmpty(_data.template))
             {
-                if (child.name == _data.slot || (i > 0 && i < _data.sizeU))
-                {
-                    takenSlots.Add(child.GetComponent<Slot>());
-                    i++;
-                }
-            }
-            if (takenSlots.Count > 0)
-            {
-                foreach (Slot s in takenSlots)
-                    s.SlotTaken(true);
                 newChassis = Instantiate(GameManager.gm.chassisModel);
                 newChassis.transform.parent = _data.parent;
-
-                Transform slot = takenSlots[0].transform;
-                newChassis.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
-                newChassis.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
-
-                newChassis.transform.localPosition = slot.localPosition;
-                if (_data.sizeU > 1)
-                    newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
-                newChassis.transform.localEulerAngles = Vector3.zero;
+                newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
+                                                                _data.sizeU * GameManager.gm.uSize,
+                                                                _data.parent.GetChild(0).localScale.z);
             }
+            //+chassis:[name]@[posU]@[template]
             else
             {
-                GameManager.gm.AppendLogLine("Slot doesn't exist", "red");
-                return null;
+                newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
+                newChassis.transform.parent = _data.parent;
+                Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+                foreach (Renderer r in renderers)
+                    r.enabled = true;
+                Destroy(newChassis.GetComponent<HierarchyName>());
             }
+            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+            newChassis.transform.localEulerAngles = Vector3.zero;
+            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
+            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
         }
-        //+chassis:[name]@[slot]@[template]
         else
         {
             List<Slot> takenSlots = new List<Slot>();
             int i = 0;
-            float max = GameManager.gm.chassisTemplates[_data.template].transform.GetChild(0).localScale.y;
-            max /= GameManager.gm.uSize;
+            float max;
+            if (string.IsNullOrEmpty(_data.template))
+                max = _data.sizeU;
+            else
+                max = GameManager.gm.chassisTemplates[_data.template].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
             foreach (Transform child in _data.parent)
             {
                 if (child.name == _data.slot || (i > 0 && i < max))
@@ -212,25 +180,31 @@ public class ObjectGenerator : MonoBehaviour
             {
                 foreach (Slot s in takenSlots)
                     s.SlotTaken(true);
-                
-                newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
-                newChassis.transform.parent = _data.parent;
-                
+
                 Transform slot = takenSlots[0].transform;
+                //+chassis:[name]@[slot]@[sizeU]
+                if (string.IsNullOrEmpty(_data.template))
+                {
+                    newChassis = Instantiate(GameManager.gm.chassisModel);
+                    newChassis.transform.parent = _data.parent;
+                    newChassis.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
+
+                }
+                //+chassis:[name]@[slot]@[template]
+                else
+                {
+                    newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
+                    newChassis.transform.parent = _data.parent;
+                    Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+                    foreach (Renderer r in renderers)
+                        r.enabled = true;
+                    Destroy(newChassis.GetComponent<HierarchyName>());
+                }
                 newChassis.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
-                Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
-                foreach (Renderer r in renderers)
-                    r.enabled = true;
-                Destroy(newChassis.GetComponent<HierarchyName>());
-
-                newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-                Destroy(newChassis.GetComponent<HierarchyName>());
-
                 newChassis.transform.localPosition = slot.localPosition;
+                // if (_data.sizeU > 1)
                 if (newChassis.transform.localScale.y > GameManager.gm.uSize)
                     newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
-                newChassis.transform.localEulerAngles = Vector3.zero;
-
             }
             else
             {
@@ -238,12 +212,12 @@ public class ObjectGenerator : MonoBehaviour
                 return null;
             }
         }
+        newChassis.transform.localEulerAngles = Vector3.zero;
+        
         newChassis.name = _data.name;
         newChassis.GetComponent<DisplayObjectData>().UpdateLabels(newChassis.name);
 
-
         newChassis.AddComponent<HierarchyName>();
-
         GameManager.gm.allItems.Add(hierarchyName, newChassis);
         if (_changeHierarchy)
             GameManager.gm.SetCurrentItem(newChassis);
