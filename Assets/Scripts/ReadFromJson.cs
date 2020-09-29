@@ -91,8 +91,8 @@ public class ReadFromJson
         public string orientation;
         public string side;
         public string fulllength;
-        public int[] sizeWDHmm;
-        public SComponentChild components;
+        public float[] sizeWDHmm;
+        public SComponentChild[] components;
     }
 
     [System.Serializable]
@@ -232,7 +232,7 @@ public class ReadFromJson
     }
 
     ///<summary>
-    /// Create a room from _json data...
+    /// Store room data in GameManager.roomTemplates.
     ///</summary>
     ///<param name="_json">Json to parse</param>
     public void CreateRoomTemplate(string _json)
@@ -242,6 +242,67 @@ public class ReadFromJson
             return;
 
         GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
+    }
+
+    ///<summary>
+    /// Create a chassis from _json data and add it to GameManager.chassisTemplates.
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateChassisTemplate(string _json)
+    {
+        SComponent data = JsonUtility.FromJson<SComponent>(_json);
+        if (GameManager.gm.chassisTemplates.ContainsKey(data.slug))
+            return;
+
+        SChassisInfos infos = new SChassisInfos();
+        infos.name = data.slug;
+        infos.parent = GameManager.gm.templatePlaceholder.GetChild(0);
+        infos.posU = 0;
+        infos.sizeU = data.sizeWDHmm[2] / 10;
+
+        Object chassis = ObjectGenerator.instance.CreateChassis(infos, false);
+        chassis.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+        chassis.transform.localPosition = Vector3.zero;
+
+        chassis.vendor = data.vendor;
+        chassis.model = data.model;
+
+        foreach (SComponentChild comp in data.components)
+            PopulateSlots(comp, chassis.transform);
+
+#if !DEBUG
+        Renderer[] renderers = chassis.transform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderers)
+            r.enabled = false;
+#endif
+
+        GameManager.gm.allItems.Remove(chassis.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.chassisTemplates.Add(chassis.name, chassis.gameObject);
+    }
+
+    ///
+    private void PopulateSlots(SComponentChild _data, Transform _parent)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = _data.location;
+        go.transform.parent = _parent;
+        go.transform.localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
+        go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
+        go.transform.localPosition += go.transform.localScale / 2;
+        go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
+        go.transform.localEulerAngles = Vector3.zero;
+
+        Slot s = go.AddComponent<Slot>();
+        s.installed = _data.position;
+        s.mandatory = _data.mandatory;
+        s.labelPos = _data.labelPos;
+
+        if (_data.mandatory == "no")
+        {
+            go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+            Material mat = go.GetComponent<Renderer>().material;
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.25f);
+        }
     }
 
 }

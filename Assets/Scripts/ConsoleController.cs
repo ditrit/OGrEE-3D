@@ -268,6 +268,8 @@ public class ConsoleController : MonoBehaviour
             {
                 if (str[0] == "rack")
                     rfJson.CreateRackTemplate(json);
+                else if (str[0] == "chassis")
+                    rfJson.CreateChassisTemplate(json);
                 else if (str[0] == "room")
                     rfJson.CreateRoomTemplate(json);
                 else
