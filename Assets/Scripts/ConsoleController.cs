@@ -299,7 +299,10 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            variables.Add(data[0], data[1]);
+            if (variables.ContainsKey(data[0]))
+                AppendLogLine($"{data[0]} already exists", "yellow");
+            else
+                variables.Add(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax Error on variable creation", "red");
@@ -586,10 +589,10 @@ public class ConsoleController : MonoBehaviour
                 GameObject room = GameManager.gm.FindByAbsPath(data[0].Substring(1));
                 if (room)
                 {
-                    SMargin resDim = new SMargin(float.Parse(data[1]), float.Parse(data[2]),
-                                                float.Parse(data[3]), float.Parse(data[4]));
-                    SMargin techDim = new SMargin(float.Parse(data[5]), float.Parse(data[6]),
-                                                float.Parse(data[7]), float.Parse(data[8]));
+                    SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                                float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
+                    SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                                float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
                     room.GetComponent<Room>().SetZones(resDim, techDim);
                 }
                 else
