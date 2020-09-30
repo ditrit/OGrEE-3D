@@ -158,6 +158,9 @@ public class ObjectGenerator : MonoBehaviour
             newChassis.transform.localEulerAngles = Vector3.zero;
             newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
             newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
+
+            float deltaZ = _data.parent.GetChild(0).localScale.z - newChassis.transform.GetChild(0).localScale.z;
+            newChassis.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
         }
         else
         {
@@ -202,9 +205,15 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 newChassis.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
                 newChassis.transform.localPosition = slot.localPosition;
-                // if (_data.sizeU > 1)
-                if (newChassis.transform.localScale.y > GameManager.gm.uSize)
+                if (newChassis.transform.GetChild(0).localScale.y > slot.localScale.y)
                     newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
+
+                float deltaZ = slot.localScale.z - newChassis.transform.GetChild(0).localScale.z;
+                if (newChassis.GetComponent<Object>().orient == EObjOrient.Frontward
+                    || newChassis.GetComponent<Object>().extras["fulllenght"] == "yes")
+                    newChassis.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                else if (newChassis.GetComponent<Object>().orient == EObjOrient.Backward)
+                    newChassis.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
             }
             else
             {
@@ -213,7 +222,7 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
         newChassis.transform.localEulerAngles = Vector3.zero;
-        
+
         newChassis.name = _data.name;
         newChassis.GetComponent<DisplayObjectData>().UpdateLabels(newChassis.name);
 

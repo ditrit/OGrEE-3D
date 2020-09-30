@@ -266,6 +266,16 @@ public class ReadFromJson
 
         chassis.vendor = data.vendor;
         chassis.model = data.model;
+        switch (data.side)
+        {
+            case "front":
+                chassis.orient = EObjOrient.Frontward;
+                break;
+            case "rear":
+                chassis.orient = EObjOrient.Backward;
+                break;
+        }
+        chassis.extras.Add("fulllength", "yes");
 
         foreach (SComponentChild comp in data.components)
             PopulateSlots(comp, chassis.transform);
