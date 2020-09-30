@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : MonoBehaviour, IAttributeModif
+public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
     public string description;
     public EObjFamily family;
@@ -25,7 +25,28 @@ public class Object : MonoBehaviour, IAttributeModif
     public string model;
     public string serial;
 
-    public Dictionary<string, string> extras;
+    public Dictionary<string, string> extras = new Dictionary<string, string>();
+    [SerializeField] private List<string> extraKeys;
+    [SerializeField] private List<string> extraValues;
+
+
+    public void OnBeforeSerialize()
+    {
+        extraKeys.Clear();
+        extraValues.Clear();
+        foreach (var kvp in extras)
+        {
+            extraKeys.Add(kvp.Key);
+            extraValues.Add(kvp.Value);
+        }
+    }
+
+    public void OnAfterDeserialize()
+    {
+        extras = new Dictionary<string, string>();
+        for (int i = 0; i != Mathf.Min(extraKeys.Count, extraValues.Count); i++)
+            extras.Add(extraKeys[i], extraValues[i]);
+    }
 
     protected virtual void OnDestroy()
     {
