@@ -25,6 +25,8 @@ public class ConsoleController : MonoBehaviour
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
     [SerializeField] private bool isReady = true;
+    public float timerValue = 1f;
+    public bool timer = false;
 
 
     ///<summary>
@@ -96,6 +98,12 @@ public class ConsoleController : MonoBehaviour
         else
         {
             AppendLogLine("Unknown command", "red");
+            isReady = true;
+        }
+        if (timer)
+        {
+            isReady = false;
+            yield return new WaitForSeconds(timerValue);
             isReady = true;
         }
     }
