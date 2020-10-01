@@ -127,7 +127,7 @@ public class Rack : Object
     /// Toggle U location cubes.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    private void ToggleU(string _value)
+    public void ToggleU(string _value)
     {
         if (_value != "true" && _value != "false")
         {
@@ -148,6 +148,22 @@ public class Rack : Object
         else
         {
             Destroy(uRoot.gameObject);
+        }
+    }
+    public void ToggleU()
+    {
+        if (uRoot)
+            Destroy(uRoot.gameObject);
+        else
+        {
+            uRoot = new GameObject("uRoot").transform;
+            uRoot.parent = transform;
+            uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
+            uRoot.localEulerAngles = Vector3.zero;
+            GenerateUColumn("rearLeft");
+            GenerateUColumn("rearRight");
+            GenerateUColumn("frontLeft");
+            GenerateUColumn("frontRight");
         }
     }
 

@@ -263,7 +263,20 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
         }
         else
-            AppendLogLine("Current item must be a room", "red");
+            AppendLogLine("Selected item must be a room", "red");
+    }
+
+    ///
+    public void ToggleUHelpers()
+    {
+        Rack rack = currentItems[0].GetComponent<Rack>();
+        if (rack)
+        {
+            rack.ToggleU();
+            AppendLogLine($"U helpers toggled for {currentItems[0].name}.", "yellow");
+        }
+        else
+            AppendLogLine("Selected item must be a rack.", "red");
     }
 
     ///<summary>
