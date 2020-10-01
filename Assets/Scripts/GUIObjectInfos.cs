@@ -38,8 +38,8 @@ public class GUIObjectInfos : MonoBehaviour
         singlePanel.SetActive(true);
         multiPanel.SetActive(false);
 
-        if (_obj && _obj.GetComponent<Rack>())
-            UpdateFields(_obj.GetComponent<Rack>());
+        if (_obj && _obj.GetComponent<Object>())
+            UpdateFields(_obj.GetComponent<Object>());
         else if (_obj && _obj.GetComponent<Room>())
             UpdateFields(_obj.GetComponent<Room>());
         else
@@ -47,18 +47,18 @@ public class GUIObjectInfos : MonoBehaviour
             if (_obj)
                 tmpName.text = _obj.name;
             else
-                tmpName.text = "-";
-            tmpTenantName.text = "-";
-            tmpTenantContact.text = "-";
-            tmpTenantPhone.text = "-";
-            tmpTenantEmail.text = "-";
-            tmpPosXY.text = "-";
-            tmpSize.text = "-";
-            tmpVendor.text = "-";
-            tmpType.text = "-";
-            tmpModel.text = "-";
-            tmpSerial.text = "-";
-            tmpDesc.text = "-";
+                tmpName.text = "Name";
+            tmpTenantName.text = "Tenant Name";
+            tmpTenantContact.text = "Tenant Contact";
+            tmpTenantPhone.text = "Tenant Phone";
+            tmpTenantEmail.text = "Tenant Email";
+            tmpPosXY.text = "PosXY";
+            tmpSize.text = "Size";
+            tmpVendor.text = "Vendor";
+            tmpType.text = "Type";
+            tmpModel.text = "Model";
+            tmpSerial.text = "Serial";
+            tmpDesc.text = "Description";
         }
     }
 
@@ -80,21 +80,24 @@ public class GUIObjectInfos : MonoBehaviour
     ///<summary>
     /// Update singlePanel texts from a Rack.
     ///</summary>
-    ///<param name="_rack">The rack whose information are displayed</param>
-    private void UpdateFields(Rack _rack)
+    ///<param name="_obj">The rack whose information are displayed</param>
+    private void UpdateFields(Object _obj)
     {
-        tmpName.text = _rack.GetComponent<HierarchyName>().fullname;
-        tmpTenantName.text = _rack.tenant.name;
-        tmpTenantContact.text = _rack.tenant.mainContact;
-        tmpTenantPhone.text = _rack.tenant.mainPhone;
-        tmpTenantEmail.text = _rack.tenant.mainEmail;
-        tmpPosXY.text = $"Tile {_rack.posXY.x.ToString("0.##")}/{_rack.posXY.y.ToString("0.##")}";
-        tmpSize.text = $"{_rack.size.x}{_rack.sizeUnit} x {_rack.size.y}{_rack.sizeUnit} x {_rack.height}{_rack.heightUnit}";
-        tmpVendor.text = _rack.vendor;
-        tmpType.text = _rack.type;
-        tmpModel.text = _rack.model;
-        tmpSerial.text = _rack.serial;
-        tmpDesc.text = _rack.description;
+        tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
+        tmpTenantName.text = _obj.tenant.name;
+        tmpTenantContact.text = _obj.tenant.mainContact;
+        tmpTenantPhone.text = _obj.tenant.mainPhone;
+        tmpTenantEmail.text = _obj.tenant.mainEmail;
+        if (_obj.family == EObjFamily.rack)
+            tmpPosXY.text = $"Tile {_obj.posXY.x.ToString("0.##")}/{_obj.posXY.y.ToString("0.##")}";
+        else
+            tmpPosXY.text = "-";
+        tmpSize.text = $"{_obj.size.x}{_obj.sizeUnit} x {_obj.size.y}{_obj.sizeUnit} x {_obj.height}{_obj.heightUnit}";
+        tmpVendor.text = _obj.vendor;
+        tmpType.text = _obj.type;
+        tmpModel.text = _obj.model;
+        tmpSerial.text = _obj.serial;
+        tmpDesc.text = _obj.description;
     }
 
     ///<summary>

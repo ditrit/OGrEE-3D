@@ -276,8 +276,8 @@ public class ConsoleController : MonoBehaviour
             {
                 if (str[0] == "rack")
                     rfJson.CreateRackTemplate(json);
-                else if (str[0] == "chassis")
-                    rfJson.CreateChassisTemplate(json);
+                else if (str[0] == "device")
+                    rfJson.CreateDeviceTemplate(json);
                 else if (str[0] == "room")
                     rfJson.CreateRoomTemplate(json);
                 else
@@ -332,8 +332,8 @@ public class ConsoleController : MonoBehaviour
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
-        else if (str[0] == "chassis")
-            CreateChassis(str[1]);
+        else if (str[0] == "device")
+            CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
         else
@@ -508,14 +508,15 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax error", "red");
     }
 
-    private void CreateChassis(string _input)
+    ///
+    private void CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
-            SChassisInfos infos = new SChassisInfos();
+            SDeviceInfos infos = new SDeviceInfos();
 
             if (int.TryParse(data[1], out infos.posU) == false)
                 infos.slot = data[1];
@@ -525,13 +526,13 @@ public class ConsoleController : MonoBehaviour
             {
                 IsolateParent(data[0].Substring(1), out infos.parent, out infos.name);
                 if (infos.parent)
-                    ObjectGenerator.instance.CreateChassis(infos, false);
+                    ObjectGenerator.instance.CreateDevice(infos, false);
             }
             else
             {
                 infos.name = data[0];
                 infos.parent = GameManager.gm.currentItems[0].transform;
-                ObjectGenerator.instance.CreateChassis(infos, true);
+                ObjectGenerator.instance.CreateDevice(infos, true);
             }
         }
         else

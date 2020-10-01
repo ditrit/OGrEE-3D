@@ -15,7 +15,7 @@ public struct SRackInfos
 }
 
 [System.Serializable]
-public struct SChassisInfos
+public struct SDeviceInfos
 {
     public string name;
     public Transform parent;
@@ -24,17 +24,6 @@ public struct SChassisInfos
     public float sizeU;
     public string template;
 
-}
-
-[System.Serializable]
-public struct SDeviceInfos
-{
-    public string name;
-    public string parentName;
-    public Vector3 pos; // mm? U ?
-    public Vector3 size; // mm? U ?
-    public string type;
-    public string orient;
 }
 
 [System.Serializable]

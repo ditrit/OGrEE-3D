@@ -112,16 +112,16 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a chassisModel or a chassisTemplate (from GameManager) and apply _data to it.
+    /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the chassis</param>
     ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Chassis</returns>
-    public Object CreateChassis(SChassisInfos _data, bool _changeHierarchy)
+    public Object CreateDevice(SDeviceInfos _data, bool _changeHierarchy)
     {
-        if (_data.parent.GetComponent<Rack>() == null)
+        if (_data.parent.GetComponent<Object>() == null)
         {
-            GameManager.gm.AppendLogLine("Chassis must be child of a Rack", "yellow");
+            GameManager.gm.AppendLogLine("Device must be child of a Rack or another Device", "yellow");
             return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_data.name}";
@@ -138,7 +138,7 @@ public class ObjectGenerator : MonoBehaviour
             //+chassis:[name]@[posU]@[sizeU]
             if (string.IsNullOrEmpty(_data.template))
             {
-                newChassis = Instantiate(GameManager.gm.chassisModel);
+                newChassis = Instantiate(GameManager.gm.deviceModel);
                 newChassis.transform.parent = _data.parent;
                 newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
                                                                 _data.sizeU * GameManager.gm.uSize,
@@ -147,7 +147,7 @@ public class ObjectGenerator : MonoBehaviour
             //+chassis:[name]@[posU]@[template]
             else
             {
-                newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
+                newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
                 newChassis.transform.parent = _data.parent;
                 Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in renderers)
@@ -170,7 +170,7 @@ public class ObjectGenerator : MonoBehaviour
             if (string.IsNullOrEmpty(_data.template))
                 max = _data.sizeU;
             else
-                max = GameManager.gm.chassisTemplates[_data.template].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                max = GameManager.gm.devicesTemplates[_data.template].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
             foreach (Transform child in _data.parent)
             {
                 if (child.name == _data.slot || (i > 0 && i < max))
@@ -188,7 +188,7 @@ public class ObjectGenerator : MonoBehaviour
                 //+chassis:[name]@[slot]@[sizeU]
                 if (string.IsNullOrEmpty(_data.template))
                 {
-                    newChassis = Instantiate(GameManager.gm.chassisModel);
+                    newChassis = Instantiate(GameManager.gm.deviceModel);
                     newChassis.transform.parent = _data.parent;
                     newChassis.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
 
@@ -196,7 +196,7 @@ public class ObjectGenerator : MonoBehaviour
                 //+chassis:[name]@[slot]@[template]
                 else
                 {
-                    newChassis = Instantiate(GameManager.gm.chassisTemplates[_data.template]);
+                    newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
                     newChassis.transform.parent = _data.parent;
                     Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
                     foreach (Renderer r in renderers)
@@ -245,16 +245,6 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     public void CreatePdu()
-    {
-
-    }
-
-    public void CreateDevice()
-    {
-
-    }
-
-    public void CreateComponent()
     {
 
     }

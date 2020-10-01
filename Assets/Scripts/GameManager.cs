@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
-    public GameObject chassisModel;
     public GameObject deviceModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
@@ -42,7 +41,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
-    public Dictionary<string, GameObject> chassisTemplates = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
@@ -266,7 +265,9 @@ public class GameManager : MonoBehaviour
             AppendLogLine("Selected item must be a room", "red");
     }
 
-    ///
+    ///<summary>
+    /// Called by GUI button: if currentItem is a rack, toggle U helpers
+    ///</summary>
     public void ToggleUHelpers()
     {
         Rack rack = currentItems[0].GetComponent<Rack>();

@@ -54,11 +54,6 @@ public class ReadFromJson
         public string slug;
         public string vendor;
         public string model;
-        public string type;
-        public string role;
-        public string orientation;
-        public string side;
-        public string fulllength;
         public int[] sizeWDHmm;
         public SRackSlot[] components;
     }
@@ -78,29 +73,29 @@ public class ReadFromJson
     }
     #endregion
 
-    #region Component
+    #region Device
     [System.Serializable]
-    private struct SComponent
+    private struct SDevice
     {
-        public string name;
         public string slug;
+        public string description;
         public string vendor;
         public string model;
         public string type;
         public string role;
-        public string orientation;
         public string side;
         public string fulllength;
         public float[] sizeWDHmm;
-        public SComponentChild[] components;
+        public SDeviceSlot[] components;
     }
 
     [System.Serializable]
-    private struct SComponentChild
+    private struct SDeviceSlot
     {
         public string location;
         public string type;
         public string role;
+        public string factor;
         public string position;
         public int[] elemPos;
         public int[] elemSize;
@@ -248,50 +243,55 @@ public class ReadFromJson
     /// Create a chassis from _json data and add it to GameManager.chassisTemplates.
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public void CreateChassisTemplate(string _json)
+    public void CreateDeviceTemplate(string _json)
     {
-        SComponent data = JsonUtility.FromJson<SComponent>(_json);
-        if (GameManager.gm.chassisTemplates.ContainsKey(data.slug))
+        SDevice data = JsonUtility.FromJson<SDevice>(_json);
+        if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
             return;
 
-        SChassisInfos infos = new SChassisInfos();
+        SDeviceInfos infos = new SDeviceInfos();
         infos.name = data.slug;
         infos.parent = GameManager.gm.templatePlaceholder.GetChild(0);
         infos.posU = 0;
         infos.sizeU = data.sizeWDHmm[2] / 10;
 
-        Object chassis = ObjectGenerator.instance.CreateChassis(infos, false);
-        chassis.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
-        chassis.transform.localPosition = Vector3.zero;
+        Object device = ObjectGenerator.instance.CreateDevice(infos, false);
+        device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+        device.transform.localPosition = Vector3.zero;
 
-        chassis.vendor = data.vendor;
-        chassis.model = data.model;
+        device.vendor = data.vendor;
+        device.model = data.model;
+        device.description = data.description;
         switch (data.side)
         {
             case "front":
-                chassis.orient = EObjOrient.Frontward;
+                device.orient = EObjOrient.Frontward;
                 break;
             case "rear":
-                chassis.orient = EObjOrient.Backward;
+                device.orient = EObjOrient.Backward;
                 break;
         }
-        chassis.extras.Add("fulllength", "yes");
+        device.extras.Add("fulllength", "yes");
 
-        foreach (SComponentChild comp in data.components)
-            PopulateSlots(comp, chassis.transform);
+        foreach (SDeviceSlot comp in data.components)
+            PopulateSlot(comp, device.transform);
 
 #if !DEBUG
-        Renderer[] renderers = chassis.transform.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = device.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(chassis.GetComponent<HierarchyName>().fullname);
-        GameManager.gm.chassisTemplates.Add(chassis.name, chassis.gameObject);
+        GameManager.gm.allItems.Remove(device.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.devicesTemplates.Add(device.name, device.gameObject);
     }
 
-    ///
-    private void PopulateSlots(SComponentChild _data, Transform _parent)
+    ///<summary>
+    /// Create a child Slot object, with alpha=0.25.
+    ///</summary>
+    ///<param name="_data">Data for slot creation</param>
+    ///<param name="_parent">The parent of the Slot</param>
+    private void PopulateSlot(SDeviceSlot _data, Transform _parent)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = _data.location;
