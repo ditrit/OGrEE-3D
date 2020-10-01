@@ -124,6 +124,14 @@ public class ObjectGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine("Device must be child of a Rack or another Device", "yellow");
             return null;
         }
+
+        if (_data.parent.GetComponent<Rack>() == null
+            && (string.IsNullOrEmpty(_data.slot) || string.IsNullOrEmpty(_data.template)))
+        {
+            GameManager.gm.AppendLogLine("A device needs to be declared with a parent's slot and a template", "yellow");
+            return null;
+        }
+
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_data.name}";
         // Debug.Log("Create " + hierarchyName);
         if (GameManager.gm.allItems.Contains(hierarchyName))
