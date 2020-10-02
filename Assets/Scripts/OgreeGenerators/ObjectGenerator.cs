@@ -39,7 +39,13 @@ public class ObjectGenerator : MonoBehaviour
             newRack = Instantiate(GameManager.gm.rackModel);
         else
         {
-            newRack = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            if (GameManager.gm.rackTemplates.ContainsKey(_data.template))
+                newRack = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            else
+            {
+                GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+                return null;
+            }
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
@@ -155,7 +161,13 @@ public class ObjectGenerator : MonoBehaviour
             //+chassis:[name]@[posU]@[template]
             else
             {
-                newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                if (GameManager.gm.devicesTemplates.ContainsKey(_data.template))
+                    newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+                    return null;
+                }
                 newChassis.transform.parent = _data.parent;
                 Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in renderers)
@@ -178,7 +190,15 @@ public class ObjectGenerator : MonoBehaviour
             if (string.IsNullOrEmpty(_data.template))
                 max = _data.sizeU;
             else
-                max = GameManager.gm.devicesTemplates[_data.template].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+            {
+                if (GameManager.gm.devicesTemplates.ContainsKey(_data.template))
+                    max = GameManager.gm.devicesTemplates[_data.template].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+                    return null;
+                }
+            }
             foreach (Transform child in _data.parent)
             {
                 if (child.name == _data.slot || (i > 0 && i < max))
@@ -204,7 +224,13 @@ public class ObjectGenerator : MonoBehaviour
                 //+chassis:[name]@[slot]@[template]
                 else
                 {
-                    newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                    if (GameManager.gm.devicesTemplates.ContainsKey(_data.template))
+                        newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                    else
+                    {
+                        GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+                        return null;
+                    }
                     newChassis.transform.parent = _data.parent;
                     Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
                     foreach (Renderer r in renderers)

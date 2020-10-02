@@ -98,12 +98,17 @@ public class BuildingGenerator : MonoBehaviour
             size = _data.size;
             orient = _data.orient;
         }
-        else
+        else if (GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
             size = new Vector3(GameManager.gm.roomTemplates[_data.template].sizeWDHm[0],
-                                GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
-                                GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
+                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
+                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
             orient = GameManager.gm.roomTemplates[_data.template].orientation;
+        }
+        else
+        {
+            GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+            return null;
         }
 
         Room room = newRoom.GetComponent<Room>();
