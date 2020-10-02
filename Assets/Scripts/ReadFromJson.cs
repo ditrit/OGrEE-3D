@@ -54,6 +54,7 @@ public class ReadFromJson
         public string slug;
         public string vendor;
         public string model;
+        public string type;
         public int[] sizeWDHmm;
         public SRackSlot[] components;
     }
@@ -112,8 +113,16 @@ public class ReadFromJson
     public void CreateRackTemplate(string _json)
     {
         SRackFromJson rackData = JsonUtility.FromJson<SRackFromJson>(_json);
-        if (GameManager.gm.rackTemplates.ContainsKey(rackData.slug))
+        if (rackData.type != "rack")
+        {
+            GameManager.gm.AppendLogLine($"{rackData.slug} is a {rackData.type}, not a rack.", "red");
             return;
+        }
+        if (GameManager.gm.rackTemplates.ContainsKey(rackData.slug))
+        {
+            GameManager.gm.AppendLogLine($"{rackData.slug} already exists.", "yellow");
+            return;
+        }
 
         SRackInfos infos = new SRackInfos();
         infos.name = rackData.slug;
@@ -246,6 +255,17 @@ public class ReadFromJson
     public void CreateDeviceTemplate(string _json)
     {
         SDevice data = JsonUtility.FromJson<SDevice>(_json);
+        if (data.type == "rack")
+        {
+            GameManager.gm.AppendLogLine($"{data.slug} is a rack, not a device.", "red");
+            return;
+        }
+        if (GameManager.gm.rackTemplates.ContainsKey(data.slug))
+        {
+            GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
+            return;
+        }
+
         if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
             return;
 
