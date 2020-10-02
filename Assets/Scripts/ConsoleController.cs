@@ -65,7 +65,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_saveCmd">If ".cmds", save it in GameManager ? true by default</param>
     public void RunCommandString(string _input, bool _saveCmd = true)
     {
-        if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
+        if (string.IsNullOrEmpty(_input.Trim()) || _input.StartsWith("//"))
             return;
 
         StartCoroutine(WaitAndRunCmdStr(_input.Trim(), _saveCmd));
@@ -259,7 +259,6 @@ public class ConsoleController : MonoBehaviour
     private void LoadTemplateFile(string _input)
     {
         string[] str = _input.Split(new char[] { '@' }, 2);
-        // if (str[0] == "rack" || str[0] == "room")
         if (str.Length == 2)
         {
             string json = "";
@@ -286,7 +285,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             AppendLogLine("Syntax error", "red");
-        //     AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -508,7 +506,10 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax error", "red");
     }
 
-    ///
+    ///<summary>
+    /// Parse a "create device" command and call ObjectGenerator.CreateDevice().
+    ///</summary>
+    ///<param name="_input">String with device data to parse</param>
     private void CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
