@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public class TimerControl : MonoBehaviour
 {
-    [SerializeField] private ConsoleController consoleController;
-    [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI value;
+    [SerializeField] private ConsoleController consoleController = null;
+    [SerializeField] private Slider slider = null;
+    [SerializeField] private TextMeshProUGUI value = null;
 
     private void Start()
     {

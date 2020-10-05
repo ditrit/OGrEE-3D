@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -26,8 +26,8 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
     public string serial;
 
     public Dictionary<string, string> extras = new Dictionary<string, string>();
-    [SerializeField] private List<string> extraKeys;
-    [SerializeField] private List<string> extraValues;
+    [SerializeField] private List<string> extraKeys = new List<string>();
+    [SerializeField] private List<string> extraValues = new List<string>();
 
 
     public void OnBeforeSerialize()
