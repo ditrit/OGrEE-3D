@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -248,6 +248,11 @@ public class ObjectGenerator : MonoBehaviour
                     newChassis.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                 else if (newChassis.GetComponent<Object>().orient == EObjOrient.Backward)
                     newChassis.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+
+                // Assign default color = slot color
+                Material mat = newChassis.transform.GetChild(0).GetComponent<Renderer>().material;
+                Color slotColor = slot.GetComponent<Renderer>().material.color;
+                mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
             }
             else
             {

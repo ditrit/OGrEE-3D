@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -102,6 +102,7 @@ public class ReadFromJson
         public int[] elemSize;
         public string mandatory;
         public string labelPos;
+        public string color;
     }
     #endregion
 
@@ -279,6 +280,15 @@ public class ReadFromJson
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
 
+        switch (data.type)
+        {
+            case "chassis":
+                device.family = EObjFamily.chassis;
+                break;
+            case "blade":
+                device.family = EObjFamily.device;
+                break;
+        }
         device.vendor = data.vendor;
         device.model = data.model;
         device.description = data.description;
@@ -291,7 +301,8 @@ public class ReadFromJson
                 device.orient = EObjOrient.Backward;
                 break;
         }
-        device.extras.Add("fulllength", "yes");
+        if (data.fulllength == "yes")
+            device.extras.Add("fulllength", "yes");
 
         foreach (SDeviceSlot comp in data.components)
             PopulateSlot(comp, device.transform);
@@ -327,12 +338,14 @@ public class ReadFromJson
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;
 
-        if (_data.mandatory == "no")
-        {
-            go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
-            Material mat = go.GetComponent<Renderer>().material;
-            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.25f);
-        }
+        go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+        Material mat = go.GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
+        if (_data.mandatory == "yes")
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+        else if (_data.mandatory == "no")
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.25f);
     }
 
 }
