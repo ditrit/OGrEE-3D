@@ -233,7 +233,12 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
+        foreach (var kpv in rackTemplates)
+            Destroy(kpv.Value);
         rackTemplates.Clear();
+        foreach (var kpv in devicesTemplates)
+            Destroy(kpv.Value);
+        devicesTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
