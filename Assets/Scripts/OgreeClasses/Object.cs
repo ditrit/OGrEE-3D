@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -15,7 +15,7 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
     public EUnit posZUnit;
     public Vector2 size;
     public EUnit sizeUnit;
-    public int height;
+    public float height;
     public EUnit heightUnit;
     public EObjOrient orient;
 

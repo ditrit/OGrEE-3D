@@ -326,7 +326,7 @@ public class ConsoleController : MonoBehaviour
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             CreateRoom(str[1]);
-        else if (str[0] == "zones")
+        else if (str[0] == "zones" || str[0] == "zo")
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);

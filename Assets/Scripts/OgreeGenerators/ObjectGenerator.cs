@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -146,15 +146,15 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject newChassis;
+        GameObject newDevice;
         if (string.IsNullOrEmpty(_data.slot))
         {
             //+chassis:[name]@[posU]@[sizeU]
             if (string.IsNullOrEmpty(_data.template))
             {
-                newChassis = Instantiate(GameManager.gm.deviceModel);
-                newChassis.transform.parent = _data.parent;
-                newChassis.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
+                newDevice = Instantiate(GameManager.gm.deviceModel);
+                newDevice.transform.parent = _data.parent;
+                newDevice.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
                                                                 _data.sizeU * GameManager.gm.uSize,
                                                                 _data.parent.GetChild(0).localScale.z);
             }
@@ -162,25 +162,25 @@ public class ObjectGenerator : MonoBehaviour
             else
             {
                 if (GameManager.gm.devicesTemplates.ContainsKey(_data.template))
-                    newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                    newDevice = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
                 else
                 {
                     GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
                     return null;
                 }
-                newChassis.transform.parent = _data.parent;
-                Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+                newDevice.transform.parent = _data.parent;
+                Renderer[] renderers = newDevice.GetComponentsInChildren<Renderer>();
                 foreach (Renderer r in renderers)
                     r.enabled = true;
-                Destroy(newChassis.GetComponent<HierarchyName>());
+                Destroy(newDevice.GetComponent<HierarchyName>());
             }
-            newChassis.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-            newChassis.transform.localEulerAngles = Vector3.zero;
-            newChassis.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newChassis.transform.GetChild(0).localScale.y) / 2, 0);
-            newChassis.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
+            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+            newDevice.transform.localEulerAngles = Vector3.zero;
+            newDevice.transform.localPosition = new Vector3(0, (-_data.parent.GetChild(0).localScale.y + newDevice.transform.GetChild(0).localScale.y) / 2, 0);
+            newDevice.transform.localPosition += new Vector3(0, (_data.posU - 1) * GameManager.gm.uSize, 0);
 
-            float deltaZ = _data.parent.GetChild(0).localScale.z - newChassis.transform.GetChild(0).localScale.z;
-            newChassis.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+            float deltaZ = _data.parent.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
+            newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
         }
         else
         {
@@ -216,41 +216,41 @@ public class ObjectGenerator : MonoBehaviour
                 //+chassis:[name]@[slot]@[sizeU]
                 if (string.IsNullOrEmpty(_data.template))
                 {
-                    newChassis = Instantiate(GameManager.gm.deviceModel);
-                    newChassis.transform.parent = _data.parent;
-                    newChassis.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
+                    newDevice = Instantiate(GameManager.gm.deviceModel);
+                    newDevice.transform.parent = _data.parent;
+                    newDevice.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
 
                 }
                 //+chassis:[name]@[slot]@[template]
                 else
                 {
                     if (GameManager.gm.devicesTemplates.ContainsKey(_data.template))
-                        newChassis = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
+                        newDevice = Instantiate(GameManager.gm.devicesTemplates[_data.template]);
                     else
                     {
                         GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
                         return null;
                     }
-                    newChassis.transform.parent = _data.parent;
-                    Renderer[] renderers = newChassis.GetComponentsInChildren<Renderer>();
+                    newDevice.transform.parent = _data.parent;
+                    Renderer[] renderers = newDevice.GetComponentsInChildren<Renderer>();
                     foreach (Renderer r in renderers)
                         r.enabled = true;
-                    Destroy(newChassis.GetComponent<HierarchyName>());
+                    Destroy(newDevice.GetComponent<HierarchyName>());
                 }
-                newChassis.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
-                newChassis.transform.localPosition = slot.localPosition;
-                if (newChassis.transform.GetChild(0).localScale.y > slot.localScale.y)
-                    newChassis.transform.localPosition += new Vector3(0, newChassis.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
+                newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
+                newDevice.transform.localPosition = slot.localPosition;
+                if (newDevice.transform.GetChild(0).localScale.y > slot.localScale.y)
+                    newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
-                float deltaZ = slot.localScale.z - newChassis.transform.GetChild(0).localScale.z;
-                if (newChassis.GetComponent<Object>().orient == EObjOrient.Frontward
-                    || newChassis.GetComponent<Object>().extras["fulllenght"] == "yes")
-                    newChassis.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
-                else if (newChassis.GetComponent<Object>().orient == EObjOrient.Backward)
-                    newChassis.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                float deltaZ = slot.localScale.z - newDevice.transform.GetChild(0).localScale.z;
+                if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward
+                    || newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
+                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                else if (newDevice.GetComponent<Object>().orient == EObjOrient.Backward)
+                    newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
 
                 // Assign default color = slot color
-                Material mat = newChassis.transform.GetChild(0).GetComponent<Renderer>().material;
+                Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
                 Color slotColor = slot.GetComponent<Renderer>().material.color;
                 mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
             }
@@ -260,17 +260,33 @@ public class ObjectGenerator : MonoBehaviour
                 return null;
             }
         }
-        newChassis.transform.localEulerAngles = Vector3.zero;
+        newDevice.transform.localEulerAngles = Vector3.zero;
 
-        newChassis.name = _data.name;
-        newChassis.GetComponent<DisplayObjectData>().UpdateLabels(newChassis.name);
+        newDevice.name = _data.name;
+        Object obj = newDevice.GetComponent<Object>();
+        obj.size = new Vector2(newDevice.transform.GetChild(0).localScale.x,
+                                newDevice.transform.GetChild(0).localScale.z) * 1000;
+        obj.sizeUnit = EUnit.mm;
+        obj.height = newDevice.transform.GetChild(0).localScale.y * 1000;
+        obj.heightUnit = EUnit.mm;
+        if (string.IsNullOrEmpty(_data.slot))
+        {
+            obj.posZ = _data.posU;
+            obj.posZUnit = EUnit.U;
+        }
+        else
+            obj.extras.Add("slot", _data.slot);
 
-        newChassis.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newChassis);
+        obj.tenant = _data.parent.GetComponent<Object>().tenant;
+
+        newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
+
+        newDevice.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(hierarchyName, newDevice);
         if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newChassis);
+            GameManager.gm.SetCurrentItem(newDevice);
 
-        return newChassis.GetComponent<Object>();
+        return newDevice.GetComponent<Object>();
     }
 
     public void CreateAirconditionner()
