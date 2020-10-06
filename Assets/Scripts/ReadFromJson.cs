@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -66,6 +66,7 @@ public class ReadFromJson
         public string family;
         public string role;
         public string installed;
+        public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
         public string mandatory;
@@ -98,6 +99,7 @@ public class ReadFromJson
         public string role;
         public string factor;
         public string position;
+        public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
         public string mandatory;
@@ -138,92 +140,107 @@ public class ReadFromJson
         rack.model = rackData.model;
         foreach (SRackSlot comp in rackData.components)
         {
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.name = comp.location;
-            go.transform.parent = rack.transform;
-            go.transform.localScale = new Vector3(comp.elemSize[0], comp.elemSize[2], comp.elemSize[1]) / 1000;
-            go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
-            go.transform.localPosition += go.transform.localScale / 2;
-            go.transform.localPosition += new Vector3(comp.elemPos[0], comp.elemPos[2], comp.elemPos[1]) / 1000;
-            go.transform.localEulerAngles = Vector3.zero;
+            SDeviceSlot slotData = new SDeviceSlot();
+            slotData.location = comp.location;
+            slotData.type = comp.family;
+            slotData.role = comp.role;
+            // slotData.factor = comp.factor;
+            slotData.position = comp.installed;
+            slotData.elemOrient = comp.elemOrient;
+            slotData.elemPos = comp.elemPos;
+            slotData.elemSize = comp.elemSize;
+            slotData.mandatory = comp.mandatory;
+            slotData.labelPos = comp.labelPos;
+            slotData.color = comp.color;
 
-            Slot s = go.AddComponent<Slot>();
-            s.installed = comp.installed;
-            s.mandatory = comp.mandatory;
-            s.labelPos = comp.labelPos;
+            PopulateSlot(slotData, rack.transform);
 
-            GameObject textHolder = new GameObject();
-            textHolder.name = "textHolder";
+            // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            // go.name = comp.location;
+            // go.transform.parent = rack.transform;
+            // go.transform.localScale = new Vector3(comp.elemSize[0], comp.elemSize[2], comp.elemSize[1]) / 1000;
+            // go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
+            // go.transform.localPosition += go.transform.localScale / 2;
+            // go.transform.localPosition += new Vector3(comp.elemPos[0], comp.elemPos[2], comp.elemPos[1]) / 1000;
+            // go.transform.localEulerAngles = Vector3.zero;
 
-            TextMeshPro text = textHolder.AddComponent<TextMeshPro>();
-            text.text = go.name;
-            text.fontSize = 0.5f;
-            text.alignment = TextAlignmentOptions.MidlineGeoAligned;
+            // Slot s = go.AddComponent<Slot>();
+            // s.installed = comp.installed;
+            // s.mandatory = comp.mandatory;
+            // s.labelPos = comp.labelPos;
 
-            switch (comp.labelPos)
-            {
-                case "front":
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / -2);
-                    textHolder.transform.localPosition += new Vector3(0, 0, 0.06f);
-                    textHolder.transform.localEulerAngles = Vector3.zero;
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
-                    break;
-                case "rear":
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / 2);
-                    textHolder.transform.localPosition += new Vector3(0, 0, -0.06f);
-                    textHolder.transform.localEulerAngles = new Vector3(0, 180, 0);
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
-                    break;
-                case "top":
-                    textHolder.transform.localEulerAngles = new Vector3(90, 0, 0);
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(0, go.transform.localScale.y * 10, 0);
-                    textHolder.transform.localPosition += new Vector3(0, 0.1f, 0);
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
-                    break;
-                case "left":
-                    textHolder.transform.localEulerAngles = new Vector3(0, -90, 0);
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(go.transform.localScale.x * -10, 0, 0);
-                    textHolder.transform.localPosition += new Vector3(-0.07f, 0, 0);
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.z, go.transform.localScale.y);
-                    break;
-                case "right":
-                    textHolder.transform.localEulerAngles = new Vector3(0, 90, 0);
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(go.transform.localScale.x * 10, 0, 0);
-                    textHolder.transform.localPosition += new Vector3(0.07f, 0, 0);
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.z, go.transform.localScale.y);
-                    break;
-                case "frontrear":
-                    // place textHolder as front...
-                    textHolder.transform.SetParent(go.transform);
-                    textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / -2);
-                    textHolder.transform.localPosition += new Vector3(0, 0, 0.06f);
-                    textHolder.transform.localEulerAngles = Vector3.zero;
-                    text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
-                    // ... and create a new one for rear
-                    GameObject textHolderBis = new GameObject();
-                    textHolderBis.name = "textHolderBis";
-                    TextMeshPro textBis = textHolderBis.AddComponent<TextMeshPro>();
-                    textBis.text = go.name;
-                    textBis.fontSize = 0.5f;
-                    textBis.alignment = TextAlignmentOptions.MidlineGeoAligned;
-                    textHolderBis.transform.SetParent(go.transform);
-                    textHolderBis.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / 2);
-                    textHolderBis.transform.localPosition += new Vector3(0, 0, -0.06f);
-                    textHolderBis.transform.localEulerAngles = new Vector3(0, 180, 0);
-                    textBis.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
-                    break;
-            }
+            // GameObject textHolder = new GameObject();
+            // textHolder.name = "textHolder";
 
-            go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
-            Material mat = go.GetComponent<Renderer>().material;
-            Color myColor = new Color();
-            ColorUtility.TryParseHtmlString($"#{comp.color}", out myColor);
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
+            // TextMeshPro text = textHolder.AddComponent<TextMeshPro>();
+            // text.text = go.name;
+            // text.fontSize = 0.5f;
+            // text.alignment = TextAlignmentOptions.MidlineGeoAligned;
+
+            // switch (comp.labelPos)
+            // {
+            //     case "front":
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / -2);
+            //         textHolder.transform.localPosition += new Vector3(0, 0, 0.06f);
+            //         textHolder.transform.localEulerAngles = Vector3.zero;
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
+            //         break;
+            //     case "rear":
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / 2);
+            //         textHolder.transform.localPosition += new Vector3(0, 0, -0.06f);
+            //         textHolder.transform.localEulerAngles = new Vector3(0, 180, 0);
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
+            //         break;
+            //     case "top":
+            //         textHolder.transform.localEulerAngles = new Vector3(90, 0, 0);
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(0, go.transform.localScale.y * 10, 0);
+            //         textHolder.transform.localPosition += new Vector3(0, 0.1f, 0);
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
+            //         break;
+            //     case "left":
+            //         textHolder.transform.localEulerAngles = new Vector3(0, -90, 0);
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(go.transform.localScale.x * -10, 0, 0);
+            //         textHolder.transform.localPosition += new Vector3(-0.07f, 0, 0);
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.z, go.transform.localScale.y);
+            //         break;
+            //     case "right":
+            //         textHolder.transform.localEulerAngles = new Vector3(0, 90, 0);
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(go.transform.localScale.x * 10, 0, 0);
+            //         textHolder.transform.localPosition += new Vector3(0.07f, 0, 0);
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.z, go.transform.localScale.y);
+            //         break;
+            //     case "frontrear":
+            //         // place textHolder as front...
+            //         textHolder.transform.SetParent(go.transform);
+            //         textHolder.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / -2);
+            //         textHolder.transform.localPosition += new Vector3(0, 0, 0.06f);
+            //         textHolder.transform.localEulerAngles = Vector3.zero;
+            //         text.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
+            //         // ... and create a new one for rear
+            //         GameObject textHolderBis = new GameObject();
+            //         textHolderBis.name = "textHolderBis";
+            //         TextMeshPro textBis = textHolderBis.AddComponent<TextMeshPro>();
+            //         textBis.text = go.name;
+            //         textBis.fontSize = 0.5f;
+            //         textBis.alignment = TextAlignmentOptions.MidlineGeoAligned;
+            //         textHolderBis.transform.SetParent(go.transform);
+            //         textHolderBis.transform.localPosition = new Vector3(0, 0, go.transform.localScale.z / 2);
+            //         textHolderBis.transform.localPosition += new Vector3(0, 0, -0.06f);
+            //         textHolderBis.transform.localEulerAngles = new Vector3(0, 180, 0);
+            //         textBis.rectTransform.sizeDelta = new Vector2(go.transform.localScale.x, go.transform.localScale.y);
+            //         break;
+            // }
+
+            // go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+            // Material mat = go.GetComponent<Renderer>().material;
+            // Color myColor = new Color();
+            // ColorUtility.TryParseHtmlString($"#{comp.color}", out myColor);
+            // mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
         }
 
 #if !DEBUG
@@ -324,12 +341,15 @@ public class ReadFromJson
     ///<param name="_parent">The parent of the Slot</param>
     private void PopulateSlot(SDeviceSlot _data, Transform _parent)
     {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.deviceModel);
+        MonoBehaviour.Destroy(go.GetComponent<Object>());
+
         go.name = _data.location;
         go.transform.parent = _parent;
-        go.transform.localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
+        go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
-        go.transform.localPosition += go.transform.localScale / 2;
+        go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
         go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         go.transform.localEulerAngles = Vector3.zero;
 
@@ -338,8 +358,13 @@ public class ReadFromJson
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;
 
-        go.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
-        Material mat = go.GetComponent<Renderer>().material;
+        DisplayObjectData dod = go.AddComponent<DisplayObjectData>();
+        dod.Setup();
+        dod.PlaceTexts(s.labelPos);
+        dod.UpdateLabels(go.name);
+
+        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+        Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_data.mandatory == "yes")

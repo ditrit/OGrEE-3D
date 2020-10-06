@@ -12,6 +12,18 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelRight = null;
 
     ///<summary>
+    /// Assign labels references with children of a Device prefab
+    ///</summary>
+    public void Setup()
+    {
+        labelFront = transform.GetChild(1).GetComponent<TextMeshPro>();
+        labelRear = transform.GetChild(2).GetComponent<TextMeshPro>();
+        labelRight = transform.GetChild(3).GetComponent<TextMeshPro>();
+        labelLeft = transform.GetChild(4).GetComponent<TextMeshPro>();
+        labelTop = transform.GetChild(5).GetComponent<TextMeshPro>();
+    }
+
+    ///<summary>
     /// Move displayed texts in the top/front of the rack.
     /// Also set width of name and description regarding rack width.
     ///</summary>

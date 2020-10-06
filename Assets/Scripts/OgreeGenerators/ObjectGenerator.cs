@@ -218,7 +218,9 @@ public class ObjectGenerator : MonoBehaviour
                 {
                     newDevice = Instantiate(GameManager.gm.deviceModel);
                     newDevice.transform.parent = _data.parent;
-                    newDevice.transform.GetChild(0).localScale = new Vector3(slot.transform.localScale.x, _data.sizeU * slot.localScale.y, slot.localScale.z);
+                    newDevice.transform.GetChild(0).localScale = new Vector3(slot.GetChild(0).localScale.x,
+                                                                                _data.sizeU * slot.GetChild(0).localScale.y,
+                                                                                slot.GetChild(0).localScale.z);
 
                 }
                 //+chassis:[name]@[slot]@[template]
@@ -239,10 +241,10 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
                 newDevice.transform.localPosition = slot.localPosition;
-                if (newDevice.transform.GetChild(0).localScale.y > slot.localScale.y)
+                if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
                     newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
-                float deltaZ = slot.localScale.z - newDevice.transform.GetChild(0).localScale.z;
+                float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
                 if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward
                     || newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
                     newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
@@ -251,7 +253,7 @@ public class ObjectGenerator : MonoBehaviour
 
                 // Assign default color = slot color
                 Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
-                Color slotColor = slot.GetComponent<Renderer>().material.color;
+                Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
                 mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
             }
             else

@@ -17,7 +17,7 @@ public class Slot : MonoBehaviour
     public void SlotTaken(bool _value)
     {
         used = _value;
-        GetComponent<Renderer>().enabled = !_value;
+        transform.GetChild(0).GetComponent<Renderer>().enabled = !_value;
         TextMeshPro[] labels = GetComponentsInChildren<TextMeshPro>();
         foreach (TextMeshPro label in labels)
             label.gameObject.SetActive(!_value);

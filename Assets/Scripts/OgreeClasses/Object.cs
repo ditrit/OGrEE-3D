@@ -50,7 +50,8 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
 
     protected virtual void OnDestroy()
     {
-        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+        if (GetComponent<HierarchyName>())
+            GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
 
     ///<summary>
