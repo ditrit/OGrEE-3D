@@ -25,6 +25,8 @@ public class ConsoleController : MonoBehaviour
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
     [SerializeField] private bool isReady = true;
+    public float timerValue = 1f;
+    public bool timer = false;
 
 
     ///<summary>
@@ -63,7 +65,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_saveCmd">If ".cmds", save it in GameManager ? true by default</param>
     public void RunCommandString(string _input, bool _saveCmd = true)
     {
-        if (string.IsNullOrEmpty(_input) || _input.StartsWith("//"))
+        if (string.IsNullOrEmpty(_input.Trim()) || _input.StartsWith("//"))
             return;
 
         StartCoroutine(WaitAndRunCmdStr(_input.Trim(), _saveCmd));
@@ -96,6 +98,12 @@ public class ConsoleController : MonoBehaviour
         else
         {
             AppendLogLine("Unknown command", "red");
+            isReady = true;
+        }
+        if (timer)
+        {
+            isReady = false;
+            yield return new WaitForSeconds(timerValue);
             isReady = true;
         }
     }
@@ -142,12 +150,15 @@ public class ConsoleController : MonoBehaviour
             GameManager.gm.SetCurrentItem(null);
             _input = _input.Trim('{', '}');
             string[] items = _input.Split(',');
-            foreach (string item in items)
+            for (int i = 0; i < items.Length; i++)
             {
+                items[i] = $"{root.GetComponent<HierarchyName>().GetHierarchyName()}.{items[i]}";
                 bool found = false;
-                foreach (Transform child in root)
+                HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
+                foreach (HierarchyName child in children)
                 {
-                    if (child.name == item)
+                    Debug.Log(child.name);
+                    if (child.GetHierarchyName() == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
                             GameManager.gm.SetCurrentItem(child.gameObject);
@@ -157,7 +168,7 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 if (!found)
-                    AppendLogLine($"Error: \"{item}\" is not a child of {root.name} or does not exist", "yellow");
+                    AppendLogLine($"Error: \"{items[i]}\" is not a child of {root.name} or does not exist", "yellow");
             }
         }
         else if (GameManager.gm.allItems.Contains(_input))
@@ -251,7 +262,6 @@ public class ConsoleController : MonoBehaviour
     private void LoadTemplateFile(string _input)
     {
         string[] str = _input.Split(new char[] { '@' }, 2);
-        // if (str[0] == "rack" || str[0] == "room")
         if (str.Length == 2)
         {
             string json = "";
@@ -268,6 +278,8 @@ public class ConsoleController : MonoBehaviour
             {
                 if (str[0] == "rack")
                     rfJson.CreateRackTemplate(json);
+                else if (str[0] == "device")
+                    rfJson.CreateDeviceTemplate(json);
                 else if (str[0] == "room")
                     rfJson.CreateRoomTemplate(json);
                 else
@@ -276,7 +288,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             AppendLogLine("Syntax error", "red");
-        //     AppendLogLine("Unknown template type", "red");
     }
 
     ///<summary>
@@ -289,7 +300,10 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, regex))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            variables.Add(data[0], data[1]);
+            if (variables.ContainsKey(data[0]))
+                AppendLogLine($"{data[0]} already exists", "yellow");
+            else
+                variables.Add(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax Error on variable creation", "red");
@@ -315,10 +329,12 @@ public class ConsoleController : MonoBehaviour
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             CreateRoom(str[1]);
-        else if (str[0] == "zones")
+        else if (str[0] == "zones" || str[0] == "zo")
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
+        else if (str[0] == "device")
+            CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
         else
@@ -494,6 +510,40 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
+    /// Parse a "create device" command and call ObjectGenerator.CreateDevice().
+    ///</summary>
+    ///<param name="_input">String with device data to parse</param>
+    private void CreateDevice(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+$";
+        if (Regex.IsMatch(_input, patern))
+        {
+            string[] data = _input.Split('@');
+            SDeviceInfos infos = new SDeviceInfos();
+
+            if (int.TryParse(data[1], out infos.posU) == false)
+                infos.slot = data[1];
+            if (float.TryParse(data[2], out infos.sizeU) == false)
+                infos.template = data[2];
+            if (data[0].StartsWith("/"))
+            {
+                IsolateParent(data[0].Substring(1), out infos.parent, out infos.name);
+                if (infos.parent)
+                    ObjectGenerator.instance.CreateDevice(infos, false);
+            }
+            else
+            {
+                infos.name = data[0];
+                infos.parent = GameManager.gm.currentItems[0].transform;
+                ObjectGenerator.instance.CreateDevice(infos, true);
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
     /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
     ///</summary>
     ///<param name="String with tenant data to parse"></param>
@@ -544,10 +594,10 @@ public class ConsoleController : MonoBehaviour
                 GameObject room = GameManager.gm.FindByAbsPath(data[0].Substring(1));
                 if (room)
                 {
-                    SMargin resDim = new SMargin(float.Parse(data[1]), float.Parse(data[2]),
-                                                float.Parse(data[3]), float.Parse(data[4]));
-                    SMargin techDim = new SMargin(float.Parse(data[5]), float.Parse(data[6]),
-                                                float.Parse(data[7]), float.Parse(data[8]));
+                    SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                                float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
+                    SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                                float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
                     room.GetComponent<Room>().SetZones(resDim, techDim);
                 }
                 else
@@ -700,6 +750,7 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
+        // Debug.Log(parentPath);
         GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {

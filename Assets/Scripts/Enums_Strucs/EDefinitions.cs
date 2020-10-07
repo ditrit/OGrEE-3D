@@ -27,6 +27,7 @@ public enum EUnit
 {
     m,
     cm,
+    mm,
     inch,
     feet,
     tile,

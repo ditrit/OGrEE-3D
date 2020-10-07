@@ -22,9 +22,8 @@ public class ConsoleView : MonoBehaviour
         UpdateLogStr(console.log);
 
 #if DEBUG
-        console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\testCmds.txt");
-        // console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\EDF.NOE_Ced.ocli");
-        // console.RunCommandString(".cmds:K:\\_Orness\\CmdsOgree3D\\Exaion\\EDF_EXAION.ocli");
+        console.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        // console.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
 

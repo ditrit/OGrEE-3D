@@ -18,11 +18,12 @@ public struct SRackInfos
 public struct SDeviceInfos
 {
     public string name;
-    public string parentName;
-    public Vector3 pos; // mm? U ?
-    public Vector3 size; // mm? U ?
-    public string type;
-    public string orient;
+    public Transform parent;
+    public int posU;
+    public string slot;
+    public float sizeU;
+    public string template;
+
 }
 
 [System.Serializable]

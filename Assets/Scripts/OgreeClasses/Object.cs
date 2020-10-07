@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : MonoBehaviour, IAttributeModif
+public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
     public string description;
     public EObjFamily family;
@@ -15,7 +15,7 @@ public class Object : MonoBehaviour, IAttributeModif
     public EUnit posZUnit;
     public Vector2 size;
     public EUnit sizeUnit;
-    public int height;
+    public float height;
     public EUnit heightUnit;
     public EObjOrient orient;
 
@@ -25,11 +25,33 @@ public class Object : MonoBehaviour, IAttributeModif
     public string model;
     public string serial;
 
-    public Dictionary<string, string> extras;
+    public Dictionary<string, string> extras = new Dictionary<string, string>();
+    [SerializeField] private List<string> extraKeys = new List<string>();
+    [SerializeField] private List<string> extraValues = new List<string>();
+
+
+    public void OnBeforeSerialize()
+    {
+        extraKeys.Clear();
+        extraValues.Clear();
+        foreach (var kvp in extras)
+        {
+            extraKeys.Add(kvp.Key);
+            extraValues.Add(kvp.Value);
+        }
+    }
+
+    public void OnAfterDeserialize()
+    {
+        extras = new Dictionary<string, string>();
+        for (int i = 0; i != Mathf.Min(extraKeys.Count, extraValues.Count); i++)
+            extras.Add(extraKeys[i], extraValues[i]);
+    }
 
     protected virtual void OnDestroy()
     {
-        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+        if (GetComponent<HierarchyName>())
+            GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
 
     ///<summary>
@@ -59,6 +81,9 @@ public class Object : MonoBehaviour, IAttributeModif
             case "tenant":
                 AssignTenant(_value);
                 break;
+            case "color":
+                SetColor(_value);
+                break;
             case "alpha":
                 UpdateAlpha(_value);
                 break;
@@ -66,10 +91,6 @@ public class Object : MonoBehaviour, IAttributeModif
                 GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
-
-        DisplayRackData drd = GetComponent<DisplayRackData>();
-        if (drd)
-            drd.FillTexts();
     }
 
     ///<summary>
@@ -99,10 +120,28 @@ public class Object : MonoBehaviour, IAttributeModif
         {
             float a = float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
             a = Mathf.Clamp(a, 0, 100);
-            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
+            if (a == 0)
+                transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+            else
+            {
+                transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+                Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
+            }
         }
         else
             GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
+    }
+
+    ///<summary>
+    /// Set a Color with an hexadecimal value
+    ///</summary>
+    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    protected void SetColor(string _hex)
+    {
+        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
+        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 }

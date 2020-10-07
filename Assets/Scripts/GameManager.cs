@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
-    public GameObject serverModel;
     public GameObject deviceModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
@@ -40,7 +39,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
+    // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
@@ -78,8 +79,12 @@ public class GameManager : MonoBehaviour
                     else
                         SetCurrentItem(hit.collider.transform.parent.gameObject);
                 }
-                else if (hit.collider == null)
+                else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
+                {
+                    if (currentItems.Count > 0)
+                        AppendLogLine("Empty selection.", "green");
                     SetCurrentItem(null);
+                }
             }
         }
     }
@@ -232,7 +237,12 @@ public class GameManager : MonoBehaviour
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
         tenants.Clear();
+        foreach (var kpv in rackTemplates)
+            Destroy(kpv.Value);
         rackTemplates.Clear();
+        foreach (var kpv in devicesTemplates)
+            Destroy(kpv.Value);
+        devicesTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
@@ -261,7 +271,22 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
         }
         else
-            AppendLogLine("Current item must be a room", "red");
+            AppendLogLine("Selected item must be a room", "red");
+    }
+
+    ///<summary>
+    /// Called by GUI button: if currentItem is a rack, toggle U helpers
+    ///</summary>
+    public void ToggleUHelpers()
+    {
+        Rack rack = currentItems[0].GetComponent<Rack>();
+        if (rack)
+        {
+            rack.ToggleU();
+            AppendLogLine($"U helpers toggled for {currentItems[0].name}.", "yellow");
+        }
+        else
+            AppendLogLine("Selected item must be a rack.", "red");
     }
 
     ///<summary>

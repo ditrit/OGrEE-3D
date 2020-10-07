@@ -19,7 +19,7 @@ OGREE 3D is a data-center viewer
         - [Load template from JSON](#Load-template-from-JSON)
     - [Hierarchy commands](#Hierarchy-commands)
         - [Select an object](#Select-an-object)
-        - [Select several children](#Select-several-children)
+        - [### Select child / children object](####Select-child-/-children-object)
         - [Select parent object](#Select-parent-object)
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
@@ -28,6 +28,7 @@ OGREE 3D is a data-center viewer
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Rack](#Create-a-Rack)
+        - [Create a Device](#Create-a-Device)
         - [Create a Tenant](#Create-a-Tenant)
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
@@ -37,6 +38,7 @@ OGREE 3D is a data-center viewer
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
     - [Rack template](#Rack-template)
+    - [Device template](#Device-template)
 - [Controls](#Controls)
     - [Free mode movement](#Free-mode-movement)
     - [Human mode movement](#Human-mode-movement)
@@ -80,7 +82,7 @@ ${[name]}
 ```
 
 ### Load template from JSON
-*`[type]` type of template: rack (more to come)  
+*`[type]` type of template: rack, room or device  
 `[path]` path of the file*  
 ```
 .template:[type]@[path]
@@ -93,11 +95,15 @@ ${[name]}
 =[full name]
 ```
 
-### Select several children
-Select several children of current selected object.  
-*`[name]` is the "short" name of the object: without '/' and hierarchy*  
+### Select child / children object
+Select one or several children of current selected object.  
+*`[name]` is the "short" name of the object: without '/' and hierarchy  
+`[relativeName]` is the hierarchy name without the selected object part*  
 ```
+={[name]}
+={[relativeName]}
 ={[name],[name],...}
+={[relativeName],[relativeName],...}
 ```  
 
 ### Select parent object
@@ -160,6 +166,24 @@ Rack must be child of a room
 +rack:[name]@[pos]@[template]@[orientation]  
 +rk:[name]@[pos]@[size]@[orientation]  
 +rk:[name]@[pos]@[template]@[orientation]
+```  
+
+### Create a Device
+A chassis is a *parent* device racked at a defined U position.  
+If the parent rack has slots:  
+```
++device:[name]@[posU]@[sizeU]
++device:[name]@[posU]@[template]
+```
+If the parent rack doesn't have slots:
+```
++device:[name]@[slot]@[sizeU]
++device:[name]@[slot]@[template]
+```  
+
+All other devices have to be declared with a parent's slot and a template.  
+```
++device:[name]@[slot]@[template]
 ```  
 
 ### Create a Tenant  
@@ -370,6 +394,25 @@ Templates are json files describing an object.
   ]
 }
 
+```  
+
+## Device template
+```
+{ 
+ "slug"        : "slug-is-lowercase-with-no-space",
+ "description" : "Description can have spaces",
+ "vendor"      : "Vendor",
+ "model"       : "Model",
+ "type"        : "chassis/blade",
+ "role"        : "parent/child",
+ "side"        : "front/rear",
+ "fulllength"  : "yes/no",
+ "sizeWDHmm"   : [x,y,z],
+ "components"  : [
+  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top" },
+  ...    
+  ]
+}
 ```  
 
 # Controls  
