@@ -34,6 +34,9 @@ OGREE 3D is a data-center viewer
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
         - [Modify object’s attribute](#Modify-object’s-attribute)
+    - [Manipulate camera](#Manipulate-camera)
+        - [Move camera](#Move-camera)
+        - [Translate camera](#Translate-camera)
     - [Examples](#Examples)
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
@@ -232,6 +235,23 @@ _.[attribute]=[value]
 Display or hide U location dummies to simply identify objects in a rack.  
 ```
 [rack].U=[true|false]
+```  
+
+## Manipulate camera
+### Move camera
+Move the camera to the given point.  
+*`[position]` is a Vector3: the new position of the camera  
+`[rotation]` is a Vector2: the rotation of the camera *  
+```
+camera.move@[position]@[rotation]
+```  
+
+### Translate camera
+Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.  
+*`[position]` is a Vector3: the position of the camera's destination  
+`[rotation]` is a Vector2: the rotation of the camera's destination *  
+```
+camera.translate@[position]@[rotation]
 ```  
 
 ## Examples
