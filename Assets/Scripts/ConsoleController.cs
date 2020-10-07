@@ -150,12 +150,15 @@ public class ConsoleController : MonoBehaviour
             GameManager.gm.SetCurrentItem(null);
             _input = _input.Trim('{', '}');
             string[] items = _input.Split(',');
-            foreach (string item in items)
+            for (int i = 0; i < items.Length; i++)
             {
+                items[i] = $"{root.GetComponent<HierarchyName>().GetHierarchyName()}.{items[i]}";
                 bool found = false;
-                foreach (Transform child in root)
+                HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
+                foreach (HierarchyName child in children)
                 {
-                    if (child.name == item)
+                    Debug.Log(child.name);
+                    if (child.GetHierarchyName() == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
                             GameManager.gm.SetCurrentItem(child.gameObject);
@@ -165,7 +168,7 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 if (!found)
-                    AppendLogLine($"Error: \"{item}\" is not a child of {root.name} or does not exist", "yellow");
+                    AppendLogLine($"Error: \"{items[i]}\" is not a child of {root.name} or does not exist", "yellow");
             }
         }
         else if (GameManager.gm.allItems.Contains(_input))
