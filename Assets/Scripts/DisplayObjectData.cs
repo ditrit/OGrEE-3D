@@ -96,8 +96,8 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_str">The string to display</param>
     public void UpdateLabels(string _str)
     {
-        labelFront.text = _str + " (F)";
-        labelRear.text = _str + " (R)";
+        labelFront.text = _str;
+        labelRear.text = _str;
         labelRight.text = _str;
         labelLeft.text = _str;
         labelTop.text = _str;
