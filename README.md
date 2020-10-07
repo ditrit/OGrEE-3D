@@ -38,6 +38,7 @@ OGREE 3D is a data-center viewer
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
     - [Rack template](#Rack-template)
+    - [Device template](#Device-template)
 - [Controls](#Controls)
     - [Free mode movement](#Free-mode-movement)
     - [Human mode movement](#Human-mode-movement)
@@ -81,7 +82,7 @@ ${[name]}
 ```
 
 ### Load template from JSON
-*`[type]` type of template: rack (more to come)  
+*`[type]` type of template: rack, room or device  
 `[path]` path of the file*  
 ```
 .template:[type]@[path]
@@ -389,6 +390,25 @@ Templates are json files describing an object.
   ]
 }
 
+```  
+
+## Device template
+```
+{ 
+ "slug"        : "slug-is-lowercase-with-no-space",
+ "description" : "Description can have spaces",
+ "vendor"      : "Vendor",
+ "model"       : "Model",
+ "type"        : "chassis/blade",
+ "role"        : "parent/child",
+ "side"        : "front/rear",
+ "fulllength"  : "yes/no",
+ "sizeWDHmm"   : [x,y,z],
+ "components"  : [
+  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top" },
+  ...    
+  ]
+}
 ```  
 
 # Controls  

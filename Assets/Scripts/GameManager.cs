@@ -79,8 +79,12 @@ public class GameManager : MonoBehaviour
                     else
                         SetCurrentItem(hit.collider.transform.parent.gameObject);
                 }
-                else if (hit.collider == null)
+                else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
+                {
+                    if (currentItems.Count > 0)
+                        AppendLogLine("Empty selection.", "green");
                     SetCurrentItem(null);
+                }
             }
         }
     }
