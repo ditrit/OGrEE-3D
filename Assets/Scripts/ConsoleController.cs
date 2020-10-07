@@ -93,6 +93,8 @@ public class ConsoleController : MonoBehaviour
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
+        else if (_input.StartsWith("camera."))
+            MoveCamera(_input.Substring(7));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -157,7 +159,6 @@ public class ConsoleController : MonoBehaviour
                 HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
                 foreach (HierarchyName child in children)
                 {
-                    Debug.Log(child.name);
                     if (child.GetHierarchyName() == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
@@ -674,6 +675,35 @@ public class ConsoleController : MonoBehaviour
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }
+    }
+
+    ///
+    private void MoveCamera(string _input)
+    {
+        string pattern = "^(move|translate)@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            Vector3 newPos = ParseVector3(data[1]);
+            Vector2 newRot = ParseVector2(data[2]);
+            CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
+            switch (data[0])
+            {
+                case "move":
+                    cc.MoveCamera(newPos, newRot);
+                    break;
+                case "translate":
+                    cc.TranslateCamera(newPos, newRot);
+                    break;
+                default:
+                    AppendLogLine("Unknown Camera control", "yellow");
+                    break;
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+        
+        isReady = true;
     }
 
     #endregion
