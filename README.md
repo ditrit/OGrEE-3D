@@ -37,6 +37,7 @@ OGREE 3D is a data-center viewer
     - [Manipulate camera](#Manipulate-camera)
         - [Move camera](#Move-camera)
         - [Translate camera](#Translate-camera)
+        - [Wait between two translations](#Wait-between-two-translations)
     - [Examples](#Examples)
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
@@ -258,6 +259,13 @@ Move the camera to the given destination. You can stack several destinations, th
 ```
 camera.translate@[position]@[rotation]
 ```  
+
+### Wait between two translations 
+You can define a delay between two camera translations.  
+*`[time]` is the time to wait in seconds*  
+```
+camera.wait@[time]
+```   
 
 ## Examples
 ```
