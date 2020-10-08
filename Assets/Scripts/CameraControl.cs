@@ -22,6 +22,7 @@ public class CameraControl : MonoBehaviour
 
     [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
     [SerializeField] private List<Vector3> targetRot = new List<Vector3>();
+    private bool isReady = true;
 
     private void Update()
     {
@@ -32,9 +33,15 @@ public class CameraControl : MonoBehaviour
             FPSControls();
         else
             FreeModeControls();
-        
-        if (targetPos.Count > 0)
-            MoveToTarget();
+
+        if (isReady && targetPos.Count > 0)
+        {
+            // Code for Waiting targetPos.y seconds
+            if (targetRot[0].x == 999)
+                StartCoroutine(Wait(targetRot[0].y));
+            else
+                MoveToTarget();
+        }
 
         UpdateGUIInfos();
     }
@@ -81,7 +88,16 @@ public class CameraControl : MonoBehaviour
     }
 
     ///<summary>
-    /// Move camera to targetPos[0] and targetRot[0]
+    /// Create a false targetRot with rot.x=999 and rot.y = time to wait.
+    ///</summary>
+    ///<param name="_time">The time to wait</param>
+    public void WaitCamera(float _time)
+    {
+        targetRot.Add(new Vector3(999, _time, 0));
+    }
+
+    ///<summary>
+    /// Move camera to targetPos[0] and targetRot[0].
     ///</summary>
     private void MoveToTarget()
     {
@@ -96,6 +112,18 @@ public class CameraControl : MonoBehaviour
             targetPos.RemoveAt(0);
             targetRot.RemoveAt(0);
         }
+    }
+
+    ///<summary>
+    /// Wait _f seconds before authorising MoveToTarget(). 
+    ///</summary>
+    ///<param name="_f">The time to wait in seconds</param>
+    private IEnumerator Wait(float _f)
+    {
+        isReady = false;
+        targetRot.RemoveAt(0);
+        yield return new WaitForSeconds(_f);
+        isReady = true;
     }
 
     ///<summary>

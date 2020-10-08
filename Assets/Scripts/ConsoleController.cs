@@ -689,20 +689,21 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void MoveCamera(string _input)
     {
-        string pattern = "^(move|translate)@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]$";
+        string pattern = "^(move|translate|wait)@(\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]|[0-9.]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            Vector3 newPos = ParseVector3(data[1]);
-            Vector2 newRot = ParseVector2(data[2]);
             CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
             switch (data[0])
             {
                 case "move":
-                    cc.MoveCamera(newPos, newRot);
+                    cc.MoveCamera(ParseVector3(data[1]), ParseVector2(data[2]));
                     break;
                 case "translate":
-                    cc.TranslateCamera(newPos, newRot);
+                    cc.TranslateCamera(ParseVector3(data[1]), ParseVector2(data[2]));
+                    break;
+                case "wait":
+                    cc.WaitCamera(ParseDecFrac(data[1]));
                     break;
                 default:
                     AppendLogLine("Unknown Camera control", "yellow");
@@ -789,7 +790,6 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
-        // Debug.Log(parentPath);
         GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {
