@@ -148,6 +148,11 @@ public class ConsoleController : MonoBehaviour
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
         {
+            if (GameManager.gm.currentItems.Count == 0)
+            {
+                isReady = true;
+                yield break;
+            }
             Transform root = GameManager.gm.currentItems[0].transform;
             GameManager.gm.SetCurrentItem(null);
             _input = _input.Trim('{', '}');
