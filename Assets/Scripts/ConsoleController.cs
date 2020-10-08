@@ -86,13 +86,15 @@ public class ConsoleController : MonoBehaviour
         if (_input == "..")
             SelectParent();
         else if (_input[0] == '=')
-            SelectItem(_input.Substring(1));
+            StartCoroutine(SelectItem(_input.Substring(1)));
         else if (_input[0] == '.')
             ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
+        else if (_input.StartsWith("camera."))
+            MoveCamera(_input.Substring(7));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -136,16 +138,21 @@ public class ConsoleController : MonoBehaviour
     /// Look in all HierarchyNames for _input, set it as GameManager.currentItem.
     ///</summary>
     ///<param name="_input">HierarchyName of the object to select</param>
-    private void SelectItem(string _input)
+    private IEnumerator SelectItem(string _input)
     {
         if (string.IsNullOrEmpty(_input))
         {
             GameManager.gm.SetCurrentItem(null);
             isReady = true;
-            return;
+            yield break;
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
         {
+            if (GameManager.gm.currentItems.Count == 0)
+            {
+                isReady = true;
+                yield break;
+            }
             Transform root = GameManager.gm.currentItems[0].transform;
             GameManager.gm.SetCurrentItem(null);
             _input = _input.Trim('{', '}');
@@ -157,7 +164,6 @@ public class ConsoleController : MonoBehaviour
                 HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
                 foreach (HierarchyName child in children)
                 {
-                    Debug.Log(child.name);
                     if (child.GetHierarchyName() == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
@@ -176,6 +182,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
 
+        yield return new WaitForEndOfFrame();
         isReady = true;
     }
 
@@ -619,7 +626,7 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('=');
 
-            // Can be a tenant or a Customer...
+            // Can be a Tenant, a Customer or selection...
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
@@ -674,6 +681,39 @@ public class ConsoleController : MonoBehaviour
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }
+    }
+
+    ///<summary>
+    /// Parse a camera command and call the corresonding CameraControl method.
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
+    private void MoveCamera(string _input)
+    {
+        string pattern = "^(move|translate|wait)@(\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]|[0-9.]+)$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
+            switch (data[0])
+            {
+                case "move":
+                    cc.MoveCamera(ParseVector3(data[1]), ParseVector2(data[2]));
+                    break;
+                case "translate":
+                    cc.TranslateCamera(ParseVector3(data[1]), ParseVector2(data[2]));
+                    break;
+                case "wait":
+                    cc.WaitCamera(ParseDecFrac(data[1]));
+                    break;
+                default:
+                    AppendLogLine("Unknown Camera control", "yellow");
+                    break;
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+
+        isReady = true;
     }
 
     #endregion
@@ -750,7 +790,6 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
-        // Debug.Log(parentPath);
         GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
         if (tmp)
         {
@@ -761,7 +800,7 @@ public class ConsoleController : MonoBehaviour
         {
             parent = null;
             name = "";
-            AppendLogLine("Error: path doesn't exist", "red");
+            AppendLogLine($"Error: path doesn't exist ({parentPath})", "red");
         }
     }
 

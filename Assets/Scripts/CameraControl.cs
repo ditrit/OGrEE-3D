@@ -20,6 +20,9 @@ public class CameraControl : MonoBehaviour
     public float humanHeight = 1.75f;
     [SerializeField] private bool humanMode = false;
 
+    [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
+    [SerializeField] private List<Vector3> targetRot = new List<Vector3>();
+    private bool isReady = true;
 
     private void Update()
     {
@@ -30,6 +33,15 @@ public class CameraControl : MonoBehaviour
             FPSControls();
         else
             FreeModeControls();
+
+        if (isReady && targetPos.Count > 0)
+        {
+            // Code for Waiting targetPos.y seconds
+            if (targetRot[0].x == 999)
+                StartCoroutine(Wait(targetRot[0].y));
+            else
+                MoveToTarget();
+        }
 
         UpdateGUIInfos();
     }
@@ -49,7 +61,69 @@ public class CameraControl : MonoBehaviour
         }
         else
             transform.GetChild(0).localEulerAngles = Vector3.zero;//apply to wrapper and reset!
-        UpdateGUIInfos();
+    }
+
+    ///<summary>
+    /// Move Camera to given coordinates
+    ///</summary>
+    ///<param name="_pos">Position of the destination</param>
+    ///<param name="_rot">Rotation of the destination</param>
+    public void MoveCamera(Vector3 _pos, Vector2 _rot)
+    {
+        if (humanMode)
+            SwitchCameraMode(false);
+        transform.localPosition = _pos;
+        transform.localEulerAngles = new Vector3(_rot.x, _rot.y, 0);
+    }
+
+    ///<summary>
+    /// Register given coordinates in targetPos and targetRot
+    ///</summary>
+    ///<param name="_pos">Position of the destination</param>
+    ///<param name="_rot">Rotation of the destination</param>
+    public void TranslateCamera(Vector3 _pos, Vector2 _rot)
+    {
+        targetPos.Add(_pos);
+        targetRot.Add(new Vector3(_rot.x, _rot.y, 0));
+    }
+
+    ///<summary>
+    /// Create a false targetRot with rot.x=999 and rot.y = time to wait.
+    ///</summary>
+    ///<param name="_time">The time to wait</param>
+    public void WaitCamera(float _time)
+    {
+        targetRot.Add(new Vector3(999, _time, 0));
+    }
+
+    ///<summary>
+    /// Move camera to targetPos[0] and targetRot[0].
+    ///</summary>
+    private void MoveToTarget()
+    {
+        if (humanMode)
+            SwitchCameraMode(false);
+        float speed = 10f * Time.deltaTime;
+        transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPos[0], speed);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(targetRot[0]),
+                                                    speed / Vector3.Distance(transform.localPosition, targetPos[0]));
+        if (Vector3.Distance(transform.localPosition, targetPos[0]) < 0.1f)
+        {
+            targetPos.RemoveAt(0);
+            targetRot.RemoveAt(0);
+        }
+    }
+
+    ///<summary>
+    /// Wait _f seconds before authorising MoveToTarget(). 
+    ///</summary>
+    ///<param name="_f">The time to wait in seconds</param>
+    private IEnumerator Wait(float _f)
+    {
+        isReady = false;
+        targetRot.RemoveAt(0);
+        yield return new WaitForSeconds(_f);
+        isReady = true;
     }
 
     ///<summary>
@@ -118,16 +192,19 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void UpdateGUIInfos()
     {
-        float rot;
+        float rotX;
+        float rotY = transform.localEulerAngles.y;
         if (humanMode)
-            rot = transform.GetChild(0).localEulerAngles.x;
+            rotX = transform.GetChild(0).localEulerAngles.x;
         else
-            rot = transform.localEulerAngles.x;
+            rotX = transform.localEulerAngles.x;
 
-        if (rot < 0 || rot > 180)
-            rot -= 360;
+        if (rotX < 0 || rotX > 180)
+            rotX -= 360;
+        if (rotY < 0 || rotY > 180)
+            rotY -= 360;
 
-        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("F2")},{transform.localPosition.y.ToString("F2")},{transform.localPosition.z.ToString("F2")}]";
-        infosTMP.text += $"\nCamera angle: {rot.ToString("0")}°";
+        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("0.##")};{transform.localPosition.z.ToString("0.##")};{transform.localPosition.y.ToString("0.##")}]";
+        infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
     }
 }

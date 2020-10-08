@@ -34,6 +34,10 @@ OGREE 3D is a data-center viewer
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
         - [Modify object’s attribute](#Modify-object’s-attribute)
+    - [Manipulate camera](#Manipulate-camera)
+        - [Move camera](#Move-camera)
+        - [Translate camera](#Translate-camera)
+        - [Wait between two translations](#Wait-between-two-translations)
     - [Examples](#Examples)
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
@@ -51,6 +55,11 @@ Customer
     |_ Building
         |_ Room
             |_ Rack
+                |_ Device
+                |   |_ Sub-device
+                |   |   |_ Sub-device
+                |   |_ ...
+                |_ Device
 ```
 You have to create each object either with the build in CLI or by loading a file containing these commands.  
 You can assign a tenant to a Datacenter, a room or a rack. If so, all children will have the same tenant by default.  
@@ -134,7 +143,7 @@ Datacenter must be child of a Customer.
 ```
 
 ### Create a Building
-Building must be child of a Datacenter.
+Building must be child of a Datacenter.  
 *`[pos]` is a Vector3 [x,y,z] (m,m,m)  
 `[size]` is a Vector3 [width,length,height] (m,m,m)*  
 ```
@@ -143,7 +152,7 @@ Building must be child of a Datacenter.
 ```
 
 ### Create a Room
-Room must be child of a building.
+Room must be child of a building.  
 Its name will be displayed in the center of the room in its local coordinates system.  
 *`[pos]` is a Vector3 [x,y,z] (m,m,m)  
 `[size]` is a Vector3 [width,length,height] (m,m,m)
@@ -156,7 +165,7 @@ Its name will be displayed in the center of the room in its local coordinates sy
 ```
 
 ### Create a Rack
-Rack must be child of a room
+Rack must be child of a room.  
 *`[pos]` is a Vector2 [x,y] (tile,tile) can be decimal or fraction. Can also be negative  
 `[size]` is a Vector3 [width,length,height (cm,cm,u)  
 `[template]` is the name of the rack template  
@@ -202,9 +211,9 @@ You have to modify an object in the same file than its creation.
 
 ### Set reserved and technical zones of a room  
 Enables tiles edges display.  
-You can modify areas only if the room has no racks in it.
-**Technical** area : typically a restricted zone where power panels and AC systems are installed. separated from "IT space" with either a wall or a wire mesh
-**Reserved** area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)
+You can modify areas only if the room has no racks in it.  
+**Technical** area : typically a restricted zone where power panels and AC systems are installed. separated from "IT space" with either a wall or a wire mesh  
+**Reserved** area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)  
 
 *`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
 `[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
@@ -233,6 +242,30 @@ Display or hide U location dummies to simply identify objects in a rack.
 ```
 [rack].U=[true|false]
 ```  
+
+## Manipulate camera
+### Move camera
+Move the camera to the given point.  
+*`[position]` is a Vector3: the new position of the camera  
+`[rotation]` is a Vector2: the rotation of the camera*  
+```
+camera.move@[position]@[rotation]
+```  
+
+### Translate camera
+Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.  
+*`[position]` is a Vector3: the position of the camera's destination  
+`[rotation]` is a Vector2: the rotation of the camera's destination*  
+```
+camera.translate@[position]@[rotation]
+```  
+
+### Wait between two translations 
+You can define a delay between two camera translations.  
+*`[time]` is the time to wait in seconds*  
+```
+camera.wait@[time]
+```   
 
 ## Examples
 ```
