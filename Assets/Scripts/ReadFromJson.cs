@@ -271,7 +271,7 @@ public class ReadFromJson
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;
 
-        DisplayObjectData dod = go.AddComponent<DisplayObjectData>();
+        DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
         dod.Setup();
         dod.PlaceTexts(s.labelPos);
         dod.UpdateLabels(go.name);
