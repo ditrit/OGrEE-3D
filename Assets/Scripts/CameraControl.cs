@@ -205,6 +205,8 @@ public class CameraControl : MonoBehaviour
             rotY -= 360;
 
         infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("0.##")};{transform.localPosition.z.ToString("0.##")};{transform.localPosition.y.ToString("0.##")}]";
+        if (!isReady)
+            infosTMP.text += " (Waiting)";
         infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
     }
 }
