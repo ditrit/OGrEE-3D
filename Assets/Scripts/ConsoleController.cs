@@ -28,8 +28,7 @@ public class ConsoleController : MonoBehaviour
     public string lastCmd;
 
     [SerializeField] private bool isReady = true;
-    public float timerValue = 1f;
-    public bool timer = false;
+    public float timerValue = 0f;
 
 
     ///<summary>
@@ -104,6 +103,8 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(DeleteItem(_input.Substring(1)));
         else if (_input.StartsWith("camera."))
             MoveCamera(_input.Substring(7));
+        else if (_input.StartsWith("delay="))
+            SetTimer(_input.Substring(6));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -111,7 +112,7 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Unknown command", "red");
             isReady = true;
         }
-        if (timer)
+        if (timerValue > 0)
         {
             isReady = false;
             yield return new WaitForSeconds(timerValue);
@@ -729,6 +730,28 @@ public class ConsoleController : MonoBehaviour
         isReady = true;
     }
 
+    ///<summary>
+    /// Set timer to a value between 0 and 2s
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
+    private void SetTimer(string _input)
+    {
+        string pattern = "^[0-9.]+$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            float time = ParseDecFrac(_input);
+            if (time < 0 || time > 2)
+            {
+                time = Mathf.Clamp(time, 0, 2);
+                AppendLogLine("Delay is a value between 0 and 2s", "yellow");
+            }
+            GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+
+        isReady = true;
+    }
     #endregion
 
     #region Utils
