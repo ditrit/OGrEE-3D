@@ -17,12 +17,15 @@ public class ConsoleController : MonoBehaviour
     /// How many log lines should be retained?
     /// Note that strings submitted to AppendLogLine with embedded newlines will be counted as a single line.
     /// </summary>
-    const int scrollbackSize = 150;
+    const int scrollbackSize = 500;
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
     public ReadFromJson rfJson = new ReadFromJson();
     public Dictionary<string, string> variables = new Dictionary<string, string>();
+
+    public Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
+    public string lastCmd;
 
     [SerializeField] private bool isReady = true;
     public float timerValue = 1f;
@@ -42,9 +45,12 @@ public class ConsoleController : MonoBehaviour
             Debug.LogError(_line);
         else
             Debug.Log(_line);
-
-        _line = $"<color={_color}>{_line}</color>";
-
+        
+        if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
+            _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
+        else
+            _line = $"<color={_color}>{_line}</color>";
+        
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
             scrollback.Dequeue();
@@ -80,6 +86,9 @@ public class ConsoleController : MonoBehaviour
     {
         yield return new WaitUntil(() => isReady == true);
         isReady = false;
+
+        lastCmd = _input;
+        // Debug.Log("=> " + lastCmd);
 
         _input = ApplyVariables(_input);
         AppendLogLine("$ " + _input);
@@ -258,8 +267,12 @@ public class ConsoleController : MonoBehaviour
             if (_saveCmd)
                 GameManager.gm.SetReloadBtn(null);
         }
-        foreach (string cmd in lines)
-            RunCommandString(cmd, false);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (!cmdsHistory.ContainsKey(lines[i].Trim()))
+               cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
+            RunCommandString(lines[i], false);
+        }
     }
 
     ///<summary>
