@@ -268,6 +268,7 @@ public class ReadFromJson
 
         Slot s = go.AddComponent<Slot>();
         s.installed = _data.position;
+        s.orient = _data.elemOrient;
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;
 

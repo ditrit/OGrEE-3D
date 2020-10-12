@@ -173,11 +173,29 @@ public class Rack : Object
     ///<param name="_corner">Corner of the column</param>
     private void GenerateUColumn(string _corner)
     {
+        Vector3 boxSize = transform.GetChild(0).localScale;
         float scale = GameManager.gm.uSize;
         if (heightUnit == EUnit.OU)
             scale = GameManager.gm.ouSize;
 
-        for (int i = 1; i <= height; i++)
+        int max = (int)height;
+        if (GetComponentInChildren<Slot>())
+        {
+            max = 0;
+            Slot[] allSlots = GetComponentsInChildren<Slot>();
+            foreach (Slot s in allSlots)
+            {
+                if (s.orient == "horizontal")
+                    max++;
+            }
+
+            Transform slot = GetComponentInChildren<Slot>().transform;
+            uRoot.localPosition = new Vector3(uRoot.localPosition.x, slot.localPosition.y, uRoot.localPosition.z);
+            uRoot.localPosition -= new Vector3(0, slot.GetChild(0).localScale.y / 2, 0);
+            // scale = slot.GetChild(0).localScale.y;
+        }
+
+        for (int i = 1; i <= max; i++)
         {
             Transform obj = Instantiate(GameManager.gm.uLocationModel).transform;
             obj.name = $"{_corner}_u{i}";
@@ -187,30 +205,22 @@ public class Rack : Object
             switch (_corner)
             {
                 case "rearLeft":
-                    obj.localPosition = new Vector3(-transform.GetChild(0).localScale.x / 2,
-                                                    i * scale - scale / 2,
-                                                    -transform.GetChild(0).localScale.z / 2);
+                    obj.localPosition = new Vector3(-boxSize.x / 2, i * scale - scale / 2, -boxSize.z / 2);
                     obj.localEulerAngles = new Vector3(0, 0, 0);
                     obj.GetComponent<Renderer>().material.color = Color.red;
                     break;
                 case "rearRight":
-                    obj.localPosition = new Vector3(transform.GetChild(0).localScale.x / 2,
-                                                    i * scale - scale / 2,
-                                                    -transform.GetChild(0).localScale.z / 2);
+                    obj.localPosition = new Vector3(boxSize.x / 2, i * scale - scale / 2, -boxSize.z / 2);
                     obj.localEulerAngles = new Vector3(0, 0, 0);
                     obj.GetComponent<Renderer>().material.color = Color.yellow;
                     break;
                 case "frontLeft":
-                    obj.localPosition = new Vector3(-transform.GetChild(0).localScale.x / 2,
-                                                    i * scale - scale / 2,
-                                                    transform.GetChild(0).localScale.z / 2);
+                    obj.localPosition = new Vector3(-boxSize.x / 2, i * scale - scale / 2, boxSize.z / 2);
                     obj.localEulerAngles = new Vector3(0, 180, 0);
                     obj.GetComponent<Renderer>().material.color = Color.blue;
                     break;
                 case "frontRight":
-                    obj.localPosition = new Vector3(transform.GetChild(0).localScale.x / 2,
-                                                    i * scale - scale / 2,
-                                                    transform.GetChild(0).localScale.z / 2);
+                    obj.localPosition = new Vector3(boxSize.x / 2, i * scale - scale / 2, boxSize.z / 2);
                     obj.localEulerAngles = new Vector3(0, 180, 0);
                     obj.GetComponent<Renderer>().material.color = Color.green;
                     break;

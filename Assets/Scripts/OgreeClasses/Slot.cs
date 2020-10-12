@@ -7,6 +7,7 @@ public class Slot : MonoBehaviour
 {
     public bool used = false;
     public string installed;
+    public string orient;
     public string mandatory;
     public string labelPos;
 
