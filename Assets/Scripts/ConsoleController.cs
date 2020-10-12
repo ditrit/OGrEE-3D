@@ -17,16 +17,20 @@ public class ConsoleController : MonoBehaviour
     /// How many log lines should be retained?
     /// Note that strings submitted to AppendLogLine with embedded newlines will be counted as a single line.
     /// </summary>
-    const int scrollbackSize = 150;
+    const int scrollbackSize = 500;
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
     public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
     public ReadFromJson rfJson = new ReadFromJson();
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
+    private Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
+    private string lastCmd;
+    private int warningsCount = 0;
+    private int errorsCount = 0;
+
     [SerializeField] private bool isReady = true;
-    public float timerValue = 1f;
-    public bool timer = false;
+    public float timerValue = 0f;
 
 
     ///<summary>
@@ -42,9 +46,18 @@ public class ConsoleController : MonoBehaviour
             Debug.LogError(_line);
         else
             Debug.Log(_line);
-
-        _line = $"<color={_color}>{_line}</color>";
-
+        
+        if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
+        {
+            _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
+            if (_color == "yellow")
+                warningsCount++;
+            else if (_color == "red")
+                errorsCount++;
+        }
+        else
+            _line = $"<color={_color}>{_line}</color>";
+        
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
             scrollback.Dequeue();
@@ -81,6 +94,9 @@ public class ConsoleController : MonoBehaviour
         yield return new WaitUntil(() => isReady == true);
         isReady = false;
 
+        lastCmd = _input;
+        // Debug.Log("=> " + lastCmd);
+
         _input = ApplyVariables(_input);
         AppendLogLine("$ " + _input);
         if (_input == "..")
@@ -95,6 +111,8 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(DeleteItem(_input.Substring(1)));
         else if (_input.StartsWith("camera."))
             MoveCamera(_input.Substring(7));
+        else if (_input.StartsWith("delay="))
+            SetTimer(_input.Substring(6));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -102,7 +120,7 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Unknown command", "red");
             isReady = true;
         }
-        if (timer)
+        if (timerValue > 0)
         {
             isReady = false;
             yield return new WaitForSeconds(timerValue);
@@ -258,8 +276,37 @@ public class ConsoleController : MonoBehaviour
             if (_saveCmd)
                 GameManager.gm.SetReloadBtn(null);
         }
-        foreach (string cmd in lines)
-            RunCommandString(cmd, false);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (!cmdsHistory.ContainsKey(lines[i].Trim()))
+               cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
+            RunCommandString(lines[i], false);
+        }
+        StartCoroutine(DisplayLogCount(lines.Length));
+    }
+
+    ///<summary>
+    /// Display read lines, warningCount and errorCount in CLI.
+    ///</summary>
+    ///<param name="_linesCount">The number of read lines</param>
+    private IEnumerator DisplayLogCount(int _linesCount)
+    {
+        yield return new WaitUntil(() => isReady == true);
+        isReady = false;
+
+        string color;
+        if (errorsCount > 0)
+            color = "red";
+        else if (warningsCount > 0)
+            color = "yellow";
+        else
+            color = "green";
+
+        AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", color);
+        warningsCount = 0;
+        errorsCount = 0;
+
+        isReady = true;
     }
 
     ///<summary>
@@ -340,7 +387,7 @@ public class ConsoleController : MonoBehaviour
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
-        else if (str[0] == "device")
+        else if (str[0] == "device" || str[0] == "dv")
             CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
@@ -716,6 +763,28 @@ public class ConsoleController : MonoBehaviour
         isReady = true;
     }
 
+    ///<summary>
+    /// Set timer to a value between 0 and 2s
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
+    private void SetTimer(string _input)
+    {
+        string pattern = "^[0-9.]+$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            float time = ParseDecFrac(_input);
+            if (time < 0 || time > 2)
+            {
+                time = Mathf.Clamp(time, 0, 2);
+                AppendLogLine("Delay is a value between 0 and 2s", "yellow");
+            }
+            GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+
+        isReady = true;
+    }
     #endregion
 
     #region Utils
