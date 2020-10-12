@@ -24,8 +24,10 @@ public class ConsoleController : MonoBehaviour
     public ReadFromJson rfJson = new ReadFromJson();
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
-    public Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
-    public string lastCmd;
+    private Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
+    private string lastCmd;
+    private int warningsCount = 0;
+    private int errorsCount = 0;
 
     [SerializeField] private bool isReady = true;
     public float timerValue = 0f;
@@ -46,7 +48,13 @@ public class ConsoleController : MonoBehaviour
             Debug.Log(_line);
         
         if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
+        {
             _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
+            if (_color == "yellow")
+                warningsCount++;
+            else if (_color == "red")
+                errorsCount++;
+        }
         else
             _line = $"<color={_color}>{_line}</color>";
         
@@ -274,6 +282,31 @@ public class ConsoleController : MonoBehaviour
                cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
             RunCommandString(lines[i], false);
         }
+        StartCoroutine(DisplayLogCount(lines.Length));
+    }
+
+    ///<summary>
+    /// Display read lines, warningCount and errorCount in CLI.
+    ///</summary>
+    ///<param name="_linesCount">The number of read lines</param>
+    private IEnumerator DisplayLogCount(int _linesCount)
+    {
+        yield return new WaitUntil(() => isReady == true);
+        isReady = false;
+
+        string color;
+        if (errorsCount > 0)
+            color = "red";
+        else if (warningsCount > 0)
+            color = "yellow";
+        else
+            color = "green";
+
+        AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", color);
+        warningsCount = 0;
+        errorsCount = 0;
+
+        isReady = true;
     }
 
     ///<summary>
@@ -354,7 +387,7 @@ public class ConsoleController : MonoBehaviour
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
-        else if (str[0] == "device")
+        else if (str[0] == "device" || str[0] == "dv")
             CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
