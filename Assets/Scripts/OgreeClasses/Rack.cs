@@ -192,7 +192,6 @@ public class Rack : Object
             Transform slot = GetComponentInChildren<Slot>().transform;
             uRoot.localPosition = new Vector3(uRoot.localPosition.x, slot.localPosition.y, uRoot.localPosition.z);
             uRoot.localPosition -= new Vector3(0, slot.GetChild(0).localScale.y / 2, 0);
-            // scale = slot.GetChild(0).localScale.y;
         }
 
         for (int i = 1; i <= max; i++)
