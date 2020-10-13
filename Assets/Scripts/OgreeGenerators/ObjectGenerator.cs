@@ -56,7 +56,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.parent = _data.parent;
 
         if (string.IsNullOrEmpty(_data.template))
-            newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
+            newRack.transform.GetChild(0).localScale = _data.size / 100;
 
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
@@ -69,7 +69,7 @@ public class ObjectGenerator : MonoBehaviour
         rack.posXYUnit = EUnit.tile;
         if (string.IsNullOrEmpty(_data.template))
         {
-            rack.size = new Vector2(_data.size.x, _data.size.y);
+            rack.size = new Vector2(_data.size.x, _data.size.z);
             rack.sizeUnit = EUnit.cm;
             rack.height = _data.height;
             rack.heightUnit = EUnit.U;

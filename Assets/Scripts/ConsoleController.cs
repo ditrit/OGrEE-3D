@@ -539,7 +539,7 @@ public class ConsoleController : MonoBehaviour
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = ParseVector3(data[2], false);
-                infos.size = new Vector2(tmp.x, tmp.y);
+                infos.size = new Vector3(tmp.x, tmp.z * GameManager.gm.uSize * 100, tmp.y);
                 infos.height = (int)tmp.z;
             }
             else // ...else: is template name

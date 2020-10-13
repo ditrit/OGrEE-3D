@@ -131,8 +131,7 @@ public class ReadFromJson
         infos.name = rackData.slug;
         infos.parent = GameManager.gm.templatePlaceholder;
         infos.orient = "front";
-        infos.size = new Vector2(rackData.sizeWDHmm[0] / 10, rackData.sizeWDHmm[1] / 10);
-        infos.height = (int)(rackData.sizeWDHmm[2] / GameManager.gm.uSize / 1000);
+        infos.size = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[2], rackData.sizeWDHmm[1]) / 10;
         Rack rack = ObjectGenerator.instance.CreateRack(infos, false);
 
         rack.transform.localPosition = Vector3.zero;
@@ -145,7 +144,7 @@ public class ReadFromJson
             slotData.type = comp.family;
             slotData.role = comp.role;
             // slotData.factor = comp.factor;
-            slotData.position = comp.installed; //
+            slotData.position = comp.installed; // not used
             slotData.elemOrient = comp.elemOrient;
             slotData.elemPos = comp.elemPos;
             slotData.elemSize = comp.elemSize;
@@ -154,6 +153,15 @@ public class ReadFromJson
             slotData.color = comp.color;
 
             PopulateSlot(slotData, rack.transform);
+        }
+
+        // Count the right height in U 
+        Slot[] slots = rack.GetComponentsInChildren<Slot>();
+        rack.height = 0;
+        foreach (Slot s in slots)
+        {
+            if (s.orient == "horizontal")
+                rack.height++;
         }
 
 #if !DEBUG

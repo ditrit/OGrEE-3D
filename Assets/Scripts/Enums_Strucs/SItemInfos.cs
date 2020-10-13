@@ -9,8 +9,8 @@ public struct SRackInfos
     public Transform parent;
     public string orient;
     public Vector2 pos; // tile
-    public Vector2 size; // cm 
-    public int height; // U = 44.5mm
+    public Vector3 size; // cm 
+    public int height; // U
     public string template;
 }
 
