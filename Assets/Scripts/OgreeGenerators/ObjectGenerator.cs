@@ -241,6 +241,7 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
                 newDevice.transform.localPosition = slot.localPosition;
+                newDevice.transform.localEulerAngles = slot.localEulerAngles;
                 if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
                     newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
@@ -262,7 +263,6 @@ public class ObjectGenerator : MonoBehaviour
                 return null;
             }
         }
-        newDevice.transform.localEulerAngles = Vector3.zero;
 
         newDevice.name = _data.name;
         Object obj = newDevice.GetComponent<Object>();
@@ -289,21 +289,6 @@ public class ObjectGenerator : MonoBehaviour
             GameManager.gm.SetCurrentItem(newDevice);
 
         return newDevice.GetComponent<Object>();
-    }
-
-    public void CreateAirconditionner()
-    {
-
-    }
-
-    public void CreatePowerpanel()
-    {
-
-    }
-
-    public void CreatePdu()
-    {
-
     }
 
 }
