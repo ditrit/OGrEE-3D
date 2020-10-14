@@ -60,6 +60,9 @@ public class Rack : Object
             case "alpha":
                 UpdateAlpha(_value);
                 break;
+            case "slots":
+                ToggleSlots(_value);
+                break;
             case "U":
                 ToggleU(_value);
                 break;
@@ -131,7 +134,7 @@ public class Rack : Object
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("displayU value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("U value has to be true or false", "yellow");
             return;
         }
         else if (_value == "true")
