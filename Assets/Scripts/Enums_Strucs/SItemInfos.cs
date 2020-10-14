@@ -19,7 +19,8 @@ public struct SDeviceInfos
 {
     public string name;
     public Transform parent;
-    public int posU;
+    // public int posU;
+    public float posU; // should be int, authorize until non IT objects can be created
     public string slot;
     public float sizeU;
     public string template;

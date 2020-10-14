@@ -576,9 +576,12 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
             SDeviceInfos infos = new SDeviceInfos();
 
-            if (int.TryParse(data[1], out infos.posU) == false)
+            // if (int.TryParse(data[1], out infos.posU) == false)
+            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,
+                out infos.posU) == false)
                 infos.slot = data[1];
-            if (float.TryParse(data[2], out infos.sizeU) == false)
+            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,
+                out infos.sizeU) == false)
                 infos.template = data[2];
             if (data[0].StartsWith("/"))
             {
