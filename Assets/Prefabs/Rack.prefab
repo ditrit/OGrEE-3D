@@ -69,6 +69,8 @@ MonoBehaviour:
   type: 
   model: 
   serial: 
+  extraKeys: []
+  extraValues: []
 --- !u!114 &777670014700511597
 MonoBehaviour:
   m_ObjectHideFlags: 0

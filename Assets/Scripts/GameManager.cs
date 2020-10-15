@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
     public GameObject deviceModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
+    public GameObject CoordinateSystemModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
@@ -195,7 +196,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Call GUIObjectInfos 'UpdateFields' method according to currentItems.Count
+    /// Call GUIObjectInfos 'UpdateFields' method according to currentItems.Count.
     ///</summary>
     public void UpdateGuiInfos()
     {
@@ -245,13 +246,14 @@ public class GameManager : MonoBehaviour
         devicesTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
+        consoleController.ResetCounts();
         Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         StartCoroutine(LoadFile());
     }
 
     ///<summary>
-    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file
+    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
     ///</summary>
     private IEnumerator LoadFile()
     {
@@ -275,7 +277,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: if currentItem is a rack, toggle U helpers
+    /// Called by GUI button: if currentItem is a rack, toggle U helpers.
     ///</summary>
     public void ToggleUHelpers()
     {
@@ -287,6 +289,18 @@ public class GameManager : MonoBehaviour
         }
         else
             AppendLogLine("Selected item must be a rack.", "red");
+    }
+
+    ///<summary>
+    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
+    ///</summary>
+    public void GuiToggleCS()
+    {
+        foreach (GameObject obj in currentItems)
+        {
+            if (obj.GetComponent<Object>())
+                obj.GetComponent<Object>().ToggleCS();
+        }
     }
 
     ///<summary>
@@ -321,7 +335,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Quit the application
+    /// Quit the application.
     ///</summary>
     public void QuitApp()
     {

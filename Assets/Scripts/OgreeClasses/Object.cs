@@ -175,4 +175,28 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
             }
         }
     }
+
+    ///<summary>
+    /// Display or hide the local coordinate system
+    ///</summary>
+    public void ToggleCS()
+    {
+        string csName = "localCS";
+        GameObject localCS = transform.Find(csName)?.gameObject;
+        if (localCS)
+        {
+            Destroy(localCS);
+            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
+        }
+        else
+        {
+            localCS = Instantiate(GameManager.gm.CoordinateSystemModel);
+            localCS.name = csName;
+            localCS.transform.parent = transform;
+            localCS.transform.localScale = Vector3.one;
+            localCS.transform.localEulerAngles = Vector3.zero;
+            localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
+            GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
+        }
+    }
 }

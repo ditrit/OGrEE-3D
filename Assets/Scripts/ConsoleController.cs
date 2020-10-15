@@ -72,6 +72,15 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
+    /// Set counts variables to 0
+    ///</summary>
+    public void ResetCounts()
+    {
+        warningsCount = 0;
+        errorsCount = 0;
+    }
+
+    ///<summary>
     /// Execute a command line. Look for the first char to call the corresponding method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
