@@ -122,6 +122,8 @@ public class ConsoleController : MonoBehaviour
             MoveCamera(_input.Substring(7));
         else if (_input.StartsWith("delay="))
             SetTimer(_input.Substring(6));
+        else if (_input.StartsWith("zoom"))
+            SetZoom(_input.Substring(4));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
@@ -797,6 +799,32 @@ public class ConsoleController : MonoBehaviour
 
         isReady = true;
     }
+    #endregion
+
+    #region ZoomMethods
+
+    ///<summary>
+    /// Call ZoomManager.SetZoom regarding input.
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
+    private void SetZoom(string _input)
+    {
+        string patern = "^(\\+\\+|--|=[0-3])$";
+        if (Regex.IsMatch(_input, patern))
+        {
+            if (_input == "++")
+                ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel + 1);
+            else if (_input == "--")
+                ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel - 1);
+            else 
+                ZoomManager.instance.SetZoom(int.Parse(_input.Substring(1)));
+            AppendLogLine($"Set zoom level to {ZoomManager.instance.zoomLevel}", "green");
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+        isReady = true;
+    }
+
     #endregion
 
     #region Utils
