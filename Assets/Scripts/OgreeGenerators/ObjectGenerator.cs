@@ -246,11 +246,13 @@ public class ObjectGenerator : MonoBehaviour
                     newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
-                if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward
-                    || newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
+                if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward)
                     newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                 else if (newDevice.GetComponent<Object>().orient == EObjOrient.Backward)
                     newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                if (newDevice.GetComponent<Object>().extras.ContainsKey("fulllenght")
+                    && newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
+                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
 
                 // Assign default color = slot color
                 Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;

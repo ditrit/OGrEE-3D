@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -241,6 +241,8 @@ public class ReadFromJson
         }
         if (data.fulllength == "yes")
             device.extras.Add("fulllength", "yes");
+        else if (data.fulllength == "no")
+            device.extras.Add("fulllength", "no");
 
         foreach (SDeviceSlot comp in data.components)
             PopulateSlot(comp, device.transform);
