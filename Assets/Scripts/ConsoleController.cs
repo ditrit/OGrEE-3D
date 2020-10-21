@@ -582,7 +582,7 @@ public class ConsoleController : MonoBehaviour
     private void CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+$";
+        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
         if (Regex.IsMatch(_input, patern))
         {
             string[] data = _input.Split('@');
@@ -595,6 +595,8 @@ public class ConsoleController : MonoBehaviour
             if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,
                 out infos.sizeU) == false)
                 infos.template = data[2];
+            if (data.Length == 4)
+                infos.side = data[3];
             if (data[0].StartsWith("/"))
             {
                 IsolateParent(data[0].Substring(1), out infos.parent, out infos.name);

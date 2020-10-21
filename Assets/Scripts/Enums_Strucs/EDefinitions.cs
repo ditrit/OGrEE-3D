@@ -17,7 +17,9 @@ public enum EObjOrient
     Frontward,
     Backward,
     Left,
-    Right
+    Right,
+    FrontFlipped,
+    RearFlipped
 }
 
 ///<summary>

@@ -245,14 +245,44 @@ public class ObjectGenerator : MonoBehaviour
                 if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
                     newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
+                Object ob = newDevice.GetComponent<Object>();
+                switch (_data.side)
+                {
+                    case "front":
+                        ob.orient = EObjOrient.Frontward;
+                        break;
+                    case "rear":
+                        ob.orient = EObjOrient.Backward;
+                        break;
+                    case "frontflipped":
+                        ob.orient = EObjOrient.FrontFlipped;
+                        break;
+                    case "rearflipped":
+                        ob.orient = EObjOrient.RearFlipped;
+                        break;
+                }
+                if (ob.extras.ContainsKey("fulllenght") && ob.extras["fulllenght"] == "yes")
+                    ob.orient = EObjOrient.Frontward;
+
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
-                if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward)
-                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
-                else if (newDevice.GetComponent<Object>().orient == EObjOrient.Backward)
-                    newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
-                if (newDevice.GetComponent<Object>().extras.ContainsKey("fulllenght")
-                    && newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
-                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                switch (ob.orient)
+                {
+                    case EObjOrient.Frontward:
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        break;
+                    case EObjOrient.Backward:
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
+                        break;
+                    case EObjOrient.FrontFlipped:
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
+                        break;
+                    case EObjOrient.RearFlipped:
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
+                        break;
+                }
 
                 // Assign default color = slot color
                 Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;

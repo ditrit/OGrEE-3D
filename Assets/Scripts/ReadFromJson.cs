@@ -64,8 +64,8 @@ public class ReadFromJson
     {
         public string location;
         public string family;
-        public string role;
-        public string installed;
+        // public string role;
+        // public string installed;// to del
         public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
@@ -84,7 +84,7 @@ public class ReadFromJson
         public string vendor;
         public string model;
         public string type;
-        public string role;
+        // public string role;
         public string side;
         public string fulllength;
         public float[] sizeWDHmm;
@@ -96,9 +96,9 @@ public class ReadFromJson
     {
         public string location;
         public string type;
-        public string role;
-        public string factor;
-        public string position;
+        // public string role; // to del
+        public string factor; // ?
+        // public string position; // to del
         public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
@@ -142,9 +142,9 @@ public class ReadFromJson
             SDeviceSlot slotData = new SDeviceSlot();
             slotData.location = comp.location;
             slotData.type = comp.family;
-            slotData.role = comp.role;
+            // slotData.role = comp.role;
             // slotData.factor = comp.factor;
-            slotData.position = comp.installed; // not used
+            // slotData.position = comp.installed; // not used
             slotData.elemOrient = comp.elemOrient;
             slotData.elemPos = comp.elemPos;
             slotData.elemSize = comp.elemSize;
@@ -238,6 +238,12 @@ public class ReadFromJson
             case "rear":
                 device.orient = EObjOrient.Backward;
                 break;
+            case "frontflipped":
+                device.orient = EObjOrient.FrontFlipped;
+                break;
+            case "rearflipped":
+                device.orient = EObjOrient.RearFlipped;
+                break;
         }
         if (data.fulllength == "yes")
             device.extras.Add("fulllength", "yes");
@@ -287,7 +293,7 @@ public class ReadFromJson
         }
 
         Slot s = go.AddComponent<Slot>();
-        s.installed = _data.position;
+        // s.installed = _data.position;
         s.orient = _data.elemOrient;
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;

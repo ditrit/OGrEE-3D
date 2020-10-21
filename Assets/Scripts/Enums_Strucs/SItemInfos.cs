@@ -24,6 +24,7 @@ public struct SDeviceInfos
     public string slot;
     public float sizeU;
     public string template;
+    public string side;
 
 }
 
