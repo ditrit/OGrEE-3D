@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -313,6 +313,7 @@ public class ConsoleController : MonoBehaviour
         else
             color = "green";
 
+        lastCmd = "LogCount";
         AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", color);
         warningsCount = 0;
         errorsCount = 0;

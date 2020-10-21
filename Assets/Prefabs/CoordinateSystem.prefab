@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 97800790095821043}
   - component: {fileID: 7396189124464042745}
   m_Layer: 0
-  m_Name: AxisZ
+  m_Name: AxisY
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,7 +166,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 20ff96327007ba44e951ee6ad7f61590, type: 2}
+  - {fileID: 2100000, guid: 52dd9aa86fbaabf44bce44702b21d536, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 8031940222450369233}
   - component: {fileID: 5270861893017591623}
   m_Layer: 0
-  m_Name: AxisY
+  m_Name: AxisZ
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,7 +325,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52dd9aa86fbaabf44bce44702b21d536, type: 2}
+  - {fileID: 2100000, guid: 20ff96327007ba44e951ee6ad7f61590, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
