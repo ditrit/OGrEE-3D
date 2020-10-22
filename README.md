@@ -430,7 +430,7 @@ Templates are json files describing an object.
  "sizeWDHmm"  : [width ,depth ,height],
  "sizeWDU"  : [width ,depth ,heightU],
  "components" : [
-   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear/front/left/right/rearleft/rearright",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left" },
+   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear/front/left/right/rearleft/rearright",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left/none" },
     ...
   ]
 }
@@ -450,7 +450,7 @@ Templates are json files describing an object.
  "fulllength"  : "yes/no",
  "sizeWDHmm"   : [x,y,z],
  "components"  : [
-  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top" },
+  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top/none" },
   ...    
   ]
 }
