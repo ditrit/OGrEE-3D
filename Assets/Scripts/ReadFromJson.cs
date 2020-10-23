@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -56,6 +56,7 @@ public class ReadFromJson
         public string model;
         public string type;
         public int[] sizeWDHmm;
+        public SColor[] colors;
         public SRackSlot[] components;
     }
 
@@ -73,6 +74,14 @@ public class ReadFromJson
         public string labelPos;
         public string color;
     }
+
+    [System.Serializable]
+    private struct SColor
+    {
+        public string name;
+        public string value;
+    }
+
     #endregion
 
     #region Device
@@ -88,6 +97,7 @@ public class ReadFromJson
         public string side;
         public string fulllength;
         public float[] sizeWDHmm;
+        public SColor[] colors;
         public SDeviceSlot[] components;
     }
 
@@ -137,6 +147,12 @@ public class ReadFromJson
         rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
         rack.model = rackData.model;
+        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        if (rackData.colors != null)
+        {
+            foreach (SColor color in rackData.colors)
+                customColors.Add(color.name, color.value);
+        }
         foreach (SRackSlot comp in rackData.components)
         {
             SDeviceSlot slotData = new SDeviceSlot();
@@ -152,7 +168,7 @@ public class ReadFromJson
             slotData.labelPos = comp.labelPos;
             slotData.color = comp.color;
 
-            PopulateSlot(slotData, rack.transform);
+            PopulateSlot(slotData, rack.transform, customColors);
         }
 
         // Count the right height in U 
@@ -250,8 +266,14 @@ public class ReadFromJson
         else if (data.fulllength == "no")
             device.extras.Add("fulllength", "no");
 
+        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        if (data.colors != null)
+        {
+            foreach (SColor color in data.colors)
+                customColors.Add(color.name, color.value);
+        }
         foreach (SDeviceSlot comp in data.components)
-            PopulateSlot(comp, device.transform);
+            PopulateSlot(comp, device.transform, customColors);
 
 #if !DEBUG
         Renderer[] renderers = device.transform.GetComponentsInChildren<Renderer>();
@@ -268,7 +290,8 @@ public class ReadFromJson
     ///</summary>
     ///<param name="_data">Data for slot creation</param>
     ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(SDeviceSlot _data, Transform _parent)
+    private void PopulateSlot(SDeviceSlot _data, Transform _parent,
+                                Dictionary<string, string> _customColors)
     {
         // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.deviceModel);
@@ -281,7 +304,10 @@ public class ReadFromJson
         go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
         {
+            // if (_data.elemPos[0] < _parent.GetChild(0).localScale.x * 500)
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
+            // else
+            //     go.transform.localEulerAngles = new Vector3(0, 0, -90);
             go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
                                                         go.transform.GetChild(0).localScale.x,
                                                         go.transform.GetChild(0).localScale.z) / 2;
@@ -306,7 +332,10 @@ public class ReadFromJson
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
+        if (_data.color != null && _data.color.StartsWith("@"))
+            ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
+        else
+            ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_data.mandatory == "yes")
             mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
         else if (_data.mandatory == "no")
