@@ -57,7 +57,7 @@ public class ReadFromJson
         public string type;
         public int[] sizeWDHmm;
         public SColor[] colors;
-        public SRackSlot[] components;
+        public SRackSlot[] slots;
     }
 
     [System.Serializable]
@@ -98,7 +98,7 @@ public class ReadFromJson
         public string fulllength;
         public float[] sizeWDHmm;
         public SColor[] colors;
-        public SDeviceSlot[] components;
+        public SDeviceSlot[] slots;
     }
 
     [System.Serializable]
@@ -153,7 +153,7 @@ public class ReadFromJson
             foreach (SColor color in rackData.colors)
                 customColors.Add(color.name, color.value);
         }
-        foreach (SRackSlot comp in rackData.components)
+        foreach (SRackSlot comp in rackData.slots)
         {
             SDeviceSlot slotData = new SDeviceSlot();
             slotData.location = comp.location;
@@ -272,7 +272,7 @@ public class ReadFromJson
             foreach (SColor color in data.colors)
                 customColors.Add(color.name, color.value);
         }
-        foreach (SDeviceSlot comp in data.components)
+        foreach (SDeviceSlot comp in data.slots)
             PopulateSlot(comp, device.transform, customColors);
 
 #if !DEBUG
@@ -304,10 +304,7 @@ public class ReadFromJson
         go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
         {
-            // if (_data.elemPos[0] < _parent.GetChild(0).localScale.x * 500)
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
-            // else
-            //     go.transform.localEulerAngles = new Vector3(0, 0, -90);
             go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
                                                         go.transform.GetChild(0).localScale.x,
                                                         go.transform.GetChild(0).localScale.z) / 2;
