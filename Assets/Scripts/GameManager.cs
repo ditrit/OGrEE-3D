@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
-    private ConsoleController consoleController;
+    public ConsoleController consoleController;
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
-        consoleController = GameObject.FindObjectOfType<ConsoleController>();
+        // consoleController = GameObject.FindObjectOfType<ConsoleController>();
     }
 
     private void Update()

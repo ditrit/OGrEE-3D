@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -400,6 +400,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
+            // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
@@ -533,7 +534,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create device" command and call ObjectGenerator.CreateDevice().
     ///</summary>
     ///<param name="_input">String with device data to parse</param>
-    private void CreateDevice(string _input)
+    public void CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
@@ -543,10 +544,10 @@ public class ConsoleController : MonoBehaviour
             SDeviceInfos infos = new SDeviceInfos();
 
             // if (int.TryParse(data[1], out infos.posU) == false)
-            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,
+            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                 out infos.posU) == false)
                 infos.slot = data[1];
-            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture,
+            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                 out infos.sizeU) == false)
                 infos.template = data[2];
             if (data.Length == 4)
@@ -687,6 +688,13 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+            }
+            else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
+            {
+                ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
+                objCmd.parentName = IsolateParentPath(data[0]);
+                objCmd.command = _input;
+                ZoomManager.instance.devicesAttributes.Add(objCmd);
             }
             else
                 AppendLogLine($"Object doesn't exist.", "yellow");

@@ -68,8 +68,7 @@ More levels will come in next releases.
 # Build in CLI
 
 ## Glossary
-`[name]` is case sensitive. It can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
-`[full name]` is the full name containing the path of an object: `cu.dc.bd.ro.rk`  
+`[name]` is case sensitive. It include the whole path of the object (for example: `cu.dc.bd.ro.rk`)  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y): **EN**, **NW**, **WS**, **SE**  
 `[color]` is a hexadecimal code (*ffffff*)  
 
@@ -99,19 +98,16 @@ ${[name]}
 
 ## Hierarchy commands
 ### Select an object
-*If `[full name]` is empty, go back to root*  
+*If `[name]` is empty, go back to root*  
 ```
-=[full name]
+=[name]
 ```
 
 ### Select child / children object
 Select one or several children of current selected object.  
-*`[name]` is the "short" name of the object: without '/' and hierarchy  
-`[relativeName]` is the hierarchy name without the selected object part*  
+*`[relativeName]` is the hierarchy name without the selected object part*  
 ```
-={[name]}
 ={[relativeName]}
-={[name],[name],...}
 ={[relativeName],[relativeName],...}
 ```  
 
@@ -123,7 +119,7 @@ Select one or several children of current selected object.
 ### Delete object
 Works with single or multi selection.  
 ```
--[full name]  
+-[name]  
 -selection
 ```  
 
@@ -159,8 +155,8 @@ Its name will be displayed in the center of the room in its local coordinates sy
 `[template]` is the name of the room template*  
 ```
 +room:[name]@[pos]@[size]@[orientation]  
-+ro:[name]@[pos]@[size]@[orientation]
 +room:[name]@[pos]@[template]  
++ro:[name]@[pos]@[size]@[orientation]
 +ro:[name]@[pos]@[template]
 ```
 
@@ -206,6 +202,7 @@ All other devices have to be declared with a parent's slot and a template.
 ### Create a Tenant  
 ```
 +tenant:[name]@[color]
++tn:[name]@[color]
 ```  
 
 ## Set commands  
