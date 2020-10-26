@@ -20,11 +20,6 @@ public class ConsoleView : MonoBehaviour
             console.logChanged += OnLogChanged;
         }
         UpdateLogStr(console.log);
-
-#if DEBUG
-        console.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
-        // console.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
-#endif
     }
 
     private void OnDestroy()

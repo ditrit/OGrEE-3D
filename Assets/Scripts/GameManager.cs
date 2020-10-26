@@ -57,6 +57,19 @@ public class GameManager : MonoBehaviour
         // consoleController = GameObject.FindObjectOfType<ConsoleController>();
     }
 
+    private void Start()
+    {
+        //https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
+        string[] args = System.Environment.GetCommandLineArgs();
+        if (args.Length == 2)
+            consoleController.RunCommandString($".cmds:{args[1]}");
+
+#if DEBUG
+        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
+#endif
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
