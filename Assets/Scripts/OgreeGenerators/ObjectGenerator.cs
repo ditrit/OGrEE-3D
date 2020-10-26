@@ -18,9 +18,8 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a rackModel or a rackPreset (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the rack</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SRackInfos _data, bool _changeHierarchy)
+    public Rack CreateRack(SRackInfos _data)
     {
         if (_data.parent.GetComponent<Room>() == null)
         {
@@ -104,15 +103,12 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
-        newRack.AddComponent<HierarchyName>();
-
         rack.tenant = _data.parent.GetComponent<Room>().tenant;
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
+        newRack.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newRack);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newRack);
 
         return rack;
     }
@@ -121,9 +117,8 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the chassis</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Chassis</returns>
-    public Object CreateDevice(SDeviceInfos _data, bool _changeHierarchy)
+    public Object CreateDevice(SDeviceInfos _data)
     {
         if (_data.parent.GetComponent<Object>() == null)
         {
@@ -317,8 +312,6 @@ public class ObjectGenerator : MonoBehaviour
 
         newDevice.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newDevice);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newDevice);
 
         return newDevice.GetComponent<Object>();
     }

@@ -46,7 +46,7 @@ public class ConsoleController : MonoBehaviour
             Debug.LogError(_line);
         else
             Debug.Log(_line);
-        
+
         if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
         {
             _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
@@ -57,7 +57,7 @@ public class ConsoleController : MonoBehaviour
         }
         else
             _line = $"<color={_color}>{_line}</color>";
-        
+
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
             scrollback.Dequeue();
@@ -290,7 +290,7 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < lines.Length; i++)
         {
             if (!cmdsHistory.ContainsKey(lines[i].Trim()))
-               cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
+                cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
             RunCommandString(lines[i], false);
         }
         StartCoroutine(DisplayLogCount(lines.Length));
@@ -418,13 +418,7 @@ public class ConsoleController : MonoBehaviour
         string pattern = "^[^@\\s.]+$";
         if (Regex.IsMatch(_input, pattern))
         {
-            if (_input.StartsWith("/"))
-            {
-                _input = _input.Substring(1);
-                CustomerGenerator.instance.CreateCustomer(_input, false);
-            }
-            else
-                CustomerGenerator.instance.CreateCustomer(_input, true);
+            CustomerGenerator.instance.CreateCustomer(_input);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -444,19 +438,9 @@ public class ConsoleController : MonoBehaviour
 
             SDataCenterInfos infos = new SDataCenterInfos();
             infos.orient = data[1];
-            if (data[0].StartsWith("/"))
-            {
-                data[0] = data[0].Substring(1);
-                IsolateParent(data[0], out infos.parent, out infos.name);
-                if (infos.parent)
-                    CustomerGenerator.instance.CreateDatacenter(infos, false);
-            }
-            else
-            {
-                infos.name = data[0];
-                infos.parent = GameManager.gm.currentItems[0].transform;
-                CustomerGenerator.instance.CreateDatacenter(infos, true);
-            }
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                CustomerGenerator.instance.CreateDatacenter(infos);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -477,19 +461,9 @@ public class ConsoleController : MonoBehaviour
             SBuildingInfos infos = new SBuildingInfos();
             infos.pos = ParseVector3(data[1]);
             infos.size = ParseVector3(data[2]);
-            if (data[0].StartsWith("/"))
-            {
-                data[0] = data[0].Substring(1);
-                IsolateParent(data[0], out infos.parent, out infos.name);
-                if (infos.parent)
-                    BuildingGenerator.instance.CreateBuilding(infos, false);
-            }
-            else
-            {
-                infos.name = data[0];
-                infos.parent = GameManager.gm.currentItems[0].transform;
-                BuildingGenerator.instance.CreateBuilding(infos, true);
-            }
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                BuildingGenerator.instance.CreateBuilding(infos);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -516,19 +490,9 @@ public class ConsoleController : MonoBehaviour
             }
             else
                 infos.template = data[2];
-            if (data[0].StartsWith("/"))
-            {
-                data[0] = data[0].Substring(1);
-                IsolateParent(data[0], out infos.parent, out infos.name);
-                if (infos.parent)
-                    BuildingGenerator.instance.CreateRoom(infos, false);
-            }
-            else
-            {
-                infos.name = data[0];
-                infos.parent = GameManager.gm.currentItems[0].transform;
-                BuildingGenerator.instance.CreateRoom(infos, true);
-            }
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                BuildingGenerator.instance.CreateRoom(infos);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -557,19 +521,9 @@ public class ConsoleController : MonoBehaviour
             else // ...else: is template name
                 infos.template = data[2];
             infos.orient = data[3];
-            if (data[0].StartsWith("/"))
-            {
-                data[0] = data[0].Substring(1);
-                IsolateParent(data[0], out infos.parent, out infos.name);
-                if (infos.parent)
-                    ObjectGenerator.instance.CreateRack(infos, false);
-            }
-            else
-            {
-                infos.name = data[0];
-                infos.parent = GameManager.gm.currentItems[0].transform;
-                ObjectGenerator.instance.CreateRack(infos, true);
-            }
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                ObjectGenerator.instance.CreateRack(infos);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -597,18 +551,30 @@ public class ConsoleController : MonoBehaviour
                 infos.template = data[2];
             if (data.Length == 4)
                 infos.side = data[3];
-            if (data[0].StartsWith("/"))
-            {
-                IsolateParent(data[0].Substring(1), out infos.parent, out infos.name);
-                if (infos.parent)
-                    ObjectGenerator.instance.CreateDevice(infos, false);
-            }
-            else
-            {
-                infos.name = data[0];
-                infos.parent = GameManager.gm.currentItems[0].transform;
-                ObjectGenerator.instance.CreateDevice(infos, true);
-            }
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                ObjectGenerator.instance.CreateDevice(infos);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Store _input in a list in ZoomManager.
+    ///</summary>
+    ///<param name="_input">String with device data to parse</param>
+    private void StoreDevice(string _input)
+    {
+        //+dv:/DEMO.ALPHA.B.R1.A99.PDU2@l17@ibm-smpdu@rearflipped
+        _input = Regex.Replace(_input, " ", "");
+        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
+        // remove "+device:" or "+dv:"
+        string cmd = _input.Substring(_input.IndexOf(':') + 1);
+        if (Regex.IsMatch(cmd, patern))
+        {
+            string[] data = _input.Split(':', '@');
+            string parentPath = IsolateParentPath(data[1]);
+            ZoomManager.instance.devices.Add(new ZoomManager.SObjectCmd(data[1], parentPath, cmd));
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -819,7 +785,7 @@ public class ConsoleController : MonoBehaviour
                 ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel + 1);
             else if (_input == "--")
                 ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel - 1);
-            else 
+            else
                 ZoomManager.instance.SetZoom(int.Parse(_input.Substring(1)));
             AppendLogLine($"Set zoom level to {ZoomManager.instance.zoomLevel}", "green");
         }
@@ -914,6 +880,21 @@ public class ConsoleController : MonoBehaviour
             name = "";
             AppendLogLine($"Error: path doesn't exist ({parentPath})", "red");
         }
+    }
+
+    ///<summary>
+    /// Isolate parent path from hierarchyName
+    ///</summary>
+    ///<param name="_input">The hierarchyName to parse</param>
+    ///<returns>The parent hierarchyName</returns>
+    private string IsolateParentPath(string _input)
+    {
+        string[] path = _input.Split('.');
+        string parentPath = "";
+        for (int i = 0; i < path.Length - 1; i++)
+            parentPath += $"{path[i]}.";
+        parentPath = parentPath.Remove(parentPath.Length - 1);
+        return parentPath;
     }
 
     ///<summary>

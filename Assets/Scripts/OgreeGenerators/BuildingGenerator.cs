@@ -18,9 +18,8 @@ public class BuildingGenerator : MonoBehaviour
     /// Instantiate a buildingModel (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the building</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SBuildingInfos _data, bool _changeHierarchy)
+    public Building CreateBuilding(SBuildingInfos _data)
     {
         if (_data.parent.GetComponent<Datacenter>() == null)
         {
@@ -59,10 +58,7 @@ public class BuildingGenerator : MonoBehaviour
         bd.heightUnit = EUnit.m;
 
         newBD.AddComponent<HierarchyName>();
-
         GameManager.gm.allItems.Add(hierarchyName, newBD);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newBD);
 
         return bd;
     }
@@ -71,9 +67,8 @@ public class BuildingGenerator : MonoBehaviour
     /// Instantiate a roomModel (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the room</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SRoomInfos _data, bool _changeHierarchy)
+    public Room CreateRoom(SRoomInfos _data)
     {
         if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
         {
@@ -167,8 +162,6 @@ public class BuildingGenerator : MonoBehaviour
         Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
-        newRoom.AddComponent<HierarchyName>();
-
         // Get tenant from related Datacenter
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
         room.UpdateZonesColor();
@@ -179,9 +172,8 @@ public class BuildingGenerator : MonoBehaviour
                             new SMargin(GameManager.gm.roomTemplates[_data.template].technicalArea));
         }
 
+        newRoom.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newRoom);
 
         return room;
     }

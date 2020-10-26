@@ -142,7 +142,7 @@ public class ReadFromJson
         infos.parent = GameManager.gm.templatePlaceholder;
         infos.orient = "front";
         infos.size = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[2], rackData.sizeWDHmm[1]) / 10;
-        Rack rack = ObjectGenerator.instance.CreateRack(infos, false);
+        Rack rack = ObjectGenerator.instance.CreateRack(infos);
 
         rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
@@ -230,7 +230,7 @@ public class ReadFromJson
         infos.posU = 0;
         infos.sizeU = data.sizeWDHmm[2] / 10;
 
-        Object device = ObjectGenerator.instance.CreateDevice(infos, false);
+        Object device = ObjectGenerator.instance.CreateDevice(infos);
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
 
