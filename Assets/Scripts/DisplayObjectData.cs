@@ -87,6 +87,13 @@ public class DisplayObjectData : MonoBehaviour
                 labelLeft.gameObject.SetActive(false);
                 labelTop.gameObject.SetActive(true);
                 break;
+            case "none":
+                labelFront.gameObject.SetActive(false);
+                labelRear.gameObject.SetActive(false);
+                labelRight.gameObject.SetActive(false);
+                labelLeft.gameObject.SetActive(false);
+                labelTop.gameObject.SetActive(false);
+                break;
         }
     }
 

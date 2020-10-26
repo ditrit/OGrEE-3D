@@ -143,6 +143,9 @@ public class Room : Building
             case "floor":
                 floor = _value;
                 break;
+            case "tiles":
+                ToggleZones(_value);
+                break;
             default:
                 GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");
                 break;
@@ -158,6 +161,28 @@ public class Room : Building
         usableZone.GetComponent<Renderer>().material.color = dc.usableColor;
         reservedZone.GetComponent<Renderer>().material.color = dc.reservedColor;
         technicalZone.GetComponent<Renderer>().material.color = dc.technicalColor;
+    }
+
+    ///<summary>
+    /// Display or hide zones and tiles edges (floor color will stay the technical one).
+    ///</summary>
+    ///<param name="_value">True of false value</param>
+    private void ToggleZones(string _value)
+    {
+        if (_value == "true")
+        {
+            usableZone.GetComponent<Renderer>().enabled = true;
+            reservedZone.GetComponent<Renderer>().enabled = true;
+            tilesEdges.GetComponent<Renderer>().enabled = true;
+        }
+        else if (_value == "false")
+        {
+            usableZone.GetComponent<Renderer>().enabled = false;
+            reservedZone.GetComponent<Renderer>().enabled = false;
+            tilesEdges.GetComponent<Renderer>().enabled = false;
+        }
+        else
+            GameManager.gm.AppendLogLine("tiles value must be true of false", "yellow");
     }
 
 }

@@ -9,8 +9,8 @@ public struct SRackInfos
     public Transform parent;
     public string orient;
     public Vector2 pos; // tile
-    public Vector2 size; // cm 
-    public int height; // U = 44.5mm
+    public Vector3 size; // cm 
+    public int height; // U
     public string template;
 }
 
@@ -19,10 +19,12 @@ public struct SDeviceInfos
 {
     public string name;
     public Transform parent;
-    public int posU;
+    // public int posU;
+    public float posU; // should be int, authorize until non IT objects can be created
     public string slot;
     public float sizeU;
     public string template;
+    public string side;
 
 }
 

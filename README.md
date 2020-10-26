@@ -68,8 +68,7 @@ More levels will come in next releases.
 # Build in CLI
 
 ## Glossary
-`[name]` is case sensitive. It can include the whole path of the object if starting with a '/'. In that case, the selected object doesn't change  
-`[full name]` is the full name containing the path of an object: `cu.dc.bd.ro.rk`  
+`[name]` is case sensitive. It include the whole path of the object (for example: `cu.dc.bd.ro.rk`)  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y): **EN**, **NW**, **WS**, **SE**  
 `[color]` is a hexadecimal code (*ffffff*)  
 
@@ -99,19 +98,16 @@ ${[name]}
 
 ## Hierarchy commands
 ### Select an object
-*If `[full name]` is empty, go back to root*  
+*If `[name]` is empty, go back to root*  
 ```
-=[full name]
+=[name]
 ```
 
 ### Select child / children object
 Select one or several children of current selected object.  
-*`[name]` is the "short" name of the object: without '/' and hierarchy  
-`[relativeName]` is the hierarchy name without the selected object part*  
+*`[relativeName]` is the hierarchy name without the selected object part*  
 ```
-={[name]}
 ={[relativeName]}
-={[name],[name],...}
 ={[relativeName],[relativeName],...}
 ```  
 
@@ -123,7 +119,7 @@ Select one or several children of current selected object.
 ### Delete object
 Works with single or multi selection.  
 ```
--[full name]  
+-[name]  
 -selection
 ```  
 
@@ -159,8 +155,8 @@ Its name will be displayed in the center of the room in its local coordinates sy
 `[template]` is the name of the room template*  
 ```
 +room:[name]@[pos]@[size]@[orientation]  
-+ro:[name]@[pos]@[size]@[orientation]
 +room:[name]@[pos]@[template]  
++ro:[name]@[pos]@[size]@[orientation]
 +ro:[name]@[pos]@[template]
 ```
 
@@ -179,6 +175,11 @@ Rack must be child of a room.
 
 ### Create a Device
 A chassis is a *parent* device racked at a defined U position.  
+*`[posU]` is the position in U in a rack  
+`[sizeU]` is the height in U in a rack  
+`[slot]` is the name of the slot in which you want to place the device  
+`[template]` is the name of the device template  
+`[side]` is from which side you can see the device if not "fullsize". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped*  
 If the parent rack has slots:  
 ```
 +device:[name]@[posU]@[sizeU]
@@ -193,11 +194,15 @@ If the parent rack doesn't have slots:
 All other devices have to be declared with a parent's slot and a template.  
 ```
 +device:[name]@[slot]@[template]
++device:[name]@[slot]@[template]@[side]
++dv:[name]@[slot]@[template]
++dv:[name]@[slot]@[template]@[side]
 ```  
 
 ### Create a Tenant  
 ```
 +tenant:[name]@[color]
++tn:[name]@[color]
 ```  
 
 ## Set commands  
@@ -422,7 +427,7 @@ Templates are json files describing an object.
  "sizeWDHmm"  : [width ,depth ,height],
  "sizeWDU"  : [width ,depth ,heightU],
  "components" : [
-   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear/front/left/right/rearleft/rearright",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left" },
+   { "location": "location",  "family": "u/ou", "role": "rack", "installed" : "fulldepth/rear/front/left/right/rearleft/rearright",  "elemPos" : [x,y,z] , "elemSize" : [x,y,z], "mandatory":"yes/no", "labelPos":"front/rear/frontrear/top/right/left/none" },
     ...
   ]
 }
@@ -438,11 +443,11 @@ Templates are json files describing an object.
  "model"       : "Model",
  "type"        : "chassis/blade",
  "role"        : "parent/child",
- "side"        : "front/rear",
+ "side"        : "front/rear/frontflipped/rearflipped",
  "fulllength"  : "yes/no",
  "sizeWDHmm"   : [x,y,z],
  "components"  : [
-  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top" },
+  { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top/none" },
   ...    
   ]
 }

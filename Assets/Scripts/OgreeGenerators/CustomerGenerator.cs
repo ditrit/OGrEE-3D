@@ -18,9 +18,8 @@ public class CustomerGenerator : MonoBehaviour
     /// Create a Customer with given name. Also create a default Tenant corresponding to the Customer.
     ///</summary>
     ///<param name="_name">The customer's name</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(string _name, bool _changeHierarchy)
+    public Customer CreateCustomer(string _name)
     {
         if (GameManager.gm.allItems.Contains(_name))
         {
@@ -36,10 +35,7 @@ public class CustomerGenerator : MonoBehaviour
 
         customer.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_name, customer);
-
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(customer);
-
+        
         return cu;
     }
 
@@ -47,9 +43,8 @@ public class CustomerGenerator : MonoBehaviour
     /// Create a Datacenter and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the datacenter</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Datacenter</returns>
-    public Datacenter CreateDatacenter(SDataCenterInfos _data, bool _changeHierarchy)
+    public Datacenter CreateDatacenter(SDataCenterInfos _data)
     {
         if (_data.parent.GetComponent<Customer>() == null)
         {
@@ -91,10 +86,7 @@ public class CustomerGenerator : MonoBehaviour
         dc.tenant = GameManager.gm.tenants[_data.parent.name];
 
         newDC.AddComponent<HierarchyName>();
-
         GameManager.gm.allItems.Add(hierarchyName, newDC);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newDC);
 
         return dc;
     }

@@ -61,6 +61,7 @@ public class CameraControl : MonoBehaviour
         }
         else
             transform.GetChild(0).localEulerAngles = Vector3.zero;//apply to wrapper and reset!
+        UpdateGUIInfos();
     }
 
     ///<summary>

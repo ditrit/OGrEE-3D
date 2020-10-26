@@ -87,6 +87,9 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
             case "alpha":
                 UpdateAlpha(_value);
                 break;
+            case "slots":
+                ToggleSlots(_value);
+                break;
             default:
                 GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
                 break;
@@ -143,5 +146,57 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+    }
+
+    ///<summary>
+    /// Display or hide all unused slots of the object.
+    ///</summary>
+    ///<param name="_value">True or false value</param>
+    protected void ToggleSlots(string _value)
+    {
+        if (_value != "true" && _value != "false")
+        {
+            GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
+            return;
+        }
+
+        Slot[] slots = GetComponentsInChildren<Slot>();
+        if (slots.Length == 0)
+            return;
+
+        foreach (Slot s in slots)
+        {
+            if (s.transform.parent == transform && s.used == false)
+            {
+                if (_value == "true")
+                    s.Display(true);
+                else
+                    s.Display(false);
+            }
+        }
+    }
+
+    ///<summary>
+    /// Display or hide the local coordinate system
+    ///</summary>
+    public void ToggleCS()
+    {
+        string csName = "localCS";
+        GameObject localCS = transform.Find(csName)?.gameObject;
+        if (localCS)
+        {
+            Destroy(localCS);
+            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
+        }
+        else
+        {
+            localCS = Instantiate(GameManager.gm.CoordinateSystemModel);
+            localCS.name = csName;
+            localCS.transform.parent = transform;
+            localCS.transform.localScale = Vector3.one;
+            localCS.transform.localEulerAngles = Vector3.zero;
+            localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
+            GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
+        }
     }
 }

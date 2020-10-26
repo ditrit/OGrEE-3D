@@ -18,9 +18,8 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a rackModel or a rackPreset (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the rack</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SRackInfos _data, bool _changeHierarchy)
+    public Rack CreateRack(SRackInfos _data)
     {
         if (_data.parent.GetComponent<Room>() == null)
         {
@@ -56,7 +55,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.parent = _data.parent;
 
         if (string.IsNullOrEmpty(_data.template))
-            newRack.transform.GetChild(0).localScale = new Vector3(_data.size.x / 100, _data.height * GameManager.gm.uSize, _data.size.y / 100);
+            newRack.transform.GetChild(0).localScale = _data.size / 100;
 
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
@@ -69,7 +68,7 @@ public class ObjectGenerator : MonoBehaviour
         rack.posXYUnit = EUnit.tile;
         if (string.IsNullOrEmpty(_data.template))
         {
-            rack.size = new Vector2(_data.size.x, _data.size.y);
+            rack.size = new Vector2(_data.size.x, _data.size.z);
             rack.sizeUnit = EUnit.cm;
             rack.height = _data.height;
             rack.heightUnit = EUnit.U;
@@ -104,15 +103,12 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
-        newRack.AddComponent<HierarchyName>();
-
         rack.tenant = _data.parent.GetComponent<Room>().tenant;
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
+        newRack.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newRack);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newRack);
 
         return rack;
     }
@@ -121,9 +117,8 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the chassis</param>
-    ///<param name="_changeHierarchy">Should the current item change to this one ?</param>
     ///<returns>The created Chassis</returns>
-    public Object CreateDevice(SDeviceInfos _data, bool _changeHierarchy)
+    public Object CreateDevice(SDeviceInfos _data)
     {
         if (_data.parent.GetComponent<Object>() == null)
         {
@@ -241,15 +236,48 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
                 newDevice.transform.localPosition = slot.localPosition;
+                newDevice.transform.localEulerAngles = slot.localEulerAngles;
                 if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
                     newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
 
+                Object ob = newDevice.GetComponent<Object>();
+                switch (_data.side)
+                {
+                    case "front":
+                        ob.orient = EObjOrient.Frontward;
+                        break;
+                    case "rear":
+                        ob.orient = EObjOrient.Backward;
+                        break;
+                    case "frontflipped":
+                        ob.orient = EObjOrient.FrontFlipped;
+                        break;
+                    case "rearflipped":
+                        ob.orient = EObjOrient.RearFlipped;
+                        break;
+                }
+                if (ob.extras.ContainsKey("fulllenght") && ob.extras["fulllenght"] == "yes")
+                    ob.orient = EObjOrient.Frontward;
+
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
-                if (newDevice.GetComponent<Object>().orient == EObjOrient.Frontward
-                    || newDevice.GetComponent<Object>().extras["fulllenght"] == "yes")
-                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
-                else if (newDevice.GetComponent<Object>().orient == EObjOrient.Backward)
-                    newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                switch (ob.orient)
+                {
+                    case EObjOrient.Frontward:
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        break;
+                    case EObjOrient.Backward:
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
+                        break;
+                    case EObjOrient.FrontFlipped:
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
+                        break;
+                    case EObjOrient.RearFlipped:
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
+                        break;
+                }
 
                 // Assign default color = slot color
                 Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
@@ -262,7 +290,6 @@ public class ObjectGenerator : MonoBehaviour
                 return null;
             }
         }
-        newDevice.transform.localEulerAngles = Vector3.zero;
 
         newDevice.name = _data.name;
         Object obj = newDevice.GetComponent<Object>();
@@ -285,25 +312,8 @@ public class ObjectGenerator : MonoBehaviour
 
         newDevice.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newDevice);
-        if (_changeHierarchy)
-            GameManager.gm.SetCurrentItem(newDevice);
 
         return newDevice.GetComponent<Object>();
-    }
-
-    public void CreateAirconditionner()
-    {
-
-    }
-
-    public void CreatePowerpanel()
-    {
-
-    }
-
-    public void CreatePdu()
-    {
-
     }
 
 }

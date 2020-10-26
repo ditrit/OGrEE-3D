@@ -56,7 +56,8 @@ public class ReadFromJson
         public string model;
         public string type;
         public int[] sizeWDHmm;
-        public SRackSlot[] components;
+        public SColor[] colors;
+        public SRackSlot[] slots;
     }
 
     [System.Serializable]
@@ -64,8 +65,8 @@ public class ReadFromJson
     {
         public string location;
         public string family;
-        public string role;
-        public string installed;
+        // public string role;
+        // public string installed;// to del
         public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
@@ -73,6 +74,14 @@ public class ReadFromJson
         public string labelPos;
         public string color;
     }
+
+    [System.Serializable]
+    private struct SColor
+    {
+        public string name;
+        public string value;
+    }
+
     #endregion
 
     #region Device
@@ -84,11 +93,12 @@ public class ReadFromJson
         public string vendor;
         public string model;
         public string type;
-        public string role;
+        // public string role;
         public string side;
         public string fulllength;
         public float[] sizeWDHmm;
-        public SDeviceSlot[] components;
+        public SColor[] colors;
+        public SDeviceSlot[] slots;
     }
 
     [System.Serializable]
@@ -96,9 +106,9 @@ public class ReadFromJson
     {
         public string location;
         public string type;
-        public string role;
-        public string factor;
-        public string position;
+        // public string role; // to del
+        public string factor; // ?
+        // public string position; // to del
         public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
@@ -131,21 +141,26 @@ public class ReadFromJson
         infos.name = rackData.slug;
         infos.parent = GameManager.gm.templatePlaceholder;
         infos.orient = "front";
-        infos.size = new Vector2(rackData.sizeWDHmm[0] / 10, rackData.sizeWDHmm[1] / 10);
-        infos.height = (int)(rackData.sizeWDHmm[2] / GameManager.gm.uSize / 1000);
-        Rack rack = ObjectGenerator.instance.CreateRack(infos, false);
+        infos.size = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[2], rackData.sizeWDHmm[1]) / 10;
+        Rack rack = ObjectGenerator.instance.CreateRack(infos);
 
         rack.transform.localPosition = Vector3.zero;
         rack.vendor = rackData.vendor;
         rack.model = rackData.model;
-        foreach (SRackSlot comp in rackData.components)
+        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        if (rackData.colors != null)
+        {
+            foreach (SColor color in rackData.colors)
+                customColors.Add(color.name, color.value);
+        }
+        foreach (SRackSlot comp in rackData.slots)
         {
             SDeviceSlot slotData = new SDeviceSlot();
             slotData.location = comp.location;
             slotData.type = comp.family;
-            slotData.role = comp.role;
+            // slotData.role = comp.role;
             // slotData.factor = comp.factor;
-            slotData.position = comp.installed; //
+            // slotData.position = comp.installed; // not used
             slotData.elemOrient = comp.elemOrient;
             slotData.elemPos = comp.elemPos;
             slotData.elemSize = comp.elemSize;
@@ -153,7 +168,16 @@ public class ReadFromJson
             slotData.labelPos = comp.labelPos;
             slotData.color = comp.color;
 
-            PopulateSlot(slotData, rack.transform);
+            PopulateSlot(slotData, rack.transform, customColors);
+        }
+
+        // Count the right height in U 
+        Slot[] slots = rack.GetComponentsInChildren<Slot>();
+        rack.height = 0;
+        foreach (Slot s in slots)
+        {
+            if (s.orient == "horizontal")
+                rack.height++;
         }
 
 #if !DEBUG
@@ -206,7 +230,7 @@ public class ReadFromJson
         infos.posU = 0;
         infos.sizeU = data.sizeWDHmm[2] / 10;
 
-        Object device = ObjectGenerator.instance.CreateDevice(infos, false);
+        Object device = ObjectGenerator.instance.CreateDevice(infos);
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
 
@@ -230,12 +254,26 @@ public class ReadFromJson
             case "rear":
                 device.orient = EObjOrient.Backward;
                 break;
+            case "frontflipped":
+                device.orient = EObjOrient.FrontFlipped;
+                break;
+            case "rearflipped":
+                device.orient = EObjOrient.RearFlipped;
+                break;
         }
         if (data.fulllength == "yes")
             device.extras.Add("fulllength", "yes");
+        else if (data.fulllength == "no")
+            device.extras.Add("fulllength", "no");
 
-        foreach (SDeviceSlot comp in data.components)
-            PopulateSlot(comp, device.transform);
+        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        if (data.colors != null)
+        {
+            foreach (SColor color in data.colors)
+                customColors.Add(color.name, color.value);
+        }
+        foreach (SDeviceSlot comp in data.slots)
+            PopulateSlot(comp, device.transform, customColors);
 
 #if !DEBUG
         Renderer[] renderers = device.transform.GetComponentsInChildren<Renderer>();
@@ -252,7 +290,8 @@ public class ReadFromJson
     ///</summary>
     ///<param name="_data">Data for slot creation</param>
     ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(SDeviceSlot _data, Transform _parent)
+    private void PopulateSlot(SDeviceSlot _data, Transform _parent,
+                                Dictionary<string, string> _customColors)
     {
         // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.deviceModel);
@@ -262,12 +301,23 @@ public class ReadFromJson
         go.transform.parent = _parent;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
-        go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
         go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
-        go.transform.localEulerAngles = Vector3.zero;
+        if (_data.elemOrient == "vertical")
+        {
+            go.transform.localEulerAngles = new Vector3(0, 0, 90);
+            go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
+                                                        go.transform.GetChild(0).localScale.x,
+                                                        go.transform.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            go.transform.localEulerAngles = Vector3.zero;
+            go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
+        }
 
         Slot s = go.AddComponent<Slot>();
-        s.installed = _data.position;
+        // s.installed = _data.position;
+        s.orient = _data.elemOrient;
         s.mandatory = _data.mandatory;
         s.labelPos = _data.labelPos;
 
@@ -279,7 +329,10 @@ public class ReadFromJson
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
+        if (_data.color != null && _data.color.StartsWith("@"))
+            ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
+        else
+            ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_data.mandatory == "yes")
             mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
         else if (_data.mandatory == "no")
