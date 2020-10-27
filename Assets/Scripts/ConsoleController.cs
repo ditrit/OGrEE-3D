@@ -607,7 +607,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">String with zones data to parse</param>
     private void SetRoomZones(string _input)
     {
-        string patern = "^(\\/[^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+        string patern = "^([^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
         if (Regex.IsMatch(_input, patern))
         {
             _input = _input.Replace("[", "");
@@ -629,7 +629,7 @@ public class ConsoleController : MonoBehaviour
             }
             else // There is an object path
             {
-                GameObject room = GameManager.gm.FindByAbsPath(data[0].Substring(1));
+                GameObject room = GameManager.gm.FindByAbsPath(data[0]);
                 if (room)
                 {
                     SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
