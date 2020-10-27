@@ -54,12 +54,14 @@ Customer
 |_ Datacenter
     |_ Building
         |_ Room
-            |_ Rack
-                |_ Device
-                |   |_ Sub-device
-                |   |   |_ Sub-device
-                |   |_ ...
-                |_ Device
+            |_ Rack                                 Rack
+                |_ Device                            |_ Chassis
+                |   |_ Sub-device                    |   |_ Blade
+                |   |   |_ Sub-device                |   |   |_ processor
+                |   |   |_ Sub-device                |   |   |_ memory
+                |   |_ ...                           |   |   |_ ...
+                |_ Device                            |_ Server
+                |_ Device                            |_ LANswitch
 ```
 You have to create each object either with the build in CLI or by loading a file containing these commands.  
 You can assign a tenant to a Datacenter, a room or a rack. If so, all children will have the same tenant by default.  
