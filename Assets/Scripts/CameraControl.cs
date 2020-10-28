@@ -158,7 +158,14 @@ public class CameraControl : MonoBehaviour
             transform.Translate(new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0) * Time.deltaTime * -moveSpeed);
         // Scrollwheel
         else if (Input.GetAxis("Mouse ScrollWheel") != 0)
-            transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * moveSpeed);
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position,
+                                transform.GetChild(0).GetComponent<Camera>().ScreenPointToRay(Input.mousePosition).direction, out hit))
+                transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * hit.distance);
+            else
+                transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * moveSpeed);
+        }
     }
 
     ///<summary>
