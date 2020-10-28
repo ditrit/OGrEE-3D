@@ -247,6 +247,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ReloadFile()
     {
+        SetCurrentItem(null);
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
