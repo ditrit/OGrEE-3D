@@ -17,6 +17,8 @@ public class Room : Building
     public EUnit floorUnit;
     public string floor;
 
+    public string template;
+
     [Header("RO References")]
     public Transform usableZone;
     public Transform reservedZone;
@@ -90,13 +92,67 @@ public class Room : Building
                 for (int i = 0; i < x; i++)
                 {
                     GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
+                    tileText.name = $"TileName{i + 1}/{j + 1}";
                     tileText.transform.SetParent(root.transform);
                     tileText.transform.localPosition = new Vector3(i, 0, j) * GameManager.gm.tileSize;
                     tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
-                    tileText.GetComponent<TextMeshPro>().text = $"{i + 1}/{j + 1}";
+                    if (GameManager.gm.roomTemplates.ContainsKey(template))
+                        CustomTiles(tileText, GameManager.gm.roomTemplates[template], $"{i + 1}/{j + 1}");
+                    else
+                        tileText.GetComponent<TextMeshPro>().text = $"{i + 1}/{j + 1}";
                 }
             }
         }
+    }
+
+    ///<summary>
+    ///
+    ///</summary>
+    ///<param name=""></param>
+    ///<param name=""></param>
+    ///<param name=""></param>
+    private void CustomTiles(GameObject _tileText, ReadFromJson.SRoomFromJson _data, string _loc)
+    {
+        // Select the right tile from _data.tiles
+        ReadFromJson.STiles tileData = new ReadFromJson.STiles();
+        foreach (ReadFromJson.STiles tile in _data.tiles)
+        {
+            if (tile.location == _loc)
+                tileData = tile;
+        }
+        if (!string.IsNullOrEmpty(tileData.location))
+        {
+            _tileText.GetComponent<TextMeshPro>().text = tileData.label;
+            if (!string.IsNullOrEmpty(tileData.type) && tileData.type != "plain"
+                || !string.IsNullOrEmpty(tileData.color))
+            {
+                _tileText.transform.localPosition += new Vector3(0, 0.002f, 0);
+                GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                tile.transform.parent = _tileText.transform;
+                tile.transform.localScale = Vector3.one * 0.06f;
+                tile.transform.localPosition = new Vector3(0, 0, 0.001f);
+                tile.transform.localEulerAngles = new Vector3(-90, 0, 0);
+                if (!string.IsNullOrEmpty(tileData.color))
+                {
+                    Material mat = tile.GetComponent<Renderer>().material;
+                    Color customColor = new Color();
+                    if (tileData.color.StartsWith("@"))
+                    {
+                        foreach (ReadFromJson.SColor color in _data.colors)
+                        {
+                            if (color.name == tileData.color.Substring(1))
+                                ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
+                        }
+                    }
+                    else
+                        ColorUtility.TryParseHtmlString($"#{tileData.color}", out customColor);
+                    mat.color = customColor;
+                }
+            }
+        }
+        else
+            _tileText.GetComponent<TextMeshPro>().text = _loc;
+
     }
 
     ///<summary>

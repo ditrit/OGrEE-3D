@@ -15,6 +15,7 @@ public class ReadFromJson
         public int[] technicalArea;
         public int[] reservedArea;
         public SSeparator[] separators;
+        public SColor[] colors;
         public STiles[] tiles;
         public SAisles[] aisles;
     }
@@ -76,7 +77,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    private struct SColor
+    public struct SColor
     {
         public string name;
         public string value;

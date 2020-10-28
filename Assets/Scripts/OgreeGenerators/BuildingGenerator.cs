@@ -99,6 +99,8 @@ public class BuildingGenerator : MonoBehaviour
                             GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
                             GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
             orient = GameManager.gm.roomTemplates[_data.template].orientation;
+
+            newRoom.GetComponent<Room>().template = _data.template;
         }
         else
         {
