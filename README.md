@@ -193,7 +193,7 @@ If the parent rack doesn't have slots:
 +device:[name]@[slot]@[template]
 ```  
 
-All other devices have to be declared with a parent's slot and a template.  
+All other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.  
 ```
 +device:[name]@[slot]@[template]
 +device:[name]@[slot]@[template]@[side]
