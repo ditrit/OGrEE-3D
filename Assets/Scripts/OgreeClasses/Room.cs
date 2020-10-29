@@ -80,26 +80,32 @@ public class Room : Building
             root.transform.localPosition = usableZone.localPosition;
             root.transform.localEulerAngles = Vector3.zero;
 
-            float x = size.x / GameManager.gm.tileSize - reserved.right - reserved.left - technical.right - technical.left;
-            float y = size.y / GameManager.gm.tileSize - reserved.top - reserved.bottom - technical.top - technical.bottom;
-            // Debug.Log($"{name}: x={x} / y={y}");
+            float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
+            float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
 
             Vector3 origin = usableZone.localScale / -0.2f;
             root.transform.localPosition += new Vector3(origin.x, 0.001f, origin.z);
             root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize) / 2;
-            for (int j = 0; j < y; j++)
+            for (int j = (int)-reserved.bottom; j < y; j++)
             {
-                for (int i = 0; i < x; i++)
+                for (int i = (int)-reserved.left; i < x; i++)
                 {
                     GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
-                    tileText.name = $"TileName{i + 1}/{j + 1}";
+                    if (i >= 0 && j >= 0)
+                        tileText.name = $"{i + 1}/{j + 1}";
+                    else if (i >= 0)
+                        tileText.name = $"{i + 1}/{j}";
+                    else if (j >= 0)
+                        tileText.name = $"{i}/{j + 1}";
+                    else
+                        tileText.name = $"{i}/{j}";
                     tileText.transform.SetParent(root.transform);
                     tileText.transform.localPosition = new Vector3(i, 0, j) * GameManager.gm.tileSize;
                     tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
                     if (GameManager.gm.roomTemplates.ContainsKey(template))
-                        CustomTiles(tileText, GameManager.gm.roomTemplates[template], $"{i + 1}/{j + 1}");
+                        CustomTiles(tileText, GameManager.gm.roomTemplates[template], tileText.name);
                     else
-                        tileText.GetComponent<TextMeshPro>().text = $"{i + 1}/{j + 1}";
+                        tileText.GetComponent<TextMeshPro>().text = tileText.name;
                 }
             }
         }
@@ -117,7 +123,7 @@ public class Room : Building
         ReadFromJson.STiles tileData = new ReadFromJson.STiles();
         foreach (ReadFromJson.STiles tile in _data.tiles)
         {
-            if (tile.location == _loc)
+            if (tile.location.Trim() == _loc)
                 tileData = tile;
         }
         if (!string.IsNullOrEmpty(tileData.location))
@@ -129,11 +135,12 @@ public class Room : Building
                 _tileText.transform.localPosition += new Vector3(0, 0.002f, 0);
                 GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
                 tile.transform.parent = _tileText.transform;
-                tile.transform.localScale = Vector3.one * 0.06f;
-                tile.transform.localPosition = new Vector3(0, 0, 0.001f);
+                tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
+                tile.transform.localPosition = new Vector3(0, 0, 0.002f);
                 tile.transform.localEulerAngles = new Vector3(-90, 0, 0);
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
+                    // tile.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
                     Material mat = tile.GetComponent<Renderer>().material;
                     Color customColor = new Color();
                     if (tileData.color.StartsWith("@"))
