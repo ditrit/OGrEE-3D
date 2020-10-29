@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menu = null;
     public Material defaultMat;
     public Material wireframeMat;
+    public Material perfMat;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;

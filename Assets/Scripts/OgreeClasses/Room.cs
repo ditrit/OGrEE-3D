@@ -155,6 +155,13 @@ public class Room : Building
                         ColorUtility.TryParseHtmlString($"#{tileData.color}", out customColor);
                     mat.color = customColor;
                 }
+                if (!string.IsNullOrEmpty(tileData.type))
+                {
+                    if (tileData.type.Contains("perf"))
+                        tile.GetComponent<Renderer>().material = GameManager.gm.perfMat;
+                    // adapt tiling according to perf size.
+                    // Means type have to be formated "perfXX" where XX is the size in mm ?
+                }
             }
         }
         else
