@@ -196,7 +196,7 @@ public class ObjectGenerator : MonoBehaviour
             }
             foreach (Transform child in _data.parent)
             {
-                if (child.name == _data.slot || (i > 0 && i < max))
+                if ((child.name == _data.slot || (i > 0 && i < max)) && child.GetComponent<Slot>())
                 {
                     takenSlots.Add(child.GetComponent<Slot>());
                     i++;

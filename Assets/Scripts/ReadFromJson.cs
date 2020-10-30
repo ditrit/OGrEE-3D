@@ -58,6 +58,7 @@ public class ReadFromJson
         public string type;
         public int[] sizeWDHmm;
         public SColor[] colors;
+        public SRackSlot[] components;
         public SRackSlot[] slots;
     }
 
@@ -66,7 +67,6 @@ public class ReadFromJson
     {
         public string location;
         public string family;
-        // public string role;
         // public string installed;// to del
         public string elemOrient;
         public int[] elemPos;
@@ -94,11 +94,11 @@ public class ReadFromJson
         public string vendor;
         public string model;
         public string type;
-        // public string role;
         public string side;
         public string fulllength;
         public float[] sizeWDHmm;
         public SColor[] colors;
+        public SDeviceSlot[] components;
         public SDeviceSlot[] slots;
     }
 
@@ -107,7 +107,6 @@ public class ReadFromJson
     {
         public string location;
         public string type;
-        // public string role; // to del
         public string factor; // ?
         // public string position; // to del
         public string elemOrient;
@@ -154,22 +153,39 @@ public class ReadFromJson
             foreach (SColor color in rackData.colors)
                 customColors.Add(color.name, color.value);
         }
-        foreach (SRackSlot comp in rackData.slots)
+        if (rackData.components != null)
         {
-            SDeviceSlot slotData = new SDeviceSlot();
-            slotData.location = comp.location;
-            slotData.type = comp.family;
-            // slotData.role = comp.role;
-            // slotData.factor = comp.factor;
-            // slotData.position = comp.installed; // not used
-            slotData.elemOrient = comp.elemOrient;
-            slotData.elemPos = comp.elemPos;
-            slotData.elemSize = comp.elemSize;
-            slotData.mandatory = comp.mandatory;
-            slotData.labelPos = comp.labelPos;
-            slotData.color = comp.color;
-
-            PopulateSlot(slotData, rack.transform, customColors);
+            foreach (SRackSlot comp in rackData.components)
+            {
+                SDeviceSlot compData = new SDeviceSlot();
+                compData.location = comp.location;
+                compData.type = comp.family;
+                compData.elemOrient = comp.elemOrient;
+                compData.elemPos = comp.elemPos;
+                compData.elemSize = comp.elemSize;
+                compData.mandatory = comp.mandatory;
+                compData.labelPos = comp.labelPos;
+                compData.color = comp.color;
+                PopulateSlot(false, compData, rack.transform, customColors);
+            }
+        }
+        if (rackData.slots != null)
+        {
+            foreach (SRackSlot comp in rackData.slots)
+            {
+                SDeviceSlot slotData = new SDeviceSlot();
+                slotData.location = comp.location;
+                slotData.type = comp.family;
+                // slotData.factor = comp.factor;
+                // slotData.position = comp.installed; // not used
+                slotData.elemOrient = comp.elemOrient;
+                slotData.elemPos = comp.elemPos;
+                slotData.elemSize = comp.elemSize;
+                slotData.mandatory = comp.mandatory;
+                slotData.labelPos = comp.labelPos;
+                slotData.color = comp.color;
+                PopulateSlot(true, slotData, rack.transform, customColors);
+            }
         }
 
         // Count the right height in U 
@@ -273,8 +289,16 @@ public class ReadFromJson
             foreach (SColor color in data.colors)
                 customColors.Add(color.name, color.value);
         }
-        foreach (SDeviceSlot comp in data.slots)
-            PopulateSlot(comp, device.transform, customColors);
+        if (data.components != null)
+        {
+            foreach (SDeviceSlot compData in data.components)
+                PopulateSlot(false, compData, device.transform, customColors);
+        }
+        if (data.slots != null)
+        {
+            foreach (SDeviceSlot slotData in data.slots)
+                PopulateSlot(true, slotData, device.transform, customColors);
+        }
 
 #if !DEBUG
         Renderer[] renderers = device.transform.GetComponentsInChildren<Renderer>();
@@ -291,12 +315,13 @@ public class ReadFromJson
     ///</summary>
     ///<param name="_data">Data for slot creation</param>
     ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(SDeviceSlot _data, Transform _parent,
+    private void PopulateSlot(bool isSlot, SDeviceSlot _data, Transform _parent,
                                 Dictionary<string, string> _customColors)
     {
         // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.deviceModel);
-        MonoBehaviour.Destroy(go.GetComponent<Object>());
+        if (isSlot)
+            MonoBehaviour.Destroy(go.GetComponent<Object>());
 
         go.name = _data.location;
         go.transform.parent = _parent;
@@ -316,28 +341,44 @@ public class ReadFromJson
             go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
         }
 
-        Slot s = go.AddComponent<Slot>();
-        // s.installed = _data.position;
-        s.orient = _data.elemOrient;
-        s.mandatory = _data.mandatory;
-        s.labelPos = _data.labelPos;
+        if (isSlot)
+        {
+            Slot s = go.AddComponent<Slot>();
+            // s.installed = _data.position;
+            s.orient = _data.elemOrient;
+            s.mandatory = _data.mandatory;
+            s.labelPos = _data.labelPos;
+        }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
         dod.Setup();
-        dod.PlaceTexts(s.labelPos);
+        dod.PlaceTexts(_data.labelPos);
         dod.UpdateLabels(go.name);
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        if (_data.color != null && _data.color.StartsWith("@"))
+        /*if (_data.color != null && _data.color == "@tenant")
+        {
+            Color parentColor = go.transform.parent.GetChild(0).GetComponent<Renderer>().material.color;
+            myColor = new Color(parentColor.r, parentColor.g, parentColor.b);
+        }
+        else */if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
-        if (_data.mandatory == "yes")
+        if (isSlot)
+        {
+            if (_data.mandatory == "yes")
+                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
+            else if (_data.mandatory == "no")
+                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.2f);
+        }
+        else
             mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
-        else if (_data.mandatory == "no")
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.25f);
+
+        if (!isSlot)
+            go.AddComponent<HierarchyName>();
     }
 
 }
