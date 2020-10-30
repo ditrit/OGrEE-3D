@@ -138,9 +138,23 @@ public class Room : Building
                 tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
                 tile.transform.localPosition = new Vector3(0, 0, 0.002f);
                 tile.transform.localEulerAngles = new Vector3(-90, 0, 0);
+                if (!string.IsNullOrEmpty(tileData.type))
+                {
+                    Renderer rend = tile.GetComponent<Renderer>();
+                    if (tileData.type == "perf22")
+                    {
+                        rend.material = new Material(GameManager.gm.perfMat);
+                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
+                    }
+                    if (tileData.type == "perf29")
+                    {
+                        rend.material = new Material(GameManager.gm.perfMat);
+                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
+
+                    }
+                }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
-                    // tile.GetComponent<Renderer>().material = GameManager.gm.defaultMat;
                     Material mat = tile.GetComponent<Renderer>().material;
                     Color customColor = new Color();
                     if (tileData.color.StartsWith("@"))
@@ -154,13 +168,6 @@ public class Room : Building
                     else
                         ColorUtility.TryParseHtmlString($"#{tileData.color}", out customColor);
                     mat.color = customColor;
-                }
-                if (!string.IsNullOrEmpty(tileData.type))
-                {
-                    if (tileData.type.Contains("perf"))
-                        tile.GetComponent<Renderer>().material = GameManager.gm.perfMat;
-                    // adapt tiling according to perf size.
-                    // Means type have to be formated "perfXX" where XX is the size in mm ?
                 }
             }
         }
