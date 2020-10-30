@@ -57,6 +57,9 @@ public class Rack : Object
             case "tenant":
                 AssignTenant(_value);
                 break;
+            case "color":
+                SetColor(_value);
+                break;
             case "alpha":
                 UpdateAlpha(_value);
                 break;
