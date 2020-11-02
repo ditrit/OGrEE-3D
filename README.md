@@ -34,6 +34,9 @@ OGREE 3D is a data-center viewer
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
         - [Modify object’s attribute](#Modify-object’s-attribute)
+            - [Display room’s tiles name or color](#Display-room’s-tiles-name-or-color) 
+            - [Display rack's U helpers](#Display-rack's-U-helpers) 
+            - [Display object's slots display](#Display-object's-slots-display) 
     - [Manipulate camera](#Manipulate-camera)
         - [Move camera](#Move-camera)
         - [Translate camera](#Translate-camera)
@@ -231,7 +234,7 @@ You can modify areas only if the room has no racks in it.
 
 ### Modify object's attribute
 Works with single or multi selection.  
-*`[full name]` can be `selection` for modifying selected objects attributes  
+*`[name]` can be `selection` or `_` for modifying selected objects attributes  
 `[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
 `[room].[attribute]` can be description / floors / tenant  
@@ -244,10 +247,21 @@ selection.[attribute]=[value]
 _.[attribute]=[value]
 ```  
 
-### Display U location of a rack
+#### Display room's tiles name or color  
+```
+[room].tilesName=[true|false]
+[room].tilesColor=[true|false]
+```  
+
+#### Display rack's U helpers
 Display or hide U location dummies to simply identify objects in a rack.  
 ```
 [rack].U=[true|false]
+```  
+
+#### Display object's slots display
+```
+[name].slots=[true|false]
 ```  
 
 ## Manipulate camera

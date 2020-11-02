@@ -299,7 +299,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: If currentItem is a room, toggle tiles name.
+    /// Called by GUI button: If currentItem is a room, toggle tiles color.
     ///</summary>
     public void ToggleTilesColor()
     {
