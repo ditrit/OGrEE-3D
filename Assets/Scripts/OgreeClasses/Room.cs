@@ -99,6 +99,22 @@ public class Room : Building
             }
         }
     }
+    public void ToggleTilesName()
+    {
+        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+        if (root)
+            Destroy(root);
+        else
+        {
+            root = new GameObject("tilesNameRoot");
+            root.transform.parent = transform;
+            root.transform.localPosition = usableZone.localPosition;
+            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
+            root.transform.localEulerAngles = Vector3.zero;
+            LoopThroughTiles("name", root.transform);
+        }
+    }
+
 
     ///<summary>
     /// Toggle tiles colors and textures.
@@ -134,6 +150,21 @@ public class Room : Building
         {
             if (root)
                 Destroy(root);
+        }
+    }
+    public void ToggleTilesColor()
+    {
+        GameObject root = transform.Find("tilesColorRoot")?.gameObject;
+        if (root)
+            Destroy(root);
+        else
+        {
+            root = new GameObject("tilesColorRoot");
+            root.transform.parent = transform;
+            root.transform.localPosition = usableZone.localPosition;
+            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
+            root.transform.localEulerAngles = Vector3.zero;
+            LoopThroughTiles("color", root.transform);
         }
     }
 

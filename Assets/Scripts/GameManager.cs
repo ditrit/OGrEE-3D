@@ -33,7 +33,8 @@ public class GameManager : MonoBehaviour
     public GameObject deviceModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
-    public GameObject CoordinateSystemModel;
+    public GameObject coordinateSystemModel;
+    public GameObject separatorModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
@@ -279,13 +280,45 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
     ///</summary>
-    public void ToggleTileNames()
+    public void ToggleTilesName()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
-            // currentRoom.ToggleTilesName();
-            AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
+            currentRoom.ToggleTilesName();
+            AppendLogLine($"Tiles name toggled for {currentItems[0].name}.", "yellow");
+        }
+        else
+            AppendLogLine("Selected item must be a room", "red");
+    }
+
+    ///<summary>
+    /// Called by GUI button: If currentItem is a room, toggle tiles name.
+    ///</summary>
+    public void ToggleTilesColor()
+    {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
+        Room currentRoom = currentItems[0].GetComponent<Room>();
+        if (currentRoom)
+        {
+            if (!roomTemplates.ContainsKey(currentRoom.template))
+            {
+                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
+                return;
+            }
+            currentRoom.ToggleTilesColor();
+            AppendLogLine($"Tiles color toggled for {currentItems[0].name}.", "yellow");
         }
         else
             AppendLogLine("Selected item must be a room", "red");
@@ -296,6 +329,12 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         Rack rack = currentItems[0].GetComponent<Rack>();
         if (rack)
         {
@@ -311,6 +350,12 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void GuiToggleCS()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         foreach (GameObject obj in currentItems)
         {
             if (obj.GetComponent<Object>())

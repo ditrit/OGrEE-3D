@@ -190,7 +190,7 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
         }
         else
         {
-            localCS = Instantiate(GameManager.gm.CoordinateSystemModel);
+            localCS = Instantiate(GameManager.gm.coordinateSystemModel);
             localCS.name = csName;
             localCS.transform.parent = transform;
             localCS.transform.localScale = Vector3.one;
