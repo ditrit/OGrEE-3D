@@ -65,79 +65,183 @@ public class Room : Building
         ReduceZone(usableZone, _resDim);
     }
 
+
     ///<summary>
-    /// If a root is finded, delete it. Otherwise instantiate one TileText per usable tile in the room. 
+    /// Toggle tiles name.
     ///</summary>
-    public void ToggleTilesName()
+    ///<param name="_value">True or false value</param>
+    public void ToggleTilesName(string _value)
     {
-        GameObject root = transform.Find("tilesRoot")?.gameObject;
-        if (root)
-            Destroy(root);
+        if (_value != "true" && _value != "false")
+        {
+            GameManager.gm.AppendLogLine("tilesName value has to be true or false", "yellow");
+            return;
+        }
         else
         {
-            root = new GameObject("tilesRoot");
-            root.transform.parent = transform;
-            root.transform.localPosition = usableZone.localPosition;
-            root.transform.localEulerAngles = Vector3.zero;
-
-            float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
-            float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
-
-            Vector3 origin = usableZone.localScale / -0.2f;
-            root.transform.localPosition += new Vector3(origin.x, 0.001f, origin.z);
-            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize) / 2;
-            for (int j = (int)-reserved.bottom; j < y; j++)
+            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+            if (_value == "true")
             {
-                for (int i = (int)-reserved.left; i < x; i++)
+                if (!root)
                 {
-                    GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
-                    if (i >= 0 && j >= 0)
-                        tileText.name = $"{i + 1}/{j + 1}";
-                    else if (i >= 0)
-                        tileText.name = $"{i + 1}/{j}";
-                    else if (j >= 0)
-                        tileText.name = $"{i}/{j + 1}";
-                    else
-                        tileText.name = $"{i}/{j}";
-                    tileText.transform.SetParent(root.transform);
-                    tileText.transform.localPosition = new Vector3(i, 0, j) * GameManager.gm.tileSize;
-                    tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
+                    root = new GameObject("tilesNameRoot");
+                    root.transform.parent = transform;
+                    root.transform.localPosition = usableZone.localPosition;
+                    root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
+                    root.transform.localEulerAngles = Vector3.zero;
+                    LoopThroughTiles("name", root.transform);
+                }
+            }
+            else
+            {
+                if (root)
+                    Destroy(root);
+            }
+        }
+    }
+
+    ///<summary>
+    /// Toggle tiles colors and textures.
+    ///</summary>
+    ///<param name="_value">True or false value</param>
+    public void ToggleTilesColor(string _value)
+    {
+        if (_value != "true" && _value != "false")
+        {
+            GameManager.gm.AppendLogLine("tilesColor value has to be true or false", "yellow");
+            return;
+        }
+        if (!GameManager.gm.roomTemplates.ContainsKey(template))
+        {
+            GameManager.gm.AppendLogLine($"There is no template for {name}", "yellow");
+            return;
+        }
+
+        GameObject root = transform.Find("tilesColorRoot")?.gameObject;
+        if (_value == "true")
+        {
+            if (!root)
+            {
+                root = new GameObject("tilesColorRoot");
+                root.transform.parent = transform;
+                root.transform.localPosition = usableZone.localPosition;
+                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
+                root.transform.localEulerAngles = Vector3.zero;
+                LoopThroughTiles("color", root.transform);
+            }
+        }
+        else
+        {
+            if (root)
+                Destroy(root);
+        }
+    }
+
+    ///<summary>
+    /// Loop through every tile placement and populate name or plane according to _mode.
+    ///</summary>
+    ///<param name="_mode">"name" or "color" mode</param>
+    ///<param name="_root">Root for choosen mode</param>
+    private void LoopThroughTiles(string _mode, Transform _root)
+    {
+        float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
+        float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
+
+        Vector3 origin = usableZone.localScale / -0.2f;
+        _root.transform.localPosition += new Vector3(origin.x, 0, origin.z);
+        for (int j = (int)-reserved.bottom; j < y; j++)
+        {
+            for (int i = (int)-reserved.left; i < x; i++)
+            {
+                string tileID = "";
+                if (i >= 0 && j >= 0)
+                    tileID = $"{i + 1}/{j + 1}";
+                else if (i >= 0)
+                    tileID = $"{i + 1}/{j}";
+                else if (j >= 0)
+                    tileID = $"{i}/{j + 1}";
+                else
+                    tileID = $"{i}/{j}";
+
+                if (_mode == "name")
+                {
                     if (GameManager.gm.roomTemplates.ContainsKey(template))
-                        CustomTiles(tileText, GameManager.gm.roomTemplates[template], tileText.name);
+                    {
+                        GenerateTileName(_root, new Vector2(i, j) * GameManager.gm.tileSize,
+                                         tileID, GameManager.gm.roomTemplates[template]);
+                    }
                     else
-                        tileText.GetComponent<TextMeshPro>().text = tileText.name;
+                    {
+                        GenerateTileName(_root, new Vector2(i, j) * GameManager.gm.tileSize,
+                                         tileID, new ReadFromJson.SRoomFromJson());
+                    }
+                }
+                else if (_mode == "color")
+                {
+                    GenerateTileColor(_root, new Vector2(i, j) * GameManager.gm.tileSize,
+                                      tileID, GameManager.gm.roomTemplates[template]);
                 }
             }
         }
     }
 
     ///<summary>
-    ///
+    /// Instantiate a tileNameModel from gm and assign a name to it.
     ///</summary>
-    ///<param name=""></param>
-    ///<param name=""></param>
-    ///<param name=""></param>
-    private void CustomTiles(GameObject _tileText, ReadFromJson.SRoomFromJson _data, string _loc)
+    ///<param name="_root">The root to parent the tile</param>
+    ///<param name="_pos">The position of the current tile</param>
+    ///<param name="_id">The id of the current tile</param>
+    ///<param name="_data">The room data from json template. Empty one if no templated one</param>
+    private void GenerateTileName(Transform _root, Vector2 _pos, string _id, ReadFromJson.SRoomFromJson _data)
+    {
+        GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
+        tileText.name = $"Text_{_id}";
+        tileText.transform.SetParent(_root);
+        tileText.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
+        tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
+
+        // Select the right tile from _data.tiles
+        ReadFromJson.STiles tileData = new ReadFromJson.STiles();
+        if (!string.IsNullOrEmpty(_data.slug))
+        {
+            foreach (ReadFromJson.STiles tile in _data.tiles)
+            {
+                if (tile.location.Trim() == _id)
+                    tileData = tile;
+            }
+        }
+        if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
+            tileText.GetComponent<TextMeshPro>().text = tileData.label;
+        else
+            tileText.GetComponent<TextMeshPro>().text = _id;
+    }
+
+    ///<summary>
+    /// Instantiate a plane as a tile and assign a texture and/or a color to it.
+    ///</summary>
+    ///<param name="_root">The root to parent the tile</param>
+    ///<param name="_pos"> The position of the current tile</param>
+    ///<param name="_id">The id of the current tile</param>
+    ///<param name="_data">The room data from json template</param>
+    private void GenerateTileColor(Transform _root, Vector2 _pos, string _id, ReadFromJson.SRoomFromJson _data)
     {
         // Select the right tile from _data.tiles
         ReadFromJson.STiles tileData = new ReadFromJson.STiles();
         foreach (ReadFromJson.STiles tile in _data.tiles)
         {
-            if (tile.location.Trim() == _loc)
+            if (tile.location.Trim() == _id)
                 tileData = tile;
         }
         if (!string.IsNullOrEmpty(tileData.location))
         {
-            _tileText.GetComponent<TextMeshPro>().text = tileData.label;
             if (!string.IsNullOrEmpty(tileData.type) && tileData.type != "plain"
                 || !string.IsNullOrEmpty(tileData.color))
             {
-                _tileText.transform.localPosition += new Vector3(0, 0.002f, 0);
                 GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                tile.transform.parent = _tileText.transform;
+                tile.name = $"Color_{_id}";
+                tile.transform.parent = _root;
                 tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
-                tile.transform.localPosition = new Vector3(0, 0, 0.002f);
-                tile.transform.localEulerAngles = new Vector3(-90, 0, 0);
+                tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
                 if (!string.IsNullOrEmpty(tileData.type))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
@@ -150,7 +254,6 @@ public class Room : Building
                     {
                         rend.material = new Material(GameManager.gm.perfMat);
                         rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
-
                     }
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
@@ -171,9 +274,6 @@ public class Room : Building
                 }
             }
         }
-        else
-            _tileText.GetComponent<TextMeshPro>().text = _loc;
-
     }
 
     ///<summary>
@@ -220,8 +320,14 @@ public class Room : Building
             case "floor":
                 floor = _value;
                 break;
-            case "tiles":
-                ToggleZones(_value);
+            // case "tiles": // DEPRECIATED
+            //     ToggleZones(_value);
+            //     break;
+            case "tilesName":
+                ToggleTilesName(_value);
+                break;
+            case "tilesColor":
+                ToggleTilesColor(_value);
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");
@@ -241,6 +347,7 @@ public class Room : Building
     }
 
     ///<summary>
+    /// DEPRECIATED
     /// Display or hide zones and tiles edges (floor color will stay the technical one).
     ///</summary>
     ///<param name="_value">True of false value</param>

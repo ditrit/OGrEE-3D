@@ -284,7 +284,7 @@ public class GameManager : MonoBehaviour
         Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
-            currentRoom.ToggleTilesName();
+            // currentRoom.ToggleTilesName();
             AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
         }
         else

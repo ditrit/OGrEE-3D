@@ -142,18 +142,22 @@ public class Rack : Object
         }
         else if (_value == "true")
         {
-            uRoot = new GameObject("uRoot").transform;
-            uRoot.parent = transform;
-            uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
-            uRoot.localEulerAngles = Vector3.zero;
-            GenerateUColumn("rearLeft");
-            GenerateUColumn("rearRight");
-            GenerateUColumn("frontLeft");
-            GenerateUColumn("frontRight");
+            if (!uRoot)
+            {
+                uRoot = new GameObject("uRoot").transform;
+                uRoot.parent = transform;
+                uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
+                uRoot.localEulerAngles = Vector3.zero;
+                GenerateUColumn("rearLeft");
+                GenerateUColumn("rearRight");
+                GenerateUColumn("frontLeft");
+                GenerateUColumn("frontRight");
+            }
         }
         else
         {
-            Destroy(uRoot.gameObject);
+            if (uRoot)
+                Destroy(uRoot.gameObject);
         }
     }
     public void ToggleU()
