@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -61,7 +61,7 @@ public class ObjectGenerator : MonoBehaviour
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
         newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
+        newRack.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.posXY = _data.pos;

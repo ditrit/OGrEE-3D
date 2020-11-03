@@ -184,16 +184,7 @@ public class Room : Building
         {
             for (int i = (int)-reserved.left; i < x; i++)
             {
-                string tileID = "";
-                if (i >= 0 && j >= 0)
-                    tileID = $"{i + 1}/{j + 1}";
-                else if (i >= 0)
-                    tileID = $"{i + 1}/{j}";
-                else if (j >= 0)
-                    tileID = $"{i}/{j + 1}";
-                else
-                    tileID = $"{i}/{j}";
-
+                string tileID = $"{i}/{j}";
                 if (_mode == "name")
                 {
                     if (GameManager.gm.roomTemplates.ContainsKey(template))
