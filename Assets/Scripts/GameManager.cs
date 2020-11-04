@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
-    public GameObject deviceModel;
+    public GameObject labeledBoxModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
     public GameObject coordinateSystemModel;

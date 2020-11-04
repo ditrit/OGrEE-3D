@@ -318,11 +318,8 @@ public class ReadFromJson
     private void PopulateSlot(bool isSlot, SDeviceSlot _data, Transform _parent,
                                 Dictionary<string, string> _customColors)
     {
-        // GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.deviceModel);
-        if (isSlot)
-            MonoBehaviour.Destroy(go.GetComponent<Object>());
-
+        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
+        
         go.name = _data.location;
         go.transform.parent = _parent;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
@@ -343,11 +340,17 @@ public class ReadFromJson
 
         if (isSlot)
         {
+            // MonoBehaviour.Destroy(go.GetComponent<Object>());
             Slot s = go.AddComponent<Slot>();
-            // s.installed = _data.position;
             s.orient = _data.elemOrient;
             s.mandatory = _data.mandatory;
             s.labelPos = _data.labelPos;
+        }
+        else
+        {
+            Object obj =go.AddComponent<Object>();
+            obj.family = EObjFamily.device;
+            go.AddComponent<HierarchyName>();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
@@ -358,12 +361,7 @@ public class ReadFromJson
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        /*if (_data.color != null && _data.color == "@tenant")
-        {
-            Color parentColor = go.transform.parent.GetChild(0).GetComponent<Renderer>().material.color;
-            myColor = new Color(parentColor.r, parentColor.g, parentColor.b);
-        }
-        else */if (_data.color != null && _data.color.StartsWith("@"))
+        if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
@@ -376,9 +374,6 @@ public class ReadFromJson
         }
         else
             mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
-
-        if (!isSlot)
-            go.AddComponent<HierarchyName>();
     }
 
 }

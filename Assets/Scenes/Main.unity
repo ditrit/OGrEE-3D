@@ -1970,7 +1970,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!84 &276150016
+--- !u!84 &276470410
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4062,9 +4062,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2020-10-28 #9725784
-
-'
+  m_text: 'B: 2020-10-28 #bb7e19e'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4133,9 +4131,9 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 756622030}
-    characterCount: 23
+    characterCount: 22
     spriteCount: 0
-    spaceCount: 3
+    spaceCount: 2
     wordCount: 3
     linkCount: 0
     lineCount: 1
@@ -4710,41 +4708,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834332615}
   m_CullTransparentMesh: 0
---- !u!84 &872224190
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  serializedVersion: 3
-  m_Width: 984
-  m_Height: 554
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthFormat: 1
-  m_ColorFormat: 8
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
 --- !u!1 &879283137
 GameObject:
   m_ObjectHideFlags: 0
@@ -5840,8 +5803,8 @@ MonoBehaviour:
   sourceCamera: {fileID: 1079497875}
   outlineCamera: {fileID: 2097124688}
   outlineShaderMaterial: {fileID: 0}
-  renderTexture: {fileID: 276150016}
-  extraRenderTexture: {fileID: 872224190}
+  renderTexture: {fileID: 2096867590}
+  extraRenderTexture: {fileID: 276470410}
 --- !u!1 &1089484604
 GameObject:
   m_ObjectHideFlags: 0
@@ -9435,7 +9398,7 @@ MonoBehaviour:
     type: 3}
   rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
     type: 3}
-  deviceModel: {fileID: 6010235731161253863, guid: d1a4ff127d0468d478546da5050299dc,
+  labeledBoxModel: {fileID: 6010235731161253863, guid: 0786d4bf0612c9d49afd9c32608c9589,
     type: 3}
   tileNameModel: {fileID: 6720931301833660590, guid: a0ef6933771b78046b706dda050693ba,
     type: 3}
@@ -9443,7 +9406,8 @@ MonoBehaviour:
     type: 3}
   coordinateSystemModel: {fileID: 4803223096728100942, guid: 0701ceca210faed459f1958237ca986e,
     type: 3}
-  separatorModel: {fileID: 0}
+  separatorModel: {fileID: 6439851413883331907, guid: 2fec6d44e3c98f84f8a75b9cf071fd4e,
+    type: 3}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
   currentItems: []
@@ -12715,6 +12679,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2095268535}
   m_CullTransparentMesh: 0
+--- !u!84 &2096867590
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  serializedVersion: 3
+  m_Width: 984
+  m_Height: 554
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthFormat: 1
+  m_ColorFormat: 8
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
 --- !u!1 &2097124687
 GameObject:
   m_ObjectHideFlags: 0
@@ -12765,7 +12764,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: 1
-  m_TargetTexture: {fileID: 276150016}
+  m_TargetTexture: {fileID: 2096867590}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
