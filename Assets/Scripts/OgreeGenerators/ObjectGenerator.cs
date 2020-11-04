@@ -117,7 +117,7 @@ public class ObjectGenerator : MonoBehaviour
             {
                 if (comp.gameObject != rack.gameObject)
                 {
-                    Debug.Log($"[{rack.name}] => {comp.name}");
+                    // Debug.Log($"[{rack.name}] => {comp.name}");
                     GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
                                                 comp.gameObject);
                 }
@@ -336,7 +336,7 @@ public class ObjectGenerator : MonoBehaviour
             {
                 if (comp.gameObject != newDevice.gameObject)
                 {
-                    Debug.Log($"[{newDevice.name}] => {comp.name}");
+                    // Debug.Log($"[{newDevice.name}] => {comp.name}");
                     GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
                                                 comp.gameObject);
                 }

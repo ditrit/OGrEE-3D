@@ -169,10 +169,13 @@ public class BuildingGenerator : MonoBehaviour
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
         room.UpdateZonesColor();
 
-        if (!string.IsNullOrEmpty(_data.template))
+        if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
-            room.SetZones(new SMargin(GameManager.gm.roomTemplates[_data.template].reservedArea),
-                            new SMargin(GameManager.gm.roomTemplates[_data.template].technicalArea));
+            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_data.template];
+            room.SetZones(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
+
+            foreach (ReadFromJson.SSeparator sep in template.separators)
+                BuildSeparator(sep, newRoom.transform, room.walls.GetChild(0).localScale.y);
         }
 
         newRoom.AddComponent<HierarchyName>();
@@ -203,5 +206,38 @@ public class BuildingGenerator : MonoBehaviour
         wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -(_dim.z / 2 + _offset));
         wallRight.localPosition = new Vector3(_dim.x / 2 + _offset, wallFront.localScale.y / 2, 0);
         wallLeft.localPosition = new Vector3(-(_dim.x / 2 + _offset), wallFront.localScale.y / 2, 0);
+    }
+
+    ///<summary>
+    /// 
+    ///</summary>
+    ///<param name=""></param>
+    ///<param name=""></param>
+    ///<param name=""></param>
+    private void BuildSeparator(ReadFromJson.SSeparator _sepData, Transform _root, float _height)
+    {
+        Vector2 start = new Vector2(_sepData.pos1XYm[0], _sepData.pos1XYm[1]);
+        Vector2 stop = new Vector2(_sepData.pos2XYm[0], _sepData.pos2XYm[1]);
+        float length = Vector3.Distance(start, stop);
+        float angle = Vector3.Angle(start, stop);
+        Debug.Log($"[{_sepData.name}]=> {Vector3.SignedAngle(stop - start, Vector3.forward, Vector3.up)}");
+
+        GameObject separator = Instantiate(GameManager.gm.separatorModel);
+        separator.name = _sepData.name;
+        separator.transform.parent = _root;
+        
+        // Set textured box
+        separator.transform.GetChild(0).localScale = new Vector3(length, _height, 0.001f);
+        separator.transform.GetChild(0).localPosition = new Vector3(length, _height, 0) / 2;
+        Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
+        rend.material.mainTextureScale = new Vector2(length, _height) * 2;
+
+        // Place the separator in the right place
+        Vector3 roomScale = _root.GetComponent<Room>().technicalZone.localScale * -5;
+        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);       
+        separator.transform.localPosition += new Vector3(start.x, 0, start.y);
+
+        separator.transform.localEulerAngles = Vector3.zero;
+
     }
 }
