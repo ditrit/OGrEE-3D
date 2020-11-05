@@ -395,6 +395,8 @@ public class ConsoleController : MonoBehaviour
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             CreateRoom(str[1]);
+        else if (str[0] == "separator" || str[0] == "sp")
+            CreateSeparator(str[1]);
         else if (str[0] == "zones" || str[0] == "zo")
             SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
@@ -494,6 +496,29 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out infos.parent, out infos.name);
             if (infos.parent)
                 BuildingGenerator.instance.CreateRoom(infos);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create separator" command and call BuildingGenerator.CreateSeparator().
+    ///</summary>
+    ///<param name="_input">String with separator data to parse</param>
+    private void CreateSeparator(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
+        {
+            string[] data = _input.Split('@');
+
+            SSeparatorInfos infos = new SSeparatorInfos();
+            infos.pos1XYm = ParseVector2(data[1]);
+            infos.pos2XYm = ParseVector2(data[2]);
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                BuildingGenerator.instance.CreateSeparator(infos);
         }
         else
             AppendLogLine("Syntax error", "red");

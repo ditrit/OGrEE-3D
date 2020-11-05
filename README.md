@@ -27,6 +27,7 @@ OGREE 3D is a data-center viewer
         - [Create a Datacenter](#Create-a-Datacenter)
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
+        - [Create a Separator](#Create-a-Separator)
         - [Create a Rack](#Create-a-Rack)
         - [Create a Device](#Create-a-Device)
         - [Create a Tenant](#Create-a-Tenant)
@@ -164,6 +165,15 @@ Its name will be displayed in the center of the room in its local coordinates sy
 +ro:[name]@[pos]@[size]@[orientation]
 +ro:[name]@[pos]@[template]
 ```
+
+### Create a Separator  
+A separator is a wire mesh wall inside a room.  
+*`[pos1]` is the starting point of the separator in meter  
+`[pos1]` is the ending point of the separator in meter*  
+```
++separator:[name]@[pos1]@[pos2]
++sp:[name]@[pos1]@[pos2]
+```  
 
 ### Create a Rack
 Rack must be child of a room.  
