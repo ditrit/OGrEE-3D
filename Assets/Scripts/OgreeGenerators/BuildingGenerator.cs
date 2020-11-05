@@ -175,7 +175,7 @@ public class BuildingGenerator : MonoBehaviour
         if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
             ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_data.template];
-            room.SetZones(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
+            room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
             foreach (ReadFromJson.SSeparator sep in template.separators)
                 CreateSeparatorFromJson(sep, newRoom.transform);

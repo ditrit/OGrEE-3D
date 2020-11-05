@@ -638,34 +638,34 @@ public class ConsoleController : MonoBehaviour
             _input = _input.Replace("[", "");
             _input = _input.Replace("]", "");
             string[] data = _input.Split('@', ',');
-            if (data.Length == 8) // No path -> On current object
+            // if (data.Length == 8) // No path -> On current object
+            // {
+            //     Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+            //     if (currentRoom)
+            //     {
+            //         SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
+            //                                     float.Parse(data[2]), float.Parse(data[3]));
+            //         SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
+            //                                     float.Parse(data[6]), float.Parse(data[7]));
+            //         currentRoom.SetZones(resDim, techDim);
+            //     }
+            //     else
+            //         AppendLogLine("Selected object must be a room", "yellow");
+            // }
+            // else // There is an object path
+            // {
+            GameObject room = GameManager.gm.FindByAbsPath(data[0]);
+            if (room)
             {
-                Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
-                if (currentRoom)
-                {
-                    SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
-                                                float.Parse(data[2]), float.Parse(data[3]));
-                    SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
-                                                float.Parse(data[6]), float.Parse(data[7]));
-                    currentRoom.SetZones(resDim, techDim);
-                }
-                else
-                    AppendLogLine("Selected object must be a room", "yellow");
+                SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                            float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
+                SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
+                                            float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
+                room.GetComponent<Room>().SetAreas(resDim, techDim);
             }
-            else // There is an object path
-            {
-                GameObject room = GameManager.gm.FindByAbsPath(data[0]);
-                if (room)
-                {
-                    SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                                float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-                    SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                                float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-                    room.GetComponent<Room>().SetZones(resDim, techDim);
-                }
-                else
-                    AppendLogLine("Error: path doesn't exist", "red");
-            }
+            else
+                AppendLogLine("Error: path doesn't exist", "red");
+            // }
         }
         else
             AppendLogLine("Syntax error", "red");

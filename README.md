@@ -168,8 +168,8 @@ Its name will be displayed in the center of the room in its local coordinates sy
 
 ### Create a Separator  
 A separator is a wire mesh wall inside a room.  
-*`[pos1]` is the starting point of the separator in meter  
-`[pos1]` is the ending point of the separator in meter*  
+*`[pos1]` is a vector2 : the starting point of the separator in meter  
+`[pos1]` is a vector2 :the ending point of the separator in meter*  
 ```
 +separator:[name]@[pos1]@[pos2]
 +sp:[name]@[pos1]@[pos2]
@@ -238,8 +238,7 @@ You can modify areas only if the room has no racks in it.
 *`[reserved]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)  
 `[technical]` is a vector4: [front,back,right,left] (tile,tile,tile,tile)*  
 ```
-+zones:[reserved]@[technical]  
-+zones:[full name]@[reserved]@[technical]
+[room].areas=[reserved]@[technical]  
 ```
 
 ### Modify object's attribute

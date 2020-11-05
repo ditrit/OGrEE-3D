@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -35,11 +36,11 @@ public class Room : Building
     }
 
     ///<summary>
-    /// Set usable/reserved/technical zones.
+    /// Set usable/reserved/technical areas.
     ///</summary>
     ///<param name="_resDim">The dimensions of the reserved zone</param>
     ///<param name="_techDim">The dimensions of the technical zone</param>
-    public void SetZones(SMargin _resDim, SMargin _techDim)
+    public void SetAreas(SMargin _resDim, SMargin _techDim)
     {
         if (transform.GetComponentInChildren<Rack>())
         {
@@ -64,7 +65,6 @@ public class Room : Building
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
     }
-
 
     ///<summary>
     /// Toggle tiles name.
@@ -330,9 +330,6 @@ public class Room : Building
             case "description":
                 description = _value;
                 break;
-            // case "nbfloors":
-            //     nbFloors = _value;
-            //     break;
             case "tenant":
                 if (GameManager.gm.tenants.ContainsKey(_value))
                     tenant = GameManager.gm.tenants[_value];
@@ -342,9 +339,9 @@ public class Room : Building
             case "floor":
                 floor = _value;
                 break;
-            // case "tiles": // DEPRECIATED
-            //     ToggleZones(_value);
-            //     break;
+            case "areas":
+                ParseAreas(_value);
+                break;
             case "tilesName":
                 ToggleTilesName(_value);
                 break;
@@ -369,26 +366,26 @@ public class Room : Building
     }
 
     ///<summary>
-    /// DEPRECIATED
-    /// Display or hide zones and tiles edges (floor color will stay the technical one).
+    /// Parse a "areas" command and call SetZones().
     ///</summary>
-    ///<param name="_value">True of false value</param>
-    private void ToggleZones(string _value)
+    ///<param name="_input">String with zones data to parse</param>
+    private void ParseAreas(string _input)
     {
-        if (_value == "true")
+        string patern = "^\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
         {
-            usableZone.GetComponent<Renderer>().enabled = true;
-            reservedZone.GetComponent<Renderer>().enabled = true;
-            tilesEdges.GetComponent<Renderer>().enabled = true;
-        }
-        else if (_value == "false")
-        {
-            usableZone.GetComponent<Renderer>().enabled = false;
-            reservedZone.GetComponent<Renderer>().enabled = false;
-            tilesEdges.GetComponent<Renderer>().enabled = false;
+            _input = _input.Replace("[", "");
+            _input = _input.Replace("]", "");
+            string[] data = _input.Split('@', ',');
+
+            SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
+                                        float.Parse(data[2]), float.Parse(data[3]));
+            SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
+                                        float.Parse(data[6]), float.Parse(data[7]));
+            SetAreas(resDim, techDim);
         }
         else
-            GameManager.gm.AppendLogLine("tiles value must be true of false", "yellow");
+            GameManager.gm.AppendLogLine("Syntax error", "red");
     }
 
 }
