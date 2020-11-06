@@ -63,6 +63,9 @@ public class Rack : Object
             case "U":
                 ToggleU(_value);
                 break;
+            case "localCS":
+                ToggleCS(_value);
+                break;
             default:
                 GameManager.gm.AppendLogLine($"[Rack] {name}: unknowed attribute to update.", "yellow");
                 break;
