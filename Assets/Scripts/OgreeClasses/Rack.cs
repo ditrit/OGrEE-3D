@@ -14,16 +14,10 @@ public class Rack : Object
         family = EObjFamily.rack;
     }
 
-    // protected override void OnDestroy()
-    // {
-    //     base.OnDestroy();
-    // }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Rack>() && GameManager.gm.currentItems.Contains(gameObject))
         {
-            // Debug.Log($"{name}.OnTriggerEnter() with {other.name}");
             GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
             transform.localPosition = originalLocalPos;
             posXY = originalPosXY;

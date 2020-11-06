@@ -48,11 +48,11 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
             extras.Add(extraKeys[i], extraValues[i]);
     }
 
-    protected virtual void OnDestroy()
-    {
-        if (GetComponent<HierarchyName>())
-            GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
-    }
+    // protected virtual void OnDestroy()
+    // {
+    //     if (GetComponent<HierarchyName>())
+    //         GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+    // }
 
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
