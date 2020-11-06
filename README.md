@@ -19,7 +19,7 @@ OGREE 3D is a data-center viewer
         - [Load template from JSON](#Load-template-from-JSON)
     - [Hierarchy commands](#Hierarchy-commands)
         - [Select an object](#Select-an-object)
-        - [### Select child / children object](####Select-child-/-children-object)
+        - [Select child / children object](#Select-child-/-children-object)
         - [Select parent object](#Select-parent-object)
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
@@ -38,6 +38,10 @@ OGREE 3D is a data-center viewer
             - [Display room’s tiles name or color](#Display-room’s-tiles-name-or-color) 
             - [Display rack's U helpers](#Display-rack's-U-helpers) 
             - [Display object's slots display](#Display-object's-slots-display) 
+    - [Manipulate UI](#Manipulate-UI)
+        - [Enable/Disable wireframe mode](#Enable/Disable-wireframe-mode)
+        - [Display/Hide infos panel](#Display/Hide-infos-panel)
+        - [Display/Hide debug panel](#Display/Hide-debug-panel)
     - [Manipulate camera](#Manipulate-camera)
         - [Move camera](#Move-camera)
         - [Translate camera](#Translate-camera)
@@ -271,6 +275,22 @@ Display or hide U location dummies to simply identify objects in a rack.
 #### Display object's slots display
 ```
 [name].slots=[true|false]
+```  
+
+## Manipulate UI
+### Enable/Disable wireframe mode
+```
+ui.wireframe=[true|false]
+```  
+
+### Display/Hide infos panel
+```
+ui.infos=[true|false]
+```  
+
+### Display/Hide debug panel
+```
+ui.debug=[true|false]
 ```  
 
 ## Manipulate camera

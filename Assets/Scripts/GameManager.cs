@@ -16,7 +16,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
+    
+    [Header("Panels")]
     [SerializeField] private GameObject menu = null;
+    [SerializeField] private GameObject infosPanel = null;
+    [SerializeField] private GameObject debugPanel = null;
+
+    [Header("Materials")]
     public Material defaultMat;
     public Material wireframeMat;
     public Material perfMat;
@@ -392,6 +398,24 @@ public class GameManager : MonoBehaviour
         else
             r.material = GameManager.gm.defaultMat;
         r.material.color = color;
+    }
+
+    ///<summary>
+    /// Set animator triger of _panel according to its current state and _value
+    ///</summary>
+    ///<param name="_panel">The panel to modify</param>
+    ///<param name="_value">Should the panel be "on"?</param>
+    public void MovePanel(string _panel, bool _value)
+    {
+        Animator anim = null;
+        if (_panel == "infos")
+            anim = infosPanel.GetComponent<Animator>();
+        else if (_panel == "debug")
+            anim = debugPanel.GetComponent<Animator>();
+        
+        if ((_value == true && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOff"))
+            || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
+            anim.SetTrigger("Transition");
     }
 
     ///<summary>
