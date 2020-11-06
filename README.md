@@ -305,7 +305,7 @@ Move the camera to the given point.
 *`[position]` is a Vector3: the new position of the camera  
 `[rotation]` is a Vector2: the rotation of the camera*  
 ```
-camera.move@[position]@[rotation]
+camera.move=[position]@[rotation]
 ```  
 
 ### Translate camera
@@ -313,14 +313,14 @@ Move the camera to the given destination. You can stack several destinations, th
 *`[position]` is a Vector3: the position of the camera's destination  
 `[rotation]` is a Vector2: the rotation of the camera's destination*  
 ```
-camera.translate@[position]@[rotation]
+camera.translate=[position]@[rotation]
 ```  
 
 ### Wait between two translations 
 You can define a delay between two camera translations.  
 *`[time]` is the time to wait in seconds*  
 ```
-camera.wait@[time]
+camera.wait=[time]
 ```   
 
 ## Examples
