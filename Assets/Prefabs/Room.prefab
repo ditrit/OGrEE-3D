@@ -80,6 +80,7 @@ MonoBehaviour:
   floorHeight: 0
   floorUnit: 0
   floor: 
+  template: 
   usableZone: {fileID: 1754386266534505231}
   reservedZone: {fileID: 18736379438063463}
   technicalZone: {fileID: 2859817786028861529}
@@ -238,7 +239,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1607862739739459084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.004, z: 0}
+  m_LocalPosition: {x: 0, y: 0.005, z: 0}
   m_LocalScale: {x: 0.1, y: 1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 4174214755756367569}

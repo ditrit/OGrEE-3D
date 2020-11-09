@@ -16,9 +16,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
+    
+    [Header("Panels")]
     [SerializeField] private GameObject menu = null;
+    [SerializeField] private GameObject infosPanel = null;
+    [SerializeField] private GameObject debugPanel = null;
+
+    [Header("Materials")]
     public Material defaultMat;
     public Material wireframeMat;
+    public Material perfMat;
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -29,10 +36,11 @@ public class GameManager : MonoBehaviour
     public GameObject buildingModel;
     public GameObject roomModel;
     public GameObject rackModel;
-    public GameObject deviceModel;
+    public GameObject labeledBoxModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
-    public GameObject CoordinateSystemModel;
+    public GameObject coordinateSystemModel;
+    public GameObject separatorModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
@@ -278,13 +286,45 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
     ///</summary>
-    public void ToggleTileNames()
+    public void ToggleTilesName()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
-            AppendLogLine($"Tiles names toggled for {currentItems[0].name}.", "yellow");
+            AppendLogLine($"Tiles name toggled for {currentItems[0].name}.", "yellow");
+        }
+        else
+            AppendLogLine("Selected item must be a room", "red");
+    }
+
+    ///<summary>
+    /// Called by GUI button: If currentItem is a room, toggle tiles color.
+    ///</summary>
+    public void ToggleTilesColor()
+    {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
+        Room currentRoom = currentItems[0].GetComponent<Room>();
+        if (currentRoom)
+        {
+            if (!roomTemplates.ContainsKey(currentRoom.template))
+            {
+                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
+                return;
+            }
+            currentRoom.ToggleTilesColor();
+            AppendLogLine($"Tiles color toggled for {currentItems[0].name}.", "yellow");
         }
         else
             AppendLogLine("Selected item must be a room", "red");
@@ -295,6 +335,12 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         Rack rack = currentItems[0].GetComponent<Rack>();
         if (rack)
         {
@@ -310,6 +356,12 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void GuiToggleCS()
     {
+        if (currentItems.Count == 0)
+        {
+            AppendLogLine("Empty selection.", "yellow");
+            return;
+        }
+
         foreach (GameObject obj in currentItems)
         {
             if (obj.GetComponent<Object>())
@@ -346,6 +398,24 @@ public class GameManager : MonoBehaviour
         else
             r.material = GameManager.gm.defaultMat;
         r.material.color = color;
+    }
+
+    ///<summary>
+    /// Set animator triger of _panel according to its current state and _value
+    ///</summary>
+    ///<param name="_panel">The panel to modify</param>
+    ///<param name="_value">Should the panel be "on"?</param>
+    public void MovePanel(string _panel, bool _value)
+    {
+        Animator anim = null;
+        if (_panel == "infos")
+            anim = infosPanel.GetComponent<Animator>();
+        else if (_panel == "debug")
+            anim = debugPanel.GetComponent<Animator>();
+        
+        if ((_value == true && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOff"))
+            || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
+            anim.SetTrigger("Transition");
     }
 
     ///<summary>

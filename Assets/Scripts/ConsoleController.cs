@@ -118,10 +118,12 @@ public class ConsoleController : MonoBehaviour
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
+        else if (_input.StartsWith("ui."))
+            ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
             MoveCamera(_input.Substring(7));
-        else if (_input.StartsWith("delay="))
-            SetTimer(_input.Substring(6));
+        // else if (_input.StartsWith("delay="))
+        //     SetTimer(_input.Substring(6));
         else if (_input.StartsWith("zoom"))
             SetZoom(_input.Substring(4));
         else if (_input.Contains(".") && _input.Contains("="))
@@ -395,8 +397,8 @@ public class ConsoleController : MonoBehaviour
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             CreateRoom(str[1]);
-        else if (str[0] == "zones" || str[0] == "zo")
-            SetRoomZones(str[1]);
+        else if (str[0] == "separator" || str[0] == "sp")
+            CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
@@ -494,6 +496,29 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out infos.parent, out infos.name);
             if (infos.parent)
                 BuildingGenerator.instance.CreateRoom(infos);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create separator" command and call BuildingGenerator.CreateSeparator().
+    ///</summary>
+    ///<param name="_input">String with separator data to parse</param>
+    private void CreateSeparator(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, patern))
+        {
+            string[] data = _input.Split('@');
+
+            SSeparatorInfos infos = new SSeparatorInfos();
+            infos.pos1XYm = ParseVector2(data[1]);
+            infos.pos2XYm = ParseVector2(data[2]);
+            IsolateParent(data[0], out infos.parent, out infos.name);
+            if (infos.parent)
+                BuildingGenerator.instance.CreateSeparator(infos);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -602,51 +627,6 @@ public class ConsoleController : MonoBehaviour
     #region SetMethods
 
     ///<summary>
-    /// Parse a "set zone" command and call corresponding Room.SetZones().
-    ///</summary>
-    ///<param name="_input">String with zones data to parse</param>
-    private void SetRoomZones(string _input)
-    {
-        string patern = "^([^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, patern))
-        {
-            _input = _input.Replace("[", "");
-            _input = _input.Replace("]", "");
-            string[] data = _input.Split('@', ',');
-            if (data.Length == 8) // No path -> On current object
-            {
-                Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
-                if (currentRoom)
-                {
-                    SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
-                                                float.Parse(data[2]), float.Parse(data[3]));
-                    SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
-                                                float.Parse(data[6]), float.Parse(data[7]));
-                    currentRoom.SetZones(resDim, techDim);
-                }
-                else
-                    AppendLogLine("Selected object must be a room", "yellow");
-            }
-            else // There is an object path
-            {
-                GameObject room = GameManager.gm.FindByAbsPath(data[0]);
-                if (room)
-                {
-                    SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                                float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-                    SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-                                                float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-                    room.GetComponent<Room>().SetZones(resDim, techDim);
-                }
-                else
-                    AppendLogLine("Error: path doesn't exist", "red");
-            }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
-    ///<summary>
     /// Parse a "set attribute" command and call corresponding SetAttribute() method according to target class
     ///</summary>
     ///<param name="input">String with attribute to modify data</param>
@@ -727,10 +707,10 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void MoveCamera(string _input)
     {
-        string pattern = "^(move|translate|wait)@(\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]|[0-9.]+)$";
+        string pattern = "^(move|translate|wait)=(\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]|[0-9.]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
-            string[] data = _input.Split('@');
+            string[] data = _input.Split('=', '@');
             CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
             switch (data[0])
             {
@@ -748,6 +728,46 @@ public class ConsoleController : MonoBehaviour
                     break;
             }
         }
+        else
+            AppendLogLine("Syntax error", "red");
+
+        isReady = true;
+    }
+
+    ///<summary>
+    /// Parse an ui command and call the corresponding GameManager method
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
+    private void ParseUiCommand(string _input)
+    {
+        string pattern = "^(wireframe|infos|debug)=(true|false)$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('=');
+            switch (data[0])
+            {
+                case "wireframe":
+                    if (data[1] == "true")
+                        GameManager.gm.ToggleRacksMaterials(true);
+                    else
+                        GameManager.gm.ToggleRacksMaterials(false);
+                    break;
+                case "infos":
+                    if (data[1] == "true")
+                        GameManager.gm.MovePanel("infos", true);
+                    else
+                        GameManager.gm.MovePanel("infos", false);
+                    break;
+                case "debug":
+                    if (data[1] == "true")
+                        GameManager.gm.MovePanel("debug", true);
+                    else
+                        GameManager.gm.MovePanel("debug", false);
+                    break;
+            }
+        }
+        else if (Regex.IsMatch(_input, "^delay=[0-9.]+$"))
+            SetTimer(_input.Substring(_input.IndexOf('=') + 1));
         else
             AppendLogLine("Syntax error", "red");
 

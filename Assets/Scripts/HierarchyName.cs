@@ -5,10 +5,16 @@ using UnityEngine;
 public class HierarchyName : MonoBehaviour
 {
     public string fullname;
-    
+
     private void OnEnable()
     {
         UpdateHierarchyName();
+        // Should also add to allItems?
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.gm.allItems.Remove(fullname);
     }
 
     ///<summary>
@@ -41,7 +47,7 @@ public class HierarchyName : MonoBehaviour
             if (parent && parent.GetComponent<HierarchyName>())
                 parentsName.Add(parent.name);
         }
-        
+
         foreach (string str in parentsName)
             fullname = $"{str}.{fullname}";
     }

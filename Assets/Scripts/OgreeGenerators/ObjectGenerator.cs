@@ -61,7 +61,7 @@ public class ObjectGenerator : MonoBehaviour
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
         newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += new Vector3(_data.pos.x - 1, 0, _data.pos.y - 1) * GameManager.gm.tileSize;
+        newRack.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.posXY = _data.pos;
@@ -110,6 +110,20 @@ public class ObjectGenerator : MonoBehaviour
         newRack.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newRack);
 
+        if (!string.IsNullOrEmpty(_data.template))
+        {
+            Object[] components = rack.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
+            {
+                if (comp.gameObject != rack.gameObject)
+                {
+                    // Debug.Log($"[{rack.name}] => {comp.name}");
+                    GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
+                                                comp.gameObject);
+                }
+            }
+        }
+
         return rack;
     }
 
@@ -147,7 +161,8 @@ public class ObjectGenerator : MonoBehaviour
             //+chassis:[name]@[posU]@[sizeU]
             if (string.IsNullOrEmpty(_data.template))
             {
-                newDevice = Instantiate(GameManager.gm.deviceModel);
+                newDevice = Instantiate(GameManager.gm.labeledBoxModel);
+                newDevice.AddComponent<Object>();
                 newDevice.transform.parent = _data.parent;
                 newDevice.transform.GetChild(0).localScale = new Vector3(_data.parent.GetChild(0).localScale.x,
                                                                 _data.sizeU * GameManager.gm.uSize,
@@ -196,7 +211,7 @@ public class ObjectGenerator : MonoBehaviour
             }
             foreach (Transform child in _data.parent)
             {
-                if (child.name == _data.slot || (i > 0 && i < max))
+                if ((child.name == _data.slot || (i > 0 && i < max)) && child.GetComponent<Slot>())
                 {
                     takenSlots.Add(child.GetComponent<Slot>());
                     i++;
@@ -211,7 +226,8 @@ public class ObjectGenerator : MonoBehaviour
                 //+chassis:[name]@[slot]@[sizeU]
                 if (string.IsNullOrEmpty(_data.template))
                 {
-                    newDevice = Instantiate(GameManager.gm.deviceModel);
+                    newDevice = Instantiate(GameManager.gm.labeledBoxModel);
+                    newDevice.AddComponent<Object>();
                     newDevice.transform.parent = _data.parent;
                     newDevice.transform.GetChild(0).localScale = new Vector3(slot.GetChild(0).localScale.x,
                                                                                 _data.sizeU * slot.GetChild(0).localScale.y,
@@ -312,6 +328,20 @@ public class ObjectGenerator : MonoBehaviour
 
         newDevice.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newDevice);
+
+        if (!string.IsNullOrEmpty(_data.template))
+        {
+            Object[] components = newDevice.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
+            {
+                if (comp.gameObject != newDevice.gameObject)
+                {
+                    // Debug.Log($"[{newDevice.name}] => {comp.name}");
+                    GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
+                                                comp.gameObject);
+                }
+            }
+        }
 
         return newDevice.GetComponent<Object>();
     }

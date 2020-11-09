@@ -48,11 +48,11 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
             extras.Add(extraKeys[i], extraValues[i]);
     }
 
-    protected virtual void OnDestroy()
-    {
-        if (GetComponent<HierarchyName>())
-            GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
-    }
+    // protected virtual void OnDestroy()
+    // {
+    //     if (GetComponent<HierarchyName>())
+    //         GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
+    // }
 
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
@@ -89,6 +89,9 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
                 break;
             case "slots":
                 ToggleSlots(_value);
+                break;
+            case "localCS":
+                ToggleCS(_value);
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
@@ -189,14 +192,45 @@ public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackRece
             GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
         }
         else
+            localCS = PopLocalCS(csName);
+    }
+
+    ///<summary>
+    /// Display or hide the local coordinate system
+    ///</summary>
+    ///<param name="_value">true of false value</param>
+    public void ToggleCS(string _value)
+    {
+        if (_value != "true" && _value != "false")
         {
-            localCS = Instantiate(GameManager.gm.CoordinateSystemModel);
-            localCS.name = csName;
-            localCS.transform.parent = transform;
-            localCS.transform.localScale = Vector3.one;
-            localCS.transform.localEulerAngles = Vector3.zero;
-            localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
-            GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
+            GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
+            return;
         }
+
+        string csName = "localCS";
+        GameObject localCS = transform.Find(csName)?.gameObject;
+        if (localCS && _value == "false")
+        {
+            Destroy(localCS);
+            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
+        }
+        else if (!localCS && _value == "true")
+            localCS = PopLocalCS(csName);
+    }
+
+    ///<summary>
+    /// Create a local Coordinate System for this object.
+    ///</summary>
+    ///<param name="_name">The name of the local CS</param>
+    private GameObject PopLocalCS(string _name)
+    {
+        GameObject localCS = Instantiate(GameManager.gm.coordinateSystemModel);
+        localCS.name = _name;
+        localCS.transform.parent = transform;
+        localCS.transform.localScale = Vector3.one;
+        localCS.transform.localEulerAngles = Vector3.zero;
+        localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
+        GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
+        return localCS;
     }
 }

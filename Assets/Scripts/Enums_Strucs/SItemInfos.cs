@@ -56,3 +56,11 @@ public struct SRoomInfos
     public string template;
 }
 
+public struct SSeparatorInfos
+{
+    public string name;
+    public Vector2 pos1XYm;
+    public Vector2 pos2XYm;
+    public Transform parent;
+}
+

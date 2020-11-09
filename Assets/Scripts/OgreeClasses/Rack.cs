@@ -14,16 +14,10 @@ public class Rack : Object
         family = EObjFamily.rack;
     }
 
-    // protected override void OnDestroy()
-    // {
-    //     base.OnDestroy();
-    // }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Rack>() && GameManager.gm.currentItems.Contains(gameObject))
         {
-            // Debug.Log($"{name}.OnTriggerEnter() with {other.name}");
             GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
             transform.localPosition = originalLocalPos;
             posXY = originalPosXY;
@@ -57,6 +51,9 @@ public class Rack : Object
             case "tenant":
                 AssignTenant(_value);
                 break;
+            case "color":
+                SetColor(_value);
+                break;
             case "alpha":
                 UpdateAlpha(_value);
                 break;
@@ -65,6 +62,9 @@ public class Rack : Object
                 break;
             case "U":
                 ToggleU(_value);
+                break;
+            case "localCS":
+                ToggleCS(_value);
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Rack] {name}: unknowed attribute to update.", "yellow");
@@ -139,18 +139,22 @@ public class Rack : Object
         }
         else if (_value == "true")
         {
-            uRoot = new GameObject("uRoot").transform;
-            uRoot.parent = transform;
-            uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
-            uRoot.localEulerAngles = Vector3.zero;
-            GenerateUColumn("rearLeft");
-            GenerateUColumn("rearRight");
-            GenerateUColumn("frontLeft");
-            GenerateUColumn("frontRight");
+            if (!uRoot)
+            {
+                uRoot = new GameObject("uRoot").transform;
+                uRoot.parent = transform;
+                uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
+                uRoot.localEulerAngles = Vector3.zero;
+                GenerateUColumn("rearLeft");
+                GenerateUColumn("rearRight");
+                GenerateUColumn("frontLeft");
+                GenerateUColumn("frontRight");
+            }
         }
         else
         {
-            Destroy(uRoot.gameObject);
+            if (uRoot)
+                Destroy(uRoot.gameObject);
         }
     }
     public void ToggleU()
