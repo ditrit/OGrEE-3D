@@ -122,8 +122,8 @@ public class ConsoleController : MonoBehaviour
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
             MoveCamera(_input.Substring(7));
-        else if (_input.StartsWith("delay="))
-            SetTimer(_input.Substring(6));
+        // else if (_input.StartsWith("delay="))
+        //     SetTimer(_input.Substring(6));
         else if (_input.StartsWith("zoom"))
             SetZoom(_input.Substring(4));
         else if (_input.Contains(".") && _input.Contains("="))
@@ -399,8 +399,6 @@ public class ConsoleController : MonoBehaviour
             CreateRoom(str[1]);
         else if (str[0] == "separator" || str[0] == "sp")
             CreateSeparator(str[1]);
-        // else if (str[0] == "zones" || str[0] == "zo")
-        //     SetRoomZones(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
@@ -629,34 +627,6 @@ public class ConsoleController : MonoBehaviour
     #region SetMethods
 
     ///<summary>
-    /// Parse a "set zone" command and call corresponding Room.SetZones().
-    ///</summary>
-    ///<param name="_input">String with zones data to parse</param>
-    // private void SetRoomZones(string _input)
-    // {
-    //     string patern = "^([^@\\s]+@)*\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-    //     if (Regex.IsMatch(_input, patern))
-    //     {
-    //         _input = _input.Replace("[", "");
-    //         _input = _input.Replace("]", "");
-    //         string[] data = _input.Split('@', ',');
-    //         GameObject room = GameManager.gm.FindByAbsPath(data[0]);
-    //         if (room)
-    //         {
-    //             SMargin resDim = new SMargin(float.Parse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-    //                                         float.Parse(data[3], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[4], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-    //             SMargin techDim = new SMargin(float.Parse(data[5], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[6], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture),
-    //                                         float.Parse(data[7], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture), float.Parse(data[8], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture));
-    //             room.GetComponent<Room>().SetAreas(resDim, techDim);
-    //         }
-    //         else
-    //             AppendLogLine("Error: path doesn't exist", "red");
-    //     }
-    //     else
-    //         AppendLogLine("Syntax error", "red");
-    // }
-
-    ///<summary>
     /// Parse a "set attribute" command and call corresponding SetAttribute() method according to target class
     ///</summary>
     ///<param name="input">String with attribute to modify data</param>
@@ -770,8 +740,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void ParseUiCommand(string _input)
     {
-        string patern = "^(wireframe|infos|debug)=(true|false)$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^(wireframe|infos|debug)=(true|false)$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('=');
             switch (data[0])
@@ -796,6 +766,8 @@ public class ConsoleController : MonoBehaviour
                     break;
             }
         }
+        else if (Regex.IsMatch(_input, "^delay=[0-9.]+$"))
+            SetTimer(_input.Substring(_input.IndexOf('=') + 1));
         else
             AppendLogLine("Syntax error", "red");
 

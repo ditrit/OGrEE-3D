@@ -284,6 +284,12 @@ Display or hide U location dummies to simply identify objects in a rack.
 ```  
 
 ## Manipulate UI
+### Delay commands
+You can put delay before each command: up to 2 seconds.  
+```
+ui.delay=[time]
+```  
+
 ### Enable/Disable wireframe mode
 ```
 ui.wireframe=[true|false]
@@ -325,112 +331,111 @@ camera.wait=[time]
 
 ## Examples
 ```
-+customer:DEMO
-DEMO.mainContact=Ced
-DEMO.mainPhone=0612345678
-DEMO.mainEmail=ced@ogree3D.com
++cu:DEMO
+    DEMO.mainContact=Ced
+    DEMO.mainPhone=0612345678
+    DEMO.mainEmail=ced@ogree3D.com
 
-+tenant:Marcus@42ff42
-Marcus.mainContact=Marcus Pandora
-Marcus.mainPhone=0666666666
-Marcus.mainEmail=marcus@pandora.com
++tn:Marcus@42ff42
+    Marcus.mainContact=Marcus Pandora
+    Marcus.mainPhone=0666666666
+    Marcus.mainEmail=marcus@pandora.com
 
 +tenant:Billy@F0C300
 
-+datacenter:ALPHA@NW
-DEMO.ALPHA.comment=This is a demo...
-DEMO.ALPHA.address=1 rue bidule
-DEMO.ALPHA.zipcode=42000
-DEMO.ALPHA.city=Truc
-DEMO.ALPHA.country=FRANCE
-DEMO.ALPHA.gps=[1,2,0]
-DEMO.ALPHA.usableColor=5BDCFF
-DEMO.ALPHA.reservedColor=AAAAAA
-DEMO.ALPHA.technicalColor=D0FF78
++dc:DEMO.ALPHA@NW
+    DEMO.ALPHA.comment=This is a demo...
+    DEMO.ALPHA.address=1 rue bidule
+    DEMO.ALPHA.zipcode=42000
+    DEMO.ALPHA.city=Truc
+    DEMO.ALPHA.country=FRANCE
+    DEMO.ALPHA.gps=[1,2,0]
+    DEMO.ALPHA.usableColor=5BDCFF
+    DEMO.ALPHA.reservedColor=AAAAAA
+    DEMO.ALPHA.technicalColor=D0FF78
 
-// Building A ( with full path only)
+// Building A
 
-+building:/DEMO.ALPHA.A@[0,0,0]@[12,12,5]
-DEMO.ALPHA.A.description=Building A
-DEMO.ALPHA.A.nbFloors=1
-+ro:/DEMO.ALPHA.A.R0_EN@[6,6,0]@[4.2,5.4,1]@EN
-+ro:/DEMO.ALPHA.A.R0_NW@[6,6,0]@[4.2,5.4,1]@NW
-+ro:/DEMO.ALPHA.A.R0_WS@[6,6,0]@[4.2,5.4,1]@WS
-+ro:/DEMO.ALPHA.A.R0_SE@[6,6,0]@[4.2,5.4,1]@SE
++bd:DEMO.ALPHA.A@[0,0,0]@[12,12,5]
+    DEMO.ALPHA.A.description=Building A
+    DEMO.ALPHA.A.nbFloors=1
++ro:DEMO.ALPHA.A.R0_EN@[6,6,0]@[4.2,5.4,1]@EN
++ro:DEMO.ALPHA.A.R0_NW@[6,6,0]@[4.2,5.4,1]@NW
++ro:DEMO.ALPHA.A.R0_WS@[6,6,0]@[4.2,5.4,1]@WS
++ro:DEMO.ALPHA.A.R0_SE@[6,6,0]@[4.2,5.4,1]@SE
 
-+rk:/DEMO.ALPHA.A.R0_EN.TEST_EN@[ 1,1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.A.R0_NW.TEST_NW@[1 ,1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.A.R0_WS.TEST_WS@[1, 1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.A.R0_SE.TEST_SE@[1,1 ]@[60,120,42]@front
++rk:DEMO.ALPHA.A.R0_EN.TEST_EN@[ 1,1]@[60,120,42]@front
++rk:DEMO.ALPHA.A.R0_NW.TEST_NW@[1 ,1]@[60,120,42]@front
++rk:DEMO.ALPHA.A.R0_WS.TEST_WS@[1, 1]@[60,120,42]@front
++rk:DEMO.ALPHA.A.R0_SE.TEST_SE@[1,1 ]@[60,120,42]@front
 
-// Building B (with relative path)
+// Building B
 
-+bd:B@[-30,10,0]@[25,29.4,5]
-DEMO.ALPHA.B.description=Building B
-DEMO.ALPHA.B.nbFloors=1
++bd:DEMO.ALPHA.B@[-30,10,0]@[25,29.4,5]
+    DEMO.ALPHA.B.description=Building B
+    DEMO.ALPHA.B.nbFloors=1
 
-// R1 will stay the selected object
-+room:R1@[0,0,0]@[22.8,19.8,4]@NW
-+zones:[2,1,5,2]@[3,3,1,1]
-DEMO.ALPHA.B.R1.description=First room
++ro:DEMO.ALPHA.B.R1@[0,0,0]@[22.8,19.8,4]@NW
+    DEMO.ALPHA.B.R1.areas=[2,1,5,2]@[3,3,1,1]
+    DEMO.ALPHA.B.R1.description=First room
 
-+ro:/DEMO.ALPHA.B.R2@[22.8,19.8,0]@[9.6,22.8,3]@WS
-+zones:/DEMO.ALPHA.B.R2@[3,1,1,3]@[5,0,0,0]
-DEMO.ALPHA.B.R2.description=Second room, owned by Marcus
-DEMO.ALPHA.B.R2.tenant=Marcus
++ro:DEMO.ALPHA.B.R2@[22.8,19.8,0]@[9.6,22.8,3]@WS
+    DEMO.ALPHA.B.R2.areas=[3,1,1,3]@[5,0,0,0]
+    DEMO.ALPHA.B.R2.description=Second room, owned by Marcus
+    DEMO.ALPHA.B.R2.tenant=Marcus
 
 // Racks for R1
 
-+rack:/DEMO.ALPHA.B.R1.A01@[1,1]@[60,120,42]@front
-DEMO.ALPHA.B.R1.A01.description=Rack A01
-DEMO.ALPHA.B.R1.A01.vendor=someVendor
-DEMO.ALPHA.B.R1.A01.type=someType
-DEMO.ALPHA.B.R1.A01.model=someModel
-DEMO.ALPHA.B.R1.A01.serial=someSerial
++rk:DEMO.ALPHA.B.R1.A01@[1,1]@[60,120,42]@front
+    DEMO.ALPHA.B.R1.A01.description=Rack A01
+    DEMO.ALPHA.B.R1.A01.vendor=someVendor
+    DEMO.ALPHA.B.R1.A01.type=someType
+    DEMO.ALPHA.B.R1.A01.model=someModel
+    DEMO.ALPHA.B.R1.A01.serial=someSerial
 
-+rk:/DEMO.ALPHA.B.R1.A02@[2,1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.A03@[3,1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.A04@[4,1]@[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.A05@[5,1]@[60,120,42]@front
-DEMO.ALPHA.B.R1.A05.tenant=Billy
++rk:DEMO.ALPHA.B.R1.A02@[2,1]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.A03@[3,1]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.A04@[4,1]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.A05@[5,1]@[60,120,42]@front
+    DEMO.ALPHA.B.R1.A05.tenant=Billy
 
-+rk:/DEMO.ALPHA.B.R1.B05 @[8,6] @[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R1.B09 @[9,6] @[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R1.B010@[10,6]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R1.B011@[11,6]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R1.B012@[12,6]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R1.B05 @[8,6] @[60,120,42]@rear
++rk:DEMO.ALPHA.B.R1.B09 @[9,6] @[60,120,42]@rear
++rk:DEMO.ALPHA.B.R1.B010@[10,6]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R1.B011@[11,6]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R1.B012@[12,6]@[60,120,42]@rear
 
-+rk:/DEMO.ALPHA.B.R1.C08 @[8,9] @[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.C09 @[9,9] @[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.C010@[10,9]@[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.C011@[11,9]@[60,120,42]@front
-+rk:/DEMO.ALPHA.B.R1.C012@[12,9]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.C08 @[8,9] @[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.C09 @[9,9] @[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.C010@[10,9]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.C011@[11,9]@[60,120,42]@front
++rk:DEMO.ALPHA.B.R1.C012@[12,9]@[60,120,42]@front
 
-+rk:/DEMO.ALPHA.B.R1.D01@[20,5]@[60,120,42]@left
-DEMO.ALPHA.B.R1.D01.tenant=Marcus
-+rk:/DEMO.ALPHA.B.R1.D02@[20,6]@[60,120,42]@left
-DEMO.ALPHA.B.R1.D02.tenant=Marcus
-+rk:/DEMO.ALPHA.B.R1.D03@[20,7]@[60,120,42]@left
-DEMO.ALPHA.B.R1.D03.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.D01@[20,5]@[60,120,42]@left
+    DEMO.ALPHA.B.R1.D01.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.D02@[20,6]@[60,120,42]@left
+    DEMO.ALPHA.B.R1.D02.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.D03@[20,7]@[60,120,42]@left
+    DEMO.ALPHA.B.R1.D03.tenant=Marcus
 
-+rk:/DEMO.ALPHA.B.R1.E01@[23,5]@[60,120,42]@right
-DEMO.ALPHA.B.R1.E01.tenant=Marcus
-+rk:/DEMO.ALPHA.B.R1.E02@[23,6]@[60,120,42]@right
-DEMO.ALPHA.B.R1.E02.tenant=Marcus
-+rk:/DEMO.ALPHA.B.R1.E03@[23,7]@[60,120,42]@right
-DEMO.ALPHA.B.R1.E03.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.E01@[23,5]@[60,120,42]@right
+    DEMO.ALPHA.B.R1.E01.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.E02@[23,6]@[60,120,42]@right
+    DEMO.ALPHA.B.R1.E02.tenant=Marcus
++rk:DEMO.ALPHA.B.R1.E03@[23,7]@[60,120,42]@right
+    DEMO.ALPHA.B.R1.E03.tenant=Marcus
 
 // Racks for R2
 
-+rk:/DEMO.ALPHA.B.R2.A01@[1,3]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R2.A02@[2,3]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R2.A03@[3,3]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R2.A04@[4,3]@[60,120,42]@rear
-+rk:/DEMO.ALPHA.B.R2.A05@[5,3]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R2.A01@[1,3]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R2.A02@[2,3]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R2.A03@[3,3]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R2.A04@[4,3]@[60,120,42]@rear
++rk:DEMO.ALPHA.B.R2.A05@[5,3]@[60,120,42]@rear
 
-+rk:/DEMO.ALPHA.B.R2.B01@[1,5]@[60,120,42]@front
-DEMO.ALPHA.B.R2.B01.tenant=Billy
-DEMO.ALPHA.B.R2.B01.alpha=50
++rk:DEMO.ALPHA.B.R2.B01@[1,5]@[60,120,42]@front
+    DEMO.ALPHA.B.R2.B01.tenant=Billy
+    DEMO.ALPHA.B.R2.B01.alpha=50
 
 // Edit description of several racks in R1
 ={B05,B09,B10,B11,B12}
