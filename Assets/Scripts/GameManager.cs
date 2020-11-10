@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -55,6 +55,13 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
+    public GameObject focus = null;
+
+    // Double click
+    private float doubleClickTimeLimit = 0.25f;
+    private bool coroutineAllowed = true;
+    private int clickCount = 0;
+
     #region UnityMethods
 
     private void Awake()
@@ -84,35 +91,86 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 
-        // if (Input.GetKeyDown(KeyCode.C))
-        //     Debug.Log(allItems.Count);
-
-        if (!EventSystem.current.IsPointerOverGameObject()
+        if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
         {
-            if (!GetComponent<MoveObject>().hasDrag)
+            clickCount++;
+        }
+
+        if (clickCount == 1 && coroutineAllowed)
+            StartCoroutine(DoubleClickDetection(Time.time));
+    }
+
+    #endregion
+
+    ///<summary>
+    /// Check if simple or double click and call corresponding method.
+    ///</summary>
+    ///<param name="_firstClickTime">The time of the first click</param>
+    private IEnumerator DoubleClickDetection(float _firstClickTime)
+    {
+        coroutineAllowed = false;
+        while (Time.time < _firstClickTime + doubleClickTimeLimit)
+        {
+            if (clickCount == 2)
             {
-                RaycastHit hit;
-                Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-                if (hit.collider && hit.collider.tag == "Selectable")
-                {
-                    // Debug.Log(hit.collider.transform.parent.name);
-                    if (Input.GetKey(KeyCode.LeftControl))
-                        UpdateCurrentItems(hit.collider.transform.parent.gameObject);
-                    else
-                        SetCurrentItem(hit.collider.transform.parent.gameObject);
-                }
-                else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
-                {
-                    if (currentItems.Count > 0)
-                        AppendLogLine("Empty selection.", "green");
-                    SetCurrentItem(null);
-                }
+                DoubleClick();
+                break;
+            }
+            yield return new WaitForEndOfFrame();
+        }
+        if (clickCount == 1)
+            SingleClick();
+        clickCount = 0;
+        coroutineAllowed = true;
+
+    }
+
+    ///<summary>
+    /// Method called when single click on a gameObject.
+    ///</summary>
+    private void SingleClick()
+    {
+        RaycastHit hit;
+        Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        if (hit.collider && hit.collider.tag == "Selectable")
+        {
+            if (Input.GetKey(KeyCode.LeftControl))
+                UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+            else
+                SetCurrentItem(hit.collider.transform.parent.gameObject);
+        }
+        else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
+        {
+            if (currentItems.Count > 0)
+                AppendLogLine("Empty selection.", "green");
+            SetCurrentItem(null);
+            if (focus)
+            {
+                focus.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+                focus = null;
+                AppendLogLine("No focus.", "green");
             }
         }
     }
 
-    #endregion
+    ///<summary>
+    /// Method called when single click on a gameObject.
+    ///</summary>
+    private void DoubleClick()
+    {
+        // Debug.Log("Double Click");
+        RaycastHit hit;
+        Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        if (hit.collider && hit.collider.tag == "Selectable")
+        {
+            // SetCurrentItem(hit.collider.transform.parent.gameObject);
+            focus = hit.transform.gameObject;
+            hit.collider.GetComponent<Collider>().enabled = false;
+            AppendLogLine($"Focus on {focus.name}.", "green");
+        }
+    }
+
 
     ///<summary>
     /// Find a GameObject by its HierarchyName.
@@ -414,7 +472,7 @@ public class GameManager : MonoBehaviour
             anim = infosPanel.GetComponent<Animator>();
         else if (_panel == "debug")
             anim = debugPanel.GetComponent<Animator>();
-        
+
         if ((_value == true && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOff"))
             || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
             anim.SetTrigger("Transition");

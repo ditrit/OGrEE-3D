@@ -345,6 +345,8 @@ public class ReadFromJson
             s.orient = _data.elemOrient;
             s.mandatory = _data.mandatory;
             s.labelPos = _data.labelPos;
+
+            go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
         }
         else
         {
