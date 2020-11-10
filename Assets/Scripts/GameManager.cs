@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
-    
+    [SerializeField] private Toggle toggleWireframe = null;
+
     [Header("Panels")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
@@ -376,6 +377,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_value">The checkbox value</param>
     public void ToggleRacksMaterials(bool _value)
     {
+        toggleWireframe.isOn = _value;
         isWireframe = _value;
         foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
