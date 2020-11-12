@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
+    [SerializeField] private TextMeshProUGUI focusText = null;
 
     [Header("Panels")]
     [SerializeField] private GameObject menu = null;
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
-    public GameObject focus = null;
+    public List<GameObject> focus = new List<GameObject>();
 
     // Double click
     private float doubleClickTimeLimit = 0.25f;
@@ -79,7 +80,8 @@ public class GameManager : MonoBehaviour
         string[] args = System.Environment.GetCommandLineArgs();
         if (args.Length == 2)
             consoleController.RunCommandString($".cmds:{args[1]}");
-
+        
+        UpdateFocusText();
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
@@ -145,12 +147,8 @@ public class GameManager : MonoBehaviour
             if (currentItems.Count > 0)
                 AppendLogLine("Empty selection.", "green");
             SetCurrentItem(null);
-            if (focus)
-            {
-                focus.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-                focus = null;
-                AppendLogLine("No focus.", "green");
-            }
+            if (focus.Count > 0)
+                UnfocusItem();
         }
     }
 
@@ -162,13 +160,8 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Double Click");
         RaycastHit hit;
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        if (hit.collider && hit.collider.tag == "Selectable")
-        {
-            // SetCurrentItem(hit.collider.transform.parent.gameObject);
-            focus = hit.transform.gameObject;
-            hit.collider.GetComponent<Collider>().enabled = false;
-            AppendLogLine($"Focus on {focus.name}.", "green");
-        }
+        if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<Object>())
+            FocusItem(hit.collider.transform.parent.gameObject);
     }
 
 
@@ -260,6 +253,44 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
 
         UpdateGuiInfos();
+    }
+
+    ///<summary>
+    /// Add a GameObject to focus list and disable its child's collider.
+    ///</summary>
+    ///<param name="_obj">The GameObject to add</param>
+    private void FocusItem(GameObject _obj)
+    {
+        focus.Add(_obj);
+        _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        AppendLogLine($"Focus on {_obj.name}.", "green");
+        UpdateFocusText();
+    }
+
+    ///<summary>
+    /// Remove last item from focus list, enable its child's collider.
+    ///</summary>
+    private void UnfocusItem()
+    {
+        GameObject obj = focus[focus.Count - 1];
+        focus.Remove(obj);
+        obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+        AppendLogLine($"Unfocus {obj.name}.", "green");
+        UpdateFocusText();
+    }
+
+    ///<summary>
+    /// Update focusText according to focus' last item.
+    ///</summary>
+    private void UpdateFocusText()
+    {
+        if (focus.Count > 0)
+        {
+            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().GetHierarchyName();
+            focusText.text = $"Focus on {objName}";
+        }
+        else
+            focusText.text = "No focus";
     }
 
     ///<summary>
