@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
         string[] args = System.Environment.GetCommandLineArgs();
         if (args.Length == 2)
             consoleController.RunCommandString($".cmds:{args[1]}");
-        
+
         UpdateFocusText();
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
@@ -147,8 +147,6 @@ public class GameManager : MonoBehaviour
             if (currentItems.Count > 0)
                 AppendLogLine("Empty selection.", "green");
             SetCurrentItem(null);
-            if (focus.Count > 0)
-                UnfocusItem();
         }
     }
 
@@ -162,6 +160,8 @@ public class GameManager : MonoBehaviour
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
         if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<Object>())
             FocusItem(hit.collider.transform.parent.gameObject);
+        else if (focus.Count > 0)
+            UnfocusItem();
     }
 
 
@@ -261,10 +261,27 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     private void FocusItem(GameObject _obj)
     {
-        focus.Add(_obj);
-        _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-        AppendLogLine($"Focus on {_obj.name}.", "green");
-        UpdateFocusText();
+        bool canFocus = false;
+        if (focus.Count == 0)
+            canFocus = true;
+        else
+        {
+            Transform root = focus[focus.Count - 1].transform;
+            foreach (Transform child in root)
+            {
+                if (child.gameObject == _obj)
+                    canFocus = true;
+            }
+        }
+        if (canFocus == true)
+        {
+            focus.Add(_obj);
+            _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            _obj.GetComponent<Object>().SetAttribute("alpha", "0");
+            UpdateFocusText();
+        }
+        else
+            UnfocusItem();
     }
 
     ///<summary>
@@ -275,7 +292,7 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
         obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-        AppendLogLine($"Unfocus {obj.name}.", "green");
+        obj.GetComponent<Object>().SetAttribute("alpha", "100");
         UpdateFocusText();
     }
 
@@ -291,6 +308,8 @@ public class GameManager : MonoBehaviour
         }
         else
             focusText.text = "No focus";
+
+        AppendLogLine(focusText.text, "green");
     }
 
     ///<summary>
