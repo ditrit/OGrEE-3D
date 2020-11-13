@@ -137,10 +137,25 @@ public class GameManager : MonoBehaviour
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
         if (hit.collider && hit.collider.tag == "Selectable")
         {
-            if (Input.GetKey(KeyCode.LeftControl))
-                UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+            bool canSelect = false;
+            if (focus.Count > 0)
+            {
+                foreach (Transform child in focus[focus.Count - 1].transform)
+                {
+                    if (child == hit.collider.transform.parent)
+                        canSelect = true;
+                }
+            }
             else
-                SetCurrentItem(hit.collider.transform.parent.gameObject);
+                canSelect = true;
+
+            if (canSelect)
+            {
+                if (Input.GetKey(KeyCode.LeftControl))
+                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                else
+                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+            }
         }
         else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
         {
@@ -184,27 +199,15 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
-        foreach (GameObject item in currentItems)
-        {
-            if (item && item.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = item.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = true;
-            }
-        }
-        currentItems.Clear();
+        //Clear current selection
+        for (int i = currentItems.Count - 1; i >= 0; i--)
+            DeselectItem(currentItems[i]);
+
         if (_obj)
         {
-            currentItems.Add(_obj);
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = false;
-            }
             AppendLogLine($"Select {_obj.name}.", "green");
+            SelectItem(_obj);
+            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
         }
         else
             currentItemText.text = "Ogree3D";
@@ -225,24 +228,12 @@ public class GameManager : MonoBehaviour
         if (currentItems.Contains(_obj))
         {
             AppendLogLine($"Remove {_obj.name} from selection.", "green");
-            currentItems.Remove(_obj);
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = true;
-            }
+            DeselectItem(_obj);
         }
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
-            currentItems.Add(_obj);
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = false;
-            }
+            SelectItem(_obj);
         }
 
         if (currentItems.Count > 1)
@@ -253,6 +244,36 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
 
         UpdateGuiInfos();
+    }
+
+    ///<summary>
+    /// Add _obj to currentItems, enable outline if possible.
+    ///</summary>
+    ///<param name="_obj">The GameObject to add</param>
+    private void SelectItem(GameObject _obj)
+    {
+        currentItems.Add(_obj);
+        if (_obj.GetComponent<Object>())
+        {
+            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+            if (ol)
+                ol.eraseRenderer = false;
+        }
+    }
+
+    ///<summary>
+    /// Remove _obj from currentItems, disable outline if possible.
+    ///</summary>
+    ///<param name="_obj">The GameObject to remove</param>
+    private void DeselectItem(GameObject _obj)
+    {
+        currentItems.Remove(_obj);
+        if (_obj.GetComponent<Object>())
+        {
+            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+            if (ol)
+                ol.eraseRenderer = true;
+        }
     }
 
     ///<summary>
@@ -278,7 +299,9 @@ public class GameManager : MonoBehaviour
             focus.Add(_obj);
             _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
             _obj.GetComponent<Object>().SetAttribute("alpha", "0");
+            _obj.GetComponent<Object>().SetAttribute("slots", "false");
             UpdateFocusText();
+            SetCurrentItem(_obj);
         }
         else
             UnfocusItem();
@@ -293,6 +316,7 @@ public class GameManager : MonoBehaviour
         focus.Remove(obj);
         obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
         obj.GetComponent<Object>().SetAttribute("alpha", "100");
+        obj.GetComponent<Object>().SetAttribute("slots", "true");
         UpdateFocusText();
     }
 
@@ -365,6 +389,7 @@ public class GameManager : MonoBehaviour
     public void ReloadFile()
     {
         SetCurrentItem(null);
+        focus.Clear();
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
