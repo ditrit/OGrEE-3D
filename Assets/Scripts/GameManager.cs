@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
     public ConsoleController consoleController;
+    private ConfigLoader configLoader = new ConfigLoader();
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -76,6 +77,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        configLoader.LoadConfigFile();
+
         //https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
         string[] args = System.Environment.GetCommandLineArgs();
         if (args.Length == 2)

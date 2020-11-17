@@ -1,0 +1,8 @@
+{
+    "verbose": "true",
+    "fullscreen": "true",
+
+    "db_url": "",
+    "db_login": "",
+    "db_tocken": ""
+}
