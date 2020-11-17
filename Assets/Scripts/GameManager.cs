@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
+    [SerializeField] private TextMeshProUGUI focusText = null;
 
     [Header("Panels")]
     [SerializeField] private GameObject menu = null;
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
-    public GameObject focus = null;
+    public List<GameObject> focus = new List<GameObject>();
 
     // Double click
     private float doubleClickTimeLimit = 0.25f;
@@ -80,6 +81,7 @@ public class GameManager : MonoBehaviour
         if (args.Length == 2)
             consoleController.RunCommandString($".cmds:{args[1]}");
 
+        UpdateFocusText();
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
@@ -135,22 +137,31 @@ public class GameManager : MonoBehaviour
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
         if (hit.collider && hit.collider.tag == "Selectable")
         {
-            if (Input.GetKey(KeyCode.LeftControl))
-                UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+            bool canSelect = false;
+            if (focus.Count > 0)
+            {
+                foreach (Transform child in focus[focus.Count - 1].transform)
+                {
+                    if (child == hit.collider.transform.parent)
+                        canSelect = true;
+                }
+            }
             else
-                SetCurrentItem(hit.collider.transform.parent.gameObject);
+                canSelect = true;
+
+            if (canSelect)
+            {
+                if (Input.GetKey(KeyCode.LeftControl))
+                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                else
+                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+            }
         }
         else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
         {
             if (currentItems.Count > 0)
                 AppendLogLine("Empty selection.", "green");
             SetCurrentItem(null);
-            if (focus)
-            {
-                focus.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-                focus = null;
-                AppendLogLine("No focus.", "green");
-            }
         }
     }
 
@@ -162,13 +173,10 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Double Click");
         RaycastHit hit;
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        if (hit.collider && hit.collider.tag == "Selectable")
-        {
-            // SetCurrentItem(hit.collider.transform.parent.gameObject);
-            focus = hit.transform.gameObject;
-            hit.collider.GetComponent<Collider>().enabled = false;
-            AppendLogLine($"Focus on {focus.name}.", "green");
-        }
+        if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<Object>())
+            FocusItem(hit.collider.transform.parent.gameObject);
+        else if (focus.Count > 0)
+            UnfocusItem();
     }
 
 
@@ -191,27 +199,15 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
-        foreach (GameObject item in currentItems)
-        {
-            if (item && item.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = item.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = true;
-            }
-        }
-        currentItems.Clear();
+        //Clear current selection
+        for (int i = currentItems.Count - 1; i >= 0; i--)
+            DeselectItem(currentItems[i]);
+
         if (_obj)
         {
-            currentItems.Add(_obj);
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = false;
-            }
             AppendLogLine($"Select {_obj.name}.", "green");
+            SelectItem(_obj);
+            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
         }
         else
             currentItemText.text = "Ogree3D";
@@ -232,24 +228,12 @@ public class GameManager : MonoBehaviour
         if (currentItems.Contains(_obj))
         {
             AppendLogLine($"Remove {_obj.name} from selection.", "green");
-            currentItems.Remove(_obj);
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = true;
-            }
+            DeselectItem(_obj);
         }
         else
         {
             AppendLogLine($"Add {_obj.name} to selection.", "green");
-            currentItems.Add(_obj);
-            if (_obj.GetComponent<Object>())
-            {
-                cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-                if (ol)
-                    ol.eraseRenderer = false;
-            }
+            SelectItem(_obj);
         }
 
         if (currentItems.Count > 1)
@@ -260,6 +244,96 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
 
         UpdateGuiInfos();
+    }
+
+    ///<summary>
+    /// Add _obj to currentItems, enable outline if possible.
+    ///</summary>
+    ///<param name="_obj">The GameObject to add</param>
+    private void SelectItem(GameObject _obj)
+    {
+        currentItems.Add(_obj);
+        if (_obj.GetComponent<Object>())
+        {
+            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+            if (ol)
+                ol.eraseRenderer = false;
+        }
+    }
+
+    ///<summary>
+    /// Remove _obj from currentItems, disable outline if possible.
+    ///</summary>
+    ///<param name="_obj">The GameObject to remove</param>
+    private void DeselectItem(GameObject _obj)
+    {
+        currentItems.Remove(_obj);
+        if (_obj.GetComponent<Object>())
+        {
+            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+            if (ol)
+                ol.eraseRenderer = true;
+        }
+    }
+
+    ///<summary>
+    /// Add a GameObject to focus list and disable its child's collider.
+    ///</summary>
+    ///<param name="_obj">The GameObject to add</param>
+    private void FocusItem(GameObject _obj)
+    {
+        bool canFocus = false;
+        if (focus.Count == 0)
+            canFocus = true;
+        else
+        {
+            Transform root = focus[focus.Count - 1].transform;
+            foreach (Transform child in root)
+            {
+                if (child.gameObject == _obj)
+                    canFocus = true;
+            }
+        }
+        if (canFocus == true)
+        {
+            focus.Add(_obj);
+            _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            _obj.GetComponent<Object>().SetAttribute("alpha", "0");
+            _obj.GetComponent<Object>().SetAttribute("slots", "false");
+            UpdateFocusText();
+            SetCurrentItem(_obj);
+        }
+        else
+            UnfocusItem();
+    }
+
+    ///<summary>
+    /// Remove last item from focus list, enable its child's collider.
+    ///</summary>
+    private void UnfocusItem()
+    {
+        GameObject obj = focus[focus.Count - 1];
+        focus.Remove(obj);
+        obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+        obj.GetComponent<Object>().SetAttribute("alpha", "100");
+        obj.GetComponent<Object>().SetAttribute("slots", "true");
+        UpdateFocusText();
+    }
+
+    ///<summary>
+    /// Update focusText according to focus' last item.
+    ///</summary>
+    private void UpdateFocusText()
+    {
+        if (focus.Count > 0)
+        {
+            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().GetHierarchyName();
+            focusText.text = $"Focus on {objName}";
+        }
+        else
+            focusText.text = "No focus";
+
+        AppendLogLine(focusText.text, "green");
     }
 
     ///<summary>
@@ -315,6 +389,7 @@ public class GameManager : MonoBehaviour
     public void ReloadFile()
     {
         SetCurrentItem(null);
+        focus.Clear();
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
