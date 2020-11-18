@@ -77,14 +77,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        configLoader.LoadConfigFile();
-
-        //https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
-        string[] args = System.Environment.GetCommandLineArgs();
-        if (args.Length == 2)
-            consoleController.RunCommandString($".cmds:{args[1]}");
-
-        UpdateFocusText();
+        configLoader.LoadConfig();
+        UpdateFocusText();      
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
