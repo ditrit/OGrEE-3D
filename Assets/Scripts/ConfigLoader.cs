@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class ConfigLoader
 {
@@ -13,6 +14,8 @@ public class ConfigLoader
         public string db_login;
         public string db_token;
     }
+
+    private SConfig config;
     private bool verbose = false;
 
     ///<summary>
@@ -20,7 +23,7 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        SConfig config = LoadConfigFile();
+        config = LoadConfigFile();
 
         OverrideConfig("--fullscreen", config.fullscreen);
 
@@ -90,6 +93,8 @@ public class ConfigLoader
         verbose = (_config.verbose == "true");
 
         FullScreenMode((_config.fullscreen == "true"));
+
+        // MonoBehaviour.StartCoroutine(ConnectToApi(_config.db_url));
     }
 
     ///<summary> 
@@ -101,5 +106,22 @@ public class ConfigLoader
         if (verbose)
             GameManager.gm.AppendLogLine($"Fullscreen: {_value}");
         Screen.fullScreen = _value;
+    }
+
+    ///
+    public IEnumerator ConnectToApi()
+    {
+        string response;
+
+        UnityWebRequest www = UnityWebRequest.Get(config.db_url);
+        www.downloadHandler = new DownloadHandlerBuffer();
+
+        yield return www.SendWebRequest();
+        if (www.isHttpError || www.isNetworkError)
+            response = $"Error while connecting to API: {www.error}";
+        else
+            response = www.downloadHandler.text;
+
+        GameManager.gm.AppendLogLine(response);
     }
 }

@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         configLoader.LoadConfig();
+        StartCoroutine(configLoader.ConnectToApi());
         UpdateFocusText();      
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
