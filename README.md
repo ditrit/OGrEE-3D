@@ -9,6 +9,7 @@ OGREE 3D is a data-center viewer
 
 # Table of Contents
 - [Getting started](#Getting-Started)
+- [Command line arguments](#Command-line-arguments)
 - [Build in CLI](#Build-in-CLI)
     - [Glossary](#Glossary)
     - [Variable](#Variable)
@@ -75,6 +76,15 @@ Customer
 You have to create each object either with the build in CLI or by loading a file containing these commands.  
 You can assign a tenant to a Datacenter, a room or a rack. If so, all children will have the same tenant by default.  
 More levels will come in next releases.
+
+# Command line arguments
+You can override the config file parameters with command line arguments
+```
+--verbose [true|false]
+--fullscreen [true|false]
+--serverUrl [url]
+--file [path to ocli file to load]
+```  
 
 # Build in CLI
 

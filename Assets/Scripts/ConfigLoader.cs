@@ -25,7 +25,11 @@ public class ConfigLoader
     {
         config = LoadConfigFile();
 
+        OverrideConfig("--verbose", config.verbose);
         OverrideConfig("--fullscreen", config.fullscreen);
+        OverrideConfig("--serverUrl", config.db_url);
+        OverrideConfig("--serverLogin", config.db_login);
+        OverrideConfig("--serverToken", config.db_token);
 
 
         ApplyConfig(config);
