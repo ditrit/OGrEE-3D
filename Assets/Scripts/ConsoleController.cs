@@ -122,8 +122,8 @@ public class ConsoleController : MonoBehaviour
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
             MoveCamera(_input.Substring(7));
-        // else if (_input.StartsWith("delay="))
-        //     SetTimer(_input.Substring(6));
+        else if (_input.StartsWith("api."))
+            CallApi(_input.Substring(4));
         else if (_input.StartsWith("zoom"))
             SetZoom(_input.Substring(4));
         else if (_input.Contains(".") && _input.Contains("="))
@@ -377,6 +377,21 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax Error on variable creation", "red");
     }
 
+    ///
+    private void CallApi(string _input)
+    {
+        string pattern = "(get|put|post)=+";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split(new char[] { '=' }, 2);
+            ApiManager.instance.EnqueueMessage(data[0], data[1]);
+        }
+        else
+            AppendLogLine("Syntax Error on API call", "red");
+        
+        isReady = true;
+    }
+
     #endregion
 
     #region CreateMethods
@@ -434,8 +449,8 @@ public class ConsoleController : MonoBehaviour
     private void CreateDataCenter(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@(EN|NW|WS|SE)$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@(EN|NW|WS|SE)$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
@@ -456,8 +471,8 @@ public class ConsoleController : MonoBehaviour
     private void CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
@@ -479,8 +494,8 @@ public class ConsoleController : MonoBehaviour
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
@@ -508,8 +523,8 @@ public class ConsoleController : MonoBehaviour
     private void CreateSeparator(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
@@ -531,8 +546,8 @@ public class ConsoleController : MonoBehaviour
     private void CreateRack(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
@@ -562,8 +577,8 @@ public class ConsoleController : MonoBehaviour
     public void CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
             SDeviceInfos infos = new SDeviceInfos();
@@ -612,8 +627,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="String with tenant data to parse"></param>
     private void CreateTenant(string _input)
     {
-        string patern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
             CustomerGenerator.instance.CreateTenant(data[0], data[1]);
@@ -632,8 +647,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string patern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('=');
 
@@ -806,8 +821,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void SetZoom(string _input)
     {
-        string patern = "^(\\+\\+|--|=[0-3])$";
-        if (Regex.IsMatch(_input, patern))
+        string pattern = "^(\\+\\+|--|=[0-3])$";
+        if (Regex.IsMatch(_input, pattern))
         {
             if (_input == "++")
                 ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel + 1);

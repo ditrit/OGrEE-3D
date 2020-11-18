@@ -111,17 +111,18 @@ public class ConfigLoader
     ///
     public IEnumerator ConnectToApi()
     {
-        string response;
-
         UnityWebRequest www = UnityWebRequest.Get(config.db_url);
         www.downloadHandler = new DownloadHandlerBuffer();
 
         yield return www.SendWebRequest();
         if (www.isHttpError || www.isNetworkError)
-            response = $"Error while connecting to API: {www.error}";
-        else
-            response = www.downloadHandler.text;
-
+        {
+            GameManager.gm.AppendLogLine($"Error while connecting to API: {www.error}", "red");
+            yield break;
+        }
+        string response = www.downloadHandler.text;
         GameManager.gm.AppendLogLine(response);
+
+        ApiManager.instance.Initialize(config.db_url, config.db_login, config.db_token);
     }
 }
