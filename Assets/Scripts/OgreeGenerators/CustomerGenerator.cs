@@ -62,6 +62,7 @@ public class CustomerGenerator : MonoBehaviour
         tn.mainContact = _cu.mainContact;
         tn.mainPhone = _cu.mainPhone;
         tn.mainEmail = _cu.mainEmail;
+        tn.id = _cu.id;
 
         customer.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_cu.name, customer);

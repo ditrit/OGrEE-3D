@@ -10,6 +10,7 @@ public class Tenant : IAttributeModif
     public string mainContact;
     public string mainPhone;
     public string mainEmail;
+    public int id;
 
     public Tenant(string _name, string _color)
     {

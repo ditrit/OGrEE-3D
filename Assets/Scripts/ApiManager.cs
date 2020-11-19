@@ -32,7 +32,7 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private string login;
     [SerializeField] private string token;
 
-    [SerializeField] private Queue<SRequest> messagesToSend = new Queue<SRequest>();
+    [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
     private void Awake()
     {
@@ -44,11 +44,11 @@ public class ApiManager : MonoBehaviour
 
     private void Update()
     {
-        if (isReady && messagesToSend.Count > 0)
+        if (isReady && requestsToSend.Count > 0)
         {
-            if (messagesToSend.Peek().type == "get")
+            if (requestsToSend.Peek().type == "get")
                 StartCoroutine(GetData());
-            else if (messagesToSend.Peek().type == "put")
+            else if (requestsToSend.Peek().type == "put")
                 StartCoroutine(PutData());
             // else if (messagesToSend.Peek().type == "delete")
             //     StartCoroutine(DeleteData());
@@ -74,9 +74,9 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_type">The type of request</param>
     ///<param name="_path">The relative path of the request</param>
-    public void EnqueueMessage(string _type, string _path)
+    public void EnqueueRequest(string _type, string _path)
     {
-        messagesToSend.Enqueue(new SRequest(_type, _path));
+        requestsToSend.Enqueue(new SRequest(_type, _path));
     }
 
     ///<summary>
@@ -85,9 +85,9 @@ public class ApiManager : MonoBehaviour
     ///<param name="_type">The type of request</param>
     ///<param name="_path">The relative path of the request</param>
     ///<param name="_json">The json to send</param>
-    public void EnqueueMessage(string _type, string _path, string _json)
+    public void EnqueueRequest(string _type, string _path, string _json)
     {
-        messagesToSend.Enqueue(new SRequest(_type, _path, _json));
+        requestsToSend.Enqueue(new SRequest(_type, _path, _json));
     }
 
     ///<summary>
@@ -97,7 +97,7 @@ public class ApiManager : MonoBehaviour
     {
         isReady = false;
 
-        SRequest req = messagesToSend.Dequeue();
+        SRequest req = requestsToSend.Dequeue();
         string fullPath = server + req.path;
 
         UnityWebRequest www = UnityWebRequest.Get(fullPath);
@@ -122,8 +122,9 @@ public class ApiManager : MonoBehaviour
     {
         isReady = false;
 
-        SRequest req = messagesToSend.Dequeue();
+        SRequest req = requestsToSend.Dequeue();
         string fullPath = server + req.path;
+        Debug.Log(fullPath);
 
         UnityWebRequest www = UnityWebRequest.Put(fullPath, req.json);
         yield return www.SendWebRequest();

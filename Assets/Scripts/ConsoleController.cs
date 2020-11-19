@@ -380,15 +380,32 @@ public class ConsoleController : MonoBehaviour
     ///
     private void CallApi(string _input)
     {
-        string pattern = "(get|put|post)=+";
+        string pattern = "(get|put|delete)=+";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            ApiManager.instance.EnqueueMessage(data[0], data[1]);
+            switch (data[0])
+            {
+                case "get":
+                    ApiManager.instance.EnqueueRequest(data[0], data[1]);
+                    break;
+                case "put":
+                    GameObject obj = GameManager.gm.FindByAbsPath(data[1]);
+                    if (obj)
+                    {
+                        int pointCount = data[1].Count(f => (f == '.'));
+                        if (pointCount == 0)
+                        {
+                            string json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
+                            ApiManager.instance.EnqueueRequest("put", $"customers/{GameManager.gm.tenants[data[1]].id}", json);
+                        }
+                    }
+                    break;
+            }
         }
         else
             AppendLogLine("Syntax Error on API call", "red");
-        
+
         isReady = true;
     }
 
