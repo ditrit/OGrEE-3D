@@ -50,11 +50,17 @@ public class ApiManager : MonoBehaviour
                 StartCoroutine(GetData());
             else if (messagesToSend.Peek().type == "put")
                 StartCoroutine(PutData());
-                // delete
+            // else if (messagesToSend.Peek().type == "delete")
+            //     StartCoroutine(DeleteData());
         }
     }
 
-    ///
+    ///<summary>
+    /// Initialiaze the manager with server, login and token.
+    ///</summary>
+    ///<param name="_serverUrl">The url to save</param>
+    ///<param name="_login">The login to save</param>
+    ///<param name="_token">The token to save</param>
     public void Initialize(string _serverUrl, string _login, string _token)
     {
         server = _serverUrl;
@@ -63,17 +69,30 @@ public class ApiManager : MonoBehaviour
         isReady = true;
     }
 
-    ///
+    ///<summary>
+    /// Enqueue a request to for the api.
+    ///</summary>
+    ///<param name="_type">The type of request</param>
+    ///<param name="_path">The relative path of the request</param>
     public void EnqueueMessage(string _type, string _path)
     {
         messagesToSend.Enqueue(new SRequest(_type, _path));
     }
+
+    ///<summary>
+    /// Enqueue a request to for the api.
+    ///</summary>
+    ///<param name="_type">The type of request</param>
+    ///<param name="_path">The relative path of the request</param>
+    ///<param name="_json">The json to send</param>
     public void EnqueueMessage(string _type, string _path, string _json)
     {
         messagesToSend.Enqueue(new SRequest(_type, _path, _json));
     }
 
-    ///
+    ///<summary>
+    /// Send a get request to the api. Create an Ogree object with response.
+    ///</summary>
     private IEnumerator GetData()
     {
         isReady = false;
@@ -87,14 +106,18 @@ public class ApiManager : MonoBehaviour
         if (www.isHttpError || www.isNetworkError)
         {
             GameManager.gm.AppendLogLine(www.error, "red");
-            isReady = false;
+            isReady = true;
             yield break;
         }
         GameManager.gm.AppendLogLine(www.downloadHandler.text);
+        CreateItemFromJson(req.path, www.downloadHandler.text);
 
         isReady = true;
     }
 
+    ///<summary>
+    /// Send a put request to the api.
+    ///</summary>
     private IEnumerator PutData()
     {
         isReady = false;
@@ -109,12 +132,29 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(www.error, "red");
         else
             GameManager.gm.AppendLogLine(www.downloadHandler.text);
-        
+
         isReady = true;
     }
 
-    #region CreateMethods
-
-    #endregion
+    ///<summary>
+    /// Create an Ogree item from Json.
+    /// Look in request path to the type of object to create
+    ///</summary>
+    private void CreateItemFromJson(string _path, string _json)
+    {
+        if (Regex.IsMatch(_path, "customers/[0-9]+"))
+        {
+            Debug.Log("Create Customer");
+            SCuFromJson cu = JsonUtility.FromJson<SCuFromJson>(_json);
+            CustomerGenerator.instance.CreateCustomer(cu);
+        }
+        else if (Regex.IsMatch(_path, "sites/[0-9]+"))
+        {
+            Debug.Log("Create Datacenter (site)");
+            SDcFromJson dc = JsonUtility.FromJson<SDcFromJson>(_json);
+            dc.id = int.Parse(_path.Substring(_path.IndexOf('/') + 1));
+            CustomerGenerator.instance.CreateDatacenter(dc);
+        }
+    }
 
 }

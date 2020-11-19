@@ -5,6 +5,7 @@ using UnityEngine;
 public class Customer : MonoBehaviour
 {
     public string contact;
+    public int id;
 
     private void OnDestroy()
     {
