@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -8,12 +9,20 @@ public class ApiManager : MonoBehaviour
     private struct SRequest
     {
         public string type;
-        public string msg;
+        public string path;
+        public string json;
 
-        public SRequest(string _type, string _message)
+        public SRequest(string _type, string _path)
         {
             type = _type;
-            msg = _message;
+            path = _path;
+            json = null;
+        }
+        public SRequest(string _type, string _path, string _json)
+        {
+            type = _type;
+            path = _path;
+            json = _json;
         }
     }
     public static ApiManager instance;
@@ -36,7 +45,13 @@ public class ApiManager : MonoBehaviour
     private void Update()
     {
         if (isReady && messagesToSend.Count > 0)
-            StartCoroutine(GetData());
+        {
+            if (messagesToSend.Peek().type == "get")
+                StartCoroutine(GetData());
+            else if (messagesToSend.Peek().type == "put")
+                StartCoroutine(PutData());
+                // delete
+        }
     }
 
     ///
@@ -49,9 +64,13 @@ public class ApiManager : MonoBehaviour
     }
 
     ///
-    public void EnqueueMessage(string _type, string _msg)
+    public void EnqueueMessage(string _type, string _path)
     {
-        messagesToSend.Enqueue(new SRequest(_type, _msg));
+        messagesToSend.Enqueue(new SRequest(_type, _path));
+    }
+    public void EnqueueMessage(string _type, string _path, string _json)
+    {
+        messagesToSend.Enqueue(new SRequest(_type, _path, _json));
     }
 
     ///
@@ -59,21 +78,43 @@ public class ApiManager : MonoBehaviour
     {
         isReady = false;
 
-        string response;
-        string request = server + messagesToSend.Dequeue().msg;
-        Debug.LogWarning(request);
+        SRequest req = messagesToSend.Dequeue();
+        string fullPath = server + req.path;
 
-        UnityWebRequest www = UnityWebRequest.Get(request);
-        www.downloadHandler = new DownloadHandlerBuffer();
+        UnityWebRequest www = UnityWebRequest.Get(fullPath);
 
         yield return www.SendWebRequest();
         if (www.isHttpError || www.isNetworkError)
-            response = $"Error while connecting to API: {www.error}";
-        else
-            response = www.downloadHandler.text;
+        {
+            GameManager.gm.AppendLogLine(www.error, "red");
+            isReady = false;
+            yield break;
+        }
+        GameManager.gm.AppendLogLine(www.downloadHandler.text);
 
-        GameManager.gm.AppendLogLine(response);
         isReady = true;
     }
+
+    private IEnumerator PutData()
+    {
+        isReady = false;
+
+        SRequest req = messagesToSend.Dequeue();
+        string fullPath = server + req.path;
+
+        UnityWebRequest www = UnityWebRequest.Put(fullPath, req.json);
+        yield return www.SendWebRequest();
+
+        if (www.isHttpError || www.isNetworkError)
+            GameManager.gm.AppendLogLine(www.error, "red");
+        else
+            GameManager.gm.AppendLogLine(www.downloadHandler.text);
+        
+        isReady = true;
+    }
+
+    #region CreateMethods
+
+    #endregion
 
 }

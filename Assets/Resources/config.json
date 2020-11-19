@@ -1,6 +1,6 @@
 {
     "verbose": "true",
-    "fullscreen": "true",
+    "fullscreen": "false",
 
     "db_url": "http://www.chibois.net:3001/",
     "db_login": "",

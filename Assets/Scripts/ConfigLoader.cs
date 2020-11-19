@@ -116,7 +116,6 @@ public class ConfigLoader
     public IEnumerator ConnectToApi()
     {
         UnityWebRequest www = UnityWebRequest.Get(config.db_url);
-        www.downloadHandler = new DownloadHandlerBuffer();
 
         yield return www.SendWebRequest();
         if (www.isHttpError || www.isNetworkError)
