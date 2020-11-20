@@ -380,9 +380,10 @@ public class ConsoleController : MonoBehaviour
     ///
     private void CallApi(string _input)
     {
-        string pattern = "(get|put|delete)=+";
+        string pattern = "(get|post|put|delete)=+";
         if (Regex.IsMatch(_input, pattern))
         {
+            GameObject obj = null;
             string[] data = _input.Split(new char[] { '=' }, 2);
             switch (data[0])
             {
@@ -390,7 +391,7 @@ public class ConsoleController : MonoBehaviour
                     ApiManager.instance.EnqueueRequest(data[0], data[1]);
                     break;
                 case "put":
-                    GameObject obj = GameManager.gm.FindByAbsPath(data[1]);
+                    obj = GameManager.gm.FindByAbsPath(data[1]);
                     if (obj)
                     {
                         int pointCount = data[1].Count(f => (f == '.'));
@@ -399,7 +400,31 @@ public class ConsoleController : MonoBehaviour
                             string json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
                             ApiManager.instance.EnqueueRequest("put", $"customers/{GameManager.gm.tenants[data[1]].id}", json);
                         }
+                        else if (pointCount == 1)
+                        {
+                            string json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                            ApiManager.instance.EnqueueRequest("put", $"sites/{obj.GetComponent<Datacenter>().id}", json);
+                        }
                     }
+                    break;
+                case "post":
+                    obj = GameManager.gm.FindByAbsPath(data[1]);
+                    if (obj)
+                    {
+                        int pointCount = data[1].Count(f => (f == '.'));
+                        if (pointCount == 0)
+                        {
+                            string json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
+                            ApiManager.instance.EnqueueRequest("post", $"customers", json);
+                        }
+                        else if (pointCount == 1)
+                        {
+                            string json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                            ApiManager.instance.EnqueueRequest("post", $"sites", json);
+                        }
+                    }
+                    break;
+                case "delete":
                     break;
             }
         }

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Networking;
 
 public class ApiManager : MonoBehaviour
 {
@@ -27,6 +27,8 @@ public class ApiManager : MonoBehaviour
     }
     public static ApiManager instance;
 
+    private HttpClient client = new HttpClient();
+
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
     [SerializeField] private string login;
@@ -47,9 +49,13 @@ public class ApiManager : MonoBehaviour
         if (isReady && requestsToSend.Count > 0)
         {
             if (requestsToSend.Peek().type == "get")
-                StartCoroutine(GetData());
+                // StartCoroutine(GetData());
+                GetHttpData();
             else if (requestsToSend.Peek().type == "put")
-                StartCoroutine(PutData());
+                // StartCoroutine(PutData());
+                PutHttpData();
+            else if (requestsToSend.Peek().type == "post")
+                PostHttpData();
             // else if (messagesToSend.Peek().type == "delete")
             //     StartCoroutine(DeleteData());
         }
@@ -93,47 +99,71 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Send a get request to the api. Create an Ogree object with response.
     ///</summary>
-    private IEnumerator GetData()
+    private async void GetHttpData()
     {
         isReady = false;
 
         SRequest req = requestsToSend.Dequeue();
         string fullPath = server + req.path;
-
-        UnityWebRequest www = UnityWebRequest.Get(fullPath);
-
-        yield return www.SendWebRequest();
-        if (www.isHttpError || www.isNetworkError)
+        try
         {
-            GameManager.gm.AppendLogLine(www.error, "red");
-            isReady = true;
-            yield break;
+            string response = await client.GetStringAsync(fullPath);
+            GameManager.gm.AppendLogLine(response);
+            CreateItemFromJson(req.path, response);
         }
-        GameManager.gm.AppendLogLine(www.downloadHandler.text);
-        CreateItemFromJson(req.path, www.downloadHandler.text);
-
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+        
         isReady = true;
     }
 
     ///<summary>
     /// Send a put request to the api.
     ///</summary>
-    private IEnumerator PutData()
+    private async void PutHttpData()
     {
         isReady = false;
 
         SRequest req = requestsToSend.Dequeue();
         string fullPath = server + req.path;
-        Debug.Log(fullPath);
+        StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpResponseMessage response = await client.PutAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+        
+        isReady = true;
+    }
 
-        UnityWebRequest www = UnityWebRequest.Put(fullPath, req.json);
-        yield return www.SendWebRequest();
+    ///<summary>
+    /// Send a post request to the api.
+    ///</summary>
+    private async void PostHttpData()
+    {
+        isReady = false;
 
-        if (www.isHttpError || www.isNetworkError)
-            GameManager.gm.AppendLogLine(www.error, "red");
-        else
-            GameManager.gm.AppendLogLine(www.downloadHandler.text);
-
+        SRequest req = requestsToSend.Dequeue();
+        string fullPath = server + req.path;
+        StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpResponseMessage response = await client.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+        
         isReady = true;
     }
 
