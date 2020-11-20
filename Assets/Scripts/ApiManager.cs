@@ -6,24 +6,12 @@ using UnityEngine;
 
 public class ApiManager : MonoBehaviour
 {
-    private struct SRequest
+    public struct SRequest
     {
         public string type;
         public string path;
         public string json;
-
-        public SRequest(string _type, string _path)
-        {
-            type = _type;
-            path = _path;
-            json = null;
-        }
-        public SRequest(string _type, string _path, string _json)
-        {
-            type = _type;
-            path = _path;
-            json = _json;
-        }
+        public string objToUpdate;
     }
     public static ApiManager instance;
 
@@ -49,15 +37,13 @@ public class ApiManager : MonoBehaviour
         if (isReady && requestsToSend.Count > 0)
         {
             if (requestsToSend.Peek().type == "get")
-                // StartCoroutine(GetData());
                 GetHttpData();
             else if (requestsToSend.Peek().type == "put")
-                // StartCoroutine(PutData());
                 PutHttpData();
             else if (requestsToSend.Peek().type == "post")
                 PostHttpData();
             // else if (messagesToSend.Peek().type == "delete")
-            //     StartCoroutine(DeleteData());
+            //     DeleteHttpData();
         }
     }
 
@@ -78,22 +64,10 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Enqueue a request to for the api.
     ///</summary>
-    ///<param name="_type">The type of request</param>
-    ///<param name="_path">The relative path of the request</param>
-    public void EnqueueRequest(string _type, string _path)
+    ///<param name="_request">The request to enqueue</param>
+    public void EnqueueRequest(SRequest _request)
     {
-        requestsToSend.Enqueue(new SRequest(_type, _path));
-    }
-
-    ///<summary>
-    /// Enqueue a request to for the api.
-    ///</summary>
-    ///<param name="_type">The type of request</param>
-    ///<param name="_path">The relative path of the request</param>
-    ///<param name="_json">The json to send</param>
-    public void EnqueueRequest(string _type, string _path, string _json)
-    {
-        requestsToSend.Enqueue(new SRequest(_type, _path, _json));
+        requestsToSend.Enqueue(_request);
     }
 
     ///<summary>
@@ -144,7 +118,7 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Send a post request to the api.
+    /// Send a post request to the api. Then, update object's id with response.
     ///</summary>
     private async void PostHttpData()
     {
@@ -158,6 +132,7 @@ public class ApiManager : MonoBehaviour
             HttpResponseMessage response = await client.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
+            UpdateObjId(req.objToUpdate, responseStr);
         }
         catch (HttpRequestException e)
         {
@@ -186,6 +161,21 @@ public class ApiManager : MonoBehaviour
             dc.id = int.Parse(_path.Substring(_path.IndexOf('/') + 1));
             CustomerGenerator.instance.CreateDatacenter(dc);
         }
+    }
+
+    ///<summary>
+    /// Update object's id with the id given by the api.
+    ///</summary>
+    ///<param name="_objName">The name of the object to update</param>
+    ///<param name="_jsonId">The json containing the id</param>
+    private void UpdateObjId(string _objName, string _jsonId)
+    {
+        string strId = Regex.Replace(_jsonId, "(.*id\":)|(})", "");
+        int id = int.Parse(strId);
+        if (GameManager.gm.tenants.ContainsKey(_objName))
+            GameManager.gm.tenants[_objName].UpdateId(id);
+        else
+            GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
     }
 
 }

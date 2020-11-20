@@ -384,11 +384,14 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             GameObject obj = null;
+            ApiManager.SRequest request = new ApiManager.SRequest();
             string[] data = _input.Split(new char[] { '=' }, 2);
+            request.type = data[0];
             switch (data[0])
             {
                 case "get":
-                    ApiManager.instance.EnqueueRequest(data[0], data[1]);
+                    request.path = data[1];
+                    ApiManager.instance.EnqueueRequest(request);
                     break;
                 case "put":
                     obj = GameManager.gm.FindByAbsPath(data[1]);
@@ -397,13 +400,15 @@ public class ConsoleController : MonoBehaviour
                         int pointCount = data[1].Count(f => (f == '.'));
                         if (pointCount == 0)
                         {
-                            string json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
-                            ApiManager.instance.EnqueueRequest("put", $"customers/{GameManager.gm.tenants[data[1]].id}", json);
+                            request.path = $"customers/{GameManager.gm.tenants[data[1]].id}";
+                            request.json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
+                            ApiManager.instance.EnqueueRequest(request);
                         }
                         else if (pointCount == 1)
                         {
-                            string json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-                            ApiManager.instance.EnqueueRequest("put", $"sites/{obj.GetComponent<Datacenter>().id}", json);
+                            request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
+                            request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                            ApiManager.instance.EnqueueRequest(request);
                         }
                     }
                     break;
@@ -411,16 +416,19 @@ public class ConsoleController : MonoBehaviour
                     obj = GameManager.gm.FindByAbsPath(data[1]);
                     if (obj)
                     {
+                        request.objToUpdate = data[1];
                         int pointCount = data[1].Count(f => (f == '.'));
                         if (pointCount == 0)
                         {
-                            string json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
-                            ApiManager.instance.EnqueueRequest("post", $"customers", json);
+                            request.path = "customers";
+                            request.json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
+                            ApiManager.instance.EnqueueRequest(request);
                         }
                         else if (pointCount == 1)
                         {
-                            string json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-                            ApiManager.instance.EnqueueRequest("post", $"sites", json);
+                            request.path = "sites";
+                            request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                            ApiManager.instance.EnqueueRequest(request);
                         }
                     }
                     break;

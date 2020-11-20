@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Datacenter : MonoBehaviour, IAttributeModif
+public class Datacenter : AServerItem, IAttributeModif
 {
     public string comment;
     public string address;
@@ -14,7 +14,6 @@ public class Datacenter : MonoBehaviour, IAttributeModif
     public string gpsY;
     public string gpsZ;
     public Tenant tenant;
-    public int id;
 
     public Color usableColor = new Color(0.86f, 0.93f, 0.95f);
     public Color reservedColor = new Color(0.95f, 0.95f, 0.95f);

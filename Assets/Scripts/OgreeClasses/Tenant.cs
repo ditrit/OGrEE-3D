@@ -42,4 +42,13 @@ public class Tenant : IAttributeModif
         }
     }
 
+    ///
+    public void UpdateId(int _id)
+    {
+        id = _id;
+        Customer cu = GameObject.Find(name)?.GetComponent<Customer>();
+        if (cu)
+            cu.GetComponent<AServerItem>().id = id;
+    }
+
 }
