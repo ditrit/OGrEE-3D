@@ -29,6 +29,7 @@ public class CustomerGenerator : MonoBehaviour
 
         GameObject customer = new GameObject(_name);
         Customer cu = customer.AddComponent<Customer>();
+        cu.name = customer.name;
 
         // Create default tenant
         CreateTenant(_name, "ffffff");
@@ -54,6 +55,7 @@ public class CustomerGenerator : MonoBehaviour
 
         GameObject customer = new GameObject(_cu.name);
         Customer cu = customer.AddComponent<Customer>();
+        cu.name = _cu.name;
         cu.contact = _cu.mainContact;
         cu.id = _cu.id;
 
@@ -93,6 +95,7 @@ public class CustomerGenerator : MonoBehaviour
         newDC.transform.parent = _data.parent;
 
         Datacenter dc = newDC.AddComponent<Datacenter>();
+        dc.name = newDC.name;
         switch (_data.orient)
         {
             case "EN":
@@ -155,6 +158,7 @@ public class CustomerGenerator : MonoBehaviour
         newDC.transform.parent = cu.transform;
 
         Datacenter dc = newDC.AddComponent<Datacenter>();
+        dc.name = newDC.name;
         switch (_dc.orient)
         {
             case "EN":
@@ -179,12 +183,10 @@ public class CustomerGenerator : MonoBehaviour
         dc.zipcode = _dc.zipcode;
         dc.city = _dc.zipcode;
         dc.country = _dc.country;
-        dc.gpsX = _dc.gps[0].ToString();
-        dc.gpsY = _dc.gps[1].ToString();
-        dc.gpsZ = _dc.gps[2].ToString();
+        dc.gps = _dc.gps;
         dc.id = _dc.id;
         dc.SetAttribute("usableColor", _dc.usableColor);
-        dc.SetAttribute("reservedColor", _dc.reservecColor);
+        dc.SetAttribute("reservedColor", _dc.reservedColor);
         dc.SetAttribute("technicalColor", _dc.technicalColor);
 
         dc.parentId = _dc.parentId;
@@ -206,7 +208,7 @@ public class CustomerGenerator : MonoBehaviour
     public Tenant CreateTenant(string _name, string _color)
     {
         Tenant newTenant = new Tenant(_name, $"#{_color}");
-        GameManager.gm.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
+        Utils.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         

@@ -559,15 +559,4 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    ///<summary>
-    /// Add a key/value pair in a dictionary only of the key doesn't exists.
-    ///</summary>
-    ///<param name="_dictionary">The dictionary to modify</param>
-    ///<param name="_key">The key to check/add</param>
-    ///<param name="_value">The value to add</param>
-    public void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
-    {
-        if (!_dictionary.ContainsKey(_key))
-            _dictionary.Add(_key, _value);
-    }
 }

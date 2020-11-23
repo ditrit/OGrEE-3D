@@ -10,14 +10,12 @@ public class Datacenter : AServerItem, IAttributeModif
     public string city;
     public string country;
     public EOrientation orientation;
-    public string gpsX;
-    public string gpsY;
-    public string gpsZ;
+    public Vector3 gps;
     public Tenant tenant;
 
-    public Color usableColor = new Color(0.86f, 0.93f, 0.95f);
-    public Color reservedColor = new Color(0.95f, 0.95f, 0.95f);
-    public Color technicalColor = new Color(0.92f, 0.95f, 0.87f);
+    public string usableColor = "DBEDF2";
+    public string reservedColor = "F2F2F2";
+    public string technicalColor = "EBF2DE";
 
     private void OnDestroy()
     {
@@ -49,11 +47,7 @@ public class Datacenter : AServerItem, IAttributeModif
                 country = _value;
                 break;
             case "gps":
-                _value = _value.Trim('[', ']');
-                string[] coords = _value.Split(',');
-                gpsX = coords[0];
-                gpsY = coords[1];
-                gpsZ = coords[2];
+                gps = Utils.ParseVector3(_value);
                 break;
             case "tenant":
                 if (GameManager.gm.tenants.ContainsKey(_value))
@@ -62,31 +56,17 @@ public class Datacenter : AServerItem, IAttributeModif
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             case "usableColor":
-                SetColor(_value, out usableColor);
+                usableColor = _value;
                 break;
             case "reservedColor":
-                SetColor(_value, out reservedColor);
+                reservedColor = _value;
                 break;
             case "technicalColor":
-                SetColor(_value, out technicalColor);
+                technicalColor = _value;
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Datacenter] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
     }
-
-    ///<summary>
-    /// Set a Color with an hexadecimal value
-    ///</summary>
-    ///<param name="_color">The color to set</param>
-    ///<param name="_hex">The hexadecimal value, without '#'</param>
-    private void SetColor(string _hex, out Color _color)
-    {
-        ColorUtility.TryParseHtmlString($"#{_hex}", out _color);
-        Room[] rooms = transform.GetComponentsInChildren<Room>();
-        foreach (Room r in rooms)
-            r.UpdateZonesColor();
-    }
-
 }

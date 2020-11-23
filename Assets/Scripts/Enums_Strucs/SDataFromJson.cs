@@ -22,9 +22,9 @@ public struct SDcFromJson
     public string zipcode;
     public string city;
     public string country;
-    public int[] gps;
+    public Vector3 gps;
     public string usableColor;
-    public string reservecColor;
+    public string reservedColor;
     public string technicalColor;
     public int parentId;
     public int id;

@@ -47,6 +47,7 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
 
         Building bd = newBD.GetComponent<Building>();
+        bd.name = newBD.name;
         BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
         bd.posXY = new Vector2(_data.pos.x, _data.pos.y);
         bd.posXYUnit = EUnit.m;
@@ -109,6 +110,7 @@ public class BuildingGenerator : MonoBehaviour
         }
 
         Room room = newRoom.GetComponent<Room>();
+        room.name = newRoom.name;
 
         Vector3 originalSize = room.usableZone.localScale;
         room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.z);

@@ -360,9 +360,9 @@ public class Room : Building
     public void UpdateZonesColor()
     {
         Datacenter dc = transform.parent.GetComponentInParent<Datacenter>();
-        usableZone.GetComponent<Renderer>().material.color = dc.usableColor;
-        reservedZone.GetComponent<Renderer>().material.color = dc.reservedColor;
-        technicalZone.GetComponent<Renderer>().material.color = dc.technicalColor;
+        usableZone.GetComponent<Renderer>().material.color = ParseColor(dc.usableColor);
+        reservedZone.GetComponent<Renderer>().material.color = ParseColor(dc.reservedColor);
+        technicalZone.GetComponent<Renderer>().material.color = ParseColor(dc.technicalColor);
     }
 
     ///<summary>
@@ -386,6 +386,17 @@ public class Room : Building
         }
         else
             GameManager.gm.AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Set a Color with an hexadecimal value
+    ///</summary>
+    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    private Color ParseColor(string _hex)
+    {
+        Color newColor;
+        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
+        return newColor;
     }
 
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class AServerItem : MonoBehaviour
 {
+    public new string name;
     public int id;
     public int parentId;
 

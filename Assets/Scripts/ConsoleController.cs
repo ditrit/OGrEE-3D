@@ -527,8 +527,8 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             SBuildingInfos infos = new SBuildingInfos();
-            infos.pos = ParseVector3(data[1]);
-            infos.size = ParseVector3(data[2]);
+            infos.pos = Utils.ParseVector3(data[1]);
+            infos.size = Utils.ParseVector3(data[2]);
             IsolateParent(data[0], out infos.parent, out infos.name);
             if (infos.parent)
                 BuildingGenerator.instance.CreateBuilding(infos);
@@ -550,10 +550,10 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             SRoomInfos infos = new SRoomInfos();
-            infos.pos = ParseVector3(data[1]);
+            infos.pos = Utils.ParseVector3(data[1]);
             if (data[2].StartsWith("["))
             {
-                infos.size = ParseVector3(data[2]);
+                infos.size = Utils.ParseVector3(data[2]);
                 infos.orient = data[3];
             }
             else
@@ -579,8 +579,8 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             SSeparatorInfos infos = new SSeparatorInfos();
-            infos.pos1XYm = ParseVector2(data[1]);
-            infos.pos2XYm = ParseVector2(data[2]);
+            infos.pos1XYm = Utils.ParseVector2(data[1]);
+            infos.pos2XYm = Utils.ParseVector2(data[2]);
             IsolateParent(data[0], out infos.parent, out infos.name);
             if (infos.parent)
                 BuildingGenerator.instance.CreateSeparator(infos);
@@ -602,10 +602,10 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             SRackInfos infos = new SRackInfos();
-            infos.pos = ParseVector2(data[1]);
+            infos.pos = Utils.ParseVector2(data[1]);
             if (data[2].StartsWith("[")) // if vector to parse...
             {
-                Vector3 tmp = ParseVector3(data[2], false);
+                Vector3 tmp = Utils.ParseVector3(data[2], false);
                 infos.size = new Vector3(tmp.x, tmp.z * GameManager.gm.uSize * 100, tmp.y);
                 infos.height = (int)tmp.z;
             }
@@ -780,13 +780,13 @@ public class ConsoleController : MonoBehaviour
             switch (data[0])
             {
                 case "move":
-                    cc.MoveCamera(ParseVector3(data[1]), ParseVector2(data[2]));
+                    cc.MoveCamera(Utils.ParseVector3(data[1]), Utils.ParseVector2(data[2]));
                     break;
                 case "translate":
-                    cc.TranslateCamera(ParseVector3(data[1]), ParseVector2(data[2]));
+                    cc.TranslateCamera(Utils.ParseVector3(data[1]), Utils.ParseVector2(data[2]));
                     break;
                 case "wait":
-                    cc.WaitCamera(ParseDecFrac(data[1]));
+                    cc.WaitCamera(Utils.ParseDecFrac(data[1]));
                     break;
                 default:
                     AppendLogLine("Unknown Camera control", "yellow");
@@ -848,7 +848,7 @@ public class ConsoleController : MonoBehaviour
         string pattern = "^[0-9.]+$";
         if (Regex.IsMatch(_input, pattern))
         {
-            float time = ParseDecFrac(_input);
+            float time = Utils.ParseDecFrac(_input);
             if (time < 0 || time > 2)
             {
                 time = Mathf.Clamp(time, 0, 2);
@@ -890,63 +890,6 @@ public class ConsoleController : MonoBehaviour
     #endregion
 
     #region Utils
-
-    ///<summary>
-    /// Parse a string with format "[x,y]" into a Vector2.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y]"</param>
-    private Vector2 ParseVector2(string _input)
-    {
-        Vector2 res = new Vector2();
-
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        res.x = ParseDecFrac(parts[0]);
-        res.y = ParseDecFrac(parts[1]);
-        return res;
-    }
-
-    ///<summary>
-    /// Parse a string with format "[x,y,z]" into a Vector3. The vector can be given in Y axis or Z axis up.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y,z]"</param>
-    ///<param name="_ZUp">Is the coordinates given are in Z axis up or Y axis up ? </param>
-    private Vector3 ParseVector3(string _input, bool _ZUp = true)
-    {
-        Vector3 res = new Vector3();
-
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        res.x = ParseDecFrac(parts[0]);
-        if (_ZUp)
-        {
-            res.y = ParseDecFrac(parts[2]);
-            res.z = ParseDecFrac(parts[1]);
-        }
-        else
-        {
-            res.y = ParseDecFrac(parts[1]);
-            res.z = ParseDecFrac(parts[2]);
-        }
-        return res;
-    }
-
-    ///<summary>
-    /// Parse a string into a float. Can be decimal, a fraction and/or negative.
-    ///</summary>
-    ///<param name="_input">The string which contains the float</param>
-    private float ParseDecFrac(string _input)
-    {
-        if (_input.Contains("/"))
-        {
-            string[] div = _input.Split('/');
-            float a = float.Parse(div[0], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-            float b = float.Parse(div[1], NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-            return a / b;
-        }
-        else
-            return float.Parse(_input, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-    }
 
     ///<summary>
     /// Take a hierarchy name and give the parent's transform and the child's name.
