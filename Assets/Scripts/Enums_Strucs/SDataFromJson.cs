@@ -26,6 +26,6 @@ public struct SDcFromJson
     public string usableColor;
     public string reservecColor;
     public string technicalColor;
-    public int customer_id;
+    public int parentId;
     public int id;
 }

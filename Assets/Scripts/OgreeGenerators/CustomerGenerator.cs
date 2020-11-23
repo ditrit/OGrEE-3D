@@ -113,6 +113,8 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
+        dc.parentId = _data.parent.GetComponent<Customer>().id;
+
         // By default, tenant is customer's one
         dc.tenant = GameManager.gm.tenants[_data.parent.name];
 
@@ -133,12 +135,12 @@ public class CustomerGenerator : MonoBehaviour
         Customer cu = null;
         foreach (Customer customer in customers)
         {
-            if (customer.id == _dc.customer_id)
+            if (customer.id == _dc.parentId)
                 cu = customer;
         }
         if (!cu)
         {
-            GameManager.gm.AppendLogLine($"Parent customer not found (id = {_dc.customer_id})", "red");
+            GameManager.gm.AppendLogLine($"Parent customer not found (id = {_dc.parentId})", "red");
             return null;
         }
 
@@ -184,6 +186,8 @@ public class CustomerGenerator : MonoBehaviour
         dc.SetAttribute("usableColor", _dc.usableColor);
         dc.SetAttribute("reservedColor", _dc.reservecColor);
         dc.SetAttribute("technicalColor", _dc.technicalColor);
+
+        dc.parentId = _dc.parentId;
 
         // By default, tenant is customer's one
         dc.tenant = GameManager.gm.tenants[cu.name];

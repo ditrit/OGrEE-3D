@@ -148,7 +148,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     private void CreateItemFromJson(string _path, string _json)
     {
-        if (Regex.IsMatch(_path, "customers/[0-9]+"))
+        if (Regex.IsMatch(_path, "customers/[0-9]+$"))
         {
             Debug.Log("Create Customer");
             SCuFromJson cu = JsonUtility.FromJson<SCuFromJson>(_json);

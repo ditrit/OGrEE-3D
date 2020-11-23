@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class AServerItem : MonoBehaviour
 {
     public int id;
+    public int parentId;
 
     public void UpdateId(int _id)
     {
