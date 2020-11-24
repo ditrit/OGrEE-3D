@@ -377,60 +377,26 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax Error on variable creation", "red");
     }
 
-    ///
+    ///<summary>
+    /// Call the right ApiManager.CreateXXXRequest() if syntax is good.
+    ///</summary>
+    ///<param name="_input">The input to parse</param>
     private void CallApi(string _input)
     {
         string pattern = "(get|post|put|delete)=+";
         if (Regex.IsMatch(_input, pattern))
         {
-            GameObject obj = null;
-            ApiManager.SRequest request = new ApiManager.SRequest();
             string[] data = _input.Split(new char[] { '=' }, 2);
-            request.type = data[0];
             switch (data[0])
             {
                 case "get":
-                    request.path = data[1];
-                    ApiManager.instance.EnqueueRequest(request);
+                    ApiManager.instance.CreateGetRequest(data[1]);
                     break;
                 case "put":
-                    obj = GameManager.gm.FindByAbsPath(data[1]);
-                    if (obj)
-                    {
-                        int pointCount = data[1].Count(f => (f == '.'));
-                        if (pointCount == 0)
-                        {
-                            request.path = $"customers/{GameManager.gm.tenants[data[1]].id}";
-                            request.json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
-                            ApiManager.instance.EnqueueRequest(request);
-                        }
-                        else if (pointCount == 1)
-                        {
-                            request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
-                            request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-                            ApiManager.instance.EnqueueRequest(request);
-                        }
-                    }
+                    ApiManager.instance.CreatePutRequest(data[1]);
                     break;
                 case "post":
-                    obj = GameManager.gm.FindByAbsPath(data[1]);
-                    if (obj)
-                    {
-                        request.objToUpdate = data[1];
-                        int pointCount = data[1].Count(f => (f == '.'));
-                        if (pointCount == 0)
-                        {
-                            request.path = "customers";
-                            request.json = JsonUtility.ToJson(GameManager.gm.tenants[data[1]]);
-                            ApiManager.instance.EnqueueRequest(request);
-                        }
-                        else if (pointCount == 1)
-                        {
-                            request.path = "sites";
-                            request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-                            ApiManager.instance.EnqueueRequest(request);
-                        }
-                    }
+                    ApiManager.instance.CreatePostRequest(data[1]);
                     break;
                 case "delete":
                     break;

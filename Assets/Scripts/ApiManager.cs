@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -42,8 +43,8 @@ public class ApiManager : MonoBehaviour
                 PutHttpData();
             else if (requestsToSend.Peek().type == "post")
                 PostHttpData();
-            // else if (messagesToSend.Peek().type == "delete")
-            //     DeleteHttpData();
+            else if (requestsToSend.Peek().type == "delete")
+                DeleteHttpData();
         }
     }
 
@@ -62,12 +63,116 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Enqueue a request to for the api.
+    /// Create an GET request from _input.
     ///</summary>
-    ///<param name="_request">The request to enqueue</param>
-    public void EnqueueRequest(SRequest _request)
+    ///<param name="_input">The get request to send</param>
+    public void CreateGetRequest(string _input)
     {
-        requestsToSend.Enqueue(_request);
+        SRequest request = new SRequest();
+        request.type = "get";
+        request.path = _input;
+
+        requestsToSend.Enqueue(request);
+    }
+
+    ///<summary>
+    /// Create an PUT request from _input.
+    ///</summary>
+    ///<param name="_objName">The hierarchy name of the object to put</param>
+    public void CreatePutRequest(string _objName)
+    {
+        SRequest request = new SRequest();
+        request.type = "put";
+
+        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
+        if (obj)
+        {
+            int pointCount = _objName.Count(f => (f == '.'));
+            if (pointCount == 0)
+            {
+                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
+                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
+            }
+            else if (pointCount == 1)
+            {
+                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
+                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+            }
+            else if (pointCount == 2)
+            {
+                request.path = $"buildings/{obj.GetComponent<Building>().id}"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Building>());
+            }
+            else if (pointCount == 3)
+            {
+                request.path = $"rooms/{obj.GetComponent<Room>().id}"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Room>());
+            }
+            else if (pointCount == 4)
+            {
+                request.path = $"racks/{obj.GetComponent<Rack>().id}"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Rack>());
+            }
+            else
+            {
+                request.path = $"objects/{obj.GetComponent<Object>().id}"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Object>());
+            }
+            requestsToSend.Enqueue(request);
+        }
+        else
+            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
+    }
+
+    ///<summary>
+    /// Create an POST request from _input.
+    ///</summary>
+    ///<param name="_objName">The hierarchy name of the object to post</param>
+    public void CreatePostRequest(string _objName)
+    {
+        SRequest request = new SRequest();
+        request.type = "post";
+
+        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
+        if (obj)
+        {
+            int pointCount = _objName.Count(f => (f == '.'));
+            if (pointCount == 0)
+            {
+                request.path = "customers";
+                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
+            }
+            else if (pointCount == 1)
+            {
+                request.path = "sites";
+                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+            }
+            else if (pointCount == 2)
+            {
+                request.path = "buildings"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Building>());
+            }
+            else if (pointCount == 3)
+            {
+                request.path = "rooms"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Room>());
+            }
+            else if (pointCount == 4)
+            {
+                request.path = "racks"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Rack>());
+            }
+            else
+            {
+                request.path = "objects"; //?
+                request.json = JsonUtility.ToJson(obj.GetComponent<Object>());
+            }
+            request.objToUpdate = _objName;
+
+            requestsToSend.Enqueue(request);
+        }
+        else
+            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
     }
 
     ///<summary>
@@ -89,7 +194,7 @@ public class ApiManager : MonoBehaviour
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
-        
+
         isReady = true;
     }
 
@@ -113,7 +218,7 @@ public class ApiManager : MonoBehaviour
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
-        
+
         isReady = true;
     }
 
@@ -138,7 +243,7 @@ public class ApiManager : MonoBehaviour
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
-        
+
         isReady = true;
     }
 
