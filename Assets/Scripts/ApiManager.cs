@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -139,6 +139,29 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
         
+        isReady = true;
+    }
+
+    ///<summary>
+    /// Send a delete request to the api.
+    ///</summary>
+    private async void DeleteHttpData()
+    {
+        isReady = false;
+
+        SRequest req = requestsToSend.Dequeue();
+        string fullPath = server + req.path;
+        try
+        {
+            HttpResponseMessage response = await client.DeleteAsync(fullPath);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+
         isReady = true;
     }
 
