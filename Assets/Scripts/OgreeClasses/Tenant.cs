@@ -40,9 +40,17 @@ public class Tenant : IAttributeModif
                 GameManager.gm.AppendLogLine($"[Tenant] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
+
+        Customer cu = GameObject.Find(name)?.GetComponent<Customer>();
+        if (cu)
+            cu.PutData();
+
     }
 
-    ///
+    ///<summary>
+    /// Update Id of corresponding Customer if existing
+    ///</summary>
+    ///<param name="_id">The id to set</param>
     public void UpdateId(int _id)
     {
         id = _id;

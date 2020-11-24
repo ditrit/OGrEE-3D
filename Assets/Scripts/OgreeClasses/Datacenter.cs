@@ -68,5 +68,6 @@ public class Datacenter : AServerItem, IAttributeModif
                 GameManager.gm.AppendLogLine($"[Datacenter] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
+        PutData();
     }
 }

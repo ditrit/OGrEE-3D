@@ -37,6 +37,8 @@ public class CustomerGenerator : MonoBehaviour
         customer.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_name, customer);
         
+        ApiManager.instance.CreatePostRequest(cu.name);
+
         return cu;
     }
 
@@ -123,6 +125,8 @@ public class CustomerGenerator : MonoBehaviour
 
         newDC.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newDC);
+
+        ApiManager.instance.CreatePostRequest(dc.name);
 
         return dc;
     }
