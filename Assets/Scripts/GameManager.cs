@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
     public ConsoleController consoleController;
+    private ConfigLoader configLoader = new ConfigLoader();
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -76,14 +77,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
-        string[] args = System.Environment.GetCommandLineArgs();
-        if (args.Length == 2)
-            consoleController.RunCommandString($".cmds:{args[1]}");
-
-        UpdateFocusText();
+        configLoader.LoadConfig();
+        StartCoroutine(configLoader.ConnectToApi());
+        UpdateFocusText();      
 #if DEBUG
-        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
@@ -561,15 +559,4 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    ///<summary>
-    /// Add a key/value pair in a dictionary only of the key doesn't exists.
-    ///</summary>
-    ///<param name="_dictionary">The dictionary to modify</param>
-    ///<param name="_key">The key to check/add</param>
-    ///<param name="_value">The value to add</param>
-    public void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
-    {
-        if (!_dictionary.ContainsKey(_key))
-            _dictionary.Add(_key, _value);
-    }
 }

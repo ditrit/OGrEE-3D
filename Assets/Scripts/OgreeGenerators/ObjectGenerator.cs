@@ -64,6 +64,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
+        rack.name = newRack.name;
         rack.posXY = _data.pos;
         rack.posXYUnit = EUnit.tile;
         if (string.IsNullOrEmpty(_data.template))
@@ -309,6 +310,7 @@ public class ObjectGenerator : MonoBehaviour
 
         newDevice.name = _data.name;
         Object obj = newDevice.GetComponent<Object>();
+        obj.name = newDevice.name;
         obj.size = new Vector2(newDevice.transform.GetChild(0).localScale.x,
                                 newDevice.transform.GetChild(0).localScale.z) * 1000;
         obj.sizeUnit = EUnit.mm;

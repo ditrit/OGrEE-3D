@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
+public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiver
 {
     public string description;
     public EObjFamily family;
