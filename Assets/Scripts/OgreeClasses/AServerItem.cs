@@ -35,7 +35,7 @@ public abstract class AServerItem : MonoBehaviour
     private IEnumerator WaitAndPut()
     {
         yield return new WaitForSeconds(2f);
-        string hierarchyName = GetComponent<HierarchyName>()?.GetHierarchyName();
+        string hierarchyName = GetComponent<HierarchyName>()?.fullname;
         ApiManager.instance.CreatePutRequest(hierarchyName);
     }
 }

@@ -78,10 +78,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         configLoader.LoadConfig();
-        StartCoroutine(configLoader.ConnectToApi());
+        //StartCoroutine(configLoader.ConnectToApi());
         UpdateFocusText();      
 #if DEBUG
-        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
@@ -325,7 +325,7 @@ public class GameManager : MonoBehaviour
     {
         if (focus.Count > 0)
         {
-            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().GetHierarchyName();
+            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().fullname;
             focusText.text = $"Focus on {objName}";
         }
         else

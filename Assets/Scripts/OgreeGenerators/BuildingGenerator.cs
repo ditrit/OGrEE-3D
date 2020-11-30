@@ -171,8 +171,8 @@ public class BuildingGenerator : MonoBehaviour
         room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
         room.UpdateZonesColor();
 
-        newRoom.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newRoom);
+        string hn = newRoom.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newRoom);
         
         if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
@@ -213,8 +213,8 @@ public class BuildingGenerator : MonoBehaviour
         separator.transform.localPosition += new Vector3(_data.pos1XYm.x, 0, _data.pos1XYm.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
-        separator.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(separator.GetComponent<HierarchyName>().GetHierarchyName(), separator);
+        string hn = separator.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, separator);
     }
 
     ///<summary>

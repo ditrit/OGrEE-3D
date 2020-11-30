@@ -151,7 +151,7 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{cu.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_dc.name}";
+        string hierarchyName = $"{cu.GetComponent<HierarchyName>()?.fullname}.{_dc.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -198,8 +198,8 @@ public class CustomerGenerator : MonoBehaviour
         // By default, tenant is customer's one
         dc.tenant = GameManager.gm.tenants[cu.name];
 
-        newDC.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newDC);
+        string hn = newDC.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newDC);
 
         return dc;
     }

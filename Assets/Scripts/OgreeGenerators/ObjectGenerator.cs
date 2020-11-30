@@ -108,8 +108,8 @@ public class ObjectGenerator : MonoBehaviour
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
-        newRack.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newRack);
+        string hn = newRack.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newRack);
 
         if (!string.IsNullOrEmpty(_data.template))
         {
@@ -118,9 +118,8 @@ public class ObjectGenerator : MonoBehaviour
             {
                 if (comp.gameObject != rack.gameObject)
                 {
-                    // Debug.Log($"[{rack.name}] => {comp.name}");
-                    GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
-                                                comp.gameObject);
+                    string compHn = comp.GetComponent<HierarchyName>().UpdateHierarchyName();
+                    GameManager.gm.allItems.Add(compHn, comp.gameObject);
                 }
             }
         }
@@ -148,8 +147,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.GetHierarchyName()}.{_data.name}";
-        // Debug.Log("Create " + hierarchyName);
+        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -328,8 +326,8 @@ public class ObjectGenerator : MonoBehaviour
 
         newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
 
-        newDevice.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newDevice);
+        string hn = newDevice.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newDevice);
 
         if (!string.IsNullOrEmpty(_data.template))
         {
@@ -339,8 +337,8 @@ public class ObjectGenerator : MonoBehaviour
                 if (comp.gameObject != newDevice.gameObject)
                 {
                     // Debug.Log($"[{newDevice.name}] => {comp.name}");
-                    GameManager.gm.allItems.Add(comp.GetComponent<HierarchyName>().GetHierarchyName(),
-                                                comp.gameObject);
+                    string compHn = comp.GetComponent<HierarchyName>().UpdateHierarchyName();
+                    GameManager.gm.allItems.Add(compHn, comp.gameObject);
                 }
             }
         }

@@ -190,12 +190,12 @@ public class ConsoleController : MonoBehaviour
             string[] items = _input.Split(',');
             for (int i = 0; i < items.Length; i++)
             {
-                items[i] = $"{root.GetComponent<HierarchyName>().GetHierarchyName()}.{items[i]}";
+                items[i] = $"{root.GetComponent<HierarchyName>().fullname}.{items[i]}";
                 bool found = false;
                 HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
                 foreach (HierarchyName child in children)
                 {
-                    if (child.GetHierarchyName() == items[i])
+                    if (child.fullname == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
                             GameManager.gm.SetCurrentItem(child.gameObject);
