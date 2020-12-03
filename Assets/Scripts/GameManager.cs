@@ -388,6 +388,7 @@ public class GameManager : MonoBehaviour
     {
         SetCurrentItem(null);
         focus.Clear();
+        UpdateFocusText();
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);

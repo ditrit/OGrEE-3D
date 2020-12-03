@@ -73,4 +73,18 @@ public static class Utils
         if (!_dictionary.ContainsKey(_key))
             _dictionary.Add(_key, _value);
     }
+
+    ///<summary>
+    /// Gets every Racks in GameManager.allItems and set their Collider.enabled.
+    ///</summary>
+    ///<param name="_value">The value to set</param>
+    public static void SwitchAllCollidersInRacks(bool _value)
+    {
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        {
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<Rack>())
+                obj.GetComponent<Collider>().enabled = _value;
+        }
+    }
 }

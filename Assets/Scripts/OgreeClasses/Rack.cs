@@ -239,7 +239,6 @@ public class Rack : Object
     ///</summary>
     private IEnumerator ReactiveCollider()
     {
-        // yield return new WaitForSeconds(1);
         yield return new WaitForEndOfFrame(); // end of current frame
         yield return new WaitForEndOfFrame(); // end of next frame
         foreach (Transform child in transform)
@@ -247,5 +246,6 @@ public class Rack : Object
             if (child.GetComponent<Collider>())
                 child.GetComponent<Collider>().enabled = true;
         }
+        Utils.SwitchAllCollidersInRacks(false);
     }
 }
