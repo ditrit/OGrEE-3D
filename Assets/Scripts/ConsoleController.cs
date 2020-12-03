@@ -399,6 +399,7 @@ public class ConsoleController : MonoBehaviour
                     ApiManager.instance.CreatePostRequest(data[1]);
                     break;
                 case "delete":
+                    ApiManager.instance.CreateDeleteRequest(data[1]);
                     break;
             }
         }

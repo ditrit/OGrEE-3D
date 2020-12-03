@@ -123,10 +123,10 @@ public class CustomerGenerator : MonoBehaviour
         // By default, tenant is customer's one
         dc.tenant = GameManager.gm.tenants[_data.parent.name];
 
-        newDC.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newDC);
+        string hn = newDC.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newDC);
 
-        ApiManager.instance.CreatePostRequest(dc.name);
+        ApiManager.instance.CreatePostRequest(hn);
 
         return dc;
     }

@@ -176,6 +176,49 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Create an DELETE request from _input.
+    ///</summary>
+    ///<param name="_objName">The hierarchy name of the object to delete</param>
+    public void CreateDeleteRequest(string _objName)
+    {
+        SRequest request = new SRequest();
+        request.type = "delete";
+
+        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
+        if (obj)
+        {
+            int pointCount = _objName.Count(f => (f == '.'));
+            if (pointCount == 0)
+            {
+                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
+            }
+            else if (pointCount == 1)
+            {
+                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
+            }
+            else if (pointCount == 2)
+            {
+                request.path = $"buildings/{obj.GetComponent<Building>().id}"; //?
+            }
+            else if (pointCount == 3)
+            {
+                request.path = $"rooms/{obj.GetComponent<Room>().id}"; //?
+            }
+            else if (pointCount == 4)
+            {
+                request.path = $"racks/{obj.GetComponent<Rack>().id}"; //?
+            }
+            else
+            {
+                request.path = $"objects/{obj.GetComponent<Object>().id}"; //?
+            }
+            requestsToSend.Enqueue(request);
+        }
+        else
+            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
+    }
+
+    ///<summary>
     /// Send a get request to the api. Create an Ogree object with response.
     ///</summary>
     private async void GetHttpData()
@@ -276,17 +319,16 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     private void CreateItemFromJson(string _path, string _json)
     {
-        if (Regex.IsMatch(_path, "customers/[0-9]+$"))
+        if (Regex.IsMatch(_path, "customers/[^/]+$"))
         {
             Debug.Log("Create Customer");
             SCuFromJson cu = JsonUtility.FromJson<SCuFromJson>(_json);
             CustomerGenerator.instance.CreateCustomer(cu);
         }
-        else if (Regex.IsMatch(_path, "sites/[0-9]+"))
+        else if (Regex.IsMatch(_path, "sites/[^/]+$"))
         {
             Debug.Log("Create Datacenter (site)");
             SDcFromJson dc = JsonUtility.FromJson<SDcFromJson>(_json);
-            dc.id = int.Parse(_path.Substring(_path.IndexOf('/') + 1));
             CustomerGenerator.instance.CreateDatacenter(dc);
         }
     }
@@ -298,8 +340,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_jsonId">The json containing the id</param>
     private void UpdateObjId(string _objName, string _jsonId)
     {
-        string strId = Regex.Replace(_jsonId, "(.*id\":)|(})", "");
-        int id = int.Parse(strId);
+        string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
         if (GameManager.gm.tenants.ContainsKey(_objName))
             GameManager.gm.tenants[_objName].UpdateId(id);
         else
