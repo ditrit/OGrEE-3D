@@ -223,22 +223,37 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">HierarchyName of the object to delete</param>
     private IEnumerator DeleteItem(string _input)
     {
-        if (_input == "selection")
+        string pattern = "^[^@\\s]+(@server){0,1}$";
+        if (Regex.IsMatch(_input, pattern))
         {
-            List<string> itemsToDel = new List<string>();
-            foreach (GameObject item in GameManager.gm.currentItems)
-                itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
-            foreach (string item in itemsToDel)
-                GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item]);
+            string[] data = _input.Split('@');
+            if (_input.StartsWith("selection"))
+            {
+                List<string> itemsToDel = new List<string>();
+                foreach (GameObject item in GameManager.gm.currentItems)
+                    itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
+                foreach (string item in itemsToDel)
+                {
+                    if (data.Length > 1)
+                        GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], true);
+                    else
+                        GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], false);
+                }
+            }
+            // Try to delete an Ogree object
+            else if (GameManager.gm.allItems.Contains(data[0]))
+            {
+                if (data.Length > 1)
+                    GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], true);
+                else
+                    GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
+            }
+            // Try to delete a tenant
+            else if (GameManager.gm.tenants.ContainsKey(data[0]))
+                GameManager.gm.tenants.Remove(data[0]);
+            else
+                AppendLogLine($"Error: \"{data[0]}\" does not exist", "yellow");
         }
-        // Try to delete an Ogree object
-        else if (GameManager.gm.allItems.Contains(_input))
-            GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[_input]);
-        // Try to delete a tenant
-        else if (GameManager.gm.tenants.ContainsKey(_input))
-            GameManager.gm.tenants.Remove(_input);
-        else
-            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
 
         yield return new WaitForEndOfFrame();
         isReady = true;

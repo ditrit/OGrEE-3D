@@ -338,12 +338,21 @@ public class GameManager : MonoBehaviour
     /// Delete a GameObject, set currentItem to null.
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
-    public void DeleteItem(GameObject _toDel)
+    ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
+    public void DeleteItem(GameObject _toDel, bool _serverDelete)
     {
         SetCurrentItem(null);
 
         // Should count type of deleted objects
-        allItems.Remove(_toDel.GetComponent<HierarchyName>().fullname);
+        if (_serverDelete)
+        {
+            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
+            foreach (Transform child in _toDel.transform)
+            {
+                if (child.GetComponent<AServerItem>())
+                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
+            }
+        }
         Destroy(_toDel);
     }
 
