@@ -10,7 +10,7 @@ public class Tenant : IAttributeModif
     public string mainContact;
     public string mainPhone;
     public string mainEmail;
-    public int id;
+    public string id;
 
     public Tenant(string _name, string _color)
     {
@@ -51,7 +51,7 @@ public class Tenant : IAttributeModif
     /// Update Id of corresponding Customer if existing
     ///</summary>
     ///<param name="_id">The id to set</param>
-    public void UpdateId(int _id)
+    public void UpdateId(string _id)
     {
         id = _id;
         Customer cu = GameObject.Find(name)?.GetComponent<Customer>();

@@ -8,7 +8,12 @@ public class Customer : AServerItem
 
     private void OnDestroy()
     {
-        GameManager.gm.allItems.Remove(name);
+        if (GameManager.gm.tenants.ContainsKey(name))
+        {
+            GameManager.gm.tenants.Remove(name);
+            Filters.instance.tenantsList.Remove($"<color=#ffffff>{name}</color>");
+            Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+        }
     }
 
     ///<summary>

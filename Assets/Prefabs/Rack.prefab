@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 2844674376055364572}
   - component: {fileID: 777670014700511597}
   - component: {fileID: 7387853021447548810}
-  - component: {fileID: 236022705429098809}
+  - component: {fileID: 585199090292068354}
   m_Layer: 0
   m_Name: Rack
-  m_TagString: Selectable
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,6 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7424943e94dc5f54b994cb997544961d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  name: 
+  id: 0
+  parentId: 0
   description: 
   family: 0
   posXY: {x: 0, y: 0}
@@ -65,6 +68,7 @@ MonoBehaviour:
     mainContact: 
     mainPhone: 
     mainEmail: 
+    id: 0
   vendor: 
   type: 
   model: 
@@ -96,11 +100,11 @@ BoxCollider:
   m_GameObject: {fileID: 382823270839367371}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.55, y: 1.75, z: 0.95}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &236022705429098809
+--- !u!54 &585199090292068354
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -649,7 +653,7 @@ GameObject:
   - component: {fileID: 7773766647226910043}
   m_Layer: 0
   m_Name: TextDescription
-  m_TagString: Selectable
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

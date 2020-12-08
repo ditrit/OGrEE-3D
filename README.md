@@ -48,6 +48,11 @@ OGREE 3D is a data-center viewer
         - [Move camera](#Move-camera)
         - [Translate camera](#Translate-camera)
         - [Wait between two translations](#Wait-between-two-translations)
+    - [Communicate with API](#Communicate-with-API)
+        - [Get](#Get)
+        - [Post](#Post)
+        - [Put](#Put)
+        - [Delete](#Delete)
     - [Examples](#Examples)
 - [Templates definition](#Templates-definition)
     - [Room template](#Room-template)
@@ -139,9 +144,12 @@ Select one or several children of current selected object.
 
 ### Delete object
 Works with single or multi selection.  
+If `@server` is used, also delete item in server
 ```
 -[name]  
--selection
+-selection  
+-[name]@server  
+-selection@server  
 ```  
 
 ## Create commands
@@ -338,6 +346,37 @@ You can define a delay between two camera translations.
 ```
 camera.wait=[time]
 ```   
+
+## Communicate with API  
+The server url is given in config file / command line argument.  
+Works only with customers and datacenters.  
+
+### Get  
+Get an item from server. Create the corresponding object in scene.  
+```
+api.get=[type/id]
+```  
+### Post  
+Post the item on server.  
+Automatically called on creation.  
+```
+api.post=[name]
+```  
+
+### Put  
+Put the item on server.  
+Automatically called 2 seconds after the last item modification.  
+```
+api.put=[name]
+```  
+
+### Delete  
+Delete the item on server only.  
+Automatically called if '@server' used on delete command.  
+```
+api.delete=[name]
+```  
+
 
 ## Examples
 ```

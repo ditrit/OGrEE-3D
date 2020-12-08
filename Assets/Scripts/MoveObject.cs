@@ -31,6 +31,7 @@ public class MoveObject : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 50))
             {
                 dest = hit.point;
+                Utils.SwitchAllCollidersInRacks(true);
                 Move();
             }
             hasDrag = false;

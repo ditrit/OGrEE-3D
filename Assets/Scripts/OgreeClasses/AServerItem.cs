@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class AServerItem : MonoBehaviour
 {
     public new string name;
-    public int id;
-    public int parentId;
+    public string id;
+    public string parentId;
 
     private Coroutine updatingCoroutine = null;
 
@@ -14,7 +14,7 @@ public abstract class AServerItem : MonoBehaviour
     /// Set id.
     ///</summary>
     ///<param name="_id">The id to set</param>
-    public void UpdateId(int _id)
+    public void UpdateId(string _id)
     {
         id = _id;
     }
@@ -35,7 +35,7 @@ public abstract class AServerItem : MonoBehaviour
     private IEnumerator WaitAndPut()
     {
         yield return new WaitForSeconds(2f);
-        string hierarchyName = GetComponent<HierarchyName>()?.GetHierarchyName();
+        string hierarchyName = GetComponent<HierarchyName>()?.fullname;
         ApiManager.instance.CreatePutRequest(hierarchyName);
     }
 }

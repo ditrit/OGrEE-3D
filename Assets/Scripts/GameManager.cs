@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(configLoader.ConnectToApi());
         UpdateFocusText();      
 #if DEBUG
-        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
@@ -325,7 +325,7 @@ public class GameManager : MonoBehaviour
     {
         if (focus.Count > 0)
         {
-            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().GetHierarchyName();
+            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().fullname;
             focusText.text = $"Focus on {objName}";
         }
         else
@@ -338,12 +338,21 @@ public class GameManager : MonoBehaviour
     /// Delete a GameObject, set currentItem to null.
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
-    public void DeleteItem(GameObject _toDel)
+    ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
+    public void DeleteItem(GameObject _toDel, bool _serverDelete)
     {
         SetCurrentItem(null);
 
         // Should count type of deleted objects
-        allItems.Remove(_toDel.GetComponent<HierarchyName>().fullname);
+        if (_serverDelete)
+        {
+            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
+            foreach (Transform child in _toDel.transform)
+            {
+                if (child.GetComponent<AServerItem>())
+                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
+            }
+        }
         Destroy(_toDel);
     }
 
@@ -388,6 +397,7 @@ public class GameManager : MonoBehaviour
     {
         SetCurrentItem(null);
         focus.Clear();
+        UpdateFocusText();
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);

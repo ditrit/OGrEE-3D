@@ -9,7 +9,7 @@ public struct SCuFromJson
     public string mainContact;
     public string mainPhone;
     public string mainEmail;
-    public int id;
+    public string id;
 }
 
 [System.Serializable]
@@ -26,6 +26,6 @@ public struct SDcFromJson
     public string usableColor;
     public string reservedColor;
     public string technicalColor;
-    public int parentId;
-    public int id;
+    public string parentId;
+    public string id;
 }

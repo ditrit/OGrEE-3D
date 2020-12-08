@@ -76,7 +76,7 @@ public class ZoomManager : MonoBehaviour
 
         if (GameManager.gm.currentItems.Count == 0)
             return;
-        string target = GameManager.gm.currentItems[0].GetComponent<HierarchyName>().GetHierarchyName();
+        string target = GameManager.gm.currentItems[0].GetComponent<HierarchyName>().fullname;
 
         foreach (SObjectCmd obj in devices)
         {
