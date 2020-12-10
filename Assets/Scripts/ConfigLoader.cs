@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +11,7 @@ public class ConfigLoader
     {
         public string verbose;
         public string fullscreen;
+        public Dictionary<string, string> textures;
         public string db_url;
         public string db_login;
         public string db_token;
@@ -128,5 +129,32 @@ public class ConfigLoader
         GameManager.gm.AppendLogLine(response);
 
         ApiManager.instance.Initialize(config.db_url, config.db_login, config.db_token);
+    }
+
+    ///<summary>
+    /// 
+    ///</summary>
+    public IEnumerator LoadTextures()
+    {
+        foreach (KeyValuePair<string, string> kvp in config.textures)
+        {
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
+            yield return www.SendWebRequest();
+            if (www.isHttpError || www.isNetworkError)
+                GameManager.gm.AppendLogLine($"{kvp.Value} not found", "red");
+                // GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
+            else
+                GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
+        }
+        if (!GameManager.gm.textures.ContainsKey("perf22"))
+        {
+            GameManager.gm.AppendLogLine("Load default texture for perf22", "yellow");
+            GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
+        }
+        if (!GameManager.gm.textures.ContainsKey("perf29"))
+        {
+            GameManager.gm.AppendLogLine("Load default texture for perf29", "yellow");
+            GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
+        }
     }
 }
