@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -78,13 +79,13 @@ public class ConfigLoader
         {
             StreamReader jsonCongif = File.OpenText("OGREE 3D_Data/config.json");
             GameManager.gm.AppendLogLine("Load custom config file", "green");
-            return JsonUtility.FromJson<SConfig>(jsonCongif.ReadToEnd());
+            return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
         catch
         {
             TextAsset ResourcesCongif = Resources.Load<TextAsset>("config");
             GameManager.gm.AppendLogLine("Load default config file", "green");
-            return JsonUtility.FromJson<SConfig>(ResourcesCongif.ToString());
+            return JsonConvert.DeserializeObject<SConfig>(ResourcesCongif.ToString());
         }
     }
 
@@ -97,8 +98,6 @@ public class ConfigLoader
         verbose = (_config.verbose == "true");
 
         FullScreenMode((_config.fullscreen == "true"));
-
-        // MonoBehaviour.StartCoroutine(ConnectToApi(_config.db_url));
     }
 
     ///<summary> 
@@ -112,7 +111,9 @@ public class ConfigLoader
         Screen.fullScreen = _value;
     }
 
-    ///
+    ///<summary>
+    /// Send a get request to the given url. If no error, initialize ApiManager.
+    ///</summary>
     public IEnumerator ConnectToApi()
     {
         UnityWebRequest www = UnityWebRequest.Get(config.db_url);
