@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -267,16 +267,21 @@ public class Room : Building
                 if (!string.IsNullOrEmpty(tileData.type))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
-                    if (tileData.type == "perf22")
+                    if (GameManager.gm.textures.ContainsKey(tileData.type))
                     {
                         rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
+                        rend.material.mainTexture = GameManager.gm.textures[tileData.type];
                     }
-                    if (tileData.type == "perf29")
-                    {
-                        rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
-                    }
+                    // if (tileData.type == "perf22")
+                    // {
+                    //     rend.material = new Material(GameManager.gm.perfMat);
+                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
+                    // }
+                    // if (tileData.type == "perf29")
+                    // {
+                    //     rend.material = new Material(GameManager.gm.perfMat);
+                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
+                    // }
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
