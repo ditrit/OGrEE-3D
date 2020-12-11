@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -24,6 +24,8 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     public string type;
     public string model;
     public string serial;
+
+    public string color;
 
     public Dictionary<string, string> extras = new Dictionary<string, string>();
     [SerializeField] private List<string> extraKeys = new List<string>();
@@ -145,6 +147,7 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     protected void SetColor(string _hex)
     {
+        color = _hex;
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
