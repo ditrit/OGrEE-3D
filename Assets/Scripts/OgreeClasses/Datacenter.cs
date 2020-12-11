@@ -9,7 +9,7 @@ public class Datacenter : AServerItem, IAttributeModif
     public string zipcode;
     public string city;
     public string country;
-    public EOrientation orientation;
+    public ECardinalOrient orientation;
     public Vector3 gps;
     public Tenant tenant;
 

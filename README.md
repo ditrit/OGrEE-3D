@@ -528,7 +528,7 @@ Templates are json files describing an object.
  "role"       : "parent",
  "orientation": "horizontal",      
  "side"       : "top",
- "fulllength" : "yes/no",
+ "fulldepth" : "yes/no",
  "sizeWDHmm"  : [width ,depth ,height],
  "sizeWDU"  : [width ,depth ,heightU],
  "components" : [
@@ -549,7 +549,7 @@ Templates are json files describing an object.
  "type"        : "chassis/blade",
  "role"        : "parent/child",
  "side"        : "front/rear/frontflipped/rearflipped",
- "fulllength"  : "yes/no",
+ "fulldepth"  : "yes/no",
  "sizeWDHmm"   : [x,y,z],
  "components"  : [
   { "location": "location",  "type": "chassis/blade",   "role": "parent/child", "position" : "front/rear",  "elemPos" : [x,y,z],  "elemSize" : [x,y,z], "mandatory":"yes/no",  "labelPos":"front/rear/frontrear/left/right/top/none" },

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -17,7 +17,7 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     public EUnit sizeUnit;
     public float height;
     public EUnit heightUnit;
-    public EObjOrient orient;
+    public EObjOrient orientation;
 
     public Tenant tenant;
     public string vendor;

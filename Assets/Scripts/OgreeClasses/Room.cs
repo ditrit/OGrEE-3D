@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -9,7 +9,7 @@ public class Room : Building
     // ITROOM : technical <> null + reserved <> null + WDunit = tile 
     // ROOM (AC + power): technical = 0 + reserved = 0 + WDunit = cm / inch / tile
 
-    public EOrientation orientation;
+    public ECardinalOrient orientation;
 
     public Tenant tenant;
     public SMargin reserved;
