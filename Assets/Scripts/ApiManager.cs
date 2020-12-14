@@ -90,8 +90,8 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
-                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
+                request.path = $"customers/{obj.GetComponent<Customer>().id}";
+                request.json = JsonUtility.ToJson(obj.GetComponent<Customer>());
             }
             else if (pointCount == 1)
             {
@@ -140,7 +140,7 @@ public class ApiManager : MonoBehaviour
             if (pointCount == 0)
             {
                 request.path = "customers";
-                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
+                request.json = JsonUtility.ToJson(obj.GetComponent<Customer>());
             }
             else if (pointCount == 1)
             {
@@ -190,7 +190,7 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
+                request.path = $"customers/{obj.GetComponent<Customer>().id}";
             }
             else if (pointCount == 1)
             {
@@ -341,9 +341,9 @@ public class ApiManager : MonoBehaviour
     private void UpdateObjId(string _objName, string _jsonId)
     {
         string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
-        if (GameManager.gm.tenants.ContainsKey(_objName))
-            GameManager.gm.tenants[_objName].UpdateId(id);
-        else
+        // if (GameManager.gm.tenants.ContainsKey(_objName))
+        //     GameManager.gm.tenants[_objName].UpdateId(id);
+        // else
             GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
     }
 

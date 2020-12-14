@@ -85,7 +85,7 @@ public class Rack : Object
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        ColorUtility.TryParseHtmlString(tenant.color, out myColor);
+        ColorUtility.TryParseHtmlString($"#{tenant.color}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 

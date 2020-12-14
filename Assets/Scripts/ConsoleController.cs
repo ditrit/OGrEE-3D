@@ -249,8 +249,8 @@ public class ConsoleController : MonoBehaviour
                     GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
             }
             // Try to delete a tenant
-            else if (GameManager.gm.tenants.ContainsKey(data[0]))
-                GameManager.gm.tenants.Remove(data[0]);
+            // else if (GameManager.gm.tenants.ContainsKey(data[0]))
+            //     GameManager.gm.tenants.Remove(data[0]);
             else
                 AppendLogLine($"Error: \"{data[0]}\" does not exist", "yellow");
         }
@@ -452,7 +452,7 @@ public class ConsoleController : MonoBehaviour
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
         else if (str[0] == "tenant" || str[0] == "tn")
-            CreateTenant(str[1]);
+            CreateCustomer(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -465,10 +465,11 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">Name of the customer</param>
     private void CreateCustomer(string _input)
     {
-        string pattern = "^[^@\\s.]+$";
+        string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
         {
-            CustomerGenerator.instance.CreateCustomer(_input);
+            string[] data = _input.Split('@');
+            CustomerGenerator.instance.CreateCustomer(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -657,17 +658,17 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
     ///</summary>
     ///<param name="String with tenant data to parse"></param>
-    private void CreateTenant(string _input)
-    {
-        string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
+    // private void CreateTenant(string _input)
+    // {
+    //     string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
+    //     if (Regex.IsMatch(_input, pattern))
+    //     {
+    //         string[] data = _input.Split('@');
+    //         CustomerGenerator.instance.CreateTenant(data[0], data[1]);
+    //     }
+    //     else
+    //         AppendLogLine("Syntax error", "red");
+    // }
 
     #endregion
 
@@ -695,12 +696,12 @@ public class ConsoleController : MonoBehaviour
                     isReady = true;
                     return;
                 }
-                if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
-                {
-                    GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
-                    isReady = true;
-                    return;
-                }
+                // if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
+                // {
+                //     GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
+                //     isReady = true;
+                //     return;
+                // }
             }
             // ...is an OgreeObject
             Transform obj;

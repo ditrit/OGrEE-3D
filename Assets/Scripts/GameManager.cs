@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
-    public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
+    // public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
     public List<GameObject> focus = new List<GameObject>();
@@ -79,12 +79,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         configLoader.LoadConfig();
-        StartCoroutine(configLoader.ConnectToApi());
+        // StartCoroutine(configLoader.ConnectToApi());
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
 #if DEBUG
-        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
@@ -404,7 +404,7 @@ public class GameManager : MonoBehaviour
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
-        tenants.Clear();
+        // tenants.Clear();
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();

@@ -84,10 +84,13 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(Object _obj)
     {
         tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
-        tmpTenantName.text = _obj.tenant.name;
-        tmpTenantContact.text = _obj.tenant.mainContact;
-        tmpTenantPhone.text = _obj.tenant.mainPhone;
-        tmpTenantEmail.text = _obj.tenant.mainEmail;
+        if (_obj.tenant)
+        {
+            tmpTenantName.text = _obj.tenant.name;
+            tmpTenantContact.text = _obj.tenant.mainContact;
+            tmpTenantPhone.text = _obj.tenant.mainPhone;
+            tmpTenantEmail.text = _obj.tenant.mainEmail;
+        }
         if (_obj.family == EObjFamily.rack)
             tmpPosXY.text = $"Tile {_obj.posXY.x.ToString("0.##")}/{_obj.posXY.y.ToString("0.##")}";
         else

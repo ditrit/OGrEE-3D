@@ -11,7 +11,7 @@ public class Room : Building
 
     public ECardinalOrient orientation;
 
-    public Tenant tenant;
+    public Customer tenant;
     public SMargin reserved;
     public SMargin technical;
     public float floorHeight;
@@ -272,16 +272,6 @@ public class Room : Building
                         rend.material = new Material(GameManager.gm.perfMat);
                         rend.material.mainTexture = GameManager.gm.textures[tileData.type];
                     }
-                    // if (tileData.type == "perf22")
-                    // {
-                    //     rend.material = new Material(GameManager.gm.perfMat);
-                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
-                    // }
-                    // if (tileData.type == "perf29")
-                    // {
-                    //     rend.material = new Material(GameManager.gm.perfMat);
-                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
-                    // }
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -336,8 +326,11 @@ public class Room : Building
                 description = _value;
                 break;
             case "tenant":
-                if (GameManager.gm.tenants.ContainsKey(_value))
-                    tenant = GameManager.gm.tenants[_value];
+                if (GameManager.gm.allItems.ContainsKey(_value))
+                {
+                    GameObject go = (GameObject)GameManager.gm.allItems[_value];
+                    tenant = go.GetComponent<Customer>();
+                }
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");
                 break;

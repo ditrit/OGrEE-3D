@@ -18,8 +18,9 @@ public class CustomerGenerator : MonoBehaviour
     /// Create a Customer with given name. Also create a default Tenant corresponding to the Customer.
     ///</summary>
     ///<param name="_name">The customer's name</param>
+    ///<param name="_color">The customer's rendering color</param>
     ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(string _name)
+    public Customer CreateCustomer(string _name, string _color)
     {
         if (GameManager.gm.allItems.Contains(_name))
         {
@@ -30,9 +31,13 @@ public class CustomerGenerator : MonoBehaviour
         GameObject customer = new GameObject(_name);
         Customer cu = customer.AddComponent<Customer>();
         cu.name = customer.name;
+        cu.color = _color;
 
         // Create default tenant
-        CreateTenant(_name, "ffffff");
+        // CreateTenant(_name, "ffffff");
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+        
 
         customer.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_name, customer);
@@ -58,15 +63,14 @@ public class CustomerGenerator : MonoBehaviour
         GameObject customer = new GameObject(_cu.name);
         Customer cu = customer.AddComponent<Customer>();
         cu.name = _cu.name;
-        cu.contact = _cu.mainContact;
         cu.id = _cu.id;
+        cu.color = _cu.color;
+        cu.mainContact = _cu.mainContact;
+        cu.mainPhone = _cu.mainPhone;
+        cu.mainEmail = _cu.mainEmail;
 
-        // Create default tenant
-        Tenant tn = CreateTenant(_cu.name, "ffffff");
-        tn.mainContact = _cu.mainContact;
-        tn.mainPhone = _cu.mainPhone;
-        tn.mainEmail = _cu.mainEmail;
-        tn.id = _cu.id;
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{cu.color}>{cu.name}</color>");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
         customer.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_cu.name, customer);
@@ -121,7 +125,7 @@ public class CustomerGenerator : MonoBehaviour
         dc.parentId = _data.parent.GetComponent<Customer>().id;
 
         // By default, tenant is customer's one
-        dc.tenant = GameManager.gm.tenants[_data.parent.name];
+        dc.tenant = dc.transform.parent.GetComponent<Customer>();
 
         string hn = newDC.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDC);
@@ -196,7 +200,7 @@ public class CustomerGenerator : MonoBehaviour
         dc.parentId = _dc.parentId;
 
         // By default, tenant is customer's one
-        dc.tenant = GameManager.gm.tenants[cu.name];
+        dc.tenant = dc.transform.parent.GetComponent<Customer>();
 
         string hn = newDC.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDC);
@@ -209,13 +213,13 @@ public class CustomerGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_name">Name of the tenant</param>
     ///<param name="_color">Color of the tenant in hexadecimal format (xxxxxx)</param>
-    public Tenant CreateTenant(string _name, string _color)
-    {
-        Tenant newTenant = new Tenant(_name, $"#{_color}");
-        Utils.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+    // public Tenant CreateTenant(string _name, string _color)
+    // {
+    //     Tenant newTenant = new Tenant(_name, $"#{_color}");
+    //     Utils.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
+    //     Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
+    //     Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         
-        return newTenant;
-    }
+    //     return newTenant;
+    // }
 }

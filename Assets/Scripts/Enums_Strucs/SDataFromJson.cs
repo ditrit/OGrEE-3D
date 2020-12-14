@@ -6,6 +6,7 @@ using UnityEngine;
 public struct SCuFromJson
 {
     public string name;
+    public string color;
     public string mainContact;
     public string mainPhone;
     public string mainEmail;

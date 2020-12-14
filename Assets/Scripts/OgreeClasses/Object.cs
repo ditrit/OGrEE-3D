@@ -19,7 +19,7 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     public EUnit heightUnit;
     public EObjOrient orientation;
 
-    public Tenant tenant;
+    public Customer tenant;
     public string vendor;
     public string type;
     public string model;
@@ -107,9 +107,10 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     ///<param name="_tenantName">The name of the tenant</param>
     protected void AssignTenant(string _tenantName)
     {
-        if (GameManager.gm.tenants.ContainsKey(_tenantName))
+        if (GameManager.gm.allItems.ContainsKey(_tenantName))
         {
-            tenant = GameManager.gm.tenants[_tenantName];
+            GameObject go = (GameObject)GameManager.gm.allItems[_tenantName];
+            tenant = go.GetComponent<Customer>();
             if (family == EObjFamily.rack)
                 GetComponent<Rack>().UpdateColor();
         }
