@@ -3,7 +3,7 @@
     "fullscreen": "false",
     "textures": {
         "perf22": "K:\\_Orness\\TilePerf22.png",
-        "perf29": "K:\\_Orness\\TilePerf29.png"
+        "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/ExternalTextures/Assets/Resources/Textures/TilePerf29.png"
     },
 
     "db_url": "http://www.chibois.net:3001/",

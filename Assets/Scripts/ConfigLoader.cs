@@ -132,17 +132,21 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// 
+    /// Foreach texture declaration in config.textures, load it from url of file.
+    /// Also load default "perf22" and "perf29" is needed.
     ///</summary>
     public IEnumerator LoadTextures()
     {
         foreach (KeyValuePair<string, string> kvp in config.textures)
         {
-            UnityWebRequest www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
+            UnityWebRequest www;
+            if (kvp.Value.Contains("http"))
+                www = UnityWebRequestTexture.GetTexture(kvp.Value);
+            else
+                www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.isHttpError || www.isNetworkError)
-                GameManager.gm.AppendLogLine($"{kvp.Value} not found", "red");
-                // GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
+                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
             else
                 GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
