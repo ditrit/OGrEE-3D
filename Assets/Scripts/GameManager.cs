@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     public Material defaultMat;
     public Material wireframeMat;
     public Material perfMat;
+    public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
     [Header("Custom units")]
     public float tileSize = 0.6f;
@@ -79,9 +80,11 @@ public class GameManager : MonoBehaviour
     {
         configLoader.LoadConfig();
         StartCoroutine(configLoader.ConnectToApi());
-        UpdateFocusText();      
+        StartCoroutine(configLoader.LoadTextures());
+
+        UpdateFocusText();
 #if DEBUG
-        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }

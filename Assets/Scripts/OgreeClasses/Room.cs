@@ -9,7 +9,7 @@ public class Room : Building
     // ITROOM : technical <> null + reserved <> null + WDunit = tile 
     // ROOM (AC + power): technical = 0 + reserved = 0 + WDunit = cm / inch / tile
 
-    public EOrientation orientation;
+    public ECardinalOrient orientation;
 
     public Tenant tenant;
     public SMargin reserved;
@@ -267,16 +267,21 @@ public class Room : Building
                 if (!string.IsNullOrEmpty(tileData.type))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
-                    if (tileData.type == "perf22")
+                    if (GameManager.gm.textures.ContainsKey(tileData.type))
                     {
                         rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
+                        rend.material.mainTexture = GameManager.gm.textures[tileData.type];
                     }
-                    if (tileData.type == "perf29")
-                    {
-                        rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
-                    }
+                    // if (tileData.type == "perf22")
+                    // {
+                    //     rend.material = new Material(GameManager.gm.perfMat);
+                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf22");
+                    // }
+                    // if (tileData.type == "perf29")
+                    // {
+                    //     rend.material = new Material(GameManager.gm.perfMat);
+                    //     rend.material.mainTexture = Resources.Load<Texture>("Textures/TilePerf29");
+                    // }
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {

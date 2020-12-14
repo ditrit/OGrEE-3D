@@ -25,7 +25,7 @@ public class ConsoleController : MonoBehaviour
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
     private Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
-    private string lastCmd;
+    private string lastCmd = "";
     private int warningsCount = 0;
     private int errorsCount = 0;
 

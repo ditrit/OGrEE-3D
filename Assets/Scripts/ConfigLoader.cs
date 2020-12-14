@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class ConfigLoader
     {
         public string verbose;
         public string fullscreen;
+        public Dictionary<string, string> textures;
         public string db_url;
         public string db_login;
         public string db_token;
@@ -78,13 +80,13 @@ public class ConfigLoader
         {
             StreamReader jsonCongif = File.OpenText("OGREE 3D_Data/config.json");
             GameManager.gm.AppendLogLine("Load custom config file", "green");
-            return JsonUtility.FromJson<SConfig>(jsonCongif.ReadToEnd());
+            return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
         catch
         {
             TextAsset ResourcesCongif = Resources.Load<TextAsset>("config");
             GameManager.gm.AppendLogLine("Load default config file", "green");
-            return JsonUtility.FromJson<SConfig>(ResourcesCongif.ToString());
+            return JsonConvert.DeserializeObject<SConfig>(ResourcesCongif.ToString());
         }
     }
 
@@ -97,8 +99,6 @@ public class ConfigLoader
         verbose = (_config.verbose == "true");
 
         FullScreenMode((_config.fullscreen == "true"));
-
-        // MonoBehaviour.StartCoroutine(ConnectToApi(_config.db_url));
     }
 
     ///<summary> 
@@ -112,7 +112,9 @@ public class ConfigLoader
         Screen.fullScreen = _value;
     }
 
-    ///
+    ///<summary>
+    /// Send a get request to the given url. If no error, initialize ApiManager.
+    ///</summary>
     public IEnumerator ConnectToApi()
     {
         UnityWebRequest www = UnityWebRequest.Get(config.db_url);
@@ -127,5 +129,36 @@ public class ConfigLoader
         GameManager.gm.AppendLogLine(response);
 
         ApiManager.instance.Initialize(config.db_url, config.db_login, config.db_token);
+    }
+
+    ///<summary>
+    /// Foreach texture declaration in config.textures, load it from url of file.
+    /// Also load default "perf22" and "perf29" is needed.
+    ///</summary>
+    public IEnumerator LoadTextures()
+    {
+        foreach (KeyValuePair<string, string> kvp in config.textures)
+        {
+            UnityWebRequest www;
+            if (kvp.Value.Contains("http"))
+                www = UnityWebRequestTexture.GetTexture(kvp.Value);
+            else
+                www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
+            yield return www.SendWebRequest();
+            if (www.isHttpError || www.isNetworkError)
+                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
+            else
+                GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
+        }
+        if (!GameManager.gm.textures.ContainsKey("perf22"))
+        {
+            GameManager.gm.AppendLogLine("Load default texture for perf22", "yellow");
+            GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
+        }
+        if (!GameManager.gm.textures.ContainsKey("perf29"))
+        {
+            GameManager.gm.AppendLogLine("Load default texture for perf29", "yellow");
+            GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
+        }
     }
 }

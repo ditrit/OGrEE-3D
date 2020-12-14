@@ -138,22 +138,22 @@ public class BuildingGenerator : MonoBehaviour
         switch (orient)
         {
             case "EN":
-                room.orientation = EOrientation.N;
+                room.orientation = ECardinalOrient.EN;
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
-                room.orientation = EOrientation.S;
+                room.orientation = ECardinalOrient.WS;
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
-                room.orientation = EOrientation.W;
+                room.orientation = ECardinalOrient.NW;
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
-                room.orientation = EOrientation.E;
+                room.orientation = ECardinalOrient.SE;
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;

@@ -95,7 +95,7 @@ public class ReadFromJson
         public string model;
         public string type;
         public string side;
-        public string fulllength;
+        public string fulldepth;
         public float[] sizeWDHmm;
         public SColor[] colors;
         public SDeviceSlot[] components;
@@ -266,22 +266,22 @@ public class ReadFromJson
         switch (data.side)
         {
             case "front":
-                device.orient = EObjOrient.Frontward;
+                device.orientation = EObjOrient.Front;
                 break;
             case "rear":
-                device.orient = EObjOrient.Backward;
+                device.orientation = EObjOrient.Rear;
                 break;
             case "frontflipped":
-                device.orient = EObjOrient.FrontFlipped;
+                device.orientation = EObjOrient.FrontFlipped;
                 break;
             case "rearflipped":
-                device.orient = EObjOrient.RearFlipped;
+                device.orientation = EObjOrient.RearFlipped;
                 break;
         }
-        if (data.fulllength == "yes")
-            device.extras.Add("fulllength", "yes");
-        else if (data.fulllength == "no")
-            device.extras.Add("fulllength", "no");
+        if (data.fulldepth == "yes")
+            device.extras.Add("fulldepth", "yes");
+        else if (data.fulldepth == "no")
+            device.extras.Add("fulldepth", "no");
 
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (data.colors != null)

@@ -77,24 +77,24 @@ public class ObjectGenerator : MonoBehaviour
         switch (_data.orient)
         {
             case "front":
-                rack.orient = EObjOrient.Frontward;
+                rack.orientation = EObjOrient.Front;
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
                 newRack.transform.localPosition += boxOrigin;
                 break;
             case "rear":
-                rack.orient = EObjOrient.Backward;
+                rack.orientation = EObjOrient.Rear;
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
             case "left":
-                rack.orient = EObjOrient.Left;
+                rack.orientation = EObjOrient.Left;
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
                 break;
             case "right":
-                rack.orient = EObjOrient.Right;
+                rack.orientation = EObjOrient.Right;
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
@@ -259,28 +259,28 @@ public class ObjectGenerator : MonoBehaviour
                 switch (_data.side)
                 {
                     case "front":
-                        ob.orient = EObjOrient.Frontward;
+                        ob.orientation = EObjOrient.Front;
                         break;
                     case "rear":
-                        ob.orient = EObjOrient.Backward;
+                        ob.orientation = EObjOrient.Rear;
                         break;
                     case "frontflipped":
-                        ob.orient = EObjOrient.FrontFlipped;
+                        ob.orientation = EObjOrient.FrontFlipped;
                         break;
                     case "rearflipped":
-                        ob.orient = EObjOrient.RearFlipped;
+                        ob.orientation = EObjOrient.RearFlipped;
                         break;
                 }
-                if (ob.extras.ContainsKey("fulllenght") && ob.extras["fulllenght"] == "yes")
-                    ob.orient = EObjOrient.Frontward;
+                if (ob.extras.ContainsKey("fulldepth") && ob.extras["fulldepth"] == "yes")
+                    ob.orientation = EObjOrient.Front;
 
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
-                switch (ob.orient)
+                switch (ob.orientation)
                 {
-                    case EObjOrient.Frontward:
+                    case EObjOrient.Front:
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         break;
-                    case EObjOrient.Backward:
+                    case EObjOrient.Rear:
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
                         break;

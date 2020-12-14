@@ -101,19 +101,19 @@ public class CustomerGenerator : MonoBehaviour
         switch (_data.orient)
         {
             case "EN":
-                dc.orientation = EOrientation.N;
+                dc.orientation = ECardinalOrient.EN;
                 newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                dc.orientation = EOrientation.S;
+                dc.orientation = ECardinalOrient.WS;
                 newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                dc.orientation = EOrientation.W;
+                dc.orientation = ECardinalOrient.NW;
                 newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                dc.orientation = EOrientation.E;
+                dc.orientation = ECardinalOrient.SE;
                 newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
@@ -166,19 +166,19 @@ public class CustomerGenerator : MonoBehaviour
         switch (_dc.orient)
         {
             case "EN":
-                dc.orientation = EOrientation.N;
+                dc.orientation = ECardinalOrient.EN;
                 newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                dc.orientation = EOrientation.S;
+                dc.orientation = ECardinalOrient.WS;
                 newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                dc.orientation = EOrientation.W;
+                dc.orientation = ECardinalOrient.NW;
                 newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                dc.orientation = EOrientation.E;
+                dc.orientation = ECardinalOrient.SE;
                 newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }

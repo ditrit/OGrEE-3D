@@ -1,12 +1,12 @@
 ﻿///<summary>
-/// World orientation: North / South / East / West
+/// Cardinal points (+x,+y): EN, NW, WS, SE
 ///</summary>
-public enum EOrientation
+public enum ECardinalOrient
 {
-    N,
-    S,
-    E,
-    W
+    EN,
+    WS,
+    SE,
+    NW
 }
 
 ///<summary>
@@ -14,8 +14,8 @@ public enum EOrientation
 ///</summary>
 public enum EObjOrient
 {
-    Frontward,
-    Backward,
+    Front,
+    Rear,
     Left,
     Right,
     FrontFlipped,
@@ -38,15 +38,6 @@ public enum EUnit
 }
 
 ///<summary>
-/// The role of a device: parent / child
-///</summary>
-public enum ERole
-{
-    parent,
-    child
-}
-
-///<summary>
 /// The family of object: Rack / Powerpanel / Airconditionner / Chassis / Device / Pdu / Container
 ///</summary>
 public enum EObjFamily
@@ -58,27 +49,4 @@ public enum EObjFamily
     device,
     pdu,
     container
-}
-
-///<summary>
-/// Role: parent / child
-///</summary>
-public enum EDeviceRole
-{
-    parent,
-    child
-}
-
-///<summary>
-/// ComponentType: processor / psu / fan / adapter / enclosure / memory / disk
-///</summary>
-public enum ECompCategory
-{
-    processor,
-    psu,
-    fan,
-    adapter,
-    memory,
-    disk
-
 }
