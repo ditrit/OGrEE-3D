@@ -341,10 +341,7 @@ public class ApiManager : MonoBehaviour
     private void UpdateObjId(string _objName, string _jsonId)
     {
         string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
-        // if (GameManager.gm.tenants.ContainsKey(_objName))
-        //     GameManager.gm.tenants[_objName].UpdateId(id);
-        // else
-            GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
+        GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
     }
 
 }

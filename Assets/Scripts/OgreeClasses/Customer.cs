@@ -11,12 +11,9 @@ public class Customer : AServerItem, IAttributeModif
 
     private void OnDestroy()
     {
-        // if (GameManager.gm.tenants.ContainsKey(name))
-        // {
-        //     GameManager.gm.tenants.Remove(name);
-            Filters.instance.tenantsList.Remove($"<color=#{color}>{name}</color>");
-            Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        // }
+
+        Filters.instance.tenantsList.Remove($"<color=#{color}>{name}</color>");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
     }
 
     ///<summary>
@@ -39,7 +36,7 @@ public class Customer : AServerItem, IAttributeModif
                 break;
             default:
                 GameManager.gm.AppendLogLine($"[Customer] {name}: unknowed attribute to update.", "yellow");
-                break;        
+                break;
         }
     }
 }

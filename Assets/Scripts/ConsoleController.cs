@@ -436,7 +436,7 @@ public class ConsoleController : MonoBehaviour
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
-        if (str[0] == "customer" || str[0] == "cu")
+        if (str[0] == "customer" || str[0] == "cu" || str[0] == "tenant" || str[0] == "tn")
             CreateCustomer(str[1]);
         else if (str[0] == "datacenter" || str[0] == "dc")
             CreateDataCenter(str[1]);
@@ -451,8 +451,6 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
-        else if (str[0] == "tenant" || str[0] == "tn")
-            CreateCustomer(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -653,22 +651,6 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
     }
-
-    ///<summary>
-    /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
-    ///</summary>
-    ///<param name="String with tenant data to parse"></param>
-    // private void CreateTenant(string _input)
-    // {
-    //     string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
-    //     if (Regex.IsMatch(_input, pattern))
-    //     {
-    //         string[] data = _input.Split('@');
-    //         CustomerGenerator.instance.CreateTenant(data[0], data[1]);
-    //     }
-    //     else
-    //         AppendLogLine("Syntax error", "red");
-    // }
 
     #endregion
 

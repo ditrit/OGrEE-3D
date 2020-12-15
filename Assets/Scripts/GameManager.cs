@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour
     // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
-    // public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
     public List<GameObject> focus = new List<GameObject>();
@@ -404,7 +403,6 @@ public class GameManager : MonoBehaviour
         Customer[] customers = FindObjectsOfType<Customer>();
         foreach (Customer cu in customers)
             Destroy(cu.gameObject);
-        // tenants.Clear();
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();

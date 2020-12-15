@@ -207,19 +207,4 @@ public class CustomerGenerator : MonoBehaviour
 
         return dc;
     }
-
-    ///<summary>
-    /// Create a Tenant and apply _data to it and store it in GameManager.tenants.
-    ///</summary>
-    ///<param name="_name">Name of the tenant</param>
-    ///<param name="_color">Color of the tenant in hexadecimal format (xxxxxx)</param>
-    // public Tenant CreateTenant(string _name, string _color)
-    // {
-    //     Tenant newTenant = new Tenant(_name, $"#{_color}");
-    //     Utils.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
-    //     Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
-    //     Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        
-    //     return newTenant;
-    // }
 }
