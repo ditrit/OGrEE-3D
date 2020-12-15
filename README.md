@@ -24,14 +24,13 @@ OGREE 3D is a data-center viewer
         - [Select parent object](#Select-parent-object)
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
-        - [Create a Customer](#Create-a-Customer)
+        - [Create a Tenant](#Create-a-Tenant)
         - [Create a Datacenter](#Create-a-Datacenter)
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Separator](#Create-a-Separator)
         - [Create a Rack](#Create-a-Rack)
         - [Create a Device](#Create-a-Device)
-        - [Create a Tenant](#Create-a-Tenant)
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
@@ -65,7 +64,7 @@ OGREE 3D is a data-center viewer
 # Getting started
 Object hierarchy, each level is mandatory
 ```
-Customer
+Tenant
 |_ Datacenter
     |_ Building
         |_ Room
@@ -94,7 +93,7 @@ You can override the config file parameters with command line arguments
 # Build in CLI
 
 ## Glossary
-`[name]` is case sensitive. It include the whole path of the object (for example: `cu.dc.bd.ro.rk`)  
+`[name]` is case sensitive. It include the whole path of the object (for example: `tn.dc.bd.ro.rk`)  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y, anti-clockwise): **EN**, **NW**, **WS**, **SE**
 `[color]` is a hexadecimal code (*ffffff*)  
 
@@ -153,15 +152,18 @@ If `@server` is used, also delete item in server
 ```  
 
 ## Create commands
-### Create a Customer
-Customer will be created as a new root.
+### Create a Tenant
+Tenant will be created as a new root.
+
 ```
-+customer:[name]  
-+cu:[name]
++tenant:[name]@[color]
++tn:[name]@[color]
++customer:[name]@[color]  
++cu:[name]@[color]
 ```
 
 ### Create a Datacenter
-Datacenter must be child of a Customer.
+Datacenter must be child of a Tenant.
 ```
 +datacenter:[name]@[orientation]  
 +dc:[name]@[orientation]
@@ -235,12 +237,6 @@ All other devices (blades / components like processor, memory, adapters, disks..
 +device:[name]@[slot]@[template]@[side]
 +dv:[name]@[slot]@[template]
 +dv:[name]@[slot]@[template]@[side]
-```  
-
-### Create a Tenant  
-```
-+tenant:[name]@[color]
-+tn:[name]@[color]
 ```  
 
 ## Set commands  
@@ -380,7 +376,7 @@ api.delete=[name]
 
 ## Examples
 ```
-+cu:DEMO
++cu:DEMO@ffffff
     DEMO.mainContact=Ced
     DEMO.mainPhone=0612345678
     DEMO.mainEmail=ced@ogree3D.com
