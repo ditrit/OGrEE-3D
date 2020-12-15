@@ -272,6 +272,8 @@ public class Room : Building
                         rend.material = new Material(GameManager.gm.perfMat);
                         rend.material.mainTexture = GameManager.gm.textures[tileData.type];
                     }
+                    else if (tileData.type != "plain")
+                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.type}", "yellow");
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
