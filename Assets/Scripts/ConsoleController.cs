@@ -153,7 +153,7 @@ public class ConsoleController : MonoBehaviour
             isReady = true;
             return;
         }
-        else if (GameManager.gm.currentItems[0].GetComponent<Customer>())
+        else if (GameManager.gm.currentItems[0].GetComponent<Tenant>())
             GameManager.gm.SetCurrentItem(null);
         else
         {
@@ -436,8 +436,8 @@ public class ConsoleController : MonoBehaviour
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
-        if (str[0] == "customer" || str[0] == "cu" || str[0] == "tenant" || str[0] == "tn")
-            CreateCustomer(str[1]);
+        if (str[0] == "tenant" || str[0] == "tn" || str[0] == "customer" || str[0] == "cu")
+            CreateTenant(str[1]);
         else if (str[0] == "datacenter" || str[0] == "dc")
             CreateDataCenter(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
@@ -458,16 +458,16 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create customer" command and call CustomerGenerator.CreateCustomer().
+    /// Parse a "create tenant" command and call CustomerGenerator.CreateCustomer().
     ///</summary>
-    ///<param name="_input">Name of the customer</param>
-    private void CreateCustomer(string _input)
+    ///<param name="_input">Name of the tenant</param>
+    private void CreateTenant(string _input)
     {
         string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            CustomerGenerator.instance.CreateCustomer(data[0], data[1]);
+            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
         }
         else
             AppendLogLine("Syntax error", "red");

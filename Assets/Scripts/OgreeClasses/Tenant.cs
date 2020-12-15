@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Customer : AServerItem, IAttributeModif
+public class Tenant : AServerItem, IAttributeModif
 {
     public string color;
     public string mainContact;
@@ -35,7 +35,7 @@ public class Customer : AServerItem, IAttributeModif
                 mainEmail = _value;
                 break;
             default:
-                GameManager.gm.AppendLogLine($"[Customer] {name}: unknowed attribute to update.", "yellow");
+                GameManager.gm.AppendLogLine($"[Tenant] {name}: unknowed attribute to update.", "yellow");
                 break;
         }
     }

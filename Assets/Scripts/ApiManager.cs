@@ -90,8 +90,8 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{obj.GetComponent<Customer>().id}";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Customer>());
+                request.path = $"customers/{obj.GetComponent<Tenant>().id}";
+                request.json = JsonUtility.ToJson(obj.GetComponent<Tenant>());
             }
             else if (pointCount == 1)
             {
@@ -140,7 +140,7 @@ public class ApiManager : MonoBehaviour
             if (pointCount == 0)
             {
                 request.path = "customers";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Customer>());
+                request.json = JsonUtility.ToJson(obj.GetComponent<Tenant>());
             }
             else if (pointCount == 1)
             {
@@ -190,7 +190,7 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{obj.GetComponent<Customer>().id}";
+                request.path = $"customers/{obj.GetComponent<Tenant>().id}";
             }
             else if (pointCount == 1)
             {
@@ -322,8 +322,8 @@ public class ApiManager : MonoBehaviour
         if (Regex.IsMatch(_path, "customers/[^/]+$"))
         {
             Debug.Log("Create Customer");
-            SCuFromJson cu = JsonUtility.FromJson<SCuFromJson>(_json);
-            CustomerGenerator.instance.CreateCustomer(cu);
+            STnFromJson tn = JsonUtility.FromJson<STnFromJson>(_json);
+            CustomerGenerator.instance.CreateTenant(tn);
         }
         else if (Regex.IsMatch(_path, "sites/[^/]+$"))
         {

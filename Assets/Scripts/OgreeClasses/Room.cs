@@ -11,7 +11,7 @@ public class Room : Building
 
     public ECardinalOrient orientation;
 
-    public Customer tenant;
+    public Tenant tenant;
     public SMargin reserved;
     public SMargin technical;
     public float floorHeight;
@@ -329,7 +329,7 @@ public class Room : Building
                 if (GameManager.gm.allItems.ContainsKey(_value))
                 {
                     GameObject go = (GameObject)GameManager.gm.allItems[_value];
-                    tenant = go.GetComponent<Customer>();
+                    tenant = go.GetComponent<Tenant>();
                 }
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");

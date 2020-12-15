@@ -15,12 +15,12 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a Customer with given name. Also create a default Tenant corresponding to the Customer.
+    /// Create a Tenant with given name.
     ///</summary>
-    ///<param name="_name">The customer's name</param>
-    ///<param name="_color">The customer's rendering color</param>
-    ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(string _name, string _color)
+    ///<param name="_name">The tenant's name</param>
+    ///<param name="_color">The tenant's rendering color</param>
+    ///<returns>The created Tenant</returns>
+    public Tenant CreateTenant(string _name, string _color)
     {
         if (GameManager.gm.allItems.Contains(_name))
         {
@@ -28,54 +28,51 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject customer = new GameObject(_name);
-        Customer cu = customer.AddComponent<Customer>();
-        cu.name = customer.name;
-        cu.color = _color;
+        GameObject tenant = new GameObject(_name);
+        Tenant tn = tenant.AddComponent<Tenant>();
+        tn.name = tenant.name;
+        tn.color = _color;
 
-        // Create default tenant
-        // CreateTenant(_name, "ffffff");
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         
-
-        customer.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_name, customer);
+        tenant.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_name, tenant);
         
-        ApiManager.instance.CreatePostRequest(cu.name);
+        ApiManager.instance.CreatePostRequest(tn.name);
 
-        return cu;
+        return tn;
     }
 
     ///<summary>
-    /// Create Customer and associated Tenant from Json.
+    /// Create Tenant and associated Tenant from Json.
     ///</summary>
-    ///<param name="_cu">The customer data to apply</param>
-    ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(SCuFromJson _cu)
+    ///<param name="_tn">The tenant data to apply</param>
+    ///<returns>The created Tenant</returns>
+    public Tenant CreateTenant(STnFromJson _tn)
     {
-        if (GameManager.gm.allItems.Contains(_cu.name))
+        if (GameManager.gm.allItems.Contains(_tn.name))
         {
-            GameManager.gm.AppendLogLine($"{_cu.name} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", "yellow");
             return null;
         }
 
-        GameObject customer = new GameObject(_cu.name);
-        Customer cu = customer.AddComponent<Customer>();
-        cu.name = _cu.name;
-        cu.id = _cu.id;
-        cu.color = _cu.color;
-        cu.mainContact = _cu.mainContact;
-        cu.mainPhone = _cu.mainPhone;
-        cu.mainEmail = _cu.mainEmail;
+        GameObject tenant = new GameObject(_tn.name);
+        Tenant tn = tenant.AddComponent<Tenant>();
+        tn.name = _tn.name;
+        tn.id = _tn.id;
+        tn.color = _tn.color;
+        tn.mainContact = _tn.mainContact;
+        tn.mainPhone = _tn.mainPhone;
+        tn.mainEmail = _tn.mainEmail;
 
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{cu.color}>{cu.name}</color>");
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tn.color}>{tn.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
-        customer.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_cu.name, customer);
+        tenant.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_tn.name, tenant);
         
-        return cu;
+        return tn;
     }
 
     ///<summary>
@@ -85,9 +82,9 @@ public class CustomerGenerator : MonoBehaviour
     ///<returns>The created Datacenter</returns>
     public Datacenter CreateDatacenter(SDataCenterInfos _data)
     {
-        if (_data.parent.GetComponent<Customer>() == null)
+        if (_data.parent.GetComponent<Tenant>() == null)
         {
-            GameManager.gm.AppendLogLine("Datacenter must be child of a customer", "yellow");
+            GameManager.gm.AppendLogLine("Datacenter must be child of a tenant", "yellow");
             return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
@@ -122,10 +119,10 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
-        dc.parentId = _data.parent.GetComponent<Customer>().id;
+        dc.parentId = _data.parent.GetComponent<Tenant>().id;
 
-        // By default, tenant is customer's one
-        dc.tenant = dc.transform.parent.GetComponent<Customer>();
+        // By default, tenant is the hierarchy's root
+        dc.tenant = dc.transform.parent.GetComponent<Tenant>();
 
         string hn = newDC.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDC);
@@ -142,20 +139,20 @@ public class CustomerGenerator : MonoBehaviour
     ///<returns>The created Datacenter</returns>
     public Datacenter CreateDatacenter(SDcFromJson _dc)
     {
-        Customer[] customers = GameObject.FindObjectsOfType<Customer>();
-        Customer cu = null;
-        foreach (Customer customer in customers)
+        Tenant[] tenants = GameObject.FindObjectsOfType<Tenant>();
+        Tenant tn = null;
+        foreach (Tenant tenant in tenants)
         {
-            if (customer.id == _dc.parentId)
-                cu = customer;
+            if (tenant.id == _dc.parentId)
+                tn = tenant;
         }
-        if (!cu)
+        if (!tn)
         {
-            GameManager.gm.AppendLogLine($"Parent customer not found (id = {_dc.parentId})", "red");
+            GameManager.gm.AppendLogLine($"Parent tenant not found (id = {_dc.parentId})", "red");
             return null;
         }
 
-        string hierarchyName = $"{cu.GetComponent<HierarchyName>()?.fullname}.{_dc.name}";
+        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_dc.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -163,7 +160,7 @@ public class CustomerGenerator : MonoBehaviour
         }
 
         GameObject newDC = new GameObject(_dc.name);
-        newDC.transform.parent = cu.transform;
+        newDC.transform.parent = tn.transform;
 
         Datacenter dc = newDC.AddComponent<Datacenter>();
         dc.name = newDC.name;
@@ -199,8 +196,8 @@ public class CustomerGenerator : MonoBehaviour
 
         dc.parentId = _dc.parentId;
 
-        // By default, tenant is customer's one
-        dc.tenant = dc.transform.parent.GetComponent<Customer>();
+        // By default, tenant is the hierarchy's root
+        dc.tenant = dc.transform.parent.GetComponent<Tenant>();
 
         string hn = newDC.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDC);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct SCuFromJson
+public struct STnFromJson
 {
     public string name;
     public string color;

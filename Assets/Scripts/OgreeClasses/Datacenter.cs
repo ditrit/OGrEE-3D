@@ -11,7 +11,7 @@ public class Datacenter : AServerItem, IAttributeModif
     public string country;
     public ECardinalOrient orientation;
     public Vector3 gps;
-    public Customer tenant;
+    public Tenant tenant;
 
     public string usableColor = "DBEDF2";
     public string reservedColor = "F2F2F2";
@@ -53,7 +53,7 @@ public class Datacenter : AServerItem, IAttributeModif
                 if (GameManager.gm.allItems.ContainsKey(_value))
                 {
                     GameObject go = (GameObject)GameManager.gm.allItems[_value];
-                    tenant = go.GetComponent<Customer>();
+                    tenant = go.GetComponent<Tenant>();
                 }
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");

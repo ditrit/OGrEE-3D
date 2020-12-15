@@ -393,16 +393,16 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Delete all Customers and reload last loaded file.
+    /// Called by GUI button: Delete all Tenants and reload last loaded file.
     ///</summary>
     public void ReloadFile()
     {
         SetCurrentItem(null);
         focus.Clear();
         UpdateFocusText();
-        Customer[] customers = FindObjectsOfType<Customer>();
-        foreach (Customer cu in customers)
-            Destroy(cu.gameObject);
+        Tenant[] tenants = FindObjectsOfType<Tenant>();
+        foreach (Tenant tn in tenants)
+            Destroy(tn.gameObject);
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();
