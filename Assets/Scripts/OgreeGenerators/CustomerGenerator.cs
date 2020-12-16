@@ -76,15 +76,15 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a Datacenter and apply _data to it.
+    /// Create a Site and apply _data to it.
     ///</summary>
-    ///<param name="_data">Informations about the datacenter</param>
-    ///<returns>The created Datacenter</returns>
-    public Datacenter CreateDatacenter(SDataCenterInfos _data)
+    ///<param name="_data">Informations about the site</param>
+    ///<returns>The created Site</returns>
+    public Site CreateSite(SSiteInfos _data)
     {
         if (_data.parent.GetComponent<Tenant>() == null)
         {
-            GameManager.gm.AppendLogLine("Datacenter must be child of a tenant", "yellow");
+            GameManager.gm.AppendLogLine("Site must be child of a tenant", "yellow");
             return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
@@ -94,114 +94,114 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject newDC = new GameObject(_data.name);
-        newDC.transform.parent = _data.parent;
+        GameObject newSite = new GameObject(_data.name);
+        newSite.transform.parent = _data.parent;
 
-        Datacenter dc = newDC.AddComponent<Datacenter>();
-        dc.name = newDC.name;
+        Site si = newSite.AddComponent<Site>();
+        si.name = newSite.name;
         switch (_data.orient)
         {
             case "EN":
-                dc.orientation = ECardinalOrient.EN;
-                newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
+                si.orientation = ECardinalOrient.EN;
+                newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                dc.orientation = ECardinalOrient.WS;
-                newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
+                si.orientation = ECardinalOrient.WS;
+                newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                dc.orientation = ECardinalOrient.NW;
-                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
+                si.orientation = ECardinalOrient.NW;
+                newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                dc.orientation = ECardinalOrient.SE;
-                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
+                si.orientation = ECardinalOrient.SE;
+                newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
 
-        dc.parentId = _data.parent.GetComponent<Tenant>().id;
+        si.parentId = _data.parent.GetComponent<Tenant>().id;
 
         // By default, tenant is the hierarchy's root
-        dc.tenant = dc.transform.parent.GetComponent<Tenant>();
+        si.tenant = si.transform.parent.GetComponent<Tenant>();
 
-        string hn = newDC.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newDC);
+        string hn = newSite.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newSite);
 
         ApiManager.instance.CreatePostRequest(hn);
 
-        return dc;
+        return si;
     }
 
     ///<summary>
-    /// Create a Datacenter and assign values from json
+    /// Create a Site and assign values from json
     ///</summary>
-    ///<param name="_dc">The datacebter data to apply</param>
-    ///<returns>The created Datacenter</returns>
-    public Datacenter CreateDatacenter(SDcFromJson _dc)
+    ///<param name="_si">The site data to apply</param>
+    ///<returns>The created Site</returns>
+    public Site CreateSite(SSiteFromJson _si)
     {
         Tenant[] tenants = GameObject.FindObjectsOfType<Tenant>();
         Tenant tn = null;
         foreach (Tenant tenant in tenants)
         {
-            if (tenant.id == _dc.parentId)
+            if (tenant.id == _si.parentId)
                 tn = tenant;
         }
         if (!tn)
         {
-            GameManager.gm.AppendLogLine($"Parent tenant not found (id = {_dc.parentId})", "red");
+            GameManager.gm.AppendLogLine($"Parent tenant not found (id = {_si.parentId})", "red");
             return null;
         }
 
-        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_dc.name}";
+        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
-        GameObject newDC = new GameObject(_dc.name);
-        newDC.transform.parent = tn.transform;
+        GameObject newSite = new GameObject(_si.name);
+        newSite.transform.parent = tn.transform;
 
-        Datacenter dc = newDC.AddComponent<Datacenter>();
-        dc.name = newDC.name;
-        switch (_dc.orient)
+        Site si = newSite.AddComponent<Site>();
+        si.name = newSite.name;
+        switch (_si.orient)
         {
             case "EN":
-                dc.orientation = ECardinalOrient.EN;
-                newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
+                si.orientation = ECardinalOrient.EN;
+                newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                dc.orientation = ECardinalOrient.WS;
-                newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
+                si.orientation = ECardinalOrient.WS;
+                newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                dc.orientation = ECardinalOrient.NW;
-                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
+                si.orientation = ECardinalOrient.NW;
+                newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                dc.orientation = ECardinalOrient.SE;
-                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
+                si.orientation = ECardinalOrient.SE;
+                newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
-        dc.comment = _dc.comment;
-        dc.address = _dc.address;
-        dc.zipcode = _dc.zipcode;
-        dc.city = _dc.zipcode;
-        dc.country = _dc.country;
-        dc.gps = _dc.gps;
-        dc.id = _dc.id;
-        dc.SetAttribute("usableColor", _dc.usableColor);
-        dc.SetAttribute("reservedColor", _dc.reservedColor);
-        dc.SetAttribute("technicalColor", _dc.technicalColor);
+        si.description = _si.comment;
+        si.address = _si.address;
+        si.zipcode = _si.zipcode;
+        si.city = _si.zipcode;
+        si.country = _si.country;
+        si.gps = _si.gps;
+        si.id = _si.id;
+        si.SetAttribute("usableColor", _si.usableColor);
+        si.SetAttribute("reservedColor", _si.reservedColor);
+        si.SetAttribute("technicalColor", _si.technicalColor);
 
-        dc.parentId = _dc.parentId;
+        si.parentId = _si.parentId;
 
         // By default, tenant is the hierarchy's root
-        dc.tenant = dc.transform.parent.GetComponent<Tenant>();
+        si.tenant = si.transform.parent.GetComponent<Tenant>();
 
-        string hn = newDC.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newDC);
+        string hn = newSite.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newSite);
 
-        return dc;
+        return si;
     }
 }

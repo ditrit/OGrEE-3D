@@ -21,9 +21,9 @@ public class BuildingGenerator : MonoBehaviour
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SBuildingInfos _data)
     {
-        if (_data.parent.GetComponent<Datacenter>() == null)
+        if (_data.parent.GetComponent<Site>() == null)
         {
-            GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
+            GameManager.gm.AppendLogLine("Building must be child of a site", "yellow");
             return null;
         }
         string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
@@ -168,7 +168,7 @@ public class BuildingGenerator : MonoBehaviour
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
         // Get tenant from related Datacenter
-        room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
+        room.tenant = newRoom.transform.parent.parent.GetComponent<Site>().tenant;
         room.UpdateZonesColor();
 
         string hn = newRoom.AddComponent<HierarchyName>().fullname;

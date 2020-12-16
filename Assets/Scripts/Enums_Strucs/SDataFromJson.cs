@@ -14,7 +14,7 @@ public struct STnFromJson
 }
 
 [System.Serializable]
-public struct SDcFromJson
+public struct SSiteFromJson
 {
     public string name;
     public string orient;

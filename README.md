@@ -25,7 +25,7 @@ OGREE 3D is a data-center viewer
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
         - [Create a Tenant](#Create-a-Tenant)
-        - [Create a Datacenter](#Create-a-Datacenter)
+        - [Create a Site](#Create-a-Site)
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Separator](#Create-a-Separator)
@@ -65,7 +65,7 @@ OGREE 3D is a data-center viewer
 Object hierarchy, each level is mandatory
 ```
 Tenant
-|_ Datacenter
+|_ Site
     |_ Building
         |_ Room
             |_ Rack                                 Rack
@@ -158,19 +158,17 @@ Tenant will be created as a new root.
 ```
 +tenant:[name]@[color]
 +tn:[name]@[color]
-+customer:[name]@[color]  
-+cu:[name]@[color]
 ```
 
-### Create a Datacenter
-Datacenter must be child of a Tenant.
+### Create a Site
+Site must be child of a Tenant.
 ```
-+datacenter:[name]@[orientation]  
-+dc:[name]@[orientation]
++site:[name]@[orientation]  
++si:[name]@[orientation]
 ```
 
 ### Create a Building
-Building must be child of a Datacenter.  
+Building must be child of a Site.  
 *`[pos]` is a Vector3 [x,y,z] (m,m,m)  
 `[size]` is a Vector3 [width,length,height] (m,m,m)*  
 ```
@@ -263,7 +261,7 @@ You can modify areas only if the room has no racks in it.
 ### Modify object's attribute
 Works with single or multi selection.  
 *`[name]` can be `selection` or `_` for modifying selected objects attributes  
-`[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
+`[datacenter].[attribute]` can be description / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
 `[room].[attribute]` can be description / floors / tenant  
 `[object].[attribute]` can be description / vendor / type / model / serial / tenant / alpha  
@@ -388,8 +386,8 @@ api.delete=[name]
 
 +tenant:Billy@F0C300
 
-+dc:DEMO.ALPHA@NW
-    DEMO.ALPHA.comment=This is a demo...
++si:DEMO.ALPHA@NW
+    DEMO.ALPHA.description=This is a demo...
     DEMO.ALPHA.address=1 rue bidule
     DEMO.ALPHA.zipcode=42000
     DEMO.ALPHA.city=Truc

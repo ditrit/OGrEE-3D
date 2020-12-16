@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Datacenter : AServerItem, IAttributeModif
+public class Site : AServerItem, IAttributeModif
 {
-    public string comment;
+    public string description;
     public string address;
     public string zipcode;
     public string city;
@@ -31,8 +31,8 @@ public class Datacenter : AServerItem, IAttributeModif
     {
         switch (_param)
         {
-            case "comment":
-                comment = _value;
+            case "description":
+                description = _value;
                 break;
             case "address":
                 address = _value;

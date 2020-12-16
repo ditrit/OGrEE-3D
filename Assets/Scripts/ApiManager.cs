@@ -95,8 +95,8 @@ public class ApiManager : MonoBehaviour
             }
             else if (pointCount == 1)
             {
-                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                request.path = $"sites/{obj.GetComponent<Site>().id}";
+                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {
@@ -145,7 +145,7 @@ public class ApiManager : MonoBehaviour
             else if (pointCount == 1)
             {
                 request.path = "sites";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
+                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {
@@ -194,7 +194,7 @@ public class ApiManager : MonoBehaviour
             }
             else if (pointCount == 1)
             {
-                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
+                request.path = $"sites/{obj.GetComponent<Site>().id}";
             }
             else if (pointCount == 2)
             {
@@ -327,9 +327,9 @@ public class ApiManager : MonoBehaviour
         }
         else if (Regex.IsMatch(_path, "sites/[^/]+$"))
         {
-            Debug.Log("Create Datacenter (site)");
-            SDcFromJson dc = JsonUtility.FromJson<SDcFromJson>(_json);
-            CustomerGenerator.instance.CreateDatacenter(dc);
+            Debug.Log("Create Site");
+            SSiteFromJson si = JsonUtility.FromJson<SSiteFromJson>(_json);
+            CustomerGenerator.instance.CreateSite(si);
         }
     }
 

@@ -438,8 +438,8 @@ public class ConsoleController : MonoBehaviour
 
         if (str[0] == "tenant" || str[0] == "tn" || str[0] == "customer" || str[0] == "cu")
             CreateTenant(str[1]);
-        else if (str[0] == "datacenter" || str[0] == "dc")
-            CreateDataCenter(str[1]);
+        else if (str[0] == "site" || str[0] == "si" || str[0] == "datacenter" || str[0] == "dc")
+            CreateSite(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
@@ -474,10 +474,10 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create datacenter" command and call CustomerGenerator.CreateDatacenter().
+    /// Parse a "create site" command and call CustomerGenerator.CreateSite().
     ///</summary>
-    ///<param name="_input">String with datacenter data to parse</param>
-    private void CreateDataCenter(string _input)
+    ///<param name="_input">String with site data to parse</param>
+    private void CreateSite(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(EN|NW|WS|SE)$";
@@ -485,11 +485,11 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SDataCenterInfos infos = new SDataCenterInfos();
+            SSiteInfos infos = new SSiteInfos();
             infos.orient = data[1];
             IsolateParent(data[0], out infos.parent, out infos.name);
             if (infos.parent)
-                CustomerGenerator.instance.CreateDatacenter(infos);
+                CustomerGenerator.instance.CreateSite(infos);
         }
         else
             AppendLogLine("Syntax error", "red");

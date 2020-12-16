@@ -29,7 +29,7 @@ public struct SDeviceInfos
 }
 
 [System.Serializable]
-public struct SDataCenterInfos
+public struct SSiteInfos
 {
     public string name;
     public Transform parent;

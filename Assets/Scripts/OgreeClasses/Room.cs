@@ -359,10 +359,10 @@ public class Room : Building
     ///</summary>
     public void UpdateZonesColor()
     {
-        Datacenter dc = transform.parent.GetComponentInParent<Datacenter>();
-        usableZone.GetComponent<Renderer>().material.color = ParseColor(dc.usableColor);
-        reservedZone.GetComponent<Renderer>().material.color = ParseColor(dc.reservedColor);
-        technicalZone.GetComponent<Renderer>().material.color = ParseColor(dc.technicalColor);
+        Site si = transform.parent.GetComponentInParent<Site>();
+        usableZone.GetComponent<Renderer>().material.color = ParseColor(si.usableColor);
+        reservedZone.GetComponent<Renderer>().material.color = ParseColor(si.reservedColor);
+        technicalZone.GetComponent<Renderer>().material.color = ParseColor(si.technicalColor);
     }
 
     ///<summary>
