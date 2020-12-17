@@ -87,4 +87,21 @@ public static class Utils
                 obj.GetComponent<Collider>().enabled = _value;
         }
     }
+
+    ///<summary>
+    /// Convert an OgreeObject to an SApiObject.
+    ///</summary>
+    ///<param name="_src">The OgreeObject to convert</param>
+    public static SApiObject ConvertToApiObj(OgreeObject _src)
+    {
+        SApiObject apiObj = new SApiObject();
+        apiObj.name = _src.name;
+        apiObj.id = _src.id;
+        apiObj.parentId = _src.parentId;
+        apiObj.category = _src.category;
+        apiObj.description = _src.description;
+        apiObj.domain = _src.domain;
+        apiObj.attributes = _src.attributes;
+        return apiObj;
+    }
 }

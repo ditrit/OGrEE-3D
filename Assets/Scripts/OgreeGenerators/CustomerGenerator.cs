@@ -15,12 +15,12 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a Tenant with given name.
+    /// Create an OgreeObject of tenant category with given name and color.
     ///</summary>
     ///<param name="_name">The tenant's name</param>
     ///<param name="_color">The tenant's rendering color</param>
     ///<returns>The created Tenant</returns>
-    public Tenant CreateTenant(string _name, string _color)
+    public OgreeObject CreateTenant(string _name, string _color)
     {
         if (GameManager.gm.allItems.Contains(_name))
         {
@@ -29,27 +29,28 @@ public class CustomerGenerator : MonoBehaviour
         }
 
         GameObject tenant = new GameObject(_name);
-        Tenant tn = tenant.AddComponent<Tenant>();
+        OgreeObject tn = tenant.AddComponent<OgreeObject>();
         tn.name = tenant.name;
-        tn.color = _color;
+        tn.category = "tenant";
+        tn.attributes.Add("color", _color);
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        
+
         tenant.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_name, tenant);
-        
+
         ApiManager.instance.CreatePostRequest(tn.name);
 
         return tn;
     }
 
     ///<summary>
-    /// Create Tenant and associated Tenant from Json.
+    /// Create OgreeObject of tenant category from Json.
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
     ///<returns>The created Tenant</returns>
-    public Tenant CreateTenant(STnFromJson _tn)
+    public OgreeObject CreateTenant(SApiObject _tn)
     {
         if (GameManager.gm.allItems.Contains(_tn.name))
         {
@@ -58,20 +59,19 @@ public class CustomerGenerator : MonoBehaviour
         }
 
         GameObject tenant = new GameObject(_tn.name);
-        Tenant tn = tenant.AddComponent<Tenant>();
+        OgreeObject tn = tenant.AddComponent<OgreeObject>();
         tn.name = _tn.name;
         tn.id = _tn.id;
-        tn.color = _tn.color;
-        tn.mainContact = _tn.mainContact;
-        tn.mainPhone = _tn.mainPhone;
-        tn.mainEmail = _tn.mainEmail;
+        tn.category = _tn.category;
+        tn.description = _tn.description;
+        tn.attributes = _tn.attributes;
 
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tn.color}>{tn.name}</color>");
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tn.attributes["color"]}>{tn.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
         tenant.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_tn.name, tenant);
-        
+
         return tn;
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -90,13 +91,14 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{obj.GetComponent<Tenant>().id}";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Tenant>());
+                request.path = $"customers/{obj.GetComponent<OgreeObject>().id}";
+                SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
+                request.json = JsonConvert.SerializeObject(apiObj);
             }
             else if (pointCount == 1)
             {
                 request.path = $"sites/{obj.GetComponent<Site>().id}";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
+                request.json = JsonConvert.SerializeObject(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {
@@ -140,12 +142,13 @@ public class ApiManager : MonoBehaviour
             if (pointCount == 0)
             {
                 request.path = "customers";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Tenant>());
+                SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
+                request.json = JsonConvert.SerializeObject(apiObj);
             }
             else if (pointCount == 1)
             {
                 request.path = "sites";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
+                request.json = JsonConvert.SerializeObject(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {
@@ -190,7 +193,7 @@ public class ApiManager : MonoBehaviour
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
             {
-                request.path = $"customers/{obj.GetComponent<Tenant>().id}";
+                request.path = $"customers/{obj.GetComponent<OgreeObject>().id}";
             }
             else if (pointCount == 1)
             {
@@ -322,13 +325,13 @@ public class ApiManager : MonoBehaviour
         if (Regex.IsMatch(_path, "customers/[^/]+$"))
         {
             Debug.Log("Create Customer");
-            STnFromJson tn = JsonUtility.FromJson<STnFromJson>(_json);
+            SApiObject tn =JsonConvert.DeserializeObject<SApiObject>(_json);
             CustomerGenerator.instance.CreateTenant(tn);
         }
         else if (Regex.IsMatch(_path, "sites/[^/]+$"))
         {
             Debug.Log("Create Site");
-            SSiteFromJson si = JsonUtility.FromJson<SSiteFromJson>(_json);
+            SSiteFromJson si = JsonConvert.DeserializeObject<SSiteFromJson>(_json);
             CustomerGenerator.instance.CreateSite(si);
         }
     }
@@ -341,7 +344,7 @@ public class ApiManager : MonoBehaviour
     private void UpdateObjId(string _objName, string _jsonId)
     {
         string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
-        GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
+        GameManager.gm.FindByAbsPath(_objName).GetComponent<OgreeObject>().UpdateId(id);
     }
 
 }

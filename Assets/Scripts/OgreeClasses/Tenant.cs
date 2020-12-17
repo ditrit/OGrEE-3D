@@ -11,7 +11,6 @@ public class Tenant : AServerItem, IAttributeModif
 
     private void OnDestroy()
     {
-
         Filters.instance.tenantsList.Remove($"<color=#{color}>{name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
     }
@@ -35,7 +34,7 @@ public class Tenant : AServerItem, IAttributeModif
                 mainEmail = _value;
                 break;
             default:
-                GameManager.gm.AppendLogLine($"[Tenant] {name}: unknowed attribute to update.", "yellow");
+                GameManager.gm.AppendLogLine($"[Tenant] {name}: unknow attribute to update.", "yellow");
                 break;
         }
     }

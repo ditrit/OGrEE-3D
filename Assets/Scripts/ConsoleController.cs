@@ -667,7 +667,7 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('=');
 
-            // Can be a Tenant, a Customer or selection...
+            // Can be a selection...
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
@@ -678,14 +678,8 @@ public class ConsoleController : MonoBehaviour
                     isReady = true;
                     return;
                 }
-                // if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
-                // {
-                //     GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
-                //     isReady = true;
-                //     return;
-                // }
             }
-            // ...is an OgreeObject
+            // ...else is an OgreeObject
             Transform obj;
             string attrName;
             IsolateParent(data[0], out obj, out attrName);

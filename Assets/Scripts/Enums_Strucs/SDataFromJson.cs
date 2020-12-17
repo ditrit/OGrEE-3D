@@ -3,15 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct STnFromJson
+public struct SApiObject
 {
     public string name;
-    public string color;
-    public string mainContact;
-    public string mainPhone;
-    public string mainEmail;
     public string id;
+    public string parentId;
+    public string category;
+    public string description;
+    public string domain;
+    public Dictionary<string, string> attributes;
 }
+
+// [System.Serializable]
+// public struct STnFromJson
+// {
+//     public string name;
+//     public string color;
+//     public string mainContact;
+//     public string mainPhone;
+//     public string mainEmail;
+//     public string id;
+// }
 
 [System.Serializable]
 public struct SSiteFromJson
