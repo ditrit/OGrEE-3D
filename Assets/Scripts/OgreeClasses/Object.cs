@@ -19,7 +19,7 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     public EUnit heightUnit;
     public EObjOrient orientation;
 
-    public Tenant tenant;
+    public string domain;
     public string vendor;
     public string type;
     public string model;
@@ -80,8 +80,8 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
             case "serial":
                 serial = _value;
                 break;
-            case "tenant":
-                AssignTenant(_value);
+            case "domain":
+                AssignDomain(_value);
                 break;
             case "color":
                 SetColor(_value);
@@ -105,12 +105,11 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     /// If Tenant exists, assign it to the object. If object is a Rack, call Rack.UpdateColor().
     ///</summary>
     ///<param name="_tenantName">The name of the tenant</param>
-    protected void AssignTenant(string _tenantName)
+    protected void AssignDomain(string _tenantName)
     {
         if (GameManager.gm.allItems.ContainsKey(_tenantName))
         {
-            GameObject go = (GameObject)GameManager.gm.allItems[_tenantName];
-            tenant = go.GetComponent<Tenant>();
+            domain = _tenantName;
             if (family == EObjFamily.rack)
                 GetComponent<Rack>().UpdateColor();
         }

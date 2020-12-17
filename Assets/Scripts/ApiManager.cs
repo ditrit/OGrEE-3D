@@ -98,7 +98,7 @@ public class ApiManager : MonoBehaviour
             else if (pointCount == 1)
             {
                 request.path = $"sites/{obj.GetComponent<Site>().id}";
-                request.json = JsonConvert.SerializeObject(obj.GetComponent<Site>());
+                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {
@@ -148,7 +148,7 @@ public class ApiManager : MonoBehaviour
             else if (pointCount == 1)
             {
                 request.path = "sites";
-                request.json = JsonConvert.SerializeObject(obj.GetComponent<Site>());
+                request.json = JsonUtility.ToJson(obj.GetComponent<Site>());
             }
             else if (pointCount == 2)
             {

@@ -11,7 +11,7 @@ public class Room : Building
 
     public ECardinalOrient orientation;
 
-    public Tenant tenant;
+    public string domain;
     public SMargin reserved;
     public SMargin technical;
     public float floorHeight;
@@ -327,12 +327,9 @@ public class Room : Building
             case "description":
                 description = _value;
                 break;
-            case "tenant":
+            case "domain":
                 if (GameManager.gm.allItems.ContainsKey(_value))
-                {
-                    GameObject go = (GameObject)GameManager.gm.allItems[_value];
-                    tenant = go.GetComponent<Tenant>();
-                }
+                    domain = _value;
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");
                 break;

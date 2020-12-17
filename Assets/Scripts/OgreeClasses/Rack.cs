@@ -48,8 +48,8 @@ public class Rack : Object
             case "serial":
                 serial = _value;
                 break;
-            case "tenant":
-                AssignTenant(_value);
+            case "domain":
+                AssignDomain(_value);
                 break;
             case "color":
                 SetColor(_value);
@@ -80,12 +80,14 @@ public class Rack : Object
     ///</summary>
     public void UpdateColor()
     {
-        if (tenant == null)
+        if (string.IsNullOrEmpty(domain))
             return;
+        
+        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.color}", out myColor);
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 

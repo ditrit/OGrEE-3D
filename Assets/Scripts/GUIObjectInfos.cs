@@ -84,12 +84,16 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(Object _obj)
     {
         tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
-        if (_obj.tenant)
+        if (!string.IsNullOrEmpty(_obj.domain))
         {
-            tmpTenantName.text = _obj.tenant.name;
-            tmpTenantContact.text = _obj.tenant.mainContact;
-            tmpTenantPhone.text = _obj.tenant.mainPhone;
-            tmpTenantEmail.text = _obj.tenant.mainEmail;
+            OgreeObject tn = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
+            tmpTenantName.text = tn.name;
+            if (tn.attributes.ContainsKey("mainContact"))
+                tmpTenantContact.text = tn.attributes["mainContact"];
+            if (tn.attributes.ContainsKey("mainPhone"))
+                tmpTenantPhone.text = tn.attributes["mainPhone"];
+            if (tn.attributes.ContainsKey("mainEmail"))
+                tmpTenantEmail.text = tn.attributes["mainEmail"];
         }
         if (_obj.family == EObjFamily.rack)
             tmpPosXY.text = $"Tile {_obj.posXY.x.ToString("0.##")}/{_obj.posXY.y.ToString("0.##")}";
@@ -110,10 +114,17 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(Room _room)
     {
         tmpName.text = _room.GetComponent<HierarchyName>().fullname;
-        tmpTenantName.text = _room.tenant.name;
-        tmpTenantContact.text = _room.tenant.mainContact;
-        tmpTenantPhone.text = _room.tenant.mainPhone;
-        tmpTenantEmail.text = _room.tenant.mainEmail;
+        if (!string.IsNullOrEmpty(_room.domain))
+        {
+            OgreeObject tn = ((GameObject)GameManager.gm.allItems[_room.domain]).GetComponent<OgreeObject>();
+            tmpTenantName.text = tn.name;
+            if (tn.attributes.ContainsKey("mainContact"))
+                tmpTenantContact.text = tn.attributes["mainContact"];
+            if (tn.attributes.ContainsKey("mainPhone"))
+                tmpTenantPhone.text = tn.attributes["mainPhone"];
+            if (tn.attributes.ContainsKey("mainEmail"))
+                tmpTenantEmail.text = tn.attributes["mainEmail"];
+        }
         tmpPosXY.text = "-";
         tmpSize.text = $"{_room.size.x}{_room.sizeUnit} x {_room.size.y}{_room.sizeUnit}";
         tmpVendor.text = "-";

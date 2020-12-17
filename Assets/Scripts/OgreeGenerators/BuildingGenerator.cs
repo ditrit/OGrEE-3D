@@ -168,7 +168,7 @@ public class BuildingGenerator : MonoBehaviour
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
         // Get tenant from related Datacenter
-        room.tenant = newRoom.transform.parent.parent.GetComponent<Site>().tenant;
+        room.domain = newRoom.transform.parent.parent.GetComponent<Site>().domain;
         room.UpdateZonesColor();
 
         string hn = newRoom.AddComponent<HierarchyName>().fullname;

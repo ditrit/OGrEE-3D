@@ -153,7 +153,7 @@ public class ConsoleController : MonoBehaviour
             isReady = true;
             return;
         }
-        else if (GameManager.gm.currentItems[0].GetComponent<Tenant>())
+        else if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
             GameManager.gm.SetCurrentItem(null);
         else
         {

@@ -99,7 +99,7 @@ public class Filters : MonoBehaviour
             GameObject obj = (GameObject)de.Value;
             if (obj.GetComponent<Rack>())
             {
-                if (txt == "All" || obj.GetComponent<Rack>().tenant.name == txt)
+                if (txt == "All" || obj.GetComponent<Rack>().domain == txt)
                     obj.SetActive(true);
                 else
                     obj.SetActive(false);

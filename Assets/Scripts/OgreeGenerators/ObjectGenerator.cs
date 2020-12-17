@@ -104,7 +104,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
-        rack.tenant = _data.parent.GetComponent<Room>().tenant;
+        rack.domain = _data.parent.GetComponent<Room>().domain;
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
@@ -322,7 +322,7 @@ public class ObjectGenerator : MonoBehaviour
         else
             obj.extras.Add("slot", _data.slot);
 
-        obj.tenant = _data.parent.GetComponent<Object>().tenant;
+        obj.domain = _data.parent.GetComponent<Object>().domain;
 
         newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
 

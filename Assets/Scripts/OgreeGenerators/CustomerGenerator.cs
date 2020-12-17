@@ -82,7 +82,7 @@ public class CustomerGenerator : MonoBehaviour
     ///<returns>The created Site</returns>
     public Site CreateSite(SSiteInfos _data)
     {
-        if (_data.parent.GetComponent<Tenant>() == null)
+        if (_data.parent.GetComponent<OgreeObject>().category != "tenant")
         {
             GameManager.gm.AppendLogLine("Site must be child of a tenant", "yellow");
             return null;
@@ -119,10 +119,10 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
-        si.parentId = _data.parent.GetComponent<Tenant>().id;
+        si.parentId = _data.parent.GetComponent<OgreeObject>().id;
 
         // By default, tenant is the hierarchy's root
-        si.tenant = si.transform.parent.GetComponent<Tenant>();
+        si.domain = si.transform.parent.GetComponent<OgreeObject>().domain;
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
@@ -139,12 +139,12 @@ public class CustomerGenerator : MonoBehaviour
     ///<returns>The created Site</returns>
     public Site CreateSite(SSiteFromJson _si)
     {
-        Tenant[] tenants = GameObject.FindObjectsOfType<Tenant>();
-        Tenant tn = null;
-        foreach (Tenant tenant in tenants)
+        GameObject tn = null;
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            if (tenant.id == _si.parentId)
-                tn = tenant;
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>().id == _si.parentId)
+                tn = go;
         }
         if (!tn)
         {
@@ -197,7 +197,7 @@ public class CustomerGenerator : MonoBehaviour
         si.parentId = _si.parentId;
 
         // By default, tenant is the hierarchy's root
-        si.tenant = si.transform.parent.GetComponent<Tenant>();
+        si.domain = si.transform.parent.GetComponent<OgreeObject>().domain;
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);

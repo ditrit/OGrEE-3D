@@ -11,7 +11,7 @@ public class Site : AServerItem, IAttributeModif
     public string country;
     public ECardinalOrient orientation;
     public Vector3 gps;
-    public Tenant tenant;
+    public string domain;
 
     public string usableColor = "DBEDF2";
     public string reservedColor = "F2F2F2";
@@ -49,12 +49,9 @@ public class Site : AServerItem, IAttributeModif
             case "gps":
                 gps = Utils.ParseVector3(_value);
                 break;
-            case "tenant":
+            case "domain":
                 if (GameManager.gm.allItems.ContainsKey(_value))
-                {
-                    GameObject go = (GameObject)GameManager.gm.allItems[_value];
-                    tenant = go.GetComponent<Tenant>();
-                }
+                    domain = _value;
                 else
                     GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;

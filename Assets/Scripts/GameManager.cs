@@ -400,9 +400,17 @@ public class GameManager : MonoBehaviour
         SetCurrentItem(null);
         focus.Clear();
         UpdateFocusText();
-        Tenant[] tenants = FindObjectsOfType<Tenant>();
-        foreach (Tenant tn in tenants)
-            Destroy(tn.gameObject);
+
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();
