@@ -15,7 +15,7 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an OgreeObject of tenant category with given name and color.
+    /// Create an OgreeObject of "tenant" category with given name and color.
     ///</summary>
     ///<param name="_name">The tenant's name</param>
     ///<param name="_color">The tenant's rendering color</param>
@@ -28,25 +28,25 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject tenant = new GameObject(_name);
-        OgreeObject tn = tenant.AddComponent<OgreeObject>();
-        tn.name = tenant.name;
-        tn.category = "tenant";
-        tn.attributes.Add("color", _color);
+        GameObject newTenant = new GameObject(_name);
+        OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
+        tenant.name = newTenant.name;
+        tenant.category = "tenant";
+        tenant.attributes.Add("color", _color);
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
-        tenant.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_name, tenant);
+        newTenant.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_name, newTenant);
 
-        ApiManager.instance.CreatePostRequest(tn.name);
+        ApiManager.instance.CreatePostRequest(tenant.name);
 
-        return tn;
+        return tenant;
     }
 
     ///<summary>
-    /// Create OgreeObject of tenant category from Json.
+    /// Create OgreeObject of "tenant" category from Json.
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
     ///<returns>The created Tenant</returns>
@@ -58,29 +58,29 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject tenant = new GameObject(_tn.name);
-        OgreeObject tn = tenant.AddComponent<OgreeObject>();
-        tn.name = _tn.name;
-        tn.id = _tn.id;
-        tn.category = _tn.category;
-        tn.description = _tn.description;
-        tn.attributes = _tn.attributes;
+        GameObject newTenant = new GameObject(_tn.name);
+        OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
+        tenant.name = _tn.name;
+        tenant.id = _tn.id;
+        tenant.category = _tn.category;
+        tenant.description = _tn.description;
+        tenant.attributes = _tn.attributes;
 
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tn.attributes["color"]}>{tn.name}</color>");
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
-        tenant.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_tn.name, tenant);
+        newTenant.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_tn.name, newTenant);
 
-        return tn;
+        return tenant;
     }
 
     ///<summary>
-    /// Create a Site and apply _data to it.
+    /// Create an OgreeObject of "site" category and apply _data to it.
     ///</summary>
     ///<param name="_data">Informations about the site</param>
     ///<returns>The created Site</returns>
-    public Site CreateSite(SSiteInfos _data)
+    public OgreeObject CreateSite(SSiteInfos _data)
     {
         if (_data.parent.GetComponent<OgreeObject>().category != "tenant")
         {
@@ -97,47 +97,43 @@ public class CustomerGenerator : MonoBehaviour
         GameObject newSite = new GameObject(_data.name);
         newSite.transform.parent = _data.parent;
 
-        Site si = newSite.AddComponent<Site>();
-        si.name = newSite.name;
+        OgreeObject site = newSite.AddComponent<OgreeObject>();
+        site.name = newSite.name;
+        site.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        site.category = "site";
+        site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
+
+        site.attributes.Add("orientation", _data.orient);
         switch (_data.orient)
         {
             case "EN":
-                si.orientation = ECardinalOrient.EN;
                 newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                si.orientation = ECardinalOrient.WS;
                 newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                si.orientation = ECardinalOrient.NW;
                 newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                si.orientation = ECardinalOrient.SE;
                 newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
-
-        si.parentId = _data.parent.GetComponent<OgreeObject>().id;
-
-        // By default, tenant is the hierarchy's root
-        si.domain = si.transform.parent.GetComponent<OgreeObject>().domain;
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
 
         ApiManager.instance.CreatePostRequest(hn);
 
-        return si;
+        return site;
     }
 
     ///<summary>
-    /// Create a Site and assign values from json
+    /// Create an OgreeObject of "site" category and assign values from json
     ///</summary>
     ///<param name="_si">The site data to apply</param>
     ///<returns>The created Site</returns>
-    public Site CreateSite(SSiteFromJson _si)
+    public OgreeObject CreateSite(SApiObject _si)
     {
         GameObject tn = null;
         foreach (DictionaryEntry de in GameManager.gm.allItems)
@@ -162,46 +158,34 @@ public class CustomerGenerator : MonoBehaviour
         GameObject newSite = new GameObject(_si.name);
         newSite.transform.parent = tn.transform;
 
-        Site si = newSite.AddComponent<Site>();
-        si.name = newSite.name;
-        switch (_si.orient)
+        OgreeObject site = newSite.AddComponent<OgreeObject>();
+        site.name = newSite.name;
+        site.id = _si.id;
+        site.parentId = _si.parentId;
+        site.category = _si.category;
+        site.description = _si.description;
+        site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
+
+        site.attributes = _si.attributes;
+        switch (site.attributes["orientation"])
         {
             case "EN":
-                si.orientation = ECardinalOrient.EN;
                 newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
                 break;
             case "WS":
-                si.orientation = ECardinalOrient.WS;
                 newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
                 break;
             case "NW":
-                si.orientation = ECardinalOrient.NW;
                 newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
                 break;
             case "SE":
-                si.orientation = ECardinalOrient.SE;
                 newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
-        si.description = _si.comment;
-        si.address = _si.address;
-        si.zipcode = _si.zipcode;
-        si.city = _si.zipcode;
-        si.country = _si.country;
-        si.gps = _si.gps;
-        si.id = _si.id;
-        si.SetAttribute("usableColor", _si.usableColor);
-        si.SetAttribute("reservedColor", _si.reservedColor);
-        si.SetAttribute("technicalColor", _si.technicalColor);
-
-        si.parentId = _si.parentId;
-
-        // By default, tenant is the hierarchy's root
-        si.domain = si.transform.parent.GetComponent<OgreeObject>().domain;
-
+        
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
 
-        return si;
+        return site;
     }
 }

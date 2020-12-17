@@ -352,14 +352,14 @@ public class Room : Building
     }
 
     ///<summary>
-    /// Set usable/reserved/technical zones color according to parented Datacenter
+    /// Set usable/reserved/technical zones color according to parented Site
     ///</summary>
     public void UpdateZonesColor()
     {
-        Site si = transform.parent.GetComponentInParent<Site>();
-        usableZone.GetComponent<Renderer>().material.color = ParseColor(si.usableColor);
-        reservedZone.GetComponent<Renderer>().material.color = ParseColor(si.reservedColor);
-        technicalZone.GetComponent<Renderer>().material.color = ParseColor(si.technicalColor);
+        OgreeObject site = transform.parent.parent.GetComponentInParent<OgreeObject>();
+        usableZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["usableColor"]);
+        reservedZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["reservedColor"]);
+        technicalZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["technicalColor"]);
     }
 
     ///<summary>

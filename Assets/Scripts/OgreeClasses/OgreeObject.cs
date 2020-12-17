@@ -13,9 +13,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string domain; // = tenant
 
     [Header("Specific attributes")]
-    public Dictionary<string, string> attributes = new Dictionary<string, string>();
     [SerializeField] private List<string> attributesKeys = new List<string>();
     [SerializeField] private List<string> attributesValues = new List<string>();
+    public Dictionary<string, string> attributes = new Dictionary<string, string>();
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
@@ -58,6 +58,12 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             case "description":
                 description = _value;
+                break;
+            case "domain":
+                if (GameManager.gm.allItems.ContainsKey(_value))
+                    domain = _value;
+                else
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             default:
                 if (attributes.ContainsKey(_param))
