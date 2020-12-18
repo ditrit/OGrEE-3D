@@ -38,7 +38,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (category == "tenant")
         {
@@ -52,7 +52,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public void SetAttribute(string _param, string _value)
+    public virtual void SetAttribute(string _param, string _value)
     {
         switch (_param)
         {

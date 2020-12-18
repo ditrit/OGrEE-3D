@@ -126,7 +126,8 @@ public class GUIObjectInfos : MonoBehaviour
                 tmpTenantEmail.text = tn.attributes["mainEmail"];
         }
         tmpPosXY.text = "-";
-        tmpSize.text = $"{_room.size.x}{_room.sizeUnit} x {_room.size.y}{_room.sizeUnit}";
+        Vector2 size = JsonUtility.FromJson<Vector2>(_room.attributes["size"]);
+        tmpSize.text = $"{size.x}{_room.attributes["sizeUnit"]} x {size.y}{_room.attributes["sizeUnit"]}";
         tmpVendor.text = "-";
         tmpType.text = "-";
         tmpModel.text = "-";

@@ -101,7 +101,7 @@ public class CustomerGenerator : MonoBehaviour
         site.name = newSite.name;
         site.parentId = _data.parent.GetComponent<OgreeObject>().id;
         site.category = "site";
-        site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
+        site.domain = _data.parent.GetComponent<OgreeObject>().domain;
 
         site.attributes.Add("orientation", _data.orient);
         switch (_data.orient)
@@ -119,6 +119,10 @@ public class CustomerGenerator : MonoBehaviour
                 newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
+        // Set default colors
+        site.attributes.Add("usableColor", "DBEDF2");
+        site.attributes.Add("reservedColor", "F2F2F2");
+        site.attributes.Add("technicalColor", "EBF2DE");
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);

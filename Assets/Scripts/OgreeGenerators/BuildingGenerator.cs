@@ -46,22 +46,26 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
         newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
 
-        Building bd = newBD.GetComponent<Building>();
-        bd.name = newBD.name;
-        BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
-        bd.posXY = new Vector2(_data.pos.x, _data.pos.y);
-        bd.posXYUnit = EUnit.m;
-        bd.posZ = _data.pos.z;
-        bd.posZUnit = EUnit.m;
-        bd.size = new Vector2(_data.size.x, _data.size.z);
-        bd.sizeUnit = EUnit.m;
-        bd.height = _data.size.y;
-        bd.heightUnit = EUnit.m;
+        Building building = newBD.GetComponent<Building>();
+        building.name = newBD.name;
+        building.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        building.category = "building";
+        building.domain = _data.parent.GetComponent<OgreeObject>().domain;
+
+        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
+        building.attributes.Add("posXY", new Vector2(_data.pos.x, _data.pos.y).ToString());
+        building.attributes.Add("posXYUnit", "m");
+        building.attributes.Add("posZ", _data.pos.z.ToString());
+        building.attributes.Add("posZUnit", "m");
+        building.attributes.Add("size", new Vector2(_data.size.x, _data.size.z).ToString());
+        building.attributes.Add("sizeUnit", "m");
+        building.attributes.Add("height", _data.size.y.ToString());
+        building.attributes.Add("heightUnit", "m");
 
         newBD.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
 
-        return bd;
+        return building;
     }
 
     ///<summary>
@@ -111,6 +115,9 @@ public class BuildingGenerator : MonoBehaviour
 
         Room room = newRoom.GetComponent<Room>();
         room.name = newRoom.name;
+        room.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        room.category = "room";
+        room.domain = _data.parent.GetComponent<OgreeObject>().domain;
 
         Vector3 originalSize = room.usableZone.localScale;
         room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.z);
@@ -127,14 +134,14 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += _data.pos;
 
-        room.posXY = new Vector2(_data.pos.x, _data.pos.y);
-        room.posXYUnit = EUnit.m;
-        room.posZ = _data.pos.z;
-        room.posZUnit = EUnit.m;
-        room.size = new Vector2(size.x, size.z);
-        room.sizeUnit = EUnit.m;
-        room.height = size.y;
-        room.heightUnit = EUnit.m;
+        room.attributes.Add("posXY", JsonUtility.ToJson(new Vector2(_data.pos.x, _data.pos.y)));
+        room.attributes.Add("posXYUnit", "m");
+        room.attributes.Add("posZ", _data.pos.z.ToString());
+        room.attributes.Add("posZUnit", "m");
+        room.attributes.Add("size", JsonUtility.ToJson(new Vector2(size.x, size.z)));
+        room.attributes.Add("sizeUnit", "m");
+        room.attributes.Add("height", size.y.ToString());
+        room.attributes.Add("heightUnit", "m");
         switch (orient)
         {
             case "EN":
@@ -161,14 +168,12 @@ public class BuildingGenerator : MonoBehaviour
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
-        room.nameText.rectTransform.sizeDelta = room.size;
+        room.nameText.rectTransform.sizeDelta = new Vector2(size.x, size.z);
 
         // Add room to GUI room filter
         Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
-        // Get tenant from related Datacenter
-        room.domain = newRoom.transform.parent.parent.GetComponent<OgreeObject>().domain;
         room.UpdateZonesColor();
 
         string hn = newRoom.AddComponent<HierarchyName>().fullname;

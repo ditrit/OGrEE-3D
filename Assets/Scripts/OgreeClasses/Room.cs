@@ -11,7 +11,7 @@ public class Room : Building
 
     public ECardinalOrient orientation;
 
-    public string domain;
+    // public string domain;
     public SMargin reserved;
     public SMargin technical;
     public float floorHeight;
@@ -175,6 +175,7 @@ public class Room : Building
     ///<param name="_root">Root for choosen mode</param>
     private void LoopThroughTiles(string _mode, Transform _root)
     {
+        Vector2 size = new Vector2(transform.localScale.x, transform.localScale.z);
         float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
         float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
 
