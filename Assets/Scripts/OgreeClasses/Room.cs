@@ -6,19 +6,8 @@ using UnityEngine;
 
 public class Room : Building
 {
-    // ITROOM : technical <> null + reserved <> null + WDunit = tile 
-    // ROOM (AC + power): technical = 0 + reserved = 0 + WDunit = cm / inch / tile
-
-    public ECardinalOrient orientation;
-
-    // public string domain;
     public SMargin reserved;
     public SMargin technical;
-    public float floorHeight;
-    public EUnit floorUnit;
-    public string floor;
-
-    public string template;
 
     [Header("RO References")]
     public Transform usableZone;
@@ -127,7 +116,7 @@ public class Room : Building
             GameManager.gm.AppendLogLine("tilesColor value has to be true or false", "yellow");
             return;
         }
-        if (!GameManager.gm.roomTemplates.ContainsKey(template))
+        if (!GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
         {
             GameManager.gm.AppendLogLine($"There is no template for {name}", "yellow");
             return;
@@ -175,7 +164,7 @@ public class Room : Building
     ///<param name="_root">Root for choosen mode</param>
     private void LoopThroughTiles(string _mode, Transform _root)
     {
-        Vector2 size = new Vector2(transform.localScale.x, transform.localScale.z);
+        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
         float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
         float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
 
@@ -188,10 +177,10 @@ public class Room : Building
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
                 {
-                    if (GameManager.gm.roomTemplates.ContainsKey(template))
+                    if (GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
                     {
                         GenerateTileName(_root, new Vector2(i, j) * GameManager.gm.tileSize,
-                                         tileID, GameManager.gm.roomTemplates[template]);
+                                         tileID, GameManager.gm.roomTemplates[attributes["template"]]);
                     }
                     else
                     {
@@ -202,7 +191,7 @@ public class Room : Building
                 else if (_mode == "color")
                 {
                     GenerateTileColor(_root, new Vector2(i, j) * GameManager.gm.tileSize,
-                                      tileID, GameManager.gm.roomTemplates[template]);
+                                      tileID, GameManager.gm.roomTemplates[attributes["template"]]);
                 }
             }
         }
@@ -332,10 +321,7 @@ public class Room : Building
                 if (GameManager.gm.allItems.ContainsKey(_value))
                     domain = _value;
                 else
-                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exists. Please create it before assign it.", "yellow");
-                break;
-            case "floor":
-                floor = _value;
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             case "areas":
                 ParseAreas(_value);
@@ -347,9 +333,13 @@ public class Room : Building
                 ToggleTilesColor(_value);
                 break;
             default:
-                GameManager.gm.AppendLogLine($"[Room] {name}: unknowed attribute to update.", "yellow");
+                if (attributes.ContainsKey(_param))
+                    attributes[_param] = _value;
+                else
+                    attributes.Add(_param, _value);
                 break;
         }
+        // PutData();
     }
 
     ///<summary>

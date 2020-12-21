@@ -106,21 +106,21 @@ public class Rack : Object
         }
 
         Room room = transform.parent.GetComponent<Room>();
-        switch (room.orientation)
+        switch (room.attributes["orientation"])
         {
-            case ECardinalOrient.EN:
+            case "EN":
                 transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.x, _v.y);
                 break;
-            case ECardinalOrient.NW:
+            case "NW":
                 transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.y, -_v.x);
                 break;
-            case ECardinalOrient.WS:
+            case "WS":
                 transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.x, -_v.y);
                 break;
-            case ECardinalOrient.SE:
+            case "SE":
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.y, _v.x);
                 break;

@@ -97,6 +97,7 @@ public class BuildingGenerator : MonoBehaviour
         {
             size = _data.size;
             orient = _data.orient;
+            newRoom.GetComponent<Room>().attributes.Add("template", "");
         }
         else if (GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
@@ -104,8 +105,7 @@ public class BuildingGenerator : MonoBehaviour
                             GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
                             GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
             orient = GameManager.gm.roomTemplates[_data.template].orientation;
-
-            newRoom.GetComponent<Room>().template = _data.template;
+            newRoom.GetComponent<Room>().attributes.Add("template", _data.template);
         }
         else
         {
@@ -145,22 +145,22 @@ public class BuildingGenerator : MonoBehaviour
         switch (orient)
         {
             case "EN":
-                room.orientation = ECardinalOrient.EN;
+                room.attributes.Add("orientation", "EN");
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
-                room.orientation = ECardinalOrient.WS;
+                room.attributes.Add("orientation", "WS");
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
-                room.orientation = ECardinalOrient.NW;
+                room.attributes.Add("orientation", "NW");
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
-                room.orientation = ECardinalOrient.SE;
+                room.attributes.Add("orientation", "SE");
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;
@@ -178,7 +178,7 @@ public class BuildingGenerator : MonoBehaviour
 
         string hn = newRoom.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRoom);
-        
+
         if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
         {
             ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_data.template];

@@ -32,6 +32,7 @@ public class CustomerGenerator : MonoBehaviour
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.name = newTenant.name;
         tenant.category = "tenant";
+        tenant.domain = tenant.name;
         tenant.attributes.Add("color", _color);
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
@@ -64,6 +65,7 @@ public class CustomerGenerator : MonoBehaviour
         tenant.id = _tn.id;
         tenant.category = _tn.category;
         tenant.description = _tn.description;
+        tenant.domain = _tn.domain;
         tenant.attributes = _tn.attributes;
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");

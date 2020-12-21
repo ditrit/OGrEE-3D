@@ -469,7 +469,7 @@ public class GameManager : MonoBehaviour
         Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
-            if (!roomTemplates.ContainsKey(currentRoom.template))
+            if (!roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
                 GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
                 return;

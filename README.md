@@ -93,7 +93,7 @@ You can override the config file parameters with command line arguments
 # Build in CLI
 
 ## Glossary
-`[name]` is case sensitive. It include the whole path of the object (for example: `tn.dc.bd.ro.rk`)  
+`[name]` is case sensitive. It include the whole path of the object (for example: `tn.si.bd.ro.rk`)  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y, anti-clockwise): **EN**, **NW**, **WS**, **SE**
 `[color]` is a hexadecimal code (*ffffff*)  
 
