@@ -33,7 +33,7 @@ public class CustomerGenerator : MonoBehaviour
         tenant.name = newTenant.name;
         tenant.category = "tenant";
         tenant.domain = tenant.name;
-        tenant.attributes.Add("color", _color);
+        tenant.attributes["color"] = _color;
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
@@ -105,7 +105,7 @@ public class CustomerGenerator : MonoBehaviour
         site.category = "site";
         site.domain = _data.parent.GetComponent<OgreeObject>().domain;
 
-        site.attributes.Add("orientation", _data.orient);
+        site.attributes["orientation"] = _data.orient;
         switch (_data.orient)
         {
             case "EN":
@@ -122,9 +122,9 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
         // Set default colors
-        site.attributes.Add("usableColor", "DBEDF2");
-        site.attributes.Add("reservedColor", "F2F2F2");
-        site.attributes.Add("technicalColor", "EBF2DE");
+        site.attributes["usableColor"] = "DBEDF2";
+        site.attributes["reservedColor"] = "F2F2F2";
+        site.attributes["technicalColor"] = "EBF2DE";
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);

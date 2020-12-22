@@ -53,14 +53,14 @@ public class BuildingGenerator : MonoBehaviour
         building.domain = _data.parent.GetComponent<OgreeObject>().domain;
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
-        building.attributes.Add("posXY", new Vector2(_data.pos.x, _data.pos.y).ToString());
-        building.attributes.Add("posXYUnit", "m");
-        building.attributes.Add("posZ", _data.pos.z.ToString());
-        building.attributes.Add("posZUnit", "m");
-        building.attributes.Add("size", new Vector2(_data.size.x, _data.size.z).ToString());
-        building.attributes.Add("sizeUnit", "m");
-        building.attributes.Add("height", _data.size.y.ToString());
-        building.attributes.Add("heightUnit", "m");
+        building.attributes["posXY"]= new Vector2(_data.pos.x, _data.pos.y).ToString();
+        building.attributes["posXYUnit"]= "m";
+        building.attributes["posZ"]= _data.pos.z.ToString();
+        building.attributes["posZUnit"]= "m";
+        building.attributes["size"]= new Vector2(_data.size.x, _data.size.z).ToString();
+        building.attributes["sizeUnit"]= "m";
+        building.attributes["height"]= _data.size.y.ToString();
+        building.attributes["heightUnit"]= "m";
 
         newBD.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
@@ -134,33 +134,33 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += _data.pos;
 
-        room.attributes.Add("posXY", JsonUtility.ToJson(new Vector2(_data.pos.x, _data.pos.y)));
-        room.attributes.Add("posXYUnit", "m");
-        room.attributes.Add("posZ", _data.pos.z.ToString());
-        room.attributes.Add("posZUnit", "m");
-        room.attributes.Add("size", JsonUtility.ToJson(new Vector2(size.x, size.z)));
-        room.attributes.Add("sizeUnit", "m");
-        room.attributes.Add("height", size.y.ToString());
-        room.attributes.Add("heightUnit", "m");
+        room.attributes["posXY"] =  JsonUtility.ToJson(new Vector2(_data.pos.x, _data.pos.y));
+        room.attributes["posXYUnit"] =  "m";
+        room.attributes["posZ"] =  _data.pos.z.ToString();
+        room.attributes["posZUnit"] =  "m";
+        room.attributes["size"] =  JsonUtility.ToJson(new Vector2(size.x, size.z));
+        room.attributes["sizeUnit"] =  "m";
+        room.attributes["height"] =  size.y.ToString();
+        room.attributes["heightUnit"] =  "m";
         switch (orient)
         {
             case "EN":
-                room.attributes.Add("orientation", "EN");
+                room.attributes["orientation"] =  "EN";
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
-                room.attributes.Add("orientation", "WS");
+                room.attributes["orientation"] =  "WS";
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
-                room.attributes.Add("orientation", "NW");
+                room.attributes["orientation"] =  "NW";
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
-                room.attributes.Add("orientation", "SE");
+                room.attributes["orientation"] =  "SE";
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;
