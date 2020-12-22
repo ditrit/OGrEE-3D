@@ -38,10 +38,8 @@ public class GUIObjectInfos : MonoBehaviour
         singlePanel.SetActive(true);
         multiPanel.SetActive(false);
 
-        if (_obj && _obj.GetComponent<Object>())
-            UpdateFields(_obj.GetComponent<Object>());
-        else if (_obj && _obj.GetComponent<Room>())
-            UpdateFields(_obj.GetComponent<Room>());
+        if (_obj && _obj.GetComponent<OgreeObject>())
+            UpdateFields(_obj.GetComponent<OgreeObject>());
         else
         {
             if (_obj)
@@ -78,10 +76,10 @@ public class GUIObjectInfos : MonoBehaviour
     }
 
     ///<summary>
-    /// Update singlePanel texts from a Rack.
+    /// Update singlePanel texts from an OgreeObject.
     ///</summary>
     ///<param name="_obj">The rack whose information are displayed</param>
-    private void UpdateFields(Object _obj)
+    private void UpdateFields(OgreeObject _obj)
     {
         tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
         if (!string.IsNullOrEmpty(_obj.domain))
@@ -98,7 +96,7 @@ public class GUIObjectInfos : MonoBehaviour
             tmpPosXY.text = $"Tile {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")}";
         }
         else
-            tmpPosXY.text = "-";
+            tmpPosXY.text = "";
         if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
@@ -109,31 +107,6 @@ public class GUIObjectInfos : MonoBehaviour
         tmpModel.text = IfInDictionary(_obj.attributes, "model");
         tmpSerial.text = IfInDictionary(_obj.attributes, "serial");
         tmpDesc.text = _obj.description;
-    }
-
-    ///<summary>
-    /// Update singlePanel texts from a Room.
-    ///</summary>
-    ///<param name="_room">The room whose information are displayed</param>
-    private void UpdateFields(Room _room)
-    {
-        tmpName.text = _room.GetComponent<HierarchyName>().fullname;
-        if (!string.IsNullOrEmpty(_room.domain))
-        {
-            OgreeObject tn = ((GameObject)GameManager.gm.allItems[_room.domain]).GetComponent<OgreeObject>();
-            tmpTenantName.text = tn.name;
-            tmpTenantContact.text = IfInDictionary(tn.attributes, "mainContact");
-            tmpTenantPhone.text = IfInDictionary(tn.attributes, "mainPhone");
-            tmpTenantEmail.text = IfInDictionary(tn.attributes, "mainEmail");
-        }
-        tmpPosXY.text = "-";
-        Vector2 size = JsonUtility.FromJson<Vector2>(_room.attributes["size"]);
-        tmpSize.text = $"{size.x}{_room.attributes["sizeUnit"]} x {size.y}{_room.attributes["sizeUnit"]}";
-        tmpVendor.text = "-";
-        tmpType.text = "-";
-        tmpModel.text = "-";
-        tmpSerial.text = "-";
-        tmpDesc.text = _room.description;
     }
 
     ///<summary>
