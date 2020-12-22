@@ -351,7 +351,7 @@ public class GameManager : MonoBehaviour
             ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
             foreach (Transform child in _toDel.transform)
             {
-                if (child.GetComponent<AServerItem>())
+                if (child.GetComponent<OgreeObject>())
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
             }
         }

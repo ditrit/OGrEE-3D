@@ -145,8 +145,8 @@ public class ReadFromJson
         Rack rack = ObjectGenerator.instance.CreateRack(infos);
 
         rack.transform.localPosition = Vector3.zero;
-        rack.vendor = rackData.vendor;
-        rack.model = rackData.model;
+        rack.attributes["vendor"] = rackData.vendor;
+        rack.attributes["model"] = rackData.model;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (rackData.colors != null)
         {
@@ -190,12 +190,13 @@ public class ReadFromJson
 
         // Count the right height in U 
         Slot[] slots = rack.GetComponentsInChildren<Slot>();
-        rack.height = 0;
+        int height = 0;
         foreach (Slot s in slots)
         {
             if (s.orient == "horizontal")
-                rack.height++;
+                height++;
         }
+        rack.attributes["height"] = height.ToString();
 
 #if !DEBUG
         Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
@@ -251,37 +252,29 @@ public class ReadFromJson
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
 
-        switch (data.type)
-        {
-            case "chassis":
-                device.family = EObjFamily.chassis;
-                break;
-            case "blade":
-                device.family = EObjFamily.device;
-                break;
-        }
-        device.vendor = data.vendor;
-        device.model = data.model;
         device.description = data.description;
+        device.attributes["deviceType"] = data.type;
+        device.attributes["vendor"] = data.vendor;
+        device.attributes["model"] = data.model;
         switch (data.side)
         {
             case "front":
-                device.orientation = EObjOrient.Front;
+                device.attributes["orientation"] = "Front";
                 break;
             case "rear":
-                device.orientation = EObjOrient.Rear;
+                device.attributes["orientation"] = "Rear";
                 break;
             case "frontflipped":
-                device.orientation = EObjOrient.FrontFlipped;
+                device.attributes["orientation"] = "FrontFlipped";
                 break;
             case "rearflipped":
-                device.orientation = EObjOrient.RearFlipped;
+                device.attributes["orientation"] = "RearFlipped";
                 break;
         }
         if (data.fulldepth == "yes")
-            device.extras.Add("fulldepth", "yes");
+            device.attributes["fulldepth"] = "yes";
         else if (data.fulldepth == "no")
-            device.extras.Add("fulldepth", "no");
+            device.attributes["fulldepth"] = "no";
 
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (data.colors != null)
@@ -319,7 +312,7 @@ public class ReadFromJson
                                 Dictionary<string, string> _customColors)
     {
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
-        
+
         go.name = _data.location;
         go.transform.parent = _parent;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
@@ -350,8 +343,8 @@ public class ReadFromJson
         }
         else
         {
-            Object obj =go.AddComponent<Object>();
-            obj.family = EObjFamily.device;
+            Object obj = go.AddComponent<Object>();
+            obj.category = "device";
             go.AddComponent<HierarchyName>();
         }
 

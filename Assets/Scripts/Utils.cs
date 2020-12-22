@@ -63,18 +63,6 @@ public static class Utils
     }
 
     ///<summary>
-    /// Add a key/value pair in a dictionary only of the key doesn't exists.
-    ///</summary>
-    ///<param name="_dictionary">The dictionary to modify</param>
-    ///<param name="_key">The key to check/add</param>
-    ///<param name="_value">The value to add</param>
-    public static void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
-    {
-        if (!_dictionary.ContainsKey(_key))
-            _dictionary.Add(_key, _value);
-    }
-
-    ///<summary>
     /// Gets every Racks in GameManager.allItems and set their Collider.enabled.
     ///</summary>
     ///<param name="_value">The value to set</param>

@@ -65,36 +65,40 @@ public class ObjectGenerator : MonoBehaviour
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.name = newRack.name;
-        rack.posXY = _data.pos;
-        rack.posXYUnit = EUnit.tile;
+        rack.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        rack.category = "rack";
+        rack.domain = _data.parent.GetComponent<OgreeObject>().domain;
+        
+        rack.attributes["posXY"] = JsonUtility.ToJson(_data.pos);
+        rack.attributes["posXYUnit"] =  "Tile";
         if (string.IsNullOrEmpty(_data.template))
         {
-            rack.size = new Vector2(_data.size.x, _data.size.z);
-            rack.sizeUnit = EUnit.cm;
-            rack.height = _data.height;
-            rack.heightUnit = EUnit.U;
+            rack.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.size.x, _data.size.z));
+            rack.attributes["sizeUnit"] = "cm";
+            rack.attributes["height"] = _data.height.ToString();
+            rack.attributes["heightUnit"] = "U" ;
         }
         switch (_data.orient)
         {
             case "front":
-                rack.orientation = EObjOrient.Front;
+                rack.attributes["orientation"] = "Front";
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
                 newRack.transform.localPosition += boxOrigin;
                 break;
             case "rear":
-                rack.orientation = EObjOrient.Rear;
+                rack.attributes["orientation"] = "Rear";
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
             case "left":
-                rack.orientation = EObjOrient.Left;
+                rack.attributes["orientation"] = "Left";
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
                 break;
             case "right":
-                rack.orientation = EObjOrient.Right;
+                rack.attributes["orientation"] = "Right";
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
@@ -104,7 +108,6 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayRackData>().PlaceTexts();
         newRack.GetComponent<DisplayRackData>().FillTexts();
 
-        rack.domain = _data.parent.GetComponent<Room>().domain;
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
@@ -259,36 +262,39 @@ public class ObjectGenerator : MonoBehaviour
                 switch (_data.side)
                 {
                     case "front":
-                        ob.orientation = EObjOrient.Front;
+                        ob.attributes["orientation"] = "Front";
                         break;
                     case "rear":
-                        ob.orientation = EObjOrient.Rear;
+                        ob.attributes["orientation"] = "Rear";
                         break;
                     case "frontflipped":
-                        ob.orientation = EObjOrient.FrontFlipped;
+                        ob.attributes["orientation"] = "FrontFlipped";
                         break;
                     case "rearflipped":
-                        ob.orientation = EObjOrient.RearFlipped;
+                        ob.attributes["orientation"] = "RearFlipped";
+                        break;
+                    default:
+                        ob.attributes["orientation"] = "Front";
                         break;
                 }
-                if (ob.extras.ContainsKey("fulldepth") && ob.extras["fulldepth"] == "yes")
-                    ob.orientation = EObjOrient.Front;
+                if (ob.attributes.ContainsKey("fulldepth") && ob.attributes["fulldepth"] == "yes")
+                    ob.attributes["orientation"] = "Front";
 
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
-                switch (ob.orientation)
+                switch (ob.attributes["orientation"])
                 {
-                    case EObjOrient.Front:
+                    case "Front":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         break;
-                    case EObjOrient.Rear:
+                    case "Rear":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
                         break;
-                    case EObjOrient.FrontFlipped:
+                    case "FrontFlipped":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
                         break;
-                    case EObjOrient.RearFlipped:
+                    case "RearFlipped":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
                         break;
@@ -309,20 +315,23 @@ public class ObjectGenerator : MonoBehaviour
         newDevice.name = _data.name;
         Object obj = newDevice.GetComponent<Object>();
         obj.name = newDevice.name;
-        obj.size = new Vector2(newDevice.transform.GetChild(0).localScale.x,
-                                newDevice.transform.GetChild(0).localScale.z) * 1000;
-        obj.sizeUnit = EUnit.mm;
-        obj.height = newDevice.transform.GetChild(0).localScale.y * 1000;
-        obj.heightUnit = EUnit.mm;
+        obj.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        obj.category = "device";
+        obj.domain = _data.parent.GetComponent<OgreeObject>().domain;
+
+        obj.attributes["size"] = JsonUtility.ToJson(new Vector2(newDevice.transform.GetChild(0).localScale.x,
+                                newDevice.transform.GetChild(0).localScale.z) * 1000);
+        obj.attributes["sizeUnit"] = "mm";
+        obj.attributes["height"] = (newDevice.transform.GetChild(0).localScale.y * 1000).ToString();
+        obj.attributes["heightUnit"] = "mm";
         if (string.IsNullOrEmpty(_data.slot))
         {
-            obj.posZ = _data.posU;
-            obj.posZUnit = EUnit.U;
+            obj.attributes["posZ"] = _data.posU.ToString();
+            obj.attributes["posZUnit"] = "U";
         }
         else
-            obj.extras.Add("slot", _data.slot);
+            obj.attributes["slot"] = _data.slot;
 
-        obj.domain = _data.parent.GetComponent<Object>().domain;
 
         newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
 

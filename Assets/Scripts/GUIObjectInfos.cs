@@ -88,22 +88,26 @@ public class GUIObjectInfos : MonoBehaviour
         {
             OgreeObject tn = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpTenantName.text = tn.name;
-            if (tn.attributes.ContainsKey("mainContact"))
-                tmpTenantContact.text = tn.attributes["mainContact"];
-            if (tn.attributes.ContainsKey("mainPhone"))
-                tmpTenantPhone.text = tn.attributes["mainPhone"];
-            if (tn.attributes.ContainsKey("mainEmail"))
-                tmpTenantEmail.text = tn.attributes["mainEmail"];
+            tmpTenantContact.text = IfInDictionary(tn.attributes, "mainContact");
+            tmpTenantPhone.text = IfInDictionary(tn.attributes, "mainPhone");
+            tmpTenantEmail.text = IfInDictionary(tn.attributes, "mainEmail");
         }
-        if (_obj.family == EObjFamily.rack)
-            tmpPosXY.text = $"Tile {_obj.posXY.x.ToString("0.##")}/{_obj.posXY.y.ToString("0.##")}";
+        if (_obj.category == "rack")
+        {
+            Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
+            tmpPosXY.text = $"Tile {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")}";
+        }
         else
             tmpPosXY.text = "-";
-        tmpSize.text = $"{_obj.size.x}{_obj.sizeUnit} x {_obj.size.y}{_obj.sizeUnit} x {_obj.height}{_obj.heightUnit}";
-        tmpVendor.text = _obj.vendor;
-        tmpType.text = _obj.type;
-        tmpModel.text = _obj.model;
-        tmpSerial.text = _obj.serial;
+        if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
+        {
+            Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
+            tmpSize.text = $"{size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}";
+        }
+        tmpVendor.text = IfInDictionary(_obj.attributes, "vendor");
+        tmpType.text = IfInDictionary(_obj.attributes, "type");
+        tmpModel.text = IfInDictionary(_obj.attributes, "model");
+        tmpSerial.text = IfInDictionary(_obj.attributes, "serial");
         tmpDesc.text = _obj.description;
     }
 
@@ -118,12 +122,9 @@ public class GUIObjectInfos : MonoBehaviour
         {
             OgreeObject tn = ((GameObject)GameManager.gm.allItems[_room.domain]).GetComponent<OgreeObject>();
             tmpTenantName.text = tn.name;
-            if (tn.attributes.ContainsKey("mainContact"))
-                tmpTenantContact.text = tn.attributes["mainContact"];
-            if (tn.attributes.ContainsKey("mainPhone"))
-                tmpTenantPhone.text = tn.attributes["mainPhone"];
-            if (tn.attributes.ContainsKey("mainEmail"))
-                tmpTenantEmail.text = tn.attributes["mainEmail"];
+            tmpTenantContact.text = IfInDictionary(tn.attributes, "mainContact");
+            tmpTenantPhone.text = IfInDictionary(tn.attributes, "mainPhone");
+            tmpTenantEmail.text = IfInDictionary(tn.attributes, "mainEmail");
         }
         tmpPosXY.text = "-";
         Vector2 size = JsonUtility.FromJson<Vector2>(_room.attributes["size"]);
@@ -133,5 +134,19 @@ public class GUIObjectInfos : MonoBehaviour
         tmpModel.text = "-";
         tmpSerial.text = "-";
         tmpDesc.text = _room.description;
+    }
+
+    ///<summary>
+    /// Return the asked value if it exists in the dictionary.
+    ///</summary>
+    ///<param name="_dictionary">The dictionary to search in</param>
+    ///<param name="_key">The ke to search</param>
+    ///<returns>The asked value</returns>
+    private T IfInDictionary<T>(Dictionary<string, T> _dictionary, string _key)
+    {
+        if (_dictionary.ContainsKey(_key))
+            return _dictionary[_key];
+        else
+            return default(T);
     }
 }

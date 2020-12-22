@@ -4,84 +4,25 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiver
+public class Object : OgreeObject
 {
-    public string description;
-    public EObjFamily family;
-
-    public Vector2 posXY;
-    public EUnit posXYUnit;
-    public float posZ;
-    public EUnit posZUnit;
-    public Vector2 size;
-    public EUnit sizeUnit;
-    public float height;
-    public EUnit heightUnit;
-    public EObjOrient orientation;
-
-    public string domain;
-    public string vendor;
-    public string type;
-    public string model;
-    public string serial;
-
-    public string color;
-
-    public Dictionary<string, string> extras = new Dictionary<string, string>();
-    [SerializeField] private List<string> extraKeys = new List<string>();
-    [SerializeField] private List<string> extraValues = new List<string>();
-
-
-    public void OnBeforeSerialize()
-    {
-        extraKeys.Clear();
-        extraValues.Clear();
-        foreach (var kvp in extras)
-        {
-            extraKeys.Add(kvp.Key);
-            extraValues.Add(kvp.Value);
-        }
-    }
-
-    public void OnAfterDeserialize()
-    {
-        extras = new Dictionary<string, string>();
-        for (int i = 0; i != Mathf.Min(extraKeys.Count, extraValues.Count); i++)
-            extras.Add(extraKeys[i], extraValues[i]);
-    }
-
-    // protected virtual void OnDestroy()
-    // {
-    //     if (GetComponent<HierarchyName>())
-    //         GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
-    // }
-
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public virtual void SetAttribute(string _param, string _value)
+    public override void SetAttribute(string _param, string _value)
     {
         switch (_param)
         {
             case "description":
                 description = _value;
                 break;
-            case "vendor":
-                vendor = _value;
-                break;
-            case "type":
-                type = _value;
-                break;
-            case "model":
-                model = _value;
-                break;
-            case "serial":
-                serial = _value;
-                break;
             case "domain":
-                AssignDomain(_value);
+                if (GameManager.gm.allItems.ContainsKey(_value))
+                    domain = _value;
+                else
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             case "color":
                 SetColor(_value);
@@ -96,25 +37,13 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
                 ToggleCS(_value);
                 break;
             default:
-                GameManager.gm.AppendLogLine($"[Object] {name}: unknowed attribute to update.", "yellow");
+                if (attributes.ContainsKey(_param))
+                    attributes[_param] = _value;
+                else
+                    attributes.Add(_param, _value);
                 break;
         }
-    }
-
-    ///<summary>
-    /// If Tenant exists, assign it to the object. If object is a Rack, call Rack.UpdateColor().
-    ///</summary>
-    ///<param name="_tenantName">The name of the tenant</param>
-    protected void AssignDomain(string _tenantName)
-    {
-        if (GameManager.gm.allItems.ContainsKey(_tenantName))
-        {
-            domain = _tenantName;
-            if (family == EObjFamily.rack)
-                GetComponent<Rack>().UpdateColor();
-        }
-        else
-            GameManager.gm.AppendLogLine($"Tenant \"{_tenantName}\" doesn't exists. Please create it before assign it.", "yellow");
+        // PutData();
     }
 
     ///<summary>
@@ -147,7 +76,7 @@ public class Object : AServerItem, IAttributeModif, ISerializationCallbackReceiv
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     protected void SetColor(string _hex)
     {
-        color = _hex;
+        attributes["color"] = _hex;
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
