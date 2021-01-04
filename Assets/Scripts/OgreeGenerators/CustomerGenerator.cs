@@ -15,38 +15,6 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an OgreeObject of "tenant" category with given name and color.
-    ///</summary>
-    ///<param name="_name">The tenant's name</param>
-    ///<param name="_color">The tenant's rendering color</param>
-    ///<returns>The created Tenant</returns>
-    public OgreeObject CreateTenant(string _name, string _color)
-    {
-        if (GameManager.gm.allItems.Contains(_name))
-        {
-            GameManager.gm.AppendLogLine($"{_name} already exists.", "yellow");
-            return null;
-        }
-
-        GameObject newTenant = new GameObject(_name);
-        OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
-        tenant.name = newTenant.name;
-        tenant.category = "tenant";
-        tenant.domain = tenant.name;
-        tenant.attributes["color"] = _color;
-
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{_color}>{_name}</color>");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-
-        newTenant.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_name, newTenant);
-
-        ApiManager.instance.CreatePostRequest(tenant.name);
-
-        return tenant;
-    }
-
-    ///<summary>
     /// Create OgreeObject of "tenant" category from Json.
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
@@ -78,79 +46,27 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an OgreeObject of "site" category and apply _data to it.
-    ///</summary>
-    ///<param name="_data">Informations about the site</param>
-    ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SSiteInfos _data)
-    {
-        if (_data.parent.GetComponent<OgreeObject>().category != "tenant")
-        {
-            GameManager.gm.AppendLogLine("Site must be child of a tenant", "yellow");
-            return null;
-        }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
-        if (GameManager.gm.allItems.Contains(hierarchyName))
-        {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return null;
-        }
-
-        GameObject newSite = new GameObject(_data.name);
-        newSite.transform.parent = _data.parent;
-
-        OgreeObject site = newSite.AddComponent<OgreeObject>();
-        site.name = newSite.name;
-        site.parentId = _data.parent.GetComponent<OgreeObject>().id;
-        site.category = "site";
-        site.domain = _data.parent.GetComponent<OgreeObject>().domain;
-
-        site.attributes["orientation"] = _data.orient;
-        switch (_data.orient)
-        {
-            case "EN":
-                newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
-                break;
-            case "WS":
-                newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
-                break;
-            case "NW":
-                newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
-            case "SE":
-                newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
-                break;
-        }
-        // Set default colors
-        site.attributes["usableColor"] = "DBEDF2";
-        site.attributes["reservedColor"] = "F2F2F2";
-        site.attributes["technicalColor"] = "EBF2DE";
-
-        string hn = newSite.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newSite);
-
-        ApiManager.instance.CreatePostRequest(hn);
-
-        return site;
-    }
-
-    ///<summary>
     /// Create an OgreeObject of "site" category and assign values from json
     ///</summary>
     ///<param name="_si">The site data to apply</param>
     ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SApiObject _si)
+    public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
     {
-        GameObject tn = null;
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        Transform tn = null;
+        if (_parent)
+            tn = _parent;
+        else
         {
-            GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>().id == _si.parentId)
-                tn = go;
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _si.parentId)
+                    tn = go.transform;
+            }
         }
-        if (!tn)
+        if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
         {
-            GameManager.gm.AppendLogLine($"Parent tenant not found (id = {_si.parentId})", "red");
+            GameManager.gm.AppendLogLine($"Parent tenant not found", "red");
             return null;
         }
 
@@ -162,7 +78,7 @@ public class CustomerGenerator : MonoBehaviour
         }
 
         GameObject newSite = new GameObject(_si.name);
-        newSite.transform.parent = tn.transform;
+        newSite.transform.parent = tn;
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
         site.name = newSite.name;
@@ -170,7 +86,9 @@ public class CustomerGenerator : MonoBehaviour
         site.parentId = _si.parentId;
         site.category = _si.category;
         site.description = _si.description;
-        site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
+        site.domain = _si.domain;
+        if (string.IsNullOrEmpty(site.domain))
+            site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
 
         site.attributes = _si.attributes;
         switch (site.attributes["orientation"])
@@ -188,7 +106,14 @@ public class CustomerGenerator : MonoBehaviour
                 newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
-        
+        // If needed, set default colors
+        if (!site.attributes.ContainsKey("usableColor"))
+            site.attributes["usableColor"] = "DBEDF2";
+        if (!site.attributes.ContainsKey("reservedColor"))
+            site.attributes["reservedColor"] = "F2F2F2";
+        if (!site.attributes.ContainsKey("technicalColor"))
+            site.attributes["technicalColor"] = "EBF2DE";
+
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
 

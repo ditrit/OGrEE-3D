@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -463,11 +463,17 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">Name of the tenant</param>
     private void CreateTenant(string _input)
     {
-        string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
+        string pattern = "^[^@\\s.]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
+            SApiObject tn = new SApiObject();
+            tn.name = data[0];
+            tn.category = "tenant";
+            tn.domain = data[0];
+            tn.attributes = new Dictionary<string, string>();
+            tn.attributes["color"] = data[1];
+            CustomerGenerator.instance.CreateTenant(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -484,12 +490,14 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-
-            SSiteInfos infos = new SSiteInfos();
-            infos.orient = data[1];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                CustomerGenerator.instance.CreateSite(infos);
+            Transform parent = null;
+            SApiObject si = new SApiObject();
+            IsolateParent(data[0], out parent, out si.name);
+            si.category = "site";
+            si.attributes = new Dictionary<string, string>();
+            si.attributes["orientation"] = data[1];
+            if (parent)
+                CustomerGenerator.instance.CreateSite(si, parent);
         }
         else
             AppendLogLine("Syntax error", "red");

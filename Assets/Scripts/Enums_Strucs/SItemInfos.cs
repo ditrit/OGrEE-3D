@@ -29,14 +29,6 @@ public struct SDeviceInfos
 }
 
 [System.Serializable]
-public struct SSiteInfos
-{
-    public string name;
-    public Transform parent;
-    public string orient;
-}
-
-[System.Serializable]
 public struct SBuildingInfos
 {
     public string name;
