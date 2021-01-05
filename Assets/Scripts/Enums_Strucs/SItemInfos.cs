@@ -29,15 +29,6 @@ public struct SDeviceInfos
 }
 
 [System.Serializable]
-public struct SBuildingInfos
-{
-    public string name;
-    public Transform parent;
-    public Vector3 pos;
-    public Vector3 size;
-}
-
-[System.Serializable]
 public struct SRoomInfos
 {
     public string name;

@@ -469,7 +469,6 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
             SApiObject tn = new SApiObject();
             tn.name = data[0];
-            tn.category = "tenant";
             tn.domain = data[0];
             tn.attributes = new Dictionary<string, string>();
             tn.attributes["color"] = data[1];
@@ -493,9 +492,11 @@ public class ConsoleController : MonoBehaviour
             Transform parent = null;
             SApiObject si = new SApiObject();
             IsolateParent(data[0], out parent, out si.name);
-            si.category = "site";
             si.attributes = new Dictionary<string, string>();
             si.attributes["orientation"] = data[1];
+            si.attributes["usableColor"] = "DBEDF2";
+            si.attributes["reservedColor"] = "F2F2F2";
+            si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
                 CustomerGenerator.instance.CreateSite(si, parent);
         }
@@ -515,12 +516,24 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SBuildingInfos infos = new SBuildingInfos();
-            infos.pos = Utils.ParseVector3(data[1]);
-            infos.size = Utils.ParseVector3(data[2]);
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateBuilding(infos);
+            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 size = Utils.ParseVector3(data[2]);
+
+            Transform parent = null;
+            SApiObject bd = new SApiObject();
+            IsolateParent(data[0], out parent, out bd.name);
+            bd.attributes = new Dictionary<string, string>();
+            bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
+            bd.attributes["posXYUnit"] = "m";
+            bd.attributes["posZ"] = pos.z.ToString();
+            bd.attributes["posZUnit"] = "m";
+            bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
+            bd.attributes["sizeUnit"] = "m";
+            bd.attributes["height"] = size.y.ToString();
+            bd.attributes["heightUnit"] = "m";
+
+            if (parent)
+                BuildingGenerator.instance.CreateBuilding(bd, parent);
         }
         else
             AppendLogLine("Syntax error", "red");

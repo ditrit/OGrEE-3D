@@ -31,7 +31,7 @@ public class CustomerGenerator : MonoBehaviour
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.name = _tn.name;
         tenant.id = _tn.id;
-        tenant.category = _tn.category;
+        tenant.category = "tenant";
         tenant.description = _tn.description;
         tenant.domain = _tn.domain;
         tenant.attributes = _tn.attributes;
@@ -84,13 +84,13 @@ public class CustomerGenerator : MonoBehaviour
         site.name = newSite.name;
         site.id = _si.id;
         site.parentId = _si.parentId;
-        site.category = _si.category;
+        site.category = "site";
         site.description = _si.description;
         site.domain = _si.domain;
         if (string.IsNullOrEmpty(site.domain))
             site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
-
         site.attributes = _si.attributes;
+        
         switch (site.attributes["orientation"])
         {
             case "EN":
@@ -106,13 +106,6 @@ public class CustomerGenerator : MonoBehaviour
                 newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
                 break;
         }
-        // If needed, set default colors
-        if (!site.attributes.ContainsKey("usableColor"))
-            site.attributes["usableColor"] = "DBEDF2";
-        if (!site.attributes.ContainsKey("reservedColor"))
-            site.attributes["reservedColor"] = "F2F2F2";
-        if (!site.attributes.ContainsKey("technicalColor"))
-            site.attributes["technicalColor"] = "EBF2DE";
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);

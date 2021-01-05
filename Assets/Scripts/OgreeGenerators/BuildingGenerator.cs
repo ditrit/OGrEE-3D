@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,48 +19,61 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the building</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SBuildingInfos _data)
+    public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
     {
-        if (_data.parent.GetComponent<OgreeObject>().category != "site")
+        Transform si = null;
+        if (_parent)
+            si = _parent;
+        else
         {
-            GameManager.gm.AppendLogLine("Building must be child of a site", "yellow");
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _bd.parentId)
+                    si = go.transform;
+            }
+        }
+        if (!si || si.GetComponent<OgreeObject>().category != "site")
+        {
+            GameManager.gm.AppendLogLine($"Parent site not found", "red");
             return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        string hierarchyName = $"{si.GetComponent<HierarchyName>()?.fullname}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
+        // Position and size data from _bd.attributes
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
+        float posZ = float.Parse(_bd.attributes["posZ"]);
+        Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
+        float height = float.Parse(_bd.attributes["height"]);
+
         GameObject newBD = Instantiate(GameManager.gm.buildingModel);
-        newBD.name = _data.name;
-        newBD.transform.parent = _data.parent;
+        newBD.name = _bd.name;
+        newBD.transform.parent = si;
         newBD.transform.localEulerAngles = Vector3.zero;
 
         // originalSize
         Vector3 originalSize = newBD.transform.GetChild(0).localScale;
-        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
 
         Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
+        newBD.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
         Building building = newBD.GetComponent<Building>();
         building.name = newBD.name;
-        building.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        building.parentId = si.GetComponent<OgreeObject>().id;
         building.category = "building";
-        building.domain = _data.parent.GetComponent<OgreeObject>().domain;
+        building.domain = _bd.domain;
+        if (string.IsNullOrEmpty(building.domain))
+            building.domain = si.GetComponent<OgreeObject>().domain;
+        building.attributes = _bd.attributes;
 
-        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
-        building.attributes["posXY"]= new Vector2(_data.pos.x, _data.pos.y).ToString();
-        building.attributes["posXYUnit"]= "m";
-        building.attributes["posZ"]= _data.pos.z.ToString();
-        building.attributes["posZUnit"]= "m";
-        building.attributes["size"]= new Vector2(_data.size.x, _data.size.z).ToString();
-        building.attributes["sizeUnit"]= "m";
-        building.attributes["height"]= _data.size.y.ToString();
-        building.attributes["heightUnit"]= "m";
+        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
         newBD.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
