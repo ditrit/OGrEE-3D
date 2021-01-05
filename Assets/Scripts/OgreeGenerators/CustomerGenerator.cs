@@ -88,9 +88,9 @@ public class CustomerGenerator : MonoBehaviour
         site.description = _si.description;
         site.domain = _si.domain;
         if (string.IsNullOrEmpty(site.domain))
-            site.domain = site.transform.parent.GetComponent<OgreeObject>().domain;
+            site.domain = tn.GetComponent<OgreeObject>().domain;
         site.attributes = _si.attributes;
-        
+
         switch (site.attributes["orientation"])
         {
             case "EN":

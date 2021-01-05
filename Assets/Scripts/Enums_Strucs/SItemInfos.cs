@@ -28,17 +28,6 @@ public struct SDeviceInfos
 
 }
 
-[System.Serializable]
-public struct SRoomInfos
-{
-    public string name;
-    public Transform parent;
-    public Vector3 pos; // tile
-    public Vector3 size; // tile
-    public string orient;
-    public string template;
-}
-
 public struct SSeparatorInfos
 {
     public string name;

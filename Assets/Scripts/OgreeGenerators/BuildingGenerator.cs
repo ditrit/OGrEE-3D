@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -86,94 +86,81 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the room</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SRoomInfos _data)
+    public Room CreateRoom(SApiObject _ro, Transform _parent = null)
     {
-        if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
+        Transform bd = null;
+        if (_parent)
+            bd = _parent;
+        else
         {
-            GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _ro.parentId)
+                    bd = go.transform;
+            }
+        }
+        if (!bd || bd.GetComponent<OgreeObject>().category != "building")
+        {
+            GameManager.gm.AppendLogLine($"Parent building not found", "red");
             return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        string hierarchyName = $"{bd.GetComponent<HierarchyName>()?.fullname}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
-        GameObject newRoom = Instantiate(GameManager.gm.roomModel);
-        newRoom.name = _data.name;
-        newRoom.transform.parent = _data.parent;
+        // Position and size data from _ro.attributes
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
+        float posZ = float.Parse(_ro.attributes["posZ"]);
+        Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
+        float height = float.Parse(_ro.attributes["height"]);
 
-        Vector3 size;
-        string orient;
-        if (string.IsNullOrEmpty(_data.template))
-        {
-            size = _data.size;
-            orient = _data.orient;
-            newRoom.GetComponent<Room>().attributes.Add("template", "");
-        }
-        else if (GameManager.gm.roomTemplates.ContainsKey(_data.template))
-        {
-            size = new Vector3(GameManager.gm.roomTemplates[_data.template].sizeWDHm[0],
-                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
-                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
-            orient = GameManager.gm.roomTemplates[_data.template].orientation;
-            newRoom.GetComponent<Room>().attributes.Add("template", _data.template);
-        }
-        else
-        {
-            GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
-            return null;
-        }
+        GameObject newRoom = Instantiate(GameManager.gm.roomModel);
+        newRoom.name = _ro.name;
+        newRoom.transform.parent = bd;
 
         Room room = newRoom.GetComponent<Room>();
-        room.name = newRoom.name;
-        room.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        room.name = _ro.name;
+        room.parentId = bd.GetComponent<OgreeObject>().id;
         room.category = "room";
-        room.domain = _data.parent.GetComponent<OgreeObject>().domain;
+        room.domain = _ro.domain;
+        if (string.IsNullOrEmpty(room.domain))
+            room.domain = bd.GetComponent<OgreeObject>().domain;
+        room.attributes = _ro.attributes;
 
         Vector3 originalSize = room.usableZone.localScale;
-        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.z);
+        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
         room.reservedZone.localScale = room.usableZone.localScale;
         room.technicalZone.localScale = room.usableZone.localScale;
         room.tilesEdges.localScale = room.usableZone.localScale;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(size.x, size.z) / 0.6f;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.z / 0.6f % 1);
-        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, size.y, room.usableZone.localScale.z * 10), -0.001f);
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-        Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
+        Vector3 bdOrigin = bd.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-        newRoom.transform.position = _data.parent.position;
+        newRoom.transform.position = bd.position;
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
-        newRoom.transform.localPosition += _data.pos;
+        newRoom.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
-        room.attributes["posXY"] =  JsonUtility.ToJson(new Vector2(_data.pos.x, _data.pos.y));
-        room.attributes["posXYUnit"] =  "m";
-        room.attributes["posZ"] =  _data.pos.z.ToString();
-        room.attributes["posZUnit"] =  "m";
-        room.attributes["size"] =  JsonUtility.ToJson(new Vector2(size.x, size.z));
-        room.attributes["sizeUnit"] =  "m";
-        room.attributes["height"] =  size.y.ToString();
-        room.attributes["heightUnit"] =  "m";
-        switch (orient)
+        switch (room.attributes["orientation"])
         {
             case "EN":
-                room.attributes["orientation"] =  "EN";
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
-                room.attributes["orientation"] =  "WS";
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
-                room.attributes["orientation"] =  "NW";
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
-                room.attributes["orientation"] =  "SE";
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;
@@ -181,7 +168,7 @@ public class BuildingGenerator : MonoBehaviour
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
-        room.nameText.rectTransform.sizeDelta = new Vector2(size.x, size.z);
+        room.nameText.rectTransform.sizeDelta = size;
 
         // Add room to GUI room filter
         Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
@@ -192,9 +179,9 @@ public class BuildingGenerator : MonoBehaviour
         string hn = newRoom.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRoom);
 
-        if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
+        if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
-            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_data.template];
+            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
             room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
             foreach (ReadFromJson.SSeparator sep in template.separators)

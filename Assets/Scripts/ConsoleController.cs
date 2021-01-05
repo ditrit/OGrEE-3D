@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -551,18 +551,44 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SRoomInfos infos = new SRoomInfos();
-            infos.pos = Utils.ParseVector3(data[1]);
+            Transform parent = null;
+            SApiObject ro = new SApiObject();
+            ro.attributes = new Dictionary<string, string>();
+
+            Vector3 pos = Utils.ParseVector3(data[1]);
+            ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
+            ro.attributes["posXYUnit"] = "m";
+            ro.attributes["posZ"] = pos.z.ToString();
+            ro.attributes["posZUnit"] = "m";
+
+            Vector3 size;
             if (data[2].StartsWith("["))
             {
-                infos.size = Utils.ParseVector3(data[2]);
-                infos.orient = data[3];
+                ro.attributes["template"] = "";
+                ro.attributes["orientation"] = data[3];
+                size = Utils.ParseVector3(data[2]);
+            }
+            else if (GameManager.gm.roomTemplates.ContainsKey(data[2]))
+            {
+                ro.attributes["template"] = data[2];
+                ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
+                size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
+                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
+                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
             }
             else
-                infos.template = data[2];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateRoom(infos);
+            {
+                GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
+                return;
+            }
+            ro.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
+            ro.attributes["sizeUnit"] = "m";
+            ro.attributes["height"] = size.y.ToString();
+            ro.attributes["heightUnit"] = "m";
+
+            IsolateParent(data[0], out parent, out ro.name);
+            if (parent)
+                BuildingGenerator.instance.CreateRoom(ro, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
