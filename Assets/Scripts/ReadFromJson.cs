@@ -137,12 +137,19 @@ public class ReadFromJson
             return;
         }
 
-        SRackInfos infos = new SRackInfos();
-        infos.name = rackData.slug;
-        infos.parent = GameManager.gm.templatePlaceholder;
-        infos.orient = "front";
-        infos.size = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[2], rackData.sizeWDHmm[1]) / 10;
-        Rack rack = ObjectGenerator.instance.CreateRack(infos);
+        Vector3 tmp = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[1], rackData.sizeWDHmm[2]) / 10;
+        SApiObject rk = new SApiObject();
+        rk.attributes = new Dictionary<string, string>();
+        rk.name = rackData.slug;
+        rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+        rk.attributes["posXYUnit"] = "Tile";
+        rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+        rk.attributes["sizeUnit"] = "cm";
+        rk.attributes["height"] = ((int)tmp.z).ToString();
+        rk.attributes["heightUnit"] = "cm";
+        rk.attributes["template"] = "";
+        rk.attributes["orientation"] = "front";
+        Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;
         rack.attributes["vendor"] = rackData.vendor;
@@ -333,7 +340,6 @@ public class ReadFromJson
 
         if (isSlot)
         {
-            // MonoBehaviour.Destroy(go.GetComponent<Object>());
             Slot s = go.AddComponent<Slot>();
             s.orient = _data.elemOrient;
             s.mandatory = _data.mandatory;

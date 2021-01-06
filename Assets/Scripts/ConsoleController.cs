@@ -629,20 +629,29 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SRackInfos infos = new SRackInfos();
-            infos.pos = Utils.ParseVector2(data[1]);
+            Transform parent;
+            SApiObject rk = new SApiObject();
+            rk.attributes = new Dictionary<string, string>();
+
+            Vector2 pos = Utils.ParseVector2(data[1]);
+            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
+            rk.attributes["posXYUnit"] = "Tile";
+
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = Utils.ParseVector3(data[2], false);
-                infos.size = new Vector3(tmp.x, tmp.z * GameManager.gm.uSize * 100, tmp.y);
-                infos.height = (int)tmp.z;
+                rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+                rk.attributes["sizeUnit"] = "cm";
+                rk.attributes["height"] = ((int)tmp.z).ToString();
+                rk.attributes["heightUnit"] = "U";
+                rk.attributes["template"] = "";
             }
             else // ...else: is template name
-                infos.template = data[2];
-            infos.orient = data[3];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                ObjectGenerator.instance.CreateRack(infos);
+                rk.attributes["template"] = data[2];
+            rk.attributes["orientation"] = data[3];
+            IsolateParent(data[0], out parent, out rk.name);
+            if (parent)
+                ObjectGenerator.instance.CreateRack(rk, parent);
         }
         else
             AppendLogLine("Syntax error", "red");

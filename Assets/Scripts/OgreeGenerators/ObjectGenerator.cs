@@ -19,14 +19,27 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_data">Informations about the rack</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SRackInfos _data)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
-        if (_data.parent.GetComponent<Room>() == null)
+        Transform parent = null;
+        if (_parent)
+            parent = _parent;
+        else
         {
-            GameManager.gm.AppendLogLine("Rack must be child of a Room", "yellow");
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _rk.parentId)
+                    parent = go.transform;
+            }
+        }
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
             return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+
+        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -34,15 +47,15 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         GameObject newRack;
-        if (string.IsNullOrEmpty(_data.template))
+        if (string.IsNullOrEmpty(_rk.attributes["template"]))
             newRack = Instantiate(GameManager.gm.rackModel);
         else
         {
-            if (GameManager.gm.rackTemplates.ContainsKey(_data.template))
-                newRack = Instantiate(GameManager.gm.rackTemplates[_data.template]);
+            if (GameManager.gm.rackTemplates.ContainsKey(_rk.attributes["template"]))
+                newRack = Instantiate(GameManager.gm.rackTemplates[_rk.attributes["template"]]);
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
+                GameManager.gm.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", "yellow");
                 return null;
             }
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
@@ -51,54 +64,56 @@ public class ObjectGenerator : MonoBehaviour
             Destroy(newRack.GetComponent<HierarchyName>());
         }
 
-        newRack.name = _data.name;
-        newRack.transform.parent = _data.parent;
+        newRack.name = _rk.name;
+        newRack.transform.parent = parent;
 
-        if (string.IsNullOrEmpty(_data.template))
-            newRack.transform.GetChild(0).localScale = _data.size / 100;
+        if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        {
+            Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
+            float height = float.Parse(_rk.attributes["height"]);
+            if (_rk.attributes["heightUnit"] == "U")
+                height *= GameManager.gm.uSize;
+            else if (_rk.attributes["heightUnit"] == "cm")
+                height /= 100;
+            newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
+        }
 
+        Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
         newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.y) * GameManager.gm.tileSize;
+        newRack.transform.localPosition += new Vector3(pos.x, 0, pos.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.name = newRack.name;
-        rack.parentId = _data.parent.GetComponent<OgreeObject>().id;
+        rack.parentId = parent.GetComponent<OgreeObject>().id;
         rack.category = "rack";
-        rack.domain = _data.parent.GetComponent<OgreeObject>().domain;
-        
-        rack.attributes["posXY"] = JsonUtility.ToJson(_data.pos);
-        rack.attributes["posXYUnit"] =  "Tile";
-        if (string.IsNullOrEmpty(_data.template))
-        {
-            rack.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.size.x, _data.size.z));
-            rack.attributes["sizeUnit"] = "cm";
-            rack.attributes["height"] = _data.height.ToString();
-            rack.attributes["heightUnit"] = "U" ;
-        }
-        switch (_data.orient)
+        rack.domain = _rk.domain;
+        if (string.IsNullOrEmpty(rack.domain))
+            rack.domain = parent.GetComponent<OgreeObject>().domain;
+        if (string.IsNullOrEmpty(_rk.attributes["template"]))
+            rack.attributes = _rk.attributes;
+        else
+            rack.attributes["template"] = _rk.attributes["template"];
+
+        switch (rack.attributes["orientation"])
         {
             case "front":
-                rack.attributes["orientation"] = "Front";
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
                 newRack.transform.localPosition += boxOrigin;
                 break;
             case "rear":
-                rack.attributes["orientation"] = "Rear";
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
                 break;
             case "left":
-                rack.attributes["orientation"] = "Left";
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
                 break;
             case "right":
-                rack.attributes["orientation"] = "Right";
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
                 newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
@@ -114,14 +129,14 @@ public class ObjectGenerator : MonoBehaviour
         string hn = newRack.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRack);
 
-        if (!string.IsNullOrEmpty(_data.template))
+        if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            Object[] components = rack.transform.GetComponentsInChildren<Object>();
-            foreach (Object comp in components)
+            HierarchyName[] components = rack.transform.GetComponentsInChildren<HierarchyName>();
+            foreach (HierarchyName comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
-                    string compHn = comp.GetComponent<HierarchyName>().UpdateHierarchyName();
+                    string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
                 }
             }
