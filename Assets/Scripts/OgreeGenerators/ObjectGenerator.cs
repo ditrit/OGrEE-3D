@@ -95,7 +95,12 @@ public class ObjectGenerator : MonoBehaviour
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
             rack.attributes = _rk.attributes;
         else
+        {
             rack.attributes["template"] = _rk.attributes["template"];
+            rack.attributes["posXY"] = _rk.attributes["posXY"];
+            rack.attributes["posXYUnit"] = _rk.attributes["posXYUnit"];
+            rack.attributes["orientation"] = _rk.attributes["orientation"];
+        }
 
         switch (rack.attributes["orientation"])
         {
