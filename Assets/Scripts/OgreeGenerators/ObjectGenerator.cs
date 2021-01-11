@@ -374,5 +374,232 @@ public class ObjectGenerator : MonoBehaviour
 
         return newDevice.GetComponent<Object>();
     }
+    public Object CreateDevice(SApiObject _dv, Transform _parent = null)
+    {
+        Transform parent = null;
+        if (_parent)
+            parent = _parent;
+        else
+        {
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _dv.parentId)
+                    parent = go.transform;
+            }
+        }
+        if (!parent || parent.GetComponent<Object>() == null)
+        {
+            GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", "red");
+            return null;
+        }
+
+        if (parent.GetComponent<Rack>() == null
+            && (!_dv.attributes.ContainsKey("slot") || !_dv.attributes.ContainsKey("template")))
+        {
+            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "yellow");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_dv.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
+        GameObject newDevice;
+        if (!_dv.attributes.ContainsKey("slot"))
+        {
+            //+chassis:[name]@[posU]@[sizeU]
+            if (!_dv.attributes.ContainsKey("template"))
+                newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
+            //+chassis:[name]@[posU]@[template]
+            else
+            {
+                newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
+                if (newDevice == null)
+                    return null;
+            }
+            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+            newDevice.transform.localEulerAngles = Vector3.zero;
+            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + newDevice.transform.GetChild(0).localScale.y) / 2, 0);
+            newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
+
+            float deltaZ = parent.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
+            newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+        }
+        else
+        {
+            List<Slot> takenSlots = new List<Slot>();
+            int i = 0;
+            float max;
+            if (!_dv.attributes.ContainsKey("template"))
+                max = float.Parse(_dv.attributes["sizeU"]);
+            else
+            {
+                if (GameManager.gm.devicesTemplates.ContainsKey(_dv.attributes["template"]))
+                    max = GameManager.gm.devicesTemplates[_dv.attributes["template"]].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "yellow");
+                    return null;
+                }
+            }
+            foreach (Transform child in parent)
+            {
+                if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
+                {
+                    takenSlots.Add(child.GetComponent<Slot>());
+                    i++;
+                }
+            }
+            if (takenSlots.Count > 0)
+            {
+                foreach (Slot s in takenSlots)
+                    s.SlotTaken(true);
+
+                Transform slot = takenSlots[0].transform;
+                //+chassis:[name]@[slot]@[sizeU]
+                if (!_dv.attributes.ContainsKey("template"))
+                    newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
+                //+chassis:[name]@[slot]@[template]
+                else
+                {
+                    newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
+                    if (newDevice == null)
+                        return null;
+                }
+                newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
+                newDevice.transform.localPosition = slot.localPosition;
+                newDevice.transform.localEulerAngles = slot.localEulerAngles;
+                if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
+                    newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
+
+                float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
+                switch (_dv.attributes["orientation"])
+                {
+                    case "Front":
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        break;
+                    case "Rear":
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
+                        break;
+                    case "FrontFlipped":
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
+                        break;
+                    case "RearFlipped":
+                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
+                        break;
+                }
+
+                // Assign default color = slot color
+                Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
+                Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+                mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+            }
+            else
+            {
+                GameManager.gm.AppendLogLine("Slot doesn't exist", "red");
+                return null;
+            }
+        }
+
+        newDevice.name = _dv.name;
+        Object obj = newDevice.GetComponent<Object>();
+        obj.name = _dv.name;
+        obj.parentId = parent.GetComponent<OgreeObject>().id;
+        obj.category = "device";
+        obj.domain = _dv.domain;
+        if (string.IsNullOrEmpty(obj.domain))
+            obj.domain = parent.GetComponent<OgreeObject>().domain;
+        if (!_dv.attributes.ContainsKey("template"))
+        {
+            obj.attributes = _dv.attributes;
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(newDevice.transform.GetChild(0).localScale.x,
+                                    newDevice.transform.GetChild(0).localScale.z) * 1000);
+            obj.attributes["sizeUnit"] = "mm";
+            obj.attributes["height"] = (newDevice.transform.GetChild(0).localScale.y * 1000).ToString();
+            obj.attributes["heightUnit"] = "mm";
+        }
+        else
+            obj.attributes["template"] = _dv.attributes["template"];
+        if (_dv.attributes.ContainsKey("posU"))
+            obj.attributes["posU"] = _dv.attributes["posU"];
+        if (_dv.attributes.ContainsKey("slot"))
+            obj.attributes["slot"] = _dv.attributes["slot"];
+        if (_dv.attributes.ContainsKey("side"))
+            obj.attributes["side"] = _dv.attributes["side"];
+
+
+
+        newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
+
+        string hn = newDevice.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newDevice);
+
+        if (_dv.attributes.ContainsKey("template"))
+        {
+            HierarchyName[] components = newDevice.transform.GetComponentsInChildren<HierarchyName>();
+            foreach (HierarchyName comp in components)
+            {
+                if (comp.gameObject != newDevice.gameObject)
+                {
+                    string compHn = comp.UpdateHierarchyName();
+                    GameManager.gm.allItems.Add(compHn, comp.gameObject);
+                }
+            }
+        }
+
+        return newDevice.GetComponent<Object>();
+    }
+
+    ///<summary>
+    /// Generate a basic device.
+    ///</summary>
+    ///<param name="_parent">The parent of the generated device</param>
+    ///<param name="_sizeU">The size in U of the device</param>
+    ///<returns>The generated device</returns>
+    private GameObject GenerateBasicDevice(Transform _parent, float _sizeU, Transform _slot = null)
+    {
+        GameObject go = Instantiate(GameManager.gm.labeledBoxModel);
+        go.AddComponent<Object>();
+        go.transform.parent = _parent;
+        Vector3 scale;
+        if (_slot)
+            scale = new Vector3(_slot.GetChild(0).localScale.x, _sizeU * _slot.GetChild(0).localScale.y, _slot.GetChild(0).localScale.z);
+        else
+            scale = new Vector3(_parent.GetChild(0).localScale.x, _sizeU * GameManager.gm.uSize, _parent.GetChild(0).localScale.z);
+        go.transform.GetChild(0).localScale = scale;
+        return go;
+    }
+
+    ///<summary>
+    /// Generate a templated device.
+    ///</summary>
+    ///<param name="_parent">The parent of the generated device</param>
+    ///<param name="_template">The template to instantiate</param>
+    ///<returns>The generated device</returns>
+    private GameObject GenerateTemplatedDevice(Transform _parent, string _template)
+    {
+        if (GameManager.gm.devicesTemplates.ContainsKey(_template))
+        {
+            GameObject go = Instantiate(GameManager.gm.devicesTemplates[_template]);
+            go.transform.parent = _parent;
+            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
+            foreach (Renderer r in renderers)
+                r.enabled = true;
+            Destroy(go.GetComponent<HierarchyName>());
+            return go;
+        }
+        else
+        {
+            GameManager.gm.AppendLogLine($"Unknown template \"{_template}\"", "yellow");
+            return null;
+        }
+    }
 
 }

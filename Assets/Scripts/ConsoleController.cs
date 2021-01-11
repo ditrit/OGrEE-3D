@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -668,20 +668,28 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            SDeviceInfos infos = new SDeviceInfos();
 
-            // if (int.TryParse(data[1], out infos.posU) == false)
-            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                out infos.posU) == false)
-                infos.slot = data[1];
-            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                out infos.sizeU) == false)
-                infos.template = data[2];
+            Transform parent;
+            SApiObject dv = new SApiObject();
+            dv.attributes = new Dictionary<string, string>();
+
+            float posU;
+            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+                dv.attributes["posU"] = posU.ToString();
+            else
+                dv.attributes["slot"] = data[1];
+            float sizeU;
+            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
+                dv.attributes["sizeU"] = sizeU.ToString();
+            else
+                dv.attributes["template"] = data[2];
             if (data.Length == 4)
-                infos.side = data[3];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                ObjectGenerator.instance.CreateDevice(infos);
+                dv.attributes["orientation"] = data[3];
+            else
+                dv.attributes["orientation"] = "Front";
+            IsolateParent(data[0], out parent, out dv.name);
+            if (parent)
+                ObjectGenerator.instance.CreateDevice(dv, parent);
         }
         else
             AppendLogLine("Syntax error", "red");

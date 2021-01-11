@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -279,7 +279,10 @@ public class ReadFromJson
                 break;
         }
         if (data.fulldepth == "yes")
+        {
             device.attributes["fulldepth"] = "yes";
+            device.attributes["orientation"] = "Front";
+        }
         else if (data.fulldepth == "no")
             device.attributes["fulldepth"] = "no";
 
