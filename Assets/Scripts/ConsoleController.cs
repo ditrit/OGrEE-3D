@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -436,9 +436,9 @@ public class ConsoleController : MonoBehaviour
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
-        if (str[0] == "tenant" || str[0] == "tn" || str[0] == "customer" || str[0] == "cu")
+        if (str[0] == "tenant" || str[0] == "tn")
             CreateTenant(str[1]);
-        else if (str[0] == "site" || str[0] == "si" || str[0] == "datacenter" || str[0] == "dc")
+        else if (str[0] == "site" || str[0] == "si")
             CreateSite(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
             CreateBuilding(str[1]);
