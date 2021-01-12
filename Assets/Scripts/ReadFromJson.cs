@@ -249,15 +249,21 @@ public class ReadFromJson
         if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
             return;
 
-        SDeviceInfos infos = new SDeviceInfos();
-        infos.name = data.slug;
-        infos.parent = GameManager.gm.templatePlaceholder.GetChild(0);
-        infos.posU = 0;
-        infos.sizeU = data.sizeWDHmm[2] / 10;
+        SApiObject dv = new SApiObject();
+        dv.attributes = new Dictionary<string, string>();
+        dv.name = data.slug;
+        dv.attributes["posU"] = "0";
+        dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
+        Object device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
 
-        Object device = ObjectGenerator.instance.CreateDevice(infos);
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
+
+
+        device.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
+        device.attributes["sizeUnit"] = "mm";
+        device.attributes["height"] = data.sizeWDHmm[2].ToString();
+        device.attributes["heightUnit"] = "mm";
 
         device.description = data.description;
         device.attributes["deviceType"] = data.type;

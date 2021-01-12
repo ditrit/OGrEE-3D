@@ -689,7 +689,14 @@ public class ConsoleController : MonoBehaviour
                 dv.attributes["orientation"] = "Front";
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
-                ObjectGenerator.instance.CreateDevice(dv, parent);
+            {
+                Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
+                Vector3 scale = device.transform.GetChild(0).localScale * 1000;
+                device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                device.attributes["sizeUnit"] = "mm";
+                device.attributes["height"] = scale.y.ToString();
+                device.attributes["heightUnit"] = "mm";
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
