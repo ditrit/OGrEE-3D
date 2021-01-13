@@ -15,9 +15,10 @@ public class BuildingGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a buildingModel (from GameManager) and apply _data to it.
+    /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the building</param>
+    ///<param name="_bd">The building data to apply</param>
+    ///<param name="_parent">The parent of the created building. Leave null if _bd contains the parendId</param>
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
     {
@@ -82,9 +83,10 @@ public class BuildingGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a roomModel (from GameManager) and apply _data to it.
+    /// Instantiate a roomModel (from GameManager) and apply given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the room</param>
+    ///<param name="_ro">The room data to apply</param>    
+    ///<param name="_parent">The parent of the created room. Leave null if _bd contains the parendId</param>
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent = null)
     {

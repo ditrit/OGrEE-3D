@@ -15,7 +15,7 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create OgreeObject of "tenant" category from Json.
+    /// Create OgreeObject of "tenant" category from given data.
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
     ///<returns>The created Tenant</returns>
@@ -46,9 +46,10 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an OgreeObject of "site" category and assign values from json
+    /// Create an OgreeObject of "site" category and assign given values to it
     ///</summary>
     ///<param name="_si">The site data to apply</param>
+    ///<param name="_parent">The parent of the created site. Leave null if _bd contains the parendId</param>
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
     {

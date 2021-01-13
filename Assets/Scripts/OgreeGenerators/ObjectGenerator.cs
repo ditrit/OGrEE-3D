@@ -15,9 +15,10 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a rackModel or a rackPreset (from GameManager) and apply _data to it.
+    /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the rack</param>
+    ///<param name="_rk">THe rack data to apply</param>
+    ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
@@ -151,9 +152,10 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply _data to it.
+    /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the chassis</param>
+    ///<param name="_dv">The device data to apply</param>
+    ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
     ///<returns>The created Chassis</returns>
     public Object CreateDevice(SApiObject _dv, Transform _parent = null)
     {
