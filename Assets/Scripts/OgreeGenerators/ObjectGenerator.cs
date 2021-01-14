@@ -88,8 +88,12 @@ public class ObjectGenerator : MonoBehaviour
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.name = newRack.name;
-        rack.parentId = parent.GetComponent<OgreeObject>().id;
+        rack.id = _rk.id;
+        rack.parentId = _rk.parentId;
+        if (string.IsNullOrEmpty(rack.parentId))
+            rack.parentId = parent.GetComponent<OgreeObject>().id;
         rack.category = "rack";
+        rack.description = _rk.description;
         rack.domain = _rk.domain;
         if (string.IsNullOrEmpty(rack.domain))
             rack.domain = parent.GetComponent<OgreeObject>().domain;
@@ -294,8 +298,12 @@ public class ObjectGenerator : MonoBehaviour
         newDevice.name = _dv.name;
         Object obj = newDevice.GetComponent<Object>();
         obj.name = _dv.name;
-        obj.parentId = parent.GetComponent<OgreeObject>().id;
+        obj.id = _dv.id;
+        obj.parentId = _dv.parentId;
+        if (string.IsNullOrEmpty(obj.parentId))
+            obj.parentId = parent.GetComponent<OgreeObject>().id;
         obj.category = "device";
+        obj.description = _dv.description;
         obj.domain = _dv.domain;
         if (string.IsNullOrEmpty(obj.domain))
             obj.domain = parent.GetComponent<OgreeObject>().domain;

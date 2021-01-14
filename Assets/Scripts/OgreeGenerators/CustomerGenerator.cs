@@ -85,6 +85,8 @@ public class CustomerGenerator : MonoBehaviour
         site.name = newSite.name;
         site.id = _si.id;
         site.parentId = _si.parentId;
+        if (string.IsNullOrEmpty(site.parentId))
+            site.parentId = tn.GetComponent<OgreeObject>().id;
         site.category = "site";
         site.description = _si.description;
         site.domain = _si.domain;

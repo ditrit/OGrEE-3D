@@ -67,8 +67,12 @@ public class BuildingGenerator : MonoBehaviour
 
         Building building = newBD.GetComponent<Building>();
         building.name = newBD.name;
-        building.parentId = si.GetComponent<OgreeObject>().id;
+        building.id = _bd.id;
+        building.parentId = _bd.parentId;
+        if (string.IsNullOrEmpty(building.parentId))
+            building.parentId = si.GetComponent<OgreeObject>().id;
         building.category = "building";
+        building.description = _bd.description;
         building.domain = _bd.domain;
         if (string.IsNullOrEmpty(building.domain))
             building.domain = si.GetComponent<OgreeObject>().domain;
@@ -126,8 +130,12 @@ public class BuildingGenerator : MonoBehaviour
 
         Room room = newRoom.GetComponent<Room>();
         room.name = _ro.name;
-        room.parentId = bd.GetComponent<OgreeObject>().id;
+        room.id = _ro.id;
+        room.parentId = _ro.parentId;
+        if (string.IsNullOrEmpty(room.parentId))
+            room.parentId = bd.GetComponent<OgreeObject>().id;
         room.category = "room";
+        room.description = _ro.description;
         room.domain = _ro.domain;
         if (string.IsNullOrEmpty(room.domain))
             room.domain = bd.GetComponent<OgreeObject>().domain;
