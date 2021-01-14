@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -87,37 +88,22 @@ public class ApiManager : MonoBehaviour
         GameObject obj = GameManager.gm.FindByAbsPath(_objName);
         if (obj)
         {
+            SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-            {
-                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
-                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
-            }
+                request.path = $"customers/";
             else if (pointCount == 1)
-            {
-                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-            }
+                request.path = $"sites/";
             else if (pointCount == 2)
-            {
-                request.path = $"buildings/{obj.GetComponent<Building>().id}"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Building>());
-            }
+                request.path = $"buildings/"; //?
             else if (pointCount == 3)
-            {
-                request.path = $"rooms/{obj.GetComponent<Room>().id}"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Room>());
-            }
+                request.path = $"rooms/"; //?
             else if (pointCount == 4)
-            {
-                request.path = $"racks/{obj.GetComponent<Rack>().id}"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Rack>());
-            }
+                request.path = $"racks/"; //?
             else
-            {
-                request.path = $"objects/{obj.GetComponent<Object>().id}"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Object>());
-            }
+                request.path = $"objects/"; //?
+            request.path += obj.GetComponent<OgreeObject>().id;
+            request.json = JsonConvert.SerializeObject(apiObj);
             requestsToSend.Enqueue(request);
         }
         else
@@ -136,37 +122,21 @@ public class ApiManager : MonoBehaviour
         GameObject obj = GameManager.gm.FindByAbsPath(_objName);
         if (obj)
         {
+            SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-            {
                 request.path = "customers";
-                request.json = JsonUtility.ToJson(GameManager.gm.tenants[_objName]);
-            }
             else if (pointCount == 1)
-            {
                 request.path = "sites";
-                request.json = JsonUtility.ToJson(obj.GetComponent<Datacenter>());
-            }
             else if (pointCount == 2)
-            {
                 request.path = "buildings"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Building>());
-            }
             else if (pointCount == 3)
-            {
                 request.path = "rooms"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Room>());
-            }
             else if (pointCount == 4)
-            {
                 request.path = "racks"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Rack>());
-            }
             else
-            {
                 request.path = "objects"; //?
-                request.json = JsonUtility.ToJson(obj.GetComponent<Object>());
-            }
+            request.json = JsonConvert.SerializeObject(apiObj);
             request.objToUpdate = _objName;
 
             requestsToSend.Enqueue(request);
@@ -189,29 +159,18 @@ public class ApiManager : MonoBehaviour
         {
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-            {
-                request.path = $"customers/{GameManager.gm.tenants[_objName].id}";
-            }
+                request.path = $"customers/";
             else if (pointCount == 1)
-            {
-                request.path = $"sites/{obj.GetComponent<Datacenter>().id}";
-            }
+                request.path = $"sites/";
             else if (pointCount == 2)
-            {
-                request.path = $"buildings/{obj.GetComponent<Building>().id}"; //?
-            }
+                request.path = $"buildings/"; //?
             else if (pointCount == 3)
-            {
-                request.path = $"rooms/{obj.GetComponent<Room>().id}"; //?
-            }
+                request.path = $"rooms/"; //?
             else if (pointCount == 4)
-            {
-                request.path = $"racks/{obj.GetComponent<Rack>().id}"; //?
-            }
+                request.path = $"racks/"; //?
             else
-            {
-                request.path = $"objects/{obj.GetComponent<Object>().id}"; //?
-            }
+                request.path = $"objects/"; //?
+            request.path += obj.GetComponent<OgreeObject>().id;
             requestsToSend.Enqueue(request);
         }
         else
@@ -319,17 +278,16 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     private void CreateItemFromJson(string _path, string _json)
     {
+        SApiObject apiObj =JsonConvert.DeserializeObject<SApiObject>(_json);
         if (Regex.IsMatch(_path, "customers/[^/]+$"))
         {
             Debug.Log("Create Customer");
-            SCuFromJson cu = JsonUtility.FromJson<SCuFromJson>(_json);
-            CustomerGenerator.instance.CreateCustomer(cu);
+            CustomerGenerator.instance.CreateTenant(apiObj);
         }
         else if (Regex.IsMatch(_path, "sites/[^/]+$"))
         {
-            Debug.Log("Create Datacenter (site)");
-            SDcFromJson dc = JsonUtility.FromJson<SDcFromJson>(_json);
-            CustomerGenerator.instance.CreateDatacenter(dc);
+            Debug.Log("Create Site");
+            CustomerGenerator.instance.CreateSite(apiObj);
         }
     }
 
@@ -341,10 +299,7 @@ public class ApiManager : MonoBehaviour
     private void UpdateObjId(string _objName, string _jsonId)
     {
         string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
-        if (GameManager.gm.tenants.ContainsKey(_objName))
-            GameManager.gm.tenants[_objName].UpdateId(id);
-        else
-            GameManager.gm.FindByAbsPath(_objName).GetComponent<AServerItem>().UpdateId(id);
+        GameManager.gm.FindByAbsPath(_objName).GetComponent<OgreeObject>().UpdateId(id);
     }
 
 }

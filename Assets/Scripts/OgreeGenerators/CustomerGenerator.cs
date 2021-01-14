@@ -15,207 +15,104 @@ public class CustomerGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a Customer with given name. Also create a default Tenant corresponding to the Customer.
+    /// Create OgreeObject of "tenant" category from given data.
     ///</summary>
-    ///<param name="_name">The customer's name</param>
-    ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(string _name)
+    ///<param name="_tn">The tenant data to apply</param>
+    ///<returns>The created Tenant</returns>
+    public OgreeObject CreateTenant(SApiObject _tn)
     {
-        if (GameManager.gm.allItems.Contains(_name))
+        if (GameManager.gm.allItems.Contains(_tn.name))
         {
-            GameManager.gm.AppendLogLine($"{_name} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", "yellow");
             return null;
         }
 
-        GameObject customer = new GameObject(_name);
-        Customer cu = customer.AddComponent<Customer>();
-        cu.name = customer.name;
+        GameObject newTenant = new GameObject(_tn.name);
+        OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
+        tenant.name = _tn.name;
+        tenant.id = _tn.id;
+        tenant.category = "tenant";
+        tenant.description = _tn.description;
+        tenant.domain = _tn.domain;
+        tenant.attributes = _tn.attributes;
 
-        // Create default tenant
-        CreateTenant(_name, "ffffff");
-
-        customer.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_name, customer);
-        
-        ApiManager.instance.CreatePostRequest(cu.name);
-
-        return cu;
-    }
-
-    ///<summary>
-    /// Create Customer and associated Tenant from Json.
-    ///</summary>
-    ///<param name="_cu">The customer data to apply</param>
-    ///<returns>The created Customer</returns>
-    public Customer CreateCustomer(SCuFromJson _cu)
-    {
-        if (GameManager.gm.allItems.Contains(_cu.name))
-        {
-            GameManager.gm.AppendLogLine($"{_cu.name} already exists.", "yellow");
-            return null;
-        }
-
-        GameObject customer = new GameObject(_cu.name);
-        Customer cu = customer.AddComponent<Customer>();
-        cu.name = _cu.name;
-        cu.contact = _cu.mainContact;
-        cu.id = _cu.id;
-
-        // Create default tenant
-        Tenant tn = CreateTenant(_cu.name, "ffffff");
-        tn.mainContact = _cu.mainContact;
-        tn.mainPhone = _cu.mainPhone;
-        tn.mainEmail = _cu.mainEmail;
-        tn.id = _cu.id;
-
-        customer.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(_cu.name, customer);
-        
-        return cu;
-    }
-
-    ///<summary>
-    /// Create a Datacenter and apply _data to it.
-    ///</summary>
-    ///<param name="_data">Informations about the datacenter</param>
-    ///<returns>The created Datacenter</returns>
-    public Datacenter CreateDatacenter(SDataCenterInfos _data)
-    {
-        if (_data.parent.GetComponent<Customer>() == null)
-        {
-            GameManager.gm.AppendLogLine("Datacenter must be child of a customer", "yellow");
-            return null;
-        }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
-        if (GameManager.gm.allItems.Contains(hierarchyName))
-        {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return null;
-        }
-
-        GameObject newDC = new GameObject(_data.name);
-        newDC.transform.parent = _data.parent;
-
-        Datacenter dc = newDC.AddComponent<Datacenter>();
-        dc.name = newDC.name;
-        switch (_data.orient)
-        {
-            case "EN":
-                dc.orientation = ECardinalOrient.EN;
-                newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
-                break;
-            case "WS":
-                dc.orientation = ECardinalOrient.WS;
-                newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
-                break;
-            case "NW":
-                dc.orientation = ECardinalOrient.NW;
-                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
-            case "SE":
-                dc.orientation = ECardinalOrient.SE;
-                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
-                break;
-        }
-
-        dc.parentId = _data.parent.GetComponent<Customer>().id;
-
-        // By default, tenant is customer's one
-        dc.tenant = GameManager.gm.tenants[_data.parent.name];
-
-        string hn = newDC.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newDC);
-
-        ApiManager.instance.CreatePostRequest(hn);
-
-        return dc;
-    }
-
-    ///<summary>
-    /// Create a Datacenter and assign values from json
-    ///</summary>
-    ///<param name="_dc">The datacebter data to apply</param>
-    ///<returns>The created Datacenter</returns>
-    public Datacenter CreateDatacenter(SDcFromJson _dc)
-    {
-        Customer[] customers = GameObject.FindObjectsOfType<Customer>();
-        Customer cu = null;
-        foreach (Customer customer in customers)
-        {
-            if (customer.id == _dc.parentId)
-                cu = customer;
-        }
-        if (!cu)
-        {
-            GameManager.gm.AppendLogLine($"Parent customer not found (id = {_dc.parentId})", "red");
-            return null;
-        }
-
-        string hierarchyName = $"{cu.GetComponent<HierarchyName>()?.fullname}.{_dc.name}";
-        if (GameManager.gm.allItems.Contains(hierarchyName))
-        {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return null;
-        }
-
-        GameObject newDC = new GameObject(_dc.name);
-        newDC.transform.parent = cu.transform;
-
-        Datacenter dc = newDC.AddComponent<Datacenter>();
-        dc.name = newDC.name;
-        switch (_dc.orient)
-        {
-            case "EN":
-                dc.orientation = ECardinalOrient.EN;
-                newDC.transform.localEulerAngles = new Vector3(0, 0, 0);
-                break;
-            case "WS":
-                dc.orientation = ECardinalOrient.WS;
-                newDC.transform.localEulerAngles = new Vector3(0, 180, 0);
-                break;
-            case "NW":
-                dc.orientation = ECardinalOrient.NW;
-                newDC.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
-            case "SE":
-                dc.orientation = ECardinalOrient.SE;
-                newDC.transform.localEulerAngles = new Vector3(0, 90, 0);
-                break;
-        }
-        dc.comment = _dc.comment;
-        dc.address = _dc.address;
-        dc.zipcode = _dc.zipcode;
-        dc.city = _dc.zipcode;
-        dc.country = _dc.country;
-        dc.gps = _dc.gps;
-        dc.id = _dc.id;
-        dc.SetAttribute("usableColor", _dc.usableColor);
-        dc.SetAttribute("reservedColor", _dc.reservedColor);
-        dc.SetAttribute("technicalColor", _dc.technicalColor);
-
-        dc.parentId = _dc.parentId;
-
-        // By default, tenant is customer's one
-        dc.tenant = GameManager.gm.tenants[cu.name];
-
-        string hn = newDC.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newDC);
-
-        return dc;
-    }
-
-    ///<summary>
-    /// Create a Tenant and apply _data to it and store it in GameManager.tenants.
-    ///</summary>
-    ///<param name="_name">Name of the tenant</param>
-    ///<param name="_color">Color of the tenant in hexadecimal format (xxxxxx)</param>
-    public Tenant CreateTenant(string _name, string _color)
-    {
-        Tenant newTenant = new Tenant(_name, $"#{_color}");
-        Utils.DictionaryAddIfUnknown(GameManager.gm.tenants, _name, newTenant);
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color={newTenant.color}>{newTenant.name}</color>");
+        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        
-        return newTenant;
+
+        newTenant.AddComponent<HierarchyName>();
+        GameManager.gm.allItems.Add(_tn.name, newTenant);
+
+        return tenant;
+    }
+
+    ///<summary>
+    /// Create an OgreeObject of "site" category and assign given values to it
+    ///</summary>
+    ///<param name="_si">The site data to apply</param>
+    ///<param name="_parent">The parent of the created site. Leave null if _bd contains the parendId</param>
+    ///<returns>The created Site</returns>
+    public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
+    {
+        Transform tn = null;
+        if (_parent)
+            tn = _parent;
+        else
+        {
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _si.parentId)
+                    tn = go.transform;
+            }
+        }
+        if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
+        {
+            GameManager.gm.AppendLogLine($"Parent tenant not found", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_si.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
+        GameObject newSite = new GameObject(_si.name);
+        newSite.transform.parent = tn;
+
+        OgreeObject site = newSite.AddComponent<OgreeObject>();
+        site.name = newSite.name;
+        site.id = _si.id;
+        site.parentId = _si.parentId;
+        if (string.IsNullOrEmpty(site.parentId))
+            site.parentId = tn.GetComponent<OgreeObject>().id;
+        site.category = "site";
+        site.description = _si.description;
+        site.domain = _si.domain;
+        if (string.IsNullOrEmpty(site.domain))
+            site.domain = tn.GetComponent<OgreeObject>().domain;
+        site.attributes = _si.attributes;
+
+        switch (site.attributes["orientation"])
+        {
+            case "EN":
+                newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
+                break;
+            case "WS":
+                newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
+                break;
+            case "NW":
+                newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
+                break;
+            case "SE":
+                newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
+                break;
+        }
+
+        string hn = newSite.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newSite);
+
+        return site;
     }
 }

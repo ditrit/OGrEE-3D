@@ -153,7 +153,7 @@ public class ConsoleController : MonoBehaviour
             isReady = true;
             return;
         }
-        else if (GameManager.gm.currentItems[0].GetComponent<Customer>())
+        else if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
             GameManager.gm.SetCurrentItem(null);
         else
         {
@@ -249,8 +249,8 @@ public class ConsoleController : MonoBehaviour
                     GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
             }
             // Try to delete a tenant
-            else if (GameManager.gm.tenants.ContainsKey(data[0]))
-                GameManager.gm.tenants.Remove(data[0]);
+            // else if (GameManager.gm.tenants.ContainsKey(data[0]))
+            //     GameManager.gm.tenants.Remove(data[0]);
             else
                 AppendLogLine($"Error: \"{data[0]}\" does not exist", "yellow");
         }
@@ -436,10 +436,10 @@ public class ConsoleController : MonoBehaviour
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
-        if (str[0] == "customer" || str[0] == "cu")
-            CreateCustomer(str[1]);
-        else if (str[0] == "datacenter" || str[0] == "dc")
-            CreateDataCenter(str[1]);
+        if (str[0] == "tenant" || str[0] == "tn")
+            CreateTenant(str[1]);
+        else if (str[0] == "site" || str[0] == "si")
+            CreateSite(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
             CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
@@ -451,8 +451,6 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
-        else if (str[0] == "tenant" || str[0] == "tn")
-            CreateTenant(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -460,37 +458,47 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create customer" command and call CustomerGenerator.CreateCustomer().
+    /// Parse a "create tenant" command and call CustomerGenerator.CreateCustomer().
     ///</summary>
-    ///<param name="_input">Name of the customer</param>
-    private void CreateCustomer(string _input)
+    ///<param name="_input">Name of the tenant</param>
+    private void CreateTenant(string _input)
     {
-        string pattern = "^[^@\\s.]+$";
+        string pattern = "^[^@\\s.]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
         {
-            CustomerGenerator.instance.CreateCustomer(_input);
+            string[] data = _input.Split('@');
+            SApiObject tn = new SApiObject();
+            tn.name = data[0];
+            tn.domain = data[0];
+            tn.attributes = new Dictionary<string, string>();
+            tn.attributes["color"] = data[1];
+            CustomerGenerator.instance.CreateTenant(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
     }
 
     ///<summary>
-    /// Parse a "create datacenter" command and call CustomerGenerator.CreateDatacenter().
+    /// Parse a "create site" command and call CustomerGenerator.CreateSite().
     ///</summary>
-    ///<param name="_input">String with datacenter data to parse</param>
-    private void CreateDataCenter(string _input)
+    ///<param name="_input">String with site data to parse</param>
+    private void CreateSite(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(EN|NW|WS|SE)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-
-            SDataCenterInfos infos = new SDataCenterInfos();
-            infos.orient = data[1];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                CustomerGenerator.instance.CreateDatacenter(infos);
+            Transform parent = null;
+            SApiObject si = new SApiObject();
+            IsolateParent(data[0], out parent, out si.name);
+            si.attributes = new Dictionary<string, string>();
+            si.attributes["orientation"] = data[1];
+            si.attributes["usableColor"] = "DBEDF2";
+            si.attributes["reservedColor"] = "F2F2F2";
+            si.attributes["technicalColor"] = "EBF2DE";
+            if (parent)
+                CustomerGenerator.instance.CreateSite(si, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -508,12 +516,24 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SBuildingInfos infos = new SBuildingInfos();
-            infos.pos = Utils.ParseVector3(data[1]);
-            infos.size = Utils.ParseVector3(data[2]);
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateBuilding(infos);
+            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 size = Utils.ParseVector3(data[2]);
+
+            Transform parent = null;
+            SApiObject bd = new SApiObject();
+            IsolateParent(data[0], out parent, out bd.name);
+            bd.attributes = new Dictionary<string, string>();
+            bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
+            bd.attributes["posXYUnit"] = "m";
+            bd.attributes["posZ"] = pos.z.ToString();
+            bd.attributes["posZUnit"] = "m";
+            bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
+            bd.attributes["sizeUnit"] = "m";
+            bd.attributes["height"] = size.y.ToString();
+            bd.attributes["heightUnit"] = "m";
+
+            if (parent)
+                BuildingGenerator.instance.CreateBuilding(bd, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -531,18 +551,44 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SRoomInfos infos = new SRoomInfos();
-            infos.pos = Utils.ParseVector3(data[1]);
+            Transform parent = null;
+            SApiObject ro = new SApiObject();
+            ro.attributes = new Dictionary<string, string>();
+
+            Vector3 pos = Utils.ParseVector3(data[1]);
+            ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
+            ro.attributes["posXYUnit"] = "m";
+            ro.attributes["posZ"] = pos.z.ToString();
+            ro.attributes["posZUnit"] = "m";
+
+            Vector3 size;
             if (data[2].StartsWith("["))
             {
-                infos.size = Utils.ParseVector3(data[2]);
-                infos.orient = data[3];
+                ro.attributes["template"] = "";
+                ro.attributes["orientation"] = data[3];
+                size = Utils.ParseVector3(data[2]);
+            }
+            else if (GameManager.gm.roomTemplates.ContainsKey(data[2]))
+            {
+                ro.attributes["template"] = data[2];
+                ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
+                size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
+                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
+                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
             }
             else
-                infos.template = data[2];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateRoom(infos);
+            {
+                GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
+                return;
+            }
+            ro.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
+            ro.attributes["sizeUnit"] = "m";
+            ro.attributes["height"] = size.y.ToString();
+            ro.attributes["heightUnit"] = "m";
+
+            IsolateParent(data[0], out parent, out ro.name);
+            if (parent)
+                BuildingGenerator.instance.CreateRoom(ro, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -583,20 +629,29 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SRackInfos infos = new SRackInfos();
-            infos.pos = Utils.ParseVector2(data[1]);
+            Transform parent;
+            SApiObject rk = new SApiObject();
+            rk.attributes = new Dictionary<string, string>();
+
+            Vector2 pos = Utils.ParseVector2(data[1]);
+            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
+            rk.attributes["posXYUnit"] = "Tile";
+
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = Utils.ParseVector3(data[2], false);
-                infos.size = new Vector3(tmp.x, tmp.z * GameManager.gm.uSize * 100, tmp.y);
-                infos.height = (int)tmp.z;
+                rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+                rk.attributes["sizeUnit"] = "cm";
+                rk.attributes["height"] = ((int)tmp.z).ToString();
+                rk.attributes["heightUnit"] = "U";
+                rk.attributes["template"] = "";
             }
             else // ...else: is template name
-                infos.template = data[2];
-            infos.orient = data[3];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                ObjectGenerator.instance.CreateRack(infos);
+                rk.attributes["template"] = data[2];
+            rk.attributes["orientation"] = data[3];
+            IsolateParent(data[0], out parent, out rk.name);
+            if (parent)
+                ObjectGenerator.instance.CreateRack(rk, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -613,20 +668,35 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            SDeviceInfos infos = new SDeviceInfos();
 
-            // if (int.TryParse(data[1], out infos.posU) == false)
-            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                out infos.posU) == false)
-                infos.slot = data[1];
-            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                out infos.sizeU) == false)
-                infos.template = data[2];
+            Transform parent;
+            SApiObject dv = new SApiObject();
+            dv.attributes = new Dictionary<string, string>();
+
+            float posU;
+            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+                dv.attributes["posU"] = posU.ToString();
+            else
+                dv.attributes["slot"] = data[1];
+            float sizeU;
+            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
+                dv.attributes["sizeU"] = sizeU.ToString();
+            else
+                dv.attributes["template"] = data[2];
             if (data.Length == 4)
-                infos.side = data[3];
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                ObjectGenerator.instance.CreateDevice(infos);
+                dv.attributes["orientation"] = data[3];
+            else
+                dv.attributes["orientation"] = "Front";
+            IsolateParent(data[0], out parent, out dv.name);
+            if (parent)
+            {
+                Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
+                Vector3 scale = device.transform.GetChild(0).localScale * 1000;
+                device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                device.attributes["sizeUnit"] = "mm";
+                device.attributes["height"] = scale.y.ToString();
+                device.attributes["heightUnit"] = "mm";
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -653,22 +723,6 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax error", "red");
     }
 
-    ///<summary>
-    /// Parse a "create tenant" command and call CustomerGenerator.CreateTenant().
-    ///</summary>
-    ///<param name="String with tenant data to parse"></param>
-    private void CreateTenant(string _input)
-    {
-        string pattern = "^[^@\\s]+@[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-            CustomerGenerator.instance.CreateTenant(data[0], data[1]);
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
     #endregion
 
     #region SetMethods
@@ -684,7 +738,7 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('=');
 
-            // Can be a Tenant, a Customer or selection...
+            // Can be a selection...
             if (data[0].Count(f => (f == '.')) == 1)
             {
                 string[] attr = data[0].Split('.');
@@ -695,14 +749,8 @@ public class ConsoleController : MonoBehaviour
                     isReady = true;
                     return;
                 }
-                if (GameManager.gm.tenants.ContainsKey(attr[0])) // ...is a tenant
-                {
-                    GameManager.gm.tenants[attr[0]].SetAttribute(attr[1], data[1]);
-                    isReady = true;
-                    return;
-                }
             }
-            // ...is an OgreeObject
+            // ...else is an OgreeObject
             Transform obj;
             string attrName;
             IsolateParent(data[0], out obj, out attrName);

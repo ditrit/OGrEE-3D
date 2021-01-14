@@ -9,18 +9,13 @@ public class Rack : Object
     private Vector3 originalPosXY;
     private Transform uRoot;
 
-    public Rack()
-    {
-        family = EObjFamily.rack;
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Rack>() && GameManager.gm.currentItems.Contains(gameObject))
         {
             GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
             transform.localPosition = originalLocalPos;
-            posXY = originalPosXY;
+            attributes["posXY"] = JsonUtility.ToJson(new Vector2(originalPosXY.x, originalPosXY.y));
         }
     }
 
@@ -36,20 +31,14 @@ public class Rack : Object
             case "description":
                 description = _value;
                 break;
-            case "vendor":
-                vendor = _value;
-                break;
-            case "type":
-                type = _value;
-                break;
-            case "model":
-                model = _value;
-                break;
-            case "serial":
-                serial = _value;
-                break;
-            case "tenant":
-                AssignTenant(_value);
+             case "domain":
+                if (GameManager.gm.allItems.ContainsKey(_value))
+                {
+                    domain = _value;
+                    UpdateColor();
+                }
+                else
+                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                 break;
             case "color":
                 SetColor(_value);
@@ -60,16 +49,20 @@ public class Rack : Object
             case "slots":
                 ToggleSlots(_value);
                 break;
-            case "U":
-                ToggleU(_value);
-                break;
             case "localCS":
                 ToggleCS(_value);
                 break;
+            case "U":
+                ToggleU(_value);
+                break;
             default:
-                GameManager.gm.AppendLogLine($"[Rack] {name}: unknowed attribute to update.", "yellow");
+                if (attributes.ContainsKey(_param))
+                    attributes[_param] = _value;
+                else
+                    attributes.Add(_param, _value);
                 break;
         }
+        // PutData();
         DisplayRackData drd = GetComponent<DisplayRackData>();
         if (drd)
             drd.FillTexts();
@@ -80,12 +73,14 @@ public class Rack : Object
     ///</summary>
     public void UpdateColor()
     {
-        if (tenant == null)
+        if (string.IsNullOrEmpty(domain))
             return;
+        
+        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
-        ColorUtility.TryParseHtmlString(tenant.color, out myColor);
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 
@@ -96,6 +91,7 @@ public class Rack : Object
     public void MoveRack(Vector2 _v)
     {
         originalLocalPos = transform.localPosition;
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
         originalPosXY = posXY;
         foreach (Transform child in transform)
         {
@@ -104,25 +100,26 @@ public class Rack : Object
         }
 
         Room room = transform.parent.GetComponent<Room>();
-        switch (room.orientation)
+        switch (room.attributes["orientation"])
         {
-            case ECardinalOrient.EN:
+            case "EN":
                 transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.x, _v.y);
                 break;
-            case ECardinalOrient.NW:
+            case "NW":
                 transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.y, -_v.x);
                 break;
-            case ECardinalOrient.WS:
+            case "WS":
                 transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.x, -_v.y);
                 break;
-            case ECardinalOrient.SE:
+            case "SE":
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.y, _v.x);
                 break;
         }
+        attributes["posXY"] = JsonUtility.ToJson(posXY);
         StartCoroutine(ReactiveCollider());
     }
 
@@ -182,10 +179,10 @@ public class Rack : Object
     {
         Vector3 boxSize = transform.GetChild(0).localScale;
         float scale = GameManager.gm.uSize;
-        if (heightUnit == EUnit.OU)
+        if (attributes["heightUnit"] == "OU")
             scale = GameManager.gm.ouSize;
 
-        int max = (int)height;
+        int max = (int)Utils.ParseDecFrac(attributes["height"]);
         if (GetComponentInChildren<Slot>())
         {
             max = 0;

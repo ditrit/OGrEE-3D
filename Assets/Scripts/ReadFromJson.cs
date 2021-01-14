@@ -137,16 +137,23 @@ public class ReadFromJson
             return;
         }
 
-        SRackInfos infos = new SRackInfos();
-        infos.name = rackData.slug;
-        infos.parent = GameManager.gm.templatePlaceholder;
-        infos.orient = "front";
-        infos.size = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[2], rackData.sizeWDHmm[1]) / 10;
-        Rack rack = ObjectGenerator.instance.CreateRack(infos);
+        Vector3 tmp = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[1], rackData.sizeWDHmm[2]) / 10;
+        SApiObject rk = new SApiObject();
+        rk.attributes = new Dictionary<string, string>();
+        rk.name = rackData.slug;
+        rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+        rk.attributes["posXYUnit"] = "Tile";
+        rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+        rk.attributes["sizeUnit"] = "cm";
+        rk.attributes["height"] = ((int)tmp.z).ToString();
+        rk.attributes["heightUnit"] = "cm";
+        rk.attributes["template"] = "";
+        rk.attributes["orientation"] = "front";
+        Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;
-        rack.vendor = rackData.vendor;
-        rack.model = rackData.model;
+        rack.attributes["vendor"] = rackData.vendor;
+        rack.attributes["model"] = rackData.model;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (rackData.colors != null)
         {
@@ -190,12 +197,13 @@ public class ReadFromJson
 
         // Count the right height in U 
         Slot[] slots = rack.GetComponentsInChildren<Slot>();
-        rack.height = 0;
+        int height = 0;
         foreach (Slot s in slots)
         {
             if (s.orient == "horizontal")
-                rack.height++;
+                height++;
         }
+        rack.attributes["height"] = height.ToString();
 
 #if !DEBUG
         Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
@@ -241,47 +249,46 @@ public class ReadFromJson
         if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
             return;
 
-        SDeviceInfos infos = new SDeviceInfos();
-        infos.name = data.slug;
-        infos.parent = GameManager.gm.templatePlaceholder.GetChild(0);
-        infos.posU = 0;
-        infos.sizeU = data.sizeWDHmm[2] / 10;
+        SApiObject dv = new SApiObject();
+        dv.attributes = new Dictionary<string, string>();
+        dv.name = data.slug;
+        dv.attributes["posU"] = "0";
+        dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
+        dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
+        dv.attributes["sizeUnit"] = "mm";
+        dv.attributes["height"] = data.sizeWDHmm[2].ToString();
+        dv.attributes["heightUnit"] = "mm";
 
-        Object device = ObjectGenerator.instance.CreateDevice(infos);
-        device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
-        device.transform.localPosition = Vector3.zero;
-
-        switch (data.type)
-        {
-            case "chassis":
-                device.family = EObjFamily.chassis;
-                break;
-            case "blade":
-                device.family = EObjFamily.device;
-                break;
-        }
-        device.vendor = data.vendor;
-        device.model = data.model;
-        device.description = data.description;
+        dv.description = data.description;
+        dv.attributes["deviceType"] = data.type;
+        dv.attributes["vendor"] = data.vendor;
+        dv.attributes["model"] = data.model;
         switch (data.side)
         {
             case "front":
-                device.orientation = EObjOrient.Front;
+                dv.attributes["orientation"] = "Front";
                 break;
             case "rear":
-                device.orientation = EObjOrient.Rear;
+                dv.attributes["orientation"] = "Rear";
                 break;
             case "frontflipped":
-                device.orientation = EObjOrient.FrontFlipped;
+                dv.attributes["orientation"] = "FrontFlipped";
                 break;
             case "rearflipped":
-                device.orientation = EObjOrient.RearFlipped;
+                dv.attributes["orientation"] = "RearFlipped";
                 break;
         }
         if (data.fulldepth == "yes")
-            device.extras.Add("fulldepth", "yes");
+        {
+            dv.attributes["fulldepth"] = "yes";
+            dv.attributes["orientation"] = "Front";
+        }
         else if (data.fulldepth == "no")
-            device.extras.Add("fulldepth", "no");
+            dv.attributes["fulldepth"] = "no";
+        
+        Object device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
+        device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+        device.transform.localPosition = Vector3.zero;
 
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (data.colors != null)
@@ -319,7 +326,7 @@ public class ReadFromJson
                                 Dictionary<string, string> _customColors)
     {
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
-        
+
         go.name = _data.location;
         go.transform.parent = _parent;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
@@ -340,7 +347,6 @@ public class ReadFromJson
 
         if (isSlot)
         {
-            // MonoBehaviour.Destroy(go.GetComponent<Object>());
             Slot s = go.AddComponent<Slot>();
             s.orient = _data.elemOrient;
             s.mandatory = _data.mandatory;
@@ -350,8 +356,8 @@ public class ReadFromJson
         }
         else
         {
-            Object obj =go.AddComponent<Object>();
-            obj.family = EObjFamily.device;
+            Object obj = go.AddComponent<Object>();
+            obj.category = "device";
             go.AddComponent<HierarchyName>();
         }
 

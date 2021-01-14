@@ -63,18 +63,6 @@ public static class Utils
     }
 
     ///<summary>
-    /// Add a key/value pair in a dictionary only of the key doesn't exists.
-    ///</summary>
-    ///<param name="_dictionary">The dictionary to modify</param>
-    ///<param name="_key">The key to check/add</param>
-    ///<param name="_value">The value to add</param>
-    public static void DictionaryAddIfUnknown<T>(Dictionary<string, T> _dictionary, string _key, T _value)
-    {
-        if (!_dictionary.ContainsKey(_key))
-            _dictionary.Add(_key, _value);
-    }
-
-    ///<summary>
     /// Gets every Racks in GameManager.allItems and set their Collider.enabled.
     ///</summary>
     ///<param name="_value">The value to set</param>
@@ -86,5 +74,22 @@ public static class Utils
             if (obj.GetComponent<Rack>())
                 obj.GetComponent<Collider>().enabled = _value;
         }
+    }
+
+    ///<summary>
+    /// Convert an OgreeObject to an SApiObject.
+    ///</summary>
+    ///<param name="_src">The OgreeObject to convert</param>
+    public static SApiObject ConvertToApiObj(OgreeObject _src)
+    {
+        SApiObject apiObj = new SApiObject();
+        apiObj.name = _src.name;
+        apiObj.id = _src.id;
+        apiObj.parentId = _src.parentId;
+        apiObj.category = _src.category;
+        apiObj.description = _src.description;
+        apiObj.domain = _src.domain;
+        apiObj.attributes = _src.attributes;
+        return apiObj;
     }
 }

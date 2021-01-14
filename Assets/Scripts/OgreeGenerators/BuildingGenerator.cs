@@ -15,145 +15,162 @@ public class BuildingGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate a buildingModel (from GameManager) and apply _data to it.
+    /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the building</param>
+    ///<param name="_bd">The building data to apply</param>
+    ///<param name="_parent">The parent of the created building. Leave null if _bd contains the parendId</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SBuildingInfos _data)
+    public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
     {
-        if (_data.parent.GetComponent<Datacenter>() == null)
+        Transform si = null;
+        if (_parent)
+            si = _parent;
+        else
         {
-            GameManager.gm.AppendLogLine("Building must be child of a datacenter", "yellow");
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _bd.parentId)
+                    si = go.transform;
+            }
+        }
+        if (!si || si.GetComponent<OgreeObject>().category != "site")
+        {
+            GameManager.gm.AppendLogLine($"Parent site not found", "red");
             return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        string hierarchyName = $"{si.GetComponent<HierarchyName>()?.fullname}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
+        // Position and size data from _bd.attributes
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
+        float posZ = float.Parse(_bd.attributes["posZ"]);
+        Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
+        float height = float.Parse(_bd.attributes["height"]);
+
         GameObject newBD = Instantiate(GameManager.gm.buildingModel);
-        newBD.name = _data.name;
-        newBD.transform.parent = _data.parent;
+        newBD.name = _bd.name;
+        newBD.transform.parent = si;
         newBD.transform.localEulerAngles = Vector3.zero;
 
         // originalSize
         Vector3 originalSize = newBD.transform.GetChild(0).localScale;
-        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * _data.size.x, originalSize.y, originalSize.z * _data.size.z);
+        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
 
         Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(_data.pos.x, 0, _data.pos.z);
+        newBD.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
-        Building bd = newBD.GetComponent<Building>();
-        bd.name = newBD.name;
-        BuildWalls(bd.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, _data.size.y, newBD.transform.GetChild(0).localScale.z * 10), 0);
-        bd.posXY = new Vector2(_data.pos.x, _data.pos.y);
-        bd.posXYUnit = EUnit.m;
-        bd.posZ = _data.pos.z;
-        bd.posZUnit = EUnit.m;
-        bd.size = new Vector2(_data.size.x, _data.size.z);
-        bd.sizeUnit = EUnit.m;
-        bd.height = _data.size.y;
-        bd.heightUnit = EUnit.m;
+        Building building = newBD.GetComponent<Building>();
+        building.name = newBD.name;
+        building.id = _bd.id;
+        building.parentId = _bd.parentId;
+        if (string.IsNullOrEmpty(building.parentId))
+            building.parentId = si.GetComponent<OgreeObject>().id;
+        building.category = "building";
+        building.description = _bd.description;
+        building.domain = _bd.domain;
+        if (string.IsNullOrEmpty(building.domain))
+            building.domain = si.GetComponent<OgreeObject>().domain;
+        building.attributes = _bd.attributes;
+
+        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
         newBD.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
 
-        return bd;
+        return building;
     }
 
     ///<summary>
-    /// Instantiate a roomModel (from GameManager) and apply _data to it.
+    /// Instantiate a roomModel (from GameManager) and apply given data to it.
     ///</summary>
-    ///<param name="_data">Informations about the room</param>
+    ///<param name="_ro">The room data to apply</param>    
+    ///<param name="_parent">The parent of the created room. Leave null if _bd contains the parendId</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SRoomInfos _data)
+    public Room CreateRoom(SApiObject _ro, Transform _parent = null)
     {
-        if (_data.parent.GetComponent<Building>() == null || _data.parent.GetComponent<Room>())
+        Transform bd = null;
+        if (_parent)
+            bd = _parent;
+        else
         {
-            GameManager.gm.AppendLogLine("Room must be child of a Building", "yellow");
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _ro.parentId)
+                    bd = go.transform;
+            }
+        }
+        if (!bd || bd.GetComponent<OgreeObject>().category != "building")
+        {
+            GameManager.gm.AppendLogLine($"Parent building not found", "red");
             return null;
         }
-        string hierarchyName = $"{_data.parent.GetComponent<HierarchyName>()?.fullname}.{_data.name}";
+        string hierarchyName = $"{bd.GetComponent<HierarchyName>()?.fullname}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
+        // Position and size data from _ro.attributes
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
+        float posZ = float.Parse(_ro.attributes["posZ"]);
+        Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
+        float height = float.Parse(_ro.attributes["height"]);
+
         GameObject newRoom = Instantiate(GameManager.gm.roomModel);
-        newRoom.name = _data.name;
-        newRoom.transform.parent = _data.parent;
-
-        Vector3 size;
-        string orient;
-        if (string.IsNullOrEmpty(_data.template))
-        {
-            size = _data.size;
-            orient = _data.orient;
-        }
-        else if (GameManager.gm.roomTemplates.ContainsKey(_data.template))
-        {
-            size = new Vector3(GameManager.gm.roomTemplates[_data.template].sizeWDHm[0],
-                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[2],
-                            GameManager.gm.roomTemplates[_data.template].sizeWDHm[1]);
-            orient = GameManager.gm.roomTemplates[_data.template].orientation;
-
-            newRoom.GetComponent<Room>().template = _data.template;
-        }
-        else
-        {
-            GameManager.gm.AppendLogLine($"Unknown template \"{_data.template}\"", "yellow");
-            return null;
-        }
+        newRoom.name = _ro.name;
+        newRoom.transform.parent = bd;
 
         Room room = newRoom.GetComponent<Room>();
-        room.name = newRoom.name;
+        room.name = _ro.name;
+        room.id = _ro.id;
+        room.parentId = _ro.parentId;
+        if (string.IsNullOrEmpty(room.parentId))
+            room.parentId = bd.GetComponent<OgreeObject>().id;
+        room.category = "room";
+        room.description = _ro.description;
+        room.domain = _ro.domain;
+        if (string.IsNullOrEmpty(room.domain))
+            room.domain = bd.GetComponent<OgreeObject>().domain;
+        room.attributes = _ro.attributes;
 
         Vector3 originalSize = room.usableZone.localScale;
-        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.z);
+        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
         room.reservedZone.localScale = room.usableZone.localScale;
         room.technicalZone.localScale = room.usableZone.localScale;
         room.tilesEdges.localScale = room.usableZone.localScale;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = new Vector2(size.x, size.z) / 0.6f;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.z / 0.6f % 1);
-        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, size.y, room.usableZone.localScale.z * 10), -0.001f);
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
+        room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-        Vector3 bdOrigin = _data.parent.GetChild(0).localScale / -0.2f;
+        Vector3 bdOrigin = bd.GetChild(0).localScale / -0.2f;
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-        newRoom.transform.position = _data.parent.position;
+        newRoom.transform.position = bd.position;
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
-        newRoom.transform.localPosition += _data.pos;
+        newRoom.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
-        room.posXY = new Vector2(_data.pos.x, _data.pos.y);
-        room.posXYUnit = EUnit.m;
-        room.posZ = _data.pos.z;
-        room.posZUnit = EUnit.m;
-        room.size = new Vector2(size.x, size.z);
-        room.sizeUnit = EUnit.m;
-        room.height = size.y;
-        room.heightUnit = EUnit.m;
-        switch (orient)
+        switch (room.attributes["orientation"])
         {
             case "EN":
-                room.orientation = ECardinalOrient.EN;
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
                 newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
                 break;
             case "WS":
-                room.orientation = ECardinalOrient.WS;
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
                 break;
             case "NW":
-                room.orientation = ECardinalOrient.NW;
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
                 newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
                 break;
             case "SE":
-                room.orientation = ECardinalOrient.SE;
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
                 break;
@@ -161,22 +178,20 @@ public class BuildingGenerator : MonoBehaviour
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
-        room.nameText.rectTransform.sizeDelta = room.size;
+        room.nameText.rectTransform.sizeDelta = size;
 
         // Add room to GUI room filter
         Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
-        // Get tenant from related Datacenter
-        room.tenant = newRoom.transform.parent.parent.GetComponent<Datacenter>().tenant;
         room.UpdateZonesColor();
 
         string hn = newRoom.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRoom);
-        
-        if (!string.IsNullOrEmpty(_data.template) && GameManager.gm.roomTemplates.ContainsKey(_data.template))
+
+        if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
-            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_data.template];
+            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
             room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
             foreach (ReadFromJson.SSeparator sep in template.separators)

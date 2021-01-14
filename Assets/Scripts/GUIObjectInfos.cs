@@ -38,10 +38,8 @@ public class GUIObjectInfos : MonoBehaviour
         singlePanel.SetActive(true);
         multiPanel.SetActive(false);
 
-        if (_obj && _obj.GetComponent<Object>())
-            UpdateFields(_obj.GetComponent<Object>());
-        else if (_obj && _obj.GetComponent<Room>())
-            UpdateFields(_obj.GetComponent<Room>());
+        if (_obj && _obj.GetComponent<OgreeObject>())
+            UpdateFields(_obj.GetComponent<OgreeObject>());
         else
         {
             if (_obj)
@@ -78,45 +76,50 @@ public class GUIObjectInfos : MonoBehaviour
     }
 
     ///<summary>
-    /// Update singlePanel texts from a Rack.
+    /// Update singlePanel texts from an OgreeObject.
     ///</summary>
     ///<param name="_obj">The rack whose information are displayed</param>
-    private void UpdateFields(Object _obj)
+    private void UpdateFields(OgreeObject _obj)
     {
         tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
-        tmpTenantName.text = _obj.tenant.name;
-        tmpTenantContact.text = _obj.tenant.mainContact;
-        tmpTenantPhone.text = _obj.tenant.mainPhone;
-        tmpTenantEmail.text = _obj.tenant.mainEmail;
-        if (_obj.family == EObjFamily.rack)
-            tmpPosXY.text = $"Tile {_obj.posXY.x.ToString("0.##")}/{_obj.posXY.y.ToString("0.##")}";
+        if (!string.IsNullOrEmpty(_obj.domain))
+        {
+            OgreeObject tn = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
+            tmpTenantName.text = tn.name;
+            tmpTenantContact.text = IfInDictionary(tn.attributes, "mainContact");
+            tmpTenantPhone.text = IfInDictionary(tn.attributes, "mainPhone");
+            tmpTenantEmail.text = IfInDictionary(tn.attributes, "mainEmail");
+        }
+        if (_obj.category == "rack")
+        {
+            Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
+            tmpPosXY.text = $"Tile {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")}";
+        }
         else
-            tmpPosXY.text = "-";
-        tmpSize.text = $"{_obj.size.x}{_obj.sizeUnit} x {_obj.size.y}{_obj.sizeUnit} x {_obj.height}{_obj.heightUnit}";
-        tmpVendor.text = _obj.vendor;
-        tmpType.text = _obj.type;
-        tmpModel.text = _obj.model;
-        tmpSerial.text = _obj.serial;
+            tmpPosXY.text = "";
+        if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
+        {
+            Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
+            tmpSize.text = $"{size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}";
+        }
+        tmpVendor.text = IfInDictionary(_obj.attributes, "vendor");
+        tmpType.text = IfInDictionary(_obj.attributes, "type");
+        tmpModel.text = IfInDictionary(_obj.attributes, "model");
+        tmpSerial.text = IfInDictionary(_obj.attributes, "serial");
         tmpDesc.text = _obj.description;
     }
 
     ///<summary>
-    /// Update singlePanel texts from a Room.
+    /// Return the asked value if it exists in the dictionary.
     ///</summary>
-    ///<param name="_room">The room whose information are displayed</param>
-    private void UpdateFields(Room _room)
+    ///<param name="_dictionary">The dictionary to search in</param>
+    ///<param name="_key">The ke to search</param>
+    ///<returns>The asked value</returns>
+    private T IfInDictionary<T>(Dictionary<string, T> _dictionary, string _key)
     {
-        tmpName.text = _room.GetComponent<HierarchyName>().fullname;
-        tmpTenantName.text = _room.tenant.name;
-        tmpTenantContact.text = _room.tenant.mainContact;
-        tmpTenantPhone.text = _room.tenant.mainPhone;
-        tmpTenantEmail.text = _room.tenant.mainEmail;
-        tmpPosXY.text = "-";
-        tmpSize.text = $"{_room.size.x}{_room.sizeUnit} x {_room.size.y}{_room.sizeUnit}";
-        tmpVendor.text = "-";
-        tmpType.text = "-";
-        tmpModel.text = "-";
-        tmpSerial.text = "-";
-        tmpDesc.text = _room.description;
+        if (_dictionary.ContainsKey(_key))
+            return _dictionary[_key];
+        else
+            return default(T);
     }
 }

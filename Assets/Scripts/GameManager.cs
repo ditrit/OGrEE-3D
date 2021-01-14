@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour
     // Group all dictionaries?
     public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
-    public Dictionary<string, Tenant> tenants = new Dictionary<string, Tenant>();
     public bool isWireframe;
 
     public List<GameObject> focus = new List<GameObject>();
@@ -79,12 +78,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         configLoader.LoadConfig();
-        StartCoroutine(configLoader.ConnectToApi());
+        // StartCoroutine(configLoader.ConnectToApi());
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
 #if DEBUG
-        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
+        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
 #endif
     }
@@ -352,7 +351,7 @@ public class GameManager : MonoBehaviour
             ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
             foreach (Transform child in _toDel.transform)
             {
-                if (child.GetComponent<AServerItem>())
+                if (child.GetComponent<OgreeObject>())
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
             }
         }
@@ -394,17 +393,24 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Delete all Customers and reload last loaded file.
+    /// Called by GUI button: Delete all Tenants and reload last loaded file.
     ///</summary>
     public void ReloadFile()
     {
         SetCurrentItem(null);
         focus.Clear();
         UpdateFocusText();
-        Customer[] customers = FindObjectsOfType<Customer>();
-        foreach (Customer cu in customers)
-            Destroy(cu.gameObject);
-        tenants.Clear();
+
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();
@@ -463,7 +469,7 @@ public class GameManager : MonoBehaviour
         Room currentRoom = currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
-            if (!roomTemplates.ContainsKey(currentRoom.template))
+            if (!roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
                 GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
                 return;

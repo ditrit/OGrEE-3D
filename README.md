@@ -24,14 +24,13 @@ OGREE 3D is a data-center viewer
         - [Select parent object](#Select-parent-object)
         - [Delete object](#Delete-object)
     - [Create commands](#Create-commands)
-        - [Create a Customer](#Create-a-Customer)
-        - [Create a Datacenter](#Create-a-Datacenter)
+        - [Create a Tenant](#Create-a-Tenant)
+        - [Create a Site](#Create-a-Site)
         - [Create a Building](#Create-a-Building)
         - [Create a Room](#Create-a-Room)
         - [Create a Separator](#Create-a-Separator)
         - [Create a Rack](#Create-a-Rack)
         - [Create a Device](#Create-a-Device)
-        - [Create a Tenant](#Create-a-Tenant)
     - [Set commands](#Set-commands)
         - [Set colors for zones of all rooms in a datacenter](#Set-colors-for-zones-of-all-rooms-in-a-datacenter)
         - [Set reserved and technical zones of a room](#Set-reserved-and-technical-zones-of-a-room)
@@ -65,8 +64,8 @@ OGREE 3D is a data-center viewer
 # Getting started
 Object hierarchy, each level is mandatory
 ```
-Customer
-|_ Datacenter
+Tenant
+|_ Site
     |_ Building
         |_ Room
             |_ Rack                                 Rack
@@ -94,7 +93,7 @@ You can override the config file parameters with command line arguments
 # Build in CLI
 
 ## Glossary
-`[name]` is case sensitive. It include the whole path of the object (for example: `cu.dc.bd.ro.rk`)  
+`[name]` is case sensitive. It include the whole path of the object (for example: `tn.si.bd.ro.rk`)  
 `[orientation]` is a definition of an orthonormal with cardinal points (+x,+y, anti-clockwise): **EN**, **NW**, **WS**, **SE**
 `[color]` is a hexadecimal code (*ffffff*)  
 
@@ -153,22 +152,23 @@ If `@server` is used, also delete item in server
 ```  
 
 ## Create commands
-### Create a Customer
-Customer will be created as a new root.
+### Create a Tenant
+Tenant will be created as a new root.
+
 ```
-+customer:[name]  
-+cu:[name]
++tenant:[name]@[color]
++tn:[name]@[color]
 ```
 
-### Create a Datacenter
-Datacenter must be child of a Customer.
+### Create a Site
+Site must be child of a Tenant.
 ```
-+datacenter:[name]@[orientation]  
-+dc:[name]@[orientation]
++site:[name]@[orientation]  
++si:[name]@[orientation]
 ```
 
 ### Create a Building
-Building must be child of a Datacenter.  
+Building must be child of a Site.  
 *`[pos]` is a Vector3 [x,y,z] (m,m,m)  
 `[size]` is a Vector3 [width,length,height] (m,m,m)*  
 ```
@@ -237,12 +237,6 @@ All other devices (blades / components like processor, memory, adapters, disks..
 +dv:[name]@[slot]@[template]@[side]
 ```  
 
-### Create a Tenant  
-```
-+tenant:[name]@[color]
-+tn:[name]@[color]
-```  
-
 ## Set commands  
 You have to modify an object in the same file than its creation.   
 ### Set colors for zones of all rooms in a datacenter
@@ -267,7 +261,7 @@ You can modify areas only if the room has no racks in it.
 ### Modify object's attribute
 Works with single or multi selection.  
 *`[name]` can be `selection` or `_` for modifying selected objects attributes  
-`[datacenter].[attribute]` can be comment / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
+`[datacenter].[attribute]` can be description / address / zipcode / city / country / gps(format:[x,y,z]) / tenant / usableColor / reservedColor / technicalColor  
 `[building].[attribute]` can be description / nbfloors  
 `[room].[attribute]` can be description / floors / tenant  
 `[object].[attribute]` can be description / vendor / type / model / serial / tenant / alpha  
@@ -380,7 +374,7 @@ api.delete=[name]
 
 ## Examples
 ```
-+cu:DEMO
++cu:DEMO@ffffff
     DEMO.mainContact=Ced
     DEMO.mainPhone=0612345678
     DEMO.mainEmail=ced@ogree3D.com
@@ -392,8 +386,8 @@ api.delete=[name]
 
 +tenant:Billy@F0C300
 
-+dc:DEMO.ALPHA@NW
-    DEMO.ALPHA.comment=This is a demo...
++si:DEMO.ALPHA@NW
+    DEMO.ALPHA.description=This is a demo...
     DEMO.ALPHA.address=1 rue bidule
     DEMO.ALPHA.zipcode=42000
     DEMO.ALPHA.city=Truc
