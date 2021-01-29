@@ -387,4 +387,53 @@ public class ObjectGenerator : MonoBehaviour
         }
     }
 
+    ///
+    public Object CreateRackGroup(string _name, Transform _parent, string[] _rackNames)
+    {
+        List<Rack> racks = new List<Rack>();
+        foreach (string rn in _rackNames)
+        {
+            GameObject go = GameManager.gm.FindByAbsPath($"{_parent.GetComponent<HierarchyName>().fullname}.{rn}");
+            if (go)
+                racks.Add(go.GetComponent<Rack>());
+            else
+                GameManager.gm.AppendLogLine($"{_parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
+        }
+        if (racks.Count == 0)
+            return null;
+
+        Rack lowerLeft = racks[0];
+        Rack upperRight = racks[0];
+        float maxHeight = 0;
+        foreach (Rack r in racks)
+        {
+            Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.attributes["posXY"]);
+            Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.attributes["posXY"]);
+            Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.attributes["posXY"]);
+
+            if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
+                lowerLeft = r;
+            if (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y)
+                upperRight = r;
+            
+            float height = r.transform.GetChild(0).localScale.y;
+            if (height > maxHeight)
+                maxHeight = height;
+
+        }
+        Debug.Log($"ll: {lowerLeft.name} / ur: {upperRight.name} / h: {maxHeight}");
+
+        GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
+        newRg.name = _name;
+        newRg.transform.parent = _parent;
+
+        Object rg = newRg.AddComponent<Object>();
+        rg.name = _name;
+        rg.parentId = _parent.GetComponent<Room>().id;
+        rg.category = "rackGroup";
+        rg.domain = racks[0].domain;
+
+        return rg;
+    }
+
 }

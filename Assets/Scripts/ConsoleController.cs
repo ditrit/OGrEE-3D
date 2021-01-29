@@ -451,6 +451,8 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
+        else if (str[0] == "rackgroup" || str[0] == "rg")
+            CreateRackGroup(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -700,6 +702,30 @@ public class ConsoleController : MonoBehaviour
         }
         else
             AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create rackGroup" command and call ObjectGenerator.CreateRackGroup().
+    ///</summary>
+    ///<param name="_input">String with rackgroup data to parse</param>
+    private void CreateRackGroup(string _input)
+    {
+        // +rg:DEMO.ALPHA.B.R1.porthos@{B05,C11,B09,B10,B11,B12,C08,C09,C10,C12}
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            data[1] = data[1].Trim('{', '}');
+            string[] racks = data[1].Split(',');
+            foreach (string r in racks)
+                Debug.Log(r);
+            string name = null;
+            Transform parent = null;
+            IsolateParent(data[0], out parent, out name);
+            if (parent)
+                ObjectGenerator.instance.CreateRackGroup(name, parent, racks);
+        }
     }
 
     ///<summary>
