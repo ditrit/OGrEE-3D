@@ -388,10 +388,11 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///
-    public Object CreateRackGroup(string _name, Transform _parent, string[] _rackNames)
+    public RackGroup CreateRackGroup(string _name, Transform _parent, string _racksList)
     {
         List<Rack> racks = new List<Rack>();
-        foreach (string rn in _rackNames)
+        string[] rackNames = _racksList.Split(',');
+        foreach (string rn in rackNames)
         {
             GameObject go = GameManager.gm.FindByAbsPath($"{_parent.GetComponent<HierarchyName>().fullname}.{rn}");
             if (go)
@@ -415,7 +416,7 @@ public class ObjectGenerator : MonoBehaviour
                 lowerLeft = r;
             if (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y)
                 upperRight = r;
-            
+
             float height = r.transform.GetChild(0).localScale.y;
             if (height > maxHeight)
                 maxHeight = height;
@@ -427,11 +428,38 @@ public class ObjectGenerator : MonoBehaviour
         newRg.name = _name;
         newRg.transform.parent = _parent;
 
-        Object rg = newRg.AddComponent<Object>();
+        float x = upperRight.transform.localPosition.x - lowerLeft.transform.localPosition.x;
+        float z = upperRight.transform.localPosition.z - lowerLeft.transform.localPosition.z;
+        if (lowerLeft.attributes["orientation"] == "front" || lowerLeft.attributes["orientation"] == "rear")
+        {
+            x += (upperRight.transform.GetChild(0).localScale.x + lowerLeft.transform.GetChild(0).localScale.x) / 2;
+            z += (upperRight.transform.GetChild(0).localScale.z + lowerLeft.transform.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            x += (upperRight.transform.GetChild(0).localScale.z + lowerLeft.transform.GetChild(0).localScale.z) / 2;
+            z += (upperRight.transform.GetChild(0).localScale.x + lowerLeft.transform.GetChild(0).localScale.x) / 2;
+        }
+        newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+
+        newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
+        newRg.transform.localPosition = new Vector3(lowerLeft.transform.localPosition.x, maxHeight / 2, lowerLeft.transform.localPosition.z);
+        Vector3 offset = upperRight.transform.localPosition - lowerLeft.transform.localPosition;
+        newRg.transform.localPosition += offset / 2;
+
+        RackGroup rg = newRg.AddComponent<RackGroup>();
         rg.name = _name;
         rg.parentId = _parent.GetComponent<Room>().id;
         rg.category = "rackGroup";
         rg.domain = racks[0].domain;
+        rg.attributes["racksList"] = _racksList;
+        rg.DisplayRacks(false);
+
+        newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        newRg.GetComponent<DisplayObjectData>().UpdateLabels(_name);
+
+        string hn = newRg.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newRg);
 
         return rg;
     }

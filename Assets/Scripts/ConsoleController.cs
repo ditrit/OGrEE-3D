@@ -717,14 +717,11 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
             data[1] = data[1].Trim('{', '}');
-            string[] racks = data[1].Split(',');
-            foreach (string r in racks)
-                Debug.Log(r);
             string name = null;
             Transform parent = null;
             IsolateParent(data[0], out parent, out name);
             if (parent)
-                ObjectGenerator.instance.CreateRackGroup(name, parent, racks);
+                ObjectGenerator.instance.CreateRackGroup(name, parent, data[1]);
         }
     }
 
