@@ -396,27 +396,27 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created rackGroup</returns>
     public RackGroup CreateRackGroup(string _name, Transform _parent, string _racksList)
     {
-        List<Rack> racks = new List<Rack>();
+        List<Transform> racks = new List<Transform>();
         string[] rackNames = _racksList.Split(',');
         foreach (string rn in rackNames)
         {
             GameObject go = GameManager.gm.FindByAbsPath($"{_parent.GetComponent<HierarchyName>().fullname}.{rn}");
             if (go)
-                racks.Add(go.GetComponent<Rack>());
+                racks.Add(go.transform);
             else
                 GameManager.gm.AppendLogLine($"{_parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
         }
         if (racks.Count == 0)
             return null;
 
-        Rack lowerLeft = racks[0];
-        Rack upperRight = racks[0];
+        Transform lowerLeft = racks[0];
+        Transform upperRight = racks[0];
         float maxHeight = 0;
-        foreach (Rack r in racks)
+        foreach (Transform r in racks)
         {
-            Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.attributes["posXY"]);
-            Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.attributes["posXY"]);
-            Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.attributes["posXY"]);
+            Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.GetComponent<Rack>().attributes["posXY"]);
+            Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.GetComponent<Rack>().attributes["posXY"]);
+            Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.GetComponent<Rack>().attributes["posXY"]);
 
             if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
                 lowerLeft = r;
@@ -434,30 +434,31 @@ public class ObjectGenerator : MonoBehaviour
         newRg.name = _name;
         newRg.transform.parent = _parent;
 
-        float x = upperRight.transform.localPosition.x - lowerLeft.transform.localPosition.x;
-        float z = upperRight.transform.localPosition.z - lowerLeft.transform.localPosition.z;
-        if (lowerLeft.attributes["orientation"] == "front" || lowerLeft.attributes["orientation"] == "rear")
+        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
+        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            x += (upperRight.transform.GetChild(0).localScale.x + lowerLeft.transform.GetChild(0).localScale.x) / 2;
-            z += (upperRight.transform.GetChild(0).localScale.z + lowerLeft.transform.GetChild(0).localScale.z) / 2;
+            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            z += (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
         }
         else
         {
-            x += (upperRight.transform.GetChild(0).localScale.z + lowerLeft.transform.GetChild(0).localScale.z) / 2;
-            z += (upperRight.transform.GetChild(0).localScale.x + lowerLeft.transform.GetChild(0).localScale.x) / 2;
+            x += (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            z += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
         }
         newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
 
         newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newRg.transform.localPosition = new Vector3(lowerLeft.transform.localPosition.x, maxHeight / 2, lowerLeft.transform.localPosition.z);
-        Vector3 offset = upperRight.transform.localPosition - lowerLeft.transform.localPosition;
+        newRg.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
+        Vector3 offset = upperRight.localPosition - lowerLeft.localPosition;
         newRg.transform.localPosition += offset / 2;
 
         RackGroup rg = newRg.AddComponent<RackGroup>();
         rg.name = _name;
         rg.parentId = _parent.GetComponent<Room>().id;
         rg.category = "rackGroup";
-        rg.domain = racks[0].domain;
+        rg.domain = racks[0].GetComponent<Rack>().domain;
         rg.attributes["racksList"] = _racksList;
         rg.DisplayRacks(false);
 
@@ -468,6 +469,74 @@ public class ObjectGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hn, newRg);
 
         return rg;
+    }
+
+    ///<summary>
+    /// Generate a corridor (from GameManager.labeledBoxModel) with defined corners and color.
+    ///</summary>
+    ///<param name="_name">The name of the corridor</param>
+    ///<param name="_parent">The parent of the generated corridor</param>
+    ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
+    ///<param name="_temp">"cold" or "warm" value</param>
+    ///<returns>The created corridor</returns>
+    public Object CreateCorridor(string _name, Transform _parent, string _cornerRacks, string _temp)
+    {
+        string roomHierarchyName = _parent.GetComponent<HierarchyName>().fullname;
+        string[] rackNames = _cornerRacks.Split(',');
+        Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}").transform;
+        Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}").transform;
+
+        if (lowerLeft == null || upperRight == null)
+            return null;
+        
+        float maxHeight = lowerLeft.GetChild(0).localScale.y;
+        if (upperRight.GetChild(0).localScale.y > maxHeight)
+            maxHeight = upperRight.GetChild(0).localScale.y;
+
+        GameObject newCo = Instantiate(GameManager.gm.labeledBoxModel);
+        newCo.name = _name;
+        newCo.transform.parent = _parent;
+
+        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
+        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        {
+            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            x += (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            z -= (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+        }
+        newCo.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+
+        newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
+        newCo.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
+        Vector3 offset = upperRight.localPosition - lowerLeft.localPosition;
+        newCo.transform.localPosition += offset / 2;
+
+        Object co = newCo.AddComponent<Object>();
+        co.name = _name;
+        co.parentId = _parent.GetComponent<Room>().id;
+        co.category = "corridor";
+        co.domain = lowerLeft.GetComponent<Rack>().domain;
+        co.attributes["cornerRacks"] = _cornerRacks;
+
+        co.SetAttribute("alpha", "50");
+        if (_temp == "cold")
+            co.SetAttribute("color", "000099");
+        else
+            co.SetAttribute("color", "990000");
+
+        newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        newCo.GetComponent<DisplayObjectData>().UpdateLabels(_name);
+
+        string hn = newCo.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newCo);
+
+        return co;
     }
 
 }

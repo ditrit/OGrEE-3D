@@ -453,6 +453,8 @@ public class ConsoleController : MonoBehaviour
             CreateDevice(str[1]);
         else if (str[0] == "rackgroup" || str[0] == "rg")
             CreateRackGroup(str[1]);
+        else if (str[0] == "corridor" || str[0] == "co")
+            CreateCorridor(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -711,7 +713,7 @@ public class ConsoleController : MonoBehaviour
     private void CreateRackGroup(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
+        string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -722,6 +724,30 @@ public class ConsoleController : MonoBehaviour
             if (parent)
                 ObjectGenerator.instance.CreateRackGroup(name, parent, data[1]);
         }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create corridor" command and call ObjectGenerator.CreateCorridor().
+    ///</summary>
+    ///<param name="_input">String with corridor data to parse</param>
+    private void CreateCorridor(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+,[^@\\s\\}]+\\}@(cold|warm)$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            data[1] = data[1].Trim('{', '}');
+            string name = null;
+            Transform parent = null;
+            IsolateParent(data[0], out parent, out name);
+            if (parent)
+                ObjectGenerator.instance.CreateCorridor(name, parent, data[1], data[2]);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
     }
 
     ///<summary>
