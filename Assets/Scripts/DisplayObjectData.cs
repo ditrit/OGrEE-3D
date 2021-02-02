@@ -26,8 +26,8 @@ public class DisplayObjectData : MonoBehaviour
     }
 
     ///<summary>
-    /// Move displayed texts in the top/front of the rack.
-    /// Also set width of name and description regarding rack width.
+    /// Setup all texts regarding object's scale.
+    /// Also Enable or disable texts according to _labelPos.
     ///</summary>
     ///<param name="_labelPos">Labels to display</param>
     public void PlaceTexts(string _labelPos)

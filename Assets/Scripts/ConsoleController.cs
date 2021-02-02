@@ -710,7 +710,6 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">String with rackgroup data to parse</param>
     private void CreateRackGroup(string _input)
     {
-        // +rg:DEMO.ALPHA.B.R1.porthos@{B05,C11,B09,B10,B11,B12,C08,C09,C10,C12}
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
         if (Regex.IsMatch(_input, pattern))

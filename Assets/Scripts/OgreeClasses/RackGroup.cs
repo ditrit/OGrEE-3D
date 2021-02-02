@@ -41,7 +41,10 @@ public class RackGroup : Object
         // PutData();
     }
 
-    ///
+    ///<summary>
+    /// Display or hide the rackGroup and its racks.
+    ///</summary>
+    ///<param name="_value">"true" or "false" value</param>
     private void ToggleRacks(string _value)
     {
         if (_value != "true" && _value != "false")
@@ -59,7 +62,10 @@ public class RackGroup : Object
         }
     }
 
-    ///
+    ///<summary>
+    /// Enable or disable racks from attributes["rackList"].
+    ///</summary>
+    ///<param name="_value">The bool value to apply</param>
     public void DisplayRacks(bool _value)
     {
         List<Rack> racks = new List<Rack>();

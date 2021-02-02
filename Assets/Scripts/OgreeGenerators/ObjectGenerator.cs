@@ -160,7 +160,7 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
-    ///<returns>The created Chassis</returns>
+    ///<returns>The created Device</returns>
     public Object CreateDevice(SApiObject _dv, Transform _parent = null)
     {
         Transform parent = null;
@@ -387,7 +387,13 @@ public class ObjectGenerator : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Generate a rackGroup (from GameManager.labeledBoxModel) which contains all the given racks.
+    ///</summary>
+    ///<param name="_name">The name of the rackGroup</param>
+    ///<param name="_parent">The parent of the generated rackGroup</param>
+    ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
+    ///<returns>The created rackGroup</returns>
     public RackGroup CreateRackGroup(string _name, Transform _parent, string _racksList)
     {
         List<Rack> racks = new List<Rack>();
