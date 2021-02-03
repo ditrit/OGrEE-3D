@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,18 +22,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
-        Transform parent = null;
-        if (_parent)
-            parent = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _rk.parentId)
-                    parent = go.transform;
-            }
-        }
+        Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
             GameManager.gm.AppendLogLine($"Parent room not found", "red");
@@ -163,18 +152,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created Device</returns>
     public Object CreateDevice(SApiObject _dv, Transform _parent = null)
     {
-        Transform parent = null;
-        if (_parent)
-            parent = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _dv.parentId)
-                    parent = go.transform;
-            }
-        }
+        Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
         {
             GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", "red");
