@@ -9,7 +9,7 @@ public struct SApiObject
     public string id;
     public string parentId;
     public string category;
-    public string description;
+    public List<string> description;
     public string domain;
     public Dictionary<string, string> attributes;
 }

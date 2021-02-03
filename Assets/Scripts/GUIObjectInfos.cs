@@ -106,7 +106,9 @@ public class GUIObjectInfos : MonoBehaviour
         tmpType.text = IfInDictionary(_obj.attributes, "type");
         tmpModel.text = IfInDictionary(_obj.attributes, "model");
         tmpSerial.text = IfInDictionary(_obj.attributes, "serial");
-        tmpDesc.text = _obj.description;
+        tmpDesc.text = "";
+        foreach (string desc in _obj.description)
+            tmpDesc.text += $"{desc}\n";
     }
 
     ///<summary>

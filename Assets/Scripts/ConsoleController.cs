@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -472,9 +472,11 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
             SApiObject tn = new SApiObject();
+            tn.description = new List<string>();
+            tn.attributes = new Dictionary<string, string>();
+
             tn.name = data[0];
             tn.domain = data[0];
-            tn.attributes = new Dictionary<string, string>();
             tn.attributes["color"] = data[1];
             CustomerGenerator.instance.CreateTenant(tn);
         }
@@ -495,8 +497,10 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
             Transform parent = null;
             SApiObject si = new SApiObject();
-            IsolateParent(data[0], out parent, out si.name);
+            si.description = new List<string>();
             si.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
             si.attributes["usableColor"] = "DBEDF2";
             si.attributes["reservedColor"] = "F2F2F2";
@@ -525,8 +529,10 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent = null;
             SApiObject bd = new SApiObject();
-            IsolateParent(data[0], out parent, out bd.name);
+            bd.description = new List<string>();
             bd.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
             bd.attributes["posZ"] = pos.z.ToString();
@@ -557,6 +563,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent = null;
             SApiObject ro = new SApiObject();
+            ro.description = new List<string>();
             ro.attributes = new Dictionary<string, string>();
 
             Vector3 pos = Utils.ParseVector3(data[1]);
@@ -635,6 +642,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent;
             SApiObject rk = new SApiObject();
+            rk.description = new List<string>();
             rk.attributes = new Dictionary<string, string>();
 
             Vector2 pos = Utils.ParseVector2(data[1]);
@@ -675,6 +683,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent;
             SApiObject dv = new SApiObject();
+            dv.description = new List<string>();
             dv.attributes = new Dictionary<string, string>();
 
             float posU;

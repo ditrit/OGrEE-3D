@@ -26,41 +26,43 @@ public class Rack : Object
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
-        switch (_param)
+        if (_param.StartsWith("description"))
+            SetDescription(_param.Substring(11), _value);
+        else
         {
-            case "description":
-                description = _value;
-                break;
-             case "domain":
-                if (GameManager.gm.allItems.ContainsKey(_value))
-                {
-                    domain = _value;
-                    UpdateColor();
-                }
-                else
-                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
-                break;
-            case "color":
-                SetColor(_value);
-                break;
-            case "alpha":
-                UpdateAlpha(_value);
-                break;
-            case "slots":
-                ToggleSlots(_value);
-                break;
-            case "localCS":
-                ToggleCS(_value);
-                break;
-            case "U":
-                ToggleU(_value);
-                break;
-            default:
-                if (attributes.ContainsKey(_param))
-                    attributes[_param] = _value;
-                else
-                    attributes.Add(_param, _value);
-                break;
+            switch (_param)
+            {
+                case "domain":
+                    if (GameManager.gm.allItems.ContainsKey(_value))
+                    {
+                        domain = _value;
+                        UpdateColor();
+                    }
+                    else
+                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    break;
+                case "color":
+                    SetColor(_value);
+                    break;
+                case "alpha":
+                    UpdateAlpha(_value);
+                    break;
+                case "slots":
+                    ToggleSlots(_value);
+                    break;
+                case "localCS":
+                    ToggleCS(_value);
+                    break;
+                case "U":
+                    ToggleU(_value);
+                    break;
+                default:
+                    if (attributes.ContainsKey(_param))
+                        attributes[_param] = _value;
+                    else
+                        attributes.Add(_param, _value);
+                    break;
+            }
         }
         // PutData();
         DisplayRackData drd = GetComponent<DisplayRackData>();
@@ -75,7 +77,7 @@ public class Rack : Object
     {
         if (string.IsNullOrEmpty(domain))
             return;
-        
+
         OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;

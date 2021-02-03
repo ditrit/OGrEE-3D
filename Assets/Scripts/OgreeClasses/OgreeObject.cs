@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
@@ -9,7 +10,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string id;
     public string parentId;
     public string category;
-    public string description; // Should evolve to List<string>
+    public List<string> description = new List<string>();
     public string domain; // = tenant
 
     [Header("Specific attributes")]
@@ -54,26 +55,59 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_value">The value to assign</param>
     public virtual void SetAttribute(string _param, string _value)
     {
-        switch (_param)
+        if (_param.StartsWith("description"))
+            SetDescription(_param.Substring(11), _value);
+        else
         {
-            case "description":
-                description = _value;
-                break;
-            case "domain":
-                if (GameManager.gm.allItems.ContainsKey(_value))
-                    domain = _value;
-                else
-                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
-                break;
-            default:
-                if (attributes.ContainsKey(_param))
-                    attributes[_param] = _value;
-                else
-                    attributes.Add(_param, _value);
-                // GameManager.gm.AppendLogLine($"[{category}] {name}: unknown attribute to update.", "yellow");
-                break;
+            switch (_param)
+            {
+                case "domain":
+                    if (GameManager.gm.allItems.ContainsKey(_value))
+                        domain = _value;
+                    else
+                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    break;
+                default:
+                    if (attributes.ContainsKey(_param))
+                        attributes[_param] = _value;
+                    else
+                        attributes.Add(_param, _value);
+                    // GameManager.gm.AppendLogLine($"[{category}] {name}: unknown attribute to update.", "yellow");
+                    break;
+            }
         }
         PutData();
+    }
+
+    ///<summary>
+    /// Set a description at the correct index.
+    ///</summary>
+    ///<param name="_index">The index to set the description</param>
+    ///<param name="_value">The value of the description</param>
+    protected void SetDescription(string _index, string _value)
+    {
+        Debug.Log(_index);
+        string pattern = "^[0-9]+$";
+        if (Regex.IsMatch(_index, pattern))
+        {
+            int index = int.Parse(_index);
+            if (index != description.Count + 1)
+                GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", "yellow");
+            description.Add(_value);
+        }
+        else
+            GameManager.gm.AppendLogLine("Wrong description index.", "red");
+    }
+
+    ///<summary>
+    /// Parse the index and give the correct description.
+    ///</summary>
+    ///<param name="_index">The index of the wanted description</param>
+    ///<returns>The asked description</returns>
+    protected string GetDescriptionAt(string _index)
+    {
+        int index = int.Parse(_index);
+        return description[index];
     }
 
     ///<summary>

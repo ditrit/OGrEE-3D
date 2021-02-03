@@ -7,11 +7,11 @@ using UnityEngine;
 public class DisplayRackData : MonoBehaviour
 {
     // textNameRear is the root of all texts
-    [SerializeField] private  TextMeshPro textNameRear = null;
-    [SerializeField] private  TextMeshPro textNameFront = null;
-    [SerializeField] private  TextMeshPro textNameTop = null;
+    [SerializeField] private TextMeshPro textNameRear = null;
+    [SerializeField] private TextMeshPro textNameFront = null;
+    [SerializeField] private TextMeshPro textNameTop = null;
     [SerializeField] private TextMeshPro textDesc = null;
-    
+
     ///<summary>
     /// Move displayed texts in the top/front of the rack.
     /// Also set width of name and description regarding rack width.
@@ -37,6 +37,8 @@ public class DisplayRackData : MonoBehaviour
         textNameRear.text = GetComponent<Rack>().name + " (R)";
         textNameFront.text = GetComponent<Rack>().name + " (F)";
         textNameTop.text = GetComponent<Rack>().name;
-        textDesc.text = GetComponent<Rack>().description;
+        textDesc.text = "";
+        foreach (string desc in GetComponent<Rack>().description)
+            textDesc.text += $"{desc}\n";
     }
 }
