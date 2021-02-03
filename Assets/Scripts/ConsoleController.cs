@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -726,12 +726,16 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            data[1] = data[1].Trim('{', '}');
-            string name = null;
+
             Transform parent = null;
-            IsolateParent(data[0], out parent, out name);
+            SApiObject rg = new SApiObject();
+            rg.description = new List<string>();
+            rg.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out rg.name);
+            rg.attributes["racksList"] = data[1].Trim('{', '}');
             if (parent)
-                ObjectGenerator.instance.CreateRackGroup(name, parent, data[1]);
+                ObjectGenerator.instance.CreateRackGroup(rg, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -748,12 +752,17 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            data[1] = data[1].Trim('{', '}');
-            string name = null;
+
             Transform parent = null;
-            IsolateParent(data[0], out parent, out name);
+            SApiObject co = new SApiObject();
+            co.description = new List<string>();
+            co.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out co.name);
+            co.attributes["cornerRacks"] = data[1].Trim('{', '}');
+            co.attributes["temperature"] = data[2];
             if (parent)
-                ObjectGenerator.instance.CreateCorridor(name, parent, data[1], data[2]);
+                ObjectGenerator.instance.CreateCorridor(co, parent);
         }
         else
             AppendLogLine("Syntax error", "red");

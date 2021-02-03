@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -372,17 +372,24 @@ public class ObjectGenerator : MonoBehaviour
     ///<param name="_parent">The parent of the generated rackGroup</param>
     ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
     ///<returns>The created rackGroup</returns>
-    public RackGroup CreateRackGroup(string _name, Transform _parent, string _racksList)
+    public RackGroup CreateRackGroup(SApiObject _rg, Transform _parent = null)
     {
+        Transform parent = Utils.FindParent(_parent, _rg.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+
         List<Transform> racks = new List<Transform>();
-        string[] rackNames = _racksList.Split(',');
+        string[] rackNames = _rg.attributes["racksList"].Split(',');
         foreach (string rn in rackNames)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{_parent.GetComponent<HierarchyName>().fullname}.{rn}");
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{rn}");
             if (go)
                 racks.Add(go.transform);
             else
-                GameManager.gm.AppendLogLine($"{_parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
         }
         if (racks.Count == 0)
             return null;
@@ -409,8 +416,8 @@ public class ObjectGenerator : MonoBehaviour
         Debug.Log($"ll: {lowerLeft.name} / ur: {upperRight.name} / h: {maxHeight}");
 
         GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
-        newRg.name = _name;
-        newRg.transform.parent = _parent;
+        newRg.name = _rg.name;
+        newRg.transform.parent = parent;
 
         float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
         float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
@@ -433,15 +440,20 @@ public class ObjectGenerator : MonoBehaviour
         newRg.transform.localPosition += offset / 2;
 
         RackGroup rg = newRg.AddComponent<RackGroup>();
-        rg.name = _name;
-        rg.parentId = _parent.GetComponent<Room>().id;
+        rg.name = newRg.name;
+        rg.parentId = _rg.parentId;
+        if (string.IsNullOrEmpty(rg.parentId))
+            rg.parentId = parent.GetComponent<Room>().id;
         rg.category = "rackGroup";
-        rg.domain = racks[0].GetComponent<Rack>().domain;
-        rg.attributes["racksList"] = _racksList;
+        rg.description = _rg.description;
+        rg.domain = _rg.domain;
+        if (string.IsNullOrEmpty(rg.domain))
+            rg.domain = racks[0].GetComponent<Rack>().domain;
+        rg.attributes = _rg.attributes;
         rg.DisplayRacks(false);
 
         newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newRg.GetComponent<DisplayObjectData>().UpdateLabels(_name);
+        newRg.GetComponent<DisplayObjectData>().UpdateLabels(rg.name);
 
         string hn = newRg.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRg);
@@ -457,23 +469,30 @@ public class ObjectGenerator : MonoBehaviour
     ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
     ///<param name="_temp">"cold" or "warm" value</param>
     ///<returns>The created corridor</returns>
-    public Object CreateCorridor(string _name, Transform _parent, string _cornerRacks, string _temp)
+    public Object CreateCorridor(SApiObject _co, Transform _parent = null)
     {
-        string roomHierarchyName = _parent.GetComponent<HierarchyName>().fullname;
-        string[] rackNames = _cornerRacks.Split(',');
+        Transform parent = Utils.FindParent(_parent, _co.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+        
+        string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
+        string[] rackNames = _co.attributes["cornerRacks"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}").transform;
         Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}").transform;
 
         if (lowerLeft == null || upperRight == null)
             return null;
-        
+
         float maxHeight = lowerLeft.GetChild(0).localScale.y;
         if (upperRight.GetChild(0).localScale.y > maxHeight)
             maxHeight = upperRight.GetChild(0).localScale.y;
 
         GameObject newCo = Instantiate(GameManager.gm.labeledBoxModel);
-        newCo.name = _name;
-        newCo.transform.parent = _parent;
+        newCo.name = _co.name;
+        newCo.transform.parent = parent;
 
         float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
         float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
@@ -496,20 +515,24 @@ public class ObjectGenerator : MonoBehaviour
         newCo.transform.localPosition += offset / 2;
 
         Object co = newCo.AddComponent<Object>();
-        co.name = _name;
-        co.parentId = _parent.GetComponent<Room>().id;
+        co.name = newCo.name;
+        co.parentId = _co.parentId;
+        if (string.IsNullOrEmpty(co.parentId))
+            co.parentId = parent.GetComponent<Room>().id;
         co.category = "corridor";
-        co.domain = lowerLeft.GetComponent<Rack>().domain;
-        co.attributes["cornerRacks"] = _cornerRacks;
+        co.domain = _co.domain;
+        if (string.IsNullOrEmpty(co.domain))
+            co.domain = lowerLeft.GetComponent<Rack>().domain;
+        co.attributes = _co.attributes;
 
         co.SetAttribute("alpha", "50");
-        if (_temp == "cold")
+        if (_co.attributes["temperature"] == "cold")
             co.SetAttribute("color", "000099");
         else
             co.SetAttribute("color", "990000");
 
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newCo.GetComponent<DisplayObjectData>().UpdateLabels(_name);
+        newCo.GetComponent<DisplayObjectData>().UpdateLabels(co.name);
 
         string hn = newCo.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newCo);
