@@ -368,10 +368,8 @@ public class Room : Building
             _input = _input.Replace("]", "");
             string[] data = _input.Split('@', ',');
 
-            SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
-                                        float.Parse(data[2]), float.Parse(data[3]));
-            SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
-                                        float.Parse(data[6]), float.Parse(data[7]));
+            SMargin resDim = new SMargin(data[0], data[1],data[2], data[3]);
+            SMargin techDim = new SMargin(data[4], data[5], data[6], data[7]);
             SetAreas(resDim, techDim);
         }
         else

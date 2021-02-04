@@ -86,7 +86,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_value">The value of the description</param>
     protected void SetDescription(string _index, string _value)
     {
-        Debug.Log(_index);
         string pattern = "^[0-9]+$";
         if (Regex.IsMatch(_index, pattern))
         {
