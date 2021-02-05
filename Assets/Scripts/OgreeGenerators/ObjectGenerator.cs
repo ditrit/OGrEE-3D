@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+// using System.Linq;
 using UnityEngine;
 
 public class ObjectGenerator : MonoBehaviour
@@ -386,7 +387,7 @@ public class ObjectGenerator : MonoBehaviour
         foreach (string rn in rackNames)
         {
             GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{rn}");
-            if (go && (go.GetComponent<OgreeObject>()?.category == "rack" || go.GetComponent<OgreeObject>().category == "corridor"))
+            if (go && (go.GetComponent<OgreeObject>()?.category == "rack" || go.GetComponent<OgreeObject>()?.category == "corridor"))
                 racks.Add(go.transform);
             else
                 GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
@@ -417,6 +418,10 @@ public class ObjectGenerator : MonoBehaviour
                     maxLength = r.transform.GetChild(0).localScale.z;
             }
         }
+        // racks = racks.OrderBy(t => t.GetChild(0).localScale.y).ToList();
+        // maxHeight = racks[racks.Count - 1].GetChild(0).localScale.y;
+        // racks = racks.OrderBy(t => t.GetChild(0).localScale.z).ToList();
+        // maxLength = racks[racks.Count - 1].GetChild(0).localScale.z;
 
         GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
         newRg.name = _rg.name;
@@ -438,11 +443,23 @@ public class ObjectGenerator : MonoBehaviour
             x += maxLength * 2;
         }
         newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
-
         newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
         newRg.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
-        Vector3 offset = upperRight.localPosition - lowerLeft.localPosition;
-        newRg.transform.localPosition += new Vector3(offset.x, 0, offset.z) / 2;
+
+        float xOffset;
+        float zOffset;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        {
+            xOffset = (newRg.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
+            zOffset = (newRg.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+        }
+        else
+        {
+            xOffset = (newRg.transform.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            zOffset = (newRg.transform.GetChild(0).localScale.z - lowerLeft.GetChild(0).localScale.x) / 2;
+        }
+        newRg.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
         RackGroup rg = newRg.AddComponent<RackGroup>();
         rg.name = newRg.name;
@@ -516,8 +533,9 @@ public class ObjectGenerator : MonoBehaviour
 
         newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
         newCo.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
-        Vector3 offset = upperRight.localPosition - lowerLeft.localPosition;
-        newCo.transform.localPosition += new Vector3(offset.x, 0, offset.z) / 2;
+        float xOffset = (newCo.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
+        float zOffset = (newCo.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+        newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
         Object co = newCo.AddComponent<Object>();
         co.name = newCo.name;
