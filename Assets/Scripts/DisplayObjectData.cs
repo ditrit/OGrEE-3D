@@ -129,4 +129,18 @@ public class DisplayObjectData : MonoBehaviour
         labelTop.text = _str;
         labelBottom.text = _str;
     }
+
+    ///<summary>
+    /// Display or hide labels.
+    ///</summary>
+    ///<param name="_value">The value to assign</param>
+    public void ToggleLabel(bool _value)
+    {
+        labelFront.enabled = _value;
+        labelRear.enabled = _value;
+        labelRight.enabled = _value;
+        labelLeft.enabled = _value;
+        labelTop.enabled = _value;
+        labelBottom.enabled = _value;
+    }
 }

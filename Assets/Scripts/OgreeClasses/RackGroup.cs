@@ -70,15 +70,17 @@ public class RackGroup : Object
     ///<param name="_value">The bool value to apply</param>
     public void DisplayRacks(bool _value)
     {
-        List<Rack> racks = new List<Rack>();
+        List<GameObject> racks = new List<GameObject>();
         string[] rackNames = attributes["racksList"].Split(',');
         foreach (string rn in rackNames)
         {
             GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<HierarchyName>().fullname}.{rn}");
             if (go)
-                racks.Add(go.GetComponent<Rack>());
+                racks.Add(go);
         }
-        foreach (Rack r in racks)
+        foreach (GameObject r in racks)
             r.gameObject.SetActive(_value);
+
+        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
     }
 }
