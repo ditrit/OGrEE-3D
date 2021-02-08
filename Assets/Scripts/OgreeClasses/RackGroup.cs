@@ -17,6 +17,9 @@ public class RackGroup : Object
         {
             switch (_param)
             {
+                case "label":
+                    SetLabel(_value);
+                    break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
                         domain = _value;

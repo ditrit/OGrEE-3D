@@ -61,6 +61,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             switch (_param)
             {
+                case "label":
+                    SetLabel(_value);
+                    break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
                         domain = _value;
@@ -96,6 +99,31 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
         else
             GameManager.gm.AppendLogLine("Wrong description index.", "red");
+    }
+
+    ///<summary>
+    /// Set corresponding labels with given field value. 
+    ///</summary>
+    ///<param name="_field">The attribute to set</param>
+    protected void SetLabel(string _field)
+    {
+        DisplayObjectData dod = GetComponent<DisplayObjectData>();
+        switch (_field)
+        {
+            case "name":
+                dod.UpdateLabels(name);
+                break;
+            case "description":
+                string str = string.Join("\n", description);
+                dod.UpdateLabels(str);
+                break;
+            default:
+                if (attributes.ContainsKey(_field))
+                    dod.UpdateLabels(attributes[_field]);
+                else
+                    GameManager.gm.AppendLogLine($"{name} doesn't contain {_field} attribute.", "yellow");
+                break;
+        }
     }
 
     ///<summary>
