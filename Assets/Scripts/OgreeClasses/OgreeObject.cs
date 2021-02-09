@@ -104,26 +104,26 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<summary>
     /// Set corresponding labels with given field value. 
     ///</summary>
-    ///<param name="_field">The attribute to set</param>
-    protected void SetLabel(string _field)
+    ///<param name="_input">The attribute to set</param>
+    protected void SetLabel(string _input)
     {
+        int i = 0;
         DisplayObjectData dod = GetComponent<DisplayObjectData>();
-        switch (_field)
+        if (_input == "name")
+            dod.UpdateLabels(name);
+        else if (_input.Contains("description"))
         {
-            case "name":
-                dod.UpdateLabels(name);
-                break;
-            case "description":
-                string str = string.Join("\n", description);
-                dod.UpdateLabels(str);
-                break;
-            default:
-                if (attributes.ContainsKey(_field))
-                    dod.UpdateLabels(attributes[_field]);
-                else
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {_field} attribute.", "yellow");
-                break;
+            if (_input == "description")
+                dod.UpdateLabels(string.Join("\n", description));
+            else if (int.TryParse(_input.Substring(11), out i) && i > 0 && description.Count >= i)
+                dod.UpdateLabels(description[i - 1]);
+            else
+                GameManager.gm.AppendLogLine("Wrong description index", "yellow");
         }
+        else if (attributes.ContainsKey(_input))
+            dod.UpdateLabels(attributes[_input]);
+        else
+            GameManager.gm.AppendLogLine($"{name} doesn't contain {_input} attribute.", "yellow");
     }
 
     ///<summary>
