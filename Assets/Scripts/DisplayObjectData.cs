@@ -11,6 +11,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelBottom = null;
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
+    private string attrToDisplay = "";
 
     ///<summary>
     /// Assign labels references with children of a Device prefab
@@ -136,6 +137,40 @@ public class DisplayObjectData : MonoBehaviour
         labelLeft.text = _str;
         labelTop.text = _str;
         labelBottom.text = _str;
+    }
+    public void UpdateLabels()
+    {
+        if (!string.IsNullOrEmpty(attrToDisplay))
+        SetLabel(attrToDisplay);
+    }
+
+    ///<summary>
+    /// Set corresponding labels with given field value. 
+    ///</summary>
+    ///<param name="_attr">The attribute to set</param>
+    public void SetLabel(string _attr)
+    {
+        int i = 0;
+        OgreeObject obj = GetComponent<OgreeObject>();
+        if (_attr == "name")
+            UpdateLabels(obj.name);
+        else if (_attr.Contains("description"))
+        {
+            if (_attr == "description")
+                UpdateLabels(string.Join("\n", obj.description));
+            else if (int.TryParse(_attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
+                UpdateLabels(obj.description[i - 1]);
+            else
+                GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+        }
+        else if (obj.attributes.ContainsKey(_attr))
+            UpdateLabels(obj.attributes[_attr]);
+        else
+        {
+            GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
+            return;
+        }
+        attrToDisplay = _attr;
     }
 
     ///<summary>

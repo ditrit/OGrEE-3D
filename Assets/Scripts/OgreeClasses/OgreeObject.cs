@@ -62,7 +62,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             switch (_param)
             {
                 case "label":
-                    SetLabel(_value);
+                    GetComponent<DisplayObjectData>().SetLabel(_value);
                     break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
@@ -80,6 +80,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             }
         }
         PutData();
+        GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
 
     ///<summary>
@@ -93,37 +94,17 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         if (Regex.IsMatch(_index, pattern))
         {
             int index = int.Parse(_index);
-            if (index != description.Count + 1)
-                GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", "yellow");
-            description.Add(_value);
+            if (index > description.Count)
+            {
+                if (index != description.Count + 1)
+                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", "yellow");
+                description.Add(_value);
+            }
+            else
+                description[index - 1] = _value;
         }
         else
             GameManager.gm.AppendLogLine("Wrong description index.", "red");
-    }
-
-    ///<summary>
-    /// Set corresponding labels with given field value. 
-    ///</summary>
-    ///<param name="_input">The attribute to set</param>
-    protected void SetLabel(string _input)
-    {
-        int i = 0;
-        DisplayObjectData dod = GetComponent<DisplayObjectData>();
-        if (_input == "name")
-            dod.UpdateLabels(name);
-        else if (_input.Contains("description"))
-        {
-            if (_input == "description")
-                dod.UpdateLabels(string.Join("\n", description));
-            else if (int.TryParse(_input.Substring(11), out i) && i > 0 && description.Count >= i)
-                dod.UpdateLabels(description[i - 1]);
-            else
-                GameManager.gm.AppendLogLine("Wrong description index", "yellow");
-        }
-        else if (attributes.ContainsKey(_input))
-            dod.UpdateLabels(attributes[_input]);
-        else
-            GameManager.gm.AppendLogLine($"{name} doesn't contain {_input} attribute.", "yellow");
     }
 
     ///<summary>

@@ -33,7 +33,7 @@ public class Rack : Object
             switch (_param)
             {
                 case "label":
-                    SetLabel(_value);
+                    GetComponent<DisplayObjectData>().SetLabel(_value);
                     break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
@@ -68,6 +68,7 @@ public class Rack : Object
             }
         }
         // PutData();
+        GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>

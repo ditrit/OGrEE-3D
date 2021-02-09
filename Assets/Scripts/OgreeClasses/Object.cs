@@ -20,7 +20,7 @@ public class Object : OgreeObject
             switch (_param)
             {
                 case "label":
-                    SetLabel(_value);
+                    GetComponent<DisplayObjectData>().SetLabel(_value);
                     break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
@@ -49,6 +49,7 @@ public class Object : OgreeObject
             }
         }
         // PutData();
+        GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
