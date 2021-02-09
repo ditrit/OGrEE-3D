@@ -409,7 +409,7 @@ public class ObjectGenerator : MonoBehaviour
 
                 if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
                     lowerLeft = r;
-                if (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y)
+                if (rackPos.y > upperRightPos.y || (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y))
                     upperRight = r;
 
                 if (r.transform.GetChild(0).localScale.y > maxHeight)
