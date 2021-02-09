@@ -120,8 +120,8 @@ public class ObjectGenerator : MonoBehaviour
                 break;
         }
 
-        newRack.GetComponent<DisplayRackData>().PlaceTexts();
-        newRack.GetComponent<DisplayRackData>().FillTexts();
+        newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        newRack.GetComponent<DisplayObjectData>().UpdateLabels(newRack.name, true);
 
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);

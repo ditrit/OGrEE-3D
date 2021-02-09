@@ -32,6 +32,9 @@ public class Rack : Object
         {
             switch (_param)
             {
+                case "label":
+                    SetLabel(_value);
+                    break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
                     {
@@ -65,9 +68,6 @@ public class Rack : Object
             }
         }
         // PutData();
-        DisplayRackData drd = GetComponent<DisplayRackData>();
-        if (drd)
-            drd.FillTexts();
     }
 
     ///<summary>

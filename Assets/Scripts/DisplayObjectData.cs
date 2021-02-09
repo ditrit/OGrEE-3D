@@ -120,10 +120,18 @@ public class DisplayObjectData : MonoBehaviour
     /// Set displayed texts with given string.
     ///</summary>
     ///<param name="_str">The string to display</param>
-    public void UpdateLabels(string _str)
+    public void UpdateLabels(string _str, bool _face = false)
     {
-        labelFront.text = _str;
-        labelRear.text = _str;
+        if (_face)
+        {
+            labelFront.text = _str + " (F)";
+            labelRear.text = _str + " (R)";
+        }
+        else
+        {
+            labelFront.text = _str;
+            labelRear.text = _str;
+        }
         labelRight.text = _str;
         labelLeft.text = _str;
         labelTop.text = _str;
