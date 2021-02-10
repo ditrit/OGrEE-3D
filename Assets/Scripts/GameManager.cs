@@ -83,8 +83,9 @@ public class GameManager : MonoBehaviour
 
         UpdateFocusText();
 #if DEBUG
-        consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__DEMO__\\testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:\\_Orness\\Nextcloud\\Ogree\\4_customers\\__EDF__\\EDF_EXAION.ocli");
+        consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/HPC_LOD_rg_co.ocli");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
     }
 
@@ -410,7 +411,7 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < tenants.Count; i++)
             Destroy(tenants[i]);
-        
+
         foreach (var kpv in rackTemplates)
             Destroy(kpv.Value);
         rackTemplates.Clear();
@@ -532,7 +533,8 @@ public class GameManager : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
             GameObject obj = (GameObject)de.Value;
-            if (obj.GetComponent<Rack>())
+            string cat = obj.GetComponent<OgreeObject>()?.category;
+            if (cat == "rack" || cat == "rackGroup" || cat == "corridor")
                 SetRackMaterial(obj.transform);
         }
     }
