@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelRight = null;
     private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
     private string attrToDisplay = "";
+    private bool isBold = false;
+    private bool isItalic = false;
+    private string color = "ffffff";
 
     ///<summary>
     /// Assign labels references with children of a Device prefab
@@ -140,6 +144,12 @@ public class DisplayObjectData : MonoBehaviour
                 if (tmp == labelRear)
                     tmp.text += " (R)";
             }
+            tmp.text = $"<color=#{color}>{tmp.text}</color>";
+
+            if (isBold)
+                tmp.text = $"<b>{tmp.text}</b>";
+            if (isItalic)
+                tmp.text = $"<i>{tmp.text}</i>";
         }
     }
 
@@ -151,6 +161,28 @@ public class DisplayObjectData : MonoBehaviour
     {
         foreach (TextMeshPro tmp in usedLabels)
             tmp.enabled = _value;
+    }
 
+    ///<summary>
+    /// Set Font attributes (bold, italic, color).
+    ///</summary>
+    ///<param name="_value">The attribute to set, with its value if needed</param>
+    public void SetLabelFont(string _value)
+    {
+        string pattern = "^(bold|italic|color@[0-9a-fA-Z]{6})$";
+        if (Regex.IsMatch(_value, pattern))
+        {
+            if (_value == "bold")
+                isBold = !isBold;
+            else if (_value == "italic")
+                isItalic = !isItalic;
+            else if (_value.Contains("color"))
+            {
+                string[] data = _value.Split('@');
+                color = data[1];
+            }
+        }
+        else
+            GameManager.gm.AppendLogLine("Unknown labelFont attribute", "yellow");
     }
 }

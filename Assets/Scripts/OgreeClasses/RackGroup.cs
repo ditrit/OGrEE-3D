@@ -20,6 +20,9 @@ public class RackGroup : Object
                 case "label":
                     GetComponent<DisplayObjectData>().SetLabel(_value);
                     break;
+                case "labelFont":
+                    GetComponent<DisplayObjectData>().SetLabelFont(_value);
+                    break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
                         domain = _value;
