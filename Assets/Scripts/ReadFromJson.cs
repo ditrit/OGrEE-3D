@@ -359,14 +359,20 @@ public class ReadFromJson
         else
         {
             Object obj = go.AddComponent<Object>();
+            obj.name = go.name;
+            // obj.id // ??
+            obj.parentId = _parent.GetComponent<OgreeObject>().id;
             obj.category = "device";
+            obj.domain = _parent.GetComponent<OgreeObject>().domain;
+            obj.description = new List<string>();
+            obj.attributes = new Dictionary<string, string>();
             go.AddComponent<HierarchyName>();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
-        dod.Setup();
+        // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
-        dod.UpdateLabels(go.name);
+        dod.SetLabel("name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;

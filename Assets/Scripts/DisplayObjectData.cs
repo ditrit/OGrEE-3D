@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,6 +11,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelBottom = null;
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
+    private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
     private string attrToDisplay = "";
 
     ///<summary>
@@ -48,129 +49,98 @@ public class DisplayObjectData : MonoBehaviour
         labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
         labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
 
+        usedLabels.Clear();
         switch (_labelPos)
         {
             case "frontrear":
-                labelFront.gameObject.SetActive(true);
-                labelRear.gameObject.SetActive(true);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelFront);
+                usedLabels.Add(labelRear);
                 break;
             case "front":
-                labelFront.gameObject.SetActive(true);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelFront);
                 break;
             case "rear":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(true);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelRear);
                 break;
             case "right":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(true);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelRight);
                 break;
             case "left":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(true);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelLeft);
                 break;
             case "top":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(true);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelTop);
                 break;
             case "bottom":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(true);
-                break;
-            case "none":
-                labelFront.gameObject.SetActive(false);
-                labelRear.gameObject.SetActive(false);
-                labelRight.gameObject.SetActive(false);
-                labelLeft.gameObject.SetActive(false);
-                labelTop.gameObject.SetActive(false);
-                labelBottom.gameObject.SetActive(false);
+                usedLabels.Add(labelBottom);
                 break;
         }
+        foreach (TextMeshPro tmp in usedLabels)
+            tmp.gameObject.SetActive(true);
     }
 
     ///<summary>
-    /// Set displayed texts with given string.
+    /// Call SetLabel with previously used attribute
     ///</summary>
-    ///<param name="_str">The string to display</param>
-    public void UpdateLabels(string _str, bool _face = false)
-    {
-        if (_face)
-        {
-            labelFront.text = _str + " (F)";
-            labelRear.text = _str + " (R)";
-        }
-        else
-        {
-            labelFront.text = _str;
-            labelRear.text = _str;
-        }
-        labelRight.text = _str;
-        labelLeft.text = _str;
-        labelTop.text = _str;
-        labelBottom.text = _str;
-    }
     public void UpdateLabels()
     {
         if (!string.IsNullOrEmpty(attrToDisplay))
-        SetLabel(attrToDisplay);
+            SetLabel(attrToDisplay);
     }
 
     ///<summary>
     /// Set corresponding labels with given field value. 
     ///</summary>
     ///<param name="_attr">The attribute to set</param>
-    public void SetLabel(string _attr)
+    public void SetLabel(string _attr, bool _face = false)
     {
         int i = 0;
         OgreeObject obj = GetComponent<OgreeObject>();
-        if (_attr == "name")
-            UpdateLabels(obj.name);
-        else if (_attr.Contains("description"))
+        if (obj)
         {
-            if (_attr == "description")
-                UpdateLabels(string.Join("\n", obj.description));
-            else if (int.TryParse(_attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
-                UpdateLabels(obj.description[i - 1]);
+            if (_attr == "name")
+                WriteLabels(obj.name, _face);
+            else if (_attr.Contains("description"))
+            {
+                if (_attr == "description")
+                    WriteLabels(string.Join("\n", obj.description));
+                else if (int.TryParse(_attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
+                    WriteLabels(obj.description[i - 1]);
+                else
+                    GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+            }
+            else if (obj.attributes.ContainsKey(_attr))
+                WriteLabels(obj.attributes[_attr]);
             else
-                GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+            {
+                GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
+                return;
+            }
         }
-        else if (obj.attributes.ContainsKey(_attr))
-            UpdateLabels(obj.attributes[_attr]);
-        else
-        {
-            GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
-            return;
-        }
+        Slot s = GetComponent<Slot>();
+        if (s)
+            WriteLabels(name);
         attrToDisplay = _attr;
+    }
+
+    ///<summary>
+    /// Set displayed texts with given string.
+    ///</summary>
+    ///<param name="_str">The string to display</param>
+    ///<param name="_face">If set to true, add referential to front and rear labels</param>
+    private void WriteLabels(string _str, bool _face = false)
+    {
+        foreach (TextMeshPro tmp in usedLabels)
+        {
+            tmp.text = _str;
+            if (_face)
+            {
+                if (tmp == labelFront)
+                    tmp.text += " (F)";
+                if (tmp == labelRear)
+                    tmp.text += " (R)";
+            }
+        }
     }
 
     ///<summary>
@@ -179,11 +149,8 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_value">The value to assign</param>
     public void ToggleLabel(bool _value)
     {
-        labelFront.enabled = _value;
-        labelRear.enabled = _value;
-        labelRight.enabled = _value;
-        labelLeft.enabled = _value;
-        labelTop.enabled = _value;
-        labelBottom.enabled = _value;
+        foreach (TextMeshPro tmp in usedLabels)
+            tmp.enabled = _value;
+
     }
 }
