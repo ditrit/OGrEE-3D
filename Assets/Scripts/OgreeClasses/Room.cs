@@ -254,6 +254,7 @@ public class Room : Building
                 tile.transform.parent = _root;
                 tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
                 tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
+                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
                 if (!string.IsNullOrEmpty(tileData.type))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
