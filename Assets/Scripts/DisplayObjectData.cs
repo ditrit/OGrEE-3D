@@ -50,8 +50,18 @@ public class DisplayObjectData : MonoBehaviour
         labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
         labelRight.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
         labelLeft.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
-        labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
-        labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+        if (boxSize.x >= boxSize.z)
+        {
+            labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+            labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+        }
+        else
+        {
+            labelTop.transform.localEulerAngles = new Vector3(90, 0, -90);
+            labelTop.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
+            labelBottom.transform.localEulerAngles = new Vector3(90, 0, -90);
+            labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
+        }
 
         usedLabels.Clear();
         switch (_labelPos)
@@ -96,14 +106,14 @@ public class DisplayObjectData : MonoBehaviour
     /// Set corresponding labels with given field value. 
     ///</summary>
     ///<param name="_attr">The attribute to set</param>
-    public void SetLabel(string _attr, bool _face = false)
+    public void SetLabel(string _attr)
     {
         int i = 0;
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
         {
             if (_attr == "name")
-                WriteLabels(obj.name, _face);
+                WriteLabels(obj.name, true);
             else if (_attr.Contains("description"))
             {
                 if (_attr == "description")
@@ -139,10 +149,14 @@ public class DisplayObjectData : MonoBehaviour
             tmp.text = _str;
             if (_face)
             {
-                if (tmp == labelFront)
-                    tmp.text += " (F)";
-                if (tmp == labelRear)
-                    tmp.text += " (R)";
+                OgreeObject obj = GetComponent<OgreeObject>();
+                if (obj && obj.category == "rack")
+                {
+                    if (tmp == labelFront)
+                        tmp.text += " (F)";
+                    if (tmp == labelRear)
+                        tmp.text += " (R)";
+                }
             }
             tmp.text = $"<color=#{color}>{tmp.text}</color>";
 

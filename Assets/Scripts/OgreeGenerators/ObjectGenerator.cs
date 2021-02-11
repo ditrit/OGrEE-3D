@@ -121,7 +121,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newRack.GetComponent<DisplayObjectData>().SetLabel("name", true);
+        newRack.GetComponent<DisplayObjectData>().SetLabel("name");
 
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
@@ -502,11 +502,14 @@ public class ObjectGenerator : MonoBehaviour
 
         string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
         string[] rackNames = _co.attributes["racksList"].Split(',');
-        Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}").transform;
-        Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}").transform;
+        Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
+        Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
 
         if (lowerLeft == null || upperRight == null)
+        {
+            GameManager.gm.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", "red");
             return null;
+        }
 
         float maxHeight = lowerLeft.GetChild(0).localScale.y;
         if (upperRight.GetChild(0).localScale.y > maxHeight)
