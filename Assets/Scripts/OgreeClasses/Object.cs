@@ -69,11 +69,9 @@ public class Object : OgreeObject
             if (a == 0)
                 transform.GetChild(0).GetComponent<Renderer>().enabled = false;
             else
-            {
                 transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-                Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
-            }
+            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
         }
         else
             GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
