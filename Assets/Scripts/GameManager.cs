@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
+
+        rackTemplates.Add("fbxBridge", GameObject.Find("fbxBridge"));
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/HPC_LOD_rg_co.ocli");
