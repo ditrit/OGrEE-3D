@@ -34,7 +34,7 @@ public class ReadFromJson
         public string location;
         public string name;
         public string label;
-        public string type;
+        public string texture;
         public string color;
     }
 

@@ -246,8 +246,7 @@ public class Room : Building
         }
         if (!string.IsNullOrEmpty(tileData.location))
         {
-            if (!string.IsNullOrEmpty(tileData.type) && tileData.type != "plain"
-                || !string.IsNullOrEmpty(tileData.color))
+            if (!string.IsNullOrEmpty(tileData.texture) || !string.IsNullOrEmpty(tileData.color))
             {
                 GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
                 tile.name = $"Color_{_id}";
@@ -255,16 +254,16 @@ public class Room : Building
                 tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
                 tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
                 tile.transform.localEulerAngles = new Vector3(0, 180, 0);
-                if (!string.IsNullOrEmpty(tileData.type))
+                if (!string.IsNullOrEmpty(tileData.texture))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
-                    if (GameManager.gm.textures.ContainsKey(tileData.type))
+                    if (GameManager.gm.textures.ContainsKey(tileData.texture))
                     {
                         rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = GameManager.gm.textures[tileData.type];
+                        rend.material.mainTexture = GameManager.gm.textures[tileData.texture];
                     }
-                    else if (tileData.type != "plain")
-                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.type}", "yellow");
+                    else
+                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", "yellow");
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
