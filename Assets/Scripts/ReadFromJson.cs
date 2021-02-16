@@ -34,7 +34,7 @@ public class ReadFromJson
         public string location;
         public string name;
         public string label;
-        public string type;
+        public string texture;
         public string color;
     }
 
@@ -139,6 +139,7 @@ public class ReadFromJson
 
         Vector3 tmp = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[1], rackData.sizeWDHmm[2]) / 10;
         SApiObject rk = new SApiObject();
+        rk.description = new List<string>();
         rk.attributes = new Dictionary<string, string>();
         rk.name = rackData.slug;
         rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
@@ -250,6 +251,7 @@ public class ReadFromJson
             return;
 
         SApiObject dv = new SApiObject();
+        dv.description = new List<string>();
         dv.attributes = new Dictionary<string, string>();
         dv.name = data.slug;
         dv.attributes["posU"] = "0";
@@ -259,7 +261,7 @@ public class ReadFromJson
         dv.attributes["height"] = data.sizeWDHmm[2].ToString();
         dv.attributes["heightUnit"] = "mm";
 
-        dv.description = data.description;
+        dv.description.Add(data.description);
         dv.attributes["deviceType"] = data.type;
         dv.attributes["vendor"] = data.vendor;
         dv.attributes["model"] = data.model;
@@ -357,14 +359,20 @@ public class ReadFromJson
         else
         {
             Object obj = go.AddComponent<Object>();
+            obj.name = go.name;
+            // obj.id // ??
+            obj.parentId = _parent.GetComponent<OgreeObject>().id;
             obj.category = "device";
+            obj.domain = _parent.GetComponent<OgreeObject>().domain;
+            obj.description = new List<string>();
+            obj.attributes = new Dictionary<string, string>();
             go.AddComponent<HierarchyName>();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
-        dod.Setup();
+        // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
-        dod.UpdateLabels(go.name);
+        dod.SetLabel("name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;

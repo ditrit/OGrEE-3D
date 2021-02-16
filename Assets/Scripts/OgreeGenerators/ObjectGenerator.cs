@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+// using System.Linq;
 using UnityEngine;
 
 public class ObjectGenerator : MonoBehaviour
@@ -22,18 +23,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
-        Transform parent = null;
-        if (_parent)
-            parent = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _rk.parentId)
-                    parent = go.transform;
-            }
-        }
+        Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
             GameManager.gm.AppendLogLine($"Parent room not found", "red");
@@ -130,8 +120,8 @@ public class ObjectGenerator : MonoBehaviour
                 break;
         }
 
-        newRack.GetComponent<DisplayRackData>().PlaceTexts();
-        newRack.GetComponent<DisplayRackData>().FillTexts();
+        newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        newRack.GetComponent<DisplayObjectData>().SetLabel("name");
 
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
@@ -160,21 +150,10 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
-    ///<returns>The created Chassis</returns>
+    ///<returns>The created Device</returns>
     public Object CreateDevice(SApiObject _dv, Transform _parent = null)
     {
-        Transform parent = null;
-        if (_parent)
-            parent = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _dv.parentId)
-                    parent = go.transform;
-            }
-        }
+        Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
         {
             GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", "red");
@@ -321,7 +300,7 @@ public class ObjectGenerator : MonoBehaviour
 
 
 
-        newDevice.GetComponent<DisplayObjectData>().UpdateLabels(newDevice.name);
+        newDevice.GetComponent<DisplayObjectData>().SetLabel("name");
 
         string hn = newDevice.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDevice);
@@ -385,6 +364,206 @@ public class ObjectGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Unknown template \"{_template}\"", "yellow");
             return null;
         }
+    }
+
+    ///<summary>
+    /// Generate a rackGroup (from GameManager.labeledBoxModel) which contains all the given racks.
+    ///</summary>
+    ///<param name="_name">The name of the rackGroup</param>
+    ///<param name="_parent">The parent of the generated rackGroup</param>
+    ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
+    ///<returns>The created rackGroup</returns>
+    public RackGroup CreateRackGroup(SApiObject _rg, Transform _parent = null)
+    {
+        Transform parent = Utils.FindParent(_parent, _rg.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+
+        List<Transform> racks = new List<Transform>();
+        string[] rackNames = _rg.attributes["racksList"].Split(',');
+        foreach (string rn in rackNames)
+        {
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{rn}");
+            if (go && (go.GetComponent<OgreeObject>()?.category == "rack" || go.GetComponent<OgreeObject>()?.category == "corridor"))
+                racks.Add(go.transform);
+            else
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
+        }
+        if (racks.Count == 0)
+            return null;
+
+        Transform lowerLeft = racks[0];
+        Transform upperRight = racks[0];
+        float maxHeight = 0;
+        float maxLength = 0;
+        foreach (Transform r in racks)
+        {
+            if (r.GetComponent<OgreeObject>().category == "rack")
+            {
+                Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.GetComponent<OgreeObject>().attributes["posXY"]);
+                Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.GetComponent<OgreeObject>().attributes["posXY"]);
+                Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.GetComponent<OgreeObject>().attributes["posXY"]);
+
+                if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
+                    lowerLeft = r;
+                if (rackPos.y > upperRightPos.y || (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y))
+                    upperRight = r;
+
+                if (r.transform.GetChild(0).localScale.y > maxHeight)
+                    maxHeight = r.transform.GetChild(0).localScale.y;
+                if (r.transform.GetChild(0).localScale.z > maxLength)
+                    maxLength = r.transform.GetChild(0).localScale.z;
+            }
+        }
+        // racks = racks.OrderBy(t => t.GetChild(0).localScale.y).ToList();
+        // maxHeight = racks[racks.Count - 1].GetChild(0).localScale.y;
+        // racks = racks.OrderBy(t => t.GetChild(0).localScale.z).ToList();
+        // maxLength = racks[racks.Count - 1].GetChild(0).localScale.z;
+
+        GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
+        newRg.name = _rg.name;
+        newRg.transform.parent = parent;
+
+        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
+        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        {
+            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            z += maxLength * 2;
+        }
+        else
+        {
+            z += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            x -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            x += maxLength * 2;
+        }
+        newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+        newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
+        newRg.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
+
+        float xOffset;
+        float zOffset;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        {
+            xOffset = (newRg.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
+            zOffset = (newRg.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+        }
+        else
+        {
+            xOffset = (newRg.transform.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            zOffset = (newRg.transform.GetChild(0).localScale.z - lowerLeft.GetChild(0).localScale.x) / 2;
+        }
+        newRg.transform.localPosition += new Vector3(xOffset, 0, zOffset);
+
+        RackGroup rg = newRg.AddComponent<RackGroup>();
+        rg.name = newRg.name;
+        rg.parentId = _rg.parentId;
+        if (string.IsNullOrEmpty(rg.parentId))
+            rg.parentId = parent.GetComponent<Room>().id;
+        rg.category = "rackGroup";
+        rg.description = _rg.description;
+        rg.domain = _rg.domain;
+        if (string.IsNullOrEmpty(rg.domain))
+            rg.domain = racks[0].GetComponent<Rack>().domain;
+        rg.attributes = _rg.attributes;
+        rg.DisplayRacks(false);
+
+        newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        newRg.GetComponent<DisplayObjectData>().SetLabel("name");
+
+        string hn = newRg.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newRg);
+
+        return rg;
+    }
+
+    ///<summary>
+    /// Generate a corridor (from GameManager.labeledBoxModel) with defined corners and color.
+    ///</summary>
+    ///<param name="_name">The name of the corridor</param>
+    ///<param name="_parent">The parent of the generated corridor</param>
+    ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
+    ///<param name="_temp">"cold" or "warm" value</param>
+    ///<returns>The created corridor</returns>
+    public Object CreateCorridor(SApiObject _co, Transform _parent = null)
+    {
+        Transform parent = Utils.FindParent(_parent, _co.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+
+        string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
+        string[] rackNames = _co.attributes["racksList"].Split(',');
+        Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
+        Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
+
+        if (lowerLeft == null || upperRight == null)
+        {
+            GameManager.gm.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", "red");
+            return null;
+        }
+
+        float maxHeight = lowerLeft.GetChild(0).localScale.y;
+        if (upperRight.GetChild(0).localScale.y > maxHeight)
+            maxHeight = upperRight.GetChild(0).localScale.y;
+
+        GameObject newCo = Instantiate(GameManager.gm.labeledBoxModel);
+        newCo.name = _co.name;
+        newCo.transform.parent = parent;
+
+        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
+        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
+        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        {
+            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            x += (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            z -= (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+        }
+        newCo.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+
+        newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
+        newCo.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
+        float xOffset = (newCo.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
+        float zOffset = (newCo.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+        newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
+
+        Object co = newCo.AddComponent<Object>();
+        co.name = newCo.name;
+        co.parentId = _co.parentId;
+        if (string.IsNullOrEmpty(co.parentId))
+            co.parentId = parent.GetComponent<Room>().id;
+        co.category = "corridor";
+        co.domain = _co.domain;
+        if (string.IsNullOrEmpty(co.domain))
+            co.domain = lowerLeft.GetComponent<Rack>().domain;
+        co.attributes = _co.attributes;
+
+        co.SetAttribute("alpha", "50");
+        if (_co.attributes["temperature"] == "cold")
+            co.SetAttribute("color", "000099");
+        else
+            co.SetAttribute("color", "990000");
+
+        newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        newCo.GetComponent<DisplayObjectData>().SetLabel("name");
+
+        string hn = newCo.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newCo);
+
+        return co;
     }
 
 }

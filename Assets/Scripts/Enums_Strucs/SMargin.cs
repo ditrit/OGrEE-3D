@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 [System.Serializable]
@@ -24,6 +25,14 @@ public struct SMargin
         bottom = _S;
         right = _E;
         left = _W;
+    }
+
+    public SMargin(string _N, string _S, string _E, string _W)
+    {
+        top = float.Parse(_N, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+        bottom = float.Parse(_S, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+        right = float.Parse(_E, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+        left = float.Parse(_W, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
     }
 
     public SMargin(int[] _data)

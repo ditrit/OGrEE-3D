@@ -53,18 +53,7 @@ public class CustomerGenerator : MonoBehaviour
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
     {
-        Transform tn = null;
-        if (_parent)
-            tn = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _si.parentId)
-                    tn = go.transform;
-            }
-        }
+        Transform tn = Utils.FindParent(_parent, _si.parentId);
         if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
         {
             GameManager.gm.AppendLogLine($"Parent tenant not found", "red");

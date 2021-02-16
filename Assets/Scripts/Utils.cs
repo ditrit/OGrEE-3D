@@ -92,4 +92,27 @@ public static class Utils
         apiObj.attributes = _src.attributes;
         return apiObj;
     }
+
+    ///<summary>
+    /// Tries to return given Transform, otherwise look for given parent Id
+    ///</summary>
+    ///<param name="_parent">The Transform to check</param>
+    ///<param name="_parentId">The ID to search</param>
+    ///<returns>A valid Transform or null</returns>
+    public static Transform FindParent(Transform _parent, string _parentId)
+    {
+        Transform parent = null;
+        if (_parent)
+            parent = _parent;
+        else
+        {
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject go = (GameObject)de.Value;
+                if (go.GetComponent<OgreeObject>().id == _parentId)
+                    parent = go.transform;
+            }
+        }
+        return parent;
+    }
 }

@@ -22,18 +22,7 @@ public class BuildingGenerator : MonoBehaviour
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
     {
-        Transform si = null;
-        if (_parent)
-            si = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _bd.parentId)
-                    si = go.transform;
-            }
-        }
+        Transform si = Utils.FindParent(_parent, _bd.parentId);
         if (!si || si.GetComponent<OgreeObject>().category != "site")
         {
             GameManager.gm.AppendLogLine($"Parent site not found", "red");
@@ -94,18 +83,7 @@ public class BuildingGenerator : MonoBehaviour
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent = null)
     {
-        Transform bd = null;
-        if (_parent)
-            bd = _parent;
-        else
-        {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
-            {
-                GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _ro.parentId)
-                    bd = go.transform;
-            }
-        }
+        Transform bd = Utils.FindParent(_parent, _ro.parentId);
         if (!bd || bd.GetComponent<OgreeObject>().category != "building")
         {
             GameManager.gm.AppendLogLine($"Parent building not found", "red");

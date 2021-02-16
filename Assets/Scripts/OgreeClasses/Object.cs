@@ -13,37 +13,46 @@ public class Object : OgreeObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
-        switch (_param)
+        if (_param.StartsWith("description"))
+            SetDescription(_param.Substring(11), _value);
+        else
         {
-            case "description":
-                description = _value;
-                break;
-            case "domain":
-                if (GameManager.gm.allItems.ContainsKey(_value))
-                    domain = _value;
-                else
-                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
-                break;
-            case "color":
-                SetColor(_value);
-                break;
-            case "alpha":
-                UpdateAlpha(_value);
-                break;
-            case "slots":
-                ToggleSlots(_value);
-                break;
-            case "localCS":
-                ToggleCS(_value);
-                break;
-            default:
-                if (attributes.ContainsKey(_param))
-                    attributes[_param] = _value;
-                else
-                    attributes.Add(_param, _value);
-                break;
+            switch (_param)
+            {
+                case "label":
+                    GetComponent<DisplayObjectData>().SetLabel(_value);
+                    break;
+                case "labelFont":
+                    GetComponent<DisplayObjectData>().SetLabelFont(_value);
+                    break;
+                case "domain":
+                    if (GameManager.gm.allItems.ContainsKey(_value))
+                        domain = _value;
+                    else
+                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    break;
+                case "color":
+                    SetColor(_value);
+                    break;
+                case "alpha":
+                    UpdateAlpha(_value);
+                    break;
+                case "slots":
+                    ToggleSlots(_value);
+                    break;
+                case "localCS":
+                    ToggleCS(_value);
+                    break;
+                default:
+                    if (attributes.ContainsKey(_param))
+                        attributes[_param] = _value;
+                    else
+                        attributes.Add(_param, _value);
+                    break;
+            }
         }
         // PutData();
+        GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
@@ -60,11 +69,9 @@ public class Object : OgreeObject
             if (a == 0)
                 transform.GetChild(0).GetComponent<Renderer>().enabled = false;
             else
-            {
                 transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-                Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
-            }
+            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
         }
         else
             GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");

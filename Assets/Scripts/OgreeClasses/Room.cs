@@ -246,24 +246,24 @@ public class Room : Building
         }
         if (!string.IsNullOrEmpty(tileData.location))
         {
-            if (!string.IsNullOrEmpty(tileData.type) && tileData.type != "plain"
-                || !string.IsNullOrEmpty(tileData.color))
+            if (!string.IsNullOrEmpty(tileData.texture) || !string.IsNullOrEmpty(tileData.color))
             {
                 GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
                 tile.name = $"Color_{_id}";
                 tile.transform.parent = _root;
                 tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
                 tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
-                if (!string.IsNullOrEmpty(tileData.type))
+                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
+                if (!string.IsNullOrEmpty(tileData.texture))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
-                    if (GameManager.gm.textures.ContainsKey(tileData.type))
+                    if (GameManager.gm.textures.ContainsKey(tileData.texture))
                     {
                         rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = GameManager.gm.textures[tileData.type];
+                        rend.material.mainTexture = GameManager.gm.textures[tileData.texture];
                     }
-                    else if (tileData.type != "plain")
-                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.type}", "yellow");
+                    else
+                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", "yellow");
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -312,32 +312,34 @@ public class Room : Building
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
-        switch (_param)
+        if (_param.StartsWith("description"))
+            SetDescription(_param.Substring(11), _value);
+        else
         {
-            case "description":
-                description = _value;
-                break;
-            case "domain":
-                if (GameManager.gm.allItems.ContainsKey(_value))
-                    domain = _value;
-                else
-                    GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
-                break;
-            case "areas":
-                ParseAreas(_value);
-                break;
-            case "tilesName":
-                ToggleTilesName(_value);
-                break;
-            case "tilesColor":
-                ToggleTilesColor(_value);
-                break;
-            default:
-                if (attributes.ContainsKey(_param))
-                    attributes[_param] = _value;
-                else
-                    attributes.Add(_param, _value);
-                break;
+            switch (_param)
+            {
+                case "domain":
+                    if (GameManager.gm.allItems.ContainsKey(_value))
+                        domain = _value;
+                    else
+                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    break;
+                case "areas":
+                    ParseAreas(_value);
+                    break;
+                case "tilesName":
+                    ToggleTilesName(_value);
+                    break;
+                case "tilesColor":
+                    ToggleTilesColor(_value);
+                    break;
+                default:
+                    if (attributes.ContainsKey(_param))
+                        attributes[_param] = _value;
+                    else
+                        attributes.Add(_param, _value);
+                    break;
+            }
         }
         // PutData();
     }
@@ -366,10 +368,8 @@ public class Room : Building
             _input = _input.Replace("]", "");
             string[] data = _input.Split('@', ',');
 
-            SMargin resDim = new SMargin(float.Parse(data[0]), float.Parse(data[1]),
-                                        float.Parse(data[2]), float.Parse(data[3]));
-            SMargin techDim = new SMargin(float.Parse(data[4]), float.Parse(data[5]),
-                                        float.Parse(data[6]), float.Parse(data[7]));
+            SMargin resDim = new SMargin(data[0], data[1],data[2], data[3]);
+            SMargin techDim = new SMargin(data[4], data[5], data[6], data[7]);
             SetAreas(resDim, techDim);
         }
         else

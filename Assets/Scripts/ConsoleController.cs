@@ -451,6 +451,10 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
+        else if (str[0] == "rackgroup" || str[0] == "rg")
+            CreateRackGroup(str[1]);
+        else if (str[0] == "corridor" || str[0] == "co")
+            CreateCorridor(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -468,9 +472,11 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
             SApiObject tn = new SApiObject();
+            tn.description = new List<string>();
+            tn.attributes = new Dictionary<string, string>();
+
             tn.name = data[0];
             tn.domain = data[0];
-            tn.attributes = new Dictionary<string, string>();
             tn.attributes["color"] = data[1];
             CustomerGenerator.instance.CreateTenant(tn);
         }
@@ -491,8 +497,10 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
             Transform parent = null;
             SApiObject si = new SApiObject();
-            IsolateParent(data[0], out parent, out si.name);
+            si.description = new List<string>();
             si.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
             si.attributes["usableColor"] = "DBEDF2";
             si.attributes["reservedColor"] = "F2F2F2";
@@ -521,8 +529,10 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent = null;
             SApiObject bd = new SApiObject();
-            IsolateParent(data[0], out parent, out bd.name);
+            bd.description = new List<string>();
             bd.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
             bd.attributes["posZ"] = pos.z.ToString();
@@ -553,6 +563,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent = null;
             SApiObject ro = new SApiObject();
+            ro.description = new List<string>();
             ro.attributes = new Dictionary<string, string>();
 
             Vector3 pos = Utils.ParseVector3(data[1]);
@@ -631,6 +642,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent;
             SApiObject rk = new SApiObject();
+            rk.description = new List<string>();
             rk.attributes = new Dictionary<string, string>();
 
             Vector2 pos = Utils.ParseVector2(data[1]);
@@ -671,6 +683,7 @@ public class ConsoleController : MonoBehaviour
 
             Transform parent;
             SApiObject dv = new SApiObject();
+            dv.description = new List<string>();
             dv.attributes = new Dictionary<string, string>();
 
             float posU;
@@ -697,6 +710,59 @@ public class ConsoleController : MonoBehaviour
                 device.attributes["height"] = scale.y.ToString();
                 device.attributes["heightUnit"] = "mm";
             }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create rackGroup" command and call ObjectGenerator.CreateRackGroup().
+    ///</summary>
+    ///<param name="_input">String with rackgroup data to parse</param>
+    private void CreateRackGroup(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+
+            Transform parent = null;
+            SApiObject rg = new SApiObject();
+            rg.description = new List<string>();
+            rg.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out rg.name);
+            rg.attributes["racksList"] = data[1].Trim('{', '}');
+            if (parent)
+                ObjectGenerator.instance.CreateRackGroup(rg, parent);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create corridor" command and call ObjectGenerator.CreateCorridor().
+    ///</summary>
+    ///<param name="_input">String with corridor data to parse</param>
+    private void CreateCorridor(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+,[^@\\s\\}]+\\}@(cold|warm)$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+
+            Transform parent = null;
+            SApiObject co = new SApiObject();
+            co.description = new List<string>();
+            co.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out co.name);
+            co.attributes["racksList"] = data[1].Trim('{', '}');
+            co.attributes["temperature"] = data[2];
+            if (parent)
+                ObjectGenerator.instance.CreateCorridor(co, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
