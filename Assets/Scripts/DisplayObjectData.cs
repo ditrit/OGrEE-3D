@@ -36,9 +36,14 @@ public class DisplayObjectData : MonoBehaviour
     /// Also Enable or disable texts according to _labelPos.
     ///</summary>
     ///<param name="_labelPos">Labels to display</param>
-    public void PlaceTexts(string _labelPos)
+    ///<param name="_isModel">Should be true if current object is an imported model</param>
+    public void PlaceTexts(string _labelPos, bool _isModel = false)
     {
-        Vector3 boxSize = transform.GetChild(0).localScale;
+        Vector3 boxSize;
+        if (_isModel)
+            boxSize = transform.GetChild(0).GetComponent<BoxCollider>().size;
+        else
+            boxSize = transform.GetChild(0).localScale;
         labelFront.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / 2;
         labelRear.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / -2;
         labelRight.transform.localPosition = new Vector3(boxSize.x + 0.002f, 0, 0) / 2;
