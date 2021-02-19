@@ -83,7 +83,6 @@ public class GameManager : MonoBehaviour
 
         UpdateFocusText();
 
-        rackTemplates.Add("fbxBridge", GameObject.Find("fbxBridge"));
 #if DEBUG
         consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/HPC_LOD_rg_co.ocli");
@@ -260,7 +259,8 @@ public class GameManager : MonoBehaviour
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
-                ol.eraseRenderer = false;
+                ol.enabled = true;
+                // ol.eraseRenderer = false;
         }
     }
 
@@ -275,7 +275,8 @@ public class GameManager : MonoBehaviour
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
-                ol.eraseRenderer = true;
+                ol.enabled = false;
+                // ol.eraseRenderer = true;
         }
     }
 
