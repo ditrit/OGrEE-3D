@@ -261,6 +261,10 @@ public class ConsoleController : MonoBehaviour
         isReady = true;
     }
 
+    ///<summary>
+    /// Set focus to given object
+    ///</summary>
+    ///<param name="_input">The item to focus</param>
     private void FocusItem(string _input)
     {
         if (string.IsNullOrEmpty(_input))
@@ -879,6 +883,20 @@ public class ConsoleController : MonoBehaviour
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }
+    }
+
+    ///
+    private void MoveRack(string _input)
+    {
+        string pattern = "[^@\\s]+@\\[[0-9]+,[0-9]+\\]$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+
+        }
+        else
+            GameManager.gm.AppendLogLine("Syntax error", "red");
+
+        isReady = true;
     }
 
     ///<summary>
