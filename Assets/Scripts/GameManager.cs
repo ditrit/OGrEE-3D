@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -281,7 +281,7 @@ public class GameManager : MonoBehaviour
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    private void FocusItem(GameObject _obj)
+    public void FocusItem(GameObject _obj)
     {
         bool canFocus = false;
         if (focus.Count == 0)
@@ -316,7 +316,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    private void UnfocusItem()
+    public void UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);

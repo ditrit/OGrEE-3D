@@ -112,6 +112,8 @@ public class ConsoleController : MonoBehaviour
             SelectParent();
         else if (_input[0] == '=')
             StartCoroutine(SelectItem(_input.Substring(1)));
+        else if (_input[0] == '>')
+            FocusItem(_input.Substring(1));
         else if (_input[0] == '.')
             ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '+')
@@ -256,6 +258,23 @@ public class ConsoleController : MonoBehaviour
         }
 
         yield return new WaitForEndOfFrame();
+        isReady = true;
+    }
+
+    private void FocusItem(string _input)
+    {
+        if (string.IsNullOrEmpty(_input))
+        {
+            // unfocus all items
+            int count = GameManager.gm.focus.Count;
+            for (int i = 0; i < count; i++)
+                GameManager.gm.UnfocusItem();
+        }
+        else if (GameManager.gm.allItems.Contains(_input))
+            GameManager.gm.FocusItem((GameObject)GameManager.gm.allItems[_input]);
+        else
+            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
+
         isReady = true;
     }
 
