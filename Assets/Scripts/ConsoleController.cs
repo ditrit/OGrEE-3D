@@ -120,6 +120,8 @@ public class ConsoleController : MonoBehaviour
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
+        else if (_input[0] == '~')
+            MoveRack(_input.Substring(1));
         else if (_input.StartsWith("ui."))
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
@@ -885,16 +887,39 @@ public class ConsoleController : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Move a rack to given coordinates.
+    ///</summary>
+    ///<param name="_input">The input to parse for a move command</param>
     private void MoveRack(string _input)
     {
-        string pattern = "[^@\\s]+@\\[[0-9]+,[0-9]+\\]$";
+        string pattern = "[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, pattern))
         {
+            string[] data = _input.Split('@');
+            if (GameManager.gm.allItems.Contains(data[0]))
+            {
+                GameObject obj = (GameObject)GameManager.gm.allItems[data[0]];
+                Rack rk = obj.GetComponent<Rack>();
+                if (rk)
+                {
+                    Vector2 origin = JsonUtility.FromJson<Vector2>(rk.attributes["posXY"]);
+                    rk.transform.localPosition -= new Vector3(origin.x, 0, origin.y) * GameManager.gm.tileSize;
+                    Vector2 dest = Utils.ParseVector2(data[1]);
+                    rk.transform.localPosition += new Vector3(dest.x, 0, dest.y) * GameManager.gm.tileSize;
 
+                    rk.attributes["posXY"] = JsonUtility.ToJson(dest);
+                    GameManager.gm.UpdateGuiInfos();
+                    GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
+                }
+                else
+                    GameManager.gm.AppendLogLine($"{data[0]} is not a rack.", "yellow");
+            }
+            else
+                GameManager.gm.AppendLogLine($"{data[0]} doesn't exist.", "yellow");
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error.", "red");
 
         isReady = true;
     }
