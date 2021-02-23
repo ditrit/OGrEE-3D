@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -277,9 +277,16 @@ public class ConsoleController : MonoBehaviour
                 GameManager.gm.UnfocusItem();
         }
         else if (GameManager.gm.allItems.Contains(_input))
-            GameManager.gm.FocusItem((GameObject)GameManager.gm.allItems[_input]);
+        {
+            GameObject obj = (GameObject)GameManager.gm.allItems[_input];
+            if (obj.GetComponent<Object>())
+                GameManager.gm.FocusItem(obj);
+            else
+                AppendLogLine($"Can't focus \"{_input}\"", "yellow");
+
+        }
         else
-            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
+            AppendLogLine($"Error: \"{_input}\" does not exist", "red");
 
         isReady = true;
     }
