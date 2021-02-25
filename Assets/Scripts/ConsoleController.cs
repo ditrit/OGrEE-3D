@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -122,6 +122,7 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(DeleteItem(_input.Substring(1)));
         else if (_input[0] == '~')
             MoveRack(_input.Substring(1));
+            // StartCoroutine(MoveRack(_input.Substring(1)));
         else if (_input.StartsWith("ui."))
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
@@ -898,8 +899,11 @@ public class ConsoleController : MonoBehaviour
     /// Move a rack to given coordinates.
     ///</summary>
     ///<param name="_input">The input to parse for a move command</param>
+    // private IEnumerator MoveRack(string _input)
     private void MoveRack(string _input)
     {
+        // yield return new WaitForEndOfFrame();
+
         string pattern = "[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, pattern))
         {
@@ -910,12 +914,9 @@ public class ConsoleController : MonoBehaviour
                 Rack rk = obj.GetComponent<Rack>();
                 if (rk)
                 {
-                    Vector2 origin = JsonUtility.FromJson<Vector2>(rk.attributes["posXY"]);
-                    rk.transform.localPosition -= new Vector3(origin.x, 0, origin.y) * GameManager.gm.tileSize;
                     Vector2 dest = Utils.ParseVector2(data[1]);
-                    rk.transform.localPosition += new Vector3(dest.x, 0, dest.y) * GameManager.gm.tileSize;
+                    rk.MoveRackTo(dest);
 
-                    rk.attributes["posXY"] = JsonUtility.ToJson(dest);
                     GameManager.gm.UpdateGuiInfos();
                     GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
                 }

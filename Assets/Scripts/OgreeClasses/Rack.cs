@@ -6,7 +6,7 @@ using UnityEngine;
 public class Rack : Object
 {
     private Vector3 originalLocalPos;
-    private Vector3 originalPosXY;
+    private Vector2 originalPosXY;
     private Transform uRoot;
 
     private void OnTriggerEnter(Collider other)
@@ -96,6 +96,8 @@ public class Rack : Object
     ///<param name="_v">The translation vector</param>
     public void MoveRack(Vector2 _v)
     {
+        Utils.SwitchAllCollidersInRacks(true);
+
         originalLocalPos = transform.localPosition;
         Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
         originalPosXY = posXY;
@@ -126,6 +128,29 @@ public class Rack : Object
                 break;
         }
         attributes["posXY"] = JsonUtility.ToJson(posXY);
+        StartCoroutine(ReactiveCollider());
+    }
+
+    ///<summary>
+    /// Move the rack to a new posXY.
+    ///</summary>
+    ///<param name="_dest">The new position in the room</param>
+    public void MoveRackTo(Vector2 _dest)
+    {
+        Utils.SwitchAllCollidersInRacks(true);
+        
+        originalLocalPos = transform.localPosition;
+        originalPosXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<Collider>())
+                child.GetComponent<Collider>().enabled = false;
+        }
+
+        transform.localPosition -= new Vector3(originalPosXY.x, 0, originalPosXY.y) * GameManager.gm.tileSize;
+        transform.localPosition += new Vector3(_dest.x, 0, _dest.y) * GameManager.gm.tileSize;
+
+        attributes["posXY"] = JsonUtility.ToJson(_dest);
         StartCoroutine(ReactiveCollider());
     }
 
