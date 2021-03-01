@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -93,6 +93,11 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
+
+#if DEBUG
+        if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(Utils.ConvertToApiObj(currentItems[0].GetComponent<OgreeObject>())));
+#endif
 
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
