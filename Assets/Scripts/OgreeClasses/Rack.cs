@@ -96,11 +96,10 @@ public class Rack : Object
     }
 
     ///<summary>
-    /// Move the rack in its room's orientation.
+    /// Called by MoveObject: Move the rack in its room's orientation.
     ///</summary>
     ///<param name="_v">The translation vector</param>
-    ///<param name="_isDest">If true, _v is a destination</param>
-    public void MoveRack(Vector2 _v, bool _isDest = false)
+    public void DragRack(Vector2 _v)
     {
         Utils.SwitchAllCollidersInRacks(true);
 
@@ -113,36 +112,60 @@ public class Rack : Object
                 child.GetComponent<Collider>().enabled = false;
         }
 
-        if (_isDest)
+        Room room = transform.parent.GetComponent<Room>();
+        switch (room.attributes["orientation"])
+        {
+            case "EN":
+                transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
+                posXY += new Vector2(_v.x, _v.y);
+                break;
+            case "NW":
+                transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
+                posXY += new Vector2(_v.y, -_v.x);
+                break;
+            case "WS":
+                transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
+                posXY += new Vector2(-_v.x, -_v.y);
+                break;
+            case "SE":
+                transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
+                posXY += new Vector2(-_v.y, _v.x);
+                break;
+        }
+        attributes["posXY"] = JsonUtility.ToJson(posXY);
+        StartCoroutine(ReactiveCollider());
+    }
+
+    ///<summary>
+    /// Move the rack in its room's orientation.
+    ///</summary>
+    ///<param name="_v">The translation vector</param>
+    ///<param name="_isRelative">If true, _v is a relative vector</param>
+    public void MoveRack(Vector2 _v, bool _isRelative)
+    {
+        Utils.SwitchAllCollidersInRacks(true);
+
+        originalLocalPos = transform.localPosition;
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
+        originalPosXY = posXY;
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<Collider>())
+                child.GetComponent<Collider>().enabled = false;
+        }
+
+        if (_isRelative)
+        {
+            transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
+            attributes["posXY"] = JsonUtility.ToJson(originalPosXY + _v);    
+        }
+        else
         {
             transform.localPosition -= new Vector3(posXY.x, 0, posXY.y) * GameManager.gm.tileSize;
             transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
             attributes["posXY"] = JsonUtility.ToJson(_v);
         }
-        else
-        {
-            Room room = transform.parent.GetComponent<Room>();
-            switch (room.attributes["orientation"])
-            {
-                case "EN":
-                    transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
-                    posXY += new Vector2(_v.x, _v.y);
-                    break;
-                case "NW":
-                    transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
-                    posXY += new Vector2(_v.y, -_v.x);
-                    break;
-                case "WS":
-                    transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
-                    posXY += new Vector2(-_v.x, -_v.y);
-                    break;
-                case "SE":
-                    transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
-                    posXY += new Vector2(-_v.y, _v.x);
-                    break;
-            }
-            attributes["posXY"] = JsonUtility.ToJson(posXY);
-        }
+
         StartCoroutine(ReactiveCollider());
     }
 

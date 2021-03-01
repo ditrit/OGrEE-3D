@@ -901,7 +901,7 @@ public class ConsoleController : MonoBehaviour
     private void MoveRack(string _input)
     {
 
-        string pattern = "[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]$";
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\](@relative)*$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -911,7 +911,10 @@ public class ConsoleController : MonoBehaviour
                 Rack rk = obj.GetComponent<Rack>();
                 if (rk)
                 {
-                    rk.MoveRack(Utils.ParseVector2(data[1]), true);
+                    if (data.Length == 2)
+                        rk.MoveRack(Utils.ParseVector2(data[1]), false);
+                    else
+                        rk.MoveRack(Utils.ParseVector2(data[1]), true);
                     GameManager.gm.UpdateGuiInfos();
                     GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
                 }
