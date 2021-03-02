@@ -94,6 +94,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 
+#if DEBUG
+        if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(Utils.ConvertToApiObj(currentItems[0].GetComponent<OgreeObject>())));
+#endif
+
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
         {
@@ -281,7 +286,7 @@ public class GameManager : MonoBehaviour
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    private void FocusItem(GameObject _obj)
+    public void FocusItem(GameObject _obj)
     {
         bool canFocus = false;
         if (focus.Count == 0)
@@ -316,7 +321,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    private void UnfocusItem()
+    public void UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
