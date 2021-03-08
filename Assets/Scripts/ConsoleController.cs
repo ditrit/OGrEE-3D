@@ -588,7 +588,7 @@ public class ConsoleController : MonoBehaviour
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');

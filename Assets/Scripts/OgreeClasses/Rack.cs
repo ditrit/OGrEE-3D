@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -115,19 +115,19 @@ public class Rack : Object
         Room room = transform.parent.GetComponent<Room>();
         switch (room.attributes["orientation"])
         {
-            case "EN":
+            case "+E+N":
                 transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.x, _v.y);
                 break;
-            case "NW":
+            case "+N+W":
                 transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.y, -_v.x);
                 break;
-            case "WS":
+            case "+W+S":
                 transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.x, -_v.y);
                 break;
-            case "SE":
+            case "+S+E":
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.y, _v.x);
                 break;

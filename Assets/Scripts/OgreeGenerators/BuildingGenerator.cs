@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
@@ -134,25 +135,45 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
-        switch (room.attributes["orientation"])
+        if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
         {
-            case "EN":
-                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-                newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-                break;
-            case "WS":
-                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-                break;
-            case "NW":
-                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-                break;
-            case "SE":
-                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-                newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-                break;
+            newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+            newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
         }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+            newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
+        }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+            newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
+        }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+            newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
+        }
+        // switch (room.attributes["orientation"])
+        // {
+        //     case "EN":
+        //         newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+        //         newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
+        //         break;
+        //     case "WS":
+        //         newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+        //         newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
+        //         break;
+        //     case "NW":
+        //         newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+        //         newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
+        //         break;
+        //     case "SE":
+        //         newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+        //         newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
+        //         break;
+        // }
 
         // Set UI room's name
         room.nameText.text = newRoom.name;

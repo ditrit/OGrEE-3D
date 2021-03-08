@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 // using System.Linq;
 using UnityEngine;
 
@@ -70,11 +71,36 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
-        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
+        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / 0.2f;
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
-        newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += new Vector3(pos.x, 0, pos.y) * GameManager.gm.tileSize;
+
+        Vector2 orient = Vector2.one;
+        if (parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        {
+            if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Left corner of the room
+                orient = new Vector2(1, 1);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Right corner of the room
+                orient = new Vector2(-1, 1);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Right corner of the room
+                orient = new Vector2(-1, -1);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Left corner of the room
+                orient = new Vector2(1, -1);
+            }
+        }
+        newRack.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+        newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.name = newRack.name;

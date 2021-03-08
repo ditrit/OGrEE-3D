@@ -168,8 +168,8 @@ public class Room : Building
         float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
         float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
 
-        Vector3 origin = usableZone.localScale / -0.2f;
-        _root.transform.localPosition += new Vector3(origin.x, 0, origin.z);
+        Vector3 origin = usableZone.localScale / 0.2f;
+        _root.transform.localPosition += new Vector3(-origin.x, 0, -origin.z);
         for (int j = (int)-reserved.bottom; j < y; j++)
         {
             for (int i = (int)-reserved.left; i < x; i++)
