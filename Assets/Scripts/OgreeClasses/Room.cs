@@ -180,6 +180,7 @@ public class Room : Building
             orient = new Vector2(-1, 1);
             offsetX = (int)-reserved.right;
             offsetY = (int)-reserved.bottom;
+            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
         }
         else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
         {
@@ -187,6 +188,7 @@ public class Room : Building
             orient = new Vector2(-1, -1);
             offsetX = (int)-reserved.right;
             offsetY = (int)-reserved.top;
+            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
         }
         else if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
         {
@@ -194,6 +196,7 @@ public class Room : Building
             orient = new Vector2(1, -1);
             offsetX = (int)-reserved.left;
             offsetY = (int)-reserved.top;
+            _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
         }
 
         Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
@@ -202,10 +205,6 @@ public class Room : Building
 
         Vector3 origin = usableZone.localScale / 0.2f;
         _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
-        if (orient.x == -1)
-            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
-        if (orient.y == -1)
-            _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
 
         for (int j = offsetY; j < y; j++)
         {
