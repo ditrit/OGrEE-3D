@@ -592,7 +592,8 @@ public class ObjectGenerator : MonoBehaviour
             co.domain = lowerLeft.GetComponent<Rack>().domain;
         co.attributes = _co.attributes;
 
-        co.SetAttribute("alpha", "50");
+        Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
+        mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
             co.SetAttribute("color", "000099");
         else

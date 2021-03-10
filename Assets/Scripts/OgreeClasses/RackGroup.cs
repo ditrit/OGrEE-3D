@@ -61,12 +61,12 @@ public class RackGroup : Object
 
         if (_value == "true")
         {
-            UpdateAlpha("0");
+            UpdateAlpha("true");
             DisplayRacks(true);
         }
         else
         {
-            UpdateAlpha("100");
+            UpdateAlpha("false");
             DisplayRacks(false);
         }
     }
