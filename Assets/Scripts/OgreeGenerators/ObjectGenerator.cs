@@ -162,7 +162,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newRack.GetComponent<DisplayObjectData>().SetLabel("name");
+        newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
@@ -341,7 +341,7 @@ public class ObjectGenerator : MonoBehaviour
 
 
 
-        newDevice.GetComponent<DisplayObjectData>().SetLabel("name");
+        newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         string hn = newDevice.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newDevice);
@@ -516,7 +516,7 @@ public class ObjectGenerator : MonoBehaviour
         rg.DisplayRacks(false);
 
         newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newRg.GetComponent<DisplayObjectData>().SetLabel("name");
+        newRg.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         string hn = newRg.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newRg);
@@ -599,7 +599,7 @@ public class ObjectGenerator : MonoBehaviour
             co.SetAttribute("color", "990000");
 
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newCo.GetComponent<DisplayObjectData>().SetLabel("name");
+        newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         string hn = newCo.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newCo);
