@@ -443,6 +443,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
 
         Transform lowerLeft = racks[0];
+        Transform lowerRight = racks[0];
         Transform upperRight = racks[0];
         float maxHeight = 0;
         float maxLength = 0;
@@ -452,10 +453,13 @@ public class ObjectGenerator : MonoBehaviour
             {
                 Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.GetComponent<OgreeObject>().attributes["posXY"]);
                 Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.GetComponent<OgreeObject>().attributes["posXY"]);
+                Vector2 lowerRightPos = JsonUtility.FromJson<Vector2>(lowerRight.GetComponent<OgreeObject>().attributes["posXY"]);
                 Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.GetComponent<OgreeObject>().attributes["posXY"]);
 
                 if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
                     lowerLeft = r;
+                if (rackPos.x >= lowerRightPos.x && rackPos.y <= lowerRightPos.y)
+                    lowerRight = r;
                 if (rackPos.y > upperRightPos.y || (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y))
                     upperRight = r;
 
@@ -465,6 +469,7 @@ public class ObjectGenerator : MonoBehaviour
                     maxLength = r.transform.GetChild(0).localScale.z;
             }
         }
+        // Debug.LogWarning($"[rg] {_rg.name}: ll={lowerLeft.name}, lr={lowerRight.name}, ur={upperRight.name}");
         // racks = racks.OrderBy(t => t.GetChild(0).localScale.y).ToList();
         // maxHeight = racks[racks.Count - 1].GetChild(0).localScale.y;
         // racks = racks.OrderBy(t => t.GetChild(0).localScale.z).ToList();
@@ -474,18 +479,30 @@ public class ObjectGenerator : MonoBehaviour
         newRg.name = _rg.name;
         newRg.transform.parent = parent;
 
-        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
+        float x;
+        if (lowerRight.localPosition.x > upperRight.localPosition.x)
+            x = lowerRight.localPosition.x - lowerLeft.localPosition.x;
+        else
+            x = upperRight.localPosition.x - lowerLeft.localPosition.x;
         float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
         if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
             || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            if (lowerRight.localPosition.x > upperRight.localPosition.x)
+                x += lowerRight.GetChild(0).localScale.x / 2;
+            else
+                x += upperRight.GetChild(0).localScale.x / 2;
+            x += lowerLeft.GetChild(0).localScale.x / 2;
             z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
             z += maxLength * 2;
         }
         else
         {
-            z += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            if (lowerRight.localPosition.x > upperRight.localPosition.x)
+                z += lowerRight.GetChild(0).localScale.z / 2;
+            else
+                z += upperRight.GetChild(0).localScale.x / 2;
+            z += lowerLeft.GetChild(0).localScale.x / 2;
             x -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
             x += maxLength * 2;
         }
