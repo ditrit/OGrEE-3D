@@ -736,11 +736,14 @@ public class ConsoleController : MonoBehaviour
             if (parent)
             {
                 Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
-                Vector3 scale = device.transform.GetChild(0).localScale * 1000;
-                device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
-                device.attributes["sizeUnit"] = "mm";
-                device.attributes["height"] = scale.y.ToString();
-                device.attributes["heightUnit"] = "mm";
+                if (device)
+                {
+                    Vector3 scale = device.transform.GetChild(0).localScale * 1000;
+                    device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                    device.attributes["sizeUnit"] = "mm";
+                    device.attributes["height"] = scale.y.ToString();
+                    device.attributes["heightUnit"] = "mm";
+                }
             }
         }
         else

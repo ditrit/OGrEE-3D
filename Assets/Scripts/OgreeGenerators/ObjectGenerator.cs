@@ -204,14 +204,20 @@ public class ObjectGenerator : MonoBehaviour
         if (parent.GetComponent<Rack>() == null
             && (!_dv.attributes.ContainsKey("slot") || !_dv.attributes.ContainsKey("template")))
         {
-            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "yellow");
+            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "red");
+            return null;
+        }
+
+        if (parent.gameObject.activeSelf == false)
+        {
+            GameManager.gm.AppendLogLine("The parent rack must be active (not hidden in a rackGroup)", "red");
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "red");
             return null;
         }
 
