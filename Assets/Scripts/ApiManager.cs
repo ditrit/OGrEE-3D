@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -15,9 +16,43 @@ public class ApiManager : MonoBehaviour
         public string json;
         public string objToUpdate;
     }
+    struct SAuth
+    {
+        public string email;
+        public string password;
+    }
+    private struct SResp
+    {
+        public SAccount account;
+        public string message;
+        public bool status;
+    }
+    private struct SAccount
+    {
+        public string ID;
+        public string CreatedAt;
+        public string UpdatedAt;
+        public string DeletedAt;
+        public string Email;
+        public string Password;
+        public string token;
+    }
+    // {
+    // "account": {
+    //     "ID":640310166111682561,
+    //     "CreatedAt":"2021-03-11T16:45:55.184234974+01:00",
+    //     "UpdatedAt":"2021-03-11T16:45:55.184234974+01:00",
+    //     "DeletedAt":null,
+    //     "Email":"iamlegend@gmail.com",
+    //     "Password":"",
+    //     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MDMxMDE2NjExMTY4MjU2MX0.DXww35yqhyzf7nI4wizNiFq52LDj1YdSsLPZTuXS8IA"
+    //     },
+    // "message":"Account has been created",
+    // "status":true
+    // }
     public static ApiManager instance;
 
-    private HttpClient client = new HttpClient();
+    private HttpClient httpClient = new HttpClient();
 
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
@@ -53,14 +88,39 @@ public class ApiManager : MonoBehaviour
     /// Initialiaze the manager with server, login and token.
     ///</summary>
     ///<param name="_serverUrl">The url to save</param>
-    ///<param name="_login">The login to save</param>
-    ///<param name="_token">The token to save</param>
-    public void Initialize(string _serverUrl, string _login, string _token)
+    ///<param name="_login">The login to use</param>
+    ///<param name="_pwd">The password to use</param>
+    public async void Initialize(string _serverUrl, string _login, string _pwd)
     {
-        server = _serverUrl;
-        login = _login;
-        token = _token;
-        isReady = true;
+        SAuth auth = new SAuth();
+        auth.email = _login;
+        auth.password = _pwd;
+
+        StringContent content = new StringContent(JsonUtility.ToJson(auth), System.Text.Encoding.UTF8, "application/json");
+        string fullPath = _serverUrl + "/api/user";
+        try
+        {
+            // HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            // string responseStr = response.Content.ReadAsStringAsync().Result;
+            string responseStr = "{\"account\":{\"ID\":640315826852364289,\"CreatedAt\":\"2021-03-11T17:14:42.706032172+01:00\",\"UpdatedAt\":\"2021-03-11T17:14:42.706032172+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MDMxNTgyNjg1MjM2NDI4OX0.BP8pC58baVrpWFdQSy3HvTCXqzUU_bxaJSE7wsKoAtk\"},\"message\":\"Account has been created\",\"status\":true}";
+            GameManager.gm.AppendLogLine(responseStr);
+            server = _serverUrl;
+
+            SResp resp = new SResp();
+            resp.account = new SAccount();
+            resp = Newtonsoft.Json.JsonConvert.DeserializeObject<SResp>(responseStr);
+            Debug.Log(resp.account.token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(resp.account.token);
+            // If only token is send back by API
+            // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(responseStr);
+
+            isReady = true;
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+
     }
 
     ///<summary>
@@ -89,20 +149,23 @@ public class ApiManager : MonoBehaviour
         if (obj)
         {
             SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
+            request.path = $"/api/user/{apiObj.category}s/{apiObj.id}";
+            /*
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-                request.path = $"customers/";
+                request.path = "/api/user/tenants/";
             else if (pointCount == 1)
-                request.path = $"sites/";
+                request.path = "/api/user/sites/";
             else if (pointCount == 2)
-                request.path = $"buildings/"; //?
+                request.path = "/api/user/buildings/"; //?
             else if (pointCount == 3)
-                request.path = $"rooms/"; //?
+                request.path = "/api/user/rooms/"; //?
             else if (pointCount == 4)
-                request.path = $"racks/"; //?
+                request.path = "/api/user/racks/"; //?
             else
-                request.path = $"objects/"; //?
+                request.path = "/api/user/devices/"; //?
             request.path += obj.GetComponent<OgreeObject>().id;
+            */
             request.json = JsonConvert.SerializeObject(apiObj);
             requestsToSend.Enqueue(request);
         }
@@ -123,19 +186,22 @@ public class ApiManager : MonoBehaviour
         if (obj)
         {
             SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
+            request.path = $"/api/user/{apiObj.category}s";
+            /*
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-                request.path = "customers";
+                request.path = "/api/user/tenants";
             else if (pointCount == 1)
-                request.path = "sites";
+                request.path = "/api/user/sites";
             else if (pointCount == 2)
-                request.path = "buildings"; //?
+                request.path = "/api/user/buildings"; //?
             else if (pointCount == 3)
-                request.path = "rooms"; //?
+                request.path = "/api/user/rooms"; //?
             else if (pointCount == 4)
-                request.path = "racks"; //?
+                request.path = "/api/user/racks"; //?
             else
-                request.path = "objects"; //?
+                request.path = "/api/user/devices"; //?
+            */
             request.json = JsonConvert.SerializeObject(apiObj);
             request.objToUpdate = _objName;
 
@@ -157,20 +223,23 @@ public class ApiManager : MonoBehaviour
         GameObject obj = GameManager.gm.FindByAbsPath(_objName);
         if (obj)
         {
+            request.path = $"/api/user/{obj.GetComponent<OgreeObject>().category}s/{obj.GetComponent<OgreeObject>().id}";
+            /*
             int pointCount = _objName.Count(f => (f == '.'));
             if (pointCount == 0)
-                request.path = $"customers/";
+                request.path = "/api/user/tenants/";
             else if (pointCount == 1)
-                request.path = $"sites/";
+                request.path = "/api/user/sites/";
             else if (pointCount == 2)
-                request.path = $"buildings/"; //?
+                request.path = "/api/user/buildings/"; //?
             else if (pointCount == 3)
-                request.path = $"rooms/"; //?
+                request.path = "/api/user/rooms/"; //?
             else if (pointCount == 4)
-                request.path = $"racks/"; //?
+                request.path = "/api/user/racks/"; //?
             else
-                request.path = $"objects/"; //?
+                request.path = "/api/user/devices/"; //?
             request.path += obj.GetComponent<OgreeObject>().id;
+            */
             requestsToSend.Enqueue(request);
         }
         else
@@ -188,7 +257,7 @@ public class ApiManager : MonoBehaviour
         string fullPath = server + req.path;
         try
         {
-            string response = await client.GetStringAsync(fullPath);
+            string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             CreateItemFromJson(req.path, response);
         }
@@ -212,7 +281,7 @@ public class ApiManager : MonoBehaviour
         StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await client.PutAsync(fullPath, content);
+            HttpResponseMessage response = await httpClient.PutAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
         }
@@ -236,7 +305,7 @@ public class ApiManager : MonoBehaviour
         StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await client.PostAsync(fullPath, content);
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
             UpdateObjId(req.objToUpdate, responseStr);
@@ -260,7 +329,7 @@ public class ApiManager : MonoBehaviour
         string fullPath = server + req.path;
         try
         {
-            HttpResponseMessage response = await client.DeleteAsync(fullPath);
+            HttpResponseMessage response = await httpClient.DeleteAsync(fullPath);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
         }
@@ -278,7 +347,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     private void CreateItemFromJson(string _path, string _json)
     {
-        SApiObject apiObj =JsonConvert.DeserializeObject<SApiObject>(_json);
+        SApiObject apiObj = JsonConvert.DeserializeObject<SApiObject>(_json);
         if (Regex.IsMatch(_path, "customers/[^/]+$"))
         {
             Debug.Log("Create Customer");
