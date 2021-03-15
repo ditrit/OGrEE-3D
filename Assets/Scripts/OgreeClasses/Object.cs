@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -27,7 +27,10 @@ public class Object : OgreeObject
                     break;
                 case "domain":
                     if (GameManager.gm.allItems.ContainsKey(_value))
+                    {
                         domain = _value;
+                        UpdateColor();
+                    }
                     else
                         GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
                     break;
@@ -90,6 +93,22 @@ public class Object : OgreeObject
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
+        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+    }
+
+    ///<summary>
+    /// Update object's color according to its Tenant.
+    ///</summary>
+    public void UpdateColor()
+    {
+        if (string.IsNullOrEmpty(domain))
+            return;
+
+        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
+
+        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 

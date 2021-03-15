@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -77,22 +77,6 @@ public class Rack : Object
         }
         // PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
-    }
-
-    ///<summary>
-    /// Update rack's color according to its Tenant.
-    ///</summary>
-    public void UpdateColor()
-    {
-        if (string.IsNullOrEmpty(domain))
-            return;
-
-        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
-
-        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 
     ///<summary>
