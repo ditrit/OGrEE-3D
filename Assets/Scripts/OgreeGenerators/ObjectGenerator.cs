@@ -126,40 +126,39 @@ public class ObjectGenerator : MonoBehaviour
             rack.attributes["orientation"] = _rk.attributes["orientation"];
         }
 
+        Vector3 fixPos = Vector3.zero;
         switch (rack.attributes["orientation"])
         {
             case "front":
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
                 if (orient.y == 1)
-                    newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 else
-                    newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, 0);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
                 break;
             case "rear":
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 if (orient.y == 1)
-                    newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
                 else
-                    newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, 0);
-                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 break;
             case "left":
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 if (orient.x == 1)
-                    newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
+                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, boxOrigin.x);
                 else
-                    newRack.transform.localPosition += new Vector3(0, boxOrigin.y, boxOrigin.x);
-                newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 break;
             case "right":
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 if (orient.x == 1)
-                    newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
                 else
-                    newRack.transform.localPosition += new Vector3(0, boxOrigin.y, -boxOrigin.x);
-                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
+                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
                 break;
         }
+        newRack.transform.localPosition += fixPos;
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
