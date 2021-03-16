@@ -38,17 +38,17 @@ public class ApiManager : MonoBehaviour
         public string token;
     }
     // {
-    // "account": {
-    //     "ID":640310166111682561,
-    //     "CreatedAt":"2021-03-11T16:45:55.184234974+01:00",
-    //     "UpdatedAt":"2021-03-11T16:45:55.184234974+01:00",
-    //     "DeletedAt":null,
-    //     "Email":"iamlegend@gmail.com",
-    //     "Password":"",
-    //     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MDMxMDE2NjExMTY4MjU2MX0.DXww35yqhyzf7nI4wizNiFq52LDj1YdSsLPZTuXS8IA"
+    //     "account":{
+    //         "ID":641717123263660033,
+    //         "CreatedAt":"2021-03-16T16:02:04.432625555+01:00",
+    //         "UpdatedAt":"2021-03-16T16:02:04.432625555+01:00",
+    //         "DeletedAt":null,
+    //         "Email":"iamlegend@gmail.com",
+    //         "Password":"",
+    //         "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20"
     //     },
-    // "message":"Account has been created",
-    // "status":true
+    //     "message":"Account has been created",
+    //     "status":true
     // }
     public static ApiManager instance;
 
@@ -102,7 +102,7 @@ public class ApiManager : MonoBehaviour
         {
             // HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             // string responseStr = response.Content.ReadAsStringAsync().Result;
-            string responseStr = "{\"account\":{\"ID\":640315826852364289,\"CreatedAt\":\"2021-03-11T17:14:42.706032172+01:00\",\"UpdatedAt\":\"2021-03-11T17:14:42.706032172+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MDMxNTgyNjg1MjM2NDI4OX0.BP8pC58baVrpWFdQSy3HvTCXqzUU_bxaJSE7wsKoAtk\"},\"message\":\"Account has been created\",\"status\":true}";
+            string responseStr = "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}";
             GameManager.gm.AppendLogLine(responseStr);
             server = _serverUrl;
 
@@ -110,7 +110,7 @@ public class ApiManager : MonoBehaviour
             resp.account = new SAccount();
             resp = Newtonsoft.Json.JsonConvert.DeserializeObject<SResp>(responseStr);
             Debug.Log(resp.account.token);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(resp.account.token);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resp.account.token);
             // If only token is send back by API
             // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(responseStr);
 
