@@ -411,8 +411,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The variable to save in "[key]=[value]" format</param>
     private void SaveVariable(string _input)
     {
-        string regex = "^[a-zA-Z0-9]+=.+$";
-        if (Regex.IsMatch(_input, regex))
+        string pattern = "^[a-zA-Z0-9]+=.+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
