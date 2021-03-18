@@ -99,7 +99,7 @@ public class GUIObjectInfos : MonoBehaviour
                     ReadFromJson.STiles[] tiles = GameManager.gm.roomTemplates[roomTemplate].tiles;
                     foreach (ReadFromJson.STiles t in tiles)
                     {
-                        if (t.location == $"{posXY.x}/{posXY.y}")
+                        if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
                             tileData = t;
                     }
                     if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
