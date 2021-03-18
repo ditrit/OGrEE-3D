@@ -61,6 +61,10 @@ public class GUIObjectInfos : MonoBehaviour
         objList.text = "";
         foreach (GameObject obj in _objects)
             objList.text += $"{obj.GetComponent<HierarchyName>().fullname}\n";
+
+        // Set correct height for scroll view
+        RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(0, _objects.Count * 20);
     }
 
     ///<summary>
