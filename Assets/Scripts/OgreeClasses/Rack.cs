@@ -44,13 +44,16 @@ public class Rack : Object
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
+                    if (_value.EndsWith("@recursive"))
                     {
-                        domain = _value;
-                        UpdateColor();
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
                     }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    {
+                        SetDomain(_value);
+                        UpdateColor();
+                    }
                     break;
                 case "color":
                     SetColor(_value);
@@ -141,7 +144,7 @@ public class Rack : Object
         if (_isRelative)
         {
             transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
-            attributes["posXY"] = JsonUtility.ToJson(originalPosXY + _v);    
+            attributes["posXY"] = JsonUtility.ToJson(originalPosXY + _v);
         }
         else
         {

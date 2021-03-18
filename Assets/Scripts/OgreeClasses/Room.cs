@@ -348,10 +348,13 @@ public class Room : Building
             switch (_param)
             {
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
+                    if (_value.EndsWith("@recursive"))
+                    {
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
+                    }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                        SetDomain(_value);
                     break;
                 case "areas":
                     ParseAreas(_value);

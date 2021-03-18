@@ -68,10 +68,13 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
+                    if (_value.EndsWith("@recursive"))
+                    {
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
+                    }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                        SetDomain(_value);
                     break;
                 default:
                     if (attributes.ContainsKey(_param))
@@ -119,6 +122,32 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         int index = int.Parse(_index);
         return description[index];
+    }
+
+    ///<summary>
+    /// Change the OgreeObject's domain
+    ///</summary>
+    ///<param name="_newDomain">The domain name to assign</param>
+    protected void SetDomain(string _newDomain)
+    {
+        if (GameManager.gm.allItems.ContainsKey(_newDomain))
+            domain = _newDomain;
+        else
+            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", "yellow");
+    }
+
+    ///<summary>
+    /// Change the domain for the OgreeObject and all its children
+    ///</summary>
+    ///<param name="_newDomain">The domain name to assign</param>
+    protected void SetAllDomains(string _newDomain)
+    {
+        SetAttribute("domain", _newDomain);
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<OgreeObject>())
+                child.GetComponent<OgreeObject>().SetAttribute("domain", _newDomain);
+        }
     }
 
     ///<summary>
