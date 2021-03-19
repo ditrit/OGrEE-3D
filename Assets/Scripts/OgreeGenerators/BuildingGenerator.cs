@@ -155,25 +155,6 @@ public class BuildingGenerator : MonoBehaviour
             newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
             newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
         }
-        // switch (room.attributes["orientation"])
-        // {
-        //     case "EN":
-        //         newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-        //         newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-        //         break;
-        //     case "WS":
-        //         newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-        //         newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-        //         break;
-        //     case "NW":
-        //         newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-        //         newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-        //         break;
-        //     case "SE":
-        //         newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-        //         newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-        //         break;
-        // }
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
