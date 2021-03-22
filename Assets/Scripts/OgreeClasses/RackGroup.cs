@@ -75,8 +75,13 @@ public class RackGroup : Object
     public void DisplayRacks(bool _value)
     {
         List<GameObject> racks = new List<GameObject>();
-        string[] rackNames = attributes["racksList"].Split(',');
-        foreach (string rn in rackNames)
+        string[] names = new string[0];
+        if (attributes.ContainsKey("racksList"))
+            names = attributes["racksList"].Split(',');
+        else if (attributes.ContainsKey("content"))
+            names = attributes["content"].Split(',');
+
+        foreach (string rn in names)
         {
             GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<HierarchyName>().fullname}.{rn}");
             if (go)

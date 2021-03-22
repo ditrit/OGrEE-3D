@@ -417,7 +417,7 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_name">The name of the rackGroup</param>
     ///<param name="_parent">The parent of the generated rackGroup</param>
-    ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
+    ///<param name="_racksList">The well formatted list of racks to contains (rk1,rk2,..,rkN)</param>
     ///<returns>The created rackGroup</returns>
     public RackGroup CreateRackGroup(SApiObject _rg, Transform _parent = null)
     {
@@ -446,21 +446,21 @@ public class ObjectGenerator : MonoBehaviour
         Transform rackAtTop = racks[0];
         float maxHeight = 0;
         float maxLength = 0;
-        foreach (Transform r in racks)
+        foreach (Transform rk in racks)
         {
-            if (r.GetComponent<OgreeObject>().category == "rack")
+            if (rk.GetComponent<OgreeObject>().category == "rack")
             {
-                if (r.localPosition.x <= rackAtLowerLeft.localPosition.x && r.localPosition.z <= rackAtLowerLeft.localPosition.z)
-                    rackAtLowerLeft = r;
-                if (r.localPosition.x > rackAtRight.localPosition.x)
-                    rackAtRight = r;
-                if (r.localPosition.z > rackAtTop.localPosition.z)
-                    rackAtTop = r;
+                if (rk.localPosition.x <= rackAtLowerLeft.localPosition.x && rk.localPosition.z <= rackAtLowerLeft.localPosition.z)
+                    rackAtLowerLeft = rk;
+                if (rk.localPosition.x > rackAtRight.localPosition.x)
+                    rackAtRight = rk;
+                if (rk.localPosition.z > rackAtTop.localPosition.z)
+                    rackAtTop = rk;
 
-                if (r.transform.GetChild(0).localScale.y > maxHeight)
-                    maxHeight = r.transform.GetChild(0).localScale.y;
-                if (r.transform.GetChild(0).localScale.z > maxLength)
-                    maxLength = r.transform.GetChild(0).localScale.z;
+                if (rk.GetChild(0).localScale.y > maxHeight)
+                    maxHeight = rk.GetChild(0).localScale.y;
+                if (rk.GetChild(0).localScale.z > maxLength)
+                    maxLength = rk.GetChild(0).localScale.z;
             }
         }
         // Debug.LogWarning($"[rg] {_rg.name}: ll={rackAtLowerLeft.name}, r={rackAtRight.name}, t={rackAtTop.name}");
@@ -527,6 +527,89 @@ public class ObjectGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hn, newRg);
 
         return rg;
+    }
+
+    ///<summary>
+    /// Generate a deviceGroup (from GameManager.labeledBoxModel) which contains all the given devices.
+    ///</summary>
+    ///<param name="_name">The name of the deviceGroup</param>
+    ///<param name="_parent">The parent of the generated deviceGroup</param>
+    ///<param name="_racksList">The well formatted list of racks to contains (dv1,dv2,..,dvN)</param>
+    ///<returns>The created deviceGroup</returns>
+    public RackGroup CreateDeviceGroup(SApiObject _dg, Transform _parent = null)
+    {
+        Transform parent = Utils.FindParent(_parent, _dg.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "rack")
+        {
+            GameManager.gm.AppendLogLine($"Parent rack not found", "red");
+            return null;
+        }
+
+        List<Transform> devices = new List<Transform>();
+        string[] deviceNames = _dg.attributes["content"].Split(',');
+        foreach (string dn in deviceNames)
+        {
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{dn}");
+            if (go && go.GetComponent<OgreeObject>()?.category == "device")
+                devices.Add(go.transform);
+            else
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{dn} doesn't exists.", "yellow");
+        }
+        if (devices.Count == 0)
+            return null;
+
+        GameObject newDg = Instantiate(GameManager.gm.labeledBoxModel);
+        newDg.name = _dg.name;
+        newDg.transform.parent = _parent;
+
+        // Find scale & apply it
+        Transform lowerDv = devices[0];
+        Transform upperDv = devices[0];
+        float maxWidth = 0;
+        float maxLength = 0;
+        foreach (Transform dv in devices)
+        {
+            if (dv.localPosition.y < lowerDv.localPosition.y)
+                lowerDv = dv;
+            if (dv.localPosition.y > upperDv.localPosition.y)
+                upperDv = dv;
+
+            if (dv.GetChild(0).localScale.x > maxWidth)
+                maxWidth = dv.GetChild(0).localScale.x;
+            if (dv.GetChild(0).localScale.z > maxLength)
+                maxLength = dv.GetChild(0).localScale.z;
+        }
+        float height = upperDv.localPosition.y - lowerDv.localPosition.y;
+        height += (upperDv.GetChild(0).localScale.y + lowerDv.GetChild(0).localScale.y) / 2;
+        newDg.transform.GetChild(0).localScale = new Vector3(maxWidth, height, maxLength);
+
+        // Find Pos & apply it
+        newDg.transform.localEulerAngles = Vector3.zero;
+        newDg.transform.localPosition = lowerDv.localPosition;
+        newDg.transform.localPosition += new Vector3(0, newDg.transform.GetChild(0).localScale.y / 2, 0);
+        newDg.transform.localPosition -= new Vector3(0, lowerDv.GetChild(0).localScale.y / 2, 0);
+
+
+        RackGroup dg = newDg.AddComponent<RackGroup>();
+        dg.name = newDg.name;
+        dg.parentId = _dg.parentId;
+        if (string.IsNullOrEmpty(dg.parentId))
+            dg.parentId = parent.GetComponent<OgreeObject>().id;
+        dg.category = "deviceGroup";
+        dg.description = _dg.description;
+        dg.domain = _dg.domain;
+        if (string.IsNullOrEmpty(dg.domain))
+            dg.domain = devices[0].GetComponent<OgreeObject>().domain;
+        dg.attributes = _dg.attributes;
+        dg.DisplayRacks(false);
+
+        newDg.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        newDg.GetComponent<DisplayObjectData>().SetLabel("#name");
+
+        string hn = newDg.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newDg);
+
+        return dg;
     }
 
     ///<summary>

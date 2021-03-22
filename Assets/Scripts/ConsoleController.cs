@@ -485,6 +485,8 @@ public class ConsoleController : MonoBehaviour
             CreateDevice(str[1]);
         else if (str[0] == "rackgroup" || str[0] == "rg")
             CreateRackGroup(str[1]);
+        else if (str[0] == "devicegroup" || str[0] == "dg")
+            CreateDeviceGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
             CreateCorridor(str[1]);
         else
@@ -771,6 +773,32 @@ public class ConsoleController : MonoBehaviour
             rg.attributes["racksList"] = data[1].Trim('{', '}');
             if (parent)
                 ObjectGenerator.instance.CreateRackGroup(rg, parent);
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create deviceGroup" command and call ObjectGenerator.CreateDeviceGroup().
+    ///</summary>
+    ///<param name="_input">String with deviceGroup data to parse</param>
+    private void CreateDeviceGroup(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+
+            Transform parent = null;
+            SApiObject rg = new SApiObject();
+            rg.description = new List<string>();
+            rg.attributes = new Dictionary<string, string>();
+
+            IsolateParent(data[0], out parent, out rg.name);
+            rg.attributes["content"] = data[1].Trim('{', '}');
+            if (parent)
+                ObjectGenerator.instance.CreateDeviceGroup(rg, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
