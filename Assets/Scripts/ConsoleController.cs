@@ -411,8 +411,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The variable to save in "[key]=[value]" format</param>
     private void SaveVariable(string _input)
     {
-        string regex = "^[a-zA-Z0-9]+=.+$";
-        if (Regex.IsMatch(_input, regex))
+        string pattern = "^[a-zA-Z0-9]+=.+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
@@ -588,7 +588,7 @@ public class ConsoleController : MonoBehaviour
     private void CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -736,11 +736,14 @@ public class ConsoleController : MonoBehaviour
             if (parent)
             {
                 Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
-                Vector3 scale = device.transform.GetChild(0).localScale * 1000;
-                device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
-                device.attributes["sizeUnit"] = "mm";
-                device.attributes["height"] = scale.y.ToString();
-                device.attributes["heightUnit"] = "mm";
+                if (device)
+                {
+                    Vector3 scale = device.transform.GetChild(0).localScale * 1000;
+                    device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                    device.attributes["sizeUnit"] = "mm";
+                    device.attributes["height"] = scale.y.ToString();
+                    device.attributes["heightUnit"] = "mm";
+                }
             }
         }
         else

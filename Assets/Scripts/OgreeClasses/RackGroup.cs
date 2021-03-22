@@ -24,10 +24,7 @@ public class RackGroup : Object
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
-                    else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    SetDomain(_value);
                     break;
                 case "color":
                     SetColor(_value);
@@ -61,12 +58,12 @@ public class RackGroup : Object
 
         if (_value == "true")
         {
-            UpdateAlpha("0");
+            UpdateAlpha("true");
             DisplayRacks(true);
         }
         else
         {
-            UpdateAlpha("100");
+            UpdateAlpha("false");
             DisplayRacks(false);
         }
     }

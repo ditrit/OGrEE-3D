@@ -116,19 +116,12 @@ public class ConfigLoader
     /// Send a get request to the given url. If no error, initialize ApiManager.
     ///</summary>
     public IEnumerator ConnectToApi()
-    {
-        UnityWebRequest www = UnityWebRequest.Get(config.db_url);
+    {        
+        // Should get pwd from UI 
+        // And send it with url & login to ApiManager
 
-        yield return www.SendWebRequest();
-        if (www.isHttpError || www.isNetworkError)
-        {
-            GameManager.gm.AppendLogLine($"Error while connecting to API: {www.error}", "red");
-            yield break;
-        }
-        string response = www.downloadHandler.text;
-        GameManager.gm.AppendLogLine(response);
-
-        ApiManager.instance.Initialize(config.db_url, config.db_login, config.db_token);
+        ApiManager.instance.Initialize(config.db_url, config.db_login, "secret");
+        yield return null;
     }
 
     ///<summary>

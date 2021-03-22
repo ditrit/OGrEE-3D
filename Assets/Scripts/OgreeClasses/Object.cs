@@ -26,10 +26,16 @@ public class Object : OgreeObject
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
+                    if (_value.EndsWith("@recursive"))
+                    {
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
+                    }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    {
+                        SetDomain(_value);
+                        UpdateColor();
+                    }
                     break;
                 case "color":
                     SetColor(_value);
@@ -58,23 +64,26 @@ public class Object : OgreeObject
     ///<summary>
     /// Update object's alpha according to _input, from 0 to 100.
     ///</summary>
-    ///<param name="_input">Alpha wanted for the rack</param>
-    protected void UpdateAlpha(string _input)
+    ///<param name="_value">Alpha wanted for the rack</param>
+    protected void UpdateAlpha(string _value)
     {
-        string regex = "^[0-9]+$";
-        if (Regex.IsMatch(_input, regex))
+        if (_value != "true" && _value != "false")
         {
-            float a = float.Parse(_input, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            a = Mathf.Clamp(a, 0, 100);
-            if (a == 0)
-                transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-            else
-                transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-            mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, a / 100);
+            GameManager.gm.AppendLogLine("alpha value has to be true or false", "yellow");
+            return;
+        }
+
+        DisplayObjectData dod = GetComponent<DisplayObjectData>();
+        if (_value == "true")
+        {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+            dod?.ToggleLabel(false);
         }
         else
-            GameManager.gm.AppendLogLine("Please use a value between 0 and 100", "yellow");
+        {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            dod?.ToggleLabel(true);
+        }
     }
 
     ///<summary>
@@ -87,6 +96,22 @@ public class Object : OgreeObject
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         Color myColor = new Color();
         ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
+        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+    }
+
+    ///<summary>
+    /// Update object's color according to its Tenant.
+    ///</summary>
+    public void UpdateColor()
+    {
+        if (string.IsNullOrEmpty(domain))
+            return;
+
+        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
+
+        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
         mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
     }
 

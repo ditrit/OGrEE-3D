@@ -42,6 +42,8 @@ public class CustomerGenerator : MonoBehaviour
         newTenant.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
+        ApiManager.instance.CreatePostRequest(_tn.name);
+
         return tenant;
     }
 
@@ -101,6 +103,8 @@ public class CustomerGenerator : MonoBehaviour
 
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
+
+        ApiManager.instance.CreatePostRequest(_si.name);
 
         return site;
     }

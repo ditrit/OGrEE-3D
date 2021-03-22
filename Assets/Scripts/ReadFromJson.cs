@@ -198,13 +198,17 @@ public class ReadFromJson
 
         // Count the right height in U 
         Slot[] slots = rack.GetComponentsInChildren<Slot>();
-        int height = 0;
-        foreach (Slot s in slots)
+        if (slots.Length > 0)
         {
-            if (s.orient == "horizontal")
-                height++;
+            int height = 0;
+            foreach (Slot s in slots)
+            {
+                if (s.orient == "horizontal")
+                    height++;
+            }
+            rack.attributes["height"] = height.ToString();
+            rack.attributes["heightUnit"] = "U";
         }
-        rack.attributes["height"] = height.ToString();
 
 #if !DEBUG
         Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
@@ -287,7 +291,7 @@ public class ReadFromJson
         }
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";
-        
+
         Object device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
