@@ -303,8 +303,8 @@ public class GameManager : MonoBehaviour
         if (canFocus == true)
         {
             focus.Add(_obj);
-            if (_obj.GetComponent<RackGroup>())
-                _obj.GetComponent<RackGroup>().SetAttribute("racks", "true");
+            if (_obj.GetComponent<Group>())
+                _obj.GetComponent<Group>().SetAttribute("racks", "true");
             else
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
@@ -325,8 +325,8 @@ public class GameManager : MonoBehaviour
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
-        if (obj.GetComponent<RackGroup>())
-            obj.GetComponent<RackGroup>().SetAttribute("racks", "false");
+        if (obj.GetComponent<Group>())
+            obj.GetComponent<Group>().SetAttribute("racks", "false");
         else
         {
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
