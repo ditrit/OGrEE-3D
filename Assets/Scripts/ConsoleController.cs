@@ -434,20 +434,28 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            switch (data[0])
+            if (data[0] == "get")
+                ApiManager.instance.CreateGetRequest(data[1]);
+            else
             {
-                case "get":
-                    ApiManager.instance.CreateGetRequest(data[1]);
-                    break;
-                case "put":
-                    ApiManager.instance.CreatePutRequest(data[1]);
-                    break;
-                case "post":
-                    ApiManager.instance.CreatePostRequest(data[1]);
-                    break;
-                case "delete":
-                    ApiManager.instance.CreateDeleteRequest(data[1]);
-                    break;
+                OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
+                if (obj)
+                {
+                    switch (data[0])
+                    {
+                        case "put":
+                            ApiManager.instance.CreatePutRequest(obj);
+                            break;
+                        case "post":
+                            ApiManager.instance.CreatePostRequest(obj);
+                            break;
+                        case "delete":
+                            ApiManager.instance.CreateDeleteRequest(obj);
+                            break;
+                    }
+                }
+                else
+                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", "red");
             }
         }
         else

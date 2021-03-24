@@ -81,7 +81,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
-                    // GameManager.gm.AppendLogLine($"[{category}] {name}: unknown attribute to update.", "yellow");
                     break;
             }
         }
@@ -176,6 +175,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         yield return new WaitForSeconds(2f);
         string hierarchyName = GetComponent<HierarchyName>()?.fullname;
-        ApiManager.instance.CreatePutRequest(hierarchyName);
+        ApiManager.instance.CreatePutRequest(this);
     }
 }

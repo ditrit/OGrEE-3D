@@ -19,7 +19,7 @@ public class CustomerGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
     ///<returns>The created Tenant</returns>
-    public OgreeObject CreateTenant(SApiObject _tn)
+    public OgreeObject CreateTenant(SApiObject _tn, bool _serverPost = true)
     {
         if (GameManager.gm.allItems.Contains(_tn.name))
         {
@@ -42,7 +42,8 @@ public class CustomerGenerator : MonoBehaviour
         newTenant.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
-        ApiManager.instance.CreatePostRequest(_tn.name);
+        if (_serverPost)
+            ApiManager.instance.CreatePostRequest(tenant);
 
         return tenant;
     }
@@ -53,7 +54,7 @@ public class CustomerGenerator : MonoBehaviour
     ///<param name="_si">The site data to apply</param>
     ///<param name="_parent">The parent of the created site. Leave null if _bd contains the parendId</param>
     ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
+    public OgreeObject CreateSite(SApiObject _si, Transform _parent = null, bool _serverPost = true)
     {
         Transform tn = Utils.FindParent(_parent, _si.parentId);
         if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
@@ -104,7 +105,8 @@ public class CustomerGenerator : MonoBehaviour
         string hn = newSite.AddComponent<HierarchyName>().fullname;
         GameManager.gm.allItems.Add(hn, newSite);
 
-        ApiManager.instance.CreatePostRequest(_si.name);
+        if (_serverPost)
+            ApiManager.instance.CreatePostRequest(site);
 
         return site;
     }

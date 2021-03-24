@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,8 +83,8 @@ public class GameManager : MonoBehaviour
 
         UpdateFocusText();
 #if DEBUG
-        consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/HPC_LOD_rg_co.ocli");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
     }
@@ -365,11 +365,11 @@ public class GameManager : MonoBehaviour
         // Should count type of deleted objects
         if (_serverDelete)
         {
-            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
+            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<OgreeObject>());
             foreach (Transform child in _toDel.transform)
             {
                 if (child.GetComponent<OgreeObject>())
-                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
+                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
         Destroy(_toDel);
