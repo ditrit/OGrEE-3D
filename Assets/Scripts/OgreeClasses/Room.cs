@@ -377,7 +377,7 @@ public class Room : Building
                     break;
             }
         }
-        // PutData();
+        PutData();
     }
 
     ///<summary>

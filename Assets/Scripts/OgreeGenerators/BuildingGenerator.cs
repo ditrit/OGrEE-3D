@@ -21,7 +21,7 @@ public class BuildingGenerator : MonoBehaviour
     ///<param name="_bd">The building data to apply</param>
     ///<param name="_parent">The parent of the created building. Leave null if _bd contains the parendId</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
+    public Building CreateBuilding(SApiObject _bd, Transform _parent = null, bool _serverPost = true)
     {
         Transform si = Utils.FindParent(_parent, _bd.parentId);
         if (!si || si.GetComponent<OgreeObject>().category != "site")
@@ -73,6 +73,9 @@ public class BuildingGenerator : MonoBehaviour
         newBD.AddComponent<HierarchyName>();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
 
+        if (_serverPost)
+            ApiManager.instance.CreatePostRequest(building);
+
         return building;
     }
 
@@ -82,7 +85,7 @@ public class BuildingGenerator : MonoBehaviour
     ///<param name="_ro">The room data to apply</param>    
     ///<param name="_parent">The parent of the created room. Leave null if _bd contains the parendId</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SApiObject _ro, Transform _parent = null)
+    public Room CreateRoom(SApiObject _ro, Transform _parent = null, bool _serverPost = true)
     {
         Transform bd = Utils.FindParent(_parent, _ro.parentId);
         if (!bd || bd.GetComponent<OgreeObject>().category != "building")
@@ -177,6 +180,9 @@ public class BuildingGenerator : MonoBehaviour
             foreach (ReadFromJson.SSeparator sep in template.separators)
                 CreateSeparatorFromJson(sep, newRoom.transform);
         }
+
+        if (_serverPost)
+            ApiManager.instance.CreatePostRequest(room);
 
         return room;
     }
