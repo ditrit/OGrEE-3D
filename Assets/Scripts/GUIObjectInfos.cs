@@ -19,6 +19,11 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private GameObject multiPanel = null;
     [SerializeField] private TextMeshProUGUI objList = null;
 
+    private void Start()
+    {
+        UpdateSingleFields(null);
+    }
+
     ///<summary>
     /// Update Texts in singlePanel.
     ///</summary>

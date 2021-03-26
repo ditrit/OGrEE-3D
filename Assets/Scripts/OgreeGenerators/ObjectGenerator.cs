@@ -613,7 +613,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
-        string[] rackNames = _co.attributes["racksList"].Split(',');
+        string[] rackNames = _co.attributes["content"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
         Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
 

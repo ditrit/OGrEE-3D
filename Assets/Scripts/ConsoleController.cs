@@ -802,7 +802,7 @@ public class ConsoleController : MonoBehaviour
             co.attributes = new Dictionary<string, string>();
 
             IsolateParent(data[0], out parent, out co.name);
-            co.attributes["racksList"] = data[1].Trim('{', '}');
+            co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
                 ObjectGenerator.instance.CreateCorridor(co, parent);
