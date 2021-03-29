@@ -434,20 +434,28 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            switch (data[0])
+            if (data[0] == "get")
+                ApiManager.instance.CreateGetRequest(data[1]);
+            else
             {
-                case "get":
-                    ApiManager.instance.CreateGetRequest(data[1]);
-                    break;
-                case "put":
-                    ApiManager.instance.CreatePutRequest(data[1]);
-                    break;
-                case "post":
-                    ApiManager.instance.CreatePostRequest(data[1]);
-                    break;
-                case "delete":
-                    ApiManager.instance.CreateDeleteRequest(data[1]);
-                    break;
+                OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
+                if (obj)
+                {
+                    switch (data[0])
+                    {
+                        case "put":
+                            ApiManager.instance.CreatePutRequest(obj);
+                            break;
+                        case "post":
+                            ApiManager.instance.CreatePostRequest(obj);
+                            break;
+                        case "delete":
+                            ApiManager.instance.CreateDeleteRequest(obj);
+                            break;
+                    }
+                }
+                else
+                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", "red");
             }
         }
         else
@@ -483,8 +491,8 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             CreateDevice(str[1]);
-        else if (str[0] == "rackgroup" || str[0] == "rg")
-            CreateRackGroup(str[1]);
+        else if (str[0] == "group" || str[0] == "gr")
+            CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
             CreateCorridor(str[1]);
         else
@@ -751,10 +759,10 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create rackGroup" command and call ObjectGenerator.CreateRackGroup().
+    /// Parse a "create group" command and call ObjectGenerator.CreateGroup().
     ///</summary>
     ///<param name="_input">String with rackgroup data to parse</param>
-    private void CreateRackGroup(string _input)
+    private void CreateGroup(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
@@ -768,9 +776,9 @@ public class ConsoleController : MonoBehaviour
             rg.attributes = new Dictionary<string, string>();
 
             IsolateParent(data[0], out parent, out rg.name);
-            rg.attributes["racksList"] = data[1].Trim('{', '}');
+            rg.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
-                ObjectGenerator.instance.CreateRackGroup(rg, parent);
+                ObjectGenerator.instance.CreateGroup(rg, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -794,7 +802,7 @@ public class ConsoleController : MonoBehaviour
             co.attributes = new Dictionary<string, string>();
 
             IsolateParent(data[0], out parent, out co.name);
-            co.attributes["racksList"] = data[1].Trim('{', '}');
+            co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
                 ObjectGenerator.instance.CreateCorridor(co, parent);

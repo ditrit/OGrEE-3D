@@ -19,7 +19,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<summary>
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
-    ///<param name="_rk">THe rack data to apply</param>
+    ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null)
@@ -413,120 +413,186 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Generate a rackGroup (from GameManager.labeledBoxModel) which contains all the given racks.
+    /// Generate a group (from GameManager.labeledBoxModel) which contains all the given objects.
     ///</summary>
-    ///<param name="_name">The name of the rackGroup</param>
-    ///<param name="_parent">The parent of the generated rackGroup</param>
-    ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
+    ///<param name="_gr">The group data to apply</param>
+    ///<param name="_parent">The parent of the generated group</param>
     ///<returns>The created rackGroup</returns>
-    public RackGroup CreateRackGroup(SApiObject _rg, Transform _parent = null)
+    public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _rg.parentId);
-        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        Transform parent = Utils.FindParent(_parent, _gr.parentId);
+        if (!parent)
         {
-            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            GameManager.gm.AppendLogLine("Parent not found", "red");
+            return null;
+        }
+        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        if (parentCategory != "room" && parentCategory != "rack")
+        {
+            GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", "red");
             return null;
         }
 
-        List<Transform> racks = new List<Transform>();
-        string[] rackNames = _rg.attributes["racksList"].Split(',');
-        foreach (string rn in rackNames)
+        List<Transform> content = new List<Transform>();
+        string[] contentNames = _gr.attributes["content"].Split(',');
+        foreach (string cn in contentNames)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{rn}");
-            if (go && (go.GetComponent<OgreeObject>()?.category == "rack" || go.GetComponent<OgreeObject>()?.category == "corridor"))
-                racks.Add(go.transform);
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{cn}");
+            if (go && go.GetComponent<OgreeObject>())
+            {
+                if ((parentCategory == "room" && (go.GetComponent<OgreeObject>().category == "rack" || go.GetComponent<OgreeObject>().category == "corridor"))
+                    || parentCategory == "rack" && go.GetComponent<OgreeObject>().category == "device")
+                    content.Add(go.transform);
+            }
             else
-                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{cn} doesn't exists.", "yellow");
         }
-        if (racks.Count == 0)
+        if (content.Count == 0)
             return null;
 
-        Transform rackAtLowerLeft = racks[0];
-        Transform rackAtRight = racks[0];
-        Transform rackAtTop = racks[0];
+        GameObject newGr = Instantiate(GameManager.gm.labeledBoxModel);
+        newGr.name = _gr.name;
+        newGr.transform.parent = _parent;
+
+        // According to group type, set pos, rot & scale
+        Vector3 pos = Vector3.zero;
+        Vector3 scale = Vector3.zero;
+        if (parentCategory == "room")
+        {
+            RackGroupPosScale(content, out pos, out scale);
+            newGr.transform.localEulerAngles = new Vector3(0, 180, 0);
+        }
+        else if (parentCategory == "rack")
+        {
+            DeviceGroupPosScale(content, out pos, out scale);
+            newGr.transform.localEulerAngles = Vector3.zero;
+        }
+        newGr.transform.localPosition = pos;
+        newGr.transform.GetChild(0).localScale = scale;
+
+        // Set Group component
+        Group gr = newGr.AddComponent<Group>();
+        gr.name = newGr.name;
+        gr.parentId = _gr.parentId;
+        if (string.IsNullOrEmpty(gr.parentId))
+            gr.parentId = parent.GetComponent<OgreeObject>().id;
+        gr.category = "group";
+        gr.domain = _gr.domain;
+        if (string.IsNullOrEmpty(gr.domain))
+            gr.domain = content[0].GetComponent<OgreeObject>().domain;
+        gr.description = _gr.description;
+        gr.attributes = _gr.attributes;
+        gr.DisplayContent(false);
+
+        if (parentCategory == "room")
+            newGr.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        else if (parentCategory == "rack")
+            newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
+
+        string hn = newGr.AddComponent<HierarchyName>().fullname;
+        GameManager.gm.allItems.Add(hn, newGr);
+
+        return gr;
+    }
+
+    ///<summary>
+    /// For a group of Racks, set _pos and _scale
+    ///</summary>
+    ///<param name="_racks">The list of racks in the group</param>
+    ///<param name="_pos">The localPosition to apply to the group</param>
+    ///<param name="_scale">The localScale to apply to the group</param>
+    private void RackGroupPosScale(List<Transform> _racks, out Vector3 _pos, out Vector3 _scale)
+    {
+        Transform rackAtLowerLeft = _racks[0];
+        Transform rackAtRight = _racks[0];
+        Transform rackAtTop = _racks[0];
         float maxHeight = 0;
         float maxLength = 0;
-        foreach (Transform r in racks)
+        foreach (Transform rk in _racks)
         {
-            if (r.GetComponent<OgreeObject>().category == "rack")
+            if (rk.GetComponent<OgreeObject>().category == "rack")
             {
-                if (r.localPosition.x <= rackAtLowerLeft.localPosition.x && r.localPosition.z <= rackAtLowerLeft.localPosition.z)
-                    rackAtLowerLeft = r;
-                if (r.localPosition.x > rackAtRight.localPosition.x)
-                    rackAtRight = r;
-                if (r.localPosition.z > rackAtTop.localPosition.z)
-                    rackAtTop = r;
+                if (rk.localPosition.x <= rackAtLowerLeft.localPosition.x && rk.localPosition.z <= rackAtLowerLeft.localPosition.z)
+                    rackAtLowerLeft = rk;
+                if (rk.localPosition.x > rackAtRight.localPosition.x)
+                    rackAtRight = rk;
+                if (rk.localPosition.z > rackAtTop.localPosition.z)
+                    rackAtTop = rk;
 
-                if (r.transform.GetChild(0).localScale.y > maxHeight)
-                    maxHeight = r.transform.GetChild(0).localScale.y;
-                if (r.transform.GetChild(0).localScale.z > maxLength)
-                    maxLength = r.transform.GetChild(0).localScale.z;
+                if (rk.GetChild(0).localScale.y > maxHeight)
+                    maxHeight = rk.GetChild(0).localScale.y;
+                if (rk.GetChild(0).localScale.z > maxLength)
+                    maxLength = rk.GetChild(0).localScale.z;
             }
         }
-        // Debug.LogWarning($"[rg] {_rg.name}: ll={rackAtLowerLeft.name}, r={rackAtRight.name}, t={rackAtTop.name}");
-        // racks = racks.OrderBy(t => t.GetChild(0).localScale.y).ToList();
-        // maxHeight = racks[racks.Count - 1].GetChild(0).localScale.y;
-        // racks = racks.OrderBy(t => t.GetChild(0).localScale.z).ToList();
-        // maxLength = racks[racks.Count - 1].GetChild(0).localScale.z;
 
-        GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
-        newRg.name = _rg.name;
-        newRg.transform.parent = parent;
-
-        float x = rackAtRight.localPosition.x - rackAtLowerLeft.localPosition.x;
-        float z = rackAtTop.localPosition.z - rackAtLowerLeft.localPosition.z;
+        float witdh = rackAtRight.localPosition.x - rackAtLowerLeft.localPosition.x;
+        float length = rackAtTop.localPosition.z - rackAtLowerLeft.localPosition.z;
         if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
             || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            x += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            z -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
-            z += maxLength * 2;
+            witdh += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            length -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
+            length += maxLength * 2;
         }
         else
         {
-            z += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            x -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
-            x += maxLength * 2;
+            length += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            witdh -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
+            witdh += maxLength * 2;
         }
-        newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
-        newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newRg.transform.localPosition = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
+        _scale = new Vector3(witdh, maxHeight, length);
 
         float xOffset;
         float zOffset;
         if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
             || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            xOffset = (newRg.transform.GetChild(0).localScale.x - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            zOffset = (newRg.transform.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            xOffset = (_scale.x - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            zOffset = (_scale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
         }
         else
         {
-            xOffset = (newRg.transform.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
-            zOffset = (newRg.transform.GetChild(0).localScale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            xOffset = (_scale.x + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
         }
-        newRg.transform.localPosition += new Vector3(xOffset, 0, zOffset);
+        _pos = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
+        _pos += new Vector3(xOffset, 0, zOffset);
+    }
 
-        RackGroup rg = newRg.AddComponent<RackGroup>();
-        rg.name = newRg.name;
-        rg.parentId = _rg.parentId;
-        if (string.IsNullOrEmpty(rg.parentId))
-            rg.parentId = parent.GetComponent<Room>().id;
-        rg.category = "rackGroup";
-        rg.description = _rg.description;
-        rg.domain = _rg.domain;
-        if (string.IsNullOrEmpty(rg.domain))
-            rg.domain = racks[0].GetComponent<Rack>().domain;
-        rg.attributes = _rg.attributes;
-        rg.DisplayRacks(false);
+    ///<summary>
+    /// For a group of devices, set _pos and _scale
+    ///</summary>
+    ///<param name="_racks">The list of devices in the group</param>
+    ///<param name="_pos">The localPosition to apply to the group</param>
+    ///<param name="_scale">The localScale to apply to the group</param>
+    private void DeviceGroupPosScale(List<Transform> _devices, out Vector3 _pos, out Vector3 _scale)
+    {
+        Transform lowerDv = _devices[0];
+        Transform upperDv = _devices[0];
+        float maxWidth = 0;
+        float maxLength = 0;
+        foreach (Transform dv in _devices)
+        {
+            if (dv.localPosition.y < lowerDv.localPosition.y)
+                lowerDv = dv;
+            if (dv.localPosition.y > upperDv.localPosition.y)
+                upperDv = dv;
 
-        newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newRg.GetComponent<DisplayObjectData>().SetLabel("#name");
+            if (dv.GetChild(0).localScale.x > maxWidth)
+                maxWidth = dv.GetChild(0).localScale.x;
+            if (dv.GetChild(0).localScale.z > maxLength)
+                maxLength = dv.GetChild(0).localScale.z;
+        }
+        float height = upperDv.localPosition.y - lowerDv.localPosition.y;
+        height += (upperDv.GetChild(0).localScale.y + lowerDv.GetChild(0).localScale.y) / 2;
 
-        string hn = newRg.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newRg);
+        _scale = new Vector3(maxWidth, height, maxLength);
 
-        return rg;
+        _pos = lowerDv.localPosition;
+        _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
+
     }
 
     ///<summary>
@@ -547,7 +613,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
-        string[] rackNames = _co.attributes["racksList"].Split(',');
+        string[] rackNames = _co.attributes["content"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
         Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
 

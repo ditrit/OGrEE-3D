@@ -21,7 +21,7 @@ public class ApiManager : MonoBehaviour
         public string email;
         public string password;
     }
-    private struct SResp
+    private struct SAuthResp
     {
         public SAccount account;
         public string message;
@@ -37,6 +37,14 @@ public class ApiManager : MonoBehaviour
         public string Password;
         public string token;
     }
+
+    private struct SObjResp
+    {
+        public string message;
+        public string status;
+        public SApiObject data;
+    }
+
     // {
     //     "account":{
     //         "ID":641717123263660033,
@@ -90,7 +98,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_serverUrl">The url to save</param>
     ///<param name="_login">The login to use</param>
     ///<param name="_pwd">The password to use</param>
-    public async void Initialize(string _serverUrl, string _login, string _pwd)
+    public /*async*/ void Initialize(string _serverUrl, string _login, string _pwd)
     {
         SAuth auth = new SAuth();
         auth.email = _login;
@@ -102,17 +110,15 @@ public class ApiManager : MonoBehaviour
         {
             // HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             // string responseStr = response.Content.ReadAsStringAsync().Result;
+            // GameManager.gm.AppendLogLine(responseStr);
             string responseStr = "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}";
-            GameManager.gm.AppendLogLine(responseStr);
-            server = _serverUrl;
+            server = fullPath;
 
-            SResp resp = new SResp();
+            SAuthResp resp = new SAuthResp();
             resp.account = new SAccount();
-            resp = Newtonsoft.Json.JsonConvert.DeserializeObject<SResp>(responseStr);
+            resp = Newtonsoft.Json.JsonConvert.DeserializeObject<SAuthResp>(responseStr);
             Debug.Log(resp.account.token);
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resp.account.token);
-            // If only token is send back by API
-            // httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(responseStr);
 
             isReady = true;
         }
@@ -131,7 +137,7 @@ public class ApiManager : MonoBehaviour
     {
         SRequest request = new SRequest();
         request.type = "get";
-        request.path = _input;
+        request.path = $"/{_input}";
 
         requestsToSend.Enqueue(request);
     }
@@ -139,111 +145,45 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Create an PUT request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to put</param>
-    public void CreatePutRequest(string _objName)
+    ///<param name="_obj">The OgreeObject to put</param>
+    public void CreatePutRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
         request.type = "put";
 
-        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
-        if (obj)
-        {
-            SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
-            request.path = $"/api/user/{apiObj.category}s/{apiObj.id}";
-            /*
-            int pointCount = _objName.Count(f => (f == '.'));
-            if (pointCount == 0)
-                request.path = "/api/user/tenants/";
-            else if (pointCount == 1)
-                request.path = "/api/user/sites/";
-            else if (pointCount == 2)
-                request.path = "/api/user/buildings/"; //?
-            else if (pointCount == 3)
-                request.path = "/api/user/rooms/"; //?
-            else if (pointCount == 4)
-                request.path = "/api/user/racks/"; //?
-            else
-                request.path = "/api/user/devices/"; //?
-            request.path += obj.GetComponent<OgreeObject>().id;
-            */
-            request.json = JsonConvert.SerializeObject(apiObj);
-            requestsToSend.Enqueue(request);
-        }
-        else
-            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
+        SApiObject apiObj = Utils.ConvertToApiObj(_obj);
+        request.path = $"/{apiObj.category}s/{apiObj.id}";
+        request.json = JsonConvert.SerializeObject(apiObj);
+        requestsToSend.Enqueue(request);
     }
 
     ///<summary>
     /// Create an POST request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to post</param>
-    public void CreatePostRequest(string _objName)
+    ///<param name="_obj">The OgreeObject to post</param>
+    public void CreatePostRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
         request.type = "post";
 
-        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
-        if (obj)
-        {
-            SApiObject apiObj = Utils.ConvertToApiObj(obj.GetComponent<OgreeObject>());
-            request.path = $"/api/user/{apiObj.category}s";
-            /*
-            int pointCount = _objName.Count(f => (f == '.'));
-            if (pointCount == 0)
-                request.path = "/api/user/tenants";
-            else if (pointCount == 1)
-                request.path = "/api/user/sites";
-            else if (pointCount == 2)
-                request.path = "/api/user/buildings"; //?
-            else if (pointCount == 3)
-                request.path = "/api/user/rooms"; //?
-            else if (pointCount == 4)
-                request.path = "/api/user/racks"; //?
-            else
-                request.path = "/api/user/devices"; //?
-            */
-            request.json = JsonConvert.SerializeObject(apiObj);
-            request.objToUpdate = _objName;
+        SApiObject apiObj = Utils.ConvertToApiObj(_obj);
+        request.path = $"/{apiObj.category}s";
+        request.json = JsonConvert.SerializeObject(apiObj);
+        request.objToUpdate = _obj.GetComponent<HierarchyName>().fullname;
 
-            requestsToSend.Enqueue(request);
-        }
-        else
-            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
+        requestsToSend.Enqueue(request);
     }
 
     ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to delete</param>
-    public void CreateDeleteRequest(string _objName)
+    ///<param name="_obj">The OgreeObject to delete</param>
+    public void CreateDeleteRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
         request.type = "delete";
-
-        GameObject obj = GameManager.gm.FindByAbsPath(_objName);
-        if (obj)
-        {
-            request.path = $"/api/user/{obj.GetComponent<OgreeObject>().category}s/{obj.GetComponent<OgreeObject>().id}";
-            /*
-            int pointCount = _objName.Count(f => (f == '.'));
-            if (pointCount == 0)
-                request.path = "/api/user/tenants/";
-            else if (pointCount == 1)
-                request.path = "/api/user/sites/";
-            else if (pointCount == 2)
-                request.path = "/api/user/buildings/"; //?
-            else if (pointCount == 3)
-                request.path = "/api/user/rooms/"; //?
-            else if (pointCount == 4)
-                request.path = "/api/user/racks/"; //?
-            else
-                request.path = "/api/user/devices/"; //?
-            request.path += obj.GetComponent<OgreeObject>().id;
-            */
-            requestsToSend.Enqueue(request);
-        }
-        else
-            GameManager.gm.AppendLogLine($"{_objName} doesn't exist", "red");
+        request.path = $"/{_obj.category}s/{_obj.id}";
+        requestsToSend.Enqueue(request);
     }
 
     ///<summary>
@@ -259,7 +199,7 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
-            CreateItemFromJson(req.path, response);
+            CreateItemFromJson(response);
         }
         catch (HttpRequestException e)
         {
@@ -345,18 +285,41 @@ public class ApiManager : MonoBehaviour
     /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create
     ///</summary>
-    private void CreateItemFromJson(string _path, string _json)
+    ///<param name="_json"></param>
+    private void CreateItemFromJson(string _json)
     {
-        SApiObject apiObj = JsonConvert.DeserializeObject<SApiObject>(_json);
-        if (Regex.IsMatch(_path, "customers/[^/]+$"))
+        // Is a list of objects
+        if (_json.Contains("\"data\":["))
+            return;
+        
+        // Is an object: generate the corresponding OGrEE object
+        SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
+        switch (resp.data.category)
         {
-            Debug.Log("Create Customer");
-            CustomerGenerator.instance.CreateTenant(apiObj);
-        }
-        else if (Regex.IsMatch(_path, "sites/[^/]+$"))
-        {
-            Debug.Log("Create Site");
-            CustomerGenerator.instance.CreateSite(apiObj);
+            case "tenant":
+                CustomerGenerator.instance.CreateTenant(resp.data, false);
+                break;
+            case "site":
+                CustomerGenerator.instance.CreateSite(resp.data, null, false);
+                break;
+            case "building":
+                BuildingGenerator.instance.CreateBuilding(resp.data, null, false);
+                break;
+            case "room":
+                BuildingGenerator.instance.CreateRoom(resp.data, null, false);
+                break;
+            // case "rack":
+            //     ObjectGenerator.instance.CreateRack(resp.data, null, false);
+            //     break;
+            // case "device":
+            //     ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+            //     break;
+            // case "group":
+            //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
+            //     break;
+            // case "corridor":
+            //     ObjectGenerator.instance.CreateCorridor(resp.data, false, false);
+            //     break;
         }
     }
 
@@ -364,11 +327,22 @@ public class ApiManager : MonoBehaviour
     /// Update object's id with the id given by the api.
     ///</summary>
     ///<param name="_objName">The name of the object to update</param>
-    ///<param name="_jsonId">The json containing the id</param>
-    private void UpdateObjId(string _objName, string _jsonId)
+    ///<param name="_json">The json containing the id</param>
+    private void UpdateObjId(string _objName, string _json)
     {
-        string id = Regex.Replace(_jsonId, "(.*id\":\")|(\"})", "");
-        GameManager.gm.FindByAbsPath(_objName).GetComponent<OgreeObject>().UpdateId(id);
+        if (_json.Contains("success"))
+        {
+            _json = Regex.Replace(_json, "\"(tenant|site|building|room)\":{", "\"data\":{");
+            SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
+            // Debug.Log(resp.data.name + " / " + resp.data.id);
+            GameObject obj = GameManager.gm.FindByAbsPath(_objName);
+            if (obj)
+                obj.GetComponent<OgreeObject>().UpdateId(resp.data.id);
+            else
+                Debug.LogError($"Can't find {_objName}");
+        }
+        else
+            GameManager.gm.AppendLogLine($"Fail to post {_objName} on server", "yellow");
     }
 
 }
