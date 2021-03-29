@@ -145,7 +145,7 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Create an PUT request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to put</param>
+    ///<param name="_obj">The OgreeObject to put</param>
     public void CreatePutRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
@@ -160,7 +160,7 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Create an POST request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to post</param>
+    ///<param name="_obj">The OgreeObject to post</param>
     public void CreatePostRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
@@ -177,7 +177,7 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
-    ///<param name="_objName">The hierarchy name of the object to delete</param>
+    ///<param name="_obj">The OgreeObject to delete</param>
     public void CreateDeleteRequest(OgreeObject _obj)
     {
         SRequest request = new SRequest();
@@ -199,7 +199,7 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
-            CreateItemFromJson(req.path, response);
+            CreateItemFromJson(response);
         }
         catch (HttpRequestException e)
         {
@@ -285,10 +285,14 @@ public class ApiManager : MonoBehaviour
     /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create
     ///</summary>
-    private void CreateItemFromJson(string _path, string _json)
+    ///<param name="_json"></param>
+    private void CreateItemFromJson(string _json)
     {
+        // Is a list of objects
         if (_json.Contains("\"data\":["))
             return;
+        
+        // Is an object: generate the corresponding OGrEE object
         SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
         switch (resp.data.category)
         {
@@ -304,6 +308,18 @@ public class ApiManager : MonoBehaviour
             case "room":
                 BuildingGenerator.instance.CreateRoom(resp.data, null, false);
                 break;
+            // case "rack":
+            //     ObjectGenerator.instance.CreateRack(resp.data, null, false);
+            //     break;
+            // case "device":
+            //     ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+            //     break;
+            // case "group":
+            //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
+            //     break;
+            // case "corridor":
+            //     ObjectGenerator.instance.CreateCorridor(resp.data, false, false);
+            //     break;
         }
     }
 
