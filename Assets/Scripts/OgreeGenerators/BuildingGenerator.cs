@@ -29,7 +29,7 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Parent site not found", "red");
             return null;
         }
-        string hierarchyName = $"{si.GetComponent<HierarchyName>()?.fullname}.{_bd.name}";
+        string hierarchyName = $"{si.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -70,8 +70,8 @@ public class BuildingGenerator : MonoBehaviour
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        newBD.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newBD);
+        string hn = building.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hn, newBD);
 
         if (_serverPost)
             ApiManager.instance.CreatePostRequest(building);
@@ -93,7 +93,7 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Parent building not found", "red");
             return null;
         }
-        string hierarchyName = $"{bd.GetComponent<HierarchyName>()?.fullname}.{_ro.name}";
+        string hierarchyName = $"{bd.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -169,7 +169,7 @@ public class BuildingGenerator : MonoBehaviour
 
         room.UpdateZonesColor();
 
-        string hn = newRoom.AddComponent<HierarchyName>().fullname;
+        string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRoom);
 
         if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
@@ -214,7 +214,7 @@ public class BuildingGenerator : MonoBehaviour
         separator.transform.localPosition += new Vector3(_data.pos1XYm.x, 0, _data.pos1XYm.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
-        string hn = separator.AddComponent<HierarchyName>().fullname;
+        string hn = _data.parent.GetComponent<OgreeObject>().hierarchyName + $".{_data.name}";
         GameManager.gm.allItems.Add(hn, separator);
     }
 

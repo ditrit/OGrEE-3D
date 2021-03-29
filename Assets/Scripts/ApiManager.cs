@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,7 +169,7 @@ public class ApiManager : MonoBehaviour
         SApiObject apiObj = Utils.ConvertToApiObj(_obj);
         request.path = $"/{apiObj.category}s";
         request.json = JsonConvert.SerializeObject(apiObj);
-        request.objToUpdate = _obj.GetComponent<HierarchyName>().fullname;
+        request.objToUpdate = _obj.hierarchyName;
 
         requestsToSend.Enqueue(request);
     }

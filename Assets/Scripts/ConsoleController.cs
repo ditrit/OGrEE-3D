@@ -194,12 +194,12 @@ public class ConsoleController : MonoBehaviour
             string[] items = _input.Split(',');
             for (int i = 0; i < items.Length; i++)
             {
-                items[i] = $"{root.GetComponent<HierarchyName>().fullname}.{items[i]}";
+                items[i] = $"{root.GetComponent<OgreeObject>().hierarchyName}.{items[i]}";
                 bool found = false;
-                HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
-                foreach (HierarchyName child in children)
+                OgreeObject[] children = root.GetComponentsInChildren<OgreeObject>();
+                foreach (OgreeObject child in children)
                 {
-                    if (child.fullname == items[i])
+                    if (child.hierarchyName == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
                             GameManager.gm.SetCurrentItem(child.gameObject);
@@ -235,7 +235,7 @@ public class ConsoleController : MonoBehaviour
             {
                 List<string> itemsToDel = new List<string>();
                 foreach (GameObject item in GameManager.gm.currentItems)
-                    itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
+                    itemsToDel.Add(item.GetComponent<OgreeObject>().hierarchyName);
                 foreach (string item in itemsToDel)
                 {
                     if (data.Length > 1)

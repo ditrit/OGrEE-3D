@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
 
         UpdateFocusText();
 #if DEBUG
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
@@ -213,7 +213,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         }
         else
             currentItemText.text = "Ogree3D";
@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
         if (currentItems.Count > 1)
             currentItemText.text = "Selection";
         else if (currentItems.Count == 1)
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         else
             currentItemText.text = "Ogree3D";
 
@@ -344,7 +344,7 @@ public class GameManager : MonoBehaviour
     {
         if (focus.Count > 0)
         {
-            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().fullname;
+            string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
         }
         else

@@ -39,7 +39,7 @@ public class CustomerGenerator : MonoBehaviour
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
-        newTenant.AddComponent<HierarchyName>();
+        tenant.UpdateHierarchyName();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
         if (_serverPost)
@@ -63,7 +63,7 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_si.name}";
+        string hierarchyName = $"{tn.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -102,7 +102,7 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
-        string hn = newSite.AddComponent<HierarchyName>().fullname;
+        string hn = site.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newSite);
 
         if (_serverPost)

@@ -12,6 +12,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
+    public string hierarchyName;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -39,6 +40,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
 
+    private void OnEnable()
+    {
+        UpdateHierarchyName();
+    }
+
     protected virtual void OnDestroy()
     {
         if (category == "tenant")
@@ -46,6 +52,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
             Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         }
+        GameManager.gm.allItems.Remove(hierarchyName);
     }
 
     ///<summary>
@@ -149,6 +156,29 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
     }
 
+    public string UpdateHierarchyName()
+    {
+        hierarchyName = name;
+
+        List<string> parentsName = new List<string>();
+        Transform parent = transform.parent;
+        if (parent)
+        {
+            if (parent.GetComponent<OgreeObject>())
+                parentsName.Add(parent.name);
+            while (parent)
+            {
+                parent = parent.parent;
+                if (parent && parent.GetComponent<OgreeObject>())
+                    parentsName.Add(parent.name);
+            }
+
+            foreach (string str in parentsName)
+                hierarchyName = $"{str}.{hierarchyName}";
+        }
+        return hierarchyName;
+    }
+
     ///<summary>
     /// Set id.
     ///</summary>
@@ -174,7 +204,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     private IEnumerator WaitAndPut()
     {
         yield return new WaitForSeconds(2f);
-        string hierarchyName = GetComponent<HierarchyName>()?.fullname;
         ApiManager.instance.CreatePutRequest(this);
     }
 }

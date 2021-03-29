@@ -216,7 +216,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(rack.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(rack.hierarchyName);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
     }
 
@@ -319,7 +319,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(device.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(device.hierarchyName);
         GameManager.gm.devicesTemplates.Add(device.name, device.gameObject);
     }
 
@@ -370,7 +370,7 @@ public class ReadFromJson
             obj.domain = _parent.GetComponent<OgreeObject>().domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
-            go.AddComponent<HierarchyName>();
+            obj.UpdateHierarchyName();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

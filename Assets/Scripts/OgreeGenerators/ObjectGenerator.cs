@@ -31,7 +31,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_rk.name}";
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -53,7 +53,6 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
-            Destroy(newRack.GetComponent<HierarchyName>());
         }
 
         newRack.name = _rk.name;
@@ -166,13 +165,13 @@ public class ObjectGenerator : MonoBehaviour
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
-        string hn = newRack.AddComponent<HierarchyName>().fullname;
+        string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            HierarchyName[] components = rack.transform.GetComponentsInChildren<HierarchyName>();
-            foreach (HierarchyName comp in components)
+            Object[] components = rack.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
@@ -213,7 +212,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_dv.name}";
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "red");
@@ -344,17 +343,15 @@ public class ObjectGenerator : MonoBehaviour
                 obj.attributes["slot"] = _dv.attributes["slot"];
         }
 
-
-
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = newDevice.AddComponent<HierarchyName>().fullname;
+        string hn = obj.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newDevice);
 
         if (_dv.attributes.ContainsKey("template"))
         {
-            HierarchyName[] components = newDevice.transform.GetComponentsInChildren<HierarchyName>();
-            foreach (HierarchyName comp in components)
+            Object[] components = newDevice.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
             {
                 if (comp.gameObject != newDevice.gameObject)
                 {
@@ -402,7 +399,6 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
-            Destroy(go.GetComponent<HierarchyName>());
             return go;
         }
         else
@@ -437,7 +433,7 @@ public class ObjectGenerator : MonoBehaviour
         string[] contentNames = _gr.attributes["content"].Split(',');
         foreach (string cn in contentNames)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{cn}");
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
             {
                 if ((parentCategory == "room" && (go.GetComponent<OgreeObject>().category == "rack" || go.GetComponent<OgreeObject>().category == "corridor"))
@@ -445,7 +441,7 @@ public class ObjectGenerator : MonoBehaviour
                     content.Add(go.transform);
             }
             else
-                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{cn} doesn't exists.", "yellow");
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", "yellow");
         }
         if (content.Count == 0)
             return null;
@@ -490,7 +486,7 @@ public class ObjectGenerator : MonoBehaviour
             newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = newGr.AddComponent<HierarchyName>().fullname;
+        string hn = gr.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newGr);
 
         return gr;
@@ -612,7 +608,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
+        string roomHierarchyName = parent.GetComponent<OgreeObject>().hierarchyName;
         string[] rackNames = _co.attributes["content"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
         Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
@@ -673,7 +669,7 @@ public class ObjectGenerator : MonoBehaviour
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
         newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = newCo.AddComponent<HierarchyName>().fullname;
+        string hn = co.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newCo);
 
         return co;
