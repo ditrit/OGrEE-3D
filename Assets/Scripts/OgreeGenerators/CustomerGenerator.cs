@@ -18,6 +18,7 @@ public class CustomerGenerator : MonoBehaviour
     /// Create OgreeObject of "tenant" category from given data.
     ///</summary>
     ///<param name="_tn">The tenant data to apply</param>
+    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Tenant</returns>
     public OgreeObject CreateTenant(SApiObject _tn, bool _serverPost = true)
     {
@@ -53,6 +54,7 @@ public class CustomerGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_si">The site data to apply</param>
     ///<param name="_parent">The parent of the created site. Leave null if _bd contains the parendId</param>
+    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent = null, bool _serverPost = true)
     {

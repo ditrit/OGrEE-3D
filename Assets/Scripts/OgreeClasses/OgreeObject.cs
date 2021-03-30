@@ -7,12 +7,12 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 {
     [Header("Standard attributes")]
     public new string name;
+    public string hierarchyName;
     public string id;
     public string parentId;
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
-    public string hierarchyName;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -158,24 +158,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     public string UpdateHierarchyName()
     {
-        hierarchyName = name;
-
-        List<string> parentsName = new List<string>();
         Transform parent = transform.parent;
         if (parent)
-        {
-            if (parent.GetComponent<OgreeObject>())
-                parentsName.Add(parent.name);
-            while (parent)
-            {
-                parent = parent.parent;
-                if (parent && parent.GetComponent<OgreeObject>())
-                    parentsName.Add(parent.name);
-            }
-
-            foreach (string str in parentsName)
-                hierarchyName = $"{str}.{hierarchyName}";
-        }
+            hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{name}";
+        else
+            hierarchyName = name;
         return hierarchyName;
     }
 
