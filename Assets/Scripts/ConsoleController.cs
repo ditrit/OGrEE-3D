@@ -657,12 +657,19 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SSeparatorInfos infos = new SSeparatorInfos();
-            infos.pos1XYm = Utils.ParseVector2(data[1]);
-            infos.pos2XYm = Utils.ParseVector2(data[2]);
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateSeparator(infos);
+            Transform parent;
+            SApiObject sp = new SApiObject();
+            sp.description = new List<string>();
+            sp.attributes = new Dictionary<string, string>();
+
+            Vector2 pos1 = Utils.ParseVector2(data[1]);
+            sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
+            Vector2 pos2 = Utils.ParseVector2(data[2]);
+            sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
+            
+            IsolateParent(data[0], out parent, out sp.name);
+            if (parent)
+                BuildingGenerator.instance.CreateSeparator(sp, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
