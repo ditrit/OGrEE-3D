@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -72,7 +72,6 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
-        // consoleController = GameObject.FindObjectOfType<ConsoleController>();
     }
 
     private void Start()
@@ -96,7 +95,7 @@ public class GameManager : MonoBehaviour
 
 #if DEBUG
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
-            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(Utils.ConvertToApiObj(currentItems[0].GetComponent<OgreeObject>())));
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
 
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag

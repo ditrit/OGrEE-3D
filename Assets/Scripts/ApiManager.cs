@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,7 +151,7 @@ public class ApiManager : MonoBehaviour
         SRequest request = new SRequest();
         request.type = "put";
 
-        SApiObject apiObj = Utils.ConvertToApiObj(_obj);
+        SApiObject apiObj = new SApiObject(_obj);
         request.path = $"/{apiObj.category}s/{apiObj.id}";
         request.json = JsonConvert.SerializeObject(apiObj);
         requestsToSend.Enqueue(request);
@@ -166,7 +166,7 @@ public class ApiManager : MonoBehaviour
         SRequest request = new SRequest();
         request.type = "post";
 
-        SApiObject apiObj = Utils.ConvertToApiObj(_obj);
+        SApiObject apiObj = new SApiObject(_obj);
         request.path = $"/{apiObj.category}s";
         request.json = JsonConvert.SerializeObject(apiObj);
         request.objToUpdate = _obj.hierarchyName;
