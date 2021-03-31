@@ -291,7 +291,7 @@ public class ApiManager : MonoBehaviour
         // Is a list of objects
         if (_json.Contains("\"data\":["))
             return;
-        
+
         // Is an object: generate the corresponding OGrEE object
         SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
         switch (resp.data.category)
@@ -308,18 +308,18 @@ public class ApiManager : MonoBehaviour
             case "room":
                 BuildingGenerator.instance.CreateRoom(resp.data, null, false);
                 break;
-            // case "rack":
-            //     ObjectGenerator.instance.CreateRack(resp.data, null, false);
-            //     break;
-            // case "device":
-            //     ObjectGenerator.instance.CreateDevice(resp.data, null, false);
-            //     break;
-            // case "group":
-            //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
-            //     break;
-            // case "corridor":
-            //     ObjectGenerator.instance.CreateCorridor(resp.data, false, false);
-            //     break;
+            case "rack":
+                ObjectGenerator.instance.CreateRack(resp.data, null, false);
+                break;
+                // case "device":
+                //     ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+                //     break;
+                // case "group":
+                //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
+                //     break;
+                // case "corridor":
+                //     ObjectGenerator.instance.CreateCorridor(resp.data, false, false);
+                //     break;
         }
     }
 
@@ -332,7 +332,7 @@ public class ApiManager : MonoBehaviour
     {
         if (_json.Contains("success"))
         {
-            _json = Regex.Replace(_json, "\"(tenant|site|building|room)\":{", "\"data\":{");
+            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
             SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
             // Debug.Log(resp.data.name + " / " + resp.data.id);
             GameObject obj = GameManager.gm.FindByAbsPath(_objName);

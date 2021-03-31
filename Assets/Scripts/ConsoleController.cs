@@ -694,7 +694,7 @@ public class ConsoleController : MonoBehaviour
 
             Vector2 pos = Utils.ParseVector2(data[1]);
             rk.attributes["posXY"] = JsonUtility.ToJson(pos);
-            rk.attributes["posXYUnit"] = "Tile";
+            rk.attributes["posXYUnit"] = "tile";
 
             if (data[2].StartsWith("[")) // if vector to parse...
             {
