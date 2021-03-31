@@ -193,8 +193,9 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
+    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Device</returns>
-    public Object CreateDevice(SApiObject _dv, Transform _parent = null)
+    public Object CreateDevice(SApiObject _dv, Transform _parent = null, bool _serverPost = true)
     {
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
@@ -294,18 +295,18 @@ public class ObjectGenerator : MonoBehaviour
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
                 switch (_dv.attributes["orientation"])
                 {
-                    case "Front":
+                    case "front":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         break;
-                    case "Rear":
+                    case "rear":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
                         break;
-                    case "FrontFlipped":
+                    case "frontflipped":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
                         break;
-                    case "RearFlipped":
+                    case "rearflipped":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
                         break;
@@ -365,7 +366,10 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
 
-        return newDevice.GetComponent<Object>();
+        if (_serverPost)
+            ApiManager.instance.CreatePostRequest(obj);
+
+        return obj;
     }
 
     ///<summary>

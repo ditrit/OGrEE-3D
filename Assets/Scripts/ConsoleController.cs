@@ -746,7 +746,7 @@ public class ConsoleController : MonoBehaviour
             if (data.Length == 4)
                 dv.attributes["orientation"] = data[3];
             else
-                dv.attributes["orientation"] = "Front";
+                dv.attributes["orientation"] = "front";
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {

@@ -269,25 +269,11 @@ public class ReadFromJson
         dv.attributes["deviceType"] = data.type;
         dv.attributes["vendor"] = data.vendor;
         dv.attributes["model"] = data.model;
-        switch (data.side)
-        {
-            case "front":
-                dv.attributes["orientation"] = "Front";
-                break;
-            case "rear":
-                dv.attributes["orientation"] = "Rear";
-                break;
-            case "frontflipped":
-                dv.attributes["orientation"] = "FrontFlipped";
-                break;
-            case "rearflipped":
-                dv.attributes["orientation"] = "RearFlipped";
-                break;
-        }
+        dv.attributes["orientation"] = data.side;
         if (data.fulldepth == "yes")
         {
             dv.attributes["fulldepth"] = "yes";
-            dv.attributes["orientation"] = "Front";
+            dv.attributes["orientation"] = "front";
         }
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";

@@ -311,9 +311,9 @@ public class ApiManager : MonoBehaviour
             case "rack":
                 ObjectGenerator.instance.CreateRack(resp.data, null, false);
                 break;
-                // case "device":
-                //     ObjectGenerator.instance.CreateDevice(resp.data, null, false);
-                //     break;
+                case "device":
+                    ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+                    break;
                 // case "group":
                 //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
                 //     break;

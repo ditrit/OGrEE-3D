@@ -57,7 +57,7 @@ public class Object : OgreeObject
                     break;
             }
         }
-        // PutData();
+        PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
