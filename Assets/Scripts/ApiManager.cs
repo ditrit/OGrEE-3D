@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ApiManager : MonoBehaviour
@@ -282,6 +282,24 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Send a get request to the api. Create an Ogree object with response. Avoid requestsToSend 
+    ///</summary>
+    public async Task GetObject(string _input)
+    {
+        string fullPath = $"{server}/{_input}";
+        try
+        {
+            string response = await httpClient.GetStringAsync(fullPath);
+            GameManager.gm.AppendLogLine(response);
+            CreateItemFromJson(response);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
+
+    ///<summary>
     /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create
     ///</summary>
@@ -311,15 +329,18 @@ public class ApiManager : MonoBehaviour
             case "rack":
                 ObjectGenerator.instance.CreateRack(resp.data, null, false);
                 break;
-                case "device":
-                    ObjectGenerator.instance.CreateDevice(resp.data, null, false);
-                    break;
-                // case "group":
-                //     ObjectGenerator.instance.CreateGroup(resp.data, false, false);
-                //     break;
-                // case "corridor":
-                //     ObjectGenerator.instance.CreateCorridor(resp.data, false, false);
-                //     break;
+            case "device":
+                ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+                break;
+            // case "group":
+            //     ObjectGenerator.instance.CreateGroup(resp.data, null, false);
+            //     break;
+            // case "corridor":
+            //     ObjectGenerator.instance.CreateCorridor(resp.data, null, false);
+            //     break;
+            // case "separator":
+            //     BuildingGenerator.instance.CreateSeparator(resp.data, null, false);
+            //     break;
         }
     }
 

@@ -428,14 +428,15 @@ public class ConsoleController : MonoBehaviour
     /// Call the right ApiManager.CreateXXXRequest() if syntax is good.
     ///</summary>
     ///<param name="_input">The input to parse</param>
-    private void CallApi(string _input)
+    private async void CallApi(string _input)
     {
         string pattern = "(get|post|put|delete)=+";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
-                ApiManager.instance.CreateGetRequest(data[1]);
+                // ApiManager.instance.CreateGetRequest(data[1]);
+                await ApiManager.instance.GetObject(data[1]);
             else
             {
                 OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
@@ -666,7 +667,7 @@ public class ConsoleController : MonoBehaviour
             sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
             Vector2 pos2 = Utils.ParseVector2(data[2]);
             sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
-            
+
             IsolateParent(data[0], out parent, out sp.name);
             if (parent)
                 BuildingGenerator.instance.CreateSeparator(sp, parent);
