@@ -62,6 +62,8 @@ public class ApiManager : MonoBehaviour
 
     private HttpClient httpClient = new HttpClient();
 
+    public bool isInit = false;
+
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
     [SerializeField] private string login;
@@ -121,6 +123,7 @@ public class ApiManager : MonoBehaviour
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resp.account.token);
 
             isReady = true;
+            isInit = true;
         }
         catch (HttpRequestException e)
         {
@@ -133,14 +136,14 @@ public class ApiManager : MonoBehaviour
     /// Create an GET request from _input.
     ///</summary>
     ///<param name="_input">The get request to send</param>
-    public void CreateGetRequest(string _input)
-    {
-        SRequest request = new SRequest();
-        request.type = "get";
-        request.path = $"/{_input}";
+    // public void CreateGetRequest(string _input)
+    // {
+    //     SRequest request = new SRequest();
+    //     request.type = "get";
+    //     request.path = $"/{_input}";
 
-        requestsToSend.Enqueue(request);
-    }
+    //     requestsToSend.Enqueue(request);
+    // }
 
     ///<summary>
     /// Create an PUT request from _input.
@@ -161,18 +164,18 @@ public class ApiManager : MonoBehaviour
     /// Create an POST request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to post</param>
-    public void CreatePostRequest(OgreeObject _obj)
-    {
-        SRequest request = new SRequest();
-        request.type = "post";
+    // public void CreatePostRequest(OgreeObject _obj)
+    // {
+    //     SRequest request = new SRequest();
+    //     request.type = "post";
 
-        SApiObject apiObj = new SApiObject(_obj);
-        request.path = $"/{apiObj.category}s";
-        request.json = JsonConvert.SerializeObject(apiObj);
-        request.objToUpdate = _obj.hierarchyName;
+    //     SApiObject apiObj = new SApiObject(_obj);
+    //     request.path = $"/{apiObj.category}s";
+    //     request.json = JsonConvert.SerializeObject(apiObj);
+    //     request.objToUpdate = _obj.hierarchyName;
 
-        requestsToSend.Enqueue(request);
-    }
+    //     requestsToSend.Enqueue(request);
+    // }
 
     ///<summary>
     /// Create an DELETE request from _input.
@@ -282,16 +285,50 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Send a get request to the api. Create an Ogree object with response. Avoid requestsToSend 
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
     ///</summary>
     public async Task GetObject(string _input)
     {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return;
+        }
         string fullPath = $"{server}/{_input}";
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             CreateItemFromJson(response);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Post an object to the api. Then, update object's id with response.
+    ///</summary>
+    public async Task PostObject(OgreeObject _obj)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return;
+        }
+        string json = JsonConvert.SerializeObject(new SApiObject(_obj));
+        string fullPath = $"{server}/{_obj.category}s";
+
+        StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+            UpdateObjId(_obj.hierarchyName, responseStr);
         }
         catch (HttpRequestException e)
         {
@@ -315,31 +352,31 @@ public class ApiManager : MonoBehaviour
         switch (resp.data.category)
         {
             case "tenant":
-                CustomerGenerator.instance.CreateTenant(resp.data, false);
+                CustomerGenerator.instance.CreateTenant(resp.data);
                 break;
             case "site":
-                CustomerGenerator.instance.CreateSite(resp.data, null, false);
+                CustomerGenerator.instance.CreateSite(resp.data, null);
                 break;
             case "building":
-                BuildingGenerator.instance.CreateBuilding(resp.data, null, false);
+                BuildingGenerator.instance.CreateBuilding(resp.data, null);
                 break;
             case "room":
-                BuildingGenerator.instance.CreateRoom(resp.data, null, false);
+                BuildingGenerator.instance.CreateRoom(resp.data, null);
                 break;
             case "rack":
-                ObjectGenerator.instance.CreateRack(resp.data, null, false);
+                ObjectGenerator.instance.CreateRack(resp.data, null);
                 break;
             case "device":
-                ObjectGenerator.instance.CreateDevice(resp.data, null, false);
+                ObjectGenerator.instance.CreateDevice(resp.data, null);
                 break;
             // case "group":
-            //     ObjectGenerator.instance.CreateGroup(resp.data, null, false);
+            //     ObjectGenerator.instance.CreateGroup(resp.data, null);
             //     break;
             // case "corridor":
-            //     ObjectGenerator.instance.CreateCorridor(resp.data, null, false);
+            //     ObjectGenerator.instance.CreateCorridor(resp.data, null);
             //     break;
             // case "separator":
-            //     BuildingGenerator.instance.CreateSeparator(resp.data, null, false);
+            //     BuildingGenerator.instance.CreateSeparator(resp.data, null);
             //     break;
         }
     }

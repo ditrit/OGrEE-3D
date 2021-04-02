@@ -20,9 +20,8 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_bd">The building data to apply</param>
     ///<param name="_parent">The parent of the created building. Leave null if _bd contains the parendId</param>
-    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SApiObject _bd, Transform _parent = null, bool _serverPost = true)
+    public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
     {
         Transform si = Utils.FindParent(_parent, _bd.parentId);
         if (!si || si.GetComponent<OgreeObject>().category != "site")
@@ -74,9 +73,6 @@ public class BuildingGenerator : MonoBehaviour
         string hn = building.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newBD);
 
-        if (_serverPost)
-            ApiManager.instance.CreatePostRequest(building);
-
         return building;
     }
 
@@ -85,9 +81,8 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_ro">The room data to apply</param>    
     ///<param name="_parent">The parent of the created room. Leave null if _bd contains the parendId</param>
-    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SApiObject _ro, Transform _parent = null, bool _serverPost = true)
+    public Room CreateRoom(SApiObject _ro, Transform _parent = null)
     {
         Transform bd = Utils.FindParent(_parent, _ro.parentId);
         if (!bd || bd.GetComponent<OgreeObject>().category != "building")
@@ -183,9 +178,6 @@ public class BuildingGenerator : MonoBehaviour
                 CreateSeparatorFromJson(sep, newRoom.transform);
         }
 
-        if (_serverPost)
-            ApiManager.instance.CreatePostRequest(room);
-
         return room;
     }
 
@@ -194,8 +186,7 @@ public class BuildingGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_sp">Informations about the separator</param>
     ///<param name="_parent">The parent of the created separator. Leave null if _bd contains the parendId</param>
-    ///<param name="_serverPost">If true, create a post request to the API</param>
-    public OgreeObject CreateSeparator(SApiObject _sp, Transform _parent = null, bool _serverPost = true)
+    public OgreeObject CreateSeparator(SApiObject _sp, Transform _parent = null)
     {
         Transform parent = Utils.FindParent(_parent, _sp.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -250,9 +241,6 @@ public class BuildingGenerator : MonoBehaviour
 
         string hn = sp.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, separator);
-
-        // if (_serverPost)
-        //     ApiManager.instance.CreatePostRequest(sp);
 
         return sp;
     }

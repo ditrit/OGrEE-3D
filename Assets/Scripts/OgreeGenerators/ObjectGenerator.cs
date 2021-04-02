@@ -21,9 +21,8 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
-    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _serverPost = true)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -182,9 +181,6 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
 
-        if (_serverPost)
-            ApiManager.instance.CreatePostRequest(rack);
-
         return rack;
     }
 
@@ -193,9 +189,8 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
-    ///<param name="_serverPost">If true, create a post request to the API</param>
     ///<returns>The created Device</returns>
-    public Object CreateDevice(SApiObject _dv, Transform _parent = null, bool _serverPost = true)
+    public Object CreateDevice(SApiObject _dv, Transform _parent = null)
     {
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
@@ -365,9 +360,6 @@ public class ObjectGenerator : MonoBehaviour
                 }
             }
         }
-
-        if (_serverPost)
-            ApiManager.instance.CreatePostRequest(obj);
 
         return obj;
     }

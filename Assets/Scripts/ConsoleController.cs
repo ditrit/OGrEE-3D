@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ConsoleController : MonoBehaviour
@@ -448,7 +449,8 @@ public class ConsoleController : MonoBehaviour
                             ApiManager.instance.CreatePutRequest(obj);
                             break;
                         case "post":
-                            ApiManager.instance.CreatePostRequest(obj);
+                            // ApiManager.instance.CreatePostRequest(obj);
+                            await ApiManager.instance.PostObject(obj);
                             break;
                         case "delete":
                             ApiManager.instance.CreateDeleteRequest(obj);
@@ -473,25 +475,25 @@ public class ConsoleController : MonoBehaviour
     /// Look at the first word of a "create" command and call the corresponding Create method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void ParseCreate(string _input)
+    private async void ParseCreate(string _input)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
         if (str[0] == "tenant" || str[0] == "tn")
-            CreateTenant(str[1]);
+            await CreateTenant(str[1]);
         else if (str[0] == "site" || str[0] == "si")
-            CreateSite(str[1]);
+            await CreateSite(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
-            CreateBuilding(str[1]);
+            await CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
-            CreateRoom(str[1]);
+            await CreateRoom(str[1]);
         else if (str[0] == "separator" || str[0] == "sp")
             CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
-            CreateRack(str[1]);
+            await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
-            CreateDevice(str[1]);
+            await CreateDevice(str[1]);
         else if (str[0] == "group" || str[0] == "gr")
             CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
@@ -506,7 +508,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create tenant" command and call CustomerGenerator.CreateCustomer().
     ///</summary>
     ///<param name="_input">Name of the tenant</param>
-    private void CreateTenant(string _input)
+    private async Task CreateTenant(string _input)
     {
         string pattern = "^[^@\\s.]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
@@ -519,7 +521,8 @@ public class ConsoleController : MonoBehaviour
             tn.name = data[0];
             tn.domain = data[0];
             tn.attributes["color"] = data[1];
-            CustomerGenerator.instance.CreateTenant(tn);
+            OgreeObject tenant = CustomerGenerator.instance.CreateTenant(tn);
+            await ApiManager.instance.PostObject(tenant);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -529,7 +532,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create site" command and call CustomerGenerator.CreateSite().
     ///</summary>
     ///<param name="_input">String with site data to parse</param>
-    private void CreateSite(string _input)
+    private async Task CreateSite(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(EN|NW|WS|SE)$";
@@ -547,7 +550,10 @@ public class ConsoleController : MonoBehaviour
             si.attributes["reservedColor"] = "F2F2F2";
             si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
-                CustomerGenerator.instance.CreateSite(si, parent);
+            {
+                OgreeObject site = CustomerGenerator.instance.CreateSite(si, parent);
+                await ApiManager.instance.PostObject(site);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -557,7 +563,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create building" command and call BuildingGenerator.CreateBuilding().
     ///</summary>
     ///<param name="_input">String with building data to parse</param>
-    private void CreateBuilding(string _input)
+    private async Task CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
@@ -584,7 +590,10 @@ public class ConsoleController : MonoBehaviour
             bd.attributes["heightUnit"] = "m";
 
             if (parent)
-                BuildingGenerator.instance.CreateBuilding(bd, parent);
+            {
+                Building building = BuildingGenerator.instance.CreateBuilding(bd, parent);
+                await ApiManager.instance.PostObject(building);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -594,7 +603,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create room" command and call BuildingGenerator.CreateRoom().
     ///</summary>
     ///<param name="_input">String with room data to parse</param>
-    private void CreateRoom(string _input)
+    private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
@@ -640,7 +649,10 @@ public class ConsoleController : MonoBehaviour
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
-                BuildingGenerator.instance.CreateRoom(ro, parent);
+            {
+                Room room = BuildingGenerator.instance.CreateRoom(ro, parent);
+                await ApiManager.instance.PostObject(room);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -680,7 +692,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create rack" command and call ObjectGenerator.CreateRack().
     ///</summary>
     ///<param name="_input">String with rack data to parse</param>
-    private void CreateRack(string _input)
+    private async Task CreateRack(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
@@ -711,7 +723,10 @@ public class ConsoleController : MonoBehaviour
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
-                ObjectGenerator.instance.CreateRack(rk, parent);
+            {
+                Rack rack = ObjectGenerator.instance.CreateRack(rk, parent);
+                await ApiManager.instance.PostObject(rack);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -721,7 +736,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create device" command and call ObjectGenerator.CreateDevice().
     ///</summary>
     ///<param name="_input">String with device data to parse</param>
-    public void CreateDevice(string _input)
+    public async Task CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
@@ -760,6 +775,7 @@ public class ConsoleController : MonoBehaviour
                     device.attributes["height"] = scale.y.ToString();
                     device.attributes["heightUnit"] = "mm";
                 }
+                await ApiManager.instance.PostObject(device);
             }
         }
         else
