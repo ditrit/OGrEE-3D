@@ -756,7 +756,10 @@ public class ConsoleController : MonoBehaviour
                 dv.attributes["slot"] = data[1];
             float sizeU;
             if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
+            {
                 dv.attributes["sizeU"] = sizeU.ToString();
+                dv.attributes["template"] = "";
+            } 
             else
                 dv.attributes["template"] = data[2];
             if (data.Length == 4)

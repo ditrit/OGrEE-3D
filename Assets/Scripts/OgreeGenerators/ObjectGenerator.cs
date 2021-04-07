@@ -200,7 +200,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         if (parent.GetComponent<Rack>() == null
-            && (!_dv.attributes.ContainsKey("slot") || !_dv.attributes.ContainsKey("template")))
+            && (!_dv.attributes.ContainsKey("slot") || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
             GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "red");
             return null;
@@ -223,7 +223,7 @@ public class ObjectGenerator : MonoBehaviour
         if (!_dv.attributes.ContainsKey("slot"))
         {
             //+chassis:[name]@[posU]@[sizeU]
-            if (!_dv.attributes.ContainsKey("template"))
+            if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
             //+chassis:[name]@[posU]@[template]
             else
@@ -245,7 +245,7 @@ public class ObjectGenerator : MonoBehaviour
             List<Slot> takenSlots = new List<Slot>();
             int i = 0;
             float max;
-            if (!_dv.attributes.ContainsKey("template"))
+            if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 max = float.Parse(_dv.attributes["sizeU"]);
             else
             {
@@ -272,7 +272,7 @@ public class ObjectGenerator : MonoBehaviour
 
                 Transform slot = takenSlots[0].transform;
                 //+chassis:[name]@[slot]@[sizeU]
-                if (!_dv.attributes.ContainsKey("template"))
+                if (string.IsNullOrEmpty(_dv.attributes["template"]))
                     newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
                 //+chassis:[name]@[slot]@[template]
                 else
@@ -331,7 +331,7 @@ public class ObjectGenerator : MonoBehaviour
         obj.domain = _dv.domain;
         if (string.IsNullOrEmpty(obj.domain))
             obj.domain = parent.GetComponent<OgreeObject>().domain;
-        if (!_dv.attributes.ContainsKey("template"))
+        if (string.IsNullOrEmpty(_dv.attributes["template"]))
             obj.attributes = _dv.attributes;
         else
         {

@@ -264,6 +264,7 @@ public class ReadFromJson
         dv.attributes["sizeUnit"] = "mm";
         dv.attributes["height"] = data.sizeWDHmm[2].ToString();
         dv.attributes["heightUnit"] = "mm";
+        dv.attributes["template"] = "";
 
         dv.description.Add(data.description);
         dv.attributes["deviceType"] = data.type;
