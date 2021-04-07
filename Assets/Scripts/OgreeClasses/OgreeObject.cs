@@ -103,7 +103,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetDescription(string _index, string _value)
     {
         string pattern = "^[0-9]+$";
-        if (Regex.IsMatch(_index, pattern))
+        if (_index != "0" && Regex.IsMatch(_index, pattern))
         {
             int index = int.Parse(_index);
             if (index > description.Count)

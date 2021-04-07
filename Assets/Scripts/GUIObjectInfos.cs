@@ -159,7 +159,7 @@ public class GUIObjectInfos : MonoBehaviour
             tmpAttributes.text += "<b>description:</b>\n";
             for (int j = 0; j < _obj.description.Count; j++)
             {
-                tmpAttributes.text += $"<b>{j}:</b> {_obj.description[j]}\n";
+                tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
                 i++;
             }
         }
