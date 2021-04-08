@@ -200,7 +200,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         if (parent.GetComponent<Rack>() == null
-            && (!_dv.attributes.ContainsKey("slot") || string.IsNullOrEmpty(_dv.attributes["template"])))
+            && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
             GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "red");
             return null;
@@ -220,7 +220,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         GameObject newDevice;
-        if (!_dv.attributes.ContainsKey("slot"))
+        if (string.IsNullOrEmpty(_dv.attributes["slot"]))
         {
             //+chassis:[name]@[posU]@[sizeU]
             if (string.IsNullOrEmpty(_dv.attributes["template"]))

@@ -92,7 +92,8 @@ public class GUIObjectInfos : MonoBehaviour
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
         // Display posXY if available
-        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit"))
+        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
+            && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
         {
             Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
             tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
