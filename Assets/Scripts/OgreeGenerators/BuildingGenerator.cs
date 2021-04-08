@@ -169,6 +169,14 @@ public class BuildingGenerator : MonoBehaviour
         string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRoom);
 
+        if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
+            && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
+        {
+            SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
+            SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
+            room.SetAreas(reserved, technical);
+        }
+        
         if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
             ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
