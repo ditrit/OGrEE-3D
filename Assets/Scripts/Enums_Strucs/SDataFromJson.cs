@@ -6,6 +6,7 @@ using UnityEngine;
 public struct SApiObject
 {
     public string name;
+    public string hierarchyName;
     public string id;
     public string parentId;
     public string category;
@@ -16,6 +17,7 @@ public struct SApiObject
     public SApiObject(OgreeObject _src)
     {
         name = _src.name;
+        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
