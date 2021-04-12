@@ -900,13 +900,13 @@ public class ConsoleController : MonoBehaviour
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
-            else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
-            {
-                ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
-                objCmd.parentName = IsolateParentPath(data[0]);
-                objCmd.command = _input;
-                ZoomManager.instance.devicesAttributes.Add(objCmd);
-            }
+            // else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
+            // {
+            //     ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
+            //     objCmd.parentName = IsolateParentPath(data[0]);
+            //     objCmd.command = _input;
+            //     ZoomManager.instance.devicesAttributes.Add(objCmd);
+            // }
             else
                 AppendLogLine($"Object doesn't exist.", "yellow");
         }

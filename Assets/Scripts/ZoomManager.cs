@@ -42,15 +42,15 @@ public class ZoomManager : MonoBehaviour
     }
 
     ///
-    public bool IsListed(string _path)
-    {
-        foreach (SObjectCmd obj in devices)
-        {
-            if (obj.hierarchyName == _path)
-                return true;
-        }
-        return false;
-    }
+    // public bool IsListed(string _path)
+    // {
+    //     foreach (SObjectCmd obj in devices)
+    //     {
+    //         if (obj.hierarchyName == _path)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
     ///<summary>
     /// Change zoom value.
@@ -63,26 +63,26 @@ public class ZoomManager : MonoBehaviour
         slider.value = _value;
         uiText.text = $"Zoom level = {_value}";
         zoomLevel = (int)_value;
-        PopObjects();
+        // PopObjects();
     }
 
     ///<summary>
     /// .
     ///</summary>
-    public void PopObjects()
-    {
-        // For debug purpose, should be a parameter
-        // string target = GameObject.FindObjectOfType<Customer>()?.name;
+    // public void PopObjects()
+    // {
+    //     // For debug purpose, should be a parameter
+    //     // string target = GameObject.FindObjectOfType<Customer>()?.name;
 
-        if (GameManager.gm.currentItems.Count == 0)
-            return;
-        string target = GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName;
+    //     if (GameManager.gm.currentItems.Count == 0)
+    //         return;
+    //     string target = GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName;
 
-        foreach (SObjectCmd obj in devices)
-        {
-            if (GameManager.gm.FindByAbsPath(obj.hierarchyName) == null
-                && obj.parentName.Contains(target))
-                GameManager.gm.consoleController.CreateDevice(obj.command);
-        }
-    }
+    //     foreach (SObjectCmd obj in devices)
+    //     {
+    //         if (GameManager.gm.FindByAbsPath(obj.hierarchyName) == null
+    //             && obj.parentName.Contains(target))
+    //             GameManager.gm.consoleController.CreateDevice(obj.command);
+    //     }
+    // }
 }

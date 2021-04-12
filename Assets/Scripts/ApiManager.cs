@@ -83,12 +83,12 @@ public class ApiManager : MonoBehaviour
     {
         if (isReady && requestsToSend.Count > 0)
         {
-            if (requestsToSend.Peek().type == "get")
+            /*if (requestsToSend.Peek().type == "get")
                 GetHttpData();
-            else if (requestsToSend.Peek().type == "put")
+            else */if (requestsToSend.Peek().type == "put")
                 PutHttpData();
-            else if (requestsToSend.Peek().type == "post")
-                PostHttpData();
+            // else if (requestsToSend.Peek().type == "post")
+            //     PostHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
@@ -192,25 +192,25 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Send a get request to the api. Create an Ogree object with response.
     ///</summary>
-    private async void GetHttpData()
-    {
-        isReady = false;
+    // private async void GetHttpData()
+    // {
+    //     isReady = false;
 
-        SRequest req = requestsToSend.Dequeue();
-        string fullPath = server + req.path;
-        try
-        {
-            string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.gm.AppendLogLine(response);
-            CreateItemFromJson(response);
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
-        }
+    //     SRequest req = requestsToSend.Dequeue();
+    //     string fullPath = server + req.path;
+    //     try
+    //     {
+    //         string response = await httpClient.GetStringAsync(fullPath);
+    //         GameManager.gm.AppendLogLine(response);
+    //         CreateItemFromJson(response);
+    //     }
+    //     catch (HttpRequestException e)
+    //     {
+    //         GameManager.gm.AppendLogLine(e.Message, "red");
+    //     }
 
-        isReady = true;
-    }
+    //     isReady = true;
+    // }
 
     ///<summary>
     /// Send a put request to the api.
@@ -239,27 +239,27 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Send a post request to the api. Then, update object's id with response.
     ///</summary>
-    private async void PostHttpData()
-    {
-        isReady = false;
+    // private async void PostHttpData()
+    // {
+    //     isReady = false;
 
-        SRequest req = requestsToSend.Dequeue();
-        string fullPath = server + req.path;
-        StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
-        try
-        {
-            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-            string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
-            UpdateObjId(req.objToUpdate, responseStr);
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
-        }
+    //     SRequest req = requestsToSend.Dequeue();
+    //     string fullPath = server + req.path;
+    //     StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
+    //     try
+    //     {
+    //         HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+    //         string responseStr = response.Content.ReadAsStringAsync().Result;
+    //         GameManager.gm.AppendLogLine(responseStr);
+    //         UpdateObjId(req.objToUpdate, responseStr);
+    //     }
+    //     catch (HttpRequestException e)
+    //     {
+    //         GameManager.gm.AppendLogLine(e.Message, "red");
+    //     }
 
-        isReady = true;
-    }
+    //     isReady = true;
+    // }
 
     ///<summary>
     /// Send a delete request to the api.
