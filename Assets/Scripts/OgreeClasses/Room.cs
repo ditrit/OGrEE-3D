@@ -21,7 +21,6 @@ public class Room : Building
         base.OnDestroy();
         Filters.instance.roomsList.Remove(name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
-        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
 
     ///<summary>

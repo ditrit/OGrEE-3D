@@ -216,7 +216,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(rack.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(rack.hierarchyName);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
     }
 
@@ -264,30 +264,17 @@ public class ReadFromJson
         dv.attributes["sizeUnit"] = "mm";
         dv.attributes["height"] = data.sizeWDHmm[2].ToString();
         dv.attributes["heightUnit"] = "mm";
+        dv.attributes["template"] = "";
 
         dv.description.Add(data.description);
         dv.attributes["deviceType"] = data.type;
         dv.attributes["vendor"] = data.vendor;
         dv.attributes["model"] = data.model;
-        switch (data.side)
-        {
-            case "front":
-                dv.attributes["orientation"] = "Front";
-                break;
-            case "rear":
-                dv.attributes["orientation"] = "Rear";
-                break;
-            case "frontflipped":
-                dv.attributes["orientation"] = "FrontFlipped";
-                break;
-            case "rearflipped":
-                dv.attributes["orientation"] = "RearFlipped";
-                break;
-        }
+        dv.attributes["orientation"] = data.side;
         if (data.fulldepth == "yes")
         {
             dv.attributes["fulldepth"] = "yes";
-            dv.attributes["orientation"] = "Front";
+            dv.attributes["orientation"] = "front";
         }
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";
@@ -319,7 +306,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(device.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(device.hierarchyName);
         GameManager.gm.devicesTemplates.Add(device.name, device.gameObject);
     }
 
@@ -370,7 +357,7 @@ public class ReadFromJson
             obj.domain = _parent.GetComponent<OgreeObject>().domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
-            go.AddComponent<HierarchyName>();
+            obj.UpdateHierarchyName();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

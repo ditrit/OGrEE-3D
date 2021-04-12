@@ -78,7 +78,7 @@ public class Rack : Object
                     break;
             }
         }
-        // PutData();
+        PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 

@@ -7,6 +7,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 {
     [Header("Standard attributes")]
     public new string name;
+    public string hierarchyName;
     public string id;
     public string parentId;
     public string category;
@@ -39,6 +40,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
 
+    private void OnEnable()
+    {
+        UpdateHierarchyName();
+    }
+
     protected virtual void OnDestroy()
     {
         if (category == "tenant")
@@ -46,6 +52,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
             Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         }
+        GameManager.gm.allItems.Remove(hierarchyName);
     }
 
     ///<summary>
@@ -96,7 +103,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetDescription(string _index, string _value)
     {
         string pattern = "^[0-9]+$";
-        if (Regex.IsMatch(_index, pattern))
+        if (_index != "0" && Regex.IsMatch(_index, pattern))
         {
             int index = int.Parse(_index);
             if (index > description.Count)
@@ -149,6 +156,16 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
     }
 
+    public string UpdateHierarchyName()
+    {
+        Transform parent = transform.parent;
+        if (parent)
+            hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{name}";
+        else
+            hierarchyName = name;
+        return hierarchyName;
+    }
+
     ///<summary>
     /// Set id.
     ///</summary>
@@ -174,7 +191,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     private IEnumerator WaitAndPut()
     {
         yield return new WaitForSeconds(2f);
-        string hierarchyName = GetComponent<HierarchyName>()?.fullname;
         ApiManager.instance.CreatePutRequest(this);
     }
 }

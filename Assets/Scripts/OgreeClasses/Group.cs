@@ -80,7 +80,7 @@ public class Group : Object
 
         foreach (string rn in names)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<HierarchyName>().fullname}.{rn}");
+            GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
             if (go)
                 content.Add(go);
         }

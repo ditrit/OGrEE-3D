@@ -65,7 +65,7 @@ public class GUIObjectInfos : MonoBehaviour
 
         objList.text = "";
         foreach (GameObject obj in _objects)
-            objList.text += $"{obj.GetComponent<HierarchyName>().fullname}\n";
+            objList.text += $"{obj.GetComponent<OgreeObject>().hierarchyName}\n";
 
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
@@ -79,7 +79,7 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(OgreeObject _obj)
     {
         int i = 1;
-        tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
+        tmpName.text = _obj.hierarchyName;
         if (!string.IsNullOrEmpty(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
@@ -92,7 +92,8 @@ public class GUIObjectInfos : MonoBehaviour
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
         // Display posXY if available
-        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit"))
+        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
+            && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
         {
             Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
             tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
@@ -159,7 +160,7 @@ public class GUIObjectInfos : MonoBehaviour
             tmpAttributes.text += "<b>description:</b>\n";
             for (int j = 0; j < _obj.description.Count; j++)
             {
-                tmpAttributes.text += $"<b>{j}:</b> {_obj.description[j]}\n";
+                tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
                 i++;
             }
         }
