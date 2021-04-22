@@ -300,7 +300,8 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
-            CreateItemFromJson(response);
+            if (response.Contains("success"))
+                CreateItemFromJson(response);
         }
         catch (HttpRequestException e)
         {

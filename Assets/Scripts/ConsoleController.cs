@@ -751,7 +751,10 @@ public class ConsoleController : MonoBehaviour
 
             float posU;
             if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+            {
                 dv.attributes["posU"] = posU.ToString();
+                dv.attributes["slot"] = "";
+            }
             else
                 dv.attributes["slot"] = data[1];
             float sizeU;
