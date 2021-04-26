@@ -83,12 +83,8 @@ public class ApiManager : MonoBehaviour
     {
         if (isReady && requestsToSend.Count > 0)
         {
-            /*if (requestsToSend.Peek().type == "get")
-                GetHttpData();
-            else */if (requestsToSend.Peek().type == "put")
+            if (requestsToSend.Peek().type == "put")
                 PutHttpData();
-            // else if (requestsToSend.Peek().type == "post")
-            //     PostHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
@@ -133,19 +129,6 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an GET request from _input.
-    ///</summary>
-    ///<param name="_input">The get request to send</param>
-    // public void CreateGetRequest(string _input)
-    // {
-    //     SRequest request = new SRequest();
-    //     request.type = "get";
-    //     request.path = $"/{_input}";
-
-    //     requestsToSend.Enqueue(request);
-    // }
-
-    ///<summary>
     /// Create an PUT request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to put</param>
@@ -161,23 +144,6 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an POST request from _input.
-    ///</summary>
-    ///<param name="_obj">The OgreeObject to post</param>
-    // public void CreatePostRequest(OgreeObject _obj)
-    // {
-    //     SRequest request = new SRequest();
-    //     request.type = "post";
-
-    //     SApiObject apiObj = new SApiObject(_obj);
-    //     request.path = $"/{apiObj.category}s";
-    //     request.json = JsonConvert.SerializeObject(apiObj);
-    //     request.objToUpdate = _obj.hierarchyName;
-
-    //     requestsToSend.Enqueue(request);
-    // }
-
-    ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to delete</param>
@@ -188,29 +154,6 @@ public class ApiManager : MonoBehaviour
         request.path = $"/{_obj.category}s/{_obj.id}";
         requestsToSend.Enqueue(request);
     }
-
-    ///<summary>
-    /// Send a get request to the api. Create an Ogree object with response.
-    ///</summary>
-    // private async void GetHttpData()
-    // {
-    //     isReady = false;
-
-    //     SRequest req = requestsToSend.Dequeue();
-    //     string fullPath = server + req.path;
-    //     try
-    //     {
-    //         string response = await httpClient.GetStringAsync(fullPath);
-    //         GameManager.gm.AppendLogLine(response);
-    //         CreateItemFromJson(response);
-    //     }
-    //     catch (HttpRequestException e)
-    //     {
-    //         GameManager.gm.AppendLogLine(e.Message, "red");
-    //     }
-
-    //     isReady = true;
-    // }
 
     ///<summary>
     /// Send a put request to the api.
@@ -235,31 +178,6 @@ public class ApiManager : MonoBehaviour
 
         isReady = true;
     }
-
-    ///<summary>
-    /// Send a post request to the api. Then, update object's id with response.
-    ///</summary>
-    // private async void PostHttpData()
-    // {
-    //     isReady = false;
-
-    //     SRequest req = requestsToSend.Dequeue();
-    //     string fullPath = server + req.path;
-    //     StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
-    //     try
-    //     {
-    //         HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-    //         string responseStr = response.Content.ReadAsStringAsync().Result;
-    //         GameManager.gm.AppendLogLine(responseStr);
-    //         UpdateObjId(req.objToUpdate, responseStr);
-    //     }
-    //     catch (HttpRequestException e)
-    //     {
-    //         GameManager.gm.AppendLogLine(e.Message, "red");
-    //     }
-
-    //     isReady = true;
-    // }
 
     ///<summary>
     /// Send a delete request to the api.
@@ -336,6 +254,29 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
     }
+    public async Task PostObject(SApiObject _obj)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return;
+        }
+        string json = JsonConvert.SerializeObject(_obj);
+        string fullPath = $"{server}/{_obj.category}s";
+
+        StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+            CreateObjFromResp(responseStr);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
 
     ///<summary>
     /// Create an Ogree item from Json.
@@ -402,6 +343,40 @@ public class ApiManager : MonoBehaviour
         }
         else
             GameManager.gm.AppendLogLine($"Fail to post {_objName} on server", "yellow");
+    }
+
+    ///
+    private void CreateObjFromResp(string _json)
+    {
+        if (_json.Contains("success"))
+        {
+            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
+            SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
+            // Debug.Log(resp.data.name + " / " + resp.data.id);
+            switch (resp.data.category)
+            {
+                case "tenant":
+                    CustomerGenerator.instance.CreateTenant(resp.data);
+                    break;
+                case "site":
+                    CustomerGenerator.instance.CreateSite(resp.data);
+                    break;
+                case "building":
+                    BuildingGenerator.instance.CreateBuilding(resp.data);
+                    break;
+                case "room":
+                    BuildingGenerator.instance.CreateRoom(resp.data);
+                    break;
+                case "rack":
+                    ObjectGenerator.instance.CreateRack(resp.data);
+                    break;
+                case "device":
+                    ObjectGenerator.instance.CreateDevice(resp.data);
+                    break;
+            }
+        }
+        else
+            GameManager.gm.AppendLogLine($"Fail to post on server", "red");
     }
 
 }

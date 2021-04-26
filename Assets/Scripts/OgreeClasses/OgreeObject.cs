@@ -175,6 +175,19 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         id = _id;
     }
 
+    ///
+    public void UpdateFromSApiObject(SApiObject _src, bool _isTemplated = false)
+    {
+        name = _src.name;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        domain = _src.domain;
+        description = _src.description;
+        if (!_isTemplated)
+            attributes = _src.attributes;
+    }
+
     ///<summary>
     /// If a WaitAndPut coroutine is running, stop it. Then, start WaitAndPut.
     ///</summary>

@@ -29,12 +29,13 @@ public class CustomerGenerator : MonoBehaviour
 
         GameObject newTenant = new GameObject(_tn.name);
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
-        tenant.name = _tn.name;
-        tenant.id = _tn.id;
-        tenant.category = "tenant";
-        tenant.description = _tn.description;
-        tenant.domain = _tn.domain;
-        tenant.attributes = _tn.attributes;
+        tenant.UpdateFromSApiObject(_tn);
+        // tenant.name = _tn.name;
+        // tenant.id = _tn.id;
+        // tenant.category = "tenant";
+        // tenant.description = _tn.description;
+        // tenant.domain = _tn.domain;
+        // tenant.attributes = _tn.attributes;
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
@@ -71,17 +72,18 @@ public class CustomerGenerator : MonoBehaviour
         newSite.transform.parent = tn;
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
-        site.name = newSite.name;
-        site.id = _si.id;
-        site.parentId = _si.parentId;
-        if (string.IsNullOrEmpty(site.parentId))
-            site.parentId = tn.GetComponent<OgreeObject>().id;
-        site.category = "site";
-        site.description = _si.description;
-        site.domain = _si.domain;
-        if (string.IsNullOrEmpty(site.domain))
-            site.domain = tn.GetComponent<OgreeObject>().domain;
-        site.attributes = _si.attributes;
+        site.UpdateFromSApiObject(_si);
+        // site.name = newSite.name;
+        // site.id = _si.id;
+        // site.parentId = _si.parentId;
+        // // if (string.IsNullOrEmpty(site.parentId))
+        // //     site.parentId = tn.GetComponent<OgreeObject>().id;
+        // site.category = "site";
+        // site.description = _si.description;
+        // site.domain = _si.domain;
+        // // if (string.IsNullOrEmpty(site.domain))
+        // //     site.domain = tn.GetComponent<OgreeObject>().domain;
+        // site.attributes = _si.attributes;
 
         switch (site.attributes["orientation"])
         {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -436,7 +436,6 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
-                // ApiManager.instance.CreateGetRequest(data[1]);
                 await ApiManager.instance.GetObject(data[1]);
             else
             {
@@ -449,8 +448,7 @@ public class ConsoleController : MonoBehaviour
                             ApiManager.instance.CreatePutRequest(obj);
                             break;
                         case "post":
-                            // ApiManager.instance.CreatePostRequest(obj);
-                            await ApiManager.instance.PostObject(obj);
+                            await ApiManager.instance.PostObject(new SApiObject(obj));
                             break;
                         case "delete":
                             ApiManager.instance.CreateDeleteRequest(obj);
@@ -519,10 +517,13 @@ public class ConsoleController : MonoBehaviour
             tn.attributes = new Dictionary<string, string>();
 
             tn.name = data[0];
+            tn.category = "tenant";
             tn.domain = data[0];
             tn.attributes["color"] = data[1];
-            OgreeObject tenant = CustomerGenerator.instance.CreateTenant(tn);
-            await ApiManager.instance.PostObject(tenant);
+            if (ApiManager.instance.isInit)
+                await ApiManager.instance.PostObject(tn);
+            else
+                CustomerGenerator.instance.CreateTenant(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -544,6 +545,7 @@ public class ConsoleController : MonoBehaviour
             si.description = new List<string>();
             si.attributes = new Dictionary<string, string>();
 
+            si.category = "site";
             IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
             si.attributes["usableColor"] = "DBEDF2";
@@ -551,8 +553,13 @@ public class ConsoleController : MonoBehaviour
             si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
             {
-                OgreeObject site = CustomerGenerator.instance.CreateSite(si, parent);
-                await ApiManager.instance.PostObject(site);
+                si.parentId = parent.GetComponent<OgreeObject>().id;
+                si.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(si);
+                else
+                    CustomerGenerator.instance.CreateSite(si, parent);
             }
         }
         else
