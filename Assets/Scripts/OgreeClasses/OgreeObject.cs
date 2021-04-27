@@ -176,7 +176,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///
-    public void UpdateFromSApiObject(SApiObject _src, bool _isTemplated = false)
+    public void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
     {
         name = _src.name;
         id = _src.id;
@@ -184,7 +184,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         category = _src.category;
         domain = _src.domain;
         description = _src.description;
-        if (!_isTemplated)
+        if (_copyAttr)
             attributes = _src.attributes;
     }
 

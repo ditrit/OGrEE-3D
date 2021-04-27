@@ -56,17 +56,18 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
         Building building = newBD.GetComponent<Building>();
-        building.name = newBD.name;
-        building.id = _bd.id;
-        building.parentId = _bd.parentId;
-        if (string.IsNullOrEmpty(building.parentId))
-            building.parentId = si.GetComponent<OgreeObject>().id;
-        building.category = "building";
-        building.description = _bd.description;
-        building.domain = _bd.domain;
-        if (string.IsNullOrEmpty(building.domain))
-            building.domain = si.GetComponent<OgreeObject>().domain;
-        building.attributes = _bd.attributes;
+        building.UpdateFromSApiObject(_bd);
+        // building.name = newBD.name;
+        // building.id = _bd.id;
+        // building.parentId = _bd.parentId;
+        // // if (string.IsNullOrEmpty(building.parentId))
+        // //     building.parentId = si.GetComponent<OgreeObject>().id;
+        // building.category = "building";
+        // building.description = _bd.description;
+        // building.domain = _bd.domain;
+        // // if (string.IsNullOrEmpty(building.domain))
+        // //     building.domain = si.GetComponent<OgreeObject>().domain;
+        // building.attributes = _bd.attributes;
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
@@ -108,17 +109,18 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.parent = bd;
 
         Room room = newRoom.GetComponent<Room>();
-        room.name = _ro.name;
-        room.id = _ro.id;
-        room.parentId = _ro.parentId;
-        if (string.IsNullOrEmpty(room.parentId))
-            room.parentId = bd.GetComponent<OgreeObject>().id;
-        room.category = "room";
-        room.description = _ro.description;
-        room.domain = _ro.domain;
-        if (string.IsNullOrEmpty(room.domain))
-            room.domain = bd.GetComponent<OgreeObject>().domain;
-        room.attributes = _ro.attributes;
+        room.UpdateFromSApiObject(_ro);
+        // room.name = _ro.name;
+        // room.id = _ro.id;
+        // room.parentId = _ro.parentId;
+        // if (string.IsNullOrEmpty(room.parentId))
+        //     room.parentId = bd.GetComponent<OgreeObject>().id;
+        // room.category = "room";
+        // room.description = _ro.description;
+        // room.domain = _ro.domain;
+        // if (string.IsNullOrEmpty(room.domain))
+        //     room.domain = bd.GetComponent<OgreeObject>().domain;
+        // room.attributes = _ro.attributes;
 
         Vector3 originalSize = room.usableZone.localScale;
         room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
@@ -176,7 +178,7 @@ public class BuildingGenerator : MonoBehaviour
             SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
             room.SetAreas(reserved, technical);
         }
-        
+
         if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
             ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];

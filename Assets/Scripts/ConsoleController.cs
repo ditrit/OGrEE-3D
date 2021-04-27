@@ -586,6 +586,7 @@ public class ConsoleController : MonoBehaviour
             bd.description = new List<string>();
             bd.attributes = new Dictionary<string, string>();
 
+            bd.category = "building";
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
@@ -598,8 +599,13 @@ public class ConsoleController : MonoBehaviour
 
             if (parent)
             {
-                Building building = BuildingGenerator.instance.CreateBuilding(bd, parent);
-                await ApiManager.instance.PostObject(building);
+                bd.parentId = parent.GetComponent<OgreeObject>().id;
+                bd.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(bd);
+                else
+                    BuildingGenerator.instance.CreateBuilding(bd, parent);
             }
         }
         else
@@ -623,6 +629,7 @@ public class ConsoleController : MonoBehaviour
             ro.description = new List<string>();
             ro.attributes = new Dictionary<string, string>();
 
+            ro.category = "room";
             Vector3 pos = Utils.ParseVector3(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
@@ -657,8 +664,13 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
             {
-                Room room = BuildingGenerator.instance.CreateRoom(ro, parent);
-                await ApiManager.instance.PostObject(room);
+                ro.parentId = parent.GetComponent<OgreeObject>().id;
+                ro.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(ro);
+                else
+                    BuildingGenerator.instance.CreateRoom(ro, parent);
             }
         }
         else
