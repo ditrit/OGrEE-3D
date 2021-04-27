@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -142,6 +142,7 @@ public class ReadFromJson
         rk.description = new List<string>();
         rk.attributes = new Dictionary<string, string>();
         rk.name = rackData.slug;
+        rk.category = "rack";
         rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
         rk.attributes["posXYUnit"] = "Tile";
         rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
@@ -150,6 +151,8 @@ public class ReadFromJson
         rk.attributes["heightUnit"] = "cm";
         rk.attributes["template"] = "";
         rk.attributes["orientation"] = "front";
+        rk.attributes["vendor"] = rackData.vendor;
+        rk.attributes["model"] = rackData.model;
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;

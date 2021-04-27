@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -21,7 +21,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -104,19 +104,21 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.name = newRack.name;
-        rack.id = _rk.id;
-        rack.parentId = _rk.parentId;
-        if (string.IsNullOrEmpty(rack.parentId))
-            rack.parentId = parent.GetComponent<OgreeObject>().id;
-        rack.category = "rack";
-        rack.description = _rk.description;
-        rack.domain = _rk.domain;
-        if (string.IsNullOrEmpty(rack.domain))
-            rack.domain = parent.GetComponent<OgreeObject>().domain;
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
-            rack.attributes = _rk.attributes;
-        else
+        rack.UpdateFromSApiObject(_rk, _copyAttr);
+        // rack.name = newRack.name;
+        // rack.id = _rk.id;
+        // rack.parentId = _rk.parentId;
+        // if (string.IsNullOrEmpty(rack.parentId))
+        //     rack.parentId = parent.GetComponent<OgreeObject>().id;
+        // rack.category = "rack";
+        // rack.description = _rk.description;
+        // rack.domain = _rk.domain;
+        // if (string.IsNullOrEmpty(rack.domain))
+        //     rack.domain = parent.GetComponent<OgreeObject>().domain;
+        // if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        //     rack.attributes = _rk.attributes;
+        // else
+        if (!_copyAttr)
         {
             rack.attributes["template"] = _rk.attributes["template"];
             rack.attributes["posXY"] = _rk.attributes["posXY"];

@@ -724,6 +724,7 @@ public class ConsoleController : MonoBehaviour
             rk.description = new List<string>();
             rk.attributes = new Dictionary<string, string>();
 
+            rk.category = "rack";
             Vector2 pos = Utils.ParseVector2(data[1]);
             rk.attributes["posXY"] = JsonUtility.ToJson(pos);
             rk.attributes["posXYUnit"] = "tile";
@@ -743,8 +744,18 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
             {
-                Rack rack = ObjectGenerator.instance.CreateRack(rk, parent);
-                await ApiManager.instance.PostObject(rack);
+                rk.parentId = parent.GetComponent<OgreeObject>().id;
+                rk.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(rk);
+                else
+                {
+                    if (rk.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateRack(rk, parent);
+                    else
+                        ObjectGenerator.instance.CreateRack(rk, parent, false);
+                }
             }
         }
         else
