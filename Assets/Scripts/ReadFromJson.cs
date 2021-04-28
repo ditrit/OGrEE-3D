@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -156,8 +156,6 @@ public class ReadFromJson
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;
-        rack.attributes["vendor"] = rackData.vendor;
-        rack.attributes["model"] = rackData.model;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (rackData.colors != null)
         {
@@ -261,6 +259,7 @@ public class ReadFromJson
         dv.description = new List<string>();
         dv.attributes = new Dictionary<string, string>();
         dv.name = data.slug;
+        dv.category = "device";
         dv.attributes["posU"] = "0";
         dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
         dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));

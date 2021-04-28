@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -694,6 +694,7 @@ public class ConsoleController : MonoBehaviour
             sp.description = new List<string>();
             sp.attributes = new Dictionary<string, string>();
 
+            sp.category = "separator";
             Vector2 pos1 = Utils.ParseVector2(data[1]);
             sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
             Vector2 pos2 = Utils.ParseVector2(data[2]);
@@ -779,6 +780,7 @@ public class ConsoleController : MonoBehaviour
             dv.description = new List<string>();
             dv.attributes = new Dictionary<string, string>();
 
+            dv.category = "device";
             float posU;
             if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
             {
@@ -792,7 +794,7 @@ public class ConsoleController : MonoBehaviour
             {
                 dv.attributes["sizeU"] = sizeU.ToString();
                 dv.attributes["template"] = "";
-            } 
+            }
             else
                 dv.attributes["template"] = data[2];
             if (data.Length == 4)
@@ -802,16 +804,27 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {
-                Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
-                if (device)
+                dv.parentId = parent.GetComponent<OgreeObject>().id;
+                dv.domain = parent.GetComponent<OgreeObject>().domain;
+                if (dv.attributes["template"] == "")
                 {
-                    Vector3 scale = device.transform.GetChild(0).localScale * 1000;
-                    device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
-                    device.attributes["sizeUnit"] = "mm";
-                    device.attributes["height"] = scale.y.ToString();
-                    device.attributes["heightUnit"] = "mm";
+                    Vector3 scale = parent.GetChild(0).localScale * 1000;
+                    dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                    dv.attributes["sizeUnit"] = "mm";
+                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["heightUnit"] = "mm";
                 }
-                await ApiManager.instance.PostObject(device);
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(dv);
+                else
+                {
+                    if (dv.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateDevice(dv, parent);
+                    else
+                        ObjectGenerator.instance.CreateDevice(dv, parent, false);
+
+                }
             }
         }
         else
@@ -835,10 +848,16 @@ public class ConsoleController : MonoBehaviour
             rg.description = new List<string>();
             rg.attributes = new Dictionary<string, string>();
 
+            rg.category = "group";
             IsolateParent(data[0], out parent, out rg.name);
             rg.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
+            {
+                rg.parentId = parent.GetComponent<OgreeObject>().id;
+                rg.domain = parent.GetComponent<OgreeObject>().id;
+
                 ObjectGenerator.instance.CreateGroup(rg, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -861,11 +880,17 @@ public class ConsoleController : MonoBehaviour
             co.description = new List<string>();
             co.attributes = new Dictionary<string, string>();
 
+            co.category = "corridor";
             IsolateParent(data[0], out parent, out co.name);
             co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
+            {
+                co.parentId = parent.GetComponent<OgreeObject>().id;
+                co.domain = parent.GetComponent<OgreeObject>().domain;
+
                 ObjectGenerator.instance.CreateCorridor(co, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");

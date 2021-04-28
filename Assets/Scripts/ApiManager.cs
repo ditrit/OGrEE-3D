@@ -229,31 +229,8 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Avoid requestsToSend 
-    /// Post an object to the api. Then, update object's id with response.
+    /// Post an object to the api. Then, create it from server's response.
     ///</summary>
-    public async Task PostObject(OgreeObject _obj)
-    {
-        if (!isInit)
-        {
-            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
-            return;
-        }
-        string json = JsonConvert.SerializeObject(new SApiObject(_obj));
-        string fullPath = $"{server}/{_obj.category}s";
-
-        StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-        try
-        {
-            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-            string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
-            UpdateObjId(_obj.hierarchyName, responseStr);
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
-        }
-    }
     public async Task PostObject(SApiObject _obj)
     {
         if (!isInit)
@@ -282,7 +259,7 @@ public class ApiManager : MonoBehaviour
     /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create
     ///</summary>
-    ///<param name="_json"></param>
+    ///<param name="_json">The API response to use</param>
     private void CreateItemFromJson(string _json)
     {
         // Is a list of objects
@@ -297,28 +274,28 @@ public class ApiManager : MonoBehaviour
                 CustomerGenerator.instance.CreateTenant(resp.data);
                 break;
             case "site":
-                CustomerGenerator.instance.CreateSite(resp.data, null);
+                CustomerGenerator.instance.CreateSite(resp.data);
                 break;
             case "building":
-                BuildingGenerator.instance.CreateBuilding(resp.data, null);
+                BuildingGenerator.instance.CreateBuilding(resp.data);
                 break;
             case "room":
-                BuildingGenerator.instance.CreateRoom(resp.data, null);
+                BuildingGenerator.instance.CreateRoom(resp.data);
                 break;
             case "rack":
-                ObjectGenerator.instance.CreateRack(resp.data, null);
+                ObjectGenerator.instance.CreateRack(resp.data);
                 break;
             case "device":
-                ObjectGenerator.instance.CreateDevice(resp.data, null);
+                ObjectGenerator.instance.CreateDevice(resp.data);
                 break;
             // case "group":
-            //     ObjectGenerator.instance.CreateGroup(resp.data, null);
+            //     ObjectGenerator.instance.CreateGroup(resp.data);
             //     break;
             // case "corridor":
-            //     ObjectGenerator.instance.CreateCorridor(resp.data, null);
+            //     ObjectGenerator.instance.CreateCorridor(resp.data);
             //     break;
             // case "separator":
-            //     BuildingGenerator.instance.CreateSeparator(resp.data, null);
+            //     BuildingGenerator.instance.CreateSeparator(resp.data);
             //     break;
         }
     }
@@ -345,35 +322,17 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine($"Fail to post {_objName} on server", "yellow");
     }
 
-    ///
+    ///<summary>
+    /// Parse the response and call CreateItemFromJson() to create the item
+    ///</summary>
+    ///<param name="_json">The API's response to parse</param>
     private void CreateObjFromResp(string _json)
     {
         if (_json.Contains("success"))
         {
             _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
             SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
-            // Debug.Log(resp.data.name + " / " + resp.data.id);
-            switch (resp.data.category)
-            {
-                case "tenant":
-                    CustomerGenerator.instance.CreateTenant(resp.data);
-                    break;
-                case "site":
-                    CustomerGenerator.instance.CreateSite(resp.data);
-                    break;
-                case "building":
-                    BuildingGenerator.instance.CreateBuilding(resp.data);
-                    break;
-                case "room":
-                    BuildingGenerator.instance.CreateRoom(resp.data);
-                    break;
-                case "rack":
-                    ObjectGenerator.instance.CreateRack(resp.data);
-                    break;
-                case "device":
-                    ObjectGenerator.instance.CreateDevice(resp.data);
-                    break;
-            }
+            CreateItemFromJson(_json);
         }
         else
             GameManager.gm.AppendLogLine($"Fail to post on server", "red");

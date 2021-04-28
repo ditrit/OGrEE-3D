@@ -57,17 +57,6 @@ public class BuildingGenerator : MonoBehaviour
 
         Building building = newBD.GetComponent<Building>();
         building.UpdateFromSApiObject(_bd);
-        // building.name = newBD.name;
-        // building.id = _bd.id;
-        // building.parentId = _bd.parentId;
-        // // if (string.IsNullOrEmpty(building.parentId))
-        // //     building.parentId = si.GetComponent<OgreeObject>().id;
-        // building.category = "building";
-        // building.description = _bd.description;
-        // building.domain = _bd.domain;
-        // // if (string.IsNullOrEmpty(building.domain))
-        // //     building.domain = si.GetComponent<OgreeObject>().domain;
-        // building.attributes = _bd.attributes;
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
@@ -110,17 +99,6 @@ public class BuildingGenerator : MonoBehaviour
 
         Room room = newRoom.GetComponent<Room>();
         room.UpdateFromSApiObject(_ro);
-        // room.name = _ro.name;
-        // room.id = _ro.id;
-        // room.parentId = _ro.parentId;
-        // if (string.IsNullOrEmpty(room.parentId))
-        //     room.parentId = bd.GetComponent<OgreeObject>().id;
-        // room.category = "room";
-        // room.description = _ro.description;
-        // room.domain = _ro.domain;
-        // if (string.IsNullOrEmpty(room.domain))
-        //     room.domain = bd.GetComponent<OgreeObject>().domain;
-        // room.attributes = _ro.attributes;
 
         Vector3 originalSize = room.usableZone.localScale;
         room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
@@ -237,17 +215,7 @@ public class BuildingGenerator : MonoBehaviour
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
         OgreeObject sp = separator.GetComponent<OgreeObject>();
-        sp.name = _sp.name;
-        sp.id = _sp.id;
-        sp.parentId = _sp.parentId;
-        if (string.IsNullOrEmpty(sp.parentId))
-            sp.parentId = parent.GetComponent<OgreeObject>().id;
-        sp.category = "separator";
-        sp.description = _sp.description;
-        sp.domain = _sp.domain;
-        if (string.IsNullOrEmpty(sp.domain))
-            sp.domain = parent.GetComponent<OgreeObject>().domain;
-        sp.attributes = _sp.attributes;
+        sp.UpdateFromSApiObject(_sp);
 
         string hn = sp.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, separator);
