@@ -120,7 +120,11 @@ public class ConfigLoader
         // Should get pwd from UI 
         // And send it with url & login to ApiManager
 
-        ApiManager.instance.Initialize(config.db_url, config.db_login, "secret");
+        // ApiManager.instance.Initialize(config.db_url, config.db_login, "secret");
+    #if API_DEBUG
+        config.db_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
+    #endif
+        ApiManager.instance.Initialize(config.db_url, config.db_token);
         yield return null;
     }
 

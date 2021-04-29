@@ -436,7 +436,6 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
-                // ApiManager.instance.CreateGetRequest(data[1]);
                 await ApiManager.instance.GetObject(data[1]);
             else
             {
@@ -449,8 +448,7 @@ public class ConsoleController : MonoBehaviour
                             ApiManager.instance.CreatePutRequest(obj);
                             break;
                         case "post":
-                            // ApiManager.instance.CreatePostRequest(obj);
-                            await ApiManager.instance.PostObject(obj);
+                            await ApiManager.instance.PostObject(new SApiObject(obj));
                             break;
                         case "delete":
                             ApiManager.instance.CreateDeleteRequest(obj);
@@ -519,10 +517,13 @@ public class ConsoleController : MonoBehaviour
             tn.attributes = new Dictionary<string, string>();
 
             tn.name = data[0];
+            tn.category = "tenant";
             tn.domain = data[0];
             tn.attributes["color"] = data[1];
-            OgreeObject tenant = CustomerGenerator.instance.CreateTenant(tn);
-            await ApiManager.instance.PostObject(tenant);
+            if (ApiManager.instance.isInit)
+                await ApiManager.instance.PostObject(tn);
+            else
+                CustomerGenerator.instance.CreateTenant(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -544,6 +545,7 @@ public class ConsoleController : MonoBehaviour
             si.description = new List<string>();
             si.attributes = new Dictionary<string, string>();
 
+            si.category = "site";
             IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
             si.attributes["usableColor"] = "DBEDF2";
@@ -551,8 +553,13 @@ public class ConsoleController : MonoBehaviour
             si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
             {
-                OgreeObject site = CustomerGenerator.instance.CreateSite(si, parent);
-                await ApiManager.instance.PostObject(site);
+                si.parentId = parent.GetComponent<OgreeObject>().id;
+                si.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(si);
+                else
+                    CustomerGenerator.instance.CreateSite(si, parent);
             }
         }
         else
@@ -579,6 +586,7 @@ public class ConsoleController : MonoBehaviour
             bd.description = new List<string>();
             bd.attributes = new Dictionary<string, string>();
 
+            bd.category = "building";
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
@@ -591,8 +599,13 @@ public class ConsoleController : MonoBehaviour
 
             if (parent)
             {
-                Building building = BuildingGenerator.instance.CreateBuilding(bd, parent);
-                await ApiManager.instance.PostObject(building);
+                bd.parentId = parent.GetComponent<OgreeObject>().id;
+                bd.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(bd);
+                else
+                    BuildingGenerator.instance.CreateBuilding(bd, parent);
             }
         }
         else
@@ -616,6 +629,7 @@ public class ConsoleController : MonoBehaviour
             ro.description = new List<string>();
             ro.attributes = new Dictionary<string, string>();
 
+            ro.category = "room";
             Vector3 pos = Utils.ParseVector3(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
@@ -650,8 +664,13 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
             {
-                Room room = BuildingGenerator.instance.CreateRoom(ro, parent);
-                await ApiManager.instance.PostObject(room);
+                ro.parentId = parent.GetComponent<OgreeObject>().id;
+                ro.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(ro);
+                else
+                    BuildingGenerator.instance.CreateRoom(ro, parent);
             }
         }
         else
@@ -675,6 +694,7 @@ public class ConsoleController : MonoBehaviour
             sp.description = new List<string>();
             sp.attributes = new Dictionary<string, string>();
 
+            sp.category = "separator";
             Vector2 pos1 = Utils.ParseVector2(data[1]);
             sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
             Vector2 pos2 = Utils.ParseVector2(data[2]);
@@ -705,6 +725,7 @@ public class ConsoleController : MonoBehaviour
             rk.description = new List<string>();
             rk.attributes = new Dictionary<string, string>();
 
+            rk.category = "rack";
             Vector2 pos = Utils.ParseVector2(data[1]);
             rk.attributes["posXY"] = JsonUtility.ToJson(pos);
             rk.attributes["posXYUnit"] = "tile";
@@ -724,8 +745,18 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
             {
-                Rack rack = ObjectGenerator.instance.CreateRack(rk, parent);
-                await ApiManager.instance.PostObject(rack);
+                rk.parentId = parent.GetComponent<OgreeObject>().id;
+                rk.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(rk);
+                else
+                {
+                    if (rk.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateRack(rk, parent);
+                    else
+                        ObjectGenerator.instance.CreateRack(rk, parent, false);
+                }
             }
         }
         else
@@ -749,6 +780,7 @@ public class ConsoleController : MonoBehaviour
             dv.description = new List<string>();
             dv.attributes = new Dictionary<string, string>();
 
+            dv.category = "device";
             float posU;
             if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
             {
@@ -762,7 +794,7 @@ public class ConsoleController : MonoBehaviour
             {
                 dv.attributes["sizeU"] = sizeU.ToString();
                 dv.attributes["template"] = "";
-            } 
+            }
             else
                 dv.attributes["template"] = data[2];
             if (data.Length == 4)
@@ -772,16 +804,27 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {
-                Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
-                if (device)
+                dv.parentId = parent.GetComponent<OgreeObject>().id;
+                dv.domain = parent.GetComponent<OgreeObject>().domain;
+                if (dv.attributes["template"] == "")
                 {
-                    Vector3 scale = device.transform.GetChild(0).localScale * 1000;
-                    device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
-                    device.attributes["sizeUnit"] = "mm";
-                    device.attributes["height"] = scale.y.ToString();
-                    device.attributes["heightUnit"] = "mm";
+                    Vector3 scale = parent.GetChild(0).localScale * 1000;
+                    dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                    dv.attributes["sizeUnit"] = "mm";
+                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["heightUnit"] = "mm";
                 }
-                await ApiManager.instance.PostObject(device);
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(dv);
+                else
+                {
+                    if (dv.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateDevice(dv, parent);
+                    else
+                        ObjectGenerator.instance.CreateDevice(dv, parent, false);
+
+                }
             }
         }
         else
@@ -805,10 +848,16 @@ public class ConsoleController : MonoBehaviour
             rg.description = new List<string>();
             rg.attributes = new Dictionary<string, string>();
 
+            rg.category = "group";
             IsolateParent(data[0], out parent, out rg.name);
             rg.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
+            {
+                rg.parentId = parent.GetComponent<OgreeObject>().id;
+                rg.domain = parent.GetComponent<OgreeObject>().id;
+
                 ObjectGenerator.instance.CreateGroup(rg, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -831,11 +880,17 @@ public class ConsoleController : MonoBehaviour
             co.description = new List<string>();
             co.attributes = new Dictionary<string, string>();
 
+            co.category = "corridor";
             IsolateParent(data[0], out parent, out co.name);
             co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
+            {
+                co.parentId = parent.GetComponent<OgreeObject>().id;
+                co.domain = parent.GetComponent<OgreeObject>().domain;
+
                 ObjectGenerator.instance.CreateCorridor(co, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");

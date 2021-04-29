@@ -20,8 +20,9 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
+    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -104,19 +105,8 @@ public class ObjectGenerator : MonoBehaviour
         newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.name = newRack.name;
-        rack.id = _rk.id;
-        rack.parentId = _rk.parentId;
-        if (string.IsNullOrEmpty(rack.parentId))
-            rack.parentId = parent.GetComponent<OgreeObject>().id;
-        rack.category = "rack";
-        rack.description = _rk.description;
-        rack.domain = _rk.domain;
-        if (string.IsNullOrEmpty(rack.domain))
-            rack.domain = parent.GetComponent<OgreeObject>().domain;
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
-            rack.attributes = _rk.attributes;
-        else
+        rack.UpdateFromSApiObject(_rk, _copyAttr);
+        if (!_copyAttr)
         {
             rack.attributes["template"] = _rk.attributes["template"];
             rack.attributes["posXY"] = _rk.attributes["posXY"];
@@ -188,8 +178,9 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
+    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
-    public Object CreateDevice(SApiObject _dv, Transform _parent = null)
+    public Object CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
@@ -319,35 +310,24 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newDevice.name = _dv.name;
-        Object obj = newDevice.GetComponent<Object>();
-        obj.name = _dv.name;
-        obj.id = _dv.id;
-        obj.parentId = _dv.parentId;
-        if (string.IsNullOrEmpty(obj.parentId))
-            obj.parentId = parent.GetComponent<OgreeObject>().id;
-        obj.category = "device";
-        obj.description = _dv.description;
-        obj.domain = _dv.domain;
-        if (string.IsNullOrEmpty(obj.domain))
-            obj.domain = parent.GetComponent<OgreeObject>().domain;
-        if (string.IsNullOrEmpty(_dv.attributes["template"]))
-            obj.attributes = _dv.attributes;
-        else
+        Object dv = newDevice.GetComponent<Object>();
+        dv.UpdateFromSApiObject(_dv, _copyAttr);
+        if (!_copyAttr)
         {
-            obj.attributes["template"] = _dv.attributes["template"];
-            obj.attributes["orientation"] = _dv.attributes["orientation"];
+            dv.attributes["template"] = _dv.attributes["template"];
+            dv.attributes["orientation"] = _dv.attributes["orientation"];
             if (_dv.attributes.ContainsKey("posU"))
-                obj.attributes["posU"] = _dv.attributes["posU"];
+                dv.attributes["posU"] = _dv.attributes["posU"];
             if (_dv.attributes.ContainsKey("slot"))
-                obj.attributes["slot"] = _dv.attributes["slot"];
+                dv.attributes["slot"] = _dv.attributes["slot"];
         }
 
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = obj.UpdateHierarchyName();
+        string hn = dv.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newDevice);
 
-        if (_dv.attributes.ContainsKey("template"))
+        if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
             Object[] components = newDevice.transform.GetComponentsInChildren<Object>();
             foreach (Object comp in components)
@@ -360,7 +340,7 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
 
-        return obj;
+        return dv;
     }
 
     ///<summary>
@@ -467,16 +447,7 @@ public class ObjectGenerator : MonoBehaviour
 
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
-        gr.name = newGr.name;
-        gr.parentId = _gr.parentId;
-        if (string.IsNullOrEmpty(gr.parentId))
-            gr.parentId = parent.GetComponent<OgreeObject>().id;
-        gr.category = "group";
-        gr.domain = _gr.domain;
-        if (string.IsNullOrEmpty(gr.domain))
-            gr.domain = content[0].GetComponent<OgreeObject>().domain;
-        gr.description = _gr.description;
-        gr.attributes = _gr.attributes;
+        gr.UpdateFromSApiObject(_gr);
         gr.DisplayContent(false);
 
         if (parentCategory == "room")
@@ -648,15 +619,7 @@ public class ObjectGenerator : MonoBehaviour
         newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
         Object co = newCo.AddComponent<Object>();
-        co.name = newCo.name;
-        co.parentId = _co.parentId;
-        if (string.IsNullOrEmpty(co.parentId))
-            co.parentId = parent.GetComponent<Room>().id;
-        co.category = "corridor";
-        co.domain = _co.domain;
-        if (string.IsNullOrEmpty(co.domain))
-            co.domain = lowerLeft.GetComponent<Rack>().domain;
-        co.attributes = _co.attributes;
+        co.UpdateFromSApiObject(_co);
 
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
         mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);

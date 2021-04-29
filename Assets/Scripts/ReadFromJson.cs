@@ -142,6 +142,7 @@ public class ReadFromJson
         rk.description = new List<string>();
         rk.attributes = new Dictionary<string, string>();
         rk.name = rackData.slug;
+        rk.category = "rack";
         rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
         rk.attributes["posXYUnit"] = "Tile";
         rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
@@ -150,11 +151,11 @@ public class ReadFromJson
         rk.attributes["heightUnit"] = "cm";
         rk.attributes["template"] = "";
         rk.attributes["orientation"] = "front";
+        rk.attributes["vendor"] = rackData.vendor;
+        rk.attributes["model"] = rackData.model;
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;
-        rack.attributes["vendor"] = rackData.vendor;
-        rack.attributes["model"] = rackData.model;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (rackData.colors != null)
         {
@@ -258,6 +259,7 @@ public class ReadFromJson
         dv.description = new List<string>();
         dv.attributes = new Dictionary<string, string>();
         dv.name = data.slug;
+        dv.category = "device";
         dv.attributes["posU"] = "0";
         dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
         dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));

@@ -83,12 +83,8 @@ public class ApiManager : MonoBehaviour
     {
         if (isReady && requestsToSend.Count > 0)
         {
-            /*if (requestsToSend.Peek().type == "get")
-                GetHttpData();
-            else */if (requestsToSend.Peek().type == "put")
+            if (requestsToSend.Peek().type == "put")
                 PutHttpData();
-            // else if (requestsToSend.Peek().type == "post")
-            //     PostHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
@@ -100,7 +96,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_serverUrl">The url to save</param>
     ///<param name="_login">The login to use</param>
     ///<param name="_pwd">The password to use</param>
-    public /*async*/ void Initialize(string _serverUrl, string _login, string _pwd)
+    public async void Initialize(string _serverUrl, string _login, string _pwd)
     {
         SAuth auth = new SAuth();
         auth.email = _login;
@@ -110,10 +106,10 @@ public class ApiManager : MonoBehaviour
         string fullPath = _serverUrl + "/api/user";
         try
         {
-            // HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-            // string responseStr = response.Content.ReadAsStringAsync().Result;
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
             // GameManager.gm.AppendLogLine(responseStr);
-            string responseStr = "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}";
+            // "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}"
             server = fullPath;
 
             SAuthResp resp = new SAuthResp();
@@ -133,17 +129,25 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an GET request from _input.
+    /// Initialize the manager with url and token. 
     ///</summary>
-    ///<param name="_input">The get request to send</param>
-    // public void CreateGetRequest(string _input)
-    // {
-    //     SRequest request = new SRequest();
-    //     request.type = "get";
-    //     request.path = $"/{_input}";
-
-    //     requestsToSend.Enqueue(request);
-    // }
+    ///<param name="_serverUrl">The base url of the API to use</param>
+    ///<param name="_token">The auth token of the API to use</param>
+    public void Initialize(string _serverUrl, string _token)
+    {
+        if (string.IsNullOrEmpty(_serverUrl))
+            GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
+        else if (string.IsNullOrEmpty(_token))
+            GameManager.gm.AppendLogLine("Failed to connect with API: no token", "red");
+        else
+        {
+            server = _serverUrl + "/api/user";
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
+            isReady = true;
+            isInit = true;
+            GameManager.gm.AppendLogLine("Connected to API", "green");
+        }
+    }
 
     ///<summary>
     /// Create an PUT request from _input.
@@ -161,23 +165,6 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an POST request from _input.
-    ///</summary>
-    ///<param name="_obj">The OgreeObject to post</param>
-    // public void CreatePostRequest(OgreeObject _obj)
-    // {
-    //     SRequest request = new SRequest();
-    //     request.type = "post";
-
-    //     SApiObject apiObj = new SApiObject(_obj);
-    //     request.path = $"/{apiObj.category}s";
-    //     request.json = JsonConvert.SerializeObject(apiObj);
-    //     request.objToUpdate = _obj.hierarchyName;
-
-    //     requestsToSend.Enqueue(request);
-    // }
-
-    ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to delete</param>
@@ -188,29 +175,6 @@ public class ApiManager : MonoBehaviour
         request.path = $"/{_obj.category}s/{_obj.id}";
         requestsToSend.Enqueue(request);
     }
-
-    ///<summary>
-    /// Send a get request to the api. Create an Ogree object with response.
-    ///</summary>
-    // private async void GetHttpData()
-    // {
-    //     isReady = false;
-
-    //     SRequest req = requestsToSend.Dequeue();
-    //     string fullPath = server + req.path;
-    //     try
-    //     {
-    //         string response = await httpClient.GetStringAsync(fullPath);
-    //         GameManager.gm.AppendLogLine(response);
-    //         CreateItemFromJson(response);
-    //     }
-    //     catch (HttpRequestException e)
-    //     {
-    //         GameManager.gm.AppendLogLine(e.Message, "red");
-    //     }
-
-    //     isReady = true;
-    // }
 
     ///<summary>
     /// Send a put request to the api.
@@ -235,31 +199,6 @@ public class ApiManager : MonoBehaviour
 
         isReady = true;
     }
-
-    ///<summary>
-    /// Send a post request to the api. Then, update object's id with response.
-    ///</summary>
-    // private async void PostHttpData()
-    // {
-    //     isReady = false;
-
-    //     SRequest req = requestsToSend.Dequeue();
-    //     string fullPath = server + req.path;
-    //     StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
-    //     try
-    //     {
-    //         HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-    //         string responseStr = response.Content.ReadAsStringAsync().Result;
-    //         GameManager.gm.AppendLogLine(responseStr);
-    //         UpdateObjId(req.objToUpdate, responseStr);
-    //     }
-    //     catch (HttpRequestException e)
-    //     {
-    //         GameManager.gm.AppendLogLine(e.Message, "red");
-    //     }
-
-    //     isReady = true;
-    // }
 
     ///<summary>
     /// Send a delete request to the api.
@@ -311,16 +250,16 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Avoid requestsToSend 
-    /// Post an object to the api. Then, update object's id with response.
+    /// Post an object to the api. Then, create it from server's response.
     ///</summary>
-    public async Task PostObject(OgreeObject _obj)
+    public async Task PostObject(SApiObject _obj)
     {
         if (!isInit)
         {
             GameManager.gm.AppendLogLine("Not connected to API", "yellow");
             return;
         }
-        string json = JsonConvert.SerializeObject(new SApiObject(_obj));
+        string json = JsonConvert.SerializeObject(_obj);
         string fullPath = $"{server}/{_obj.category}s";
 
         StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
@@ -329,7 +268,7 @@ public class ApiManager : MonoBehaviour
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
-            UpdateObjId(_obj.hierarchyName, responseStr);
+            CreateObjFromResp(responseStr);
         }
         catch (HttpRequestException e)
         {
@@ -341,7 +280,7 @@ public class ApiManager : MonoBehaviour
     /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create
     ///</summary>
-    ///<param name="_json"></param>
+    ///<param name="_json">The API response to use</param>
     private void CreateItemFromJson(string _json)
     {
         // Is a list of objects
@@ -356,29 +295,29 @@ public class ApiManager : MonoBehaviour
                 CustomerGenerator.instance.CreateTenant(resp.data);
                 break;
             case "site":
-                CustomerGenerator.instance.CreateSite(resp.data, null);
+                CustomerGenerator.instance.CreateSite(resp.data);
                 break;
             case "building":
-                BuildingGenerator.instance.CreateBuilding(resp.data, null);
+                BuildingGenerator.instance.CreateBuilding(resp.data);
                 break;
             case "room":
-                BuildingGenerator.instance.CreateRoom(resp.data, null);
+                BuildingGenerator.instance.CreateRoom(resp.data);
                 break;
             case "rack":
-                ObjectGenerator.instance.CreateRack(resp.data, null);
+                ObjectGenerator.instance.CreateRack(resp.data);
                 break;
             case "device":
-                ObjectGenerator.instance.CreateDevice(resp.data, null);
+                ObjectGenerator.instance.CreateDevice(resp.data);
                 break;
-            // case "group":
-            //     ObjectGenerator.instance.CreateGroup(resp.data, null);
-            //     break;
-            // case "corridor":
-            //     ObjectGenerator.instance.CreateCorridor(resp.data, null);
-            //     break;
-            // case "separator":
-            //     BuildingGenerator.instance.CreateSeparator(resp.data, null);
-            //     break;
+                // case "group":
+                //     ObjectGenerator.instance.CreateGroup(resp.data);
+                //     break;
+                // case "corridor":
+                //     ObjectGenerator.instance.CreateCorridor(resp.data);
+                //     break;
+                // case "separator":
+                //     BuildingGenerator.instance.CreateSeparator(resp.data);
+                //     break;
         }
     }
 
@@ -402,6 +341,22 @@ public class ApiManager : MonoBehaviour
         }
         else
             GameManager.gm.AppendLogLine($"Fail to post {_objName} on server", "yellow");
+    }
+
+    ///<summary>
+    /// Parse the response and call CreateItemFromJson() to create the item
+    ///</summary>
+    ///<param name="_json">The API's response to parse</param>
+    private void CreateObjFromResp(string _json)
+    {
+        if (_json.Contains("success"))
+        {
+            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
+            SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
+            CreateItemFromJson(_json);
+        }
+        else
+            GameManager.gm.AppendLogLine($"Fail to post on server", "red");
     }
 
 }
