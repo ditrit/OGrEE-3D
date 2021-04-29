@@ -26,13 +26,7 @@ public class ConfigLoader
     public void LoadConfig()
     {
         config = LoadConfigFile();
-
-        OverrideConfig("--verbose", config.verbose);
-        OverrideConfig("--fullscreen", config.fullscreen);
-        OverrideConfig("--serverUrl", config.db_url);
-        OverrideConfig("--serverLogin", config.db_login);
-        OverrideConfig("--serverToken", config.db_token);
-
+        OverrideConfig();
 
         ApplyConfig(config);
 
@@ -60,15 +54,37 @@ public class ConfigLoader
     }
 
     ///<summmary>
-    /// Get an argument and override config value.
+    /// Override config if arguments are found.
     ///</summmary>
-    ///<param name="_arg">The argument to search</param>
-    ///<param name="_value">The config value to override</param>
-    private void OverrideConfig(string _arg, string _value)
+    private void OverrideConfig()
     {
-        string str = GetArg(_arg);
-        if (!string.IsNullOrEmpty(str))
-            _value = str;
+        string[] args = new string[] { "--verbose", "--fullscreen", "--serverUrl", "--serverLogin", "--serverToken" };
+        for (int i = 0; i < args.Length; i++)
+        {
+            string str = GetArg(args[i]);
+            if (!string.IsNullOrEmpty(str))
+            {
+                switch (i)
+                {
+                    case 0:
+                        config.verbose = str;
+                        break;
+                    case 1:
+                        config.fullscreen = str;
+                        break;
+                    case 2:
+                        config.db_url = str;
+                        break;
+                    case 3:
+                        config.db_login = str;
+                        break;
+                    case 4:
+                        config.db_token = str;
+                        break;
+                }
+
+            }
+        }
     }
 
     ///<summary>
@@ -116,14 +132,11 @@ public class ConfigLoader
     /// Send a get request to the given url. If no error, initialize ApiManager.
     ///</summary>
     public IEnumerator ConnectToApi()
-    {        
-        // Should get pwd from UI 
-        // And send it with url & login to ApiManager
-
+    {
         // ApiManager.instance.Initialize(config.db_url, config.db_login, "secret");
-    #if API_DEBUG
+#if API_DEBUG
         config.db_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
-    #endif
+#endif
         ApiManager.instance.Initialize(config.db_url, config.db_token);
         yield return null;
     }
