@@ -96,7 +96,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_serverUrl">The url to save</param>
     ///<param name="_login">The login to use</param>
     ///<param name="_pwd">The password to use</param>
-    public /*async*/ void Initialize(string _serverUrl, string _login, string _pwd)
+    public async void Initialize(string _serverUrl, string _login, string _pwd)
     {
         SAuth auth = new SAuth();
         auth.email = _login;
@@ -106,10 +106,10 @@ public class ApiManager : MonoBehaviour
         string fullPath = _serverUrl + "/api/user";
         try
         {
-            // HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-            // string responseStr = response.Content.ReadAsStringAsync().Result;
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
             // GameManager.gm.AppendLogLine(responseStr);
-            string responseStr = "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}";
+            // "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}"
             server = fullPath;
 
             SAuthResp resp = new SAuthResp();
@@ -126,6 +126,27 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
 
+    }
+
+    ///<summary>
+    /// Initialize the manager with url and token. 
+    ///</summary>
+    ///<param name="_serverUrl">The base url of the API to use</param>
+    ///<param name="_token">The auth token of the API to use</param>
+    public void Initialize(string _serverUrl, string _token)
+    {
+        if (string.IsNullOrEmpty(_serverUrl))
+            GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
+        else if (string.IsNullOrEmpty(_token))
+            GameManager.gm.AppendLogLine("Failed to connect with API: no token", "red");
+        else
+        {
+            server = _serverUrl + "/api/user";
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
+            isReady = true;
+            isInit = true;
+            GameManager.gm.AppendLogLine("Connected to API", "green");
+        }
     }
 
     ///<summary>
@@ -288,15 +309,15 @@ public class ApiManager : MonoBehaviour
             case "device":
                 ObjectGenerator.instance.CreateDevice(resp.data);
                 break;
-            // case "group":
-            //     ObjectGenerator.instance.CreateGroup(resp.data);
-            //     break;
-            // case "corridor":
-            //     ObjectGenerator.instance.CreateCorridor(resp.data);
-            //     break;
-            // case "separator":
-            //     BuildingGenerator.instance.CreateSeparator(resp.data);
-            //     break;
+                // case "group":
+                //     ObjectGenerator.instance.CreateGroup(resp.data);
+                //     break;
+                // case "corridor":
+                //     ObjectGenerator.instance.CreateCorridor(resp.data);
+                //     break;
+                // case "separator":
+                //     BuildingGenerator.instance.CreateSeparator(resp.data);
+                //     break;
         }
     }
 
