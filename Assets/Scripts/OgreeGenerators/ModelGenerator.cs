@@ -29,7 +29,7 @@ public class ModelGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_rk.name}";
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -47,7 +47,6 @@ public class ModelGenerator : MonoBehaviour
         Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
             r.enabled = true;
-        Destroy(newRack.GetComponent<HierarchyName>());
 
         newRack.name = _rk.name;
         newRack.transform.parent = parent;
@@ -100,18 +99,18 @@ public class ModelGenerator : MonoBehaviour
         }
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear", true);
-        newRack.GetComponent<DisplayObjectData>().SetLabel("name");
+        newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColor();
         // GameManager.gm.SetRackMaterial(newRack.transform);
 
-        string hn = newRack.AddComponent<HierarchyName>().fullname;
+        string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            HierarchyName[] components = rack.transform.GetComponentsInChildren<HierarchyName>();
-            foreach (HierarchyName comp in components)
+            Object[] components = rack.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
