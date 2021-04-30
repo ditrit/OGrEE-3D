@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
@@ -28,7 +29,7 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Parent site not found", "red");
             return null;
         }
-        string hierarchyName = $"{si.GetComponent<HierarchyName>()?.fullname}.{_bd.name}";
+        string hierarchyName = $"{si.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -55,22 +56,12 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
         Building building = newBD.GetComponent<Building>();
-        building.name = newBD.name;
-        building.id = _bd.id;
-        building.parentId = _bd.parentId;
-        if (string.IsNullOrEmpty(building.parentId))
-            building.parentId = si.GetComponent<OgreeObject>().id;
-        building.category = "building";
-        building.description = _bd.description;
-        building.domain = _bd.domain;
-        if (string.IsNullOrEmpty(building.domain))
-            building.domain = si.GetComponent<OgreeObject>().domain;
-        building.attributes = _bd.attributes;
+        building.UpdateFromSApiObject(_bd);
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        newBD.AddComponent<HierarchyName>();
-        GameManager.gm.allItems.Add(hierarchyName, newBD);
+        string hn = building.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hn, newBD);
 
         return building;
     }
@@ -89,7 +80,7 @@ public class BuildingGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Parent building not found", "red");
             return null;
         }
-        string hierarchyName = $"{bd.GetComponent<HierarchyName>()?.fullname}.{_ro.name}";
+        string hierarchyName = $"{bd.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -107,17 +98,7 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.parent = bd;
 
         Room room = newRoom.GetComponent<Room>();
-        room.name = _ro.name;
-        room.id = _ro.id;
-        room.parentId = _ro.parentId;
-        if (string.IsNullOrEmpty(room.parentId))
-            room.parentId = bd.GetComponent<OgreeObject>().id;
-        room.category = "room";
-        room.description = _ro.description;
-        room.domain = _ro.domain;
-        if (string.IsNullOrEmpty(room.domain))
-            room.domain = bd.GetComponent<OgreeObject>().domain;
-        room.attributes = _ro.attributes;
+        room.UpdateFromSApiObject(_ro);
 
         Vector3 originalSize = room.usableZone.localScale;
         room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
@@ -134,24 +115,25 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
         newRoom.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
 
-        switch (room.attributes["orientation"])
+        if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
         {
-            case "EN":
-                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-                newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-                break;
-            case "WS":
-                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-                break;
-            case "NW":
-                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-                break;
-            case "SE":
-                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-                newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-                break;
+            newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+            newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
+        }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+            newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
+        }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+            newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
+        }
+        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
+        {
+            newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+            newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
         }
 
         // Set UI room's name
@@ -164,8 +146,16 @@ public class BuildingGenerator : MonoBehaviour
 
         room.UpdateZonesColor();
 
-        string hn = newRoom.AddComponent<HierarchyName>().fullname;
+        string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRoom);
+
+        if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
+            && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
+        {
+            SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
+            SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
+            room.SetAreas(reserved, technical);
+        }
 
         if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
@@ -182,17 +172,35 @@ public class BuildingGenerator : MonoBehaviour
     ///<summary>
     /// Instantiate a separatorModel (from GameManager) and apply _data to it.
     ///</summary>
-    ///<param name="_data">Informations about the separator</param>
-    public void CreateSeparator(SSeparatorInfos _data)
+    ///<param name="_sp">Informations about the separator</param>
+    ///<param name="_parent">The parent of the created separator. Leave null if _bd contains the parendId</param>
+    public OgreeObject CreateSeparator(SApiObject _sp, Transform _parent = null)
     {
-        float length = Vector3.Distance(_data.pos1XYm, _data.pos2XYm);
-        float height = _data.parent.GetComponent<Room>().walls.GetChild(0).localScale.y;
-        float angle = Vector3.SignedAngle(Vector3.right, _data.pos2XYm - _data.pos1XYm, Vector3.up);
-        // Debug.Log($"[{_data.name}]=> {angle}");
+        Transform parent = Utils.FindParent(_parent, _sp.parentId);
+        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        {
+            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_sp.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
+        // pos1XYm = startPos - pos2XYm = endPos
+        Vector2 pos1 = JsonUtility.FromJson<Vector2>(_sp.attributes["startPos"]);
+        Vector2 pos2 = JsonUtility.FromJson<Vector2>(_sp.attributes["endPos"]);
+
+        float length = Vector2.Distance(pos1, pos2);
+        float height = parent.GetComponent<Room>().walls.GetChild(0).localScale.y;
+        float angle = Vector3.SignedAngle(Vector3.right, pos2 - pos1, Vector3.up);
+        // Debug.Log($"[{_sp.name}]=> {angle}");
 
         GameObject separator = Instantiate(GameManager.gm.separatorModel);
-        separator.name = _data.name;
-        separator.transform.parent = _data.parent;
+        separator.name = _sp.name;
+        separator.transform.parent = parent;
 
         // Set textured box
         separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
@@ -201,13 +209,18 @@ public class BuildingGenerator : MonoBehaviour
         rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
 
         // Place the separator in the right place
-        Vector3 roomScale = _data.parent.GetComponent<Room>().technicalZone.localScale * -5;
+        Vector3 roomScale = parent.GetComponent<Room>().technicalZone.localScale * -5;
         separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
-        separator.transform.localPosition += new Vector3(_data.pos1XYm.x, 0, _data.pos1XYm.y);
+        separator.transform.localPosition += new Vector3(pos1.x, 0, pos1.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
-        string hn = separator.AddComponent<HierarchyName>().fullname;
+        OgreeObject sp = separator.GetComponent<OgreeObject>();
+        sp.UpdateFromSApiObject(_sp);
+
+        string hn = sp.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, separator);
+
+        return sp;
     }
 
     ///<summary>
@@ -241,12 +254,16 @@ public class BuildingGenerator : MonoBehaviour
     ///<param name="_root">The room of the separator</param>
     private void CreateSeparatorFromJson(ReadFromJson.SSeparator _sepData, Transform _root)
     {
-        SSeparatorInfos infos = new SSeparatorInfos();
-        infos.name = _sepData.name;
-        infos.pos1XYm = new Vector2(_sepData.pos1XYm[0], _sepData.pos1XYm[1]);
-        infos.pos2XYm = new Vector2(_sepData.pos2XYm[0], _sepData.pos2XYm[1]);
-        infos.parent = _root;
+        SApiObject sp = new SApiObject();
+        sp.description = new List<string>();
+        sp.attributes = new Dictionary<string, string>();
 
-        CreateSeparator(infos);
+        sp.name = _sepData.name;
+        Vector2 pos1 = new Vector2(_sepData.pos1XYm[0], _sepData.pos1XYm[1]);
+        sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
+        Vector2 pos2 = new Vector2(_sepData.pos2XYm[0], _sepData.pos2XYm[1]);
+        sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
+
+        BuildingGenerator.instance.CreateSeparator(sp, _root);
     }
 }

@@ -13,17 +13,16 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
     [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
     [SerializeField] private TextMeshProUGUI tmpTenantEmail = null;
-    [SerializeField] private TextMeshProUGUI tmpPosXY = null;
-    [SerializeField] private TextMeshProUGUI tmpSize = null;
-    [SerializeField] private TextMeshProUGUI tmpVendor = null;
-    [SerializeField] private TextMeshProUGUI tmpType = null;
-    [SerializeField] private TextMeshProUGUI tmpModel = null;
-    [SerializeField] private TextMeshProUGUI tmpSerial = null;
-    [SerializeField] private TextMeshProUGUI tmpDesc = null;
+    [SerializeField] private TextMeshProUGUI tmpAttributes = null;
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
     [SerializeField] private TextMeshProUGUI objList = null;
+
+    private void Start()
+    {
+        UpdateSingleFields(null);
+    }
 
     ///<summary>
     /// Update Texts in singlePanel.
@@ -45,18 +44,12 @@ public class GUIObjectInfos : MonoBehaviour
             if (_obj)
                 tmpName.text = _obj.name;
             else
-                tmpName.text = "Name";
-            tmpTenantName.text = "Tenant Name";
-            tmpTenantContact.text = "Tenant Contact";
-            tmpTenantPhone.text = "Tenant Phone";
-            tmpTenantEmail.text = "Tenant Email";
-            tmpPosXY.text = "PosXY";
-            tmpSize.text = "Size";
-            tmpVendor.text = "Vendor";
-            tmpType.text = "Type";
-            tmpModel.text = "Model";
-            tmpSerial.text = "Serial";
-            tmpDesc.text = "Description";
+                tmpName.text = "";
+            tmpTenantName.text = "";
+            tmpTenantContact.text = "";
+            tmpTenantPhone.text = "";
+            tmpTenantEmail.text = "";
+            tmpAttributes.text = "";
         }
     }
 
@@ -72,7 +65,11 @@ public class GUIObjectInfos : MonoBehaviour
 
         objList.text = "";
         foreach (GameObject obj in _objects)
-            objList.text += $"{obj.GetComponent<HierarchyName>().fullname}\n";
+            objList.text += $"{obj.GetComponent<OgreeObject>().hierarchyName}\n";
+
+        // Set correct height for scroll view
+        RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(0, _objects.Count * 20);
     }
 
     ///<summary>
@@ -81,34 +78,96 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_obj">The rack whose information are displayed</param>
     private void UpdateFields(OgreeObject _obj)
     {
-        tmpName.text = _obj.GetComponent<HierarchyName>().fullname;
+        int i = 1;
+        tmpName.text = _obj.hierarchyName;
         if (!string.IsNullOrEmpty(_obj.domain))
         {
-            OgreeObject tn = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
-            tmpTenantName.text = tn.name;
-            tmpTenantContact.text = IfInDictionary(tn.attributes, "mainContact");
-            tmpTenantPhone.text = IfInDictionary(tn.attributes, "mainPhone");
-            tmpTenantEmail.text = IfInDictionary(tn.attributes, "mainEmail");
+            OgreeObject domain = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
+            tmpTenantName.text = domain.name;
+            tmpTenantContact.text = IfInDictionary(domain.attributes, "mainContact");
+            tmpTenantPhone.text = IfInDictionary(domain.attributes, "mainPhone");
+            tmpTenantEmail.text = IfInDictionary(domain.attributes, "mainEmail");
         }
-        if (_obj.category == "rack")
+        // Display category
+        tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
+
+        // Display posXY if available
+        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
+            && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
         {
             Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
-            tmpPosXY.text = $"Tile {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")}";
+            tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
+            i++;
+
+            // If rack, display pos by tile name if available
+            if (_obj.category == "rack")
+            {
+                string roomTemplate = _obj.transform.parent.GetComponent<Room>().attributes["template"];
+                if (!string.IsNullOrEmpty(roomTemplate))
+                {
+                    ReadFromJson.STiles tileData = new ReadFromJson.STiles();
+                    ReadFromJson.STiles[] tiles = GameManager.gm.roomTemplates[roomTemplate].tiles;
+                    foreach (ReadFromJson.STiles t in tiles)
+                    {
+                        if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
+                            tileData = t;
+                    }
+                    if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
+                    {
+                        tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
+                        i++;
+                    }
+                }
+            }
         }
-        else
-            tmpPosXY.text = "";
+
+        // Display orientation if available
+        if (_obj.attributes.ContainsKey("orientation"))
+        {
+            tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
+            i++;
+        }
+
+        // Display size if available
         if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
-            tmpSize.text = $"{size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}";
+            tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
+            i++;
         }
-        tmpVendor.text = IfInDictionary(_obj.attributes, "vendor");
-        tmpType.text = IfInDictionary(_obj.attributes, "type");
-        tmpModel.text = IfInDictionary(_obj.attributes, "model");
-        tmpSerial.text = IfInDictionary(_obj.attributes, "serial");
-        tmpDesc.text = "";
-        foreach (string desc in _obj.description)
-            tmpDesc.text += $"{desc}\n";
+
+        // Display template if available
+        if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
+        {
+            tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
+            i++;
+        }
+
+        // Display all other attributes
+        foreach (KeyValuePair<string, string> kvp in _obj.attributes)
+        {
+            if (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
+                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template")
+            {
+                tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+                i++;
+            }
+        }
+
+        // Display all descriptions
+        if (_obj.description.Count != 0)
+        {
+            tmpAttributes.text += "<b>description:</b>\n";
+            for (int j = 0; j < _obj.description.Count; j++)
+            {
+                tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
+                i++;
+            }
+        }
+
+        // Set correct height for scroll view
+        RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(0, i * 30);
     }
 
     ///<summary>

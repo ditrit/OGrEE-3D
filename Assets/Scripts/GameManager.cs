@@ -72,20 +72,19 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
-        // consoleController = GameObject.FindObjectOfType<ConsoleController>();
     }
 
     private void Start()
     {
         configLoader.LoadConfig();
-        // StartCoroutine(configLoader.ConnectToApi());
+        StartCoroutine(configLoader.ConnectToApi());
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
 
 #if DEBUG
-        consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/HPC_LOD_rg_co.ocli");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
     }
@@ -94,6 +93,11 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
+
+#if DEBUG
+        if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
+#endif
 
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
@@ -209,7 +213,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         }
         else
             currentItemText.text = "Ogree3D";
@@ -241,7 +245,7 @@ public class GameManager : MonoBehaviour
         if (currentItems.Count > 1)
             currentItemText.text = "Selection";
         else if (currentItems.Count == 1)
-            currentItemText.text = currentItems[0].GetComponent<HierarchyName>().fullname;
+            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         else
             currentItemText.text = "Ogree3D";
 
@@ -284,7 +288,7 @@ public class GameManager : MonoBehaviour
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    private void FocusItem(GameObject _obj)
+    public void FocusItem(GameObject _obj)
     {
         bool canFocus = false;
         if (focus.Count == 0)
@@ -301,8 +305,8 @@ public class GameManager : MonoBehaviour
         if (canFocus == true)
         {
             focus.Add(_obj);
-            if (_obj.GetComponent<RackGroup>())
-                _obj.GetComponent<RackGroup>().SetAttribute("racks", "true");
+            if (_obj.GetComponent<Group>())
+                _obj.GetComponent<Group>().SetAttribute("racks", "true");
             else
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
@@ -319,12 +323,12 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    private void UnfocusItem()
+    public void UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
-        if (obj.GetComponent<RackGroup>())
-            obj.GetComponent<RackGroup>().SetAttribute("racks", "false");
+        if (obj.GetComponent<Group>())
+            obj.GetComponent<Group>().SetAttribute("racks", "false");
         else
         {
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
@@ -342,7 +346,7 @@ public class GameManager : MonoBehaviour
     {
         if (focus.Count > 0)
         {
-            string objName = focus[focus.Count - 1].GetComponent<HierarchyName>().fullname;
+            string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
         }
         else
@@ -363,11 +367,11 @@ public class GameManager : MonoBehaviour
         // Should count type of deleted objects
         if (_serverDelete)
         {
-            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<HierarchyName>().fullname);
+            ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<OgreeObject>());
             foreach (Transform child in _toDel.transform)
             {
                 if (child.GetComponent<OgreeObject>())
-                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<HierarchyName>().fullname);
+                    ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
         Destroy(_toDel);

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ConsoleController : MonoBehaviour
@@ -112,12 +113,16 @@ public class ConsoleController : MonoBehaviour
             SelectParent();
         else if (_input[0] == '=')
             StartCoroutine(SelectItem(_input.Substring(1)));
+        else if (_input[0] == '>')
+            FocusItem(_input.Substring(1));
         else if (_input[0] == '.')
             ParseLoad(_input.Substring(1), _saveCmd);
         else if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
+        else if (_input[0] == '~')
+            MoveRack(_input.Substring(1));
         else if (_input.StartsWith("ui."))
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
@@ -190,12 +195,12 @@ public class ConsoleController : MonoBehaviour
             string[] items = _input.Split(',');
             for (int i = 0; i < items.Length; i++)
             {
-                items[i] = $"{root.GetComponent<HierarchyName>().fullname}.{items[i]}";
+                items[i] = $"{root.GetComponent<OgreeObject>().hierarchyName}.{items[i]}";
                 bool found = false;
-                HierarchyName[] children = root.GetComponentsInChildren<HierarchyName>();
-                foreach (HierarchyName child in children)
+                OgreeObject[] children = root.GetComponentsInChildren<OgreeObject>();
+                foreach (OgreeObject child in children)
                 {
-                    if (child.fullname == items[i])
+                    if (child.hierarchyName == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
                             GameManager.gm.SetCurrentItem(child.gameObject);
@@ -231,7 +236,7 @@ public class ConsoleController : MonoBehaviour
             {
                 List<string> itemsToDel = new List<string>();
                 foreach (GameObject item in GameManager.gm.currentItems)
-                    itemsToDel.Add(item.GetComponent<HierarchyName>().fullname);
+                    itemsToDel.Add(item.GetComponent<OgreeObject>().hierarchyName);
                 foreach (string item in itemsToDel)
                 {
                     if (data.Length > 1)
@@ -256,6 +261,34 @@ public class ConsoleController : MonoBehaviour
         }
 
         yield return new WaitForEndOfFrame();
+        isReady = true;
+    }
+
+    ///<summary>
+    /// Set focus to given object
+    ///</summary>
+    ///<param name="_input">The item to focus</param>
+    private void FocusItem(string _input)
+    {
+        if (string.IsNullOrEmpty(_input))
+        {
+            // unfocus all items
+            int count = GameManager.gm.focus.Count;
+            for (int i = 0; i < count; i++)
+                GameManager.gm.UnfocusItem();
+        }
+        else if (GameManager.gm.allItems.Contains(_input))
+        {
+            GameObject obj = (GameObject)GameManager.gm.allItems[_input];
+            if (obj.GetComponent<Object>())
+                GameManager.gm.FocusItem(obj);
+            else
+                AppendLogLine($"Can't focus \"{_input}\"", "yellow");
+
+        }
+        else
+            AppendLogLine($"Error: \"{_input}\" does not exist", "red");
+
         isReady = true;
     }
 
@@ -379,8 +412,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The variable to save in "[key]=[value]" format</param>
     private void SaveVariable(string _input)
     {
-        string regex = "^[a-zA-Z0-9]+=.+$";
-        if (Regex.IsMatch(_input, regex))
+        string pattern = "^[a-zA-Z0-9]+=.+$";
+        if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
@@ -396,26 +429,34 @@ public class ConsoleController : MonoBehaviour
     /// Call the right ApiManager.CreateXXXRequest() if syntax is good.
     ///</summary>
     ///<param name="_input">The input to parse</param>
-    private void CallApi(string _input)
+    private async void CallApi(string _input)
     {
         string pattern = "(get|post|put|delete)=+";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
-            switch (data[0])
+            if (data[0] == "get")
+                await ApiManager.instance.GetObject(data[1]);
+            else
             {
-                case "get":
-                    ApiManager.instance.CreateGetRequest(data[1]);
-                    break;
-                case "put":
-                    ApiManager.instance.CreatePutRequest(data[1]);
-                    break;
-                case "post":
-                    ApiManager.instance.CreatePostRequest(data[1]);
-                    break;
-                case "delete":
-                    ApiManager.instance.CreateDeleteRequest(data[1]);
-                    break;
+                OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
+                if (obj)
+                {
+                    switch (data[0])
+                    {
+                        case "put":
+                            ApiManager.instance.CreatePutRequest(obj);
+                            break;
+                        case "post":
+                            await ApiManager.instance.PostObject(new SApiObject(obj));
+                            break;
+                        case "delete":
+                            ApiManager.instance.CreateDeleteRequest(obj);
+                            break;
+                    }
+                }
+                else
+                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", "red");
             }
         }
         else
@@ -432,29 +473,29 @@ public class ConsoleController : MonoBehaviour
     /// Look at the first word of a "create" command and call the corresponding Create method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void ParseCreate(string _input)
+    private async void ParseCreate(string _input)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
 
         if (str[0] == "tenant" || str[0] == "tn")
-            CreateTenant(str[1]);
+            await CreateTenant(str[1]);
         else if (str[0] == "site" || str[0] == "si")
-            CreateSite(str[1]);
+            await CreateSite(str[1]);
         else if (str[0] == "building" || str[0] == "bd")
-            CreateBuilding(str[1]);
+            await CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
-            CreateRoom(str[1]);
+            await CreateRoom(str[1]);
         else if (str[0] == "separator" || str[0] == "sp")
             CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
-            CreateRack(str[1]);
+            await CreateRack(str[1]);
         else if (str[0] == "model" || str[0] == "mo")
             CreateModel(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
-            CreateDevice(str[1]);
-        else if (str[0] == "rackgroup" || str[0] == "rg")
-            CreateRackGroup(str[1]);
+            await CreateDevice(str[1]);
+        else if (str[0] == "group" || str[0] == "gr")
+            CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
             CreateCorridor(str[1]);
         else
@@ -467,7 +508,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create tenant" command and call CustomerGenerator.CreateCustomer().
     ///</summary>
     ///<param name="_input">Name of the tenant</param>
-    private void CreateTenant(string _input)
+    private async Task CreateTenant(string _input)
     {
         string pattern = "^[^@\\s.]+@[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_input, pattern))
@@ -478,9 +519,13 @@ public class ConsoleController : MonoBehaviour
             tn.attributes = new Dictionary<string, string>();
 
             tn.name = data[0];
+            tn.category = "tenant";
             tn.domain = data[0];
             tn.attributes["color"] = data[1];
-            CustomerGenerator.instance.CreateTenant(tn);
+            if (ApiManager.instance.isInit)
+                await ApiManager.instance.PostObject(tn);
+            else
+                CustomerGenerator.instance.CreateTenant(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -490,7 +535,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create site" command and call CustomerGenerator.CreateSite().
     ///</summary>
     ///<param name="_input">String with site data to parse</param>
-    private void CreateSite(string _input)
+    private async Task CreateSite(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(EN|NW|WS|SE)$";
@@ -502,13 +547,22 @@ public class ConsoleController : MonoBehaviour
             si.description = new List<string>();
             si.attributes = new Dictionary<string, string>();
 
+            si.category = "site";
             IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
             si.attributes["usableColor"] = "DBEDF2";
             si.attributes["reservedColor"] = "F2F2F2";
             si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
-                CustomerGenerator.instance.CreateSite(si, parent);
+            {
+                si.parentId = parent.GetComponent<OgreeObject>().id;
+                si.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(si);
+                else
+                    CustomerGenerator.instance.CreateSite(si, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -518,7 +572,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create building" command and call BuildingGenerator.CreateBuilding().
     ///</summary>
     ///<param name="_input">String with building data to parse</param>
-    private void CreateBuilding(string _input)
+    private async Task CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
@@ -534,6 +588,7 @@ public class ConsoleController : MonoBehaviour
             bd.description = new List<string>();
             bd.attributes = new Dictionary<string, string>();
 
+            bd.category = "building";
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
@@ -545,7 +600,15 @@ public class ConsoleController : MonoBehaviour
             bd.attributes["heightUnit"] = "m";
 
             if (parent)
-                BuildingGenerator.instance.CreateBuilding(bd, parent);
+            {
+                bd.parentId = parent.GetComponent<OgreeObject>().id;
+                bd.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(bd);
+                else
+                    BuildingGenerator.instance.CreateBuilding(bd, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -555,10 +618,10 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create room" command and call BuildingGenerator.CreateRoom().
     ///</summary>
     ///<param name="_input">String with room data to parse</param>
-    private void CreateRoom(string _input)
+    private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(EN|NW|WS|SE)|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -568,6 +631,7 @@ public class ConsoleController : MonoBehaviour
             ro.description = new List<string>();
             ro.attributes = new Dictionary<string, string>();
 
+            ro.category = "room";
             Vector3 pos = Utils.ParseVector3(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
@@ -601,7 +665,15 @@ public class ConsoleController : MonoBehaviour
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
-                BuildingGenerator.instance.CreateRoom(ro, parent);
+            {
+                ro.parentId = parent.GetComponent<OgreeObject>().id;
+                ro.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(ro);
+                else
+                    BuildingGenerator.instance.CreateRoom(ro, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -619,12 +691,20 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            SSeparatorInfos infos = new SSeparatorInfos();
-            infos.pos1XYm = Utils.ParseVector2(data[1]);
-            infos.pos2XYm = Utils.ParseVector2(data[2]);
-            IsolateParent(data[0], out infos.parent, out infos.name);
-            if (infos.parent)
-                BuildingGenerator.instance.CreateSeparator(infos);
+            Transform parent;
+            SApiObject sp = new SApiObject();
+            sp.description = new List<string>();
+            sp.attributes = new Dictionary<string, string>();
+
+            sp.category = "separator";
+            Vector2 pos1 = Utils.ParseVector2(data[1]);
+            sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
+            Vector2 pos2 = Utils.ParseVector2(data[2]);
+            sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
+
+            IsolateParent(data[0], out parent, out sp.name);
+            if (parent)
+                BuildingGenerator.instance.CreateSeparator(sp, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -634,7 +714,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create rack" command and call ObjectGenerator.CreateRack().
     ///</summary>
     ///<param name="_input">String with rack data to parse</param>
-    private void CreateRack(string _input)
+    private async Task CreateRack(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
@@ -647,9 +727,10 @@ public class ConsoleController : MonoBehaviour
             rk.description = new List<string>();
             rk.attributes = new Dictionary<string, string>();
 
+            rk.category = "rack";
             Vector2 pos = Utils.ParseVector2(data[1]);
             rk.attributes["posXY"] = JsonUtility.ToJson(pos);
-            rk.attributes["posXYUnit"] = "Tile";
+            rk.attributes["posXYUnit"] = "tile";
 
             if (data[2].StartsWith("[")) // if vector to parse...
             {
@@ -665,7 +746,20 @@ public class ConsoleController : MonoBehaviour
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
-                ObjectGenerator.instance.CreateRack(rk, parent);
+            {
+                rk.parentId = parent.GetComponent<OgreeObject>().id;
+                rk.domain = parent.GetComponent<OgreeObject>().domain;
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(rk);
+                else
+                {
+                    if (rk.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateRack(rk, parent);
+                    else
+                        ObjectGenerator.instance.CreateRack(rk, parent, false);
+                }
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -704,7 +798,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create device" command and call ObjectGenerator.CreateDevice().
     ///</summary>
     ///<param name="_input">String with device data to parse</param>
-    public void CreateDevice(string _input)
+    public async Task CreateDevice(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
@@ -717,29 +811,51 @@ public class ConsoleController : MonoBehaviour
             dv.description = new List<string>();
             dv.attributes = new Dictionary<string, string>();
 
+            dv.category = "device";
             float posU;
             if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+            {
                 dv.attributes["posU"] = posU.ToString();
+                dv.attributes["slot"] = "";
+            }
             else
                 dv.attributes["slot"] = data[1];
             float sizeU;
             if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
+            {
                 dv.attributes["sizeU"] = sizeU.ToString();
+                dv.attributes["template"] = "";
+            }
             else
                 dv.attributes["template"] = data[2];
             if (data.Length == 4)
                 dv.attributes["orientation"] = data[3];
             else
-                dv.attributes["orientation"] = "Front";
+                dv.attributes["orientation"] = "front";
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {
-                Object device = ObjectGenerator.instance.CreateDevice(dv, parent);
-                Vector3 scale = device.transform.GetChild(0).localScale * 1000;
-                device.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
-                device.attributes["sizeUnit"] = "mm";
-                device.attributes["height"] = scale.y.ToString();
-                device.attributes["heightUnit"] = "mm";
+                dv.parentId = parent.GetComponent<OgreeObject>().id;
+                dv.domain = parent.GetComponent<OgreeObject>().domain;
+                if (dv.attributes["template"] == "")
+                {
+                    Vector3 scale = parent.GetChild(0).localScale * 1000;
+                    dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
+                    dv.attributes["sizeUnit"] = "mm";
+                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["heightUnit"] = "mm";
+                }
+
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(dv);
+                else
+                {
+                    if (dv.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateDevice(dv, parent);
+                    else
+                        ObjectGenerator.instance.CreateDevice(dv, parent, false);
+
+                }
             }
         }
         else
@@ -747,10 +863,10 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create rackGroup" command and call ObjectGenerator.CreateRackGroup().
+    /// Parse a "create group" command and call ObjectGenerator.CreateGroup().
     ///</summary>
     ///<param name="_input">String with rackgroup data to parse</param>
-    private void CreateRackGroup(string _input)
+    private void CreateGroup(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
@@ -763,10 +879,16 @@ public class ConsoleController : MonoBehaviour
             rg.description = new List<string>();
             rg.attributes = new Dictionary<string, string>();
 
+            rg.category = "group";
             IsolateParent(data[0], out parent, out rg.name);
-            rg.attributes["racksList"] = data[1].Trim('{', '}');
+            rg.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
-                ObjectGenerator.instance.CreateRackGroup(rg, parent);
+            {
+                rg.parentId = parent.GetComponent<OgreeObject>().id;
+                rg.domain = parent.GetComponent<OgreeObject>().id;
+
+                ObjectGenerator.instance.CreateGroup(rg, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -789,11 +911,17 @@ public class ConsoleController : MonoBehaviour
             co.description = new List<string>();
             co.attributes = new Dictionary<string, string>();
 
+            co.category = "corridor";
             IsolateParent(data[0], out parent, out co.name);
-            co.attributes["racksList"] = data[1].Trim('{', '}');
+            co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
+            {
+                co.parentId = parent.GetComponent<OgreeObject>().id;
+                co.domain = parent.GetComponent<OgreeObject>().domain;
+
                 ObjectGenerator.instance.CreateCorridor(co, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -861,13 +989,13 @@ public class ConsoleController : MonoBehaviour
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
-            else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
-            {
-                ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
-                objCmd.parentName = IsolateParentPath(data[0]);
-                objCmd.command = _input;
-                ZoomManager.instance.devicesAttributes.Add(objCmd);
-            }
+            // else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
+            // {
+            //     ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
+            //     objCmd.parentName = IsolateParentPath(data[0]);
+            //     objCmd.command = _input;
+            //     ZoomManager.instance.devicesAttributes.Add(objCmd);
+            // }
             else
                 AppendLogLine($"Object doesn't exist.", "yellow");
         }
@@ -891,6 +1019,42 @@ public class ConsoleController : MonoBehaviour
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }
+    }
+
+    ///<summary>
+    /// Move a rack to given coordinates.
+    ///</summary>
+    ///<param name="_input">The input to parse for a move command</param>
+    private void MoveRack(string _input)
+    {
+
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\](@relative)*$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            if (GameManager.gm.allItems.Contains(data[0]))
+            {
+                GameObject obj = (GameObject)GameManager.gm.allItems[data[0]];
+                Rack rk = obj.GetComponent<Rack>();
+                if (rk)
+                {
+                    if (data.Length == 2)
+                        rk.MoveRack(Utils.ParseVector2(data[1]), false);
+                    else
+                        rk.MoveRack(Utils.ParseVector2(data[1]), true);
+                    GameManager.gm.UpdateGuiInfos();
+                    GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
+                }
+                else
+                    GameManager.gm.AppendLogLine($"{data[0]} is not a rack.", "yellow");
+            }
+            else
+                GameManager.gm.AppendLogLine($"{data[0]} doesn't exist.", "yellow");
+        }
+        else
+            GameManager.gm.AppendLogLine("Syntax error.", "red");
+
+        isReady = true;
     }
 
     ///<summary>

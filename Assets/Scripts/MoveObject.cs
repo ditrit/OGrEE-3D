@@ -31,7 +31,7 @@ public class MoveObject : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 50))
             {
                 dest = hit.point;
-                Utils.SwitchAllCollidersInRacks(true);
+                // Utils.SwitchAllCollidersInRacks(true);
                 Move();
             }
             hasDrag = false;
@@ -51,7 +51,7 @@ public class MoveObject : MonoBehaviour
         {
             GameObject obj = GameManager.gm.currentItems[0];
             if (obj.GetComponent<Rack>())
-                obj.GetComponent<Rack>().MoveRack(new Vector2(x, y));
+                obj.GetComponent<Rack>().DragRack(new Vector2(x, y));
         }
         else if (GameManager.gm.currentItems.Count > 1)
         {
@@ -59,7 +59,7 @@ public class MoveObject : MonoBehaviour
             foreach (GameObject obj in GameManager.gm.currentItems)
             {
                 if (obj.transform.parent == targetRoom && obj.GetComponent<Rack>())
-                    obj.GetComponent<Rack>().MoveRack(new Vector2(x, y));
+                    obj.GetComponent<Rack>().DragRack(new Vector2(x, y));
             }
         }
         GameManager.gm.UpdateGuiInfos();

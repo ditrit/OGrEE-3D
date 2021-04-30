@@ -7,6 +7,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 {
     [Header("Standard attributes")]
     public new string name;
+    public string hierarchyName;
     public string id;
     public string parentId;
     public string category;
@@ -39,6 +40,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
 
+    private void OnEnable()
+    {
+        UpdateHierarchyName();
+    }
+
     protected virtual void OnDestroy()
     {
         if (category == "tenant")
@@ -46,6 +52,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
             Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         }
+        GameManager.gm.allItems.Remove(hierarchyName);
     }
 
     ///<summary>
@@ -68,17 +75,19 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
+                    if (_value.EndsWith("@recursive"))
+                    {
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
+                    }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                        SetDomain(_value);
                     break;
                 default:
                     if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
-                    // GameManager.gm.AppendLogLine($"[{category}] {name}: unknown attribute to update.", "yellow");
                     break;
             }
         }
@@ -94,7 +103,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetDescription(string _index, string _value)
     {
         string pattern = "^[0-9]+$";
-        if (Regex.IsMatch(_index, pattern))
+        if (_index != "0" && Regex.IsMatch(_index, pattern))
         {
             int index = int.Parse(_index);
             if (index > description.Count)
@@ -122,12 +131,61 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
+    /// Change the OgreeObject's domain
+    ///</summary>
+    ///<param name="_newDomain">The domain name to assign</param>
+    protected void SetDomain(string _newDomain)
+    {
+        if (GameManager.gm.allItems.ContainsKey(_newDomain))
+            domain = _newDomain;
+        else
+            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", "yellow");
+    }
+
+    ///<summary>
+    /// Change the domain for the OgreeObject and all its children
+    ///</summary>
+    ///<param name="_newDomain">The domain name to assign</param>
+    protected void SetAllDomains(string _newDomain)
+    {
+        SetAttribute("domain", _newDomain);
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<OgreeObject>())
+                child.GetComponent<OgreeObject>().SetAttribute("domain", _newDomain);
+        }
+    }
+
+    public string UpdateHierarchyName()
+    {
+        Transform parent = transform.parent;
+        if (parent)
+            hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{name}";
+        else
+            hierarchyName = name;
+        return hierarchyName;
+    }
+
+    ///<summary>
     /// Set id.
     ///</summary>
     ///<param name="_id">The id to set</param>
     public void UpdateId(string _id)
     {
         id = _id;
+    }
+
+    ///
+    public void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    {
+        name = _src.name;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        domain = _src.domain;
+        description = _src.description;
+        if (_copyAttr)
+            attributes = _src.attributes;
     }
 
     ///<summary>
@@ -146,7 +204,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     private IEnumerator WaitAndPut()
     {
         yield return new WaitForSeconds(2f);
-        string hierarchyName = GetComponent<HierarchyName>()?.fullname;
-        ApiManager.instance.CreatePutRequest(hierarchyName);
+        ApiManager.instance.CreatePutRequest(this);
     }
 }

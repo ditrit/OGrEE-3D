@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-// using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class ObjectGenerator : MonoBehaviour
@@ -18,10 +18,11 @@ public class ObjectGenerator : MonoBehaviour
     ///<summary>
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
-    ///<param name="_rk">THe rack data to apply</param>
+    ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
+    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -30,7 +31,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_rk.name}";
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -52,7 +53,6 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
-            Destroy(newRack.GetComponent<HierarchyName>());
         }
 
         newRack.name = _rk.name;
@@ -70,26 +70,43 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
-        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / -0.2f;
+        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / 0.2f;
         Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
-        newRack.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        newRack.transform.localPosition += new Vector3(pos.x, 0, pos.y) * GameManager.gm.tileSize;
+
+        Vector2 orient = Vector2.one;
+        if (parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        {
+            if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Left corner of the room
+                orient = new Vector2(1, 1);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Right corner of the room
+                orient = new Vector2(-1, 1);
+                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Right corner of the room
+                orient = new Vector2(-1, -1);
+                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
+            }
+            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Left corner of the room
+                orient = new Vector2(1, -1);
+                newRack.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
+            }
+        }
+        newRack.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+        newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.name = newRack.name;
-        rack.id = _rk.id;
-        rack.parentId = _rk.parentId;
-        if (string.IsNullOrEmpty(rack.parentId))
-            rack.parentId = parent.GetComponent<OgreeObject>().id;
-        rack.category = "rack";
-        rack.description = _rk.description;
-        rack.domain = _rk.domain;
-        if (string.IsNullOrEmpty(rack.domain))
-            rack.domain = parent.GetComponent<OgreeObject>().domain;
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
-            rack.attributes = _rk.attributes;
-        else
+        rack.UpdateFromSApiObject(_rk, _copyAttr);
+        if (!_copyAttr)
         {
             rack.attributes["template"] = _rk.attributes["template"];
             rack.attributes["posXY"] = _rk.attributes["posXY"];
@@ -97,42 +114,53 @@ public class ObjectGenerator : MonoBehaviour
             rack.attributes["orientation"] = _rk.attributes["orientation"];
         }
 
+        Vector3 fixPos = Vector3.zero;
         switch (rack.attributes["orientation"])
         {
             case "front":
                 newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
-                newRack.transform.localPosition += boxOrigin;
+                if (orient.y == 1)
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+                else
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
                 break;
             case "rear":
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
-                newRack.transform.localPosition += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z);
-                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
+                if (orient.y == 1)
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
+                else
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 break;
             case "left":
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
-                newRack.transform.localPosition += new Vector3(-boxOrigin.z, boxOrigin.y, boxOrigin.x);
-                newRack.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0, 0);
+                if (orient.x == 1)
+                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, boxOrigin.x);
+                else
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 break;
             case "right":
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
-                newRack.transform.localPosition += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x);
-                newRack.transform.localPosition += new Vector3(0, 0, GameManager.gm.tileSize);
+                if (orient.x == 1)
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
+                else
+                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
                 break;
         }
+        newRack.transform.localPosition += fixPos;
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newRack.GetComponent<DisplayObjectData>().SetLabel("name");
+        newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColor();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
-        string hn = newRack.AddComponent<HierarchyName>().fullname;
+        string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            HierarchyName[] components = rack.transform.GetComponentsInChildren<HierarchyName>();
-            foreach (HierarchyName comp in components)
+            Object[] components = rack.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
@@ -150,8 +178,9 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
+    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
-    public Object CreateDevice(SApiObject _dv, Transform _parent = null)
+    public Object CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<Object>() == null)
@@ -161,24 +190,30 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         if (parent.GetComponent<Rack>() == null
-            && (!_dv.attributes.ContainsKey("slot") || !_dv.attributes.ContainsKey("template")))
+            && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
-            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "yellow");
+            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "red");
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<HierarchyName>()?.fullname}.{_dv.name}";
+        if (parent.gameObject.activeSelf == false)
+        {
+            GameManager.gm.AppendLogLine("The parent rack must be active (not hidden in a rackGroup)", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "red");
             return null;
         }
 
         GameObject newDevice;
-        if (!_dv.attributes.ContainsKey("slot"))
+        if (string.IsNullOrEmpty(_dv.attributes["slot"]))
         {
             //+chassis:[name]@[posU]@[sizeU]
-            if (!_dv.attributes.ContainsKey("template"))
+            if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
             //+chassis:[name]@[posU]@[template]
             else
@@ -200,7 +235,7 @@ public class ObjectGenerator : MonoBehaviour
             List<Slot> takenSlots = new List<Slot>();
             int i = 0;
             float max;
-            if (!_dv.attributes.ContainsKey("template"))
+            if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 max = float.Parse(_dv.attributes["sizeU"]);
             else
             {
@@ -227,7 +262,7 @@ public class ObjectGenerator : MonoBehaviour
 
                 Transform slot = takenSlots[0].transform;
                 //+chassis:[name]@[slot]@[sizeU]
-                if (!_dv.attributes.ContainsKey("template"))
+                if (string.IsNullOrEmpty(_dv.attributes["template"]))
                     newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
                 //+chassis:[name]@[slot]@[template]
                 else
@@ -245,18 +280,18 @@ public class ObjectGenerator : MonoBehaviour
                 float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
                 switch (_dv.attributes["orientation"])
                 {
-                    case "Front":
+                    case "front":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         break;
-                    case "Rear":
+                    case "rear":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
                         break;
-                    case "FrontFlipped":
+                    case "frontflipped":
                         newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
                         break;
-                    case "RearFlipped":
+                    case "rearflipped":
                         newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
                         break;
@@ -275,40 +310,27 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newDevice.name = _dv.name;
-        Object obj = newDevice.GetComponent<Object>();
-        obj.name = _dv.name;
-        obj.id = _dv.id;
-        obj.parentId = _dv.parentId;
-        if (string.IsNullOrEmpty(obj.parentId))
-            obj.parentId = parent.GetComponent<OgreeObject>().id;
-        obj.category = "device";
-        obj.description = _dv.description;
-        obj.domain = _dv.domain;
-        if (string.IsNullOrEmpty(obj.domain))
-            obj.domain = parent.GetComponent<OgreeObject>().domain;
-        if (!_dv.attributes.ContainsKey("template"))
-            obj.attributes = _dv.attributes;
-        else
+        Object dv = newDevice.GetComponent<Object>();
+        dv.UpdateFromSApiObject(_dv, _copyAttr);
+        if (!_copyAttr)
         {
-            obj.attributes["template"] = _dv.attributes["template"];
-            obj.attributes["orientation"] = _dv.attributes["orientation"];
+            dv.attributes["template"] = _dv.attributes["template"];
+            dv.attributes["orientation"] = _dv.attributes["orientation"];
             if (_dv.attributes.ContainsKey("posU"))
-                obj.attributes["posU"] = _dv.attributes["posU"];
+                dv.attributes["posU"] = _dv.attributes["posU"];
             if (_dv.attributes.ContainsKey("slot"))
-                obj.attributes["slot"] = _dv.attributes["slot"];
+                dv.attributes["slot"] = _dv.attributes["slot"];
         }
 
+        newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-
-        newDevice.GetComponent<DisplayObjectData>().SetLabel("name");
-
-        string hn = newDevice.AddComponent<HierarchyName>().fullname;
+        string hn = dv.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newDevice);
 
-        if (_dv.attributes.ContainsKey("template"))
+        if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            HierarchyName[] components = newDevice.transform.GetComponentsInChildren<HierarchyName>();
-            foreach (HierarchyName comp in components)
+            Object[] components = newDevice.transform.GetComponentsInChildren<Object>();
+            foreach (Object comp in components)
             {
                 if (comp.gameObject != newDevice.gameObject)
                 {
@@ -318,7 +340,7 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
 
-        return newDevice.GetComponent<Object>();
+        return dv;
     }
 
     ///<summary>
@@ -356,7 +378,6 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
-            Destroy(go.GetComponent<HierarchyName>());
             return go;
         }
         else
@@ -367,120 +388,177 @@ public class ObjectGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Generate a rackGroup (from GameManager.labeledBoxModel) which contains all the given racks.
+    /// Generate a group (from GameManager.labeledBoxModel) which contains all the given objects.
     ///</summary>
-    ///<param name="_name">The name of the rackGroup</param>
-    ///<param name="_parent">The parent of the generated rackGroup</param>
-    ///<param name="_racksList">The well formatted list of racks to contains (r1,r2,..,rN)</param>
+    ///<param name="_gr">The group data to apply</param>
+    ///<param name="_parent">The parent of the generated group</param>
     ///<returns>The created rackGroup</returns>
-    public RackGroup CreateRackGroup(SApiObject _rg, Transform _parent = null)
+    public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _rg.parentId);
-        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        Transform parent = Utils.FindParent(_parent, _gr.parentId);
+        if (!parent)
         {
-            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            GameManager.gm.AppendLogLine("Parent not found", "red");
+            return null;
+        }
+        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        if (parentCategory != "room" && parentCategory != "rack")
+        {
+            GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", "red");
             return null;
         }
 
-        List<Transform> racks = new List<Transform>();
-        string[] rackNames = _rg.attributes["racksList"].Split(',');
-        foreach (string rn in rackNames)
+        List<Transform> content = new List<Transform>();
+        string[] contentNames = _gr.attributes["content"].Split(',');
+        foreach (string cn in contentNames)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<HierarchyName>().fullname}.{rn}");
-            if (go && (go.GetComponent<OgreeObject>()?.category == "rack" || go.GetComponent<OgreeObject>()?.category == "corridor"))
-                racks.Add(go.transform);
+            GameObject go = GameManager.gm.FindByAbsPath($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn}");
+            if (go && go.GetComponent<OgreeObject>())
+            {
+                if ((parentCategory == "room" && (go.GetComponent<OgreeObject>().category == "rack" || go.GetComponent<OgreeObject>().category == "corridor"))
+                    || parentCategory == "rack" && go.GetComponent<OgreeObject>().category == "device")
+                    content.Add(go.transform);
+            }
             else
-                GameManager.gm.AppendLogLine($"{parent.GetComponent<HierarchyName>().fullname}.{rn} doesn't exists.", "yellow");
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", "yellow");
         }
-        if (racks.Count == 0)
+        if (content.Count == 0)
             return null;
 
-        Transform lowerLeft = racks[0];
-        Transform upperRight = racks[0];
+        GameObject newGr = Instantiate(GameManager.gm.labeledBoxModel);
+        newGr.name = _gr.name;
+        newGr.transform.parent = _parent;
+
+        // According to group type, set pos, rot & scale
+        Vector3 pos = Vector3.zero;
+        Vector3 scale = Vector3.zero;
+        if (parentCategory == "room")
+        {
+            RackGroupPosScale(content, out pos, out scale);
+            newGr.transform.localEulerAngles = new Vector3(0, 180, 0);
+        }
+        else if (parentCategory == "rack")
+        {
+            DeviceGroupPosScale(content, out pos, out scale);
+            newGr.transform.localEulerAngles = Vector3.zero;
+        }
+        newGr.transform.localPosition = pos;
+        newGr.transform.GetChild(0).localScale = scale;
+
+        // Set Group component
+        Group gr = newGr.AddComponent<Group>();
+        gr.UpdateFromSApiObject(_gr);
+        gr.DisplayContent(false);
+
+        if (parentCategory == "room")
+            newGr.GetComponent<DisplayObjectData>().PlaceTexts("top");
+        else if (parentCategory == "rack")
+            newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
+
+        string hn = gr.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hn, newGr);
+
+        return gr;
+    }
+
+    ///<summary>
+    /// For a group of Racks, set _pos and _scale
+    ///</summary>
+    ///<param name="_racks">The list of racks in the group</param>
+    ///<param name="_pos">The localPosition to apply to the group</param>
+    ///<param name="_scale">The localScale to apply to the group</param>
+    private void RackGroupPosScale(List<Transform> _racks, out Vector3 _pos, out Vector3 _scale)
+    {
+        Transform rackAtLowerLeft = _racks[0];
+        Transform rackAtRight = _racks[0];
+        Transform rackAtTop = _racks[0];
         float maxHeight = 0;
         float maxLength = 0;
-        foreach (Transform r in racks)
+        foreach (Transform rk in _racks)
         {
-            if (r.GetComponent<OgreeObject>().category == "rack")
+            if (rk.GetComponent<OgreeObject>().category == "rack")
             {
-                Vector2 rackPos = JsonUtility.FromJson<Vector2>(r.GetComponent<OgreeObject>().attributes["posXY"]);
-                Vector2 lowerLeftPos = JsonUtility.FromJson<Vector2>(lowerLeft.GetComponent<OgreeObject>().attributes["posXY"]);
-                Vector2 upperRightPos = JsonUtility.FromJson<Vector2>(upperRight.GetComponent<OgreeObject>().attributes["posXY"]);
+                if (rk.localPosition.x <= rackAtLowerLeft.localPosition.x && rk.localPosition.z <= rackAtLowerLeft.localPosition.z)
+                    rackAtLowerLeft = rk;
+                if (rk.localPosition.x > rackAtRight.localPosition.x)
+                    rackAtRight = rk;
+                if (rk.localPosition.z > rackAtTop.localPosition.z)
+                    rackAtTop = rk;
 
-                if (rackPos.x <= lowerLeftPos.x && rackPos.y <= lowerLeftPos.y)
-                    lowerLeft = r;
-                if (rackPos.y > upperRightPos.y || (rackPos.x >= upperRightPos.x && rackPos.y >= upperRightPos.y))
-                    upperRight = r;
-
-                if (r.transform.GetChild(0).localScale.y > maxHeight)
-                    maxHeight = r.transform.GetChild(0).localScale.y;
-                if (r.transform.GetChild(0).localScale.z > maxLength)
-                    maxLength = r.transform.GetChild(0).localScale.z;
+                if (rk.GetChild(0).localScale.y > maxHeight)
+                    maxHeight = rk.GetChild(0).localScale.y;
+                if (rk.GetChild(0).localScale.z > maxLength)
+                    maxLength = rk.GetChild(0).localScale.z;
             }
         }
-        // racks = racks.OrderBy(t => t.GetChild(0).localScale.y).ToList();
-        // maxHeight = racks[racks.Count - 1].GetChild(0).localScale.y;
-        // racks = racks.OrderBy(t => t.GetChild(0).localScale.z).ToList();
-        // maxLength = racks[racks.Count - 1].GetChild(0).localScale.z;
 
-        GameObject newRg = Instantiate(GameManager.gm.labeledBoxModel);
-        newRg.name = _rg.name;
-        newRg.transform.parent = parent;
-
-        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
-        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
-        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
-            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        float witdh = rackAtRight.localPosition.x - rackAtLowerLeft.localPosition.x;
+        float length = rackAtTop.localPosition.z - rackAtLowerLeft.localPosition.z;
+        if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
-            z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
-            z += maxLength * 2;
+            witdh += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            length -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
+            length += maxLength * 2;
         }
         else
         {
-            z += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
-            x -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
-            x += maxLength * 2;
+            length += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            witdh -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
+            witdh += maxLength * 2;
         }
-        newRg.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
-        newRg.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newRg.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
+        _scale = new Vector3(witdh, maxHeight, length);
 
         float xOffset;
         float zOffset;
-        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
-            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
+            || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
         {
-            xOffset = (newRg.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
-            zOffset = (newRg.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            xOffset = (_scale.x - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            zOffset = (_scale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
         }
         else
         {
-            xOffset = (newRg.transform.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
-            zOffset = (newRg.transform.GetChild(0).localScale.z - lowerLeft.GetChild(0).localScale.x) / 2;
+            xOffset = (_scale.x + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
         }
-        newRg.transform.localPosition += new Vector3(xOffset, 0, zOffset);
+        _pos = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
+        _pos += new Vector3(xOffset, 0, zOffset);
+    }
 
-        RackGroup rg = newRg.AddComponent<RackGroup>();
-        rg.name = newRg.name;
-        rg.parentId = _rg.parentId;
-        if (string.IsNullOrEmpty(rg.parentId))
-            rg.parentId = parent.GetComponent<Room>().id;
-        rg.category = "rackGroup";
-        rg.description = _rg.description;
-        rg.domain = _rg.domain;
-        if (string.IsNullOrEmpty(rg.domain))
-            rg.domain = racks[0].GetComponent<Rack>().domain;
-        rg.attributes = _rg.attributes;
-        rg.DisplayRacks(false);
+    ///<summary>
+    /// For a group of devices, set _pos and _scale
+    ///</summary>
+    ///<param name="_racks">The list of devices in the group</param>
+    ///<param name="_pos">The localPosition to apply to the group</param>
+    ///<param name="_scale">The localScale to apply to the group</param>
+    private void DeviceGroupPosScale(List<Transform> _devices, out Vector3 _pos, out Vector3 _scale)
+    {
+        Transform lowerDv = _devices[0];
+        Transform upperDv = _devices[0];
+        float maxWidth = 0;
+        float maxLength = 0;
+        foreach (Transform dv in _devices)
+        {
+            if (dv.localPosition.y < lowerDv.localPosition.y)
+                lowerDv = dv;
+            if (dv.localPosition.y > upperDv.localPosition.y)
+                upperDv = dv;
 
-        newRg.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newRg.GetComponent<DisplayObjectData>().SetLabel("name");
+            if (dv.GetChild(0).localScale.x > maxWidth)
+                maxWidth = dv.GetChild(0).localScale.x;
+            if (dv.GetChild(0).localScale.z > maxLength)
+                maxLength = dv.GetChild(0).localScale.z;
+        }
+        float height = upperDv.localPosition.y - lowerDv.localPosition.y;
+        height += (upperDv.GetChild(0).localScale.y + lowerDv.GetChild(0).localScale.y) / 2;
 
-        string hn = newRg.AddComponent<HierarchyName>().fullname;
-        GameManager.gm.allItems.Add(hn, newRg);
+        _scale = new Vector3(maxWidth, height, maxLength);
 
-        return rg;
+        _pos = lowerDv.localPosition;
+        _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
+
     }
 
     ///<summary>
@@ -500,8 +578,8 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string roomHierarchyName = parent.GetComponent<HierarchyName>().fullname;
-        string[] rackNames = _co.attributes["racksList"].Split(',');
+        string roomHierarchyName = parent.GetComponent<OgreeObject>().hierarchyName;
+        string[] rackNames = _co.attributes["content"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
         Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
 
@@ -541,26 +619,19 @@ public class ObjectGenerator : MonoBehaviour
         newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
         Object co = newCo.AddComponent<Object>();
-        co.name = newCo.name;
-        co.parentId = _co.parentId;
-        if (string.IsNullOrEmpty(co.parentId))
-            co.parentId = parent.GetComponent<Room>().id;
-        co.category = "corridor";
-        co.domain = _co.domain;
-        if (string.IsNullOrEmpty(co.domain))
-            co.domain = lowerLeft.GetComponent<Rack>().domain;
-        co.attributes = _co.attributes;
+        co.UpdateFromSApiObject(_co);
 
-        co.SetAttribute("alpha", "50");
+        Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
+        mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
             co.SetAttribute("color", "000099");
         else
             co.SetAttribute("color", "990000");
 
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newCo.GetComponent<DisplayObjectData>().SetLabel("name");
+        newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = newCo.AddComponent<HierarchyName>().fullname;
+        string hn = co.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newCo);
 
         return co;

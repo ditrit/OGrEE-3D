@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RackGroup : Object
+public class Group : Object
 {
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
@@ -24,10 +24,8 @@ public class RackGroup : Object
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
-                    else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    SetDomain(_value);
+                    UpdateColor();
                     break;
                 case "color":
                     SetColor(_value);
@@ -36,7 +34,7 @@ public class RackGroup : Object
                     UpdateAlpha(_value);
                     break;
                 case "racks":
-                    ToggleRacks(_value);
+                    ToggleContent(_value);
                     break;
                 default:
                     if (attributes.ContainsKey(_param))
@@ -54,20 +52,20 @@ public class RackGroup : Object
     /// Display or hide the rackGroup and its racks.
     ///</summary>
     ///<param name="_value">"true" or "false" value</param>
-    private void ToggleRacks(string _value)
+    private void ToggleContent(string _value)
     {
         if (_value != "true" && _value != "false")
             return;
 
         if (_value == "true")
         {
-            UpdateAlpha("0");
-            DisplayRacks(true);
+            UpdateAlpha("true");
+            DisplayContent(true);
         }
         else
         {
-            UpdateAlpha("100");
-            DisplayRacks(false);
+            UpdateAlpha("false");
+            DisplayContent(false);
         }
     }
 
@@ -75,17 +73,18 @@ public class RackGroup : Object
     /// Enable or disable racks from attributes["rackList"].
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
-    public void DisplayRacks(bool _value)
+    public void DisplayContent(bool _value)
     {
-        List<GameObject> racks = new List<GameObject>();
-        string[] rackNames = attributes["racksList"].Split(',');
-        foreach (string rn in rackNames)
+        List<GameObject> content = new List<GameObject>();
+        string[] names = attributes["content"].Split(',');
+
+        foreach (string rn in names)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<HierarchyName>().fullname}.{rn}");
+            GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
             if (go)
-                racks.Add(go);
+                content.Add(go);
         }
-        foreach (GameObject r in racks)
+        foreach (GameObject r in content)
             r.gameObject.SetActive(_value);
 
         GetComponent<DisplayObjectData>().ToggleLabel(!_value);

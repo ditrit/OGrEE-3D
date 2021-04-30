@@ -29,17 +29,12 @@ public class CustomerGenerator : MonoBehaviour
 
         GameObject newTenant = new GameObject(_tn.name);
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
-        tenant.name = _tn.name;
-        tenant.id = _tn.id;
-        tenant.category = "tenant";
-        tenant.description = _tn.description;
-        tenant.domain = _tn.domain;
-        tenant.attributes = _tn.attributes;
+        tenant.UpdateFromSApiObject(_tn);
 
         Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
 
-        newTenant.AddComponent<HierarchyName>();
+        tenant.UpdateHierarchyName();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
         return tenant;
@@ -60,7 +55,7 @@ public class CustomerGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{tn.GetComponent<HierarchyName>()?.fullname}.{_si.name}";
+        string hierarchyName = $"{tn.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
@@ -71,17 +66,7 @@ public class CustomerGenerator : MonoBehaviour
         newSite.transform.parent = tn;
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
-        site.name = newSite.name;
-        site.id = _si.id;
-        site.parentId = _si.parentId;
-        if (string.IsNullOrEmpty(site.parentId))
-            site.parentId = tn.GetComponent<OgreeObject>().id;
-        site.category = "site";
-        site.description = _si.description;
-        site.domain = _si.domain;
-        if (string.IsNullOrEmpty(site.domain))
-            site.domain = tn.GetComponent<OgreeObject>().domain;
-        site.attributes = _si.attributes;
+        site.UpdateFromSApiObject(_si);
 
         switch (site.attributes["orientation"])
         {
@@ -99,7 +84,7 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
-        string hn = newSite.AddComponent<HierarchyName>().fullname;
+        string hn = site.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newSite);
 
         return site;

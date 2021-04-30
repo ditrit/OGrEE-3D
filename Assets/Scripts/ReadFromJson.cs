@@ -142,6 +142,7 @@ public class ReadFromJson
         rk.description = new List<string>();
         rk.attributes = new Dictionary<string, string>();
         rk.name = rackData.slug;
+        rk.category = "rack";
         rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
         rk.attributes["posXYUnit"] = "Tile";
         rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
@@ -150,11 +151,11 @@ public class ReadFromJson
         rk.attributes["heightUnit"] = "cm";
         rk.attributes["template"] = "";
         rk.attributes["orientation"] = "front";
+        rk.attributes["vendor"] = rackData.vendor;
+        rk.attributes["model"] = rackData.model;
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
 
         rack.transform.localPosition = Vector3.zero;
-        rack.attributes["vendor"] = rackData.vendor;
-        rack.attributes["model"] = rackData.model;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (rackData.colors != null)
         {
@@ -198,13 +199,17 @@ public class ReadFromJson
 
         // Count the right height in U 
         Slot[] slots = rack.GetComponentsInChildren<Slot>();
-        int height = 0;
-        foreach (Slot s in slots)
+        if (slots.Length > 0)
         {
-            if (s.orient == "horizontal")
-                height++;
+            int height = 0;
+            foreach (Slot s in slots)
+            {
+                if (s.orient == "horizontal")
+                    height++;
+            }
+            rack.attributes["height"] = height.ToString();
+            rack.attributes["heightUnit"] = "U";
         }
-        rack.attributes["height"] = height.ToString();
 
 #if !DEBUG
         Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
@@ -212,7 +217,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(rack.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(rack.hierarchyName);
         GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
     }
 
@@ -254,40 +259,29 @@ public class ReadFromJson
         dv.description = new List<string>();
         dv.attributes = new Dictionary<string, string>();
         dv.name = data.slug;
+        dv.category = "device";
         dv.attributes["posU"] = "0";
         dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
         dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
         dv.attributes["sizeUnit"] = "mm";
         dv.attributes["height"] = data.sizeWDHmm[2].ToString();
         dv.attributes["heightUnit"] = "mm";
+        dv.attributes["template"] = "";
+        dv.attributes["slot"] = "";
 
         dv.description.Add(data.description);
         dv.attributes["deviceType"] = data.type;
         dv.attributes["vendor"] = data.vendor;
         dv.attributes["model"] = data.model;
-        switch (data.side)
-        {
-            case "front":
-                dv.attributes["orientation"] = "Front";
-                break;
-            case "rear":
-                dv.attributes["orientation"] = "Rear";
-                break;
-            case "frontflipped":
-                dv.attributes["orientation"] = "FrontFlipped";
-                break;
-            case "rearflipped":
-                dv.attributes["orientation"] = "RearFlipped";
-                break;
-        }
+        dv.attributes["orientation"] = data.side;
         if (data.fulldepth == "yes")
         {
             dv.attributes["fulldepth"] = "yes";
-            dv.attributes["orientation"] = "Front";
+            dv.attributes["orientation"] = "front";
         }
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";
-        
+
         Object device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
@@ -315,7 +309,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
 
-        GameManager.gm.allItems.Remove(device.GetComponent<HierarchyName>().fullname);
+        GameManager.gm.allItems.Remove(device.hierarchyName);
         GameManager.gm.devicesTemplates.Add(device.name, device.gameObject);
     }
 
@@ -366,7 +360,7 @@ public class ReadFromJson
             obj.domain = _parent.GetComponent<OgreeObject>().domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
-            go.AddComponent<HierarchyName>();
+            obj.UpdateHierarchyName();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

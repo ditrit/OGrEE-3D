@@ -117,24 +117,29 @@ public class DisplayObjectData : MonoBehaviour
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
         {
-            if (_attr == "name")
-                WriteLabels(obj.name, true);
-            else if (_attr.Contains("description"))
+            if (_attr[0] == '#')
             {
-                if (_attr == "description")
-                    WriteLabels(string.Join("\n", obj.description));
-                else if (int.TryParse(_attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
-                    WriteLabels(obj.description[i - 1]);
+                if (_attr == "#name")
+                    WriteLabels(obj.name, true);
+                else if (_attr.Contains("#description"))
+                {
+                    if (_attr == "#description")
+                        WriteLabels(string.Join("\n", obj.description));
+                    else if (int.TryParse(_attr.Substring(12), out i) && i > 0 && obj.description.Count >= i)
+                        WriteLabels(obj.description[i - 1]);
+                    else
+                        GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+                }
+                else if (obj.attributes.ContainsKey(_attr))
+                    WriteLabels(obj.attributes[_attr]);
                 else
-                    GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+                {
+                    GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
+                    return;
+                }
             }
-            else if (obj.attributes.ContainsKey(_attr))
-                WriteLabels(obj.attributes[_attr]);
             else
-            {
-                GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
-                return;
-            }
+                WriteLabels(_attr);
         }
         Slot s = GetComponent<Slot>();
         if (s)

@@ -21,7 +21,6 @@ public class Room : Building
         base.OnDestroy();
         Filters.instance.roomsList.Remove(name);
         Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
-        GameManager.gm.allItems.Remove(GetComponent<HierarchyName>().fullname);
     }
 
     ///<summary>
@@ -53,6 +52,10 @@ public class Room : Building
         ReduceZone(reservedZone, _techDim);
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
+
+        // Save areas in attributes
+        attributes["reserved"] = JsonUtility.ToJson(_resDim);
+        attributes["technical"] = JsonUtility.ToJson(_techDim);
     }
 
     ///<summary>
@@ -164,35 +167,64 @@ public class Room : Building
     ///<param name="_root">Root for choosen mode</param>
     private void LoopThroughTiles(string _mode, Transform _root)
     {
-        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
-        float x = size.x / GameManager.gm.tileSize - reserved.left - technical.right - technical.left;
-        float y = size.y / GameManager.gm.tileSize - reserved.bottom - technical.top - technical.bottom;
-
-        Vector3 origin = usableZone.localScale / -0.2f;
-        _root.transform.localPosition += new Vector3(origin.x, 0, origin.z);
-        for (int j = (int)-reserved.bottom; j < y; j++)
+        Vector2 orient = Vector2.one;
+        int offsetX = 0;
+        int offsetY = 0;
+        if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
         {
-            for (int i = (int)-reserved.left; i < x; i++)
+            // Lower Left   
+            orient = new Vector2(1, 1);
+            offsetX = (int)-reserved.left;
+            offsetY = (int)-reserved.bottom;
+        }
+        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+        {
+            // Lower Right
+            orient = new Vector2(-1, 1);
+            offsetX = (int)-reserved.right;
+            offsetY = (int)-reserved.bottom;
+            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
+        }
+        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+        {
+            // Upper Right
+            orient = new Vector2(-1, -1);
+            offsetX = (int)-reserved.right;
+            offsetY = (int)-reserved.top;
+            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
+        }
+        else if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+        {
+            // Upper Left
+            orient = new Vector2(1, -1);
+            offsetX = (int)-reserved.left;
+            offsetY = (int)-reserved.top;
+            _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
+        }
+
+        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
+        float x = size.x / GameManager.gm.tileSize - technical.right - technical.left + offsetX;
+        float y = size.y / GameManager.gm.tileSize - technical.top - technical.bottom + offsetY;
+
+        Vector3 origin = usableZone.localScale / 0.2f;
+        _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+
+        for (int j = offsetY; j < y; j++)
+        {
+            for (int i = offsetX; i < x; i++)
             {
+                Vector2 pos = new Vector2(i, j) * orient * GameManager.gm.tileSize;
+
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
                 {
                     if (GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
-                    {
-                        GenerateTileName(_root, new Vector2(i, j) * GameManager.gm.tileSize,
-                                         tileID, GameManager.gm.roomTemplates[attributes["template"]]);
-                    }
+                        GenerateTileName(_root, pos, tileID, GameManager.gm.roomTemplates[attributes["template"]]);
                     else
-                    {
-                        GenerateTileName(_root, new Vector2(i, j) * GameManager.gm.tileSize,
-                                         tileID, new ReadFromJson.SRoomFromJson());
-                    }
+                        GenerateTileName(_root, pos, tileID, new ReadFromJson.SRoomFromJson());
                 }
                 else if (_mode == "color")
-                {
-                    GenerateTileColor(_root, new Vector2(i, j) * GameManager.gm.tileSize,
-                                      tileID, GameManager.gm.roomTemplates[attributes["template"]]);
-                }
+                    GenerateTileColor(_root, pos, tileID, GameManager.gm.roomTemplates[attributes["template"]]);
             }
         }
     }
@@ -319,10 +351,13 @@ public class Room : Building
             switch (_param)
             {
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
-                        domain = _value;
+                    if (_value.EndsWith("@recursive"))
+                    {
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
+                    }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                        SetDomain(_value);
                     break;
                 case "areas":
                     ParseAreas(_value);
@@ -341,7 +376,7 @@ public class Room : Building
                     break;
             }
         }
-        // PutData();
+        PutData();
     }
 
     ///<summary>
@@ -368,7 +403,7 @@ public class Room : Building
             _input = _input.Replace("]", "");
             string[] data = _input.Split('@', ',');
 
-            SMargin resDim = new SMargin(data[0], data[1],data[2], data[3]);
+            SMargin resDim = new SMargin(data[0], data[1], data[2], data[3]);
             SMargin techDim = new SMargin(data[4], data[5], data[6], data[7]);
             SetAreas(resDim, techDim);
         }

@@ -6,12 +6,17 @@ using UnityEngine;
 public class Rack : Object
 {
     private Vector3 originalLocalPos;
-    private Vector3 originalPosXY;
+    private Vector2 originalPosXY;
     private Transform uRoot;
+
+    private void OnEnable()
+    {
+        originalLocalPos = transform.localPosition;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Rack>() && GameManager.gm.currentItems.Contains(gameObject))
+        if (other.GetComponent<Rack>() && transform.localPosition != originalLocalPos)
         {
             GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
             transform.localPosition = originalLocalPos;
@@ -39,13 +44,16 @@ public class Rack : Object
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
                 case "domain":
-                    if (GameManager.gm.allItems.ContainsKey(_value))
+                    if (_value.EndsWith("@recursive"))
                     {
-                        domain = _value;
-                        UpdateColor();
+                        string[] data = _value.Split('@');
+                        SetAllDomains(data[0]);
                     }
                     else
-                        GameManager.gm.AppendLogLine($"Tenant \"{_value}\" doesn't exist. Please create it before assign it.", "yellow");
+                    {
+                        SetDomain(_value);
+                        UpdateColor();
+                    }
                     break;
                 case "color":
                     SetColor(_value);
@@ -70,32 +78,18 @@ public class Rack : Object
                     break;
             }
         }
-        // PutData();
+        PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
-    /// Update rack's color according to its Tenant.
-    ///</summary>
-    public void UpdateColor()
-    {
-        if (string.IsNullOrEmpty(domain))
-            return;
-
-        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
-
-        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
-    }
-
-    ///<summary>
-    /// Move the rack in its room's orientation.
+    /// Called by MoveObject: Move the rack in its room's orientation.
     ///</summary>
     ///<param name="_v">The translation vector</param>
-    public void MoveRack(Vector2 _v)
+    public void DragRack(Vector2 _v)
     {
+        Utils.SwitchAllCollidersInRacks(true);
+
         originalLocalPos = transform.localPosition;
         Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
         originalPosXY = posXY;
@@ -108,24 +102,57 @@ public class Rack : Object
         Room room = transform.parent.GetComponent<Room>();
         switch (room.attributes["orientation"])
         {
-            case "EN":
+            case "+E+N":
                 transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.x, _v.y);
                 break;
-            case "NW":
+            case "+N+W":
                 transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(_v.y, -_v.x);
                 break;
-            case "WS":
+            case "+W+S":
                 transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.x, -_v.y);
                 break;
-            case "SE":
+            case "+S+E":
                 transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
                 posXY += new Vector2(-_v.y, _v.x);
                 break;
         }
         attributes["posXY"] = JsonUtility.ToJson(posXY);
+        StartCoroutine(ReactiveCollider());
+    }
+
+    ///<summary>
+    /// Move the rack in its room's orientation.
+    ///</summary>
+    ///<param name="_v">The translation vector</param>
+    ///<param name="_isRelative">If true, _v is a relative vector</param>
+    public void MoveRack(Vector2 _v, bool _isRelative)
+    {
+        Utils.SwitchAllCollidersInRacks(true);
+
+        originalLocalPos = transform.localPosition;
+        Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
+        originalPosXY = posXY;
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<Collider>())
+                child.GetComponent<Collider>().enabled = false;
+        }
+
+        if (_isRelative)
+        {
+            transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
+            attributes["posXY"] = JsonUtility.ToJson(originalPosXY + _v);
+        }
+        else
+        {
+            transform.localPosition -= new Vector3(posXY.x, 0, posXY.y) * GameManager.gm.tileSize;
+            transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
+            attributes["posXY"] = JsonUtility.ToJson(_v);
+        }
+
         StartCoroutine(ReactiveCollider());
     }
 

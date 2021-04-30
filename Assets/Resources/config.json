@@ -2,14 +2,11 @@
     "verbose": "true",
     "fullscreen": "false",
     "textures": {
-        "perf22": "K:/_Orness/TilePerf22.png",
-        "kirk" : "C:/Users/herve/Nextcloud.ditrit/Ogree/4_customers/__DEMO__/metallica.png",
-        "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png",
-        "chybz" : "https://media-exp1.licdn.com/dms/image/C4E03AQFWoTK_0_dfpA/profile-displayphoto-shrink_200_200/0/1595487851451?e=1613606400&v=beta&t=K4dbOFev4-qq-4tsQ0QRHRJ24c-3kOUWptYt1E_mN2g",
-        "lbm" : "https://media-exp1.licdn.com/dms/image/C5603AQH8fm6kDUlXOA/profile-displayphoto-shrink_800_800/0/1516991969621?e=1613606400&v=beta&t=IyhUzni1rOB-9a_MT_zm7m7gZ3BW66c2mSmAnQQoEmU"
+        "perf22": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png",
+        "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
     },
 
-    "db_url": "https://ogree.chibois.net/",
-    "db_login": "",
+    "db_url": "https://ogree.chibois.net",
+    "db_login": "iamlegend@gmail.com",
     "db_token": ""
 }
