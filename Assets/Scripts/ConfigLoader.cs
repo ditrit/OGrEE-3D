@@ -155,7 +155,7 @@ public class ConfigLoader
             else
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
-            if (www.isHttpError || www.isNetworkError)
+            if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
                 GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
             else
                 GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
