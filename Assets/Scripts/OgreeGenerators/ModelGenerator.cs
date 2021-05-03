@@ -141,8 +141,8 @@ public class ModelGenerator : MonoBehaviour
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            Object[] components = rack.transform.GetComponentsInChildren<Object>();
-            foreach (Object comp in components)
+            OObject[] components = rack.transform.GetComponentsInChildren<OObject>();
+            foreach (OObject comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {

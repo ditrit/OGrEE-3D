@@ -159,8 +159,8 @@ public class ObjectGenerator : MonoBehaviour
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            Object[] components = rack.transform.GetComponentsInChildren<Object>();
-            foreach (Object comp in components)
+            OObject[] components = rack.transform.GetComponentsInChildren<OObject>();
+            foreach (OObject comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
@@ -180,10 +180,10 @@ public class ObjectGenerator : MonoBehaviour
     ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
     ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
-    public Object CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
+    public OObject CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
     {
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
-        if (!parent || parent.GetComponent<Object>() == null)
+        if (!parent || parent.GetComponent<OObject>() == null)
         {
             GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", "red");
             return null;
@@ -310,7 +310,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newDevice.name = _dv.name;
-        Object dv = newDevice.GetComponent<Object>();
+        OObject dv = newDevice.GetComponent<OObject>();
         dv.UpdateFromSApiObject(_dv, _copyAttr);
         if (!_copyAttr)
         {
@@ -329,8 +329,8 @@ public class ObjectGenerator : MonoBehaviour
 
         if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            Object[] components = newDevice.transform.GetComponentsInChildren<Object>();
-            foreach (Object comp in components)
+            OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
+            foreach (OObject comp in components)
             {
                 if (comp.gameObject != newDevice.gameObject)
                 {
@@ -352,7 +352,7 @@ public class ObjectGenerator : MonoBehaviour
     private GameObject GenerateBasicDevice(Transform _parent, float _sizeU, Transform _slot = null)
     {
         GameObject go = Instantiate(GameManager.gm.labeledBoxModel);
-        go.AddComponent<Object>();
+        go.AddComponent<OObject>();
         go.transform.parent = _parent;
         Vector3 scale;
         if (_slot)
@@ -569,7 +569,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
     ///<param name="_temp">"cold" or "warm" value</param>
     ///<returns>The created corridor</returns>
-    public Object CreateCorridor(SApiObject _co, Transform _parent = null)
+    public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
     {
         Transform parent = Utils.FindParent(_parent, _co.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -618,7 +618,7 @@ public class ObjectGenerator : MonoBehaviour
         float zOffset = (newCo.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
         newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
-        Object co = newCo.AddComponent<Object>();
+        OObject co = newCo.AddComponent<OObject>();
         co.UpdateFromSApiObject(_co);
 
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;

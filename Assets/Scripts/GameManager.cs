@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour
         // Debug.Log("Double Click");
         RaycastHit hit;
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<Object>())
+        if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<OObject>())
             FocusItem(hit.collider.transform.parent.gameObject);
         else if (focus.Count > 0)
             UnfocusItem();
@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
     public void UpdateCurrentItems(GameObject _obj)
     {
         if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
-            || (currentItems[0].GetComponent<Object>() && !_obj.GetComponent<Object>()))
+            || (currentItems[0].GetComponent<OObject>() && !_obj.GetComponent<OObject>()))
         {
             AppendLogLine("Multiple selection should be same type of objects.", "yellow");
             return;
@@ -259,7 +259,7 @@ public class GameManager : MonoBehaviour
     private void SelectItem(GameObject _obj)
     {
         currentItems.Add(_obj);
-        if (_obj.GetComponent<Object>())
+        if (_obj.GetComponent<OObject>())
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
@@ -275,7 +275,7 @@ public class GameManager : MonoBehaviour
     private void DeselectItem(GameObject _obj)
     {
         currentItems.Remove(_obj);
-        if (_obj.GetComponent<Object>())
+        if (_obj.GetComponent<OObject>())
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
@@ -311,7 +311,7 @@ public class GameManager : MonoBehaviour
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
                 _obj.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-                _obj.GetComponent<Object>().SetAttribute("slots", "false");
+                _obj.GetComponent<OObject>().SetAttribute("slots", "false");
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
@@ -334,7 +334,7 @@ public class GameManager : MonoBehaviour
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
             if (obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a != 0)
                 obj.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            obj.GetComponent<Object>().SetAttribute("slots", "true");
+            obj.GetComponent<OObject>().SetAttribute("slots", "true");
         }
         UpdateFocusText();
     }
@@ -534,8 +534,8 @@ public class GameManager : MonoBehaviour
 
         foreach (GameObject obj in currentItems)
         {
-            if (obj.GetComponent<Object>())
-                obj.GetComponent<Object>().ToggleCS();
+            if (obj.GetComponent<OObject>())
+                obj.GetComponent<OObject>().ToggleCS();
         }
     }
 

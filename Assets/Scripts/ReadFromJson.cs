@@ -282,7 +282,7 @@ public class ReadFromJson
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";
 
-        Object device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
+        OObject device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
         device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         device.transform.localPosition = Vector3.zero;
 
@@ -352,7 +352,7 @@ public class ReadFromJson
         }
         else
         {
-            Object obj = go.AddComponent<Object>();
+            OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
             // obj.id // ??
             obj.parentId = _parent.GetComponent<OgreeObject>().id;
