@@ -492,8 +492,6 @@ public class ConsoleController : MonoBehaviour
             CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
-        else if (str[0] == "model" || str[0] == "mo")
-            CreateModel(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
             // StoreDevice($"+{_input}");
             await CreateDevice(str[1]);
@@ -763,35 +761,6 @@ public class ConsoleController : MonoBehaviour
                         ObjectGenerator.instance.CreateRack(rk, parent, false);
                 }
             }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-    ///<summary>
-    /// Parse a "create rack" command and call ObjectGenerator.CreateRack().
-    ///</summary>
-    ///<param name="_input">String with rack data to parse</param>
-    private void CreateModel(string _input)
-    {
-        _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.-]+(\\/[0-9.]+)*,[0-9.-]+(\\/[0-9.]+)*\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]|[^\\[][^@]+)@(front|rear|left|right)$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-
-            Transform parent;
-            SApiObject rk = new SApiObject();
-            rk.description = new List<string>();
-            rk.attributes = new Dictionary<string, string>();
-
-            Vector2 pos = Utils.ParseVector2(data[1]);
-            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
-            rk.attributes["posXYUnit"] = "Tile";
-            rk.attributes["template"] = data[2];
-            rk.attributes["orientation"] = data[3];
-            IsolateParent(data[0], out parent, out rk.name);
-            if (parent)
-                ModelGenerator.instance.InstantiateModel(rk, parent);
         }
         else
             AppendLogLine("Syntax error", "red");
