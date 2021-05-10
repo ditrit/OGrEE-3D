@@ -57,6 +57,7 @@ public class ReadFromJson
         public string model;
         public string type;
         public int[] sizeWDHmm;
+        public string fbxModel;
         public SColor[] colors;
         public SRackSlot[] components;
         public SRackSlot[] slots;
@@ -155,6 +156,8 @@ public class ReadFromJson
         rk.attributes["vendor"] = rackData.vendor;
         rk.attributes["model"] = rackData.model;
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
+        if (!string.IsNullOrEmpty(rackData.fbxModel))
+            ModelGenerator.instance.ReplaceBox(rack.gameObject, rackData.fbxModel);
 
         rack.transform.localPosition = Vector3.zero;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
