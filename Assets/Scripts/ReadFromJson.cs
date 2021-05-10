@@ -97,6 +97,7 @@ public class ReadFromJson
         public string side;
         public string fulldepth;
         public float[] sizeWDHmm;
+        public string fbxModel;
         public SColor[] colors;
         public SDeviceSlot[] components;
         public SDeviceSlot[] slots;
@@ -175,7 +176,7 @@ public class ReadFromJson
                 compData.mandatory = comp.mandatory;
                 compData.labelPos = comp.labelPos;
                 compData.color = comp.color;
-                PopulateSlot(false, compData, rack.transform, customColors);
+                PopulateSlot(false, compData, rack, customColors);
             }
         }
         if (rackData.slots != null)
@@ -193,7 +194,7 @@ public class ReadFromJson
                 slotData.mandatory = comp.mandatory;
                 slotData.labelPos = comp.labelPos;
                 slotData.color = comp.color;
-                PopulateSlot(true, slotData, rack.transform, customColors);
+                PopulateSlot(true, slotData, rack, customColors);
             }
         }
 
@@ -283,7 +284,10 @@ public class ReadFromJson
             dv.attributes["fulldepth"] = "no";
 
         OObject device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
-        device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+        if (string.IsNullOrEmpty(data.fbxModel))
+            device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+        else
+            ModelGenerator.instance.ReplaceBox(device.gameObject, data.fbxModel);
         device.transform.localPosition = Vector3.zero;
 
         Dictionary<string, string> customColors = new Dictionary<string, string>();
@@ -295,12 +299,12 @@ public class ReadFromJson
         if (data.components != null)
         {
             foreach (SDeviceSlot compData in data.components)
-                PopulateSlot(false, compData, device.transform, customColors);
+                PopulateSlot(false, compData, device, customColors);
         }
         if (data.slots != null)
         {
             foreach (SDeviceSlot slotData in data.slots)
-                PopulateSlot(true, slotData, device.transform, customColors);
+                PopulateSlot(true, slotData, device, customColors);
         }
 
 #if !DEBUG
@@ -318,15 +322,22 @@ public class ReadFromJson
     ///</summary>
     ///<param name="_data">Data for slot creation</param>
     ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(bool isSlot, SDeviceSlot _data, Transform _parent,
+    private void PopulateSlot(bool isSlot, SDeviceSlot _data, OgreeObject _parent,
                                 Dictionary<string, string> _customColors)
     {
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
 
+        Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
+        Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
+        if (_parent.attributes["sizeUnit"] == "mm")
+            parentSize /= 1000;
+        else if (_parent.attributes["sizeUnit"] == "cm")
+            parentSize /= 100;
+
         go.name = _data.location;
-        go.transform.parent = _parent;
+        go.transform.parent = _parent.transform;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
-        go.transform.localPosition = go.transform.parent.GetChild(0).localScale / -2;
+        go.transform.localPosition = parentSize / -2;
         go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
         {
@@ -355,9 +366,9 @@ public class ReadFromJson
             OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
             // obj.id // ??
-            obj.parentId = _parent.GetComponent<OgreeObject>().id;
+            obj.parentId = _parent.id;
             obj.category = "device";
-            obj.domain = _parent.GetComponent<OgreeObject>().domain;
+            obj.domain = _parent.domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
             obj.UpdateHierarchyName();

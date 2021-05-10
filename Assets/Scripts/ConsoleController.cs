@@ -116,7 +116,7 @@ public class ConsoleController : MonoBehaviour
         else if (_input[0] == '>')
             FocusItem(_input.Substring(1));
         else if (_input[0] == '.')
-            ParseLoad(_input.Substring(1), _saveCmd);
+            StartCoroutine(ParseLoad(_input.Substring(1), _saveCmd));
         else if (_input[0] == '+')
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
@@ -301,13 +301,16 @@ public class ConsoleController : MonoBehaviour
     ///</summary>
     ///<param name="_input">Command line to parse</param>
     ///<param name="_saveCmd">If "cmds", save it in GameManager ?</param>
-    private void ParseLoad(string _input, bool _saveCmd)
+    private IEnumerator ParseLoad(string _input, bool _saveCmd)
     {
         string[] str = _input.Split(new char[] { ':' }, 2);
         if (str[0] == "cmds")
             LoadCmdsFile(str[1], _saveCmd);
         else if (str[0] == "template" || str[0] == "t")
+        {
             LoadTemplateFile(str[1]);
+            yield return new WaitForSeconds(1);
+        }
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
