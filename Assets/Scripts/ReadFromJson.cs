@@ -157,7 +157,7 @@ public class ReadFromJson
         rk.attributes["model"] = rackData.model;
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
         if (!string.IsNullOrEmpty(rackData.fbxModel))
-            ModelGenerator.instance.ReplaceBox(rack.gameObject, rackData.fbxModel);
+            ModelLoader.instance.ReplaceBox(rack.gameObject, rackData.fbxModel);
 
         rack.transform.localPosition = Vector3.zero;
         Dictionary<string, string> customColors = new Dictionary<string, string>();
@@ -290,7 +290,7 @@ public class ReadFromJson
         if (string.IsNullOrEmpty(data.fbxModel))
             device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
         else
-            ModelGenerator.instance.ReplaceBox(device.gameObject, data.fbxModel);
+            ModelLoader.instance.ReplaceBox(device.gameObject, data.fbxModel);
         device.transform.localPosition = Vector3.zero;
 
         Dictionary<string, string> customColors = new Dictionary<string, string>();
