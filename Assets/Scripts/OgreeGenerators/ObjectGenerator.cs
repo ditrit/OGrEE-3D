@@ -71,7 +71,12 @@ public class ObjectGenerator : MonoBehaviour
 
         Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
         Vector3 origin = newRack.transform.parent.GetChild(0).localScale / 0.2f;
-        Vector3 boxOrigin = newRack.transform.GetChild(0).localScale / 2;
+        Vector3 boxOrigin;
+        Transform box = newRack.transform.GetChild(0);
+        if (box.childCount == 0)
+            boxOrigin = box.localScale / 2;
+        else
+            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
         newRack.transform.position = newRack.transform.parent.GetChild(0).position;
 
         Vector2 orient = Vector2.one;
@@ -224,10 +229,16 @@ public class ObjectGenerator : MonoBehaviour
             }
             newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
             newDevice.transform.localEulerAngles = Vector3.zero;
-            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + newDevice.transform.GetChild(0).localScale.y) / 2, 0);
+            Vector3 boxSize;
+            Transform box = newDevice.transform.GetChild(0);
+            if (box.childCount == 0)
+                boxSize = box.localScale;
+            else
+                boxSize = box.GetComponent<BoxCollider>().size;
+            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + boxSize.y) / 2, 0);
             newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
 
-            float deltaZ = parent.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
+            float deltaZ = parent.GetChild(0).localScale.z - boxSize.z;
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
         }
         else
@@ -274,10 +285,16 @@ public class ObjectGenerator : MonoBehaviour
                 newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
                 newDevice.transform.localPosition = slot.localPosition;
                 newDevice.transform.localEulerAngles = slot.localEulerAngles;
-                if (newDevice.transform.GetChild(0).localScale.y > slot.GetChild(0).localScale.y)
-                    newDevice.transform.localPosition += new Vector3(0, newDevice.transform.GetChild(0).localScale.y / 2 - GameManager.gm.uSize / 2, 0);
+                Vector3 boxSize;
+                Transform box = newDevice.transform.GetChild(0);
+                if (box.childCount == 0)
+                    boxSize = box.localScale;
+                else
+                    boxSize = box.GetComponent<BoxCollider>().size;
+                if (boxSize.y > slot.GetChild(0).localScale.y)
+                    newDevice.transform.localPosition += new Vector3(0, boxSize.y / 2 - GameManager.gm.uSize / 2, 0);
 
-                float deltaZ = slot.GetChild(0).localScale.z - newDevice.transform.GetChild(0).localScale.z;
+                float deltaZ = slot.GetChild(0).localScale.z - boxSize.z;
                 switch (_dv.attributes["orientation"])
                 {
                     case "front":
