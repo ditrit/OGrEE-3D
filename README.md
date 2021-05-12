@@ -5,7 +5,7 @@ OGREE 3D is a data-center viewer
 - Gamer gpu needed
 - VR version to come  
 
-*Unity version: 2019.2.11*  
+*Unity version: 2020.3.6f1*  
 
 # Table of Contents
 - [Getting started](#Getting-Started)
@@ -42,6 +42,7 @@ You can override the config file parameters with command line arguments
 --verbose [true|false]
 --fullscreen [true|false]
 --serverUrl [url]
+--serverToken [token]
 --file [path to ocli file to load]
 ```  
 
