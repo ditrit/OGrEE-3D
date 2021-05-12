@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Rack : Object
+public class Rack : OObject
 {
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;

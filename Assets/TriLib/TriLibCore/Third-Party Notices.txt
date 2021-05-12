@@ -1,0 +1,45 @@
+﻿This asset is governed by the Asset Store EULA; however, the following components are governed by the licenses indicated below:
+
+TriLib uses
+A. StbImageSharp
+Public Domain
+Roman Shapiro
+
+B. LibTessDotNet
+SGI FREE SOFTWARE LICENSE B (Version 2.0, Sept. 18, 2008)
+Rémi Gillig
+
+C. SharpZipLib
+MIT License (MIT)
+Copyright (c) 2000-2016 SharpZipLib Contributors
+
+D. ANTLR 4
+BSD License
+Copyright (c) 2012 Terence Parr and Sam Harwell
+
+E. Newtonsoft.Json for Unity
+MIT License (MIT)
+Copyright (c) 2019 Kalle Jillheden (jilleJr)
+Original NewtownSoft.Json
+MIT License (MIT)
+Copyright (c) 2007 James Newton-King
+
+F. StandaloneFileBrowser
+MIT License (MIT)
+Copyright (c) Gökhan Gökçe
+
+G. Open Sans Font
+Apache License
+Copyright (c) Steve Matteson
+
+H. Android Native File Picker
+MIT License
+Süleyman Yasir KULA
+
+I. IxMilia.ThreeMf
+MIT License
+Copyright (c) IxMilia
+
+J. GTLF Draco Decoder
+Apache License
+Copyright (c) Google

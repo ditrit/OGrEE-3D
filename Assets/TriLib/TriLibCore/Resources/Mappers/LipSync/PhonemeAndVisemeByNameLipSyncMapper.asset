@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e814020d5db143c5b35df2deb05a174e, type: 3}
+  m_Name: PhonemeAndVisemeByNameLipSyncMapper
+  m_EditorClassIdentifier: 
+  StringComparisonMode: 0
+  CaseInsensitive: 1
+  VisemeCandidates:
+  - Viseme: 1
+    CandidateNames:
+    - _pp
+    - .mpb_up_m
+    - .mpb_down_m
+    - .pp
+    - .mpb_up_m0
+    - .mpb_down_m0
+  - Viseme: 2
+    CandidateNames:
+    - _ff
+    - .fv_m
+    - .ff
+    - .fv_m0
+  - Viseme: 3
+    CandidateNames:
+    - _th
+    - .td_i_m
+    - .th
+    - .td_i_m0
+  - Viseme: 4
+    CandidateNames:
+    - _dd
+    - .td_i_m
+    - .dd
+    - .td_i_m0
+  - Viseme: 5
+    CandidateNames:
+    - _kk
+    - .kg_m
+    - .kk
+    - .kg_m0
+  - Viseme: 6
+    CandidateNames:
+    - _ch
+    - .sh_ch_m
+    - .ch
+    - .sh_ch_m0
+  - Viseme: 7
+    CandidateNames:
+    - _ss
+    - .s_m
+    - .ss
+    - .s_m0
+  - Viseme: 8
+    CandidateNames:
+    - _nn
+    - 
+    - .nn
+  - Viseme: 9
+    CandidateNames:
+    - _rr
+    - 
+    - .rr
+  - Viseme: 10
+    CandidateNames:
+    - _aa
+    - .ae_aa_m
+    - .aa
+    - .ae_aa_m0
+  - Viseme: 11
+    CandidateNames:
+    - _ee
+    - .ax_e_m
+    - .ee
+    - .ax_e_m0
+  - Viseme: 12
+    CandidateNames:
+    - _ih
+    - .td_i_m
+    - .ih
+    - .td_i_m0
+  - Viseme: 13
+    CandidateNames:
+    - _oh
+    - .uh_oo_m
+    - .oh
+    - .uh_oo_m0
+  - Viseme: 14
+    CandidateNames:
+    - _ou
+    - .uw_u_m
+    - .ou
+    - .uw_u_m0
+  - Viseme: 0
+    CandidateNames:
+    - _sil
+    - 
+    - .sil

@@ -1,0 +1,7 @@
+﻿2.0.17b
+Changelog:
+-Fixed regression issue preventing TextureMappers from executing.
+-Fixed gLTF specular materials processing.
+-Fixed StandardAlpha reflections.
+-Refactored gLTF reader for improved performance.
+-Added ScaleFactor processing to 3MF and PLY readers.

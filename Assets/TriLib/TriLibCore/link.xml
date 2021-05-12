@@ -1,0 +1,6 @@
+<linker>
+    <assembly fullname="glTFLoader2" preserve="all"/>
+    <assembly fullname="Newtonsoft.Json" preserve="all"/>
+    <assembly fullname="I18N.Common" preserve="all"/>
+    <assembly fullname="I18N.West" preserve="all"/>
+</linker>
