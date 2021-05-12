@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Group : Object
+public class Group : OObject
 {
     ///<summary>
     /// Check for a _param attribute and assign _value to it.

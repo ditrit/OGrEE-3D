@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class Object : OgreeObject
+public class OObject : OgreeObject
 {
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
