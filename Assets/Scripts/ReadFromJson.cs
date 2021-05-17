@@ -155,6 +155,7 @@ public class ReadFromJson
         rk.attributes["orientation"] = "front";
         rk.attributes["vendor"] = rackData.vendor;
         rk.attributes["model"] = rackData.model;
+        rk.attributes["fbxModel"] = (!string.IsNullOrEmpty(rackData.fbxModel)).ToString();
         Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
         if (!string.IsNullOrEmpty(rackData.fbxModel))
             ModelLoader.instance.ReplaceBox(rack.gameObject, rackData.fbxModel);
@@ -265,7 +266,8 @@ public class ReadFromJson
         dv.name = data.slug;
         dv.category = "device";
         dv.attributes["posU"] = "0";
-        dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
+        int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+        dv.attributes["sizeU"] = sizeU.ToString();
         dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
         dv.attributes["sizeUnit"] = "mm";
         dv.attributes["height"] = data.sizeWDHmm[2].ToString();
@@ -285,6 +287,7 @@ public class ReadFromJson
         }
         else if (data.fulldepth == "no")
             dv.attributes["fulldepth"] = "no";
+        dv.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
 
         OObject device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
         if (string.IsNullOrEmpty(data.fbxModel))
