@@ -146,8 +146,8 @@ public class GUIObjectInfos : MonoBehaviour
         // Display all other attributes
         foreach (KeyValuePair<string, string> kvp in _obj.attributes)
         {
-            if (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
-                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template")
+            if (!string.IsNullOrEmpty(kvp.Value) && (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
+                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template"))
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
                 i++;
