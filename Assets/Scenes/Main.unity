@@ -878,7 +878,7 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!84 &93855984
+--- !u!84 &86237358
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5262,7 +5262,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834332615}
   m_CullTransparentMesh: 0
---- !u!84 &869699269
+--- !u!84 &868877705
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6617,7 +6617,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -6680,8 +6680,8 @@ MonoBehaviour:
   sourceCamera: {fileID: 1079497875}
   outlineCamera: {fileID: 2097124688}
   outlineShaderMaterial: {fileID: 0}
-  renderTexture: {fileID: 93855984}
-  extraRenderTexture: {fileID: 869699269}
+  renderTexture: {fileID: 86237358}
+  extraRenderTexture: {fileID: 868877705}
 --- !u!1 &1089484604
 GameObject:
   m_ObjectHideFlags: 0
@@ -14203,7 +14203,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -14213,7 +14213,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: 1
-  m_TargetTexture: {fileID: 93855984}
+  m_TargetTexture: {fileID: 86237358}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
