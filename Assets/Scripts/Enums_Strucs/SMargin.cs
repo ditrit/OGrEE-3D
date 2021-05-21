@@ -43,11 +43,13 @@ public struct SMargin
             bottom = 0;
             right = 0;
             left = 0;
-            return;
         }
-        top = _data[0];
-        bottom = _data[1];
-        right = _data[2];
-        left = _data[3];
+        else
+        {
+            top = _data[0];
+            bottom = _data[1];
+            right = _data[2];
+            left = _data[3];
+        }
     }
 }
