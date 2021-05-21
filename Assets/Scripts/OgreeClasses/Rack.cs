@@ -167,41 +167,39 @@ public class Rack : OObject
             GameManager.gm.AppendLogLine("U value has to be true or false", "yellow");
             return;
         }
-        else if (_value == "true")
-        {
-            if (!uRoot)
-            {
-                uRoot = new GameObject("uRoot").transform;
-                uRoot.parent = transform;
-                uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
-                uRoot.localEulerAngles = Vector3.zero;
-                GenerateUColumn("rearLeft");
-                GenerateUColumn("rearRight");
-                GenerateUColumn("frontLeft");
-                GenerateUColumn("frontRight");
-            }
-        }
-        else
-        {
-            if (uRoot)
-                Destroy(uRoot.gameObject);
-        }
+        else if (_value == "true" && !uRoot)
+            GenerateUHelpers();
+        else if (_value == "false" && uRoot)
+            Destroy(uRoot.gameObject);
     }
     public void ToggleU()
     {
         if (uRoot)
             Destroy(uRoot.gameObject);
         else
-        {
-            uRoot = new GameObject("uRoot").transform;
-            uRoot.parent = transform;
-            uRoot.localPosition = new Vector3(0, -transform.GetChild(0).localScale.y / 2, 0);
-            uRoot.localEulerAngles = Vector3.zero;
-            GenerateUColumn("rearLeft");
-            GenerateUColumn("rearRight");
-            GenerateUColumn("frontLeft");
-            GenerateUColumn("frontRight");
-        }
+            GenerateUHelpers();
+    }
+
+    ///<summary>
+    /// Create uRoot, place it and call GenerateUColumn() for each corner
+    ///</summary>
+    private void GenerateUHelpers()
+    {
+        Vector3 rootPos;
+        Transform box = transform.GetChild(0);
+        if (box.childCount == 0)
+            rootPos = new Vector3(0, box.localScale.y / -2, 0);
+        else
+            rootPos = new Vector3(0, box.GetComponent<BoxCollider>().size.y / -2, 0);
+
+        uRoot = new GameObject("uRoot").transform;
+        uRoot.parent = transform;
+        uRoot.localPosition = rootPos;
+        uRoot.localEulerAngles = Vector3.zero;
+        GenerateUColumn("rearLeft");
+        GenerateUColumn("rearRight");
+        GenerateUColumn("frontLeft");
+        GenerateUColumn("frontRight");
     }
 
     ///<summary>
@@ -211,24 +209,30 @@ public class Rack : OObject
     private void GenerateUColumn(string _corner)
     {
         Vector3 boxSize = transform.GetChild(0).localScale;
+
+        // By defalut, attributes["heightUnit"] == "U"
         float scale = GameManager.gm.uSize;
-        if (attributes["heightUnit"] == "OU")
-            scale = GameManager.gm.ouSize;
-
         int max = (int)Utils.ParseDecFrac(attributes["height"]);
-        if (GetComponentInChildren<Slot>())
+        if (attributes["heightUnit"] == "OU")
         {
-            max = 0;
-            Slot[] allSlots = GetComponentsInChildren<Slot>();
-            foreach (Slot s in allSlots)
-            {
-                if (s.orient == "horizontal")
-                    max++;
-            }
+            scale = GameManager.gm.ouSize;
+            max = (int)Utils.ParseDecFrac(attributes["height"]);
+        }
+        else if (attributes["heightUnit"] == "cm")
+        {
+            scale = GameManager.gm.uSize;
+            max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));
+            Debug.LogWarning(max);
+        }
 
-            Transform slot = GetComponentInChildren<Slot>().transform;
-            uRoot.localPosition = new Vector3(uRoot.localPosition.x, slot.localPosition.y, uRoot.localPosition.z);
-            uRoot.localPosition -= new Vector3(0, slot.GetChild(0).localScale.y / 2, 0);
+        if (!string.IsNullOrEmpty(attributes["template"]))
+        {
+            Transform slot = GetComponentInChildren<Slot>()?.transform;
+            if (slot)
+            {
+                uRoot.localPosition = new Vector3(uRoot.localPosition.x, slot.localPosition.y, uRoot.localPosition.z);
+                uRoot.localPosition -= new Vector3(0, slot.GetChild(0).localScale.y / 2, 0);
+            }
         }
 
         for (int i = 1; i <= max; i++)
