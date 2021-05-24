@@ -133,7 +133,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_serverUrl">The base url of the API to use</param>
     ///<param name="_token">The auth token of the API to use</param>
-    public void Initialize(string _serverUrl, string _token)
+    public async void Initialize(string _serverUrl, string _token)
     {
         if (string.IsNullOrEmpty(_serverUrl))
             GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
@@ -143,9 +143,21 @@ public class ApiManager : MonoBehaviour
         {
             server = _serverUrl + "/api/user";
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
-            isReady = true;
-            isInit = true;
-            GameManager.gm.AppendLogLine("Connected to API", "green");
+            try
+            {
+                string response = await httpClient.GetStringAsync($"{_serverUrl}/api/token/valid");
+                isReady = true;
+                isInit = true;
+                GameManager.gm.AppendLogLine("Connected to API", "green");
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.Log(e.Message);
+                if (e.Message.Contains("403"))
+                    GameManager.gm.AppendLogLine("Wrong token", "red");
+                else
+                    GameManager.gm.AppendLogLine("Wrong api url", "red");
+            }
         }
     }
 
