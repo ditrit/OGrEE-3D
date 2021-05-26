@@ -47,6 +47,38 @@ public class ReadFromJson
     }
     #endregion
 
+    [System.Serializable]
+    private struct STemplate
+    {
+        public string slug;
+        public string description;
+        public string category;
+        public string vendor;
+        public string model;
+        public string type;
+        public string side;
+        public string fulldepth;
+        public int[] sizeWDHmm;
+        public string fbxModel;
+        public SColor[] colors;
+        public STemplateChild[] components;
+        public STemplateChild[] slots;
+    }
+
+    [System.Serializable]
+    private struct STemplateChild
+    {
+        public string location;
+        public string type;
+        public string factor;
+        public string elemOrient;
+        public int[] elemPos;
+        public int[] elemSize;
+        public string mandatory;
+        public string labelPos;
+        public string color;
+    }
+
     #region Rack
     [System.Serializable]
     private struct SRackFromJson
@@ -68,7 +100,6 @@ public class ReadFromJson
     {
         public string location;
         public string family;
-        // public string installed;// to del
         public string elemOrient;
         public int[] elemPos;
         public int[] elemSize;
@@ -190,8 +221,6 @@ public class ReadFromJson
                 SDeviceSlot slotData = new SDeviceSlot();
                 slotData.location = comp.location;
                 slotData.type = comp.family;
-                // slotData.factor = comp.factor;
-                // slotData.position = comp.installed; // not used
                 slotData.elemOrient = comp.elemOrient;
                 slotData.elemPos = comp.elemPos;
                 slotData.elemSize = comp.elemSize;
@@ -251,14 +280,11 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"{data.slug} is a rack, not a device.", "red");
             return;
         }
-        if (GameManager.gm.rackTemplates.ContainsKey(data.slug))
+        if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
         {
             GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
             return;
         }
-
-        if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
-            return;
 
         SApiObject dv = new SApiObject();
         dv.description = new List<string>();
@@ -324,11 +350,141 @@ public class ReadFromJson
     }
 
     ///<summary>
-    /// Create a child Slot object, with alpha=0.25.
+    /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
-    ///<param name="_data">Data for slot creation</param>
-    ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(bool isSlot, SDeviceSlot _data, OgreeObject _parent,
+    ///<param name="_json">Json to parse</param>
+    public void CreateObjectTemplate(string _json)
+    {
+        STemplate data = JsonUtility.FromJson<STemplate>(_json);
+        if (data.category != "rack" && data.category != "device")
+        {
+            GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");
+            return;
+        }
+        if (GameManager.gm.rackTemplates.ContainsKey(data.slug) || GameManager.gm.devicesTemplates.ContainsKey(data.slug))
+        {
+            GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
+            return;
+        }
+
+        // Build SApiObject
+        SApiObject obj = new SApiObject();
+        obj.description = new List<string>();
+        obj.attributes = new Dictionary<string, string>();
+
+        obj.name = data.slug;
+        obj.category = data.category;
+        obj.description.Add(data.description);
+        if (obj.category == "rack")
+        {
+            Vector3 tmp = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[1], data.sizeWDHmm[2]) / 10;
+            obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+            obj.attributes["posXYUnit"] = "Tile";
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+            obj.attributes["sizeUnit"] = "cm";
+            obj.attributes["height"] = ((int)tmp.z).ToString();
+            obj.attributes["heightUnit"] = "cm";
+            obj.attributes["orientation"] = "front";
+        }
+        else if (obj.category == "device")
+        {
+            int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+            obj.attributes["posU"] = "0";
+            obj.attributes["sizeU"] = sizeU.ToString();
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
+            obj.attributes["sizeUnit"] = "mm";
+            obj.attributes["height"] = data.sizeWDHmm[2].ToString();
+            obj.attributes["heightUnit"] = "mm";
+            obj.attributes["slot"] = "";
+            obj.attributes["deviceType"] = data.type;
+            obj.attributes["fulldepth"] = data.fulldepth;
+            if (data.fulldepth == "yes")
+                obj.attributes["orientation"] = "front";
+            else if (data.fulldepth == "no")
+                obj.attributes["orientation"] = data.side;
+        }
+        obj.attributes["template"] = "";
+        obj.attributes["vendor"] = data.vendor;
+        obj.attributes["model"] = data.model;
+        obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
+
+        // Generate the 3D object
+        OgreeObject newObject;
+        if (obj.category == "rack")
+        {
+            newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
+            if (!string.IsNullOrEmpty(data.fbxModel))
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+        }
+        else// if (obj.category == "device")
+        {
+            newObject = ObjectGenerator.instance.CreateDevice(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            if (string.IsNullOrEmpty(data.fbxModel))
+                newObject.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+            else
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+        }
+        newObject.transform.localPosition = Vector3.zero;
+
+        // Retrieve custom colors
+        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        if (data.colors != null)
+        {
+            foreach (SColor color in data.colors)
+                customColors.Add(color.name, color.value);
+        }
+
+        // Generate components & slots
+        if (data.components != null)
+        {
+            foreach (STemplateChild compData in data.components)
+                PopulateSlot(false, compData, newObject, customColors);
+        }
+        if (data.slots != null)
+        {
+            foreach (STemplateChild slotData in data.slots)
+                PopulateSlot(true, slotData, newObject, customColors);
+        }
+
+        // For rack, update height counting
+        if (newObject.category == "rack")
+        {
+            Slot[] slots = newObject.GetComponentsInChildren<Slot>();
+            if (slots.Length > 0)
+            {
+                int height = 0;
+                foreach (Slot s in slots)
+                {
+                    if (s.orient == "horizontal")
+                        height++;
+                }
+                newObject.attributes["height"] = height.ToString();
+                newObject.attributes["heightUnit"] = "U";
+            }
+        }
+
+        // Toggle renderers & put newObj in correct list
+#if !DEBUG
+        Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderers)
+            r.enabled = false;
+#endif
+        GameManager.gm.allItems.Remove(newObject.hierarchyName);
+        if (newObject.category == "rack")
+            GameManager.gm.rackTemplates.Add(newObject.name, newObject.gameObject);
+        else if (newObject.category == "device")
+            GameManager.gm.devicesTemplates.Add(newObject.name, newObject.gameObject);
+
+    }
+
+    ///<summary>
+    /// Create a child Slot or Component object.
+    ///</summary>
+    ///<param name="_isSlot">Device if it's a slot or a component to create</param>
+    ///<param name="_data">Data for Slot/Component creation</param>
+    ///<param name="_parent">The parent of the Slot/Component</param>
+    ///<param name="_customColors">Custom colors to use</param>
+    private void PopulateSlot(bool _isSlot, SDeviceSlot _data, OgreeObject _parent,
                                 Dictionary<string, string> _customColors)
     {
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
@@ -358,7 +514,7 @@ public class ReadFromJson
             go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
         }
 
-        if (isSlot)
+        if (_isSlot)
         {
             Slot s = go.AddComponent<Slot>();
             s.orient = _data.elemOrient;
@@ -392,7 +548,84 @@ public class ReadFromJson
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
-        if (isSlot)
+        if (_isSlot)
+        {
+            if (_data.mandatory == "yes")
+                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
+            else if (_data.mandatory == "no")
+                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.2f);
+        }
+        else
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+    }
+    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent,
+                                Dictionary<string, string> _customColors)
+    {
+        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
+
+        Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
+        Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
+        if (_parent.attributes["sizeUnit"] == "mm")
+            parentSize /= 1000;
+        else if (_parent.attributes["sizeUnit"] == "cm")
+            parentSize /= 100;
+
+        go.name = _data.location;
+        go.transform.parent = _parent.transform;
+        go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
+        go.transform.localPosition = parentSize / -2;
+        go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
+        if (_data.elemOrient == "vertical")
+        {
+            go.transform.localEulerAngles = new Vector3(0, 0, 90);
+            go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
+                                                        go.transform.GetChild(0).localScale.x,
+                                                        go.transform.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            go.transform.localEulerAngles = Vector3.zero;
+            go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
+        }
+
+        if (_isSlot)
+        {
+            Slot s = go.AddComponent<Slot>();
+            s.orient = _data.elemOrient;
+            s.formFactor = _data.factor;
+            s.mandatory = _data.mandatory;
+            s.labelPos = _data.labelPos;
+
+            go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        }
+        else
+        {
+            OObject obj = go.AddComponent<OObject>();
+            obj.name = go.name;
+            // obj.id // ??
+            obj.parentId = _parent.id;
+            obj.category = "device";
+            obj.domain = _parent.domain;
+            obj.description = new List<string>();
+            obj.attributes = new Dictionary<string, string>();
+            obj.attributes["deviceType"] = _data.type;
+            obj.attributes["factor"] = _data.factor;
+            obj.UpdateHierarchyName();
+        }
+
+        DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
+        // dod.Setup();
+        dod.PlaceTexts(_data.labelPos);
+        dod.SetLabel("name");
+
+        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+        Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
+        Color myColor = new Color();
+        if (_data.color != null && _data.color.StartsWith("@"))
+            ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
+        else
+            ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
+        if (_isSlot)
         {
             if (_data.mandatory == "yes")
                 mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);

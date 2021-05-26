@@ -380,13 +380,13 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
-        string[] str = _input.Split(new char[] { '@' }, 2);
-        if (str.Length == 2)
-        {
+        // string[] str = _input.Split(new char[] { '@' }, 2);
+        // if (str.Length == 2)
+        // {
             string json = "";
             try
             {
-                using (StreamReader sr = File.OpenText(str[1]))
+                using (StreamReader sr = File.OpenText(_input))
                     json = sr.ReadToEnd();
             }
             catch (System.Exception e)
@@ -395,18 +395,34 @@ public class ConsoleController : MonoBehaviour
             }
             if (!string.IsNullOrEmpty(json))
             {
-                if (str[0] == "rack")
-                    rfJson.CreateRackTemplate(json);
-                else if (str[0] == "device")
-                    rfJson.CreateDeviceTemplate(json);
-                else if (str[0] == "room")
+                if (json.Contains("\"category\":\"room\"")) // Should be category instead of type
                     rfJson.CreateRoomTemplate(json);
-                else
-                    AppendLogLine("Unknown template type", "red");
+                else // rack or device
+                    rfJson.CreateObjectTemplate(json);
+
+
+                // switch (str[0])
+                // {
+                //     case "rack":
+                //         rfJson.CreateRackTemplate(json);
+                //         break;
+                //     case "device":
+                //         rfJson.CreateDeviceTemplate(json);
+                //         break;
+                //     case "room":
+                //         rfJson.CreateRoomTemplate(json);
+                //         break;
+                //     case "object":
+                //         rfJson.CreateObjectTemplate(json);
+                //         break;
+                //     default:
+                //         AppendLogLine("Unknown template type", "red");
+                //         break;
+                // }
             }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
+        // }
+        // else
+        //     AppendLogLine("Syntax error", "red");
     }
 
     ///<summary>
