@@ -222,7 +222,6 @@ public class Rack : OObject
         {
             scale = GameManager.gm.uSize;
             max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));
-            Debug.LogWarning(max);
         }
 
         if (!string.IsNullOrEmpty(attributes["template"]))
