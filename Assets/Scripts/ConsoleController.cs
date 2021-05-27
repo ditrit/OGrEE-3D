@@ -455,7 +455,10 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
-                await ApiManager.instance.GetObject(data[1]);
+            {
+                bool isSingleObj = Regex.IsMatch(data[1], "^[a-z]+\\/[0-9]+$");
+                await ApiManager.instance.GetObject(data[1], isSingleObj);
+            }
             else
             {
                 OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();

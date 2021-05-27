@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
@@ -16,48 +17,24 @@ public class ApiManager : MonoBehaviour
         public string json;
         public string objToUpdate;
     }
-    struct SAuth
-    {
-        public string email;
-        public string password;
-    }
-    private struct SAuthResp
-    {
-        public SAccount account;
-        public string message;
-        public bool status;
-    }
-    private struct SAccount
-    {
-        public string ID;
-        public string CreatedAt;
-        public string UpdatedAt;
-        public string DeletedAt;
-        public string Email;
-        public string Password;
-        public string token;
-    }
 
-    private struct SObjResp
+    private struct SObjRespSingle
     {
         public string message;
         public string status;
         public SApiObject data;
     }
+    private struct SObjRespArray
+    {
+        public string message;
+        public string status;
+        public SObjectArray data;
+    }
+    private struct SObjectArray
+    {
+        public SApiObject[] objects;
+    }
 
-    // {
-    //     "account":{
-    //         "ID":641717123263660033,
-    //         "CreatedAt":"2021-03-16T16:02:04.432625555+01:00",
-    //         "UpdatedAt":"2021-03-16T16:02:04.432625555+01:00",
-    //         "DeletedAt":null,
-    //         "Email":"iamlegend@gmail.com",
-    //         "Password":"",
-    //         "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20"
-    //     },
-    //     "message":"Account has been created",
-    //     "status":true
-    // }
     public static ApiManager instance;
 
     private HttpClient httpClient = new HttpClient();
@@ -66,8 +43,8 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
-    [SerializeField] private string login;
-    [SerializeField] private string token;
+    // [SerializeField] private string login;
+    // [SerializeField] private string token;
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
@@ -88,44 +65,6 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
-    }
-
-    ///<summary>
-    /// Initialiaze the manager with server, login and token.
-    ///</summary>
-    ///<param name="_serverUrl">The url to save</param>
-    ///<param name="_login">The login to use</param>
-    ///<param name="_pwd">The password to use</param>
-    public async void Initialize(string _serverUrl, string _login, string _pwd)
-    {
-        SAuth auth = new SAuth();
-        auth.email = _login;
-        auth.password = _pwd;
-
-        StringContent content = new StringContent(JsonUtility.ToJson(auth), System.Text.Encoding.UTF8, "application/json");
-        string fullPath = _serverUrl + "/api/user";
-        try
-        {
-            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
-            string responseStr = response.Content.ReadAsStringAsync().Result;
-            // GameManager.gm.AppendLogLine(responseStr);
-            // "{\"account\":{\"ID\":641717123263660033,\"CreatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"UpdatedAt\":\"2021-03-16T16:02:04.432625555+01:00\",\"DeletedAt\":null,\"Email\":\"iamlegend@gmail.com\",\"Password\":\"\",\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20\"},\"message\":\"Account has been created\",\"status\":true}"
-            server = fullPath;
-
-            SAuthResp resp = new SAuthResp();
-            resp.account = new SAccount();
-            resp = Newtonsoft.Json.JsonConvert.DeserializeObject<SAuthResp>(responseStr);
-            Debug.Log(resp.account.token);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", resp.account.token);
-
-            isReady = true;
-            isInit = true;
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
-        }
-
     }
 
     ///<summary>
@@ -239,7 +178,7 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Get an Object from the api. Create an ogreeObject with response.
     ///</summary>
-    public async Task GetObject(string _input)
+    public async Task GetObject(string _input, bool _isSingleObj)
     {
         if (!isInit)
         {
@@ -252,7 +191,7 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("success"))
-                CreateItemFromJson(response);
+                CreateItemFromJson(response, _isSingleObj);
         }
         catch (HttpRequestException e)
         {
@@ -293,66 +232,66 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private void CreateItemFromJson(string _json)
+    private void CreateItemFromJson(string _json, bool _singleObject)
     {
-        // Is a list of objects
-        if (_json.Contains("\"data\":["))
-            return;
+        List<SApiObject> objsToCreate = new List<SApiObject>();
 
-        // Is an object: generate the corresponding OGrEE object
-        SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
-        switch (resp.data.category)
+        if (_singleObject)
         {
-            case "tenant":
-                CustomerGenerator.instance.CreateTenant(resp.data);
-                break;
-            case "site":
-                CustomerGenerator.instance.CreateSite(resp.data);
-                break;
-            case "building":
-                BuildingGenerator.instance.CreateBuilding(resp.data);
-                break;
-            case "room":
-                BuildingGenerator.instance.CreateRoom(resp.data);
-                break;
-            case "rack":
-                ObjectGenerator.instance.CreateRack(resp.data);
-                break;
-            case "device":
-                ObjectGenerator.instance.CreateDevice(resp.data);
-                break;
-                // case "group":
-                //     ObjectGenerator.instance.CreateGroup(resp.data);
-                //     break;
-                // case "corridor":
-                //     ObjectGenerator.instance.CreateCorridor(resp.data);
-                //     break;
-                // case "separator":
-                //     BuildingGenerator.instance.CreateSeparator(resp.data);
-                //     break;
-        }
-    }
-
-    ///<summary>
-    /// Update object's id with the id given by the api.
-    ///</summary>
-    ///<param name="_objName">The name of the object to update</param>
-    ///<param name="_json">The json containing the id</param>
-    private void UpdateObjId(string _objName, string _json)
-    {
-        if (_json.Contains("success"))
-        {
-            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
-            SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
-            // Debug.Log(resp.data.name + " / " + resp.data.id);
-            GameObject obj = GameManager.gm.FindByAbsPath(_objName);
-            if (obj)
-                obj.GetComponent<OgreeObject>().UpdateId(resp.data.id);
-            else
-                Debug.LogError($"Can't find {_objName}");
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
+            objsToCreate.Add(resp.data);
         }
         else
-            GameManager.gm.AppendLogLine($"Fail to post {_objName} on server", "yellow");
+        {
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);            
+            foreach (SApiObject obj in resp.data.objects)
+                objsToCreate.Add(obj);
+        }
+
+        GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
+
+        objsToCreate.OrderBy(o => o.category == "tenant")
+                     .ThenBy(o => o.category == "site")
+                     .ThenBy(o => o.category == "building")
+                     .ThenBy(o => o.category == "room")
+                     .ThenBy(o => o.category == "rack")
+                     .ThenBy(o => o.category == "device")
+                     .ThenBy(o => o.category == "corridor")
+                     .ThenBy(o => o.category == "group");
+
+        foreach (SApiObject obj in objsToCreate)
+        {
+            switch (obj.category)
+            {
+                case "tenant":
+                    CustomerGenerator.instance.CreateTenant(obj);
+                    break;
+                case "site":
+                    CustomerGenerator.instance.CreateSite(obj);
+                    break;
+                case "building":
+                    BuildingGenerator.instance.CreateBuilding(obj);
+                    break;
+                case "room":
+                    BuildingGenerator.instance.CreateRoom(obj);
+                    break;
+                case "rack":
+                    ObjectGenerator.instance.CreateRack(obj);
+                    break;
+                case "device":
+                    ObjectGenerator.instance.CreateDevice(obj);
+                    break;
+                    // case "group":
+                    //     ObjectGenerator.instance.CreateGroup(obj);
+                    //     break;
+                    // case "corridor":
+                    //     ObjectGenerator.instance.CreateCorridor(obj);
+                    //     break;
+                    // case "separator":
+                    //     BuildingGenerator.instance.CreateSeparator(obj);
+                    //     break;
+            }
+        }
     }
 
     ///<summary>
@@ -364,8 +303,8 @@ public class ApiManager : MonoBehaviour
         if (_json.Contains("success"))
         {
             _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
-            SObjResp resp = JsonConvert.DeserializeObject<SObjResp>(_json);
-            CreateItemFromJson(_json);
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
+            CreateItemFromJson(_json, true);
         }
         else
             GameManager.gm.AppendLogLine($"Fail to post on server", "red");
