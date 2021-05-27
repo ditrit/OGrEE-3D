@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -53,13 +54,12 @@ public class ReadFromJson
         public string slug;
         public string description;
         public string category;
-        public string vendor;
-        public string model;
         public string type;
         public string side;
         public string fulldepth;
-        public int[] sizeWDHmm;
+        public float[] sizeWDHmm;
         public string fbxModel;
+        public Dictionary<string, string> attributes;
         public SColor[] colors;
         public STemplateChild[] components;
         public STemplateChild[] slots;
@@ -72,8 +72,8 @@ public class ReadFromJson
         public string type;
         public string factor;
         public string elemOrient;
-        public int[] elemPos;
-        public int[] elemSize;
+        public float[] elemPos;
+        public float[] elemSize;
         public string mandatory;
         public string labelPos;
         public string color;
@@ -355,7 +355,7 @@ public class ReadFromJson
     ///<param name="_json">Json to parse</param>
     public void CreateObjectTemplate(string _json)
     {
-        STemplate data = JsonUtility.FromJson<STemplate>(_json);
+        STemplate data = JsonConvert.DeserializeObject<STemplate>(_json);
         if (data.category != "rack" && data.category != "device")
         {
             GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");
@@ -404,9 +404,12 @@ public class ReadFromJson
                 obj.attributes["orientation"] = data.side;
         }
         obj.attributes["template"] = "";
-        obj.attributes["vendor"] = data.vendor;
-        obj.attributes["model"] = data.model;
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
+        if (data.attributes != null)
+        {
+            foreach (KeyValuePair<string, string> kvp in data.attributes)
+                obj.attributes[kvp.Key] = kvp.Value;
+        }
 
         // Generate the 3D object
         OgreeObject newObject;
