@@ -456,8 +456,8 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
             {
-                bool isSingleObj = Regex.IsMatch(data[1], "^[a-z]+\\/[0-9]+$");
-                await ApiManager.instance.GetObject(data[1], isSingleObj);
+                // bool isObjArray = Regex.IsMatch(data[1], "(?:^[a-z]+$)|(?:[a-z]+\\?[a-z0-9]+=.+$)");
+                await ApiManager.instance.GetObject(data[1]);
             }
             else
             {

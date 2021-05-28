@@ -91,11 +91,7 @@ public class ApiManager : MonoBehaviour
             }
             catch (HttpRequestException e)
             {
-                Debug.Log(e.Message);
-                if (e.Message.Contains("403"))
-                    GameManager.gm.AppendLogLine("Wrong token", "red");
-                else
-                    GameManager.gm.AppendLogLine("Wrong api url", "red");
+                GameManager.gm.AppendLogLine($"Error while connecting to API: {e.Message}", "red");
             }
         }
     }
@@ -178,7 +174,7 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Get an Object from the api. Create an ogreeObject with response.
     ///</summary>
-    public async Task GetObject(string _input, bool _isSingleObj)
+    public async Task GetObject(string _input)
     {
         if (!isInit)
         {
@@ -191,7 +187,7 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("success"))
-                CreateItemFromJson(response, _isSingleObj);
+                CreateItemFromJson(response);
         }
         catch (HttpRequestException e)
         {
@@ -232,32 +228,33 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private void CreateItemFromJson(string _json, bool _singleObject)
+    private void CreateItemFromJson(string _json)
     {
         List<SApiObject> objsToCreate = new List<SApiObject>();
 
-        if (_singleObject)
+        if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
-            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            objsToCreate.Add(resp.data);
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);
+            foreach (SApiObject obj in resp.data.objects)
+                objsToCreate.Add(obj);
         }
         else
         {
-            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);            
-            foreach (SApiObject obj in resp.data.objects)
-                objsToCreate.Add(obj);
+            _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices)\":", "\"children\":");
+            Debug.Log(_json);
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
+            if (resp.data.children == null)
+                objsToCreate.Add(resp.data);
+            else
+                ParseNestedObjects(objsToCreate, resp.data);
         }
 
         GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
 
-        objsToCreate.OrderBy(o => o.category == "tenant")
-                     .ThenBy(o => o.category == "site")
-                     .ThenBy(o => o.category == "building")
-                     .ThenBy(o => o.category == "room")
-                     .ThenBy(o => o.category == "rack")
-                     .ThenBy(o => o.category == "device")
-                     .ThenBy(o => o.category == "corridor")
-                     .ThenBy(o => o.category == "group");
+        // string strA = "";
+        // foreach (SApiObject o in objsToCreate)
+        //     strA += ($"{o.name}({o.category}) / ");
+        // Debug.Log(strA);
 
         foreach (SApiObject obj in objsToCreate)
         {
@@ -304,10 +301,21 @@ public class ApiManager : MonoBehaviour
         {
             _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            CreateItemFromJson(_json, true);
+            CreateItemFromJson(_json);
         }
         else
             GameManager.gm.AppendLogLine($"Fail to post on server", "red");
+    }
+
+    ///
+    private void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    {
+        _list.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_list, obj);
+        }
     }
 
 }
