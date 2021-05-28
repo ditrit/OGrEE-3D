@@ -380,49 +380,23 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
-        // string[] str = _input.Split(new char[] { '@' }, 2);
-        // if (str.Length == 2)
-        // {
-            string json = "";
-            try
-            {
-                using (StreamReader sr = File.OpenText(_input))
-                    json = sr.ReadToEnd();
-            }
-            catch (System.Exception e)
-            {
-                AppendLogLine(e.Message, "red");
-            }
-            if (!string.IsNullOrEmpty(json))
-            {
-                if (json.Contains("\"category\":\"room\"")) // Should be category instead of type
-                    rfJson.CreateRoomTemplate(json);
-                else // rack or device
-                    rfJson.CreateObjectTemplate(json);
-
-
-                // switch (str[0])
-                // {
-                //     case "rack":
-                //         rfJson.CreateRackTemplate(json);
-                //         break;
-                //     case "device":
-                //         rfJson.CreateDeviceTemplate(json);
-                //         break;
-                //     case "room":
-                //         rfJson.CreateRoomTemplate(json);
-                //         break;
-                //     case "object":
-                //         rfJson.CreateObjectTemplate(json);
-                //         break;
-                //     default:
-                //         AppendLogLine("Unknown template type", "red");
-                //         break;
-                // }
-            }
-        // }
-        // else
-        //     AppendLogLine("Syntax error", "red");
+        string json = "";
+        try
+        {
+            using (StreamReader sr = File.OpenText(_input))
+                json = sr.ReadToEnd();
+        }
+        catch (System.Exception e)
+        {
+            AppendLogLine(e.Message, "red");
+        }
+        if (!string.IsNullOrEmpty(json))
+        {
+            if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
+                rfJson.CreateRoomTemplate(json);
+            else // rack or device
+                rfJson.CreateObjectTemplate(json);
+        }
     }
 
     ///<summary>

@@ -170,15 +170,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
-    /// Set id.
-    ///</summary>
-    ///<param name="_id">The id to set</param>
-    public void UpdateId(string _id)
-    {
-        id = _id;
-    }
-
-    ///<summary>
     /// Update the OgreeObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
