@@ -156,6 +156,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
     }
 
+    ///<summary>
+    /// Update the OgreeObject's hierarchyName with it's parent's one.
+    ///</summary>
     public string UpdateHierarchyName()
     {
         Transform parent = transform.parent;
@@ -167,15 +170,10 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
-    /// Set id.
+    /// Update the OgreeObject attributes with given SApiObject.
     ///</summary>
-    ///<param name="_id">The id to set</param>
-    public void UpdateId(string _id)
-    {
-        id = _id;
-    }
-
-    ///
+    ///<param name="_src">The SApiObject used to update attributes</param>
+    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
     public void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
     {
         name = _src.name;
