@@ -15,7 +15,6 @@ public class ApiManager : MonoBehaviour
         public string type;
         public string path;
         public string json;
-        public string objToUpdate;
     }
 
     private struct SObjRespSingle
@@ -43,8 +42,6 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
-    // [SerializeField] private string login;
-    // [SerializeField] private string token;
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
@@ -174,6 +171,7 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Get an Object from the api. Create an ogreeObject with response.
     ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
     public async Task GetObject(string _input)
     {
         if (!isInit)
@@ -199,6 +197,7 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
+    ///<param name="_obj">The SApiObject to post</param>
     public async Task PostObject(SApiObject _obj)
     {
         if (!isInit)
@@ -251,11 +250,6 @@ public class ApiManager : MonoBehaviour
 
         GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
 
-        // string strA = "";
-        // foreach (SApiObject o in objsToCreate)
-        //     strA += ($"{o.name}({o.category}) / ");
-        // Debug.Log(strA);
-
         foreach (SApiObject obj in objsToCreate)
         {
             switch (obj.category)
@@ -307,7 +301,11 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine($"Fail to post on server", "red");
     }
 
-    ///
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_list">The list to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
     private void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
     {
         _list.Add(_src);

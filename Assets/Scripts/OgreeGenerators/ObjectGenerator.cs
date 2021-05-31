@@ -210,7 +210,7 @@ public class ObjectGenerator : MonoBehaviour
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "red");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
@@ -422,6 +422,13 @@ public class ObjectGenerator : MonoBehaviour
         if (parentCategory != "room" && parentCategory != "rack")
         {
             GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
