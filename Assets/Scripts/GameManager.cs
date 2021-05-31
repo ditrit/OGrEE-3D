@@ -52,9 +52,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
-    // Group all dictionaries?
-    public Dictionary<string, GameObject> rackTemplates = new Dictionary<string, GameObject>();
-    public Dictionary<string, GameObject> devicesTemplates = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public bool isWireframe;
 
     public List<GameObject> focus = new List<GameObject>();
@@ -430,12 +428,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < tenants.Count; i++)
             Destroy(tenants[i]);
 
-        foreach (var kpv in rackTemplates)
+        foreach (var kpv in objectTemplates)
             Destroy(kpv.Value);
-        rackTemplates.Clear();
-        foreach (var kpv in devicesTemplates)
-            Destroy(kpv.Value);
-        devicesTemplates.Clear();
+        objectTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
         consoleController.ResetCounts();

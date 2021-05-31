@@ -114,7 +114,7 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");
             return;
         }
-        if (GameManager.gm.rackTemplates.ContainsKey(data.slug) || GameManager.gm.devicesTemplates.ContainsKey(data.slug))
+        if (GameManager.gm.objectTemplates.ContainsKey(data.slug))
         {
             GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
             return;
@@ -226,11 +226,7 @@ public class ReadFromJson
             r.enabled = false;
 #endif
         GameManager.gm.allItems.Remove(newObject.hierarchyName);
-        if (newObject.category == "rack")
-            GameManager.gm.rackTemplates.Add(newObject.name, newObject.gameObject);
-        else if (newObject.category == "device")
-            GameManager.gm.devicesTemplates.Add(newObject.name, newObject.gameObject);
-
+        GameManager.gm.objectTemplates.Add(newObject.name, newObject.gameObject);
     }
 
     ///<summary>
