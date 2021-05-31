@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -47,31 +48,33 @@ public class ReadFromJson
     }
     #endregion
 
-    #region Rack
+    #region Object
     [System.Serializable]
-    private struct SRackFromJson
+    private struct STemplate
     {
-        public string name;
         public string slug;
-        public string vendor;
-        public string model;
+        public string description;
+        public string category;
         public string type;
-        public int[] sizeWDHmm;
+        public string side;
+        public string fulldepth;
+        public float[] sizeWDHmm;
         public string fbxModel;
+        public Dictionary<string, string> attributes;
         public SColor[] colors;
-        public SRackSlot[] components;
-        public SRackSlot[] slots;
+        public STemplateChild[] components;
+        public STemplateChild[] slots;
     }
 
     [System.Serializable]
-    private struct SRackSlot
+    private struct STemplateChild
     {
         public string location;
-        public string family;
-        // public string installed;// to del
+        public string type;
+        public string factor;
         public string elemOrient;
-        public int[] elemPos;
-        public int[] elemSize;
+        public float[] elemPos;
+        public float[] elemSize;
         public string mandatory;
         public string labelPos;
         public string color;
@@ -85,145 +88,6 @@ public class ReadFromJson
     }
 
     #endregion
-
-    #region Device
-    [System.Serializable]
-    private struct SDevice
-    {
-        public string slug;
-        public string description;
-        public string vendor;
-        public string model;
-        public string type;
-        public string side;
-        public string fulldepth;
-        public float[] sizeWDHmm;
-        public string fbxModel;
-        public SColor[] colors;
-        public SDeviceSlot[] components;
-        public SDeviceSlot[] slots;
-    }
-
-    [System.Serializable]
-    private struct SDeviceSlot
-    {
-        public string location;
-        public string type;
-        public string factor; // ?
-        // public string position; // to del
-        public string elemOrient;
-        public int[] elemPos;
-        public int[] elemSize;
-        public string mandatory;
-        public string labelPos;
-        public string color;
-    }
-    #endregion
-
-
-    ///<summary>
-    /// Create a rack from _json data and add it to GameManager.rackTemplates.
-    ///</summary>
-    ///<param name="_json">Json to parse</param>
-    public void CreateRackTemplate(string _json)
-    {
-        SRackFromJson rackData = JsonUtility.FromJson<SRackFromJson>(_json);
-        if (rackData.type != "rack")
-        {
-            GameManager.gm.AppendLogLine($"{rackData.slug} is a {rackData.type}, not a rack.", "red");
-            return;
-        }
-        if (GameManager.gm.rackTemplates.ContainsKey(rackData.slug))
-        {
-            GameManager.gm.AppendLogLine($"{rackData.slug} already exists.", "yellow");
-            return;
-        }
-
-        Vector3 tmp = new Vector3(rackData.sizeWDHmm[0], rackData.sizeWDHmm[1], rackData.sizeWDHmm[2]) / 10;
-        SApiObject rk = new SApiObject();
-        rk.description = new List<string>();
-        rk.attributes = new Dictionary<string, string>();
-        rk.name = rackData.slug;
-        rk.category = "rack";
-        rk.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
-        rk.attributes["posXYUnit"] = "Tile";
-        rk.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
-        rk.attributes["sizeUnit"] = "cm";
-        rk.attributes["height"] = ((int)tmp.z).ToString();
-        rk.attributes["heightUnit"] = "cm";
-        rk.attributes["template"] = "";
-        rk.attributes["orientation"] = "front";
-        rk.attributes["vendor"] = rackData.vendor;
-        rk.attributes["model"] = rackData.model;
-        Rack rack = ObjectGenerator.instance.CreateRack(rk, GameManager.gm.templatePlaceholder);
-        if (!string.IsNullOrEmpty(rackData.fbxModel))
-            ModelLoader.instance.ReplaceBox(rack.gameObject, rackData.fbxModel);
-
-        rack.transform.localPosition = Vector3.zero;
-        Dictionary<string, string> customColors = new Dictionary<string, string>();
-        if (rackData.colors != null)
-        {
-            foreach (SColor color in rackData.colors)
-                customColors.Add(color.name, color.value);
-        }
-        if (rackData.components != null)
-        {
-            foreach (SRackSlot comp in rackData.components)
-            {
-                SDeviceSlot compData = new SDeviceSlot();
-                compData.location = comp.location;
-                compData.type = comp.family;
-                compData.elemOrient = comp.elemOrient;
-                compData.elemPos = comp.elemPos;
-                compData.elemSize = comp.elemSize;
-                compData.mandatory = comp.mandatory;
-                compData.labelPos = comp.labelPos;
-                compData.color = comp.color;
-                PopulateSlot(false, compData, rack, customColors);
-            }
-        }
-        if (rackData.slots != null)
-        {
-            foreach (SRackSlot comp in rackData.slots)
-            {
-                SDeviceSlot slotData = new SDeviceSlot();
-                slotData.location = comp.location;
-                slotData.type = comp.family;
-                // slotData.factor = comp.factor;
-                // slotData.position = comp.installed; // not used
-                slotData.elemOrient = comp.elemOrient;
-                slotData.elemPos = comp.elemPos;
-                slotData.elemSize = comp.elemSize;
-                slotData.mandatory = comp.mandatory;
-                slotData.labelPos = comp.labelPos;
-                slotData.color = comp.color;
-                PopulateSlot(true, slotData, rack, customColors);
-            }
-        }
-
-        // Count the right height in U 
-        Slot[] slots = rack.GetComponentsInChildren<Slot>();
-        if (slots.Length > 0)
-        {
-            int height = 0;
-            foreach (Slot s in slots)
-            {
-                if (s.orient == "horizontal")
-                    height++;
-            }
-            rack.attributes["height"] = height.ToString();
-            rack.attributes["heightUnit"] = "U";
-        }
-
-#if !DEBUG
-        Renderer[] renderers = rack.transform.GetComponentsInChildren<Renderer>();
-        foreach (Renderer r in renderers)
-            r.enabled = false;
-#endif
-
-        GameManager.gm.allItems.Remove(rack.hierarchyName);
-        GameManager.gm.rackTemplates.Add(rack.name, rack.gameObject);
-    }
 
     ///<summary>
     /// Store room data in GameManager.roomTemplates.
@@ -239,93 +103,140 @@ public class ReadFromJson
     }
 
     ///<summary>
-    /// Create a chassis from _json data and add it to GameManager.chassisTemplates.
+    /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public void CreateDeviceTemplate(string _json)
+    public void CreateObjectTemplate(string _json)
     {
-        SDevice data = JsonUtility.FromJson<SDevice>(_json);
-        if (data.type == "rack")
+        STemplate data = JsonConvert.DeserializeObject<STemplate>(_json);
+        if (data.category != "rack" && data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"{data.slug} is a rack, not a device.", "red");
+            GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");
             return;
         }
-        if (GameManager.gm.rackTemplates.ContainsKey(data.slug))
+        if (GameManager.gm.objectTemplates.ContainsKey(data.slug))
         {
             GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
             return;
         }
 
-        if (GameManager.gm.devicesTemplates.ContainsKey(data.slug))
-            return;
+        // Build SApiObject
+        SApiObject obj = new SApiObject();
+        obj.description = new List<string>();
+        obj.attributes = new Dictionary<string, string>();
 
-        SApiObject dv = new SApiObject();
-        dv.description = new List<string>();
-        dv.attributes = new Dictionary<string, string>();
-        dv.name = data.slug;
-        dv.category = "device";
-        dv.attributes["posU"] = "0";
-        dv.attributes["sizeU"] = (data.sizeWDHmm[2] / 10).ToString();
-        dv.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
-        dv.attributes["sizeUnit"] = "mm";
-        dv.attributes["height"] = data.sizeWDHmm[2].ToString();
-        dv.attributes["heightUnit"] = "mm";
-        dv.attributes["template"] = "";
-        dv.attributes["slot"] = "";
-
-        dv.description.Add(data.description);
-        dv.attributes["deviceType"] = data.type;
-        dv.attributes["vendor"] = data.vendor;
-        dv.attributes["model"] = data.model;
-        dv.attributes["orientation"] = data.side;
-        if (data.fulldepth == "yes")
+        obj.name = data.slug;
+        obj.category = data.category;
+        obj.description.Add(data.description);
+        if (obj.category == "rack")
         {
-            dv.attributes["fulldepth"] = "yes";
-            dv.attributes["orientation"] = "front";
+            Vector3 tmp = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[1], data.sizeWDHmm[2]) / 10;
+            obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+            obj.attributes["posXYUnit"] = "Tile";
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+            obj.attributes["sizeUnit"] = "cm";
+            obj.attributes["height"] = ((int)tmp.z).ToString();
+            obj.attributes["heightUnit"] = "cm";
+            obj.attributes["orientation"] = "front";
         }
-        else if (data.fulldepth == "no")
-            dv.attributes["fulldepth"] = "no";
+        else if (obj.category == "device")
+        {
+            int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+            obj.attributes["posU"] = "0";
+            obj.attributes["sizeU"] = sizeU.ToString();
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
+            obj.attributes["sizeUnit"] = "mm";
+            obj.attributes["height"] = data.sizeWDHmm[2].ToString();
+            obj.attributes["heightUnit"] = "mm";
+            obj.attributes["slot"] = "";
+            obj.attributes["deviceType"] = data.type;
+            obj.attributes["fulldepth"] = data.fulldepth;
+            if (data.fulldepth == "yes")
+                obj.attributes["orientation"] = "front";
+            else if (data.fulldepth == "no")
+                obj.attributes["orientation"] = data.side;
+        }
+        obj.attributes["template"] = "";
+        obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
+        if (data.attributes != null)
+        {
+            foreach (KeyValuePair<string, string> kvp in data.attributes)
+                obj.attributes[kvp.Key] = kvp.Value;
+        }
 
-        OObject device = ObjectGenerator.instance.CreateDevice(dv, GameManager.gm.templatePlaceholder.GetChild(0));
-        if (string.IsNullOrEmpty(data.fbxModel))
-            device.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
-        else
-            ModelLoader.instance.ReplaceBox(device.gameObject, data.fbxModel);
-        device.transform.localPosition = Vector3.zero;
+        // Generate the 3D object
+        OgreeObject newObject;
+        if (obj.category == "rack")
+        {
+            newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
+            if (!string.IsNullOrEmpty(data.fbxModel))
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+        }
+        else// if (obj.category == "device")
+        {
+            newObject = ObjectGenerator.instance.CreateDevice(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            if (string.IsNullOrEmpty(data.fbxModel))
+                newObject.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+            else
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+        }
+        newObject.transform.localPosition = Vector3.zero;
 
+        // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (data.colors != null)
         {
             foreach (SColor color in data.colors)
                 customColors.Add(color.name, color.value);
         }
+
+        // Generate components & slots
         if (data.components != null)
         {
-            foreach (SDeviceSlot compData in data.components)
-                PopulateSlot(false, compData, device, customColors);
+            foreach (STemplateChild compData in data.components)
+                PopulateSlot(false, compData, newObject, customColors);
         }
         if (data.slots != null)
         {
-            foreach (SDeviceSlot slotData in data.slots)
-                PopulateSlot(true, slotData, device, customColors);
+            foreach (STemplateChild slotData in data.slots)
+                PopulateSlot(true, slotData, newObject, customColors);
         }
 
+        // For rack, update height counting
+        if (newObject.category == "rack")
+        {
+            Slot[] slots = newObject.GetComponentsInChildren<Slot>();
+            if (slots.Length > 0)
+            {
+                int height = 0;
+                foreach (Slot s in slots)
+                {
+                    if (s.orient == "horizontal")
+                        height++;
+                }
+                newObject.attributes["height"] = height.ToString();
+                newObject.attributes["heightUnit"] = "U";
+            }
+        }
+
+        // Toggle renderers & put newObj in correct list
 #if !DEBUG
-        Renderer[] renderers = device.transform.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
             r.enabled = false;
 #endif
-
-        GameManager.gm.allItems.Remove(device.hierarchyName);
-        GameManager.gm.devicesTemplates.Add(device.name, device.gameObject);
+        GameManager.gm.allItems.Remove(newObject.hierarchyName);
+        GameManager.gm.objectTemplates.Add(newObject.name, newObject.gameObject);
     }
 
     ///<summary>
-    /// Create a child Slot object, with alpha=0.25.
+    /// Create a child Slot or Component object.
     ///</summary>
-    ///<param name="_data">Data for slot creation</param>
-    ///<param name="_parent">The parent of the Slot</param>
-    private void PopulateSlot(bool isSlot, SDeviceSlot _data, OgreeObject _parent,
+    ///<param name="_isSlot">Device if it's a slot or a component to create</param>
+    ///<param name="_data">Data for Slot/Component creation</param>
+    ///<param name="_parent">The parent of the Slot/Component</param>
+    ///<param name="_customColors">Custom colors to use</param>
+    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent,
                                 Dictionary<string, string> _customColors)
     {
         GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
@@ -355,10 +266,11 @@ public class ReadFromJson
             go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
         }
 
-        if (isSlot)
+        if (_isSlot)
         {
             Slot s = go.AddComponent<Slot>();
             s.orient = _data.elemOrient;
+            s.formFactor = _data.factor;
             s.mandatory = _data.mandatory;
             s.labelPos = _data.labelPos;
 
@@ -374,6 +286,8 @@ public class ReadFromJson
             obj.domain = _parent.domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
+            obj.attributes["deviceType"] = _data.type;
+            obj.attributes["factor"] = _data.factor;
             obj.UpdateHierarchyName();
         }
 
@@ -389,7 +303,7 @@ public class ReadFromJson
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
-        if (isSlot)
+        if (_isSlot)
         {
             if (_data.mandatory == "yes")
                 mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);

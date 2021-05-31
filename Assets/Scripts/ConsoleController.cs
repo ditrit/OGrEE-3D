@@ -380,33 +380,23 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">Command line to parse</param>
     private void LoadTemplateFile(string _input)
     {
-        string[] str = _input.Split(new char[] { '@' }, 2);
-        if (str.Length == 2)
+        string json = "";
+        try
         {
-            string json = "";
-            try
-            {
-                using (StreamReader sr = File.OpenText(str[1]))
-                    json = sr.ReadToEnd();
-            }
-            catch (System.Exception e)
-            {
-                AppendLogLine(e.Message, "red");
-            }
-            if (!string.IsNullOrEmpty(json))
-            {
-                if (str[0] == "rack")
-                    rfJson.CreateRackTemplate(json);
-                else if (str[0] == "device")
-                    rfJson.CreateDeviceTemplate(json);
-                else if (str[0] == "room")
-                    rfJson.CreateRoomTemplate(json);
-                else
-                    AppendLogLine("Unknown template type", "red");
-            }
+            using (StreamReader sr = File.OpenText(_input))
+                json = sr.ReadToEnd();
         }
-        else
-            AppendLogLine("Syntax error", "red");
+        catch (System.Exception e)
+        {
+            AppendLogLine(e.Message, "red");
+        }
+        if (!string.IsNullOrEmpty(json))
+        {
+            if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
+                rfJson.CreateRoomTemplate(json);
+            else // rack or device
+                rfJson.CreateObjectTemplate(json);
+        }
     }
 
     ///<summary>
@@ -439,7 +429,10 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (data[0] == "get")
+            {
+                // bool isObjArray = Regex.IsMatch(data[1], "(?:^[a-z]+$)|(?:[a-z]+\\?[a-z0-9]+=.+$)");
                 await ApiManager.instance.GetObject(data[1]);
+            }
             else
             {
                 OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();

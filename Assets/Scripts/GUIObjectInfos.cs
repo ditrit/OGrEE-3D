@@ -56,7 +56,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<summary>
     /// Update Texts in multiPanel.
     ///</summary>
-    ///<param name="The objects whose name are displayed"></param>
+    ///<param name="_objects">The objects whose name are displayed</param>
     public void UpdateMultiFields(List<GameObject> _objects)
     {
         tmpBtnName.text = "Selection";
@@ -75,7 +75,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<summary>
     /// Update singlePanel texts from an OgreeObject.
     ///</summary>
-    ///<param name="_obj">The rack whose information are displayed</param>
+    ///<param name="_obj">The object whose information are displayed</param>
     private void UpdateFields(OgreeObject _obj)
     {
         int i = 1;
@@ -146,8 +146,8 @@ public class GUIObjectInfos : MonoBehaviour
         // Display all other attributes
         foreach (KeyValuePair<string, string> kvp in _obj.attributes)
         {
-            if (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
-                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template")
+            if (!string.IsNullOrEmpty(kvp.Value) && (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
+                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template"))
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
                 i++;

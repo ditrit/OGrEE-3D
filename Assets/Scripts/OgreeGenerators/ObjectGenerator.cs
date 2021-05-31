@@ -43,8 +43,8 @@ public class ObjectGenerator : MonoBehaviour
             newRack = Instantiate(GameManager.gm.rackModel);
         else
         {
-            if (GameManager.gm.rackTemplates.ContainsKey(_rk.attributes["template"]))
-                newRack = Instantiate(GameManager.gm.rackTemplates[_rk.attributes["template"]]);
+            if (GameManager.gm.objectTemplates.ContainsKey(_rk.attributes["template"]))
+                newRack = Instantiate(GameManager.gm.objectTemplates[_rk.attributes["template"]]);
             else
             {
                 GameManager.gm.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", "yellow");
@@ -210,7 +210,7 @@ public class ObjectGenerator : MonoBehaviour
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "red");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 
@@ -250,8 +250,8 @@ public class ObjectGenerator : MonoBehaviour
                 max = float.Parse(_dv.attributes["sizeU"]);
             else
             {
-                if (GameManager.gm.devicesTemplates.ContainsKey(_dv.attributes["template"]))
-                    max = GameManager.gm.devicesTemplates[_dv.attributes["template"]].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                if (GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
+                    max = GameManager.gm.objectTemplates[_dv.attributes["template"]].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
                 else
                 {
                     GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "yellow");
@@ -388,9 +388,9 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The generated device</returns>
     private GameObject GenerateTemplatedDevice(Transform _parent, string _template)
     {
-        if (GameManager.gm.devicesTemplates.ContainsKey(_template))
+        if (GameManager.gm.objectTemplates.ContainsKey(_template))
         {
-            GameObject go = Instantiate(GameManager.gm.devicesTemplates[_template]);
+            GameObject go = Instantiate(GameManager.gm.objectTemplates[_template]);
             go.transform.parent = _parent;
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
@@ -422,6 +422,13 @@ public class ObjectGenerator : MonoBehaviour
         if (parentCategory != "room" && parentCategory != "rack")
         {
             GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 

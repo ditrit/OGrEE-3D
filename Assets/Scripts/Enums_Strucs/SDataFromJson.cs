@@ -13,6 +13,7 @@ public struct SApiObject
     public List<string> description;
     public string domain;
     public Dictionary<string, string> attributes;
+    public SApiObject[] children;
 
     public SApiObject(OgreeObject _src)
     {
@@ -24,5 +25,6 @@ public struct SApiObject
         description = _src.description;
         domain = _src.domain;
         attributes = _src.attributes;
+        children = null;
     }
 }
