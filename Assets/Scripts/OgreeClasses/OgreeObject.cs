@@ -19,6 +19,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     [SerializeField] private List<string> attributesValues = new List<string>();
     public Dictionary<string, string> attributes = new Dictionary<string, string>();
 
+    [Header("LOD")]
+    public int currentLod = 0;
+
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
 
@@ -64,6 +67,12 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         if (_param.StartsWith("description"))
             SetDescription(_param.Substring(11), _value);
+        else if (_param == "lod")
+        {
+            int i = 0;
+            int.TryParse(_value, out i);
+            SetLod(i);
+        }
         else
         {
             switch (_param)
@@ -203,5 +212,48 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         yield return new WaitForSeconds(2f);
         ApiManager.instance.CreatePutRequest(this);
+    }
+
+    ///<summary>
+    /// Get children from API according to wanted LOD
+    ///</summary>
+    ///<param name="_level">Wanted LOD to get</param>
+    protected async void SetLod(int _level)
+    {
+        currentLod = Mathf.Clamp(_level, 0, 2);
+        GameManager.gm.AppendLogLine($"Set {name}'s LOD to {currentLod}", "green");
+
+        string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
+        int index = 0;
+        for (int i = 0; i < categories.Length; i++)
+        {
+            if ($"{category}s" == categories[i])
+                index = i;
+
+        }
+
+        string apiCall = "";
+        switch (currentLod)
+        {
+            case 0:
+                // Delete all children
+                break;
+            case 1:
+                // Get only 1st lvl children
+                if (category == "tenant")
+                    apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
+                else
+                    apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
+                break;
+            case 2:
+                // Get 1st lvl children & set them to LOD1
+                if (category == "tenant")
+                    apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
+                else
+                    apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
+                break;
+        }
+        Debug.Log(apiCall);
+        await ApiManager.instance.GetObject(apiCall);
     }
 }
