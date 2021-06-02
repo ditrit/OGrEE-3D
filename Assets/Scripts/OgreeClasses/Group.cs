@@ -13,6 +13,12 @@ public class Group : OObject
     {
         if (_param.StartsWith("description"))
             SetDescription(_param.Substring(11), _value);
+        // else if (_param == "lod")
+        // {
+        //     int i = 0;
+        //     int.TryParse(_value, out i);
+        //     SetLod(i);
+        // }
         else
         {
             switch (_param)

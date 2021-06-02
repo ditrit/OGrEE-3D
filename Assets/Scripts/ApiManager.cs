@@ -240,7 +240,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices)\":", "\"children\":");
-            Debug.Log(_json);
+            // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             if (resp.data.children == null)
                 objsToCreate.Add(resp.data);
