@@ -602,6 +602,13 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
         string roomHierarchyName = parent.GetComponent<OgreeObject>().hierarchyName;
         string[] rackNames = _co.attributes["content"].Split(',');
         Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
