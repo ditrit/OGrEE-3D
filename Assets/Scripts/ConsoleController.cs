@@ -486,7 +486,6 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
-            // StoreDevice($"+{_input}");
             await CreateDevice(str[1]);
         else if (str[0] == "group" || str[0] == "gr")
             CreateGroup(str[1]);
@@ -891,28 +890,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
     }
-
-    ///<summary>
-    /// Store _input in a list in ZoomManager.
-    ///</summary>
-    ///<param name="_input">String with device data to parse</param>
-    private void StoreDevice(string _input)
-    {
-        //+dv:/DEMO.ALPHA.B.R1.A99.PDU2@l17@ibm-smpdu@rearflipped
-        _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
-        // remove "+device:" or "+dv:"
-        string cmd = _input.Substring(_input.IndexOf(':') + 1);
-        if (Regex.IsMatch(cmd, patern))
-        {
-            string[] data = _input.Split(':', '@');
-            string parentPath = IsolateParentPath(data[1]);
-            ZoomManager.instance.devices.Add(new ZoomManager.SObjectCmd(data[1], parentPath, cmd));
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
+    
     #endregion
 
     #region SetMethods
@@ -954,13 +932,6 @@ public class ConsoleController : MonoBehaviour
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
-            // else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
-            // {
-            //     ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
-            //     objCmd.parentName = IsolateParentPath(data[0]);
-            //     objCmd.command = _input;
-            //     ZoomManager.instance.devicesAttributes.Add(objCmd);
-            // }
             else
                 AppendLogLine($"Object doesn't exist.", "yellow");
         }

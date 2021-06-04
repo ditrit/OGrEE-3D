@@ -219,7 +219,7 @@ public class ReadFromJson
             }
         }
 
-        // Toggle renderers & put newObj in correct list
+        // Toggle renderers & put newObj in GameManager.objectTemplates
 #if !DEBUG
         Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
