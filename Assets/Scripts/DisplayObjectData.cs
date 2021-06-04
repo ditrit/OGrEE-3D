@@ -39,11 +39,28 @@ public class DisplayObjectData : MonoBehaviour
     public void PlaceTexts(string _labelPos)
     {
         Vector3 boxSize;
-        Transform box = transform.GetChild(0);
-        if (box.childCount == 0)
-            boxSize = box.localScale;
+        OgreeObject oObj = GetComponent<OgreeObject>();
+        if (oObj && oObj.attributes.ContainsKey("template")
+            && !string.IsNullOrEmpty(oObj.attributes["template"]))
+        {
+            Vector2 size = JsonUtility.FromJson<Vector2>(oObj.attributes["size"]);
+            if (oObj.attributes["sizeUnit"] == "mm")
+                size /= 1000;
+            else if (oObj.attributes["sizeUnit"] == "cm")
+                size /= 100;
+
+            float height = float.Parse(oObj.attributes["height"]);
+            if (oObj.attributes["heightUnit"] == "U")
+                height *= GameManager.gm.uSize;
+            else if (oObj.attributes["heightUnit"] == "mm")
+                height /= 1000;
+            else if (oObj.attributes["heightUnit"] == "cm")
+                height /= 100;
+            boxSize = new Vector3(size.x, height, size.y);
+        }
         else
-            boxSize = box.GetComponent<BoxCollider>().size;
+            boxSize = transform.GetChild(0).localScale;
+
         labelFront.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / 2;
         labelRear.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / -2;
         labelRight.transform.localPosition = new Vector3(boxSize.x + 0.002f, 0, 0) / 2;
