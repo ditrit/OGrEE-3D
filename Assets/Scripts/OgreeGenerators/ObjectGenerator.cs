@@ -224,8 +224,9 @@ public class ObjectGenerator : MonoBehaviour
             if (string.IsNullOrEmpty(_dv.attributes["template"]))
             {
                 newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
-                size = JsonUtility.FromJson<Vector2>(_dv.attributes["size"]) / 1000;
-                height = float.Parse(_dv.attributes["height"]) / 1000;
+                Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
+                size = new Vector2(boxSize.x, boxSize.z);
+                height = boxSize.y;
             }
             //+dv:[name]@[posU]@[template]
             else
@@ -279,8 +280,9 @@ public class ObjectGenerator : MonoBehaviour
                 if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 {
                     newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
-                    size = JsonUtility.FromJson<Vector2>(_dv.attributes["size"]) / 1000;
-                    height = float.Parse(_dv.attributes["height"]) / 1000;
+                    Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
+                    size = new Vector2(boxSize.x, boxSize.z);
+                    height = boxSize.y;
                 }
                 //+dv:[name]@[slot]@[template]
                 else
