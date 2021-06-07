@@ -57,7 +57,6 @@ public class ReadFromJson
         public string category;
         public string type;
         public string side;
-        public string fulldepth;
         public float[] sizeWDHmm;
         public string fbxModel;
         public Dictionary<string, string> attributes;
@@ -150,11 +149,6 @@ public class ReadFromJson
             obj.attributes["heightUnit"] = "mm";
             obj.attributes["slot"] = "";
             obj.attributes["deviceType"] = data.type;
-            obj.attributes["fulldepth"] = data.fulldepth;
-            if (data.fulldepth == "yes")
-                obj.attributes["orientation"] = "front";
-            else if (data.fulldepth == "no")
-                obj.attributes["orientation"] = data.side;
         }
         obj.attributes["template"] = "";
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
