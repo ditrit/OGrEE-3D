@@ -232,11 +232,19 @@ public class Rack : OObject
 
         if (!string.IsNullOrEmpty(attributes["template"]))
         {
-            Transform slot = GetComponentInChildren<Slot>()?.transform;
-            if (slot)
+            Transform firstSlot = null;
+            foreach (Transform child in transform)
             {
-                uRoot.localPosition = new Vector3(uRoot.localPosition.x, slot.localPosition.y, uRoot.localPosition.z);
-                uRoot.localPosition -= new Vector3(0, slot.GetChild(0).localScale.y / 2, 0);
+                if (child.GetComponent<Slot>())
+                {
+                    firstSlot = child;
+                    break;
+                }
+            }
+            if (firstSlot)
+            {
+                uRoot.localPosition = new Vector3(uRoot.localPosition.x, firstSlot.localPosition.y, uRoot.localPosition.z);
+                uRoot.localPosition -= new Vector3(0, firstSlot.GetChild(0).localScale.y / 2, 0);
             }
         }
 
