@@ -255,7 +255,7 @@ public class ObjectGenerator : MonoBehaviour
             else
             {
                 if (GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
-                    max = GameManager.gm.objectTemplates[_dv.attributes["template"]].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                    max = float.Parse(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
                 else
                 {
                     GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "yellow");

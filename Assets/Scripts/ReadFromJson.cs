@@ -288,7 +288,7 @@ public class ReadFromJson
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
         // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
-        dod.SetLabel("name");
+        dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
