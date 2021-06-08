@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -308,7 +308,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                _obj.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+                _obj.GetComponent<OObject>().SetAttribute("alpha", "true");
                 _obj.GetComponent<OObject>().SetAttribute("slots", "false");
             }
             UpdateFocusText();
@@ -330,8 +330,7 @@ public class GameManager : MonoBehaviour
         else
         {
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-            if (obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a != 0)
-                obj.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            obj.GetComponent<OObject>().SetAttribute("alpha", "false");
             obj.GetComponent<OObject>().SetAttribute("slots", "true");
         }
         UpdateFocusText();
