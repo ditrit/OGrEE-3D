@@ -28,8 +28,6 @@ public class Slot : MonoBehaviour
     public void Display(bool _value)
     {
         transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
-        TextMeshPro[] labels = GetComponentsInChildren<TextMeshPro>();
-        foreach (TextMeshPro label in labels)
-            label.gameObject.SetActive(_value);
+        GetComponent<DisplayObjectData>().ToggleLabel(_value);
     }
 }
