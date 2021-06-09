@@ -354,7 +354,7 @@ public class ObjectGenerator : MonoBehaviour
         string hn = dv.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newDevice);
 
-        if (string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
