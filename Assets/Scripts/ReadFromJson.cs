@@ -55,7 +55,6 @@ public class ReadFromJson
         public string slug;
         public string description;
         public string category;
-        public string side;
         public float[] sizeWDHmm;
         public string fbxModel;
         public Dictionary<string, string> attributes;
@@ -298,7 +297,10 @@ public class ReadFromJson
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+        if (_isSlot)
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+        else
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
     }
 
 }
