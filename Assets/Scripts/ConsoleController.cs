@@ -890,7 +890,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
     }
-    
+
     #endregion
 
     #region SetMethods
@@ -924,9 +924,12 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out obj, out attrName);
             if (obj)
             {
-                if (obj.GetComponent<IAttributeModif>() != null)
+                if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
+                    if (attrName == "lod")
+                        obj.GetComponent<OgreeObject>().SetLod(data[1]);
+                    else
+                        obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
                     GameManager.gm.UpdateGuiInfos();
                 }
                 else
@@ -950,8 +953,13 @@ public class ConsoleController : MonoBehaviour
     {
         foreach (GameObject obj in GameManager.gm.currentItems)
         {
-            if (obj.GetComponent<IAttributeModif>() != null)
-                obj.GetComponent<IAttributeModif>().SetAttribute(_attr, _value);
+            if (obj.GetComponent<OgreeObject>() != null)
+            {
+                if (_attr == "lod")
+                    obj.GetComponent<OgreeObject>().SetLod(_value);
+                else
+                    obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
+            }
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }

@@ -67,12 +67,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         if (_param.StartsWith("description"))
             SetDescription(_param.Substring(11), _value);
-        else if (_param == "lod")
-        {
-            int i = 0;
-            int.TryParse(_value, out i);
-            SetLod(i);
-        }
         else
         {
             switch (_param)
@@ -218,45 +212,94 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    protected async void SetLod(int _level)
+    public async void SetLod(string _level)
     {
-        currentLod = Mathf.Clamp(_level, 0, 2);
+        int lvl = 0;
+        int.TryParse(_level, out lvl);
+        currentLod = Mathf.Clamp(lvl, 0, 2);
         GameManager.gm.AppendLogLine($"Set {name}'s LOD to {currentLod}", "green");
 
-        if (category != "device")
+        string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
+        int index = 0;
+        for (int i = 0; i < categories.Length; i++)
         {
-            string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
-            int index = 0;
-            for (int i = 0; i < categories.Length; i++)
-            {
-                if ($"{category}s" == categories[i])
-                    index = i;
+            if ($"{category}s" == categories[i])
+                index = i;
+        }
 
-            }
-
-            string apiCall = "";
-            switch (currentLod)
-            {
-                case 0:
-                    // Delete all children
-                    break;
-                case 1:
-                    // Get only 1st lvl children
-                    if (category == "tenant")
-                        apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
-                    else
-                        apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
-                    break;
-                case 2:
-                    // Get 1st lvl children & set them to LOD1
-                    if (category == "tenant")
-                        apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
-                    else
-                        apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
-                    break;
-            }
+        string apiCall = "";
+        switch (currentLod)
+        {
+            case 0:
+                // Delete all children
+                DeleteChildren(0);
+                break;
+            case 1:
+                // Get only 1st lvl children
+                DeleteChildren(1);
+                if (category == "tenant")
+                    apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
+                else if (category == "device")
+                    apiCall = $"devices/{id}/subdevices1";
+                else
+                    apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
+                break;
+            case 2:
+                // Get 1st lvl children & set them to LOD1
+                if (category == "tenant")
+                    apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
+                else if (category == "rack")
+                    apiCall = $"racks/{id}/all/devices/subdevices1";
+                else if (category == "device")
+                    apiCall = $"devices/{id}/all/subdevices1/subdevices2";
+                else
+                    apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
+                break;
+        }
+        if (!string.IsNullOrEmpty(apiCall))
+        {
             Debug.Log(apiCall);
             await ApiManager.instance.GetObject(apiCall);
+
+            // Set currentLod to 1 for direct children of currentLod = 2
+            if (currentLod == 2)
+            {
+                foreach (Transform child in transform)
+                {
+                    OgreeObject obj = child.GetComponent<OgreeObject>();
+                    if (obj)
+                        obj.currentLod = 1;
+                }
+            }
+        }
+    }
+
+    ///<summary>
+    /// Delete OgreeObject children according to _askedLevel.
+    ///</summary>
+    ///<param name="_askedLevel">The LOD to switch on</param>
+    protected void DeleteChildren(int _askedLevel)
+    {
+        List<OgreeObject> objsToDel = new List<OgreeObject>();
+        foreach (Transform child in transform)
+        {
+            OgreeObject obj = child.GetComponent<OgreeObject>();
+            if (obj && obj.id != "") // Exclude components
+                objsToDel.Add(obj);
+        }
+
+        if (_askedLevel == 0) // Delete all children
+        {
+            foreach (OgreeObject obj in objsToDel)
+            {
+                Debug.Log($"[Delete] {obj.name}");
+                GameManager.gm.DeleteItem(obj.gameObject, false);
+            }
+        }
+        else if (_askedLevel == 1) // Keep only direct Children
+        {
+            foreach (OgreeObject go in objsToDel)
+                go.GetComponent<OgreeObject>().DeleteChildren(0);
         }
     }
 }
