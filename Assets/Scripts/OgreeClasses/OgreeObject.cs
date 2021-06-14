@@ -272,6 +272,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 }
             }
         }
+        GameManager.gm.lodSlider.UpdateSlider(currentLod);
     }
 
     ///<summary>

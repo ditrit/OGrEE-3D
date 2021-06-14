@@ -20,10 +20,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
 
-    [Header("Panels")]
+    [Header("UI")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GameObject debugPanel = null;
+    public LodSlider lodSlider = null;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -256,14 +257,17 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     private void SelectItem(GameObject _obj)
     {
+        if (currentItems.Count == 0)
+            lodSlider.ActiveSlider(true);
+
         currentItems.Add(_obj);
         if (_obj.GetComponent<OObject>())
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
                 ol.enabled = true;
-                // ol.eraseRenderer = false;
         }
+        lodSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
     ///<summary>
@@ -278,7 +282,11 @@ public class GameManager : MonoBehaviour
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
                 ol.enabled = false;
-                // ol.eraseRenderer = true;
+        }
+        if (currentItems.Count == 0)
+        {
+            lodSlider.UpdateSlider(0);
+            lodSlider.ActiveSlider(false);
         }
     }
 
