@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -293,7 +293,7 @@ public class ApiManager : MonoBehaviour
     {
         if (_json.Contains("success"))
         {
-            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
+            // _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             CreateItemFromJson(_json);
         }

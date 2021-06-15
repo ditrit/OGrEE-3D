@@ -240,7 +240,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 if (category == "tenant")
                     apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
                 else if (category == "device")
-                    apiCall = $"devices/{id}/subdevices1";
+                    apiCall = $"devices/{id}/subdevices";
                 else
                     apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
                 break;
@@ -249,9 +249,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 if (category == "tenant")
                     apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
                 else if (category == "rack")
-                    apiCall = $"racks/{id}/all/devices/subdevices1";
+                    apiCall = $"racks/{id}/all/devices/subdevices";
                 else if (category == "device")
-                    apiCall = $"devices/{id}/all/subdevices1/subdevices2";
+                    apiCall = $"devices/{id}/all";
                 else
                     apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
                 break;
