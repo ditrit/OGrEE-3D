@@ -809,6 +809,14 @@ public class ConsoleController : MonoBehaviour
                     dv.attributes["height"] = scale.y.ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
+                else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
+                {
+                    OgreeObject template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
+                    dv.attributes["size"] = template.attributes["size"];
+                    dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                    dv.attributes["height"] = template.attributes["height"];
+                    dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                }
 
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(dv);
