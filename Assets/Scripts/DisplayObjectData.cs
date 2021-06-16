@@ -85,6 +85,8 @@ public class DisplayObjectData : MonoBehaviour
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
         }
 
+        foreach (TextMeshPro tmp in usedLabels)
+            tmp.gameObject.SetActive(false);
         usedLabels.Clear();
         switch (_labelPos)
         {
