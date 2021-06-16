@@ -215,30 +215,34 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         GameObject newDevice;
+        Vector2 size;
+        float height;
+        Transform slot = null;
         if (string.IsNullOrEmpty(_dv.attributes["slot"]))
         {
-            //+chassis:[name]@[posU]@[sizeU]
+            //+dv:[name]@[posU]@[sizeU]
             if (string.IsNullOrEmpty(_dv.attributes["template"]))
+            {
                 newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
-            //+chassis:[name]@[posU]@[template]
+                Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
+                size = new Vector2(boxSize.x, boxSize.z);
+                height = boxSize.y;
+            }
+            //+dv:[name]@[posU]@[template]
             else
             {
                 newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
                 if (newDevice == null)
                     return null;
+                OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
+                size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
+                height = float.Parse(tmp.attributes["height"]) / 1000;
             }
-            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
             newDevice.transform.localEulerAngles = Vector3.zero;
-            Vector3 boxSize;
-            Transform box = newDevice.transform.GetChild(0);
-            if (box.childCount == 0)
-                boxSize = box.localScale;
-            else
-                boxSize = box.GetComponent<BoxCollider>().size;
-            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + boxSize.y) / 2, 0);
+            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + height) / 2, 0);
             newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
 
-            float deltaZ = parent.GetChild(0).localScale.z - boxSize.z;
+            float deltaZ = parent.GetChild(0).localScale.z - size.y;
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
         }
         else
@@ -251,7 +255,7 @@ public class ObjectGenerator : MonoBehaviour
             else
             {
                 if (GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
-                    max = GameManager.gm.objectTemplates[_dv.attributes["template"]].transform.GetChild(0).localScale.y / GameManager.gm.uSize;
+                    max = float.Parse(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
                 else
                 {
                     GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "yellow");
@@ -271,30 +275,32 @@ public class ObjectGenerator : MonoBehaviour
                 foreach (Slot s in takenSlots)
                     s.SlotTaken(true);
 
-                Transform slot = takenSlots[0].transform;
-                //+chassis:[name]@[slot]@[sizeU]
+                slot = takenSlots[0].transform;
+                //+dv:[name]@[slot]@[sizeU]
                 if (string.IsNullOrEmpty(_dv.attributes["template"]))
+                {
                     newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
-                //+chassis:[name]@[slot]@[template]
+                    Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
+                    size = new Vector2(boxSize.x, boxSize.z);
+                    height = boxSize.y;
+                }
+                //+dv:[name]@[slot]@[template]
                 else
                 {
                     newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
                     if (newDevice == null)
                         return null;
+                    OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
+                    size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
+                    height = float.Parse(tmp.attributes["height"]) / 1000;
                 }
-                newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot.GetComponent<Slot>().labelPos);
-                newDevice.transform.localPosition = slot.localPosition;
                 newDevice.transform.localEulerAngles = slot.localEulerAngles;
-                Vector3 boxSize;
-                Transform box = newDevice.transform.GetChild(0);
-                if (box.childCount == 0)
-                    boxSize = box.localScale;
-                else
-                    boxSize = box.GetComponent<BoxCollider>().size;
-                if (boxSize.y > slot.GetChild(0).localScale.y)
-                    newDevice.transform.localPosition += new Vector3(0, boxSize.y / 2 - GameManager.gm.uSize / 2, 0);
+                newDevice.transform.localPosition = slot.localPosition;
 
-                float deltaZ = slot.GetChild(0).localScale.z - boxSize.z;
+                if (height > slot.GetChild(0).localScale.y)
+                    newDevice.transform.localPosition += new Vector3(0, height / 2 - GameManager.gm.uSize / 2, 0);
+
+                float deltaZ = slot.GetChild(0).localScale.z - size.y;
                 switch (_dv.attributes["orientation"])
                 {
                     case "front":
@@ -339,12 +345,16 @@ public class ObjectGenerator : MonoBehaviour
                 dv.attributes["slot"] = _dv.attributes["slot"];
         }
 
+        if (string.IsNullOrEmpty(dv.attributes["slot"]))
+            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+        else
+            newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         string hn = dv.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newDevice);
 
-        if (string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
@@ -599,6 +609,13 @@ public class ObjectGenerator : MonoBehaviour
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
             GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
             return null;
         }
 

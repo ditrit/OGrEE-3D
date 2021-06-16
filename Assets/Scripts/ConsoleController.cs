@@ -486,7 +486,6 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
-            // StoreDevice($"+{_input}");
             await CreateDevice(str[1]);
         else if (str[0] == "group" || str[0] == "gr")
             CreateGroup(str[1]);
@@ -810,16 +809,31 @@ public class ConsoleController : MonoBehaviour
                     dv.attributes["height"] = scale.y.ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
+                else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
+                {
+                    OgreeObject template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
+                    dv.attributes["size"] = template.attributes["size"];
+                    dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                    dv.attributes["height"] = template.attributes["height"];
+                    dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                }
 
                 if (ApiManager.instance.isInit)
-                    await ApiManager.instance.PostObject(dv);
+                {
+                    // Temporary "hack" for matching with current API calls for DB hierarchy
+                    if (parent.parent.GetComponent<OgreeObject>().category == "device")
+                        await ApiManager.instance.PostObject(dv, "subdevice1s");
+                    else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
+                        await ApiManager.instance.PostObject(dv, "subdevices");
+                    else
+                        await ApiManager.instance.PostObject(dv);
+                }
                 else
                 {
                     if (dv.attributes["template"] == "")
                         ObjectGenerator.instance.CreateDevice(dv, parent);
                     else
                         ObjectGenerator.instance.CreateDevice(dv, parent, false);
-
                 }
             }
         }
@@ -892,27 +906,6 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine("Syntax error", "red");
     }
 
-    ///<summary>
-    /// Store _input in a list in ZoomManager.
-    ///</summary>
-    ///<param name="_input">String with device data to parse</param>
-    private void StoreDevice(string _input)
-    {
-        //+dv:/DEMO.ALPHA.B.R1.A99.PDU2@l17@ibm-smpdu@rearflipped
-        _input = Regex.Replace(_input, " ", "");
-        string patern = "^[^@\\s]+@[^@\\s]+@[^@\\s]+(@(front|rear|frontflipped|rearflipped)){0,1}$";
-        // remove "+device:" or "+dv:"
-        string cmd = _input.Substring(_input.IndexOf(':') + 1);
-        if (Regex.IsMatch(cmd, patern))
-        {
-            string[] data = _input.Split(':', '@');
-            string parentPath = IsolateParentPath(data[1]);
-            ZoomManager.instance.devices.Add(new ZoomManager.SObjectCmd(data[1], parentPath, cmd));
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
     #endregion
 
     #region SetMethods
@@ -946,21 +939,17 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out obj, out attrName);
             if (obj)
             {
-                if (obj.GetComponent<IAttributeModif>() != null)
+                if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    obj.GetComponent<IAttributeModif>().SetAttribute(attrName, data[1]);
+                    if (attrName == "lod")
+                        obj.GetComponent<OgreeObject>().SetLod(data[1]);
+                    else
+                        obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
                     GameManager.gm.UpdateGuiInfos();
                 }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
             }
-            // else if (ZoomManager.instance.IsListed(IsolateParentPath(data[0])))
-            // {
-            //     ZoomManager.SObjectCmd objCmd = new ZoomManager.SObjectCmd();
-            //     objCmd.parentName = IsolateParentPath(data[0]);
-            //     objCmd.command = _input;
-            //     ZoomManager.instance.devicesAttributes.Add(objCmd);
-            // }
             else
                 AppendLogLine($"Object doesn't exist.", "yellow");
         }
@@ -979,8 +968,13 @@ public class ConsoleController : MonoBehaviour
     {
         foreach (GameObject obj in GameManager.gm.currentItems)
         {
-            if (obj.GetComponent<IAttributeModif>() != null)
-                obj.GetComponent<IAttributeModif>().SetAttribute(_attr, _value);
+            if (obj.GetComponent<OgreeObject>() != null)
+            {
+                if (_attr == "lod")
+                    obj.GetComponent<OgreeObject>().SetLod(_value);
+                else
+                    obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
+            }
             else
                 AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
         }

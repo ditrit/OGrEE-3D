@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,10 +20,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
 
-    [Header("Panels")]
+    [Header("UI")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GameObject debugPanel = null;
+    public LodSlider lodSlider = null;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -256,14 +257,17 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     private void SelectItem(GameObject _obj)
     {
+        if (currentItems.Count == 0)
+            lodSlider.ActiveSlider(true);
+
         currentItems.Add(_obj);
         if (_obj.GetComponent<OObject>())
         {
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
                 ol.enabled = true;
-                // ol.eraseRenderer = false;
         }
+        lodSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
     ///<summary>
@@ -278,7 +282,11 @@ public class GameManager : MonoBehaviour
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
                 ol.enabled = false;
-                // ol.eraseRenderer = true;
+        }
+        if (currentItems.Count == 0)
+        {
+            lodSlider.UpdateSlider(0);
+            lodSlider.ActiveSlider(false);
         }
     }
 
@@ -304,12 +312,12 @@ public class GameManager : MonoBehaviour
         {
             focus.Add(_obj);
             if (_obj.GetComponent<Group>())
-                _obj.GetComponent<Group>().SetAttribute("racks", "true");
+                _obj.GetComponent<Group>().ToggleContent("true");
             else
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                _obj.transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-                _obj.GetComponent<OObject>().SetAttribute("slots", "false");
+                _obj.GetComponent<OObject>().UpdateAlpha("true");
+                _obj.GetComponent<OObject>().ToggleSlots("false");
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
@@ -326,13 +334,12 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
         if (obj.GetComponent<Group>())
-            obj.GetComponent<Group>().SetAttribute("racks", "false");
+            obj.GetComponent<Group>().ToggleContent("false");
         else
         {
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-            if (obj.transform.GetChild(0).GetComponent<Renderer>().material.color.a != 0)
-                obj.transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            obj.GetComponent<OObject>().SetAttribute("slots", "true");
+            obj.GetComponent<OObject>().UpdateAlpha("false");
+            obj.GetComponent<OObject>().ToggleSlots("true");
         }
         UpdateFocusText();
     }
