@@ -65,7 +65,7 @@ public class OObject : OgreeObject
     /// Update object's alpha according to _input, from 0 to 100.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
-    protected void UpdateAlpha(string _value)
+    public void UpdateAlpha(string _value)
     {
         if (_value != "true" && _value != "false")
         {
@@ -119,7 +119,7 @@ public class OObject : OgreeObject
     /// Display or hide all unused slots of the object.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    protected void ToggleSlots(string _value)
+    public void ToggleSlots(string _value)
     {
         if (_value != "true" && _value != "false")
         {

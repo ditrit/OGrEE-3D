@@ -25,9 +25,9 @@ Tenant
         |_ Room
             |_ Rack                                 Rack
                 |_ Device                            |_ Chassis
-                |   |_ Sub-device                    |   |_ Blade
-                |   |   |_ Sub-device                |   |   |_ processor
-                |   |   |_ Sub-device                |   |   |_ memory
+                |   |_ Device                        |   |_ Blade
+                |   |   |_ Device                    |   |   |_ processor
+                |   |   |_ Device                    |   |   |_ memory
                 |   |_ ...                           |   |   |_ ...
                 |_ Device                            |_ Server
                 |_ Device                            |_ LANswitch

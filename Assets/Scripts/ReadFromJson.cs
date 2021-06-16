@@ -55,9 +55,6 @@ public class ReadFromJson
         public string slug;
         public string description;
         public string category;
-        public string type;
-        public string side;
-        public string fulldepth;
         public float[] sizeWDHmm;
         public string fbxModel;
         public Dictionary<string, string> attributes;
@@ -71,13 +68,12 @@ public class ReadFromJson
     {
         public string location;
         public string type;
-        public string factor;
         public string elemOrient;
         public float[] elemPos;
         public float[] elemSize;
-        public string mandatory;
         public string labelPos;
         public string color;
+        public Dictionary<string, string> attributes;
     }
 
     [System.Serializable]
@@ -149,12 +145,6 @@ public class ReadFromJson
             obj.attributes["height"] = data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = "mm";
             obj.attributes["slot"] = "";
-            obj.attributes["deviceType"] = data.type;
-            obj.attributes["fulldepth"] = data.fulldepth;
-            if (data.fulldepth == "yes")
-                obj.attributes["orientation"] = "front";
-            else if (data.fulldepth == "no")
-                obj.attributes["orientation"] = data.side;
         }
         obj.attributes["template"] = "";
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
@@ -219,7 +209,7 @@ public class ReadFromJson
             }
         }
 
-        // Toggle renderers & put newObj in correct list
+        // Toggle renderers & put newObj in GameManager.objectTemplates
 #if !DEBUG
         Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
@@ -270,8 +260,8 @@ public class ReadFromJson
         {
             Slot s = go.AddComponent<Slot>();
             s.orient = _data.elemOrient;
-            s.formFactor = _data.factor;
-            s.mandatory = _data.mandatory;
+            if (_data.attributes != null && _data.attributes.ContainsKey("factor"))
+                s.formFactor = _data.attributes["factor"];
             s.labelPos = _data.labelPos;
 
             go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
@@ -287,14 +277,18 @@ public class ReadFromJson
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>();
             obj.attributes["deviceType"] = _data.type;
-            obj.attributes["factor"] = _data.factor;
+            if (_data.attributes != null)
+            {
+                foreach (KeyValuePair<string, string> kvp in _data.attributes)
+                    obj.attributes[kvp.Key] = kvp.Value;
+            }
             obj.UpdateHierarchyName();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
         // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
-        dod.SetLabel("name");
+        dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
@@ -304,12 +298,7 @@ public class ReadFromJson
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
-        {
-            if (_data.mandatory == "yes")
-                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.5f);
-            else if (_data.mandatory == "no")
-                mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.2f);
-        }
+            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
         else
             mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
     }
