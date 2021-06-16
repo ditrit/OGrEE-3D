@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -296,6 +296,8 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public void FocusItem(GameObject _obj)
     {
+        if (_obj.GetComponent<OgreeObject>().category == "corridor")
+            return;
         bool canFocus = false;
         if (focus.Count == 0)
             canFocus = true;
