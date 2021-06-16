@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using SDD.Events;
 
 [RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
@@ -321,6 +322,8 @@ public class GameManager : MonoBehaviour
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
+           
+            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] } );
         }
         else
             UnfocusItem();
@@ -341,7 +344,9 @@ public class GameManager : MonoBehaviour
             obj.GetComponent<OObject>().SetAttribute("alpha", "false");
             obj.GetComponent<OObject>().SetAttribute("slots", "true");
         }
+
         UpdateFocusText();
+        EventManager.Instance.Raise(new OnUnFocusEvent() { _obj = obj });
     }
 
     ///<summary>

@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 public class ModelLoader : MonoBehaviour
 {
     public static ModelLoader instance;
+    
 
     private void Awake()
     {
