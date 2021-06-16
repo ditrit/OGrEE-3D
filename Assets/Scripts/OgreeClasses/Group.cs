@@ -52,7 +52,7 @@ public class Group : OObject
     /// Display or hide the rackGroup and its racks.
     ///</summary>
     ///<param name="_value">"true" or "false" value</param>
-    private void ToggleContent(string _value)
+    public void ToggleContent(string _value)
     {
         if (_value != "true" && _value != "false")
             return;

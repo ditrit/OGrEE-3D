@@ -312,12 +312,12 @@ public class GameManager : MonoBehaviour
         {
             focus.Add(_obj);
             if (_obj.GetComponent<Group>())
-                _obj.GetComponent<Group>().SetAttribute("racks", "true");
+                _obj.GetComponent<Group>().ToggleContent("true");
             else
             {
                 _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                _obj.GetComponent<OObject>().SetAttribute("alpha", "true");
-                _obj.GetComponent<OObject>().SetAttribute("slots", "false");
+                _obj.GetComponent<OObject>().UpdateAlpha("true");
+                _obj.GetComponent<OObject>().ToggleSlots("false");
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
@@ -334,12 +334,12 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
         if (obj.GetComponent<Group>())
-            obj.GetComponent<Group>().SetAttribute("racks", "false");
+            obj.GetComponent<Group>().ToggleContent("false");
         else
         {
             obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-            obj.GetComponent<OObject>().SetAttribute("alpha", "false");
-            obj.GetComponent<OObject>().SetAttribute("slots", "true");
+            obj.GetComponent<OObject>().UpdateAlpha("false");
+            obj.GetComponent<OObject>().ToggleSlots("true");
         }
         UpdateFocusText();
     }
