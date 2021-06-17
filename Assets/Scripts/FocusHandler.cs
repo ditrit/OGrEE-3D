@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FocusHandler : MonoBehaviour {
+
+    public int RackOwnMeshRendererNb = 3;
     public List<MeshRenderer> meshRendererList;
 
-    private void Start() {
-        UpdateChildRendererList();
+    
 
-        //manual unfocus on start
-        ManualUnFocus();
+    private void Start() {
+        
 
     }
 
@@ -26,6 +27,7 @@ public class FocusHandler : MonoBehaviour {
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
 
@@ -34,6 +36,7 @@ public class FocusHandler : MonoBehaviour {
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     //when we focus on the object we react to the event and enable all renderers
@@ -56,6 +59,11 @@ public class FocusHandler : MonoBehaviour {
             }
         }
     }
+    
+    private void OnImportFinished(ImportFinishedEvent e) {
+        UpdateChildRendererList();
+        ManualUnFocus();
+    }
 
     private void ManualUnFocus() {
         Debug.Log("Manual unfocus");
@@ -64,8 +72,6 @@ public class FocusHandler : MonoBehaviour {
         }
     }
 
-
-
     //We update the list of renderers 
     private void UpdateChildRendererList() {
         meshRendererList.Clear();
@@ -73,13 +79,13 @@ public class FocusHandler : MonoBehaviour {
         MeshRenderer[] meshRendererArray = GetComponentsInChildren<MeshRenderer>();
 
         //checking if it has more renderers than 7 since 7 is the minimum amount for an empty rack with no sons
-        if(meshRendererArray.Length > 7) {
+        if(meshRendererArray.Length > RackOwnMeshRendererNb) {
             foreach(MeshRenderer meshRenderer in meshRendererArray) {
                 meshRendererList.Add(meshRenderer);
             }
 
             //the first ones are always the box and the labels so i remove them
-            for(int i = 0; i < 7; i++)
+            for(int i = 0; i < RackOwnMeshRendererNb; i++)
                 meshRendererList.Remove(meshRendererArray[i]);
         }
 
