@@ -1067,6 +1067,7 @@ MonoBehaviour:
   labelBottom: {fileID: 7045867512332830116}
   labelLeft: {fileID: 4991055209020205873}
   labelRight: {fileID: 3970544498558124524}
+  usedLabels: []
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0
