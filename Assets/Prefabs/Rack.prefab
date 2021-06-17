@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5666233796082005944}
   - component: {fileID: 7128627431715475119}
   - component: {fileID: -4847266291842506605}
+  - component: {fileID: -3966503025729716914}
   m_Layer: 0
   m_Name: Rack
   m_TagString: Untagged
@@ -128,7 +129,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RackOwnMeshRendererNb: 3
   meshRendererList: []
+--- !u!54 &-3966503025729716914
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382823270839367371}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0
