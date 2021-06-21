@@ -187,6 +187,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created Device</returns>
     public OObject CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
     {
+        // Check parent & parent category
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<OObject>() == null)
         {
@@ -194,6 +195,7 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
+        // Check parent for subdevice
         if (parent.GetComponent<Rack>() == null
             && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
@@ -201,12 +203,14 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
+        // Check if parent not hidden in a group
         if (parent.gameObject.activeSelf == false)
         {
-            GameManager.gm.AppendLogLine("The parent rack must be active (not hidden in a rackGroup)", "red");
+            GameManager.gm.AppendLogLine("The parent object must be active (not hidden in a group)", "red");
             return null;
         }
 
+        // Check if unique hierarchyName
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
@@ -214,38 +218,16 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        GameObject newDevice;
-        Vector2 size;
-        float height;
-        Transform slot = null;
-        if (string.IsNullOrEmpty(_dv.attributes["slot"]))
+        // Check template
+        if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
-            //+dv:[name]@[posU]@[sizeU]
-            if (string.IsNullOrEmpty(_dv.attributes["template"]))
-            {
-                newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]));
-                Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
-                size = new Vector2(boxSize.x, boxSize.z);
-                height = boxSize.y;
-            }
-            //+dv:[name]@[posU]@[template]
-            else
-            {
-                newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
-                if (newDevice == null)
-                    return null;
-                OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
-                size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
-                height = float.Parse(tmp.attributes["height"]) / 1000;
-            }
-            newDevice.transform.localEulerAngles = Vector3.zero;
-            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + height) / 2, 0);
-            newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
-
-            float deltaZ = parent.GetChild(0).localScale.z - size.y;
-            newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+            GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "red");
+            return null;
         }
-        else
+
+        // Check slot
+        Transform slot = null;
+        if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
         {
             List<Slot> takenSlots = new List<Slot>();
             int i = 0;
@@ -253,15 +235,7 @@ public class ObjectGenerator : MonoBehaviour
             if (string.IsNullOrEmpty(_dv.attributes["template"]))
                 max = float.Parse(_dv.attributes["sizeU"]);
             else
-            {
-                if (GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
-                    max = float.Parse(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
-                else
-                {
-                    GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "yellow");
-                    return null;
-                }
-            }
+                max = float.Parse(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
             foreach (Transform child in parent)
             {
                 if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
@@ -270,68 +244,85 @@ public class ObjectGenerator : MonoBehaviour
                     i++;
                 }
             }
+
             if (takenSlots.Count > 0)
             {
                 foreach (Slot s in takenSlots)
                     s.SlotTaken(true);
-
                 slot = takenSlots[0].transform;
-                //+dv:[name]@[slot]@[sizeU]
-                if (string.IsNullOrEmpty(_dv.attributes["template"]))
-                {
-                    newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), takenSlots[0].transform);
-                    Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
-                    size = new Vector2(boxSize.x, boxSize.z);
-                    height = boxSize.y;
-                }
-                //+dv:[name]@[slot]@[template]
-                else
-                {
-                    newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
-                    if (newDevice == null)
-                        return null;
-                    OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
-                    size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
-                    height = float.Parse(tmp.attributes["height"]) / 1000;
-                }
-                newDevice.transform.localEulerAngles = slot.localEulerAngles;
-                newDevice.transform.localPosition = slot.localPosition;
-
-                if (height > slot.GetChild(0).localScale.y)
-                    newDevice.transform.localPosition += new Vector3(0, height / 2 - GameManager.gm.uSize / 2, 0);
-
-                float deltaZ = slot.GetChild(0).localScale.z - size.y;
-                switch (_dv.attributes["orientation"])
-                {
-                    case "front":
-                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
-                        break;
-                    case "rear":
-                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
-                        newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        break;
-                    case "frontflipped":
-                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
-                        newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        break;
-                    case "rearflipped":
-                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
-                        newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        break;
-                }
-
-                // Assign default color = slot color
-                Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
-                Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
-                mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
             }
             else
             {
-                GameManager.gm.AppendLogLine("Slot doesn't exist", "red");
+                GameManager.gm.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {parent.name}", "red");
                 return null;
             }
         }
 
+        // Generate device
+        GameObject newDevice;
+        Vector2 size;
+        float height;
+
+        if (string.IsNullOrEmpty(_dv.attributes["template"]))
+        {
+            newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), slot);
+            Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
+            size = new Vector2(boxSize.x, boxSize.z);
+            height = boxSize.y;
+        }
+        else
+        {
+            newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
+            OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
+            size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
+            height = float.Parse(tmp.attributes["height"]) / 1000;
+        }
+
+        // Place the device
+        if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
+        {
+            newDevice.transform.localEulerAngles = slot.localEulerAngles;
+            newDevice.transform.localPosition = slot.localPosition;
+
+            if (height > slot.GetChild(0).localScale.y)
+                newDevice.transform.localPosition += new Vector3(0, height / 2 - GameManager.gm.uSize / 2, 0);
+
+            float deltaZ = slot.GetChild(0).localScale.z - size.y;
+            switch (_dv.attributes["orientation"])
+            {
+                case "front":
+                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                    break;
+                case "rear":
+                    newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                    newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
+                    break;
+                case "frontflipped":
+                    newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                    newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
+                    break;
+                case "rearflipped":
+                    newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
+                    newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
+                    break;
+            }
+
+            // if slot, color
+            Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
+            Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+            mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+        }
+        else
+        {
+            newDevice.transform.localEulerAngles = Vector3.zero;
+            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + height) / 2, 0);
+            newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
+
+            float deltaZ = parent.GetChild(0).localScale.z - size.y;
+            newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+        }
+
+        // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
         dv.UpdateFromSApiObject(_dv, _copyAttr);
@@ -345,6 +336,7 @@ public class ObjectGenerator : MonoBehaviour
                 dv.attributes["slot"] = _dv.attributes["slot"];
         }
 
+        // Set labels
         if (string.IsNullOrEmpty(dv.attributes["slot"]))
             newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         else
