@@ -806,7 +806,7 @@ public class ConsoleController : MonoBehaviour
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
                     dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
                     dv.attributes["sizeUnit"] = "mm";
-                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["height"] = (sizeU * GameManager.gm.uSize * 1000).ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
                 else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))

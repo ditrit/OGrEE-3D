@@ -265,7 +265,7 @@ public class ObjectGenerator : MonoBehaviour
 
         if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["sizeU"]), slot);
+            newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["height"]), slot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new Vector2(boxSize.x, boxSize.z);
             height = boxSize.y;
@@ -316,7 +316,8 @@ public class ObjectGenerator : MonoBehaviour
         {
             newDevice.transform.localEulerAngles = Vector3.zero;
             newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + height) / 2, 0);
-            newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
+            if (_dv.attributes.ContainsKey("posU"))
+                newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
 
             float deltaZ = parent.GetChild(0).localScale.z - size.y;
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
@@ -366,18 +367,18 @@ public class ObjectGenerator : MonoBehaviour
     /// Generate a basic device.
     ///</summary>
     ///<param name="_parent">The parent of the generated device</param>
-    ///<param name="_sizeU">The size in U of the device</param>
+    ///<param name="_height">The height in mm of the device</param>
     ///<returns>The generated device</returns>
-    private GameObject GenerateBasicDevice(Transform _parent, float _sizeU, Transform _slot = null)
+    private GameObject GenerateBasicDevice(Transform _parent, float _height, Transform _slot = null)
     {
         GameObject go = Instantiate(GameManager.gm.labeledBoxModel);
         go.AddComponent<OObject>();
         go.transform.parent = _parent;
         Vector3 scale;
         if (_slot)
-            scale = new Vector3(_slot.GetChild(0).localScale.x, _sizeU * _slot.GetChild(0).localScale.y, _slot.GetChild(0).localScale.z);
+            scale = new Vector3(_slot.GetChild(0).localScale.x, _height / 1000, _slot.GetChild(0).localScale.z);
         else
-            scale = new Vector3(_parent.GetChild(0).localScale.x, _sizeU * GameManager.gm.uSize, _parent.GetChild(0).localScale.z);
+            scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
         return go;
     }

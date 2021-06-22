@@ -137,9 +137,12 @@ public class ReadFromJson
         }
         else if (obj.category == "device")
         {
-            int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
-            obj.attributes["posU"] = "0";
-            obj.attributes["sizeU"] = sizeU.ToString();
+            if (data.attributes.ContainsKey("type")
+                && (data.attributes["type"] == "chassis" || data.attributes["type"] == "server"))
+            {
+                int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+                obj.attributes["sizeU"] = sizeU.ToString();
+            }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
             obj.attributes["sizeUnit"] = "mm";
             obj.attributes["height"] = data.sizeWDHmm[2].ToString();
