@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
 
             if (canSelect)
             {
-                if (Input.GetKey(KeyCode.LeftControl))
+                if (Input.GetKey(KeyCode.LeftControl) && currentItems.Count > 0)
                     UpdateCurrentItems(hit.collider.transform.parent.gameObject);
                 else
                     SetCurrentItem(hit.collider.transform.parent.gameObject);
@@ -225,8 +225,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void UpdateCurrentItems(GameObject _obj)
     {
-        if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
-            || (currentItems[0].GetComponent<OObject>() && !_obj.GetComponent<OObject>()))
+        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category)
         {
             AppendLogLine("Multiple selection should be same type of objects.", "yellow");
             return;
@@ -324,8 +323,8 @@ public class GameManager : MonoBehaviour
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
-           
-            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] } );
+
+            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] });
         }
         else
             UnfocusItem();
