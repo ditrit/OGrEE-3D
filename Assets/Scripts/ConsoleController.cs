@@ -806,19 +806,34 @@ public class ConsoleController : MonoBehaviour
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
                     dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
                     dv.attributes["sizeUnit"] = "mm";
-                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["height"] = (sizeU * GameManager.gm.uSize * 1000).ToString();
                     dv.attributes["heightUnit"] = "mm";
+                }
+                else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
+                {
+                    OgreeObject template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
+                    dv.attributes["size"] = template.attributes["size"];
+                    dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                    dv.attributes["height"] = template.attributes["height"];
+                    dv.attributes["heightUnit"] = template.attributes["heightUnit"];
                 }
 
                 if (ApiManager.instance.isInit)
-                    await ApiManager.instance.PostObject(dv);
+                {
+                    // Temporary "hack" for matching with current API calls for DB hierarchy
+                    if (parent.parent.GetComponent<OgreeObject>().category == "device")
+                        await ApiManager.instance.PostObject(dv, "subdevice1s");
+                    else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
+                        await ApiManager.instance.PostObject(dv, "subdevices");
+                    else
+                        await ApiManager.instance.PostObject(dv);
+                }
                 else
                 {
                     if (dv.attributes["template"] == "")
                         ObjectGenerator.instance.CreateDevice(dv, parent);
                     else
                         ObjectGenerator.instance.CreateDevice(dv, parent, false);
-
                 }
             }
         }
