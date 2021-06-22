@@ -198,7 +198,8 @@ public class ApiManager : MonoBehaviour
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
     ///<param name="_obj">The SApiObject to post</param>
-    public async Task PostObject(SApiObject _obj)
+    ///<param name="_forcedPath">Specific path to use for posting the object</param>
+    public async Task PostObject(SApiObject _obj, string _forcedPath = null)
     {
         if (!isInit)
         {
@@ -206,7 +207,12 @@ public class ApiManager : MonoBehaviour
             return;
         }
         string json = JsonConvert.SerializeObject(_obj);
-        string fullPath = $"{server}/{_obj.category}s";
+        // Debug.Log(json);
+        string fullPath;
+        if (_forcedPath == null)
+            fullPath = $"{server}/{_obj.category}s";
+        else
+            fullPath = $"{server}/{_forcedPath}";
 
         StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
         try
@@ -239,7 +245,7 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
-            _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices)\":", "\"children\":");
+            _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices|subdevices|subdevices1)\":", "\"children\":");
             // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             if (resp.data.children == null)
@@ -267,10 +273,16 @@ public class ApiManager : MonoBehaviour
                     BuildingGenerator.instance.CreateRoom(obj);
                     break;
                 case "rack":
-                    ObjectGenerator.instance.CreateRack(obj);
+                    if (obj.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateRack(obj);
+                    else
+                        ObjectGenerator.instance.CreateRack(obj, null, false);
                     break;
                 case "device":
-                    ObjectGenerator.instance.CreateDevice(obj);
+                    if (obj.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateDevice(obj);
+                    else
+                        ObjectGenerator.instance.CreateDevice(obj, null, false);
                     break;
                     // case "group":
                     //     ObjectGenerator.instance.CreateGroup(obj);
@@ -293,7 +305,7 @@ public class ApiManager : MonoBehaviour
     {
         if (_json.Contains("success"))
         {
-            _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
+            // _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             CreateItemFromJson(_json);
         }

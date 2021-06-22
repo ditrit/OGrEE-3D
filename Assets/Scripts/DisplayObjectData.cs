@@ -85,6 +85,8 @@ public class DisplayObjectData : MonoBehaviour
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
         }
 
+        foreach (TextMeshPro tmp in usedLabels)
+            tmp.gameObject.SetActive(false);
         usedLabels.Clear();
         switch (_labelPos)
         {
@@ -112,7 +114,10 @@ public class DisplayObjectData : MonoBehaviour
                 break;
         }
         foreach (TextMeshPro tmp in usedLabels)
+        {
             tmp.gameObject.SetActive(true);
+            tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
+        }
     }
 
     ///<summary>
