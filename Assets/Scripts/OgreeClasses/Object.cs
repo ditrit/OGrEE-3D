@@ -13,8 +13,12 @@ public class OObject : OgreeObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -36,9 +40,11 @@ public class OObject : OgreeObject
                         SetDomain(_value);
                         UpdateColor();
                     }
+                    updateAttr = true;
                     break;
                 case "color":
                     SetColor(_value);
+                    updateAttr = true;
                     break;
                 case "alpha":
                     UpdateAlpha(_value);
@@ -54,10 +60,12 @@ public class OObject : OgreeObject
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    updateAttr = true;
                     break;
             }
         }
-        PutData();
+        if (updateAttr)
+            PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
