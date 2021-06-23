@@ -38,7 +38,7 @@ public class Group : OObject
                 case "alpha":
                     UpdateAlpha(_value);
                     break;
-                case "racks":
+                case "content":
                     ToggleContent(_value);
                     break;
                 default:
@@ -56,7 +56,7 @@ public class Group : OObject
     }
 
     ///<summary>
-    /// Display or hide the rackGroup and its racks.
+    /// Display or hide the rackGroup and its content.
     ///</summary>
     ///<param name="_value">"true" or "false" value</param>
     public void ToggleContent(string _value)
