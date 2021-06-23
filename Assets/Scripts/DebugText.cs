@@ -11,7 +11,8 @@ public class DebugText : MonoBehaviour
     private int[] last100FPS = new int[100];
     private int currentIndex = 0;
     public int averageFPS {get; private set;}
-    public int count {get; private set;}
+    public int goCount {get; private set;}
+    public int ooCount {get; private set;}
 
     private void Start()
     {
@@ -33,9 +34,17 @@ public class DebugText : MonoBehaviour
         }
         averageFPS = Average(last100FPS);
 
-        count = GameObject.FindObjectsOfType<GameObject>().Length;
         
-        txt.text = $"Object count: {count}\nFPS: {averageFPS}";
+        txt.text = $"Objs: {ooCount}/{goCount}\nFPS: {averageFPS}";
+    }
+
+    ///<summary>
+    /// Count the number of OgreeObject and GameObject in the scene.
+    ///</summary>
+    public void CountObjects()
+    {
+        ooCount = GameManager.gm.allItems.Count;
+        goCount = GameObject.FindObjectsOfType<GameObject>().Length;
     }
 
     ///<summary>
