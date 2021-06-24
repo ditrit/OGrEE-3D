@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GameObject debugPanel = null;
-    public LodSlider lodSlider = null;
+    public DetailsSlider detailsSlider = null;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -84,6 +84,8 @@ public class GameManager : MonoBehaviour
 
 #if DEBUG
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
@@ -258,7 +260,7 @@ public class GameManager : MonoBehaviour
     private void SelectItem(GameObject _obj)
     {
         if (currentItems.Count == 0)
-            lodSlider.ActiveSlider(true);
+            detailsSlider.ActiveSlider(true);
 
         currentItems.Add(_obj);
         if (_obj.GetComponent<OObject>())
@@ -267,7 +269,7 @@ public class GameManager : MonoBehaviour
             if (ol)
                 ol.enabled = true;
         }
-        lodSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
+        detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
     ///<summary>
@@ -285,8 +287,8 @@ public class GameManager : MonoBehaviour
         }
         if (currentItems.Count == 0)
         {
-            lodSlider.UpdateSlider(0);
-            lodSlider.ActiveSlider(false);
+            detailsSlider.UpdateSlider(0);
+            detailsSlider.ActiveSlider(false);
         }
     }
 

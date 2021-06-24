@@ -4555,7 +4555,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2021-06-23 #e3d84e6'
+  m_text: 'B: 2021-06-24 #50217fa'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5644,7 +5644,7 @@ GameObject:
   - component: {fileID: 905944677}
   - component: {fileID: 905944678}
   m_Layer: 5
-  m_Name: SliderLOD
+  m_Name: SliderDetails
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10612,7 +10612,7 @@ MonoBehaviour:
   menu: {fileID: 1389592958}
   infosPanel: {fileID: 879283137}
   debugPanel: {fileID: 369061558}
-  lodSlider: {fileID: 905944678}
+  detailsSlider: {fileID: 905944678}
   defaultMat: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
   wireframeMat: {fileID: 2100000, guid: a84e4f4a4b62cbb4695bc277f37f8d99, type: 2}
   perfMat: {fileID: 2100000, guid: a8ed24829e715404caae7c6cc24fab79, type: 2}
