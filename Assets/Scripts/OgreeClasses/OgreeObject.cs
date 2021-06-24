@@ -219,7 +219,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void SetLod(string _level)
+    public async void LoadChildren(string _level)
     {
         int lvl = 0;
         int.TryParse(_level, out lvl);
@@ -279,7 +279,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 }
             }
         }
-        GameManager.gm.lodSlider.UpdateSlider(currentLod);
+        GameManager.gm.detailsSlider.UpdateSlider(currentLod);
     }
 
     ///<summary>

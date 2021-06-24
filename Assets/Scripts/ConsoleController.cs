@@ -939,8 +939,8 @@ public class ConsoleController : MonoBehaviour
             {
                 if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    if (attrName == "lod")
-                        obj.GetComponent<OgreeObject>().SetLod(data[1]);
+                    if (attrName == "details")
+                        obj.GetComponent<OgreeObject>().LoadChildren(data[1]);
                     else
                         obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
                     GameManager.gm.UpdateGuiInfos();
@@ -968,8 +968,8 @@ public class ConsoleController : MonoBehaviour
         {
             if (obj.GetComponent<OgreeObject>() != null)
             {
-                if (_attr == "lod")
-                    obj.GetComponent<OgreeObject>().SetLod(_value);
+                if (_attr == "details")
+                    obj.GetComponent<OgreeObject>().LoadChildren(_value);
                 else
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }

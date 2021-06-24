@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
-public class LodSlider : MonoBehaviour
+public class DetailsSlider : MonoBehaviour
 {
     private Slider slider;
 
@@ -23,7 +23,7 @@ public class LodSlider : MonoBehaviour
         foreach (GameObject go in GameManager.gm.currentItems)
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
-            obj?.SetLod(_value.ToString());
+            obj?.LoadChildren(_value.ToString());
 
     }
 
