@@ -8,15 +8,18 @@ public class FocusHandler : MonoBehaviour {
     public int RackOwnMeshRendererNb = 3;
     public List<MeshRenderer> meshRendererList;
 
-    
+    public List<GameObject> RackOwnObjectsList;
+    public List<GameObject> OgreeChildObjects;
+    public List<GameObject> SlotsChildObjects;
 
-    private void Start() {
-        
+    public List<MeshRenderer> OgreeChildMeshRendererList;
+    public List<MeshRenderer> SlotChildMeshRendererList;
 
-    }
+    private Rack rack;
 
     private void Awake() {
         SubscribeEvents();
+        rack = GetComponent<Rack>();
     }
 
     private void OnDestroy() {
@@ -43,9 +46,10 @@ public class FocusHandler : MonoBehaviour {
     private void OnFocus(OnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             Debug.Log("focus");
-            foreach(MeshRenderer meshRenderer in meshRendererList) {
+            /*foreach(MeshRenderer meshRenderer in meshRendererList) {
                 meshRenderer.enabled = true;
-            }
+            }*/
+            UpdateChildMeshRenderers(true);
         }
         
     }
@@ -54,25 +58,29 @@ public class FocusHandler : MonoBehaviour {
     private void OnUnFocus(OnUnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             Debug.Log("unfocus");
-            foreach(MeshRenderer meshRenderer in meshRendererList) {
-                meshRenderer.enabled = false;
-            }
+            /* foreach(MeshRenderer meshRenderer in meshRendererList) {
+                 meshRenderer.enabled = false;
+             }*/
+            UpdateChildMeshRenderers(false);
         }
     }
     
     private void OnImportFinished(ImportFinishedEvent e) {
-        UpdateChildRendererList();
+        
+        FillListsWithChildren();
+        FillMeshRendererLists();
+
+        //UpdateChildRendererList();
         ManualUnFocus();
     }
 
     private void ManualUnFocus() {
         Debug.Log("Manual unfocus");
-        foreach(MeshRenderer meshRenderer in meshRendererList) {
-            meshRenderer.enabled = false;
-        }
+        UpdateChildMeshRenderers(false);
     }
 
     //We update the list of renderers 
+    /*
     private void UpdateChildRendererList() {
         meshRendererList.Clear();
 
@@ -90,6 +98,51 @@ public class FocusHandler : MonoBehaviour {
         }
 
         
+    }*/
+
+    private void FillListsWithChildren() {
+        OgreeChildObjects.Clear();
+        RackOwnObjectsList.Clear();
+        SlotsChildObjects.Clear();
+
+        foreach(Transform child in transform) {
+            if(child.GetComponent<OgreeObject>()) {
+                OgreeChildObjects.Add(child.gameObject);
+            } else if(child.GetComponent<Slot>()) {
+                SlotsChildObjects.Add(child.gameObject);
+            } else {
+                RackOwnObjectsList.Add(child.gameObject);
+            }
+        }
+    }
+
+    private void FillMeshRendererLists() {
+        OgreeChildMeshRendererList.Clear();
+        SlotChildMeshRendererList.Clear();
+
+        foreach(GameObject gameObject in OgreeChildObjects) {
+            MeshRenderer[] OgreeChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+            foreach(MeshRenderer meshRenderer in OgreeChildMeshRenderers) {
+                OgreeChildMeshRendererList.Add(meshRenderer);
+            }
+        }
+
+        foreach(GameObject gameObject in SlotsChildObjects) {
+           MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+            foreach(MeshRenderer meshRenderer in SlotChildMeshRenderers) {
+                SlotChildMeshRendererList.Add(meshRenderer);
+            }
+        }
+    }
+
+    private void UpdateChildMeshRenderers(bool value) {
+        foreach(MeshRenderer meshRenderer in OgreeChildMeshRendererList) {
+            meshRenderer.enabled = value;
+        }
+
+        foreach(MeshRenderer meshRenderer in SlotChildMeshRendererList) {
+            meshRenderer.enabled = value;
+        }
     }
     
 }
