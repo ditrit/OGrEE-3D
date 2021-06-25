@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class FocusHandler : MonoBehaviour {
 
-    public int RackOwnMeshRendererNb = 3;
-    public List<MeshRenderer> meshRendererList;
-
     public List<GameObject> RackOwnObjectsList;
     public List<GameObject> OgreeChildObjects;
     public List<GameObject> SlotsChildObjects;
@@ -45,28 +42,20 @@ public class FocusHandler : MonoBehaviour {
     //when we focus on the object we react to the event and enable all renderers
     private void OnFocus(OnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
-            Debug.Log("focus");
-            /*foreach(MeshRenderer meshRenderer in meshRendererList) {
-                meshRenderer.enabled = true;
-            }*/
             UpdateChildMeshRenderers(true);
         }
-        
+
     }
 
     //when we unfocus on the object we react to the event and disable all renderers
     private void OnUnFocus(OnUnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
-            Debug.Log("unfocus");
-            /* foreach(MeshRenderer meshRenderer in meshRendererList) {
-                 meshRenderer.enabled = false;
-             }*/
             UpdateChildMeshRenderers(false);
         }
     }
-    
+
     private void OnImportFinished(ImportFinishedEvent e) {
-        
+
         FillListsWithChildren();
         FillMeshRendererLists();
 
@@ -75,30 +64,8 @@ public class FocusHandler : MonoBehaviour {
     }
 
     private void ManualUnFocus() {
-        Debug.Log("Manual unfocus");
         UpdateChildMeshRenderers(false);
     }
-
-    //We update the list of renderers 
-    /*
-    private void UpdateChildRendererList() {
-        meshRendererList.Clear();
-
-        MeshRenderer[] meshRendererArray = GetComponentsInChildren<MeshRenderer>();
-
-        //checking if it has more renderers than 7 since 7 is the minimum amount for an empty rack with no sons
-        if(meshRendererArray.Length > RackOwnMeshRendererNb) {
-            foreach(MeshRenderer meshRenderer in meshRendererArray) {
-                meshRendererList.Add(meshRenderer);
-            }
-
-            //the first ones are always the box and the labels so i remove them
-            for(int i = 0; i < RackOwnMeshRendererNb; i++)
-                meshRendererList.Remove(meshRendererArray[i]);
-        }
-
-        
-    }*/
 
     private void FillListsWithChildren() {
         OgreeChildObjects.Clear();
@@ -128,7 +95,7 @@ public class FocusHandler : MonoBehaviour {
         }
 
         foreach(GameObject gameObject in SlotsChildObjects) {
-           MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
+            MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach(MeshRenderer meshRenderer in SlotChildMeshRenderers) {
                 SlotChildMeshRendererList.Add(meshRenderer);
             }
@@ -144,5 +111,5 @@ public class FocusHandler : MonoBehaviour {
             meshRenderer.enabled = value;
         }
     }
-    
+
 }
