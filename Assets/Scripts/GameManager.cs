@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,13 +147,7 @@ public class GameManager : MonoBehaviour
         {
             bool canSelect = false;
             if (focus.Count > 0)
-            {
-                foreach (Transform child in focus[focus.Count - 1].transform)
-                {
-                    if (child == hit.collider.transform.parent)
-                        canSelect = true;
-                }
-            }
+                canSelect = IsInFocus(hit.collider.transform.parent.gameObject);
             else
                 canSelect = true;
 
@@ -304,14 +298,8 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             canFocus = true;
         else
-        {
-            Transform root = focus[focus.Count - 1].transform;
-            foreach (Transform child in root)
-            {
-                if (child.gameObject == _obj)
-                    canFocus = true;
-            }
-        }
+            canFocus = IsInFocus(_obj);
+
         if (canFocus == true)
         {
             focus.Add(_obj);
@@ -347,8 +335,8 @@ public class GameManager : MonoBehaviour
             obj.GetComponent<OObject>().UpdateAlpha("false");
             obj.GetComponent<OObject>().ToggleSlots("true");
         }
-
         UpdateFocusText();
+
         EventManager.Instance.Raise(new OnUnFocusEvent() { _obj = obj });
     }
 
@@ -366,6 +354,33 @@ public class GameManager : MonoBehaviour
             focusText.text = "No focus";
 
         AppendLogLine(focusText.text, "green");
+    }
+
+    ///<summary>
+    /// Check if the given GameObject is a child (or a content) of focused object.
+    ///</summary>
+    ///<param name="_obj">The object to check</param>
+    ///<returns>True if _obj is a child of focused object</returns>
+    private bool IsInFocus(GameObject _obj)
+    {
+        Transform root = focus[focus.Count - 1].transform;
+        if (root.GetComponent<Group>())
+        {
+            foreach (GameObject go in root.GetComponent<Group>().GetContent())
+            {
+                if (go == _obj)
+                    return true;
+            }
+        }
+        else
+        {
+            foreach (Transform child in root)
+            {
+                if (child.gameObject == _obj)
+                    return true;
+            }
+        }
+        return false;
     }
 
     ///<summary>

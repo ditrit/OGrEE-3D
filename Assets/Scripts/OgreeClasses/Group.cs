@@ -68,11 +68,13 @@ public class Group : OObject
         {
             UpdateAlpha("true");
             DisplayContent(true);
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
         }
         else
         {
             UpdateAlpha("false");
             DisplayContent(false);
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
         }
     }
 
@@ -81,6 +83,18 @@ public class Group : OObject
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
     public void DisplayContent(bool _value)
+    {
+        foreach (GameObject r in GetContent())
+            r.gameObject.SetActive(_value);
+
+        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
+    }
+
+    ///<summary>
+    /// Get all GameObjects listed in attributes["content"].
+    ///</summary>
+    ///<returns>The list of GameObject corresponding to attributes["content"]</returns>
+    public List<GameObject> GetContent()
     {
         List<GameObject> content = new List<GameObject>();
         string[] names = attributes["content"].Split(',');
@@ -91,9 +105,6 @@ public class Group : OObject
             if (go)
                 content.Add(go);
         }
-        foreach (GameObject r in content)
-            r.gameObject.SetActive(_value);
-
-        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
+        return content;
     }
 }
