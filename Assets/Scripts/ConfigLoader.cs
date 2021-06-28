@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -131,13 +132,14 @@ public class ConfigLoader
     ///<summary>
     /// Send a get request to the given url. If no error, initialize ApiManager.
     ///</summary>
-    public IEnumerator ConnectToApi()
+    ///<returns>The value of ApiManager.isInit</returns>
+    public async Task<bool> ConnectToApi()
     {
 #if API_DEBUG
         config.db_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
 #endif
-        ApiManager.instance.Initialize(config.db_url, config.db_token);
-        yield return null;
+        await ApiManager.instance.Initialize(config.db_url, config.db_token);
+        return ApiManager.instance.isInit;
     }
 
     ///<summary>

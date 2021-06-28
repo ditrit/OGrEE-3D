@@ -17,7 +17,7 @@ public class CameraControl : MonoBehaviour
     [Range(20, 100)]
     public float rotationSpeed = 50;
     [Range(1.60f, 1.90f)]
-    public float humanHeight = 1.75f;
+    public float humanHeight = 1.62f;
     [SerializeField] private bool humanMode = false;
 
     [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
