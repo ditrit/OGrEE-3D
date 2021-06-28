@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
+    [SerializeField] private Button apiBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
@@ -77,10 +78,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         configLoader.LoadConfig();
-        StartCoroutine(configLoader.ConnectToApi());
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
+
+#if API_DEBUG
+        ToggleApi();
+#endif
 
 #if DEBUG
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
@@ -476,6 +480,38 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+    }
+
+    ///<summary>
+    /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
+    ///</summary>
+    public async void ToggleApi()
+    {
+        if (ApiManager.instance.isInit)
+        {
+            ApiManager.instance.isInit = false;
+            ChangeApiButton("Connect to Api", Color.white);
+            AppendLogLine("Disconnected from API", "green");
+        }
+        else
+        {
+            await configLoader.ConnectToApi();
+            if (ApiManager.instance.isInit)
+                ChangeApiButton("Connected to Api", Color.green);
+            else
+                ChangeApiButton("Fail to connected to Api", Color.red);
+        }
+    }
+
+    ///<summary>
+    /// Change text and color of apiBtn.
+    ///</summary>
+    ///<param name="_str">The new text of the button</param>
+    ///<param name="_color">The new color of the button</param>
+    private void ChangeApiButton(string _str, Color _color)
+    {
+        apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
+        apiBtn.GetComponent<Image>().color = _color;
     }
 
     ///<summary>

@@ -69,7 +69,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_serverUrl">The base url of the API to use</param>
     ///<param name="_token">The auth token of the API to use</param>
-    public async void Initialize(string _serverUrl, string _token)
+    public async Task Initialize(string _serverUrl, string _token)
     {
         if (string.IsNullOrEmpty(_serverUrl))
             GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
