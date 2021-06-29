@@ -8,12 +8,15 @@ using UnityEngine;
 ///</summary>
 public class FocusHandler : MonoBehaviour {
 
-    public List<GameObject> RackOwnObjectsList;
-    public List<GameObject> OgreeChildObjects;
-    public List<GameObject> SlotsChildObjects;
+    public List<GameObject> rackOwnObjectsList;
+    public List<GameObject> ogreeChildObjects;
+    public List<GameObject> slotsChildObjects;
 
-    public List<MeshRenderer> OgreeChildMeshRendererList;
-    public List<MeshRenderer> SlotChildMeshRendererList;
+    public List<MeshRenderer> ogreeChildMeshRendererList;
+    public List<MeshRenderer> slotChildMeshRendererList;
+
+    public Material focusedMaterial;
+    public Material defaultMaterial;
 
     private Rack rack;
 
@@ -54,6 +57,8 @@ public class FocusHandler : MonoBehaviour {
     private void OnFocus(OnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(true);
+
+            transform.GetChild(0).GetComponent<Renderer>().material = focusedMaterial;
         }
 
     }
@@ -65,6 +70,8 @@ public class FocusHandler : MonoBehaviour {
     private void OnUnFocus(OnUnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(false);
+
+            transform.GetChild(0).GetComponent<Renderer>().material = defaultMaterial;
         }
     }
 
@@ -90,17 +97,17 @@ public class FocusHandler : MonoBehaviour {
     /// Fills the 3 Child list with their corresponding content.
     ///</summary>
     private void FillListsWithChildren() {
-        OgreeChildObjects.Clear();
-        RackOwnObjectsList.Clear();
-        SlotsChildObjects.Clear();
+        ogreeChildObjects.Clear();
+        rackOwnObjectsList.Clear();
+        slotsChildObjects.Clear();
 
         foreach(Transform child in transform) {
             if(child.GetComponent<OgreeObject>()) {
-                OgreeChildObjects.Add(child.gameObject);
+                ogreeChildObjects.Add(child.gameObject);
             } else if(child.GetComponent<Slot>()) {
-                SlotsChildObjects.Add(child.gameObject);
+                slotsChildObjects.Add(child.gameObject);
             } else {
-                RackOwnObjectsList.Add(child.gameObject);
+                rackOwnObjectsList.Add(child.gameObject);
             }
         }
     }
@@ -109,20 +116,20 @@ public class FocusHandler : MonoBehaviour {
     /// Fills the Mesh renderer Lists from the OgreeChildObjects and SlotsChildObjects lists.
     ///</summary>
     private void FillMeshRendererLists() {
-        OgreeChildMeshRendererList.Clear();
-        SlotChildMeshRendererList.Clear();
+        ogreeChildMeshRendererList.Clear();
+        slotChildMeshRendererList.Clear();
 
-        foreach(GameObject gameObject in OgreeChildObjects) {
+        foreach(GameObject gameObject in ogreeChildObjects) {
             MeshRenderer[] OgreeChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach(MeshRenderer meshRenderer in OgreeChildMeshRenderers) {
-                OgreeChildMeshRendererList.Add(meshRenderer);
+                ogreeChildMeshRendererList.Add(meshRenderer);
             }
         }
 
-        foreach(GameObject gameObject in SlotsChildObjects) {
+        foreach(GameObject gameObject in slotsChildObjects) {
             MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach(MeshRenderer meshRenderer in SlotChildMeshRenderers) {
-                SlotChildMeshRendererList.Add(meshRenderer);
+                slotChildMeshRendererList.Add(meshRenderer);
             }
         }
     }
@@ -132,11 +139,11 @@ public class FocusHandler : MonoBehaviour {
     ///</summary>
     ///<param name="value">Boolean value assigned to the meshRenderer.enabled </param>
     private void UpdateChildMeshRenderers(bool value) {
-        foreach(MeshRenderer meshRenderer in OgreeChildMeshRendererList) {
+        foreach(MeshRenderer meshRenderer in ogreeChildMeshRendererList) {
             meshRenderer.enabled = value;
         }
 
-        foreach(MeshRenderer meshRenderer in SlotChildMeshRendererList) {
+        foreach(MeshRenderer meshRenderer in slotChildMeshRendererList) {
             meshRenderer.enabled = value;
         }
     }
