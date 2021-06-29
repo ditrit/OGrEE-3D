@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+///<summary>
+/// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
+///</summary>
 public class FocusHandler : MonoBehaviour {
 
     public List<GameObject> RackOwnObjectsList;
@@ -23,6 +26,9 @@ public class FocusHandler : MonoBehaviour {
         UnsubscribeEvents();
     }
 
+    ///<summary>
+    /// Subscribe the GameObject to Events
+    ///</summary>
     public void SubscribeEvents() {
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
@@ -30,16 +36,21 @@ public class FocusHandler : MonoBehaviour {
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
-
-
+    ///<summary>
+    /// Unsubscribe the GameObject to Events
+    ///</summary>
     public void UnsubscribeEvents() {
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
+    
 
-    //when we focus on the object we react to the event and enable all renderers
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnFocus(OnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(true);
@@ -47,26 +58,37 @@ public class FocusHandler : MonoBehaviour {
 
     }
 
-    //when we unfocus on the object we react to the event and disable all renderers
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnUnFocus(OnUnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(false);
         }
     }
 
+    ///<summary>
+    /// When called, fills all the lists and does a ManualUnFocus to deactivate all useless mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e) {
 
         FillListsWithChildren();
         FillMeshRendererLists();
-
-        //UpdateChildRendererList();
         ManualUnFocus();
     }
 
+    ///<summary>
+    /// Used to imitate an Unfocus to disable all useless mesh renderers.
+    ///</summary>
     private void ManualUnFocus() {
         UpdateChildMeshRenderers(false);
     }
 
+    ///<summary>
+    /// Fills the 3 Child list with their corresponding content.
+    ///</summary>
     private void FillListsWithChildren() {
         OgreeChildObjects.Clear();
         RackOwnObjectsList.Clear();
@@ -83,6 +105,9 @@ public class FocusHandler : MonoBehaviour {
         }
     }
 
+    ///<summary>
+    /// Fills the Mesh renderer Lists from the OgreeChildObjects and SlotsChildObjects lists.
+    ///</summary>
     private void FillMeshRendererLists() {
         OgreeChildMeshRendererList.Clear();
         SlotChildMeshRendererList.Clear();
@@ -102,6 +127,10 @@ public class FocusHandler : MonoBehaviour {
         }
     }
 
+    ///<summary>
+    /// When called enables/disables the child MeshRenderers located in the OgreeChildMeshRendererList and SlotChildMeshRendererList depending on the boolean argument.
+    ///</summary>
+    ///<param name="value">Boolean value assigned to the meshRenderer.enabled </param>
     private void UpdateChildMeshRenderers(bool value) {
         foreach(MeshRenderer meshRenderer in OgreeChildMeshRendererList) {
             meshRenderer.enabled = value;
