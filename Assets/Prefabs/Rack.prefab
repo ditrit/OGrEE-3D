@@ -129,8 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RackOwnMeshRendererNb: 3
-  meshRendererList: []
+  rackOwnObjectsList: []
+  ogreeChildObjects: []
+  slotsChildObjects: []
+  ogreeChildMeshRendererList: []
+  slotChildMeshRendererList: []
+  focusedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
 --- !u!54 &-3966503025729716914
 Rigidbody:
   m_ObjectHideFlags: 0
