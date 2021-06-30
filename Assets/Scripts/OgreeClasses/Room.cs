@@ -383,7 +383,7 @@ public class Room : Building
                     break;
             }
         }
-        if (updateAttr)
+        if (updateAttr && ApiManager.instance.isInit)
             PutData();
     }
 

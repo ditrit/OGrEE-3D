@@ -85,7 +85,7 @@ public class Rack : OObject
                     break;
             }
         }
-        if (updateAttr)
+        if (updateAttr && ApiManager.instance.isInit)
             PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
