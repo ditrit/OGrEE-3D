@@ -100,7 +100,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                     break;
             }
         }
-        if (updateAttr)
+        if (updateAttr && ApiManager.instance.isInit)
             PutData();
         GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
@@ -304,7 +304,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             foreach (OgreeObject obj in objsToDel)
             {
-                Debug.Log($"[Delete] {obj.name}");
+                Debug.Log($"[Delete] {obj.hierarchyName}");
                 GameManager.gm.DeleteItem(obj.gameObject, false);
             }
         }
