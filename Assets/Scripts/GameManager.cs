@@ -436,11 +436,11 @@ public class GameManager : MonoBehaviour
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
     ///<param name="_lastPath">The command file path to store</param>
-    public void SetReloadBtn(string _lastPath)
+    public void SetReloadBtn(bool _value, string _lastPath = null)
     {
-        lastCmdFilePath = _lastPath;
-        reloadBtn.interactable = (!string.IsNullOrEmpty(lastCmdFilePath));
-
+        if (_lastPath != null)
+            lastCmdFilePath = _lastPath;
+        reloadBtn.interactable = _value;
     }
 
     ///<summary>
@@ -461,9 +461,10 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < tenants.Count; i++)
             Destroy(tenants[i]);
+        allItems.Clear();
 
-        foreach (var kpv in objectTemplates)
-            Destroy(kpv.Value);
+        foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
+            Destroy(kvp.Value);
         objectTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
