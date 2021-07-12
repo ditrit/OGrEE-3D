@@ -594,12 +594,12 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
-            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 pos = Utils.ParseVector2(data[1]);
             Vector3 size = Utils.ParseVector3(data[2]);
 
             Transform parent = null;
@@ -611,8 +611,8 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
-            bd.attributes["posZ"] = pos.z.ToString();
-            bd.attributes["posZUnit"] = "m";
+            bd.attributes["posZ"] = "0"; // to del when removed from API
+            bd.attributes["posZUnit"] = "m"; // to del when removed from API
             bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             bd.attributes["sizeUnit"] = "m";
             bd.attributes["height"] = size.y.ToString();
@@ -640,7 +640,7 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -651,11 +651,11 @@ public class ConsoleController : MonoBehaviour
             ro.attributes = new Dictionary<string, string>();
 
             ro.category = "room";
-            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 pos = Utils.ParseVector2(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
-            ro.attributes["posZ"] = pos.z.ToString();
-            ro.attributes["posZUnit"] = "m";
+            ro.attributes["posZ"] = pos.z.ToString(); // to del when removed from API
+            ro.attributes["posZUnit"] = "m"; // to del when removed from API
 
             Vector3 size;
             if (data[2].StartsWith("["))
