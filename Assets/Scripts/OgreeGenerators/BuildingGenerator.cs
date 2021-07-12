@@ -38,7 +38,6 @@ public class BuildingGenerator : MonoBehaviour
 
         // Position and size data from _bd.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
-        float posZ = float.Parse(_bd.attributes["posZ"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = float.Parse(_bd.attributes["height"]);
 
@@ -53,7 +52,7 @@ public class BuildingGenerator : MonoBehaviour
 
         Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
         newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
+        newBD.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
         Building building = newBD.GetComponent<Building>();
         building.UpdateFromSApiObject(_bd);
@@ -89,7 +88,6 @@ public class BuildingGenerator : MonoBehaviour
 
         // Position and size data from _ro.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
-        float posZ = float.Parse(_ro.attributes["posZ"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
         float height = float.Parse(_ro.attributes["height"]);
 
@@ -113,7 +111,7 @@ public class BuildingGenerator : MonoBehaviour
         Vector3 roOrigin = room.usableZone.localScale / 0.2f;
         newRoom.transform.position = bd.position;
         newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
-        newRoom.transform.localPosition += new Vector3(posXY.x, posXY.y, posZ);
+        newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
         if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
         {
