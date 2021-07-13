@@ -79,7 +79,7 @@ public class Group : OObject
     }
 
     ///<summary>
-    /// Enable or disable racks from attributes["rackList"].
+    /// Enable or disable racks from attributes["content"].
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
     public void DisplayContent(bool _value)

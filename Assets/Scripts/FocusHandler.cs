@@ -100,7 +100,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled)
         {
             UpdateChildMeshRenderers(false);
         }
@@ -114,15 +114,8 @@ public class FocusHandler : MonoBehaviour
     {
         FillListsWithChildren();
         FillMeshRendererLists();
-        ManualUnFocus();
-    }
-
-    ///<summary>
-    /// Used to imitate an Unfocus to disable all useless mesh renderers.
-    ///</summary>
-    private void ManualUnFocus()
-    {
-        UpdateChildMeshRenderers(false);
+        if (transform.GetChild(0).GetComponent<Renderer>().enabled)
+            UpdateChildMeshRenderers(false);
     }
 
     ///<summary>
@@ -191,7 +184,7 @@ public class FocusHandler : MonoBehaviour
 
         foreach (MeshRenderer meshRenderer in slotChildMeshRendererList)
         {
-            if (!meshRenderer.GetComponent<Slot>().used)
+            if (!meshRenderer.transform.parent.GetComponent<Slot>().used)
                 meshRenderer.enabled = _value;
         }
     }
