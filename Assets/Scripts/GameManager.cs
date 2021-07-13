@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using SDD.Events;
 
 [RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
@@ -30,6 +29,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Materials")]
     public Material defaultMat;
+    public Material alphaMat;
     public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
@@ -261,15 +261,13 @@ public class GameManager : MonoBehaviour
             detailsSlider.ActiveSlider(true);
 
         currentItems.Add(_obj);
-        if (_obj.GetComponent<OObject>())
-        {
+        // if (_obj.GetComponent<OObject>())
+        // {
 
-            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-            if (ol)
-                ol.enabled = true;
-
-            
-        }
+        //     cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+        //     if (ol)
+        //         ol.enabled = true;
+        // }
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { _obj = _obj });
         detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
