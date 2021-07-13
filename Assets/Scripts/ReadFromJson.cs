@@ -294,16 +294,19 @@ public class ReadFromJson
         dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
-        Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
+        Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
         Color myColor = new Color();
         if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+        {
+            rend.material = GameManager.gm.alphaMat;
+            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+        }
         else
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
     }
 
 }

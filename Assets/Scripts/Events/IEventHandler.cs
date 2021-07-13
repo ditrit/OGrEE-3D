@@ -1,10 +1,8 @@
-namespace SDD.Events {
-
-  /// <summary>
-  ///  Interface for event handlers
-  /// </summary>
-  public interface IEventHandler {
-
+/// <summary>
+///  Interface for event handlers
+/// </summary>
+public interface IEventHandler
+{
     /// <summary>
     /// Subscribe to events
     ///
@@ -25,5 +23,4 @@ namespace SDD.Events {
     /// </summary>
     void UnsubscribeEvents();
 
-  }
 }

@@ -1,4 +1,3 @@
-using SDD.Events;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,24 +9,28 @@ public class CustomRendererOutline : MonoBehaviour
 
     public bool isActive = false;
 
-    private void Awake() {
-        if(GetComponent<OObject>() || GetComponent<Rack>()) {
+    private void Start()
+    {
+        if (GetComponent<OObject>() || GetComponent<Rack>() || GetComponent<Group>())
+        {
             isActive = true;
         }
 
-        if(isActive)
+        if (isActive)
             SubscribeEvents();
     }
 
-    private void OnDestroy() {
-        if(isActive)
+    private void OnDestroy()
+    {
+        if (isActive)
             UnsubscribeEvents();
     }
 
     ///<summary>
     /// Subscribe the GameObject to Events
     ///</summary>
-    public void SubscribeEvents() {
+    public void SubscribeEvents()
+    {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
     }
@@ -35,18 +38,21 @@ public class CustomRendererOutline : MonoBehaviour
     ///<summary>
     /// Unsubscribe the GameObject to Events
     ///</summary>
-    public void UnsubscribeEvents() {
+    public void UnsubscribeEvents()
+    {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
     }
-    
+
 
     ///<summary>
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent e) {
-        if(e._obj.Equals(gameObject)) {
+    private void OnSelectItem(OnSelectItemEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
             transform.GetChild(0).GetComponent<Renderer>().material = selectedMaterial;
         }
 
@@ -56,8 +62,10 @@ public class CustomRendererOutline : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e) {
-        if(e._obj.Equals(gameObject)) {
+    private void OnDeselectItem(OnDeselectItemEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
             transform.GetChild(0).GetComponent<Renderer>().material = defaultMaterial;
         }
     }

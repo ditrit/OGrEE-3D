@@ -70,7 +70,7 @@ public class OObject : OgreeObject
     }
 
     ///<summary>
-    /// Update object's alpha according to _input, from 0 to 100.
+    /// Update object's alpha according to _input, true or false.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
     public void UpdateAlpha(string _value)
