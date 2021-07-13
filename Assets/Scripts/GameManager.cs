@@ -263,10 +263,15 @@ public class GameManager : MonoBehaviour
         currentItems.Add(_obj);
         if (_obj.GetComponent<OObject>())
         {
+
             cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
             if (ol)
                 ol.enabled = true;
+
+            
         }
+
+        EventManager.Instance.Raise(new OnSelectItemEvent() { _obj = _obj });
         detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
@@ -288,6 +293,8 @@ public class GameManager : MonoBehaviour
             detailsSlider.UpdateSlider(0);
             detailsSlider.ActiveSlider(false);
         }
+
+        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj});
     }
 
     ///<summary>

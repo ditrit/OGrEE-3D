@@ -68,6 +68,16 @@ public class OnUnFocusEvent : SDD.Events.Event {
     public GameObject _obj { get; set; }
 }
 
+public class OnSelectItemEvent : SDD.Events.Event {
+
+    public GameObject _obj { get; set; }
+}
+
+public class OnDeselectItemEvent : SDD.Events.Event {
+
+    public GameObject _obj { get; set; }
+}
+
 public class ImportFinishedEvent : SDD.Events.Event {
 }
 

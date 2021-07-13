@@ -1021,6 +1021,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8422964209624112029}
   - component: {fileID: 226685182499933010}
+  - component: {fileID: -7375449237141215194}
   m_Layer: 0
   m_Name: LabeledBox
   m_TagString: Untagged
@@ -1068,6 +1069,21 @@ MonoBehaviour:
   labelLeft: {fileID: 4991055209020205873}
   labelRight: {fileID: 3970544498558124524}
   usedLabels: []
+--- !u!114 &-7375449237141215194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ead1eefb9e5dfc409361e81e364eeeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
+  defaultMaterial: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
+  isActive: 0
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0
