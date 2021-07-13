@@ -15,9 +15,6 @@ public class FocusHandler : MonoBehaviour {
     public List<MeshRenderer> ogreeChildMeshRendererList;
     public List<MeshRenderer> slotChildMeshRendererList;
 
-    public Material focusedMaterial;
-    public Material defaultMaterial;
-
     private Rack rack;
 
     private void Awake() {
@@ -34,8 +31,12 @@ public class FocusHandler : MonoBehaviour {
     ///</summary>
     public void SubscribeEvents() {
 
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+        //EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
+        //EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -44,8 +45,12 @@ public class FocusHandler : MonoBehaviour {
     ///</summary>
     public void UnsubscribeEvents() {
 
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+        //EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
+        //EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
     
@@ -57,10 +62,7 @@ public class FocusHandler : MonoBehaviour {
     private void OnFocus(OnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(true);
-
-            transform.GetChild(0).GetComponent<Renderer>().material = focusedMaterial;
         }
-
     }
 
     ///<summary>
@@ -70,8 +72,27 @@ public class FocusHandler : MonoBehaviour {
     private void OnUnFocus(OnUnFocusEvent e) {
         if(e._obj.Equals(gameObject)) {
             UpdateChildMeshRenderers(false);
+        }
+    }
 
-            transform.GetChild(0).GetComponent<Renderer>().material = defaultMaterial;
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnSelectItem(OnSelectItemEvent e) {
+        if(e._obj.Equals(gameObject)) {
+            UpdateChildMeshRenderers(true);
+        }
+
+    }
+
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnDeselectItem(OnDeselectItemEvent e) {
+        if(e._obj.Equals(gameObject)) {
+            UpdateChildMeshRenderers(false);
         }
     }
 
@@ -144,7 +165,8 @@ public class FocusHandler : MonoBehaviour {
         }
 
         foreach(MeshRenderer meshRenderer in slotChildMeshRendererList) {
-            meshRenderer.enabled = value;
+            if(!meshRenderer.GetComponent<Slot>().used)
+                meshRenderer.enabled = value;
         }
     }
 
