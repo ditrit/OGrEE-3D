@@ -18,10 +18,10 @@ public class SelectOnMouseHover : MonoBehaviour
 
             } else {
                 if(savedObjectThatWeHover)
-                    EventManager.Instance.Raise(new OnDeselectItemEvent { _obj = savedObjectThatWeHover.gameObject });
+                    EventManager.Instance.Raise(new OnMouseUnHoverEvent { _obj = savedObjectThatWeHover.gameObject });
 
                 savedObjectThatWeHover = objectHit;
-                EventManager.Instance.Raise(new OnSelectItemEvent { _obj = objectHit.gameObject });
+                EventManager.Instance.Raise(new OnMouseHoverEvent { _obj = objectHit.gameObject });
 
             }
         }
@@ -36,7 +36,6 @@ public class SelectOnMouseHover : MonoBehaviour
             Transform objectHit = hit.transform;
 
             return objectHit;
-            // Do something with the object that was hit by the raycast.
         } else {
             return null;
         }
