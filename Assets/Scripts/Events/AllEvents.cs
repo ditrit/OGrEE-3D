@@ -34,4 +34,8 @@ public class ImportFinishedEvent : CustomEvent
 {
 }
 
+public class ChangeCursorEvent : CustomEvent
+{
+    public CursorChanger.CursorType type;
+}
 

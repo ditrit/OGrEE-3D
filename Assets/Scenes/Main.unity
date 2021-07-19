@@ -4689,7 +4689,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B: 2021-07-13 #6c5e171\r"
+  m_text: "B: 2021-07-19 #fecb0d8\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11018,9 +11018,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1595579780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35b0566274456e4293d466ba6106bf2, type: 3}
+  m_Script: {fileID: 11500000, guid: c3734f991e4d80144ad4186c07f479b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursors:
+  - cursorType: 0
+    texture: {fileID: 2800000, guid: b0f0147cb86a9254ba22c22a56f0e983, type: 3}
+    offset: {x: 27, y: 9}
+  - cursorType: 1
+    texture: {fileID: 2800000, guid: 8ba17cb453cc5da4b8959e3038fc57c8, type: 3}
+    offset: {x: 21, y: 12}
 --- !u!114 &1595579788
 MonoBehaviour:
   m_ObjectHideFlags: 0
