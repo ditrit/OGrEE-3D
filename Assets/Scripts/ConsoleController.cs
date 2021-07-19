@@ -890,7 +890,7 @@ public class ConsoleController : MonoBehaviour
             if (parent)
             {
                 rg.parentId = parent.GetComponent<OgreeObject>().id;
-                rg.domain = parent.GetComponent<OgreeObject>().id;
+                rg.domain = parent.GetComponent<OgreeObject>().domain;
 
                 ObjectGenerator.instance.CreateGroup(rg, parent);
             }
