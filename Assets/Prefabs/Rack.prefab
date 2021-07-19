@@ -115,6 +115,7 @@ MonoBehaviour:
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &5666233796082005944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,8 +165,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
+  mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
+  transparentMaterial: {fileID: 0}
   isActive: 0
+  isSelected: 0
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0

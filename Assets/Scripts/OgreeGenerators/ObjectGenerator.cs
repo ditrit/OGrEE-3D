@@ -169,6 +169,7 @@ public class ObjectGenerator : MonoBehaviour
             {
                 if (comp.gameObject != rack.gameObject)
                 {
+                    comp.domain = rack.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
                 }
@@ -311,6 +312,7 @@ public class ObjectGenerator : MonoBehaviour
             Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
             Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
             mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+            newDevice.GetComponent<OObject>().color = mat.color;
         }
         else
         {
@@ -354,6 +356,7 @@ public class ObjectGenerator : MonoBehaviour
             {
                 if (comp.gameObject != newDevice.gameObject)
                 {
+                    comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
                 }
@@ -475,6 +478,7 @@ public class ObjectGenerator : MonoBehaviour
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
         gr.UpdateFromSApiObject(_gr);
+        gr.UpdateColor();
         gr.DisplayContent(false);
 
         if (parentCategory == "room")
@@ -655,6 +659,7 @@ public class ObjectGenerator : MonoBehaviour
         OObject co = newCo.AddComponent<OObject>();
         co.UpdateFromSApiObject(_co);
 
+        newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.alphaMat;
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
         mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
