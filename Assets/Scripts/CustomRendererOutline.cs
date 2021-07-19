@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomRendererOutline : MonoBehaviour {
+public class CustomRendererOutline : MonoBehaviour
+{
     public Material selectedMaterial;
     public Material mouseHoverMaterial;
     private Material defaultMaterial;
@@ -13,27 +14,31 @@ public class CustomRendererOutline : MonoBehaviour {
     public bool isSelected = false;
     public bool isHovered = false;
 
-    private void Start() {
+    private void Start()
+    {
         defaultMaterial = GameManager.gm.defaultMat;
         transparentMaterial = GameManager.gm.alphaMat;
 
-        if(GetComponent<OObject>() || GetComponent<Rack>() || GetComponent<Group>()) {
+        if (GetComponent<OObject>() || GetComponent<Rack>() || GetComponent<Group>())
+        {
             isActive = true;
         }
 
-        if(isActive)
+        if (isActive)
             SubscribeEvents();
     }
 
-    private void OnDestroy() {
-        if(isActive)
+    private void OnDestroy()
+    {
+        if (isActive)
             UnsubscribeEvents();
     }
 
     ///<summary>
     /// Subscribe the GameObject to Events
     ///</summary>
-    public void SubscribeEvents() {
+    public void SubscribeEvents()
+    {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
@@ -44,7 +49,8 @@ public class CustomRendererOutline : MonoBehaviour {
     ///<summary>
     /// Unsubscribe the GameObject to Events
     ///</summary>
-    public void UnsubscribeEvents() {
+    public void UnsubscribeEvents()
+    {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
@@ -57,8 +63,10 @@ public class CustomRendererOutline : MonoBehaviour {
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent e) {
-        if(e._obj.Equals(gameObject)) {
+    private void OnSelectItem(OnSelectItemEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
             transform.GetChild(0).GetComponent<Renderer>().material = selectedMaterial;
             isSelected = true;
         }
@@ -69,39 +77,47 @@ public class CustomRendererOutline : MonoBehaviour {
     /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e) {
-        if(e._obj.Equals(gameObject)) {
-
+    private void OnDeselectItem(OnDeselectItemEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
 
-            if(e._obj.GetComponent<OObject>().category.Equals("corridor")) {
+            if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
+            {
                 renderer.material = transparentMaterial;
-            } else {
+            }
+            else
+            {
                 renderer.material = defaultMaterial;
-
             }
 
             renderer.material.color = e._obj.GetComponent<OObject>().color;
             isSelected = false;
         }
     }
-    
-    private void OnMouseHover(OnMouseHoverEvent e) {
-        if(e._obj.Equals(gameObject) && !isSelected) {
+
+    private void OnMouseHover(OnMouseHoverEvent e)
+    {
+        if (e._obj.Equals(gameObject) && !isSelected)
+        {
             transform.GetChild(0).GetComponent<Renderer>().material = mouseHoverMaterial;
             isHovered = true;
         }
-
     }
 
-    private void OnMouseUnHover(OnMouseUnHoverEvent e) {
-        if(e._obj.Equals(gameObject) && !isSelected) {
-
+    private void OnMouseUnHover(OnMouseUnHoverEvent e)
+    {
+        if (e._obj.Equals(gameObject) && !isSelected)
+        {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
 
-            if(e._obj.GetComponent<OObject>().category.Equals("corridor")) {
+            if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
+            {
                 renderer.material = transparentMaterial;
-            } else {
+            }
+            else
+            {
                 renderer.material = defaultMaterial;
 
             }

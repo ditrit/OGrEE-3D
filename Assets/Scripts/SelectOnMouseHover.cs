@@ -4,42 +4,37 @@ using UnityEngine;
 
 public class SelectOnMouseHover : MonoBehaviour
 {
-    public Transform savedObjectThatWeHover;
-    
+    [SerializeField] private Transform savedObjectThatWeHover;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-       Transform objectHit =  RaycastFromCameraToMouse();
+        Transform objectHit = RaycastFromCameraToMouse();
 
-        if(objectHit) {
-            Debug.Log(objectHit.name);
-            if(objectHit.Equals(savedObjectThatWeHover)) {
-
-            } else {
-                if(savedObjectThatWeHover)
+        if (objectHit)
+        {
+            // Debug.Log(objectHit.name);
+            if (!objectHit.Equals(savedObjectThatWeHover))
+            {
+                if (savedObjectThatWeHover)
                     EventManager.Instance.Raise(new OnMouseUnHoverEvent { _obj = savedObjectThatWeHover.gameObject });
 
                 savedObjectThatWeHover = objectHit;
                 EventManager.Instance.Raise(new OnMouseHoverEvent { _obj = objectHit.gameObject });
-
             }
         }
-        
     }
 
-    private Transform RaycastFromCameraToMouse() {
+    private Transform RaycastFromCameraToMouse()
+    {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if(Physics.Raycast(ray, out hit)) {
+        if (Physics.Raycast(ray, out hit))
+        {
             Transform objectHit = hit.transform;
-
             return objectHit;
-        } else {
-            return null;
         }
-
-        
+        else
+            return null;
     }
 }
