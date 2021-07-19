@@ -304,9 +304,11 @@ public class ReadFromJson
         {
             rend.material = GameManager.gm.alphaMat;
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
-        }
-        else
+        } else {
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+            go.GetComponent<OObject>().color = rend.material.color;
+
+        }
     }
 
 }

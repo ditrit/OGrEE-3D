@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class OObject : OgreeObject
 {
+    public Color color;
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>
@@ -100,11 +102,13 @@ public class OObject : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     protected void SetColor(string _hex)
     {
-        attributes["color"] = _hex;
+        // attributes["color"] = _hex;
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+        color = new Color();
+        ColorUtility.TryParseHtmlString($"#{_hex}", out color);
+        color.a = mat.color.a;
+        mat.color = color;
+        
     }
 
     ///<summary>
@@ -118,9 +122,9 @@ public class OObject : OgreeObject
         OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+        color = new Color();
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
+        mat.color = new Color(color.r, color.g, color.b, mat.color.a);
     }
 
     ///<summary>
