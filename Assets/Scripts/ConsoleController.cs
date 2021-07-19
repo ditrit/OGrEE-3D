@@ -89,6 +89,8 @@ public class ConsoleController : MonoBehaviour
     {
         isReady = false;
         GameManager.gm.SetReloadBtn(false);
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 
     ///<summary>
@@ -98,6 +100,8 @@ public class ConsoleController : MonoBehaviour
     {
         isReady = true;
         StartCoroutine(WaitAndEnableBtn());
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     ///<summary>
