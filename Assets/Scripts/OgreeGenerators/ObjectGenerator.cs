@@ -323,6 +323,7 @@ public class ObjectGenerator : MonoBehaviour
 
             float deltaZ = parent.GetChild(0).localScale.z - size.y;
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+            newDevice.GetComponent<OObject>().color = Color.white;
         }
 
         // Fill OObject class

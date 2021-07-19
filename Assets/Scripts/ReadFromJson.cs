@@ -175,6 +175,8 @@ public class ReadFromJson
         }
         newObject.transform.localPosition = Vector3.zero;
 
+        newObject.GetComponent<OObject>().color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
+
         // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
         if (data.colors != null)
@@ -304,10 +306,11 @@ public class ReadFromJson
         {
             rend.material = GameManager.gm.alphaMat;
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
-        } else {
+        }
+        else
+        {
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
             go.GetComponent<OObject>().color = rend.material.color;
-
         }
     }
 
