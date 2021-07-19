@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
 
@@ -292,7 +293,7 @@ public class GameManager : MonoBehaviour
             detailsSlider.ActiveSlider(false);
         }
 
-        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj});
+        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj });
     }
 
     ///<summary>
