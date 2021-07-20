@@ -152,6 +152,8 @@ MonoBehaviour:
   slotsChildObjects: []
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
+  isSelected: 0
+  isHovered: 0
 --- !u!114 &4507776248461121190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,10 +168,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
-  defaultMaterial: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
-  transparentMaterial: {fileID: 0}
   isActive: 0
   isSelected: 0
+  isHovered: 0
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,7 +525,6 @@ GameObject:
   - component: {fileID: 4012234162031736587}
   - component: {fileID: 4012234162031736586}
   - component: {fileID: 4012234162031736585}
-  - component: {fileID: 7776070536470310480}
   m_Layer: 0
   m_Name: Box
   m_TagString: Selectable
@@ -608,22 +608,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7776070536470310480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4012234162031736584}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  color: 0
-  eraseRenderer: 0
-  originalLayer: 0
-  originalMaterials: []
 --- !u!1 &5256789171345211104
 GameObject:
   m_ObjectHideFlags: 0
