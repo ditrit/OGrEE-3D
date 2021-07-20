@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TriLibCore;
 using UnityEngine;
@@ -71,8 +71,8 @@ public class ModelLoader : MonoBehaviour
         triLibObj.localPosition = Vector3.zero;
         triLibWrapper.localPosition = Vector3.zero;
 
-        cakeslice.Outline ol = triLibObj.gameObject.AddComponent<cakeslice.Outline>();
-        ol.enabled = false;
+        // cakeslice.Outline ol = triLibObj.gameObject.AddComponent<cakeslice.Outline>();
+        // ol.enabled = false;
         triLibObj.gameObject.AddComponent<BoxCollider>();
 
         triLibObj.tag = "Selectable";
