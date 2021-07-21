@@ -19,10 +19,8 @@ public class CustomRendererOutline : MonoBehaviour
         defaultMaterial = GameManager.gm.defaultMat;
         transparentMaterial = GameManager.gm.alphaMat;
 
-        if (GetComponent<OObject>() || GetComponent<Rack>() || GetComponent<Group>())
-        {
+        if (GetComponent<OObject>())
             isActive = true;
-        }
 
         if (isActive)
             SubscribeEvents();
@@ -67,7 +65,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e._obj.Equals(gameObject))
         {
-            transform.GetChild(0).GetComponent<Renderer>().material = selectedMaterial;
+            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), selectedMaterial);
             isSelected = true;
         }
 
@@ -82,15 +80,10 @@ public class CustomRendererOutline : MonoBehaviour
         if (e._obj.Equals(gameObject))
         {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
-
             if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
-            {
-                renderer.material = transparentMaterial;
-            }
+                SetMaterial(renderer, transparentMaterial);
             else
-            {
-                renderer.material = defaultMaterial;
-            }
+                SetMaterial(renderer, defaultMaterial);
 
             renderer.material.color = e._obj.GetComponent<OObject>().color;
             isSelected = false;
@@ -101,7 +94,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e._obj.Equals(gameObject) && !isSelected)
         {
-            transform.GetChild(0).GetComponent<Renderer>().material = mouseHoverMaterial;
+            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), mouseHoverMaterial);
             isHovered = true;
         }
     }
@@ -111,19 +104,29 @@ public class CustomRendererOutline : MonoBehaviour
         if (e._obj.Equals(gameObject) && !isSelected)
         {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
-
             if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
-            {
-                renderer.material = transparentMaterial;
-            }
+                SetMaterial(renderer, transparentMaterial);
             else
-            {
-                renderer.material = defaultMaterial;
-
-            }
+                SetMaterial(renderer, defaultMaterial);
 
             renderer.material.color = e._obj.GetComponent<OObject>().color;
             isHovered = false;
         }
+    }
+
+    ///<summary>
+    /// Assign a Material to given Renderer keeping textures.
+    ///</summary>
+    ///<param name="_renderer">The Renderer of the object to modify</param>
+    ///<param name="_newMat">The Material to assign</param>
+    private void SetMaterial(Renderer _renderer, Material _newMat)
+    {
+        Material mat = _renderer.material;
+        _renderer.material = Instantiate(_newMat);
+
+        _renderer.material.SetTexture("_BaseMap", mat.GetTexture("_BaseMap"));
+        _renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
+        _renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
+        _renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
     }
 }
