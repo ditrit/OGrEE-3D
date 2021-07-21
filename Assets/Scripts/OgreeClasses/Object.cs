@@ -40,7 +40,7 @@ public class OObject : OgreeObject
                     else
                     {
                         SetDomain(_value);
-                        UpdateColor();
+                        UpdateColorByTenant();
                     }
                     updateAttr = true;
                     break;
@@ -102,19 +102,28 @@ public class OObject : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     protected void SetColor(string _hex)
     {
-        // attributes["color"] = _hex;
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = new Color();
-        ColorUtility.TryParseHtmlString($"#{_hex}", out color);
-        color.a = mat.color.a;
-        mat.color = color;
-        
+        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
+        if (validColor)
+        {
+            color.a = mat.color.a;
+            mat.color = color;
+            attributes["color"] = _hex;
+        }
+        else
+        {
+            UpdateColorByTenant();
+            attributes.Remove("color");
+            GameManager.gm.AppendLogLine("Unknown color", "yellow");
+        }
+            
     }
 
     ///<summary>
     /// Update object's color according to its Tenant.
     ///</summary>
-    public void UpdateColor()
+    public void UpdateColorByTenant()
     {
         if (string.IsNullOrEmpty(domain))
             return;

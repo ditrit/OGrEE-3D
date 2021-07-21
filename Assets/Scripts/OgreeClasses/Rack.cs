@@ -56,7 +56,7 @@ public class Rack : OObject
                     else
                     {
                         SetDomain(_value);
-                        UpdateColor();
+                        UpdateColorByTenant();
                     }
                     updateAttr = true;
                     break;

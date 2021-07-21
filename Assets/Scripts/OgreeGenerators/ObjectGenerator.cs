@@ -156,7 +156,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        rack.UpdateColor();
+        rack.UpdateColorByTenant();
         GameManager.gm.SetRackMaterial(newRack.transform);
 
         string hn = rack.UpdateHierarchyName();
@@ -479,7 +479,7 @@ public class ObjectGenerator : MonoBehaviour
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
         gr.UpdateFromSApiObject(_gr);
-        gr.UpdateColor();
+        gr.UpdateColorByTenant();
         gr.DisplayContent(false);
 
         if (parentCategory == "room")
