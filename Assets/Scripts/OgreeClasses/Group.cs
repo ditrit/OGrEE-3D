@@ -29,7 +29,7 @@ public class Group : OObject
                     break;
                 case "domain":
                     SetDomain(_value);
-                    UpdateColor();
+                    UpdateColorByTenant();
                     // updateAttr = true;
                     break;
                 case "color":
