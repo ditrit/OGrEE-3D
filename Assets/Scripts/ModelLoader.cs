@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using TriLibCore;
 using UnityEngine;
@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 public class ModelLoader : MonoBehaviour
 {
     public static ModelLoader instance;
-    
 
     private void Awake()
     {
@@ -27,10 +26,10 @@ public class ModelLoader : MonoBehaviour
         Destroy(_object.transform.GetChild(0).gameObject);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
-        assetLoaderOptions.ScaleFactor = 0.1f;
         // BoxCollider added later
         assetLoaderOptions.GenerateColliders = false;
         assetLoaderOptions.ConvexColliders = false;
+        assetLoaderOptions.AlphaMaterialMode = TriLibCore.General.AlphaMaterialMode.None;
 
         UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
         AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
@@ -71,10 +70,7 @@ public class ModelLoader : MonoBehaviour
         triLibObj.localPosition = Vector3.zero;
         triLibWrapper.localPosition = Vector3.zero;
 
-        // cakeslice.Outline ol = triLibObj.gameObject.AddComponent<cakeslice.Outline>();
-        // ol.enabled = false;
         triLibObj.gameObject.AddComponent<BoxCollider>();
-
         triLibObj.tag = "Selectable";
 
     }
