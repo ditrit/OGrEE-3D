@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -446,7 +446,8 @@ public class GameManager : MonoBehaviour
     {
         if (_lastPath != null)
             lastCmdFilePath = _lastPath;
-        reloadBtn.interactable = _value;
+        if (!string.IsNullOrEmpty(lastCmdFilePath))
+            reloadBtn.interactable = _value;
     }
 
     ///<summary>
