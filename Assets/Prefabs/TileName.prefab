@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6720931301833660577}
   - component: {fileID: 6720931301833660578}
   - component: {fileID: 6720931301833660589}
+  - component: {fileID: 8827720186382235848}
   m_Layer: 0
   m_Name: TileName
   m_TagString: Untagged
@@ -170,3 +171,22 @@ MonoBehaviour:
   _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
+--- !u!205 &8827720186382235848
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6720931301833660590}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0.000050008297, y: 0.0011957213, z: 0}
+  m_Size: 0.54436046
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.054363325
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6720931301833660578}
+  m_Enabled: 1

@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _boolKeys:
   - StandardMaterialMapper
-  _boolValues: 01
+  - UniversalRPMaterialMapper
+  _boolValues: 0001

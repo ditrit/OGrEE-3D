@@ -11,8 +11,12 @@ public class Group : OObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
+        // bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            // updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -25,7 +29,8 @@ public class Group : OObject
                     break;
                 case "domain":
                     SetDomain(_value);
-                    UpdateColor();
+                    UpdateColorByTenant();
+                    // updateAttr = true;
                     break;
                 case "color":
                     SetColor(_value);
@@ -33,7 +38,7 @@ public class Group : OObject
                 case "alpha":
                     UpdateAlpha(_value);
                     break;
-                case "racks":
+                case "content":
                     ToggleContent(_value);
                     break;
                 default:
@@ -41,15 +46,17 @@ public class Group : OObject
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    // updateAttr = true;
                     break;
             }
         }
-        // PutData();
+        // if (updateAttr && ApiManager.instance.isInit)
+        //     PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
-    /// Display or hide the rackGroup and its racks.
+    /// Display or hide the rackGroup and its content.
     ///</summary>
     ///<param name="_value">"true" or "false" value</param>
     public void ToggleContent(string _value)
@@ -61,19 +68,33 @@ public class Group : OObject
         {
             UpdateAlpha("true");
             DisplayContent(true);
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
         }
         else
         {
             UpdateAlpha("false");
             DisplayContent(false);
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
         }
     }
 
     ///<summary>
-    /// Enable or disable racks from attributes["rackList"].
+    /// Enable or disable racks from attributes["content"].
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
     public void DisplayContent(bool _value)
+    {
+        foreach (GameObject r in GetContent())
+            r.gameObject.SetActive(_value);
+
+        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
+    }
+
+    ///<summary>
+    /// Get all GameObjects listed in attributes["content"].
+    ///</summary>
+    ///<returns>The list of GameObject corresponding to attributes["content"]</returns>
+    public List<GameObject> GetContent()
     {
         List<GameObject> content = new List<GameObject>();
         string[] names = attributes["content"].Split(',');
@@ -84,9 +105,6 @@ public class Group : OObject
             if (go)
                 content.Add(go);
         }
-        foreach (GameObject r in content)
-            r.gameObject.SetActive(_value);
-
-        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
+        return content;
     }
 }

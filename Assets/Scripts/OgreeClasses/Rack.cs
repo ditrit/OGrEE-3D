@@ -31,8 +31,12 @@ public class Rack : OObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -52,11 +56,13 @@ public class Rack : OObject
                     else
                     {
                         SetDomain(_value);
-                        UpdateColor();
+                        UpdateColorByTenant();
                     }
+                    updateAttr = true;
                     break;
                 case "color":
                     SetColor(_value);
+                    updateAttr = true;
                     break;
                 case "alpha":
                     UpdateAlpha(_value);
@@ -75,10 +81,12 @@ public class Rack : OObject
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    updateAttr = true;
                     break;
             }
         }
-        PutData();
+        if (updateAttr && ApiManager.instance.isInit)
+            PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 

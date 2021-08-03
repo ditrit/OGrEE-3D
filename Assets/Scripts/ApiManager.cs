@@ -69,7 +69,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_serverUrl">The base url of the API to use</param>
     ///<param name="_token">The auth token of the API to use</param>
-    public async void Initialize(string _serverUrl, string _token)
+    public async Task Initialize(string _serverUrl, string _token)
     {
         if (string.IsNullOrEmpty(_serverUrl))
             GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
@@ -273,10 +273,16 @@ public class ApiManager : MonoBehaviour
                     BuildingGenerator.instance.CreateRoom(obj);
                     break;
                 case "rack":
-                    ObjectGenerator.instance.CreateRack(obj);
+                    if (obj.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateRack(obj);
+                    else
+                        ObjectGenerator.instance.CreateRack(obj, null, false);
                     break;
                 case "device":
-                    ObjectGenerator.instance.CreateDevice(obj);
+                    if (obj.attributes["template"] == "")
+                        ObjectGenerator.instance.CreateDevice(obj);
+                    else
+                        ObjectGenerator.instance.CreateDevice(obj, null, false);
                     break;
                     // case "group":
                     //     ObjectGenerator.instance.CreateGroup(obj);

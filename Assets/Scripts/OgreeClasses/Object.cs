@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class OObject : OgreeObject
 {
+    public Color color;
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>
@@ -13,8 +15,12 @@ public class OObject : OgreeObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -34,11 +40,13 @@ public class OObject : OgreeObject
                     else
                     {
                         SetDomain(_value);
-                        UpdateColor();
+                        UpdateColorByTenant();
                     }
+                    updateAttr = true;
                     break;
                 case "color":
                     SetColor(_value);
+                    updateAttr = true;
                     break;
                 case "alpha":
                     UpdateAlpha(_value);
@@ -54,15 +62,17 @@ public class OObject : OgreeObject
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    updateAttr = true;
                     break;
             }
         }
-        PutData();
+        if (updateAttr && ApiManager.instance.isInit)
+            PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
-    /// Update object's alpha according to _input, from 0 to 100.
+    /// Update object's alpha according to _input, true or false.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
     public void UpdateAlpha(string _value)
@@ -92,17 +102,28 @@ public class OObject : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     protected void SetColor(string _hex)
     {
-        attributes["color"] = _hex;
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{_hex}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+        color = new Color();
+        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
+        if (validColor)
+        {
+            color.a = mat.color.a;
+            mat.color = color;
+            attributes["color"] = _hex;
+        }
+        else
+        {
+            UpdateColorByTenant();
+            attributes.Remove("color");
+            GameManager.gm.AppendLogLine("Unknown color", "yellow");
+        }
+            
     }
 
     ///<summary>
     /// Update object's color according to its Tenant.
     ///</summary>
-    public void UpdateColor()
+    public void UpdateColorByTenant()
     {
         if (string.IsNullOrEmpty(domain))
             return;
@@ -110,9 +131,9 @@ public class OObject : OgreeObject
         OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        Color myColor = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out myColor);
-        mat.color = new Color(myColor.r, myColor.g, myColor.b, mat.color.a);
+        color = new Color();
+        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
+        mat.color = new Color(color.r, color.g, color.b, mat.color.a);
     }
 
     ///<summary>

@@ -31,6 +31,7 @@ public class ConsoleController : MonoBehaviour
     private int errorsCount = 0;
 
     [SerializeField] private bool isReady = true;
+    ///<summary>Value used for delaying cmds execution</summary>
     public float timerValue = 0f;
 
 
@@ -82,6 +83,38 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
+    /// Turn isReady to false and disable reload button.
+    ///</summary>
+    private void LockController()
+    {
+        isReady = false;
+        GameManager.gm.SetReloadBtn(false);
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+    }
+
+    ///<summary>
+    /// Turn isReady to true and enable reload button.
+    ///</summary>
+    private void UnlockController()
+    {
+        isReady = true;
+        StartCoroutine(WaitAndEnableBtn());
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+
+    ///<summary>
+    /// Wait 1 second to check if the reload button can be enabled.
+    ///</summary>
+    private IEnumerator WaitAndEnableBtn()
+    {
+        yield return new WaitForSeconds(1);
+        if (isReady)
+            GameManager.gm.SetReloadBtn(true);
+    }
+
+    ///<summary>
     /// Execute a command line. Look for the first char to call the corresponding method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
@@ -102,10 +135,9 @@ public class ConsoleController : MonoBehaviour
     private IEnumerator WaitAndRunCmdStr(string _input, bool _saveCmd)
     {
         yield return new WaitUntil(() => isReady == true);
-        isReady = false;
+        LockController();
 
         lastCmd = _input;
-        // Debug.Log("=> " + lastCmd);
 
         _input = ApplyVariables(_input);
         AppendLogLine("$ " + _input);
@@ -129,20 +161,18 @@ public class ConsoleController : MonoBehaviour
             MoveCamera(_input.Substring(7));
         else if (_input.StartsWith("api."))
             CallApi(_input.Substring(4));
-        else if (_input.StartsWith("zoom"))
-            SetZoom(_input.Substring(4));
         else if (_input.Contains(".") && _input.Contains("="))
             SetAttribute(_input);
         else
         {
             AppendLogLine("Unknown command", "red");
-            isReady = true;
+            UnlockController();
         }
         if (timerValue > 0)
         {
-            isReady = false;
+            LockController();
             yield return new WaitForSeconds(timerValue);
-            isReady = true;
+            UnlockController();
         }
     }
 
@@ -155,7 +185,7 @@ public class ConsoleController : MonoBehaviour
     {
         if (!GameManager.gm.currentItems[0])
         {
-            isReady = true;
+            UnlockController();
             return;
         }
         else if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
@@ -167,7 +197,7 @@ public class ConsoleController : MonoBehaviour
                 GameManager.gm.SetCurrentItem(parent);
         }
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -179,14 +209,14 @@ public class ConsoleController : MonoBehaviour
         if (string.IsNullOrEmpty(_input))
         {
             GameManager.gm.SetCurrentItem(null);
-            isReady = true;
+            UnlockController();
             yield break;
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
         {
             if (GameManager.gm.currentItems.Count == 0)
             {
-                isReady = true;
+                UnlockController();
                 yield break;
             }
             Transform root = GameManager.gm.currentItems[0].transform;
@@ -219,7 +249,7 @@ public class ConsoleController : MonoBehaviour
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
 
         yield return new WaitForEndOfFrame();
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -261,7 +291,7 @@ public class ConsoleController : MonoBehaviour
         }
 
         yield return new WaitForEndOfFrame();
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -289,7 +319,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     #endregion
@@ -316,7 +346,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Unknown command", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -332,13 +362,13 @@ public class ConsoleController : MonoBehaviour
             using (StreamReader sr = File.OpenText(_input))
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
             if (_saveCmd)
-                GameManager.gm.SetReloadBtn(_input);
+                GameManager.gm.SetReloadBtn(false, _input);
         }
         catch (System.Exception e)
         {
             AppendLogLine(e.Message, "red");
             if (_saveCmd)
-                GameManager.gm.SetReloadBtn(null);
+                GameManager.gm.SetReloadBtn(false, "");
         }
         for (int i = 0; i < lines.Length; i++)
         {
@@ -356,7 +386,7 @@ public class ConsoleController : MonoBehaviour
     private IEnumerator DisplayLogCount(int _linesCount)
     {
         yield return new WaitUntil(() => isReady == true);
-        isReady = false;
+        LockController();
 
         string color;
         if (errorsCount > 0)
@@ -371,7 +401,7 @@ public class ConsoleController : MonoBehaviour
         warningsCount = 0;
         errorsCount = 0;
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -458,7 +488,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax Error on API call", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     #endregion
@@ -494,7 +524,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Unknown command", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -568,12 +598,12 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateBuilding(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
+        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\]@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
 
-            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 pos = Utils.ParseVector2(data[1]);
             Vector3 size = Utils.ParseVector3(data[2]);
 
             Transform parent = null;
@@ -585,8 +615,8 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
-            bd.attributes["posZ"] = pos.z.ToString();
-            bd.attributes["posZUnit"] = "m";
+            bd.attributes["posZ"] = "0"; // to del when removed from API
+            bd.attributes["posZUnit"] = "m"; // to del when removed from API
             bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             bd.attributes["sizeUnit"] = "m";
             bd.attributes["height"] = size.y.ToString();
@@ -614,7 +644,7 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -625,11 +655,11 @@ public class ConsoleController : MonoBehaviour
             ro.attributes = new Dictionary<string, string>();
 
             ro.category = "room";
-            Vector3 pos = Utils.ParseVector3(data[1]);
+            Vector3 pos = Utils.ParseVector2(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
-            ro.attributes["posZ"] = pos.z.ToString();
-            ro.attributes["posZUnit"] = "m";
+            ro.attributes["posZ"] = pos.z.ToString(); // to del when removed from API
+            ro.attributes["posZUnit"] = "m"; // to del when removed from API
 
             Vector3 size;
             if (data[2].StartsWith("["))
@@ -806,7 +836,7 @@ public class ConsoleController : MonoBehaviour
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
                     dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
                     dv.attributes["sizeUnit"] = "mm";
-                    dv.attributes["height"] = scale.y.ToString();
+                    dv.attributes["height"] = (sizeU * GameManager.gm.uSize * 1000).ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
                 else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
@@ -864,7 +894,7 @@ public class ConsoleController : MonoBehaviour
             if (parent)
             {
                 rg.parentId = parent.GetComponent<OgreeObject>().id;
-                rg.domain = parent.GetComponent<OgreeObject>().id;
+                rg.domain = parent.GetComponent<OgreeObject>().domain;
 
                 ObjectGenerator.instance.CreateGroup(rg, parent);
             }
@@ -929,7 +959,7 @@ public class ConsoleController : MonoBehaviour
                 {
                     SetMultiAttribute(attr[1], data[1]);
                     GameManager.gm.UpdateGuiInfos();
-                    isReady = true;
+                    UnlockController();
                     return;
                 }
             }
@@ -941,8 +971,8 @@ public class ConsoleController : MonoBehaviour
             {
                 if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    if (attrName == "lod")
-                        obj.GetComponent<OgreeObject>().SetLod(data[1]);
+                    if (attrName == "details")
+                        obj.GetComponent<OgreeObject>().LoadChildren(data[1]);
                     else
                         obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
                     GameManager.gm.UpdateGuiInfos();
@@ -956,7 +986,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -970,8 +1000,8 @@ public class ConsoleController : MonoBehaviour
         {
             if (obj.GetComponent<OgreeObject>() != null)
             {
-                if (_attr == "lod")
-                    obj.GetComponent<OgreeObject>().SetLod(_value);
+                if (_attr == "details")
+                    obj.GetComponent<OgreeObject>().LoadChildren(_value);
                 else
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }
@@ -986,7 +1016,6 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse for a move command</param>
     private void MoveRack(string _input)
     {
-
         string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\](@relative)*$";
         if (Regex.IsMatch(_input, pattern))
         {
@@ -1013,7 +1042,7 @@ public class ConsoleController : MonoBehaviour
         else
             GameManager.gm.AppendLogLine("Syntax error.", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -1046,7 +1075,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -1086,7 +1115,7 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
 
-        isReady = true;
+        UnlockController();
     }
 
     ///<summary>
@@ -1109,34 +1138,8 @@ public class ConsoleController : MonoBehaviour
         else
             AppendLogLine("Syntax error", "red");
 
-        isReady = true;
+        UnlockController();
     }
-    #endregion
-
-    #region ZoomMethods
-
-    ///<summary>
-    /// Call ZoomManager.SetZoom regarding input.
-    ///</summary>
-    ///<param name="_input">The input to parse</param>
-    private void SetZoom(string _input)
-    {
-        string pattern = "^(\\+\\+|--|=[0-3])$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            if (_input == "++")
-                ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel + 1);
-            else if (_input == "--")
-                ZoomManager.instance.SetZoom(ZoomManager.instance.zoomLevel - 1);
-            else
-                ZoomManager.instance.SetZoom(int.Parse(_input.Substring(1)));
-            AppendLogLine($"Set zoom level to {ZoomManager.instance.zoomLevel}", "green");
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-        isReady = true;
-    }
-
     #endregion
 
     #region Utils

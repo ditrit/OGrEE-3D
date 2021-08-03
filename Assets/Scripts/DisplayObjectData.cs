@@ -114,7 +114,10 @@ public class DisplayObjectData : MonoBehaviour
                 break;
         }
         foreach (TextMeshPro tmp in usedLabels)
+        {
             tmp.gameObject.SetActive(true);
+            tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
+        }
     }
 
     ///<summary>
@@ -129,41 +132,42 @@ public class DisplayObjectData : MonoBehaviour
     ///<summary>
     /// Set corresponding labels with given field value. 
     ///</summary>
-    ///<param name="_attr">The attribute to set</param>
-    public void SetLabel(string _attr)
+    ///<param name="_str">The attribute to set</param>
+    public void SetLabel(string _str)
     {
         int i = 0;
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
         {
-            if (_attr[0] == '#')
+            if (_str[0] == '#')
             {
-                if (_attr == "#name")
+                string attr = _str.Substring(1);
+                if (attr == "name")
                     WriteLabels(obj.name, true);
-                else if (_attr.Contains("#description"))
+                else if (attr.Contains("description"))
                 {
-                    if (_attr == "#description")
+                    if (attr == "description")
                         WriteLabels(string.Join("\n", obj.description));
-                    else if (int.TryParse(_attr.Substring(12), out i) && i > 0 && obj.description.Count >= i)
+                    else if (int.TryParse(attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
                         GameManager.gm.AppendLogLine("Wrong description index", "yellow");
                 }
-                else if (obj.attributes.ContainsKey(_attr))
-                    WriteLabels(obj.attributes[_attr]);
+                else if (obj.attributes.ContainsKey(attr))
+                    WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {_attr} attribute.", "yellow");
+                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", "yellow");
                     return;
                 }
             }
             else
-                WriteLabels(_attr);
+                WriteLabels(_str);
         }
         Slot s = GetComponent<Slot>();
         if (s)
             WriteLabels(name);
-        attrToDisplay = _attr;
+        attrToDisplay = _str;
     }
 
     ///<summary>
