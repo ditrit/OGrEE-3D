@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: TriLibSettings
   m_EditorClassIdentifier: 
   _boolKeys:
-  - StandardMaterialMapper
   - UniversalRPMaterialMapper
-  _boolValues: 0001
+  _boolValues: 01

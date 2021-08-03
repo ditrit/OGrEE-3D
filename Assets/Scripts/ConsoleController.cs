@@ -121,7 +121,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_saveCmd">If ".cmds", save it in GameManager ? true by default</param>
     public void RunCommandString(string _input, bool _saveCmd = true)
     {
-        if (string.IsNullOrEmpty(_input.Trim()) || _input.StartsWith("//"))
+        _input = RemoveComment(_input);
+        if (string.IsNullOrEmpty(_input.Trim()))
             return;
 
         StartCoroutine(WaitAndRunCmdStr(_input.Trim(), _saveCmd));
@@ -1201,6 +1202,17 @@ public class ConsoleController : MonoBehaviour
             // Debug.Log($"[{variables[key]}] {_input}");
         }
         return _input;
+    }
+
+    ///<summary>
+    /// Removes every characters after a "//" indicator.
+    ///</summary>
+    ///<param name="_input">The string to refine</param>
+    ///<returns>The given string without comment</returns>
+    private string RemoveComment(string _input)
+    {
+        string[] data = _input.Split(new string[] {"//"}, StringSplitOptions.None);
+        return data[0];
     }
 
     #endregion
