@@ -65,8 +65,12 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_value">The value to assign</param>
     public virtual void SetAttribute(string _param, string _value)
     {
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -85,16 +89,19 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                     }
                     else
                         SetDomain(_value);
+                    updateAttr = true;
                     break;
                 default:
                     if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    updateAttr = true;
                     break;
             }
         }
-        PutData();
+        if (updateAttr && ApiManager.instance.isInit)
+            PutData();
         GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
 
@@ -212,67 +219,71 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void SetLod(string _level)
+    public async void LoadChildren(string _level)
     {
         int lvl = 0;
         int.TryParse(_level, out lvl);
-        currentLod = Mathf.Clamp(lvl, 0, 2);
-        GameManager.gm.AppendLogLine($"Set {name}'s LOD to {currentLod}", "green");
-
-        string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
-        int index = 0;
-        for (int i = 0; i < categories.Length; i++)
+        int clampedValue = Mathf.Clamp(lvl, 0, 2);
+        if (currentLod != clampedValue)
         {
-            if ($"{category}s" == categories[i])
-                index = i;
-        }
+            currentLod = clampedValue;
+            GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
 
-        string apiCall = "";
-        switch (currentLod)
-        {
-            case 0:
-                // Delete all children
-                DeleteChildren(0);
-                break;
-            case 1:
-                // Get only 1st lvl children
-                DeleteChildren(1);
-                if (category == "tenant")
-                    apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
-                else if (category == "device")
-                    apiCall = $"devices/{id}/subdevices";
-                else
-                    apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
-                break;
-            case 2:
-                // Get 1st lvl children & set them to LOD1
-                if (category == "tenant")
-                    apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
-                else if (category == "rack")
-                    apiCall = $"racks/{id}/all/devices/subdevices";
-                else if (category == "device")
-                    apiCall = $"devices/{id}/all";
-                else
-                    apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
-                break;
-        }
-        if (!string.IsNullOrEmpty(apiCall))
-        {
-            Debug.Log(apiCall);
-            await ApiManager.instance.GetObject(apiCall);
-
-            // Set currentLod to 1 for direct children of currentLod = 2
-            if (currentLod == 2)
+            string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
+            int index = 0;
+            for (int i = 0; i < categories.Length; i++)
             {
-                foreach (Transform child in transform)
+                if ($"{category}s" == categories[i])
+                    index = i;
+            }
+
+            string apiCall = "";
+            switch (currentLod)
+            {
+                case 0:
+                    // Delete all children
+                    DeleteChildren(0);
+                    break;
+                case 1:
+                    // Get only 1st lvl children
+                    DeleteChildren(1);
+                    if (category == "tenant")
+                        apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
+                    else if (category == "device")
+                        apiCall = $"devices/{id}/subdevices";
+                    else
+                        apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
+                    break;
+                case 2:
+                    // Get 1st lvl children & set them to LOD1
+                    if (category == "tenant")
+                        apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
+                    else if (category == "rack")
+                        apiCall = $"racks/{id}/all/devices/subdevices";
+                    else if (category == "device")
+                        apiCall = $"devices/{id}/all";
+                    else
+                        apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
+                    break;
+            }
+            if (!string.IsNullOrEmpty(apiCall))
+            {
+                Debug.Log(apiCall);
+                await ApiManager.instance.GetObject(apiCall);
+
+                // Set currentLod to 1 for direct children of currentLod = 2
+                if (currentLod != 0)
                 {
-                    OgreeObject obj = child.GetComponent<OgreeObject>();
-                    if (obj)
-                        obj.currentLod = 1;
+                    foreach (Transform child in transform)
+                    {
+                        OgreeObject obj = child.GetComponent<OgreeObject>();
+                        if (obj)
+                            obj.currentLod = currentLod - 1;
+                    }
                 }
             }
+            GameManager.gm.detailsSlider.UpdateSlider(currentLod);
         }
-        GameManager.gm.lodSlider.UpdateSlider(currentLod);
     }
 
     ///<summary>
@@ -293,7 +304,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             foreach (OgreeObject obj in objsToDel)
             {
-                Debug.Log($"[Delete] {obj.name}");
+                Debug.Log($"[Delete] {obj.hierarchyName}");
                 GameManager.gm.DeleteItem(obj.gameObject, false);
             }
         }

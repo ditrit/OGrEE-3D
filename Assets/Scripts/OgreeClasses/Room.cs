@@ -344,8 +344,12 @@ public class Room : Building
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
+        {
             SetDescription(_param.Substring(11), _value);
+            updateAttr = true;
+        }
         else
         {
             switch (_param)
@@ -358,9 +362,11 @@ public class Room : Building
                     }
                     else
                         SetDomain(_value);
+                    updateAttr = true;
                     break;
                 case "areas":
                     ParseAreas(_value);
+                    updateAttr = true;
                     break;
                 case "tilesName":
                     ToggleTilesName(_value);
@@ -373,10 +379,12 @@ public class Room : Building
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
+                    updateAttr = true;
                     break;
             }
         }
-        PutData();
+        if (updateAttr && ApiManager.instance.isInit)
+            PutData();
     }
 
     ///<summary>

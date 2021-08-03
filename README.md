@@ -1,7 +1,7 @@
 # OGREE-3D
 OGREE 3D is a data-center viewer  
-- Build windows in v2.2
-- Build to come : macOS / Android
+- Build windows / macOS / Linux: v2.3
+- Build to come: Android
 - Gamer gpu needed
 - VR version to come  
 

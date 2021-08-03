@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
+    [SerializeField] private Button apiBtn = null;
     [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
@@ -24,10 +25,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GameObject debugPanel = null;
-    public LodSlider lodSlider = null;
+    public DetailsSlider detailsSlider = null;
 
     [Header("Materials")]
     public Material defaultMat;
+    public Material alphaMat;
     public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
@@ -75,14 +77,20 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
-        StartCoroutine(configLoader.ConnectToApi());
         StartCoroutine(configLoader.LoadTextures());
 
         UpdateFocusText();
 
+#if API_DEBUG
+        ToggleApi();
+#endif
+
 #if DEBUG
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
+        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
@@ -144,19 +152,13 @@ public class GameManager : MonoBehaviour
         {
             bool canSelect = false;
             if (focus.Count > 0)
-            {
-                foreach (Transform child in focus[focus.Count - 1].transform)
-                {
-                    if (child == hit.collider.transform.parent)
-                        canSelect = true;
-                }
-            }
+                canSelect = IsInFocus(hit.collider.transform.parent.gameObject);
             else
                 canSelect = true;
 
             if (canSelect)
             {
-                if (Input.GetKey(KeyCode.LeftControl))
+                if (Input.GetKey(KeyCode.LeftControl) && currentItems.Count > 0)
                     UpdateCurrentItems(hit.collider.transform.parent.gameObject);
                 else
                     SetCurrentItem(hit.collider.transform.parent.gameObject);
@@ -224,8 +226,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void UpdateCurrentItems(GameObject _obj)
     {
-        if ((currentItems[0].GetComponent<Building>() && !_obj.GetComponent<Building>())
-            || (currentItems[0].GetComponent<OObject>() && !_obj.GetComponent<OObject>()))
+        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category)
         {
             AppendLogLine("Multiple selection should be same type of objects.", "yellow");
             return;
@@ -258,16 +259,19 @@ public class GameManager : MonoBehaviour
     private void SelectItem(GameObject _obj)
     {
         if (currentItems.Count == 0)
-            lodSlider.ActiveSlider(true);
+            detailsSlider.ActiveSlider(true);
 
         currentItems.Add(_obj);
-        if (_obj.GetComponent<OObject>())
-        {
-            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-            if (ol)
-                ol.enabled = true;
-        }
-        lodSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
+        // if (_obj.GetComponent<OObject>())
+        // {
+
+        //     cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
+        //     if (ol)
+        //         ol.enabled = true;
+        // }
+
+        EventManager.Instance.Raise(new OnSelectItemEvent() { _obj = _obj });
+        detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
     ///<summary>
@@ -285,9 +289,11 @@ public class GameManager : MonoBehaviour
         }
         if (currentItems.Count == 0)
         {
-            lodSlider.UpdateSlider(0);
-            lodSlider.ActiveSlider(false);
+            detailsSlider.UpdateSlider(0);
+            detailsSlider.ActiveSlider(false);
         }
+
+        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj });
     }
 
     ///<summary>
@@ -296,18 +302,14 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public void FocusItem(GameObject _obj)
     {
+        if (_obj.GetComponent<OgreeObject>().category == "corridor")
+            return;
         bool canFocus = false;
         if (focus.Count == 0)
             canFocus = true;
         else
-        {
-            Transform root = focus[focus.Count - 1].transform;
-            foreach (Transform child in root)
-            {
-                if (child.gameObject == _obj)
-                    canFocus = true;
-            }
-        }
+            canFocus = IsInFocus(_obj);
+
         if (canFocus == true)
         {
             focus.Add(_obj);
@@ -321,6 +323,8 @@ public class GameManager : MonoBehaviour
             }
             UpdateFocusText();
             SetCurrentItem(_obj);
+
+            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] });
         }
         else
             UnfocusItem();
@@ -342,6 +346,8 @@ public class GameManager : MonoBehaviour
             obj.GetComponent<OObject>().ToggleSlots("true");
         }
         UpdateFocusText();
+
+        EventManager.Instance.Raise(new OnUnFocusEvent() { _obj = obj });
     }
 
     ///<summary>
@@ -358,6 +364,33 @@ public class GameManager : MonoBehaviour
             focusText.text = "No focus";
 
         AppendLogLine(focusText.text, "green");
+    }
+
+    ///<summary>
+    /// Check if the given GameObject is a child (or a content) of focused object.
+    ///</summary>
+    ///<param name="_obj">The object to check</param>
+    ///<returns>True if _obj is a child of focused object</returns>
+    private bool IsInFocus(GameObject _obj)
+    {
+        Transform root = focus[focus.Count - 1].transform;
+        if (root.GetComponent<Group>())
+        {
+            foreach (GameObject go in root.GetComponent<Group>().GetContent())
+            {
+                if (go == _obj)
+                    return true;
+            }
+        }
+        else
+        {
+            foreach (Transform child in root)
+            {
+                if (child.gameObject == _obj)
+                    return true;
+            }
+        }
+        return false;
     }
 
     ///<summary>
@@ -409,11 +442,12 @@ public class GameManager : MonoBehaviour
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
     ///<param name="_lastPath">The command file path to store</param>
-    public void SetReloadBtn(string _lastPath)
+    public void SetReloadBtn(bool _value, string _lastPath = null)
     {
-        lastCmdFilePath = _lastPath;
-        reloadBtn.interactable = (!string.IsNullOrEmpty(lastCmdFilePath));
-
+        if (_lastPath != null)
+            lastCmdFilePath = _lastPath;
+        if (!string.IsNullOrEmpty(lastCmdFilePath))
+            reloadBtn.interactable = _value;
     }
 
     ///<summary>
@@ -434,9 +468,10 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < tenants.Count; i++)
             Destroy(tenants[i]);
+        allItems.Clear();
 
-        foreach (var kpv in objectTemplates)
-            Destroy(kpv.Value);
+        foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
+            Destroy(kvp.Value);
         objectTemplates.Clear();
         roomTemplates.Clear();
         consoleController.variables.Clear();
@@ -453,6 +488,38 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
+    }
+
+    ///<summary>
+    /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
+    ///</summary>
+    public async void ToggleApi()
+    {
+        if (ApiManager.instance.isInit)
+        {
+            ApiManager.instance.isInit = false;
+            ChangeApiButton("Connect to Api", Color.white);
+            AppendLogLine("Disconnected from API", "green");
+        }
+        else
+        {
+            await configLoader.ConnectToApi();
+            if (ApiManager.instance.isInit)
+                ChangeApiButton("Connected to Api", Color.green);
+            else
+                ChangeApiButton("Fail to connected to Api", Color.red);
+        }
+    }
+
+    ///<summary>
+    /// Change text and color of apiBtn.
+    ///</summary>
+    ///<param name="_str">The new text of the button</param>
+    ///<param name="_color">The new color of the button</param>
+    private void ChangeApiButton(string _str, Color _color)
+    {
+        apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
+        apiBtn.GetComponent<Image>().color = _color;
     }
 
     ///<summary>

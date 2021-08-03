@@ -137,9 +137,12 @@ public class ReadFromJson
         }
         else if (obj.category == "device")
         {
-            int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
-            obj.attributes["posU"] = "0";
-            obj.attributes["sizeU"] = sizeU.ToString();
+            if (data.attributes.ContainsKey("type")
+                && (data.attributes["type"] == "chassis" || data.attributes["type"] == "server"))
+            {
+                int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+                obj.attributes["sizeU"] = sizeU.ToString();
+            }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
             obj.attributes["sizeUnit"] = "mm";
             obj.attributes["height"] = data.sizeWDHmm[2].ToString();
@@ -171,6 +174,8 @@ public class ReadFromJson
                 ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
+
+        newObject.GetComponent<OObject>().color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
         // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
@@ -291,16 +296,22 @@ public class ReadFromJson
         dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
-        Material mat = go.transform.GetChild(0).GetComponent<Renderer>().material;
+        Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
         Color myColor = new Color();
         if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+        {
+            rend.material = GameManager.gm.alphaMat;
+            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+        }
         else
-            mat.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+        {
+            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+            go.GetComponent<OObject>().color = rend.material.color;
+        }
     }
 
 }
