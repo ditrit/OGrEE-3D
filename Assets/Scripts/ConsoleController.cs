@@ -1080,7 +1080,7 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse an ui command and call the corresponding GameManager method
+    /// Parse an ui command and call the corresponding method.
     ///</summary>
     ///<param name="_input">The input to parse</param>
     private void ParseUiCommand(string _input)
@@ -1112,11 +1112,32 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else if (Regex.IsMatch(_input, "^delay=[0-9.]+$"))
+        {
             SetTimer(_input.Substring(_input.IndexOf('=') + 1));
+        }
+        else if (Regex.IsMatch(_input, "^(highlight|hl)=[^@\\s]+$"))
+        {
+            string[] data = _input.Split('=');
+            StartCoroutine(HighlightItem(data[1]));
+        }
         else
             AppendLogLine("Syntax error", "red");
 
         UnlockController();
+    }
+
+    ///<summary>
+    /// Raise a new HighlightEvent with given gameObject.
+    ///</summary>
+    ///<param name="_name">The hierarchyName of the object to send</param>
+    private IEnumerator HighlightItem(string _name)
+    {
+        yield return new WaitForEndOfFrame();
+        if (GameManager.gm.allItems.Contains(_name))
+        {
+            GameObject obj = (GameObject)GameManager.gm.allItems[_name];
+            EventManager.Instance.Raise(new HighlightEvent { _obj = obj });
+        }
     }
 
     ///<summary>
@@ -1211,7 +1232,7 @@ public class ConsoleController : MonoBehaviour
     ///<returns>The given string without comment</returns>
     private string RemoveComment(string _input)
     {
-        string[] data = _input.Split(new string[] {"//"}, StringSplitOptions.None);
+        string[] data = _input.Split(new string[] { "//" }, StringSplitOptions.None);
         return data[0];
     }
 

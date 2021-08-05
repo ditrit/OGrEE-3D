@@ -32,6 +32,11 @@ public class OnMouseUnHoverEvent : CustomEvent
     public GameObject _obj { get; set; }
 }
 
+public class HighlightEvent : CustomEvent
+{
+    public GameObject _obj { get; set; }
+}
+
 public class ImportFinishedEvent : CustomEvent
 {
 
