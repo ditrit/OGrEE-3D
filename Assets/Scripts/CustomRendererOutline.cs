@@ -105,7 +105,7 @@ public class CustomRendererOutline : MonoBehaviour
 
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected && !isHighlighted)
+        if (e._obj.Equals(gameObject) && !isSelected)
         {
             SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), mouseHoverMaterial);
             isHovered = true;
@@ -114,13 +114,20 @@ public class CustomRendererOutline : MonoBehaviour
 
     private void OnMouseUnHover(OnMouseUnHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected && !isHighlighted)
+        if (e._obj.Equals(gameObject) && !isSelected)
         {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
-            if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
-                SetMaterial(renderer, transparentMaterial);
+            if (isHighlighted)
+            {
+                SetMaterial(renderer, highlightMaterial);
+            }
             else
-                SetMaterial(renderer, defaultMaterial);
+            {
+                if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(renderer, transparentMaterial);
+                else
+                    SetMaterial(renderer, defaultMaterial);
+            }
 
             renderer.material.color = e._obj.GetComponent<OObject>().color;
             isHovered = false;
@@ -137,6 +144,7 @@ public class CustomRendererOutline : MonoBehaviour
         {
             isHighlighted = !isHighlighted;
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
+            EventManager.Instance.Raise(new HighlightEvent { _obj = transform.parent.gameObject });
             if (isHighlighted)
             {
                 SetMaterial(renderer, highlightMaterial);

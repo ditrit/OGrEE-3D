@@ -1023,9 +1023,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
+  isHighlighted: 0
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0
