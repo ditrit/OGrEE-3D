@@ -169,6 +169,7 @@ MonoBehaviour:
   selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
+  focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0

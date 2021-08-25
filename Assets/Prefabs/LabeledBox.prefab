@@ -960,6 +960,7 @@ GameObject:
   - component: {fileID: 8422964209624112029}
   - component: {fileID: 226685182499933010}
   - component: {fileID: -7375449237141215194}
+  - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
   - component: {fileID: 7641173002511634591}
   m_Layer: 0
@@ -1024,10 +1025,32 @@ MonoBehaviour:
   selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
+  focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
   isHighlighted: 0
+  isFocused: 0
+--- !u!114 &896571463841240914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rackOwnObjectsList: []
+  ogreeChildObjects: []
+  slotsChildObjects: []
+  ogreeChildMeshRendererList: []
+  slotChildMeshRendererList: []
+  isSelected: 0
+  isHovered: 0
+  isFocused: 0
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0

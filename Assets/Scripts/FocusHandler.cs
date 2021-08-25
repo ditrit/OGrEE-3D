@@ -7,7 +7,7 @@ using UnityEngine;
 ///</summary>
 public class FocusHandler : MonoBehaviour
 {
-    public List<GameObject> rackOwnObjectsList;
+    public List<GameObject> OwnObjectsList;
     public List<GameObject> ogreeChildObjects;
     public List<GameObject> slotsChildObjects;
 
@@ -16,6 +16,7 @@ public class FocusHandler : MonoBehaviour
 
     public bool isSelected = false;
     public bool isHovered = false;
+    public bool isFocused = false;
 
     private void Awake()
     {
@@ -36,6 +37,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -50,6 +54,9 @@ public class FocusHandler : MonoBehaviour
 
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
@@ -77,23 +84,73 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
-        if (e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled)
+        if (e._obj.Equals(gameObject))
         {
-            UpdateChildMeshRenderers(false);
+            if (transform.GetChild(0).GetComponent<Renderer>().enabled && !isFocused)
+                UpdateChildMeshRenderers(false);
             isSelected = false;
         }
     }
 
-    private void OnMouseHover(OnMouseHoverEvent e) {
-        if(e._obj.Equals(gameObject) && !isSelected) {
+    ///
+    private void OnFocusItem(OnFocusEvent e)
+    {
+        if (e._obj == gameObject)
+        {
+            UpdateChildMeshRenderers(true);
+            UpdateOtherChildrenMeshRenderers(false);
+            isFocused = true;
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        }
+        else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
+        {
+            if (GetComponent<OObject>().category == "rack" || GetComponent<OObject>().category == "device")
+            {
+                GetComponent<OObject>().UpdateAlpha("true");
+                GetComponent<OObject>().ToggleSlots("false");
+            }
+        }
+    }
+
+    ///
+    private void OnUnFocusItem(OnUnFocusEvent e)
+    {
+        if (e._obj == gameObject)
+        {
+            UpdateOtherChildrenMeshRenderers(true);
+            UpdateChildMeshRenderers(false);
+            isFocused = false;
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+
+            if (GameManager.gm.focus.Count > 0)
+            {
+                // EventManager.Instance.Raise(new OnFocusEvent() { _obj = GameManager.gm.focus[GameManager.gm.focus.Count - 1] });
+                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
+                newFocus.GetComponent<OObject>().UpdateAlpha("false");
+                newFocus.GetComponent<OObject>().ToggleSlots("true");
+            }
+        }
+    }
+
+    ///
+    private void OnMouseHover(OnMouseHoverEvent e)
+    {
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+            return;
+        if (e._obj.Equals(gameObject) && !isSelected && !isFocused)
+        {
             UpdateChildMeshRenderers(true);
             isHovered = true;
         }
 
     }
 
-    private void OnMouseUnHover(OnMouseUnHoverEvent e) {
-        if(e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled && !isSelected) {
+    ///
+    private void OnMouseUnHover(OnMouseUnHoverEvent e)
+    {
+        if (e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
+            && !isSelected && !isFocused)
+        {
             UpdateChildMeshRenderers(false);
             isHovered = false;
         }
@@ -107,7 +164,8 @@ public class FocusHandler : MonoBehaviour
     {
         FillListsWithChildren();
         FillMeshRendererLists();
-        if (transform.GetChild(0).GetComponent<Renderer>().enabled && transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f)
+        if (transform.GetChild(0).GetComponent<Renderer>().enabled
+            && transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f)
             UpdateChildMeshRenderers(false);
     }
 
@@ -117,7 +175,7 @@ public class FocusHandler : MonoBehaviour
     private void FillListsWithChildren()
     {
         ogreeChildObjects.Clear();
-        rackOwnObjectsList.Clear();
+        OwnObjectsList.Clear();
         slotsChildObjects.Clear();
 
         foreach (Transform child in transform)
@@ -132,7 +190,7 @@ public class FocusHandler : MonoBehaviour
             }
             else
             {
-                rackOwnObjectsList.Add(child.gameObject);
+                OwnObjectsList.Add(child.gameObject);
             }
         }
     }
@@ -182,4 +240,25 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///
+    private void UpdateOtherChildrenMeshRenderers(bool _value)
+    {
+        List<Transform> others = new List<Transform>();
+        foreach (Transform child in transform.parent)
+        {
+            if (child.GetComponent<OgreeObject>() && child != transform)
+                others.Add(child);
+        }
+
+        List<MeshRenderer> renderers = new List<MeshRenderer>();
+        foreach (Transform obj in others)
+        {
+            MeshRenderer[] meshRenderers = obj.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer mr in meshRenderers)
+                renderers.Add(mr);
+        }
+
+        foreach (MeshRenderer mr in renderers)
+            mr.enabled = _value;
+    }
 }
