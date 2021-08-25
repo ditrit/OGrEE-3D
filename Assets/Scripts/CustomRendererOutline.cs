@@ -7,6 +7,7 @@ public class CustomRendererOutline : MonoBehaviour
     public Material selectedMaterial;
     public Material mouseHoverMaterial;
     public Material highlightMaterial;
+    public Material focusMaterial;
     private Material defaultMaterial;
     private Material transparentMaterial;
 
@@ -15,6 +16,7 @@ public class CustomRendererOutline : MonoBehaviour
     public bool isSelected = false;
     public bool isHovered = false;
     public bool isHighlighted = false;
+    public bool isFocused = false;
 
     private void Start()
     {
@@ -42,6 +44,9 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -55,6 +60,9 @@ public class CustomRendererOutline : MonoBehaviour
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
@@ -87,9 +95,9 @@ public class CustomRendererOutline : MonoBehaviour
         {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             if (isHighlighted)
-            {
                 SetMaterial(renderer, highlightMaterial);
-            }
+            else if (isFocused)
+                SetMaterial(renderer, focusMaterial);
             else
             {
                 if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
@@ -103,18 +111,55 @@ public class CustomRendererOutline : MonoBehaviour
         }
     }
 
+    ///
+    private void OnFocusItem(OnFocusEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
+            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), focusMaterial);
+            isFocused = true;
+        }
+    }
+
+    ///
+    private void OnUnFocusItem(OnUnFocusEvent e)
+    {
+        if (e._obj.Equals(gameObject))
+        {
+            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
+            if (isHighlighted)
+                SetMaterial(renderer, highlightMaterial);
+            else if (isSelected)
+                SetMaterial(renderer, selectedMaterial);
+            else
+            {
+                if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(renderer, transparentMaterial);
+                else
+                    SetMaterial(renderer, defaultMaterial);
+
+                renderer.material.color = e._obj.GetComponent<OObject>().color;
+            }
+            isFocused = false;
+        }
+    }
+
+    ///
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected)
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+            return;
+        if (e._obj.Equals(gameObject) && !isSelected && !isFocused)
         {
             SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), mouseHoverMaterial);
             isHovered = true;
         }
     }
 
+    ///
     private void OnMouseUnHover(OnMouseUnHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected)
+        if (e._obj.Equals(gameObject) && !isSelected && !isFocused)
         {
             Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             if (isHighlighted)
