@@ -70,7 +70,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e.obj.Equals(gameObject))
         {
             UpdateChildMeshRenderers(true);
             isSelected = true;
@@ -84,7 +84,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e.obj.Equals(gameObject))
         {
             if (transform.GetChild(0).GetComponent<Renderer>().enabled && !isFocused)
                 UpdateChildMeshRenderers(false);
@@ -92,10 +92,14 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
+    /// If he is the previously focused GameObject, use OObject methods to hide it.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent e)
     {
-        if (e._obj == gameObject)
+        if (e.obj == gameObject)
         {
             UpdateChildMeshRenderers(true);
             UpdateOtherChildrenMeshRenderers(false);
@@ -112,10 +116,13 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
-        if (e._obj == gameObject)
+        if (e.obj == gameObject)
         {
             UpdateOtherChildrenMeshRenderers(true);
             UpdateChildMeshRenderers(false);
@@ -124,7 +131,6 @@ public class FocusHandler : MonoBehaviour
 
             if (GameManager.gm.focus.Count > 0)
             {
-                // EventManager.Instance.Raise(new OnFocusEvent() { _obj = GameManager.gm.focus[GameManager.gm.focus.Count - 1] });
                 GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
                 newFocus.GetComponent<OObject>().UpdateAlpha("false");
                 newFocus.GetComponent<OObject>().ToggleSlots("true");
@@ -132,12 +138,16 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and if true activates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent e)
     {
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
             return;
-        if (e._obj.Equals(gameObject) && !isSelected && !isFocused)
+
+        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
             UpdateChildMeshRenderers(true);
             isHovered = true;
@@ -145,10 +155,13 @@ public class FocusHandler : MonoBehaviour
 
     }
 
-    ///
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnMouseUnHover(OnMouseUnHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
+        if (e.obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
             && !isSelected && !isFocused)
         {
             UpdateChildMeshRenderers(false);
@@ -240,7 +253,10 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Catch all object in the same hierarchy level of its parent and turns on or off all they MeshRenderer.
+    ///</summary>
+    ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateOtherChildrenMeshRenderers(bool _value)
     {
         List<Transform> others = new List<Transform>();

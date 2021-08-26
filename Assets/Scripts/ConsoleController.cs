@@ -1136,7 +1136,7 @@ public class ConsoleController : MonoBehaviour
         if (GameManager.gm.allItems.Contains(_name))
         {
             GameObject obj = (GameObject)GameManager.gm.allItems[_name];
-            EventManager.Instance.Raise(new HighlightEvent { _obj = obj });
+            EventManager.Instance.Raise(new HighlightEvent { obj = obj });
         }
     }
 

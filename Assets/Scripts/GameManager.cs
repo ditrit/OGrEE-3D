@@ -263,7 +263,7 @@ public class GameManager : MonoBehaviour
 
         currentItems.Add(_obj);
 
-        EventManager.Instance.Raise(new OnSelectItemEvent() { _obj = _obj });
+        EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
@@ -280,7 +280,7 @@ public class GameManager : MonoBehaviour
             detailsSlider.ActiveSlider(false);
         }
 
-        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj });
+        EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
     }
 
     ///<summary>
@@ -309,7 +309,7 @@ public class GameManager : MonoBehaviour
         {
             focus.Add(_obj);
             UpdateFocusText();
-            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] });
+            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
             SetCurrentItem(_obj);
         }
         else
@@ -325,7 +325,7 @@ public class GameManager : MonoBehaviour
         focus.Remove(obj);
         UpdateFocusText();
 
-        EventManager.Instance.Raise(new OnUnFocusEvent() { _obj = obj });
+        EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
             SetCurrentItem(focus[focus.Count - 1]);
         else
