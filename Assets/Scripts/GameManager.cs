@@ -310,7 +310,7 @@ public class GameManager : MonoBehaviour
             focus.Add(_obj);
             UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(_obj);
+            // SetCurrentItem(_obj);
         }
         else
             UnfocusItem();
@@ -326,10 +326,10 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
-        if (focus.Count > 0)
-            SetCurrentItem(focus[focus.Count - 1]);
-        else
-            SetCurrentItem(null);
+        // if (focus.Count > 0)
+        //     SetCurrentItem(focus[focus.Count - 1]);
+        // else
+        //     SetCurrentItem(null);
     }
 
     ///<summary>
