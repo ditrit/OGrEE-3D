@@ -105,6 +105,7 @@ public class FocusHandler : MonoBehaviour
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(false);
         }
         else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
         {
@@ -126,6 +127,7 @@ public class FocusHandler : MonoBehaviour
             UpdateChildMeshRenderers(false);
             isFocused = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(true);
 
             if (GameManager.gm.focus.Count > 0)
             {
@@ -260,7 +262,7 @@ public class FocusHandler : MonoBehaviour
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
             meshRenderer.enabled = _value;
-            if (meshRenderer.GetComponent<Collider>())
+            if (meshRenderer.GetComponent<Collider>() && !meshRenderer.transform.parent.GetComponent<Slot>())
                 meshRenderer.GetComponent<Collider>().enabled = _collider;
         }
 
