@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Group : OObject
 {
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        ToggleContent("true");
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>

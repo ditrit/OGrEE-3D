@@ -181,7 +181,12 @@ public class GameManager : MonoBehaviour
         RaycastHit hit;
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
         if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<OObject>())
-            FocusItem(hit.collider.transform.parent.gameObject);
+        {
+            if (hit.collider.transform.parent.GetComponent<Group>())
+                hit.collider.transform.parent.GetComponent<Group>().ToggleContent("true");
+            else
+                FocusItem(hit.collider.transform.parent.gameObject);
+        }
         else if (focus.Count > 0)
             UnfocusItem();
     }
