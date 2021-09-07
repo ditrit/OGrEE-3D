@@ -79,7 +79,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), selectedMaterial);
+            SetMaterial(selectedMaterial);
             isSelected = true;
         }
 
@@ -93,19 +93,18 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             if (isHighlighted)
-                SetMaterial(renderer, highlightMaterial);
+                SetMaterial(highlightMaterial);
             else if (isFocused)
-                SetMaterial(renderer, focusMaterial);
+                SetMaterial(focusMaterial);
             else
             {
                 if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(renderer, transparentMaterial);
+                    SetMaterial(transparentMaterial);
                 else
-                    SetMaterial(renderer, defaultMaterial);
+                    SetMaterial(defaultMaterial);
 
-                renderer.material.color = e.obj.GetComponent<OObject>().color;
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
             }
             isSelected = false;
         }
@@ -119,7 +118,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), focusMaterial);
+            SetMaterial(focusMaterial);
             isFocused = true;
         }
     }
@@ -132,21 +131,25 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             if (isHighlighted)
-                SetMaterial(renderer, highlightMaterial);
+                SetMaterial(highlightMaterial);
             else if (isSelected)
-                SetMaterial(renderer, selectedMaterial);
+                SetMaterial(selectedMaterial);
             else
             {
                 if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(renderer, transparentMaterial);
+                    SetMaterial(transparentMaterial);
                 else
-                    SetMaterial(renderer, defaultMaterial);
-
-                renderer.material.color = e.obj.GetComponent<OObject>().color;
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
             }
             isFocused = false;
+
+            if (GameManager.gm.focus.Count > 0)
+            {
+                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
+                newFocus.GetComponent<CustomRendererOutline>().SetMaterial(focusMaterial);
+            }
         }
     }
 
@@ -161,7 +164,7 @@ public class CustomRendererOutline : MonoBehaviour
 
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
-            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), mouseHoverMaterial);
+            SetMaterial(mouseHoverMaterial);
             isHovered = true;
         }
     }
@@ -174,18 +177,15 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             if (isHighlighted)
-            {
-                SetMaterial(renderer, highlightMaterial);
-            }
+                SetMaterial(highlightMaterial);
             else
             {
                 if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(renderer, transparentMaterial);
+                    SetMaterial(transparentMaterial);
                 else
-                    SetMaterial(renderer, defaultMaterial);
-                renderer.material.color = e.obj.GetComponent<OObject>().color;
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
             }
 
             isHovered = false;
@@ -201,19 +201,16 @@ public class CustomRendererOutline : MonoBehaviour
         if (e.obj.Equals(gameObject))
         {
             isHighlighted = !isHighlighted;
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
             EventManager.Instance.Raise(new HighlightEvent { obj = transform.parent.gameObject });
             if (isHighlighted)
-            {
-                SetMaterial(renderer, highlightMaterial);
-            }
+                SetMaterial(highlightMaterial);
             else
             {
                 if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(renderer, transparentMaterial);
+                    SetMaterial(transparentMaterial);
                 else
-                    SetMaterial(renderer, defaultMaterial);
-                renderer.material.color = e.obj.GetComponent<OObject>().color;
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
             }
         }
     }
@@ -223,14 +220,15 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    private void SetMaterial(Renderer _renderer, Material _newMat)
+    private void SetMaterial(Material _newMat)
     {
-        Material mat = _renderer.material;
-        _renderer.material = Instantiate(_newMat);
+        Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
+        Material mat = renderer.material;
+        renderer.material = Instantiate(_newMat);
 
-        _renderer.material.SetTexture("_BaseMap", mat.GetTexture("_BaseMap"));
-        _renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
-        _renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
-        _renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
+        renderer.material.SetTexture("_BaseMap", mat.GetTexture("_BaseMap"));
+        renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
+        renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
+        renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
     }
 }
