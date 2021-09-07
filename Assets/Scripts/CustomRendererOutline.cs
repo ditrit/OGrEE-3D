@@ -185,9 +185,9 @@ public class CustomRendererOutline : MonoBehaviour
                     SetMaterial(renderer, transparentMaterial);
                 else
                     SetMaterial(renderer, defaultMaterial);
+                renderer.material.color = e.obj.GetComponent<OObject>().color;
             }
 
-            renderer.material.color = e.obj.GetComponent<OObject>().color;
             isHovered = false;
         }
     }
