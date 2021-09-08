@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
         ToggleApi();
 #endif
 
-#if DEBUG
+#if !PROD
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 
-#if DEBUG
+#if !PROD
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
