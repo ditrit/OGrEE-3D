@@ -14,18 +14,25 @@ public class FocusHandler : MonoBehaviour
     public List<MeshRenderer> ogreeChildMeshRendererList;
     public List<MeshRenderer> slotChildMeshRendererList;
 
+    public bool isActive = false;
+
     public bool isSelected = false;
     public bool isHovered = false;
     public bool isFocused = false;
 
-    private void Awake()
+    private void Start()
     {
-        SubscribeEvents();
+        if (GameManager.gm.allItems.ContainsValue(gameObject))
+            isActive = true;
+
+        if (isActive)
+            SubscribeEvents();
     }
 
     private void OnDestroy()
     {
-        UnsubscribeEvents();
+        if (isActive)
+            UnsubscribeEvents();
     }
 
     ///<summary>
