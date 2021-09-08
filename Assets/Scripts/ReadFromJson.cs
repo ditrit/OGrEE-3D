@@ -91,7 +91,17 @@ public class ReadFromJson
     ///<param name="_json">Json to parse</param>
     public void CreateRoomTemplate(string _json)
     {
-        SRoomFromJson roomData = JsonUtility.FromJson<SRoomFromJson>(_json);
+        SRoomFromJson roomData;
+        try
+        {
+            roomData = JsonUtility.FromJson<SRoomFromJson>(_json);
+        }
+        catch (System.Exception e)
+        {
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            return;
+        }
+        
         if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
             return;
 
@@ -104,7 +114,17 @@ public class ReadFromJson
     ///<param name="_json">Json to parse</param>
     public void CreateObjectTemplate(string _json)
     {
-        STemplate data = JsonConvert.DeserializeObject<STemplate>(_json);
+        STemplate data;
+        try
+        {
+            data = JsonConvert.DeserializeObject<STemplate>(_json);
+        }
+        catch (System.Exception e)
+        {
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            return;
+        }
+
         if (data.category != "rack" && data.category != "device")
         {
             GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");

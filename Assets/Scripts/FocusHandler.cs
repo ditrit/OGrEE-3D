@@ -7,7 +7,7 @@ using UnityEngine;
 ///</summary>
 public class FocusHandler : MonoBehaviour
 {
-    public List<GameObject> rackOwnObjectsList;
+    public List<GameObject> OwnObjectsList;
     public List<GameObject> ogreeChildObjects;
     public List<GameObject> slotsChildObjects;
 
@@ -16,6 +16,7 @@ public class FocusHandler : MonoBehaviour
 
     public bool isSelected = false;
     public bool isHovered = false;
+    public bool isFocused = false;
 
     private void Awake()
     {
@@ -36,6 +37,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -51,6 +55,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -63,7 +70,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e.obj.Equals(gameObject))
         {
             UpdateChildMeshRenderers(true);
             isSelected = true;
@@ -77,23 +84,86 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
-        if (e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled)
+        if (e.obj.Equals(gameObject))
         {
-            UpdateChildMeshRenderers(false);
+            if (transform.GetChild(0).GetComponent<Renderer>().enabled && !isFocused)
+                UpdateChildMeshRenderers(false);
             isSelected = false;
         }
     }
 
-    private void OnMouseHover(OnMouseHoverEvent e) {
-        if(e._obj.Equals(gameObject) && !isSelected) {
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
+    /// If he is the previously focused GameObject, use OObject methods to hide it.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnFocusItem(OnFocusEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+            UpdateChildMeshRenderers(true, true);
+            UpdateOtherObjectsMeshRenderers(false);
+            isFocused = true;
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+        }
+        else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
+        {
+            UpdateOwnMeshRenderers(false);
+            if (GetComponent<OObject>().category == "rack" || GetComponent<OObject>().category == "device")
+                GetComponent<OObject>().ToggleSlots("false");
+        }
+    }
+
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnUnFocusItem(OnUnFocusEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+            UpdateOtherObjectsMeshRenderers(true);
+            UpdateChildMeshRenderers(false);
+            isFocused = false;
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(true);
+
+            if (GameManager.gm.focus.Count > 0)
+            {
+                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
+                newFocus.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(true);
+                newFocus.GetComponent<OObject>().ToggleSlots("true");
+            }
+        }
+    }
+
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and if true activates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnMouseHover(OnMouseHoverEvent e)
+    {
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+            return;
+
+        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
+        {
             UpdateChildMeshRenderers(true);
             isHovered = true;
         }
 
     }
 
-    private void OnMouseUnHover(OnMouseUnHoverEvent e) {
-        if(e._obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled && !isSelected) {
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and if true deactivates all of his child's mesh renderers.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnMouseUnHover(OnMouseUnHoverEvent e)
+    {
+        if (e.obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
+            && !isSelected && !isFocused)
+        {
             UpdateChildMeshRenderers(false);
             isHovered = false;
         }
@@ -107,7 +177,8 @@ public class FocusHandler : MonoBehaviour
     {
         FillListsWithChildren();
         FillMeshRendererLists();
-        if (transform.GetChild(0).GetComponent<Renderer>().enabled && transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f)
+        if (transform.GetChild(0).GetComponent<Renderer>().enabled
+            && transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f)
             UpdateChildMeshRenderers(false);
     }
 
@@ -117,7 +188,7 @@ public class FocusHandler : MonoBehaviour
     private void FillListsWithChildren()
     {
         ogreeChildObjects.Clear();
-        rackOwnObjectsList.Clear();
+        OwnObjectsList.Clear();
         slotsChildObjects.Clear();
 
         foreach (Transform child in transform)
@@ -132,7 +203,7 @@ public class FocusHandler : MonoBehaviour
             }
             else
             {
-                rackOwnObjectsList.Add(child.gameObject);
+                OwnObjectsList.Add(child.gameObject);
             }
         }
     }
@@ -150,7 +221,9 @@ public class FocusHandler : MonoBehaviour
             MeshRenderer[] OgreeChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer meshRenderer in OgreeChildMeshRenderers)
             {
-                ogreeChildMeshRendererList.Add(meshRenderer);
+                Slot s = meshRenderer.transform.parent.GetComponent<Slot>();
+                if (!(s && s.used == true))
+                    ogreeChildMeshRendererList.Add(meshRenderer);
             }
         }
 
@@ -165,14 +238,32 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
+    /// When called enables/disables the MeshRenderers located in the OwnObjectsList depending on the boolean argument.
+    ///</summary>
+    ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
+    private void UpdateOwnMeshRenderers(bool _value)
+    {
+        foreach (GameObject go in OwnObjectsList)
+        {
+            MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer mr in renderers)
+                mr.enabled = _value;
+        }
+        // transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+    }
+
+    ///<summary>
     /// When called enables/disables the child MeshRenderers located in the OgreeChildMeshRendererList and SlotChildMeshRendererList depending on the boolean argument.
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
-    private void UpdateChildMeshRenderers(bool _value)
+    ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
+    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
             meshRenderer.enabled = _value;
+            if (meshRenderer.GetComponent<Collider>() && !meshRenderer.transform.parent.GetComponent<Slot>())
+                meshRenderer.GetComponent<Collider>().enabled = _collider;
         }
 
         foreach (MeshRenderer meshRenderer in slotChildMeshRendererList)
@@ -182,4 +273,28 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Catch all object in the same hierarchy level of its parent and turns on or off all they MeshRenderer.
+    ///</summary>
+    ///<param name="_value">The value to give to all MeshRenderer</param>
+    private void UpdateOtherObjectsMeshRenderers(bool _value)
+    {
+        List<Transform> others = new List<Transform>();
+        foreach (Transform child in transform.parent)
+        {
+            if (child.GetComponent<OgreeObject>() && child != transform)
+                others.Add(child);
+        }
+
+        foreach (Transform obj in others)
+        {
+            FocusHandler fh = obj.GetComponent<FocusHandler>();
+            if (fh)
+            {
+                fh.UpdateOwnMeshRenderers(_value);
+                fh.UpdateChildMeshRenderers(_value);
+                fh.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+            }
+        }
+    }
 }
