@@ -235,10 +235,11 @@ public class ReadFromJson
         }
 
         // Toggle renderers & put newObj in GameManager.objectTemplates
-#if !DEBUG
+#if PROD
         Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
             r.enabled = false;
+        newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 #endif
         GameManager.gm.allItems.Remove(newObject.hierarchyName);
         GameManager.gm.objectTemplates.Add(newObject.name, newObject.gameObject);

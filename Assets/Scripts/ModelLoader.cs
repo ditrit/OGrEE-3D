@@ -73,6 +73,11 @@ public class ModelLoader : MonoBehaviour
         triLibObj.gameObject.AddComponent<BoxCollider>();
         triLibObj.tag = "Selectable";
 
+#if PROD
+        // Hide template object
+        triLibObj.GetComponent<Renderer>().enabled = false;
+        triLibObj.GetComponent<Collider>().enabled = false;
+#endif
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.

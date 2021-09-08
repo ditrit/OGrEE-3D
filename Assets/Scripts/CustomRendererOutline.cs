@@ -23,7 +23,8 @@ public class CustomRendererOutline : MonoBehaviour
         defaultMaterial = GameManager.gm.defaultMat;
         transparentMaterial = GameManager.gm.alphaMat;
 
-        if (GetComponent<OObject>())
+        // if (GetComponent<OObject>())
+        if (GameManager.gm.allItems.ContainsValue(gameObject))
             isActive = true;
 
         if (isActive)
