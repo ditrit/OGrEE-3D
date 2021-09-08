@@ -53,6 +53,7 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
+            newRack.transform.GetChild(0).GetComponent<Collider>().enabled = true;
         }
 
         newRack.name = _rk.name;
@@ -402,6 +403,7 @@ public class ObjectGenerator : MonoBehaviour
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
                 r.enabled = true;
+            go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
             return go;
         }
         else
