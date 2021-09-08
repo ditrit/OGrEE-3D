@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -181,7 +181,12 @@ public class GameManager : MonoBehaviour
         RaycastHit hit;
         Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
         if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<OObject>())
-            FocusItem(hit.collider.transform.parent.gameObject);
+        {
+            if (hit.collider.transform.parent.GetComponent<Group>())
+                hit.collider.transform.parent.GetComponent<Group>().ToggleContent("true");
+            else
+                FocusItem(hit.collider.transform.parent.gameObject);
+        }
         else if (focus.Count > 0)
             UnfocusItem();
     }
@@ -262,15 +267,8 @@ public class GameManager : MonoBehaviour
             detailsSlider.ActiveSlider(true);
 
         currentItems.Add(_obj);
-        // if (_obj.GetComponent<OObject>())
-        // {
 
-        //     cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-        //     if (ol)
-        //         ol.enabled = true;
-        // }
-
-        EventManager.Instance.Raise(new OnSelectItemEvent() { _obj = _obj });
+        EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
     }
 
@@ -281,19 +279,13 @@ public class GameManager : MonoBehaviour
     private void DeselectItem(GameObject _obj)
     {
         currentItems.Remove(_obj);
-        if (_obj.GetComponent<OObject>())
-        {
-            cakeslice.Outline ol = _obj.transform.GetChild(0).GetComponent<cakeslice.Outline>();
-            if (ol)
-                ol.enabled = false;
-        }
         if (currentItems.Count == 0)
         {
             detailsSlider.UpdateSlider(0);
             detailsSlider.ActiveSlider(false);
         }
 
-        EventManager.Instance.Raise(new OnDeselectItemEvent() { _obj = _obj });
+        EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
     }
 
     ///<summary>
@@ -304,6 +296,14 @@ public class GameManager : MonoBehaviour
     {
         if (_obj.GetComponent<OgreeObject>().category == "corridor")
             return;
+
+        OObject[] children = _obj.GetComponentsInChildren<OObject>();
+        if (children.Length == 1)
+        {
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", "yellow");
+            return;
+        }
+
         bool canFocus = false;
         if (focus.Count == 0)
             canFocus = true;
@@ -313,18 +313,9 @@ public class GameManager : MonoBehaviour
         if (canFocus == true)
         {
             focus.Add(_obj);
-            if (_obj.GetComponent<Group>())
-                _obj.GetComponent<Group>().ToggleContent("true");
-            else
-            {
-                _obj.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                _obj.GetComponent<OObject>().UpdateAlpha("true");
-                _obj.GetComponent<OObject>().ToggleSlots("false");
-            }
             UpdateFocusText();
-            SetCurrentItem(_obj);
-
-            EventManager.Instance.Raise(new OnFocusEvent() { _obj = focus[focus.Count - 1] });
+            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            // SetCurrentItem(_obj);
         }
         else
             UnfocusItem();
@@ -337,17 +328,13 @@ public class GameManager : MonoBehaviour
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
-        if (obj.GetComponent<Group>())
-            obj.GetComponent<Group>().ToggleContent("false");
-        else
-        {
-            obj.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-            obj.GetComponent<OObject>().UpdateAlpha("false");
-            obj.GetComponent<OObject>().ToggleSlots("true");
-        }
         UpdateFocusText();
 
-        EventManager.Instance.Raise(new OnUnFocusEvent() { _obj = obj });
+        EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        // if (focus.Count > 0)
+        //     SetCurrentItem(focus[focus.Count - 1]);
+        // else
+        //     SetCurrentItem(null);
     }
 
     ///<summary>
@@ -447,7 +434,10 @@ public class GameManager : MonoBehaviour
         if (_lastPath != null)
             lastCmdFilePath = _lastPath;
         if (!string.IsNullOrEmpty(lastCmdFilePath))
+        {
             reloadBtn.interactable = _value;
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+        }
     }
 
     ///<summary>

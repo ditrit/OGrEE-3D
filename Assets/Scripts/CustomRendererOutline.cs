@@ -6,6 +6,8 @@ public class CustomRendererOutline : MonoBehaviour
 {
     public Material selectedMaterial;
     public Material mouseHoverMaterial;
+    public Material highlightMaterial;
+    public Material focusMaterial;
     private Material defaultMaterial;
     private Material transparentMaterial;
 
@@ -13,6 +15,8 @@ public class CustomRendererOutline : MonoBehaviour
 
     public bool isSelected = false;
     public bool isHovered = false;
+    public bool isHighlighted = false;
+    public bool isFocused = false;
 
     private void Start()
     {
@@ -40,8 +44,13 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+
+        EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
     }
 
     ///<summary>
@@ -52,65 +61,157 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+
+        EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
     }
 
 
     ///<summary>
-    /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
+    /// When called checks if he is the GameObject selected and change its material.
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e.obj.Equals(gameObject))
         {
-            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), selectedMaterial);
+            SetMaterial(selectedMaterial);
             isSelected = true;
         }
 
     }
 
     ///<summary>
-    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
+    /// When called checks if he is the GameObject selected and revert its material to the previously used.
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
-        if (e._obj.Equals(gameObject))
+        if (e.obj.Equals(gameObject))
         {
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
-            if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
-                SetMaterial(renderer, transparentMaterial);
+            if (isHighlighted)
+                SetMaterial(highlightMaterial);
+            else if (isFocused)
+                SetMaterial(focusMaterial);
             else
-                SetMaterial(renderer, defaultMaterial);
+            {
+                if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(transparentMaterial);
+                else
+                    SetMaterial(defaultMaterial);
 
-            renderer.material.color = e._obj.GetComponent<OObject>().color;
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
+            }
             isSelected = false;
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and change its material.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnFocusItem(OnFocusEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            SetMaterial(focusMaterial);
+            isFocused = true;
+        }
+    }
+
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and revert its material to the previously used.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void OnUnFocusItem(OnUnFocusEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            if (isHighlighted)
+                SetMaterial(highlightMaterial);
+            else if (isSelected)
+                SetMaterial(selectedMaterial);
+            else
+            {
+                if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(transparentMaterial);
+                else
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
+            }
+            isFocused = false;
+
+            if (GameManager.gm.focus.Count > 0)
+            {
+                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
+                newFocus.GetComponent<CustomRendererOutline>().SetMaterial(focusMaterial);
+            }
+        }
+    }
+
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and change its material.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected)
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+            return;
+
+        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
-            SetMaterial(transform.GetChild(0).GetComponent<Renderer>(), mouseHoverMaterial);
+            SetMaterial(mouseHoverMaterial);
             isHovered = true;
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject hovered on and revert its material to the previously used.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnMouseUnHover(OnMouseUnHoverEvent e)
     {
-        if (e._obj.Equals(gameObject) && !isSelected)
+        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
-            Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
-            if (e._obj.GetComponent<OObject>().category.Equals("corridor"))
-                SetMaterial(renderer, transparentMaterial);
+            if (isHighlighted)
+                SetMaterial(highlightMaterial);
             else
-                SetMaterial(renderer, defaultMaterial);
+            {
+                if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(transparentMaterial);
+                else
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
+            }
 
-            renderer.material.color = e._obj.GetComponent<OObject>().color;
             isHovered = false;
+        }
+    }
+
+    ///<summary>
+    /// Change the material for highlightMaterial if this gameObject is highlighted.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
+    private void ToggleHighlight(HighlightEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            isHighlighted = !isHighlighted;
+            EventManager.Instance.Raise(new HighlightEvent { obj = transform.parent.gameObject });
+            if (isHighlighted)
+                SetMaterial(highlightMaterial);
+            else
+            {
+                if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(transparentMaterial);
+                else
+                    SetMaterial(defaultMaterial);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
+            }
         }
     }
 
@@ -119,14 +220,15 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    private void SetMaterial(Renderer _renderer, Material _newMat)
+    private void SetMaterial(Material _newMat)
     {
-        Material mat = _renderer.material;
-        _renderer.material = Instantiate(_newMat);
+        Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
+        Material mat = renderer.material;
+        renderer.material = Instantiate(_newMat);
 
-        _renderer.material.SetTexture("_BaseMap", mat.GetTexture("_BaseMap"));
-        _renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
-        _renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
-        _renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
+        renderer.material.SetTexture("_BaseMap", mat.GetTexture("_BaseMap"));
+        renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
+        renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
+        renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
     }
 }
