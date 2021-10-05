@@ -108,6 +108,7 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
@@ -151,7 +152,8 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+        if (GameManager.gm.focus.Count > 0
+            && (!transform.parent || GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject))
             return;
 
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
@@ -286,21 +288,59 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateOtherObjectsMeshRenderers(bool _value)
     {
-        List<Transform> others = new List<Transform>();
-        foreach (Transform child in transform.parent)
-        {
-            if (child.GetComponent<OgreeObject>() && child != transform)
-                others.Add(child);
-        }
+        // List<Transform> others = new List<Transform>();
+        // foreach (Transform child in transform.parent)
+        // {
+        //     if (child.GetComponent<OgreeObject>() && child != transform)
+        //         others.Add(child);
+        // }
 
-        foreach (Transform obj in others)
+        // foreach (Transform obj in others)
+        // {
+        //     FocusHandler fh = obj.GetComponent<FocusHandler>();
+        //     if (fh)
+        //     {
+        //         fh.UpdateOwnMeshRenderers(_value);
+        //         fh.UpdateChildMeshRenderers(_value);
+        //         fh.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        //     }
+        // }
+
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            FocusHandler fh = obj.GetComponent<FocusHandler>();
-            if (fh)
+            GameObject go = (GameObject)de.Value;
+            if (ogreeChildObjects.Contains(go) == false && go != this.gameObject)
             {
-                fh.UpdateOwnMeshRenderers(_value);
-                fh.UpdateChildMeshRenderers(_value);
-                fh.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                FocusHandler fh;
+                switch (go.GetComponent<OgreeObject>().category)
+                {
+                    case "building":
+                        Building bd = go.GetComponent<Building>();
+                        bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
+                        foreach (Transform wall in bd.walls)
+                            wall.GetComponent<Renderer>().enabled = _value;
+                        break;
+                    case "room":
+                        Room ro = go.GetComponent<Room>();
+                        ro.usableZone.GetComponent<Renderer>().enabled = _value;
+                        ro.reservedZone.GetComponent<Renderer>().enabled = _value;
+                        ro.technicalZone.GetComponent<Renderer>().enabled = _value;
+                        ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
+                        ro.nameText.GetComponent<Renderer>().enabled = _value;
+                        foreach (Transform wall in ro.walls)
+                            wall.GetComponent<Renderer>().enabled = _value;
+                        break;
+                    case "rack":
+                        fh = go.GetComponent<FocusHandler>();
+                        fh.UpdateOwnMeshRenderers(_value);
+                        go.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                        break;
+                    case "device":
+                        fh = go.GetComponent<FocusHandler>();
+                        fh.UpdateOwnMeshRenderers(_value);
+                        go.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                        break;
+                }
             }
         }
     }

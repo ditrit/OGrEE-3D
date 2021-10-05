@@ -58,6 +58,7 @@ MonoBehaviour:
   domain: 
   attributesKeys: []
   attributesValues: []
+  currentLod: 0
   walls: {fileID: 2447770562802736307}
   reserved:
     left: 0
