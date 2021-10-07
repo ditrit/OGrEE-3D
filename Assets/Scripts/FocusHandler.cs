@@ -115,12 +115,12 @@ public class FocusHandler : MonoBehaviour
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
         }
-        else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
-        {
-            UpdateOwnMeshRenderers(false);
-            if (GetComponent<OObject>().category == "rack" || GetComponent<OObject>().category == "device")
-                GetComponent<OObject>().ToggleSlots("false");
-        }
+        // else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
+        // {
+        //     UpdateOwnMeshRenderers(false);
+        //     if (GetComponent<OObject>().category == "rack" || GetComponent<OObject>().category == "device")
+        //         GetComponent<OObject>().ToggleSlots("false");
+        // }
     }
 
     ///<summary>
@@ -131,8 +131,8 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
-            UpdateOtherObjectsMeshRenderers(true);
             UpdateChildMeshRenderers(false);
+            UpdateOtherObjectsMeshRenderers(true);
             isFocused = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
@@ -140,8 +140,9 @@ public class FocusHandler : MonoBehaviour
             if (GameManager.gm.focus.Count > 0)
             {
                 GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-                newFocus.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(true);
-                newFocus.GetComponent<OObject>().ToggleSlots("true");
+                EventManager.Instance.Raise(new OnFocusEvent() {obj = newFocus});
+                // newFocus.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(true);
+                // newFocus.GetComponent<OObject>().ToggleSlots("true");
             }
         }
     }
@@ -258,6 +259,7 @@ public class FocusHandler : MonoBehaviour
             foreach (MeshRenderer mr in renderers)
                 mr.enabled = _value;
         }
+        GetComponent<OObject>().ToggleSlots(_value.ToString());
         // transform.GetChild(0).GetComponent<Collider>().enabled = _value;
     }
 
@@ -288,24 +290,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateOtherObjectsMeshRenderers(bool _value)
     {
-        // List<Transform> others = new List<Transform>();
-        // foreach (Transform child in transform.parent)
-        // {
-        //     if (child.GetComponent<OgreeObject>() && child != transform)
-        //         others.Add(child);
-        // }
-
-        // foreach (Transform obj in others)
-        // {
-        //     FocusHandler fh = obj.GetComponent<FocusHandler>();
-        //     if (fh)
-        //     {
-        //         fh.UpdateOwnMeshRenderers(_value);
-        //         fh.UpdateChildMeshRenderers(_value);
-        //         fh.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
-        //     }
-        // }
-
         foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
             GameObject go = (GameObject)de.Value;
@@ -337,8 +321,8 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "device":
                         fh = go.GetComponent<FocusHandler>();
-                        fh.UpdateOwnMeshRenderers(_value);
-                        go.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                        fh.UpdateOwnMeshRenderers(false);
+                        go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
                         break;
                 }
             }
