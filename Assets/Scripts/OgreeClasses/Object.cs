@@ -77,6 +77,7 @@ public class OObject : OgreeObject
     ///<param name="_value">Alpha wanted for the rack</param>
     public void UpdateAlpha(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("alpha value has to be true or false", "yellow");
@@ -142,6 +143,7 @@ public class OObject : OgreeObject
     ///<param name="_value">True or false value</param>
     public void ToggleSlots(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
@@ -186,6 +188,7 @@ public class OObject : OgreeObject
     ///<param name="_value">true of false value</param>
     public void ToggleCS(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
