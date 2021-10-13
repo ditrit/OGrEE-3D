@@ -268,6 +268,11 @@ public class CameraControl : MonoBehaviour
         {
             transform.position = _target.position;
             float offset = 3f;
+            OObject obj = _target.GetComponent<OObject>();
+            if (obj && obj.category == "rack")
+                offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
+            else if (obj && obj.category == "device")
+                offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
             switch ((int)_target.eulerAngles.y)
             {
                 case 0:
@@ -277,8 +282,8 @@ public class CameraControl : MonoBehaviour
                     break;
                 case 90:
                     Debug.Log("90");
-                    transform.position += new Vector3(-offset, 0, 0);
-                    transform.eulerAngles = new Vector3(0, 90, 0);
+                    transform.position += new Vector3(offset, 0, 0);
+                    transform.eulerAngles = new Vector3(0, 270, 0);
                     break;
                 case 180:
                     Debug.Log("180");
@@ -287,11 +292,11 @@ public class CameraControl : MonoBehaviour
                     break;
                 case 270:
                     Debug.Log("270");
-                    transform.position += new Vector3(offset, 0, 0);
-                    transform.eulerAngles = new Vector3(0, 270, 0);
+                    transform.position += new Vector3(-offset, 0, 0);
+                    transform.eulerAngles = new Vector3(0, 90, 0);
                     break;
                 default:
-                    Debug.Log(_target.rotation.y);
+                    Debug.Log("default: " + _target.rotation.y);
                     break;
             }
         }
