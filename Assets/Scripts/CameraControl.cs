@@ -238,7 +238,6 @@ public class CameraControl : MonoBehaviour
     ///<param name="_e">The raised event</param>
     private void OnFocus(OnFocusEvent _e)
     {
-        Debug.Log("CameraControl.OnFocus()...");
         MoveToObject(_e.obj.transform);
     }
 
@@ -248,7 +247,6 @@ public class CameraControl : MonoBehaviour
     ///<param name="_e">The raised event</param>
     private void OnUnFocus(OnUnFocusEvent _e)
     {
-        Debug.Log("CameraControl.OnUnFocus()...");
         MoveToObject(null);
     }
 
@@ -276,22 +274,22 @@ public class CameraControl : MonoBehaviour
             switch ((int)_target.eulerAngles.y)
             {
                 case 0:
-                    Debug.Log("0");
+                    // Debug.Log("0");
                     transform.position += new Vector3(0, 0, offset);
                     transform.eulerAngles = new Vector3(0, 180, 0);
                     break;
                 case 90:
-                    Debug.Log("90");
+                    // Debug.Log("90");
                     transform.position += new Vector3(offset, 0, 0);
                     transform.eulerAngles = new Vector3(0, 270, 0);
                     break;
                 case 180:
-                    Debug.Log("180");
+                    // Debug.Log("180");
                     transform.position += new Vector3(0, 0, -offset);
                     transform.eulerAngles = new Vector3(0, 0, 0);
                     break;
                 case 270:
-                    Debug.Log("270");
+                    // Debug.Log("270");
                     transform.position += new Vector3(-offset, 0, 0);
                     transform.eulerAngles = new Vector3(0, 90, 0);
                     break;

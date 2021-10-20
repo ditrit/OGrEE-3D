@@ -5242,7 +5242,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2021-10-13 #1fe6c16'
+  m_text: 'B: 2021-10-20 #32c15ff+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10657,7 +10657,6 @@ MonoBehaviour:
   currentItemText: {fileID: 1510264671}
   reloadBtn: {fileID: 1890827699}
   apiBtn: {fileID: 184299213}
-  currentCam: {fileID: 1079497875}
   objInfos: {fileID: 879283141}
   toggleWireframe: {fileID: 1337625306}
   focusText: {fileID: 1346455887}

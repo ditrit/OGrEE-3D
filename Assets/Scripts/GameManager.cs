@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +16,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Button apiBtn = null;
-    [SerializeField] private Camera currentCam = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
@@ -146,25 +145,24 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void SingleClick()
     {
-        RaycastHit hit;
-        Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        if (hit.collider && hit.collider.tag == "Selectable")
+        GameObject objectHit = Utils.RaycastFromCameraToMouse();
+        if (objectHit && objectHit.tag == "Selectable")
         {
             bool canSelect = false;
             if (focus.Count > 0)
-                canSelect = IsInFocus(hit.collider.transform.parent.gameObject);
+                canSelect = IsInFocus(objectHit);
             else
                 canSelect = true;
 
             if (canSelect)
             {
                 if (Input.GetKey(KeyCode.LeftControl) && currentItems.Count > 0)
-                    UpdateCurrentItems(hit.collider.transform.parent.gameObject);
+                    UpdateCurrentItems(objectHit);
                 else
-                    SetCurrentItem(hit.collider.transform.parent.gameObject);
+                    SetCurrentItem(objectHit);
             }
         }
-        else if (hit.collider == null || (hit.collider && hit.collider.tag != "Selectable"))
+        else
         {
             if (currentItems.Count > 0)
                 AppendLogLine("Empty selection.", "green");
@@ -177,15 +175,13 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void DoubleClick()
     {
-        // Debug.Log("Double Click");
-        RaycastHit hit;
-        Physics.Raycast(currentCam.transform.position, currentCam.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        if (hit.collider && hit.collider.tag == "Selectable" && hit.collider.transform.parent.GetComponent<OObject>())
+        GameObject objectHit = Utils.RaycastFromCameraToMouse();
+        if (objectHit && objectHit.tag == "Selectable" && objectHit.GetComponent<OObject>())
         {
-            if (hit.collider.transform.parent.GetComponent<Group>())
-                hit.collider.transform.parent.GetComponent<Group>().ToggleContent("true");
+            if (objectHit.GetComponent<Group>())
+                objectHit.GetComponent<Group>().ToggleContent("true");
             else
-                FocusItem(hit.collider.transform.parent.gameObject);
+                FocusItem(objectHit);
         }
         else if (focus.Count > 0)
             UnfocusItem();

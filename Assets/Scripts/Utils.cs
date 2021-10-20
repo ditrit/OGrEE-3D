@@ -98,4 +98,21 @@ public static class Utils
         }
         return parent;
     }
+
+    ///<summary>
+    /// Cast a raycast from main camera and returns hit object
+    ///</summary>
+    ///<returns>Hit GameObject or null</returns>
+    public static GameObject RaycastFromCameraToMouse()
+    {
+        RaycastHit hit;
+        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        if (hit.collider)
+        {
+            // Debug.Log(hit.collider.transform.parent.name);
+            return hit.collider.transform.parent.gameObject;
+        }
+        else
+            return null;
+    }
 }

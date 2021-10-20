@@ -244,7 +244,7 @@ public class FocusHandler : MonoBehaviour
                 mr.enabled = _value;
         }
         GetComponent<OObject>().ToggleSlots(_value.ToString());
-        // transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        transform.GetChild(0).GetComponent<Collider>().enabled = _value;
     }
 
     ///<summary>
@@ -279,7 +279,6 @@ public class FocusHandler : MonoBehaviour
             GameObject go = (GameObject)de.Value;
             if (ogreeChildObjects.Contains(go) == false && go != this.gameObject)
             {
-                FocusHandler fh;
                 switch (go.GetComponent<OgreeObject>().category)
                 {
                     case "tenant":
@@ -313,14 +312,17 @@ public class FocusHandler : MonoBehaviour
                         }
                         break;
                     case "rack":
-                        fh = go.GetComponent<FocusHandler>();
-                        fh.UpdateOwnMeshRenderers(_value);
-                        go.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
                         break;
                     case "device":
-                        fh = go.GetComponent<FocusHandler>();
-                        fh.UpdateOwnMeshRenderers(false);
-                        go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
+                        break;
+                    case "group":
+                        if (go.GetComponent<Group>().isDisplayed)
+                            go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
+                        break;
+                    case "corridor":
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
                         break;
                     default:
                         go.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
