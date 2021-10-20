@@ -77,7 +77,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Failed to connect with API: no token", "red");
         else
         {
-            server = _serverUrl + "/api/user";
+            server = _serverUrl + "/api";
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
             try
             {
