@@ -130,12 +130,6 @@ public class FocusHandler : MonoBehaviour
             isFocused = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
-
-            if (GameManager.gm.focus.Count > 0)
-            {
-                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-                EventManager.Instance.Raise(new OnFocusEvent() { obj = newFocus });
-            }
         }
     }
 
