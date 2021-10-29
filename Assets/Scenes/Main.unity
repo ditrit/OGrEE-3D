@@ -1092,8 +1092,7 @@ MonoBehaviour:
   humanMode: 0
   targetPos: []
   targetRot: []
-  previousPos: {x: 0, y: 0, z: 0}
-  previousRot: {x: 0, y: 0, z: 0}
+  labeledTransforms: []
 --- !u!1 &214809336
 GameObject:
   m_ObjectHideFlags: 0
@@ -5242,7 +5241,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2021-10-20 #32c15ff+'
+  m_text: 'B: 2021-10-29 #edb1da8'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10687,6 +10686,8 @@ MonoBehaviour:
     type: 3}
   separatorModel: {fileID: 6439851413883331907, guid: 2fec6d44e3c98f84f8a75b9cf071fd4e,
     type: 3}
+  sensorExtModel: {fileID: 0}
+  sensorIntModel: {fileID: 0}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
   currentItems: []

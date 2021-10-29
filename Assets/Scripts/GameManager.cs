@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -327,6 +327,8 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        if (focus.Count > 0)
+            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         // if (focus.Count > 0)
         //     SetCurrentItem(focus[focus.Count - 1]);
         // else
