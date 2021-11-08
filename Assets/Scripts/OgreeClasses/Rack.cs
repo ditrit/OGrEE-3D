@@ -76,6 +76,9 @@ public class Rack : OObject
                 case "U":
                     ToggleU(_value);
                     break;
+                case "temperature":
+                    SetTemperature(_value);
+                    break;
                 default:
                     if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;

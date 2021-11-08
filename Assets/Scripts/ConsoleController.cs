@@ -522,6 +522,8 @@ public class ConsoleController : MonoBehaviour
             CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
             CreateCorridor(str[1]);
+        else if (str[0] == "sensor" || str[0] == "se")
+            CreateSensor(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -931,6 +933,39 @@ public class ConsoleController : MonoBehaviour
                 co.domain = parent.GetComponent<OgreeObject>().domain;
 
                 ObjectGenerator.instance.CreateCorridor(co, parent);
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create sensor" command and call ObjectGenerator.CreateSensor().
+    ///</summary>
+    ///<param name="_input">String with sensor data to parse</param>
+    private void CreateSensor(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@(ext|int)@[0-9.]+$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            Transform parent = null;
+            SApiObject se = new SApiObject();
+            se.description = new List<string>();
+            se.attributes = new Dictionary<string, string>();
+
+            se.name = "sensor"; // ?
+            se.category = "sensor";
+            parent = GameManager.gm.FindByAbsPath(data[0])?.transform;
+            se.attributes["formFactor"] = data[1];
+            se.attributes["temperature"] = data[2];
+            if (parent)
+            {
+                se.parentId = parent.GetComponent<OgreeObject>().id;
+                se.domain = parent.GetComponent<OgreeObject>().domain;
+
+                ObjectGenerator.instance.CreateSensor(se, parent);
             }
         }
         else

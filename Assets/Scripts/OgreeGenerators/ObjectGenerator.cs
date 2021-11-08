@@ -19,7 +19,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
-    ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created rack. Leave null if _rk contains the parendId</param>
     ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
@@ -184,7 +184,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply given data to it.
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
-    ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created device. Leave null if _dv contains the parendId</param>
     ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
     public OObject CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
@@ -417,7 +417,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Generate a group (from GameManager.labeledBoxModel) which contains all the given objects.
     ///</summary>
     ///<param name="_gr">The group data to apply</param>
-    ///<param name="_parent">The parent of the generated group</param>
+    ///<param name="_parent">The parent of the created group. Leave null if _gr contains the parendId</param>
     ///<returns>The created rackGroup</returns>
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
@@ -598,10 +598,8 @@ public class ObjectGenerator : MonoBehaviour
     ///<summary>
     /// Generate a corridor (from GameManager.labeledBoxModel) with defined corners and color.
     ///</summary>
-    ///<param name="_name">The name of the corridor</param>
-    ///<param name="_parent">The parent of the generated corridor</param>
-    ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
-    ///<param name="_temp">"cold" or "warm" value</param>
+    ///<param name="_co">The corridor data to apply</param>
+    ///<param name="_parent">The parent of the created corridor. Leave null if _co contains the parendId</param>
     ///<returns>The created corridor</returns>
     public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
     {
@@ -679,4 +677,64 @@ public class ObjectGenerator : MonoBehaviour
         return co;
     }
 
+    ///<summary>
+    /// Generate a sensor (from GameManager.sensorExtModel/sensorIntModel) with defined temperature.
+    ///</summary>
+    ///<param name="_se">The sensor data to apply</param>
+    ///<param name="_parent">The parent of the created sensor. Leave null if _se contains the parendId</param>
+    ///<returns>The created sensor</returns>
+    public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
+    {
+        Transform parent = Utils.FindParent(_parent, _se.parentId);
+        if (!parent)
+        {
+            GameManager.gm.AppendLogLine($"Parent not found", "red");
+            return null;
+        }
+        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        if (parentCategory != "rack" && parentCategory != "device")
+        {
+            GameManager.gm.AppendLogLine("A sensor must be child of a rack or a device", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_se.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
+        GameObject newSensor;
+        if (_se.attributes["formFactor"] == "ext") //Dimensions : 80 x 26 x 18 mm
+        {
+            newSensor = Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor.name = "sensor";
+
+            Vector3 parentSize = _parent.GetChild(0).localScale;
+            Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
+            newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
+            newSensor.transform.localPosition += new Vector3(boxSize.x, -boxSize.y, 0) / 2;
+        }
+        else
+        {
+            newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
+            // place the sensor
+
+        }
+
+        Sensor sensor = newSensor.GetComponent<Sensor>();
+        sensor.UpdateFromSApiObject(_se);
+
+        sensor.UpdateSensorColor();
+        newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
+        newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
+
+
+
+        string hn = sensor.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hn, newSensor);
+
+        return sensor;
+    }
 }
