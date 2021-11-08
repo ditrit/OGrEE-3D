@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
     public GameObject uLocationModel;
     public GameObject coordinateSystemModel;
     public GameObject separatorModel;
+    public GameObject sensorExtModel;
+    public GameObject sensorIntModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
