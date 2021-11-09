@@ -618,8 +618,6 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
-            bd.attributes["posZ"] = "0"; // to del when removed from API
-            bd.attributes["posZUnit"] = "m"; // to del when removed from API
             bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             bd.attributes["sizeUnit"] = "m";
             bd.attributes["height"] = size.y.ToString();
@@ -661,8 +659,6 @@ public class ConsoleController : MonoBehaviour
             Vector3 pos = Utils.ParseVector2(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
-            ro.attributes["posZ"] = pos.z.ToString(); // to del when removed from API
-            ro.attributes["posZUnit"] = "m"; // to del when removed from API
 
             Vector3 size;
             if (data[2].StartsWith("["))
