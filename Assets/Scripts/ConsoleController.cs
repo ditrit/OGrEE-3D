@@ -883,19 +883,19 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             Transform parent = null;
-            SApiObject rg = new SApiObject();
-            rg.description = new List<string>();
-            rg.attributes = new Dictionary<string, string>();
+            SApiObject gr = new SApiObject();
+            gr.description = new List<string>();
+            gr.attributes = new Dictionary<string, string>();
 
-            rg.category = "group";
-            IsolateParent(data[0], out parent, out rg.name);
-            rg.attributes["content"] = data[1].Trim('{', '}');
+            gr.category = "group";
+            IsolateParent(data[0], out parent, out gr.name);
+            gr.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
             {
-                rg.parentId = parent.GetComponent<OgreeObject>().id;
-                rg.domain = parent.GetComponent<OgreeObject>().domain;
+                gr.parentId = parent.GetComponent<OgreeObject>().id;
+                gr.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateGroup(rg, parent);
+                ObjectGenerator.instance.CreateGroup(gr, parent);
             }
         }
         else
@@ -942,7 +942,7 @@ public class ConsoleController : MonoBehaviour
     private void CreateSensor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@(ext|int)@[0-9.]+$";
+        string pattern = "^[^@\\s]+@(ext@[0-9.]+|int@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@[0-9.]+)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
@@ -951,11 +951,23 @@ public class ConsoleController : MonoBehaviour
             se.description = new List<string>();
             se.attributes = new Dictionary<string, string>();
 
-            se.name = "sensor"; // ?
             se.category = "sensor";
-            parent = GameManager.gm.FindByAbsPath(data[0])?.transform;
-            se.attributes["formFactor"] = data[1];
-            se.attributes["temperature"] = data[2];
+                se.attributes["formFactor"] = data[1];
+            if (data[1] == "ext")
+            {
+                se.name = "sensor"; // ?
+                parent = GameManager.gm.FindByAbsPath(data[0])?.transform;
+                se.attributes["linkedObject"] = data[0];
+                se.attributes["temperature"] = data[2];
+            }
+            else
+            {
+                IsolateParent(data[0], out parent, out se.name);
+                se.attributes["temperature"] = data[3];
+                Vector3 tmp = Utils.ParseVector3(data[2], false);
+                se.attributes["posXY"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+                se.attributes["posU"] = tmp.z.ToString();
+            }
             if (parent)
             {
                 se.parentId = parent.GetComponent<OgreeObject>().id;
