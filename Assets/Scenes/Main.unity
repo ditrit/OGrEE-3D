@@ -5241,7 +5241,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2021-11-08 #0a8dcec'
+  m_text: 'B: 2021-11-10 #125d4d3'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10688,7 +10688,8 @@ MonoBehaviour:
     type: 3}
   sensorExtModel: {fileID: 6010235731161253863, guid: d5f1dea437b4d8247b0a6e981b274a4f,
     type: 3}
-  sensorIntModel: {fileID: 0}
+  sensorIntModel: {fileID: 6010235731161253863, guid: ff0469596841b8149a14774b014c600a,
+    type: 3}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
   currentItems: []

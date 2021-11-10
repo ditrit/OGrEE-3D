@@ -692,7 +692,8 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
-        if (parentCategory != "rack" && parentCategory != "device")
+        if (_se.attributes["formFactor"] == "ext"
+            && (parentCategory != "rack" && parentCategory != "device"))
         {
             GameManager.gm.AppendLogLine("A sensor must be child of a rack or a device", "red");
             return null;
@@ -719,7 +720,18 @@ public class ObjectGenerator : MonoBehaviour
         else
         {
             newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
-            // place the sensor
+            newSensor.name = _se.name;
+            PlaceInRoom(newSensor.transform, _se);
+            float posU = float.Parse(_se.attributes["posU"]);
+            if (posU == 0)
+            {
+                newSensor.transform.localPosition += Vector3.up;
+            }
+            else
+            {
+                newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
+                newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
+            }
 
         }
 
@@ -736,5 +748,50 @@ public class ObjectGenerator : MonoBehaviour
         GameManager.gm.allItems.Add(hn, newSensor);
 
         return sensor;
+    }
+
+    ///<summary>
+    /// Move the given Transform to given position in tiles in a room.
+    ///</summary>
+    ///<param name="_obj">The object to move</param>
+    ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
+    private void PlaceInRoom(Transform _obj, SApiObject _apiObj)
+    {
+        Vector2 pos = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+        Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
+        Vector3 boxOrigin = _obj.GetChild(0).localScale / 2;
+        _obj.position = _obj.parent.GetChild(0).position;
+
+        Vector2 orient = Vector2.one;
+        if (_obj.parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        {
+            if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Left corner of the room
+                orient = new Vector2(1, 1);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Right corner of the room
+                orient = new Vector2(-1, 1);
+                _obj.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Right corner of the room
+                orient = new Vector2(-1, -1);
+                _obj.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Left corner of the room
+                orient = new Vector2(1, -1);
+                _obj.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
+            }
+        }
+        _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+        _obj.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
+        _obj.localPosition += new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize) / 2;
+        _obj.localEulerAngles = new Vector3(0, 180, 0);
     }
 }
