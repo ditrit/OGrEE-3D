@@ -13,6 +13,7 @@ public class ReadFromJson
         public string slug;
         public string orientation;
         public float[] sizeWDHm;
+        public string floorUnit;
         public int[] technicalArea;
         public int[] reservedArea;
         public SSeparator[] separators;

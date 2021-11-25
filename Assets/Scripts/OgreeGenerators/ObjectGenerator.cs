@@ -70,45 +70,8 @@ public class ObjectGenerator : MonoBehaviour
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
         }
 
-        Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
-        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / 0.2f;
-        Vector3 boxOrigin;
-        Transform box = newRack.transform.GetChild(0);
-        if (box.childCount == 0)
-            boxOrigin = box.localScale / 2;
-        else
-            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-        newRack.transform.position = newRack.transform.parent.GetChild(0).position;
-
-        Vector2 orient = Vector2.one;
-        if (parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
-        {
-            if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
-            {
-                // Lower Left corner of the room
-                orient = new Vector2(1, 1);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
-            {
-                // Lower Right corner of the room
-                orient = new Vector2(-1, 1);
-                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
-            {
-                // Upper Right corner of the room
-                orient = new Vector2(-1, -1);
-                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
-            {
-                // Upper Left corner of the room
-                orient = new Vector2(1, -1);
-                newRack.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
-            }
-        }
-        newRack.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
-        newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
+        Vector2 orient;
+        PlaceInRoom(newRack.transform, _rk, out orient);
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk, _copyAttr);
@@ -120,6 +83,14 @@ public class ObjectGenerator : MonoBehaviour
             rack.attributes["orientation"] = _rk.attributes["orientation"];
         }
 
+        // Correct position according to rack size & rack orientation
+        Vector3 boxOrigin;
+        Transform box = newRack.transform.GetChild(0);
+        if (box.childCount == 0)
+            boxOrigin = box.localScale / 2;
+        else
+            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
+        float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
         Vector3 fixPos = Vector3.zero;
         switch (rack.attributes["orientation"])
         {
@@ -128,28 +99,28 @@ public class ObjectGenerator : MonoBehaviour
                 if (orient.y == 1)
                     fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 else
-                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
                 break;
             case "rear":
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 if (orient.y == 1)
-                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
                 else
                     fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 break;
             case "left":
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 if (orient.x == 1)
-                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, boxOrigin.x);
+                    fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
                 else
                     fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 break;
             case "right":
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 if (orient.x == 1)
-                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
                 else
-                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
+                    fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
                 break;
         }
         newRack.transform.localPosition += fixPos;
@@ -721,7 +692,14 @@ public class ObjectGenerator : MonoBehaviour
         {
             newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
             newSensor.name = _se.name;
-            PlaceInRoom(newSensor.transform, _se);
+            Vector2 orient;
+            PlaceInRoom(newSensor.transform, _se, out orient);
+
+            // Adjust position
+            float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
+            newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
+            newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
+
             float posU = float.Parse(_se.attributes["posU"]);
             if (posU == 0)
             {
@@ -755,43 +733,66 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_obj">The object to move</param>
     ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
-    private void PlaceInRoom(Transform _obj, SApiObject _apiObj)
+    private void PlaceInRoom(Transform _obj, SApiObject _apiObj, out Vector2 _orient)
     {
+        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
+
         Vector2 pos = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
-        Vector3 boxOrigin = _obj.GetChild(0).localScale / 2;
         _obj.position = _obj.parent.GetChild(0).position;
 
-        Vector2 orient = Vector2.one;
+        _orient = new Vector2();
         if (_obj.parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
         {
             if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
             {
                 // Lower Left corner of the room
-                orient = new Vector2(1, 1);
+                _orient = new Vector2(1, 1);
             }
             else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
             {
                 // Lower Right corner of the room
-                orient = new Vector2(-1, 1);
-                _obj.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
+                _orient = new Vector2(-1, 1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
             }
             else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
             {
                 // Upper Right corner of the room
-                orient = new Vector2(-1, -1);
-                _obj.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
+                _orient = new Vector2(-1, -1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
             }
             else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
             {
                 // Upper Left corner of the room
-                orient = new Vector2(1, -1);
-                _obj.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
+                _orient = new Vector2(1, -1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
             }
         }
-        _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
-        _obj.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
-        _obj.localPosition += new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize) / 2;
-        _obj.localEulerAngles = new Vector3(0, 180, 0);
+        // Go to the right corner of the room & apply pos
+        _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+        _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
+    }
+
+    ///<summary>
+    /// Get a floorUnit regarding given room attributes.
+    ///</summary>
+    ///<param name="_r">The room to parse</param>
+    ///<returns>The floor unit</returns>
+    private float GetUnitFromRoom(Room _r)
+    {
+        if (!_r.attributes.ContainsKey("floorUnit"))
+            return GameManager.gm.tileSize;
+        switch (_r.attributes["floorUnit"])
+        {
+            case "m":
+                return 1.0f;
+            case "f":
+                return 3.28084f;
+            default:
+                return GameManager.gm.tileSize;
+        }
     }
 }
