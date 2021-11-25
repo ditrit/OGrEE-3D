@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -645,11 +645,10 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)(@(t|m|f)){0,1}$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-
             Transform parent = null;
             SApiObject ro = new SApiObject();
             ro.description = new List<string>();
@@ -671,6 +670,7 @@ public class ConsoleController : MonoBehaviour
             {
                 ro.attributes["template"] = data[2];
                 ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
+                ro.attributes["floorUnit"] = GameManager.gm.roomTemplates[data[2]].floorUnit;
                 size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
                                 GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
                                 GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
@@ -684,6 +684,10 @@ public class ConsoleController : MonoBehaviour
             ro.attributes["sizeUnit"] = "m";
             ro.attributes["height"] = size.y.ToString();
             ro.attributes["heightUnit"] = "m";
+            if (data.Length == 5)
+                ro.attributes["floorUnit"] = data[4];
+            else
+                ro.attributes["floorUnit"] = "t";
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
@@ -952,7 +956,7 @@ public class ConsoleController : MonoBehaviour
             se.attributes = new Dictionary<string, string>();
 
             se.category = "sensor";
-                se.attributes["formFactor"] = data[1];
+            se.attributes["formFactor"] = data[1];
             if (data[1] == "ext")
             {
                 se.name = "sensor"; // ?
