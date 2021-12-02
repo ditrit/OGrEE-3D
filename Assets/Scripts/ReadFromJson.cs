@@ -149,7 +149,7 @@ public class ReadFromJson
         {
             Vector3 tmp = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[1], data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
-            obj.attributes["posXYUnit"] = "Tile";
+            obj.attributes["posXYUnit"] = "tile";
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
             obj.attributes["sizeUnit"] = "cm";
             obj.attributes["height"] = ((int)tmp.z).ToString();

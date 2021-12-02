@@ -730,7 +730,12 @@ public class ConsoleController : MonoBehaviour
 
             IsolateParent(data[0], out parent, out sp.name);
             if (parent)
+            {
+                sp.parentId = parent.GetComponent<OgreeObject>().id;
+                sp.domain = parent.GetComponent<OgreeObject>().domain;
+
                 BuildingGenerator.instance.CreateSeparator(sp, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
