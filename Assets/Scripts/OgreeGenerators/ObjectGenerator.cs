@@ -666,7 +666,13 @@ public class ObjectGenerator : MonoBehaviour
         if (_se.attributes["formFactor"] == "ext"
             && (parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.gm.AppendLogLine("A sensor must be child of a rack or a device", "red");
+            GameManager.gm.AppendLogLine("An external sensor must be child of a rack or a device", "red");
+            return null;
+        }
+        if (_se.attributes["formFactor"] == "int"
+            && (parentCategory != "room" && parentCategory != "rack" && parentCategory != "device"))
+        {
+            GameManager.gm.AppendLogLine("An internal sensor must be child of a room, a rack or a device", "red");
             return null;
         }
 
@@ -692,23 +698,37 @@ public class ObjectGenerator : MonoBehaviour
         {
             newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
             newSensor.name = _se.name;
-            Vector2 orient;
-            PlaceInRoom(newSensor.transform, _se, out orient);
-
-            // Adjust position
-            float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
-            newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
-            newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
-
-            float posU = float.Parse(_se.attributes["posU"]);
-            if (posU == 0)
+            if (parentCategory == "room")
             {
-                newSensor.transform.localPosition += Vector3.up;
+                Vector2 orient;
+                PlaceInRoom(newSensor.transform, _se, out orient);
+
+                // Adjust position
+                float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
+                newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
+                newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
+
+                float posU = float.Parse(_se.attributes["posU"]);
+                if (posU == 0)
+                {
+                    newSensor.transform.localPosition += Vector3.up;
+                }
+                else
+                {
+                    newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
+                    newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
+                }
             }
             else
             {
-                newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
-                newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
+                newSensor.transform.localPosition = parent.GetChild(0).localScale / -2;
+                // Assuming given pos is in mm
+                Vector2 posXY = JsonUtility.FromJson<Vector2>(_se.attributes["posXY"]);
+                Vector3 newPos = new Vector3(posXY.x, float.Parse(_se.attributes["posU"]), posXY.y) / 1000;
+                newSensor.transform.localPosition += newPos;
+
+                newSensor.transform.GetChild(0).localScale = Vector3.one * 0.05f;
+                newSensor.transform.localEulerAngles = Vector3.zero;
             }
 
         }
