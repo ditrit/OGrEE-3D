@@ -223,66 +223,45 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         int lvl = 0;
         int.TryParse(_level, out lvl);
-        int clampedValue = Mathf.Clamp(lvl, 0, 2);
-        if (currentLod != clampedValue)
-        {
-            currentLod = clampedValue;
-            GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+        if (lvl < 0)
+            lvl = 0;
 
-            string[] categories = { "tenants", "sites", "buildings", "rooms", "racks", "devices" };
-            int index = 0;
-            for (int i = 0; i < categories.Length; i++)
-            {
-                if ($"{category}s" == categories[i])
-                    index = i;
-            }
+        if (currentLod != lvl)
+        {
+            DeleteChildren(lvl);
 
             string apiCall = "";
-            switch (currentLod)
-            {
-                case 0:
-                    // Delete all children
-                    DeleteChildren(0);
-                    break;
-                case 1:
-                    // Get only 1st lvl children
-                    DeleteChildren(1);
-                    if (category == "tenant")
-                        apiCall = $"{categories[index]}/{name}/{categories[index + 1]}";
-                    else if (category == "device")
-                        apiCall = $"devices/{id}/subdevices";
-                    else
-                        apiCall = $"{categories[index]}/{id}/{categories[index + 1]}";
-                    break;
-                case 2:
-                    // Get 1st lvl children & set them to LOD1
-                    if (category == "tenant")
-                        apiCall = $"{categories[index]}/{name}/all/{categories[index + 1]}/{categories[index + 2]}";
-                    else if (category == "rack")
-                        apiCall = $"racks/{id}/all/devices/subdevices";
-                    else if (category == "device")
-                        apiCall = $"devices/{id}/all";
-                    else
-                        apiCall = $"{categories[index]}/{id}/all/{categories[index + 1]}/{categories[index + 2]}";
-                    break;
-            }
+            if (lvl != 0)
+                apiCall = $"{category}s/{id}/all?limit={lvl}";
+
             if (!string.IsNullOrEmpty(apiCall))
             {
                 Debug.Log(apiCall);
                 await ApiManager.instance.GetObject(apiCall);
-
-                // Set currentLod to 1 for direct children of currentLod = 2
-                if (currentLod != 0)
-                {
-                    foreach (Transform child in transform)
-                    {
-                        OgreeObject obj = child.GetComponent<OgreeObject>();
-                        if (obj)
-                            obj.currentLod = currentLod - 1;
-                    }
-                }
             }
+
+            SetCurrentLod(lvl);
             GameManager.gm.detailsSlider.UpdateSlider(currentLod);
+        }
+    }
+
+    ///<summary>
+    /// Set currentLod value for this object and it's OgreeObject children.
+    ///</summary>
+    ///<param name="_level">The value to set at currentLod</param>
+    protected void SetCurrentLod(int _level)
+    {
+        currentLod = _level;
+        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+
+        if (_level != 0)
+        {
+            foreach (Transform child in transform)
+            {
+                OgreeObject obj = child.GetComponent<OgreeObject>();
+                if (obj)
+                    obj.SetCurrentLod(currentLod - 1);
+            }
         }
     }
 
@@ -308,10 +287,10 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 GameManager.gm.DeleteItem(obj.gameObject, false);
             }
         }
-        else if (_askedLevel == 1) // Keep only direct Children
+        else
         {
             foreach (OgreeObject go in objsToDel)
-                go.GetComponent<OgreeObject>().DeleteChildren(0);
+                go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
     }
 }

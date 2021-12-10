@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -857,15 +857,15 @@ public class ConsoleController : MonoBehaviour
                 }
 
                 if (ApiManager.instance.isInit)
-                {
+                // {
                     // Temporary "hack" for matching with current API calls for DB hierarchy
-                    if (parent.parent.GetComponent<OgreeObject>().category == "device")
-                        await ApiManager.instance.PostObject(dv, "subdevice1s");
-                    else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
-                        await ApiManager.instance.PostObject(dv, "subdevices");
-                    else
-                        await ApiManager.instance.PostObject(dv);
-                }
+                    // if (parent.parent.GetComponent<OgreeObject>().category == "device")
+                    //     await ApiManager.instance.PostObject(dv, "subdevice1s");
+                    // else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
+                    //     await ApiManager.instance.PostObject(dv, "subdevices");
+                    // else
+                    await ApiManager.instance.PostObject(dv);
+                // }
                 else
                 {
                     if (dv.attributes["template"] == "")
