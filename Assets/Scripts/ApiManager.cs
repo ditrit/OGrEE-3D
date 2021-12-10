@@ -186,6 +186,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("success"))
                 CreateItemFromJson(response);
+            
         }
         catch (HttpRequestException e)
         {
@@ -233,7 +234,7 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private void CreateItemFromJson(string _json)
+    private async void CreateItemFromJson(string _json)
     {
         List<SApiObject> objsToCreate = new List<SApiObject>();
 
@@ -245,7 +246,7 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
-            _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices|subdevices|subdevices1)\":", "\"children\":");
+            // _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices|subdevices|subdevices1)\":", "\"children\":");
             // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             if (resp.data.children == null)
@@ -254,10 +255,17 @@ public class ApiManager : MonoBehaviour
                 ParseNestedObjects(objsToCreate, resp.data);
         }
 
-        GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
-
         foreach (SApiObject obj in objsToCreate)
         {
+            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
+                await GetObject($"tenants?name={obj.domain}");
+
+            // if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"]) 
+            //     && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
+            // {
+            // //     await GetObject($"obj-templates/{obj.attributes["template"]}");
+            // }
+
             switch (obj.category)
             {
                 case "tenant":
@@ -295,6 +303,8 @@ public class ApiManager : MonoBehaviour
                     //     break;
             }
         }
+        GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
