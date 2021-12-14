@@ -112,7 +112,9 @@ public class OObject : OgreeObject
         if (validColor)
         {
             color.a = mat.color.a;
-            mat.color = color;
+            CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
+            if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
+                mat.color = color;
             attributes["color"] = _hex;
         }
         else
@@ -136,7 +138,10 @@ public class OObject : OgreeObject
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = new Color();
         ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
-        mat.color = new Color(color.r, color.g, color.b, mat.color.a);
+
+        CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
+        if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
+            mat.color = new Color(color.r, color.g, color.b, mat.color.a);
     }
 
     ///<summary>
