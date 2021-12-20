@@ -409,7 +409,7 @@ public class ConsoleController : MonoBehaviour
     /// Look at the first word, Open given file and call corresponding ReadFromJson.CreateTemplate method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void LoadTemplateFile(string _input)
+    private async void LoadTemplateFile(string _input)
     {
         string json = "";
         try
@@ -426,7 +426,12 @@ public class ConsoleController : MonoBehaviour
             if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
                 rfJson.CreateRoomTemplate(json);
             else // rack or device
-                rfJson.CreateObjectTemplate(json);
+            {
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostTemplateObject(json);
+                else
+                    rfJson.CreateObjTemplateJson(json);
+            }
         }
     }
 
@@ -857,15 +862,7 @@ public class ConsoleController : MonoBehaviour
                 }
 
                 if (ApiManager.instance.isInit)
-                // {
-                    // Temporary "hack" for matching with current API calls for DB hierarchy
-                    // if (parent.parent.GetComponent<OgreeObject>().category == "device")
-                    //     await ApiManager.instance.PostObject(dv, "subdevice1s");
-                    // else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
-                    //     await ApiManager.instance.PostObject(dv, "subdevices");
-                    // else
                     await ApiManager.instance.PostObject(dv);
-                // }
                 else
                 {
                     if (dv.attributes["template"] == "")

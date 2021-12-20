@@ -34,6 +34,13 @@ public class ApiManager : MonoBehaviour
         public SApiObject[] objects;
     }
 
+    private struct STemplateResp
+    {
+        public string message;
+        public string status;
+        public ReadFromJson.STemplate data;
+    }
+
     public static ApiManager instance;
 
     private HttpClient httpClient = new HttpClient();
@@ -44,6 +51,8 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private string server;
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
+
+    ReadFromJson rfJson = new ReadFromJson();
 
     private void Awake()
     {
@@ -184,9 +193,12 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
-            if (response.Contains("success"))
-                CreateItemFromJson(response);
-            
+            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
+                    CreateItemFromJson(response);
+            else if (response.Contains("successfully got obj_template"))
+                    CreateTemplateFromJson(response);
+            else
+                GameManager.gm.AppendLogLine("Unknown object received","red");
         }
         catch (HttpRequestException e)
         {
@@ -199,8 +211,7 @@ public class ApiManager : MonoBehaviour
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
     ///<param name="_obj">The SApiObject to post</param>
-    ///<param name="_forcedPath">Specific path to use for posting the object</param>
-    public async Task PostObject(SApiObject _obj, string _forcedPath = null)
+    public async Task PostObject(SApiObject _obj)
     {
         if (!isInit)
         {
@@ -209,11 +220,7 @@ public class ApiManager : MonoBehaviour
         }
         string json = JsonConvert.SerializeObject(_obj);
         // Debug.Log(json);
-        string fullPath;
-        if (_forcedPath == null)
-            fullPath = $"{server}/{_obj.category}s";
-        else
-            fullPath = $"{server}/{_forcedPath}";
+        string fullPath = $"{server}/{_obj.category}s";
 
         StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
         try
@@ -221,7 +228,44 @@ public class ApiManager : MonoBehaviour
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(responseStr);
-            CreateObjFromResp(responseStr);
+
+            if (responseStr.Contains("success"))
+                CreateItemFromJson(responseStr);
+            else
+                GameManager.gm.AppendLogLine($"Fail to post on server", "red");
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Post an object to the api. Then, create it from server's response.
+    ///</summary>
+    ///<param name="_obj">The serialized STemplate to post</param>
+    public async Task PostTemplateObject(string _json)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return;
+        }
+        Debug.Log(_json);
+        string fullPath = $"{server}/obj-templates";
+
+        StringContent content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+
+            if (responseStr.Contains("success"))
+                CreateTemplateFromJson(responseStr);
+            else
+                GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
         catch (HttpRequestException e)
         {
@@ -246,7 +290,6 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
-            // _json = Regex.Replace(_json, "\"(sites|buildings|rooms|racks|devices|subdevices|subdevices1)\":", "\"children\":");
             // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             if (resp.data.children == null)
@@ -255,16 +298,17 @@ public class ApiManager : MonoBehaviour
                 ParseNestedObjects(objsToCreate, resp.data);
         }
 
-        foreach (SApiObject obj in objsToCreate)
+        foreach (SApiObject obj in objsToCreate) // should split to physical then logical lists
         {
             if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
                 await GetObject($"tenants?name={obj.domain}");
 
-            // if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"]) 
-            //     && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
-            // {
-            // //     await GetObject($"obj-templates/{obj.attributes["template"]}");
-            // }
+            if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
+                && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
+            {
+                Debug.Log("Get template from API");
+                await GetObject($"obj-templates/{obj.attributes["template"]}");
+            }
 
             switch (obj.category)
             {
@@ -308,19 +352,13 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse the response and call CreateItemFromJson() to create the item
+    /// Use the given template json to instantiate an object template.
     ///</summary>
-    ///<param name="_json">The API's response to parse</param>
-    private void CreateObjFromResp(string _json)
+    ///<param name="_json">The json given by the API</param>
+    private void CreateTemplateFromJson(string _json)
     {
-        if (_json.Contains("success"))
-        {
-            // _json = Regex.Replace(_json, "\"(tenant|site|building|room|rack|device)\":{", "\"data\":{");
-            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            CreateItemFromJson(_json);
-        }
-        else
-            GameManager.gm.AppendLogLine($"Fail to post on server", "red");
+        STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
+        rfJson.CreateObjectTemplate(resp.data);
     }
 
     ///<summary>
