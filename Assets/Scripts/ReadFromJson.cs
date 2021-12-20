@@ -51,7 +51,7 @@ public class ReadFromJson
 
     #region Object
     [System.Serializable]
-    private struct STemplate
+    public struct STemplate
     {
         public string slug;
         public string description;
@@ -65,7 +65,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    private struct STemplateChild
+    public struct STemplateChild
     {
         public string location;
         public string type;
@@ -102,7 +102,7 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
             return;
         }
-        
+
         if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
             return;
 
@@ -113,7 +113,7 @@ public class ReadFromJson
     /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public void CreateObjectTemplate(string _json)
+    public void CreateObjTemplateJson(string _json)
     {
         STemplate data;
         try
@@ -125,15 +125,23 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
             return;
         }
+        CreateObjectTemplate(data);
+    }
 
-        if (data.category != "rack" && data.category != "device")
+    ///<summary>
+    /// Create a rack or a device from received data and add it to correct GameManager list
+    ///</summary>
+    ///<param name="_data">The data template</param>
+    public void CreateObjectTemplate(STemplate _data)
+    {
+        if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {data.slug} template.", "red");
+            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", "red");
             return;
         }
-        if (GameManager.gm.objectTemplates.ContainsKey(data.slug))
+        if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{data.slug} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", "yellow");
             return;
         }
 
@@ -142,12 +150,12 @@ public class ReadFromJson
         obj.description = new List<string>();
         obj.attributes = new Dictionary<string, string>();
 
-        obj.name = data.slug;
-        obj.category = data.category;
-        obj.description.Add(data.description);
+        obj.name = _data.slug;
+        obj.category = _data.category;
+        obj.description.Add(_data.description);
         if (obj.category == "rack")
         {
-            Vector3 tmp = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[1], data.sizeWDHmm[2]) / 10;
+            Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
             obj.attributes["posXYUnit"] = "tile";
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
@@ -158,23 +166,23 @@ public class ReadFromJson
         }
         else if (obj.category == "device")
         {
-            if (data.attributes.ContainsKey("type")
-                && (data.attributes["type"] == "chassis" || data.attributes["type"] == "server"))
+            if (_data.attributes.ContainsKey("type")
+                && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
-            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(data.sizeWDHmm[0], data.sizeWDHmm[1]));
+            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
             obj.attributes["sizeUnit"] = "mm";
-            obj.attributes["height"] = data.sizeWDHmm[2].ToString();
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = "mm";
             obj.attributes["slot"] = "";
         }
         obj.attributes["template"] = "";
-        obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(data.fbxModel)).ToString();
-        if (data.attributes != null)
+        obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
+        if (_data.attributes != null)
         {
-            foreach (KeyValuePair<string, string> kvp in data.attributes)
+            foreach (KeyValuePair<string, string> kvp in _data.attributes)
                 obj.attributes[kvp.Key] = kvp.Value;
         }
 
@@ -183,16 +191,16 @@ public class ReadFromJson
         if (obj.category == "rack")
         {
             newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
-            if (!string.IsNullOrEmpty(data.fbxModel))
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+            if (!string.IsNullOrEmpty(_data.fbxModel))
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
             newObject = ObjectGenerator.instance.CreateDevice(obj, GameManager.gm.templatePlaceholder.GetChild(0));
-            if (string.IsNullOrEmpty(data.fbxModel))
-                newObject.transform.GetChild(0).localScale = new Vector3(data.sizeWDHmm[0], data.sizeWDHmm[2], data.sizeWDHmm[1]) / 1000;
+            if (string.IsNullOrEmpty(_data.fbxModel))
+                newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, data.fbxModel);
+                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
 
@@ -200,21 +208,21 @@ public class ReadFromJson
 
         // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
-        if (data.colors != null)
+        if (_data.colors != null)
         {
-            foreach (SColor color in data.colors)
+            foreach (SColor color in _data.colors)
                 customColors.Add(color.name, color.value);
         }
 
         // Generate components & slots
-        if (data.components != null)
+        if (_data.components != null)
         {
-            foreach (STemplateChild compData in data.components)
+            foreach (STemplateChild compData in _data.components)
                 PopulateSlot(false, compData, newObject, customColors);
         }
-        if (data.slots != null)
+        if (_data.slots != null)
         {
-            foreach (STemplateChild slotData in data.slots)
+            foreach (STemplateChild slotData in _data.slots)
                 PopulateSlot(true, slotData, newObject, customColors);
         }
 
