@@ -778,7 +778,22 @@ public class ConsoleController : MonoBehaviour
                 rk.attributes["template"] = "";
             }
             else // ...else: is template name
+            {
                 rk.attributes["template"] = data[2];
+                if (GameManager.gm.objectTemplates.ContainsKey(data[2]))
+                {
+                    OgreeObject template = GameManager.gm.objectTemplates[data[2]].GetComponent<OgreeObject>();
+                    rk.attributes["size"] = template.attributes["size"];
+                    rk.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                    rk.attributes["height"] = template.attributes["height"];
+                    rk.attributes["heightUnit"] = template.attributes["heightUnit"];
+                }
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", "yellow");
+                    return;
+                }
+            }
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
