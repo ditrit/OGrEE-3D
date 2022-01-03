@@ -647,6 +647,7 @@ PlayerSettings:
       PrivateNetworkClientServer: False
       InternetClientServer: False
       VideosLibrary: False
+      BackgroundMediaPlayback: False
       Objects3D: False
       RemoteSystem: False
       BlockedChatMessages: False
@@ -670,6 +671,7 @@ PlayerSettings:
       Contacts: False
       InternetClient: False
       Proximity: False
+      InternetClient: False
       CodeGeneration: False
       BackgroundMediaPlayback: False
   metroTargetDeviceFamilies:
