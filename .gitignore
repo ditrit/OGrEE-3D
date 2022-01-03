@@ -58,3 +58,7 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Third party assets
+[Aa]ssets/TriLib
+[Aa]ssets/Trilib.meta
+
