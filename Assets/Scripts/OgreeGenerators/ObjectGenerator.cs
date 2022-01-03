@@ -19,7 +19,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
-    ///<param name="_parent">The parent of the created rack. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created rack. Leave null if _rk contains the parendId</param>
     ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
@@ -70,45 +70,8 @@ public class ObjectGenerator : MonoBehaviour
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
         }
 
-        Vector2 pos = JsonUtility.FromJson<Vector2>(_rk.attributes["posXY"]);
-        Vector3 origin = newRack.transform.parent.GetChild(0).localScale / 0.2f;
-        Vector3 boxOrigin;
-        Transform box = newRack.transform.GetChild(0);
-        if (box.childCount == 0)
-            boxOrigin = box.localScale / 2;
-        else
-            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-        newRack.transform.position = newRack.transform.parent.GetChild(0).position;
-
-        Vector2 orient = Vector2.one;
-        if (parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
-        {
-            if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
-            {
-                // Lower Left corner of the room
-                orient = new Vector2(1, 1);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
-            {
-                // Lower Right corner of the room
-                orient = new Vector2(-1, 1);
-                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
-            {
-                // Upper Right corner of the room
-                orient = new Vector2(-1, -1);
-                newRack.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
-            }
-            else if (Regex.IsMatch(parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
-            {
-                // Upper Left corner of the room
-                orient = new Vector2(1, -1);
-                newRack.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
-            }
-        }
-        newRack.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
-        newRack.transform.localPosition += new Vector3(pos.x * orient.x, 0, pos.y * orient.y) * GameManager.gm.tileSize;
+        Vector2 orient;
+        PlaceInRoom(newRack.transform, _rk, out orient);
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk, _copyAttr);
@@ -120,6 +83,14 @@ public class ObjectGenerator : MonoBehaviour
             rack.attributes["orientation"] = _rk.attributes["orientation"];
         }
 
+        // Correct position according to rack size & rack orientation
+        Vector3 boxOrigin;
+        Transform box = newRack.transform.GetChild(0);
+        if (box.childCount == 0)
+            boxOrigin = box.localScale / 2;
+        else
+            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
+        float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
         Vector3 fixPos = Vector3.zero;
         switch (rack.attributes["orientation"])
         {
@@ -128,28 +99,28 @@ public class ObjectGenerator : MonoBehaviour
                 if (orient.y == 1)
                     fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 else
-                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
                 break;
             case "rear":
                 newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
                 if (orient.y == 1)
-                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
                 else
                     fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
                 break;
             case "left":
                 newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
                 if (orient.x == 1)
-                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, boxOrigin.x);
+                    fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
                 else
                     fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
                 break;
             case "right":
                 newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
                 if (orient.x == 1)
-                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
+                    fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
                 else
-                    fixPos = new Vector3(-boxOrigin.z + GameManager.gm.tileSize, boxOrigin.y, -boxOrigin.x + GameManager.gm.tileSize);
+                    fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
                 break;
         }
         newRack.transform.localPosition += fixPos;
@@ -184,7 +155,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply given data to it.
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
-    ///<param name="_parent">The parent of the created device. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created device. Leave null if _dv contains the parendId</param>
     ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
     public OObject CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
@@ -417,7 +388,7 @@ public class ObjectGenerator : MonoBehaviour
     /// Generate a group (from GameManager.labeledBoxModel) which contains all the given objects.
     ///</summary>
     ///<param name="_gr">The group data to apply</param>
-    ///<param name="_parent">The parent of the generated group</param>
+    ///<param name="_parent">The parent of the created group. Leave null if _gr contains the parendId</param>
     ///<returns>The created rackGroup</returns>
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
@@ -598,10 +569,8 @@ public class ObjectGenerator : MonoBehaviour
     ///<summary>
     /// Generate a corridor (from GameManager.labeledBoxModel) with defined corners and color.
     ///</summary>
-    ///<param name="_name">The name of the corridor</param>
-    ///<param name="_parent">The parent of the generated corridor</param>
-    ///<param name="_cornerRacks">The well formatted list of racks/corners (r1,r2)</param>
-    ///<param name="_temp">"cold" or "warm" value</param>
+    ///<param name="_co">The corridor data to apply</param>
+    ///<param name="_parent">The parent of the created corridor. Leave null if _co contains the parendId</param>
     ///<returns>The created corridor</returns>
     public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
     {
@@ -679,4 +648,171 @@ public class ObjectGenerator : MonoBehaviour
         return co;
     }
 
+    ///<summary>
+    /// Generate a sensor (from GameManager.sensorExtModel/sensorIntModel) with defined temperature.
+    ///</summary>
+    ///<param name="_se">The sensor data to apply</param>
+    ///<param name="_parent">The parent of the created sensor. Leave null if _se contains the parendId</param>
+    ///<returns>The created sensor</returns>
+    public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
+    {
+        Transform parent = Utils.FindParent(_parent, _se.parentId);
+        if (!parent)
+        {
+            GameManager.gm.AppendLogLine($"Parent not found", "red");
+            return null;
+        }
+        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        if (_se.attributes["formFactor"] == "ext"
+            && (parentCategory != "rack" && parentCategory != "device"))
+        {
+            GameManager.gm.AppendLogLine("An external sensor must be child of a rack or a device", "red");
+            return null;
+        }
+        if (_se.attributes["formFactor"] == "int"
+            && (parentCategory != "room" && parentCategory != "rack" && parentCategory != "device"))
+        {
+            GameManager.gm.AppendLogLine("An internal sensor must be child of a room, a rack or a device", "red");
+            return null;
+        }
+
+        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_se.name}";
+        if (GameManager.gm.allItems.Contains(hierarchyName))
+        {
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            return null;
+        }
+
+        GameObject newSensor;
+        if (_se.attributes["formFactor"] == "ext") //Dimensions : 80 x 26 x 18 mm
+        {
+            newSensor = Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor.name = "sensor";
+
+            Vector3 parentSize = _parent.GetChild(0).localScale;
+            Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
+            newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
+            newSensor.transform.localPosition += new Vector3(boxSize.x, -boxSize.y, 0) / 2;
+        }
+        else
+        {
+            newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor.name = _se.name;
+            if (parentCategory == "room")
+            {
+                Vector2 orient;
+                PlaceInRoom(newSensor.transform, _se, out orient);
+
+                // Adjust position
+                float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
+                newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
+                newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
+
+                float posU = float.Parse(_se.attributes["posU"]);
+                if (posU == 0)
+                {
+                    newSensor.transform.localPosition += Vector3.up;
+                }
+                else
+                {
+                    newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
+                    newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
+                }
+            }
+            else
+            {
+                newSensor.transform.localPosition = parent.GetChild(0).localScale / -2;
+                // Assuming given pos is in mm
+                Vector2 posXY = JsonUtility.FromJson<Vector2>(_se.attributes["posXY"]);
+                Vector3 newPos = new Vector3(posXY.x, float.Parse(_se.attributes["posU"]), posXY.y) / 1000;
+                newSensor.transform.localPosition += newPos;
+
+                newSensor.transform.GetChild(0).localScale = Vector3.one * 0.05f;
+                newSensor.transform.localEulerAngles = Vector3.zero;
+            }
+
+        }
+
+        Sensor sensor = newSensor.GetComponent<Sensor>();
+        sensor.UpdateFromSApiObject(_se);
+
+        sensor.UpdateSensorColor();
+        newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
+        newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
+
+
+
+        string hn = sensor.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hn, newSensor);
+
+        return sensor;
+    }
+
+    ///<summary>
+    /// Move the given Transform to given position in tiles in a room.
+    ///</summary>
+    ///<param name="_obj">The object to move</param>
+    ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
+    private void PlaceInRoom(Transform _obj, SApiObject _apiObj, out Vector2 _orient)
+    {
+        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
+
+        Vector2 pos = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+        Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
+        _obj.position = _obj.parent.GetChild(0).position;
+
+        _orient = new Vector2();
+        if (_obj.parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        {
+            if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Left corner of the room
+                _orient = new Vector2(1, 1);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            {
+                // Lower Right corner of the room
+                _orient = new Vector2(-1, 1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Right corner of the room
+                _orient = new Vector2(-1, -1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
+            }
+            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            {
+                // Upper Left corner of the room
+                _orient = new Vector2(1, -1);
+                if (_apiObj.category == "rack")
+                    _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
+            }
+        }
+        // Go to the right corner of the room & apply pos
+        _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+        _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
+    }
+
+    ///<summary>
+    /// Get a floorUnit regarding given room attributes.
+    ///</summary>
+    ///<param name="_r">The room to parse</param>
+    ///<returns>The floor unit</returns>
+    private float GetUnitFromRoom(Room _r)
+    {
+        if (!_r.attributes.ContainsKey("floorUnit"))
+            return GameManager.gm.tileSize;
+        switch (_r.attributes["floorUnit"])
+        {
+            case "m":
+                return 1.0f;
+            case "f":
+                return 3.28084f;
+            default:
+                return GameManager.gm.tileSize;
+        }
+    }
 }

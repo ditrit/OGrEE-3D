@@ -160,7 +160,8 @@ public class CustomRendererOutline : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+        if (GameManager.gm.focus.Count > 0
+            && (!transform.parent || GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject))
             return;
 
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)

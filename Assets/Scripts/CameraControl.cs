@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class CameraControl : MonoBehaviour
 {
+    [System.Serializable]
+    private struct SCameraTrans
+    {
+        public string label;
+        public Vector3 pos;
+        public Vector3 rot;
+    }
+
     [Header("References")]
     [SerializeField] private TextMeshProUGUI infosTMP = null;
 
@@ -22,7 +28,20 @@ public class CameraControl : MonoBehaviour
 
     [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
     [SerializeField] private List<Vector3> targetRot = new List<Vector3>();
+    [SerializeField] private List<SCameraTrans> labeledTransforms = new List<SCameraTrans>();
     private bool isReady = true;
+
+    private void Start()
+    {
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+    }
 
     private void Update()
     {
@@ -216,5 +235,117 @@ public class CameraControl : MonoBehaviour
         if (!isReady)
             infosTMP.text += " (Waiting)";
         infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
+    }
+
+    ///<summary>
+    /// Called when an OnFocusEvent is raised
+    ///</summary>
+    ///<param name="_e">The raised event</param>
+    private void OnFocus(OnFocusEvent _e)
+    {
+        SCameraTrans target = GetRegisteredCameraTrans(_e.obj.name);
+        if (string.IsNullOrEmpty(target.label))
+        {
+            RegisterTransform();
+            MoveToObject(_e.obj.transform);
+        }
+        else
+        {
+            transform.position = target.pos;
+            transform.eulerAngles = target.rot;
+            labeledTransforms.RemoveAt(labeledTransforms.Count - 1);
+        }
+    }
+
+    ///<summary>
+    /// Called when an OnUnFocusEvent is raised
+    ///</summary>
+    ///<param name="_e">The raised event</param>
+    private void OnUnFocus(OnUnFocusEvent _e)
+    {
+        if (GameManager.gm.focus.Count == 0)
+        {
+            transform.position = labeledTransforms[0].pos;
+            transform.eulerAngles = labeledTransforms[0].rot;
+            labeledTransforms.Clear();
+        }
+    }
+
+    ///<summary>
+    /// Register camera position with a label in labeledTransforms.
+    ///</summary>
+    private void RegisterTransform()
+    {
+        SCameraTrans newTrans = new SCameraTrans();
+        if (labeledTransforms.Count == 0)
+        {
+            newTrans.label = "NoFocus";
+            newTrans.pos = transform.position;
+            newTrans.rot = transform.eulerAngles;
+        }
+        else
+        {
+            newTrans.label = GameManager.gm.focus[GameManager.gm.focus.Count - 2].name;
+            newTrans.pos = transform.position;
+            newTrans.rot = transform.eulerAngles;
+        }
+        labeledTransforms.Add(newTrans);
+    }
+
+    ///<summary>
+    /// Get a SCameraTrans by its label in labeledTranforms.
+    ///</summary>
+    ///<param name="_label">The label to look for</param>
+    ///<returns>Wanted SCameraTrans or an empty one if not found</returns>
+    private SCameraTrans GetRegisteredCameraTrans(string _label)
+    {
+        foreach (SCameraTrans ct in labeledTransforms)
+        {
+            Debug.Log($"{ct.label}/{_label}");
+            if (ct.label.Equals(_label))
+                return ct;
+        }
+        return new SCameraTrans();
+    }
+
+    ///<summary>
+    /// Move the camera in front of given _target.
+    ///</summary>
+    ///<param name="_target">The object to look at</param>
+    private void MoveToObject(Transform _target)
+    {
+        transform.position = _target.position;
+        float offset = 3f;
+        OObject obj = _target.GetComponent<OObject>();
+        if (obj && obj.category == "rack")
+            offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
+        else if (obj && obj.category == "device")
+            offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
+        switch ((int)_target.eulerAngles.y)
+        {
+            case 0:
+                // Debug.Log("0");
+                transform.position += new Vector3(0, 0, offset);
+                transform.eulerAngles = new Vector3(0, 180, 0);
+                break;
+            case 90:
+                // Debug.Log("90");
+                transform.position += new Vector3(offset, 0, 0);
+                transform.eulerAngles = new Vector3(0, 270, 0);
+                break;
+            case 180:
+                // Debug.Log("180");
+                transform.position += new Vector3(0, 0, -offset);
+                transform.eulerAngles = new Vector3(0, 0, 0);
+                break;
+            case 270:
+                // Debug.Log("270");
+                transform.position += new Vector3(-offset, 0, 0);
+                transform.eulerAngles = new Vector3(0, 90, 0);
+                break;
+            default:
+                Debug.Log("default: " + _target.rotation.y);
+                break;
+        }
     }
 }

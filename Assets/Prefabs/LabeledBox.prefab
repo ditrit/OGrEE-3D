@@ -965,7 +965,7 @@ GameObject:
   - component: {fileID: 7641173002511634591}
   m_Layer: 0
   m_Name: LabeledBox
-  m_TagString: Untagged
+  m_TagString: Selectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1043,11 +1043,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rackOwnObjectsList: []
+  OwnObjectsList: []
   ogreeChildObjects: []
   slotsChildObjects: []
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
+  isActive: 0
   isSelected: 0
   isHovered: 0
   isFocused: 0

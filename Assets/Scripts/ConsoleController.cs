@@ -409,7 +409,7 @@ public class ConsoleController : MonoBehaviour
     /// Look at the first word, Open given file and call corresponding ReadFromJson.CreateTemplate method.
     ///</summary>
     ///<param name="_input">Command line to parse</param>
-    private void LoadTemplateFile(string _input)
+    private async void LoadTemplateFile(string _input)
     {
         string json = "";
         try
@@ -426,7 +426,12 @@ public class ConsoleController : MonoBehaviour
             if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
                 rfJson.CreateRoomTemplate(json);
             else // rack or device
-                rfJson.CreateObjectTemplate(json);
+            {
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostTemplateObject(json);
+                else
+                    rfJson.CreateObjTemplateJson(json);
+            }
         }
     }
 
@@ -522,6 +527,8 @@ public class ConsoleController : MonoBehaviour
             CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
             CreateCorridor(str[1]);
+        else if (str[0] == "sensor" || str[0] == "se")
+            CreateSensor(str[1]);
         else
             AppendLogLine("Unknown command", "red");
 
@@ -616,8 +623,6 @@ public class ConsoleController : MonoBehaviour
             IsolateParent(data[0], out parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
-            bd.attributes["posZ"] = "0"; // to del when removed from API
-            bd.attributes["posZUnit"] = "m"; // to del when removed from API
             bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             bd.attributes["sizeUnit"] = "m";
             bd.attributes["height"] = size.y.ToString();
@@ -645,11 +650,10 @@ public class ConsoleController : MonoBehaviour
     private async Task CreateRoom(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)$";
+        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@(\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@(\\+|\\-)[ENSW]{1}(\\+|\\-)[ENSW]{1}|[^\\[][^@]+)(@(t|m|f)){0,1}$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-
             Transform parent = null;
             SApiObject ro = new SApiObject();
             ro.description = new List<string>();
@@ -659,8 +663,6 @@ public class ConsoleController : MonoBehaviour
             Vector3 pos = Utils.ParseVector2(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
-            ro.attributes["posZ"] = pos.z.ToString(); // to del when removed from API
-            ro.attributes["posZUnit"] = "m"; // to del when removed from API
 
             Vector3 size;
             if (data[2].StartsWith("["))
@@ -673,6 +675,7 @@ public class ConsoleController : MonoBehaviour
             {
                 ro.attributes["template"] = data[2];
                 ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
+                ro.attributes["floorUnit"] = GameManager.gm.roomTemplates[data[2]].floorUnit;
                 size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
                                 GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
                                 GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
@@ -686,6 +689,10 @@ public class ConsoleController : MonoBehaviour
             ro.attributes["sizeUnit"] = "m";
             ro.attributes["height"] = size.y.ToString();
             ro.attributes["heightUnit"] = "m";
+            if (data.Length == 5)
+                ro.attributes["floorUnit"] = data[4];
+            else
+                ro.attributes["floorUnit"] = "t";
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
@@ -728,7 +735,12 @@ public class ConsoleController : MonoBehaviour
 
             IsolateParent(data[0], out parent, out sp.name);
             if (parent)
+            {
+                sp.parentId = parent.GetComponent<OgreeObject>().id;
+                sp.domain = parent.GetComponent<OgreeObject>().domain;
+
                 BuildingGenerator.instance.CreateSeparator(sp, parent);
+            }
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -766,7 +778,22 @@ public class ConsoleController : MonoBehaviour
                 rk.attributes["template"] = "";
             }
             else // ...else: is template name
+            {
                 rk.attributes["template"] = data[2];
+                if (GameManager.gm.objectTemplates.ContainsKey(data[2]))
+                {
+                    OgreeObject template = GameManager.gm.objectTemplates[data[2]].GetComponent<OgreeObject>();
+                    rk.attributes["size"] = template.attributes["size"];
+                    rk.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                    rk.attributes["height"] = template.attributes["height"];
+                    rk.attributes["heightUnit"] = template.attributes["heightUnit"];
+                }
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", "yellow");
+                    return;
+                }
+            }
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
@@ -850,15 +877,7 @@ public class ConsoleController : MonoBehaviour
                 }
 
                 if (ApiManager.instance.isInit)
-                {
-                    // Temporary "hack" for matching with current API calls for DB hierarchy
-                    if (parent.parent.GetComponent<OgreeObject>().category == "device")
-                        await ApiManager.instance.PostObject(dv, "subdevice1s");
-                    else if (parent.parent.GetComponent<OgreeObject>().category == "rack")
-                        await ApiManager.instance.PostObject(dv, "subdevices");
-                    else
-                        await ApiManager.instance.PostObject(dv);
-                }
+                    await ApiManager.instance.PostObject(dv);
                 else
                 {
                     if (dv.attributes["template"] == "")
@@ -885,19 +904,19 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('@');
 
             Transform parent = null;
-            SApiObject rg = new SApiObject();
-            rg.description = new List<string>();
-            rg.attributes = new Dictionary<string, string>();
+            SApiObject gr = new SApiObject();
+            gr.description = new List<string>();
+            gr.attributes = new Dictionary<string, string>();
 
-            rg.category = "group";
-            IsolateParent(data[0], out parent, out rg.name);
-            rg.attributes["content"] = data[1].Trim('{', '}');
+            gr.category = "group";
+            IsolateParent(data[0], out parent, out gr.name);
+            gr.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
             {
-                rg.parentId = parent.GetComponent<OgreeObject>().id;
-                rg.domain = parent.GetComponent<OgreeObject>().domain;
+                gr.parentId = parent.GetComponent<OgreeObject>().id;
+                gr.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateGroup(rg, parent);
+                ObjectGenerator.instance.CreateGroup(gr, parent);
             }
         }
         else
@@ -931,6 +950,51 @@ public class ConsoleController : MonoBehaviour
                 co.domain = parent.GetComponent<OgreeObject>().domain;
 
                 ObjectGenerator.instance.CreateCorridor(co, parent);
+            }
+        }
+        else
+            AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse a "create sensor" command and call ObjectGenerator.CreateSensor().
+    ///</summary>
+    ///<param name="_input">String with sensor data to parse</param>
+    private void CreateSensor(string _input)
+    {
+        _input = Regex.Replace(_input, " ", "");
+        string pattern = "^[^@\\s]+@(ext@[0-9.]+|int@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@[0-9.]+)$";
+        if (Regex.IsMatch(_input, pattern))
+        {
+            string[] data = _input.Split('@');
+            Transform parent = null;
+            SApiObject se = new SApiObject();
+            se.description = new List<string>();
+            se.attributes = new Dictionary<string, string>();
+
+            se.category = "sensor";
+            se.attributes["formFactor"] = data[1];
+            if (data[1] == "ext")
+            {
+                se.name = "sensor"; // ?
+                parent = GameManager.gm.FindByAbsPath(data[0])?.transform;
+                se.attributes["linkedObject"] = data[0];
+                se.attributes["temperature"] = data[2];
+            }
+            else
+            {
+                IsolateParent(data[0], out parent, out se.name);
+                se.attributes["temperature"] = data[3];
+                Vector3 tmp = Utils.ParseVector3(data[2], false);
+                se.attributes["posXY"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+                se.attributes["posU"] = tmp.z.ToString();
+            }
+            if (parent)
+            {
+                se.parentId = parent.GetComponent<OgreeObject>().id;
+                se.domain = parent.GetComponent<OgreeObject>().domain;
+
+                ObjectGenerator.instance.CreateSensor(se, parent);
             }
         }
         else

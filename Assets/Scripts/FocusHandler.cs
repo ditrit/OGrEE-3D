@@ -108,17 +108,12 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
-        }
-        else if (GameManager.gm.focus.Count >= 2 && gameObject == GameManager.gm.focus[GameManager.gm.focus.Count - 2])
-        {
-            UpdateOwnMeshRenderers(false);
-            if (GetComponent<OObject>().category == "rack" || GetComponent<OObject>().category == "device")
-                GetComponent<OObject>().ToggleSlots("false");
         }
     }
 
@@ -130,18 +125,11 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
-            UpdateOtherObjectsMeshRenderers(true);
             UpdateChildMeshRenderers(false);
+            UpdateOtherObjectsMeshRenderers(true);
             isFocused = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
-
-            if (GameManager.gm.focus.Count > 0)
-            {
-                GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-                newFocus.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(true);
-                newFocus.GetComponent<OObject>().ToggleSlots("true");
-            }
         }
     }
 
@@ -151,7 +139,8 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent e)
     {
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject)
+        if (GameManager.gm.focus.Count > 0
+            && (!transform.parent || GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject))
             return;
 
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
@@ -201,17 +190,11 @@ public class FocusHandler : MonoBehaviour
         foreach (Transform child in transform)
         {
             if (child.GetComponent<OgreeObject>())
-            {
                 ogreeChildObjects.Add(child.gameObject);
-            }
             else if (child.GetComponent<Slot>())
-            {
                 slotsChildObjects.Add(child.gameObject);
-            }
             else
-            {
                 OwnObjectsList.Add(child.gameObject);
-            }
         }
     }
 
@@ -238,9 +221,7 @@ public class FocusHandler : MonoBehaviour
         {
             MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer meshRenderer in SlotChildMeshRenderers)
-            {
                 slotChildMeshRendererList.Add(meshRenderer);
-            }
         }
     }
 
@@ -256,7 +237,8 @@ public class FocusHandler : MonoBehaviour
             foreach (MeshRenderer mr in renderers)
                 mr.enabled = _value;
         }
-        // transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        GetComponent<OObject>().ToggleSlots(_value.ToString());
+        transform.GetChild(0).GetComponent<Collider>().enabled = _value;
     }
 
     ///<summary>
@@ -281,26 +263,65 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// Catch all object in the same hierarchy level of its parent and turns on or off all they MeshRenderer.
+    /// Toggle renderer of all items which are not in ogreeChildObjects.
     ///</summary>
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateOtherObjectsMeshRenderers(bool _value)
     {
-        List<Transform> others = new List<Transform>();
-        foreach (Transform child in transform.parent)
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
-            if (child.GetComponent<OgreeObject>() && child != transform)
-                others.Add(child);
-        }
-
-        foreach (Transform obj in others)
-        {
-            FocusHandler fh = obj.GetComponent<FocusHandler>();
-            if (fh)
+            GameObject go = (GameObject)de.Value;
+            if (ogreeChildObjects.Contains(go) == false && go != this.gameObject)
             {
-                fh.UpdateOwnMeshRenderers(_value);
-                fh.UpdateChildMeshRenderers(_value);
-                fh.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+                switch (go.GetComponent<OgreeObject>().category)
+                {
+                    case "tenant":
+                        break;
+                    case "site":
+                        break;
+                    case "building":
+                        Building bd = go.GetComponent<Building>();
+                        bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
+                        foreach (Transform wall in bd.walls)
+                            wall.GetComponent<Renderer>().enabled = _value;
+                        break;
+                    case "room":
+                        Room ro = go.GetComponent<Room>();
+                        ro.usableZone.GetComponent<Renderer>().enabled = _value;
+                        ro.reservedZone.GetComponent<Renderer>().enabled = _value;
+                        ro.technicalZone.GetComponent<Renderer>().enabled = _value;
+                        ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
+                        ro.nameText.GetComponent<Renderer>().enabled = _value;
+                        foreach (Transform wall in ro.walls)
+                            wall.GetComponent<Renderer>().enabled = _value;
+                        if (go.transform.Find("tilesNameRoot"))
+                        {
+                            foreach (Transform child in go.transform.Find("tilesNameRoot"))
+                                child.GetComponent<Renderer>().enabled = _value;
+                        }
+                        if (go.transform.Find("tilesColorRoot"))
+                        {
+                            foreach (Transform child in go.transform.Find("tilesColorRoot"))
+                                child.GetComponent<Renderer>().enabled = _value;
+                        }
+                        break;
+                    case "rack":
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
+                        break;
+                    case "device":
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
+                        break;
+                    case "group":
+                        if (go.GetComponent<Group>().isDisplayed)
+                            go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
+                        break;
+                    case "corridor":
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
+                        break;
+                    default:
+                        go.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
+                        break;
+                }
             }
         }
     }

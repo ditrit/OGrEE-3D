@@ -57,6 +57,9 @@ public class OObject : OgreeObject
                 case "localCS":
                     ToggleCS(_value);
                     break;
+                case "temperature":
+                    SetTemperature(_value);
+                    break;
                 default:
                     if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
@@ -77,6 +80,7 @@ public class OObject : OgreeObject
     ///<param name="_value">Alpha wanted for the rack</param>
     public void UpdateAlpha(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("alpha value has to be true or false", "yellow");
@@ -108,7 +112,9 @@ public class OObject : OgreeObject
         if (validColor)
         {
             color.a = mat.color.a;
-            mat.color = color;
+            CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
+            if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
+                mat.color = color;
             attributes["color"] = _hex;
         }
         else
@@ -117,7 +123,6 @@ public class OObject : OgreeObject
             attributes.Remove("color");
             GameManager.gm.AppendLogLine("Unknown color", "yellow");
         }
-            
     }
 
     ///<summary>
@@ -133,7 +138,10 @@ public class OObject : OgreeObject
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = new Color();
         ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
-        mat.color = new Color(color.r, color.g, color.b, mat.color.a);
+
+        CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
+        if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
+            mat.color = new Color(color.r, color.g, color.b, mat.color.a);
     }
 
     ///<summary>
@@ -142,6 +150,7 @@ public class OObject : OgreeObject
     ///<param name="_value">True or false value</param>
     public void ToggleSlots(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
@@ -186,6 +195,7 @@ public class OObject : OgreeObject
     ///<param name="_value">true of false value</param>
     public void ToggleCS(string _value)
     {
+        _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
             GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
@@ -218,4 +228,37 @@ public class OObject : OgreeObject
         GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
         return localCS;
     }
+
+    ///<summary>
+    /// Set temperature attribute and create/update related sensor object.
+    ///</summary>
+    ///<param name="_value">The temperature value</param>
+    protected void SetTemperature(string _value)
+    {
+        if (Regex.IsMatch(_value, "^[0-9.]+$"))
+        {
+            attributes["temperature"] = _value;
+            GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
+            if (sensor)
+                sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+            else
+            {
+                SApiObject se = new SApiObject();
+                se.description = new List<string>();
+                se.attributes = new Dictionary<string, string>();
+
+                se.name = "sensor"; // ?
+                se.category = "sensor";
+                se.attributes["formFactor"] = "ext";
+                se.attributes["temperature"] = _value;
+                se.parentId = id;
+                se.domain = domain;
+
+                ObjectGenerator.instance.CreateSensor(se, transform);
+            }
+        }
+        else
+            GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+    }
+
 }

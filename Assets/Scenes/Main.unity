@@ -1092,6 +1092,7 @@ MonoBehaviour:
   humanMode: 0
   targetPos: []
   targetRot: []
+  labeledTransforms: []
 --- !u!1 &214809336
 GameObject:
   m_ObjectHideFlags: 0
@@ -5240,7 +5241,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B: 2021-09-08 #823ef55\r"
+  m_text: 'B: 2021-12-21 #2cb77c8'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9576,6 +9577,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1406083045}
   m_CullTransparentMesh: 0
+--- !u!1 &1407285862
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1407285864}
+  - component: {fileID: 1407285865}
+  m_Layer: 0
+  m_Name: Network
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1407285864
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407285862}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1407285865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407285862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9787855dcc51f96498f77f59939ee42e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  protocol: 1
+  receivePort: 5500
+  triggerSend: 0
+  msg: Hi !
 --- !u!1 &1408815681
 GameObject:
   m_ObjectHideFlags: 0
@@ -10655,7 +10703,6 @@ MonoBehaviour:
   currentItemText: {fileID: 1510264671}
   reloadBtn: {fileID: 1890827699}
   apiBtn: {fileID: 184299213}
-  currentCam: {fileID: 1079497875}
   objInfos: {fileID: 879283141}
   toggleWireframe: {fileID: 1337625306}
   focusText: {fileID: 1346455887}
@@ -10685,6 +10732,10 @@ MonoBehaviour:
   coordinateSystemModel: {fileID: 4803223096728100942, guid: 0701ceca210faed459f1958237ca986e,
     type: 3}
   separatorModel: {fileID: 6439851413883331907, guid: 2fec6d44e3c98f84f8a75b9cf071fd4e,
+    type: 3}
+  sensorExtModel: {fileID: 6010235731161253863, guid: d5f1dea437b4d8247b0a6e981b274a4f,
+    type: 3}
+  sensorIntModel: {fileID: 6010235731161253863, guid: ff0469596841b8149a14774b014c600a,
     type: 3}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
@@ -10771,7 +10822,7 @@ MonoBehaviour:
   cursors:
   - cursorType: 0
     texture: {fileID: 2800000, guid: b0f0147cb86a9254ba22c22a56f0e983, type: 3}
-    offset: {x: 27, y: 9}
+    offset: {x: 9, y: 3}
   - cursorType: 1
     texture: {fileID: 2800000, guid: 8ba17cb453cc5da4b8959e3038fc57c8, type: 3}
     offset: {x: 21, y: 12}
