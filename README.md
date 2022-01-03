@@ -6,6 +6,7 @@ OGREE 3D is a data-center viewer
 - VR version to come  
 
 *Unity version: 2020.3.6f1*  
+*A third party plugin is needed for loading fbx models at runtime: **TriLib**.*
 
 # Table of Contents
 - [Getting started](#Getting-Started)
