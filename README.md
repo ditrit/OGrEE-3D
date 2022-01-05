@@ -1,12 +1,15 @@
 # OGREE-3D
-OGREE 3D is a data-center viewer  
-- Build windows / macOS / Linux: v2.4
+OGREE 3D is a data-center viewer, using Unity 3D  
+- Build windows / macOS / Linux: v2.5
 - Build to come: Android
 - Gamer gpu needed
 - VR version to come  
 
-*Unity version: 2020.3.6f1*  
-*A third party plugin is needed for loading fbx models at runtime: **TriLib**.*
+## Work on OGrEE-3D
+- Install Unity version **2020.3.6f1**
+- For loading fbx models at runtime, we are using a third party plugin: [**TriLib 2**](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548). You'll have to purchase it.
+- Open the project in Unity Editor. A warning message will ask you to enter into safe mode. Deny it and continue to open the project.
+- Import your TriLib2 package in the *Assets* folder.
 
 # Table of Contents
 - [Getting started](#Getting-Started)
