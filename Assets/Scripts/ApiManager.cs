@@ -339,12 +339,12 @@ public class ApiManager : MonoBehaviour
                     // case "group":
                     //     ObjectGenerator.instance.CreateGroup(obj);
                     //     break;
-                    // case "corridor":
-                    //     ObjectGenerator.instance.CreateCorridor(obj);
-                    //     break;
-                    // case "separator":
-                    //     BuildingGenerator.instance.CreateSeparator(obj);
-                    //     break;
+                    case "corridor":
+                        ObjectGenerator.instance.CreateCorridor(obj);
+                        break;
+                    case "separator":
+                        BuildingGenerator.instance.CreateSeparator(obj);
+                        break;
             }
         }
         GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");

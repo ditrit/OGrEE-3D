@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -518,7 +518,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "room" || str[0] == "ro")
             await CreateRoom(str[1]);
         else if (str[0] == "separator" || str[0] == "sp")
-            CreateSeparator(str[1]);
+            await CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
@@ -526,7 +526,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "group" || str[0] == "gr")
             CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
-            CreateCorridor(str[1]);
+            await CreateCorridor(str[1]);
         else if (str[0] == "sensor" || str[0] == "se")
             CreateSensor(str[1]);
         else
@@ -714,7 +714,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create separator" command and call BuildingGenerator.CreateSeparator().
     ///</summary>
     ///<param name="_input">String with separator data to parse</param>
-    private void CreateSeparator(string _input)
+    private async Task CreateSeparator(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
@@ -739,7 +739,10 @@ public class ConsoleController : MonoBehaviour
                 sp.parentId = parent.GetComponent<OgreeObject>().id;
                 sp.domain = parent.GetComponent<OgreeObject>().domain;
 
-                BuildingGenerator.instance.CreateSeparator(sp, parent);
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(sp);
+                else
+                    BuildingGenerator.instance.CreateSeparator(sp, parent);
             }
         }
         else
@@ -927,7 +930,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create corridor" command and call ObjectGenerator.CreateCorridor().
     ///</summary>
     ///<param name="_input">String with corridor data to parse</param>
-    private void CreateCorridor(string _input)
+    private async Task CreateCorridor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+,[^@\\s\\}]+\\}@(cold|warm)$";
@@ -949,7 +952,10 @@ public class ConsoleController : MonoBehaviour
                 co.parentId = parent.GetComponent<OgreeObject>().id;
                 co.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateCorridor(co, parent);
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(co);
+                else
+                    ObjectGenerator.instance.CreateCorridor(co, parent);
             }
         }
         else
