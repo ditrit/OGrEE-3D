@@ -194,11 +194,11 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                    CreateItemFromJson(response);
+                CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
-                    CreateTemplateFromJson(response);
+                CreateTemplateFromJson(response);
             else
-                GameManager.gm.AppendLogLine("Unknown object received","red");
+                GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
         catch (HttpRequestException e)
         {
@@ -280,25 +280,26 @@ public class ApiManager : MonoBehaviour
     ///<param name="_json">The API response to use</param>
     private async void CreateItemFromJson(string _json)
     {
-        List<SApiObject> objsToCreate = new List<SApiObject>();
+        List<SApiObject> physicalObjects = new List<SApiObject>();
+        List<SApiObject> logicalObjects = new List<SApiObject>();
 
         if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
             SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);
             foreach (SApiObject obj in resp.data.objects)
-                objsToCreate.Add(obj);
+                physicalObjects.Add(obj);
         }
         else
         {
             // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            if (resp.data.children == null)
-                objsToCreate.Add(resp.data);
-            else
-                ParseNestedObjects(objsToCreate, resp.data);
+            // if (resp.data.children == null)
+            //     physicalObjects.Add(resp.data);
+            // else
+                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
-        foreach (SApiObject obj in objsToCreate) // should split to physical then logical lists
+        foreach (SApiObject obj in physicalObjects)
         {
             if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
                 await GetObject($"tenants?name={obj.domain}");
@@ -336,18 +337,27 @@ public class ApiManager : MonoBehaviour
                     else
                         ObjectGenerator.instance.CreateDevice(obj, null, false);
                     break;
-                    // case "group":
-                    //     ObjectGenerator.instance.CreateGroup(obj);
-                    //     break;
-                    case "corridor":
-                        ObjectGenerator.instance.CreateCorridor(obj);
-                        break;
-                    case "separator":
-                        BuildingGenerator.instance.CreateSeparator(obj);
-                        break;
+                case "corridor":
+                    ObjectGenerator.instance.CreateCorridor(obj);
+                    break;
+                case "separator":
+                    BuildingGenerator.instance.CreateSeparator(obj);
+                    break;
             }
         }
-        GameManager.gm.AppendLogLine($"{objsToCreate.Count} object(s) created", "green");
+        foreach (SApiObject obj in logicalObjects)
+        {
+            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
+                await GetObject($"tenants?name={obj.domain}");
+
+            switch (obj.category)
+            {
+                case "group":
+                    ObjectGenerator.instance.CreateGroup(obj);
+                    break;
+            }
+        }
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
@@ -364,15 +374,19 @@ public class ApiManager : MonoBehaviour
     ///<summary>
     /// Parse a nested SApiObject and add each item to a given list.
     ///</summary>
-    ///<param name="_list">The list to complete</param>
+    ///<param name="_physicalList">The list of physical objects to complete</param>
+    ///<param name="_logicalList">The list of logical objects to complete</param>
     ///<param name="_src">The head of nested SApiObjects</param>
-    private void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    private void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
     {
-        _list.Add(_src);
+        if (_src.category == "group")
+            _logicalList.Add(_src);
+        else
+            _physicalList.Add(_src);
         if (_src.children != null)
         {
             foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_list, obj);
+                ParseNestedObjects(_physicalList, _logicalList, obj);
         }
     }
 
