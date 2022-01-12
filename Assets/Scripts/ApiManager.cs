@@ -340,9 +340,6 @@ public class ApiManager : MonoBehaviour
                 case "corridor":
                     ObjectGenerator.instance.CreateCorridor(obj);
                     break;
-                case "separator":
-                    BuildingGenerator.instance.CreateSeparator(obj);
-                    break;
             }
         }
         foreach (SApiObject obj in logicalObjects)

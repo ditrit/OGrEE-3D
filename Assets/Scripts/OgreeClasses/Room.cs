@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 
@@ -368,6 +369,10 @@ public class Room : Building
                     ParseAreas(_value);
                     updateAttr = true;
                     break;
+                case "separator":
+                    AddSeparator(_value);
+                    updateAttr = true;
+                    break;
                 case "tilesName":
                     ToggleTilesName(_value);
                     break;
@@ -417,6 +422,47 @@ public class Room : Building
         }
         else
             GameManager.gm.AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Add a separator to attributes["separators"] and instantiate it.
+    ///</summary>
+    ///<param name="_input">The startPos and endPos of the new separator</param>
+    public void AddSeparator(string _input)
+    {
+        List<string> separators;
+        if (attributes.ContainsKey("separators"))
+            separators = JsonConvert.DeserializeObject<List<string>>(attributes["separators"]);
+        else
+            separators = new List<string>();
+        separators.Add(_input);
+        attributes["separators"] = JsonConvert.SerializeObject(separators);
+
+        string[] data = _input.Split('@');
+        Vector2 startPos = Utils.ParseVector2(data[0]);
+        Vector2 endPos = Utils.ParseVector2(data[1]);
+
+        float length = Vector2.Distance(startPos, endPos);
+        float height = walls.GetChild(0).localScale.y;
+        float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
+
+        GameObject separator = Instantiate(GameManager.gm.separatorModel);
+        separator.transform.parent = transform;
+
+        // Set textured box
+        separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
+        separator.transform.GetChild(0).localPosition = new Vector3(length, height, 0) / 2;
+        Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
+        rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
+
+        // Place the separator in the right place
+        Vector3 roomScale = technicalZone.localScale * -5;
+        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+
+        // Apply wanted transform
+        separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
+        separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+
     }
 
     ///<summary>

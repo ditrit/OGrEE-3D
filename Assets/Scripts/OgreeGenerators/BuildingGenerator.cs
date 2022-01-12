@@ -161,64 +161,13 @@ public class BuildingGenerator : MonoBehaviour
             room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
             foreach (ReadFromJson.SSeparator sep in template.separators)
-                CreateSeparatorFromJson(sep, newRoom.transform);
+            {
+                string sepDefinition = $"[{sep.startPosXYm[0]},{sep.startPosXYm[1]}]@[{sep.endPosXYm[0]},{sep.endPosXYm[1]}]";
+                room.AddSeparator(sepDefinition);
+            }
         }
 
         return room;
-    }
-
-    ///<summary>
-    /// Instantiate a separatorModel (from GameManager) and apply _data to it.
-    ///</summary>
-    ///<param name="_sp">Informations about the separator</param>
-    ///<param name="_parent">The parent of the created separator. Leave null if _bd contains the parendId</param>
-    public OgreeObject CreateSeparator(SApiObject _sp, Transform _parent = null)
-    {
-        Transform parent = Utils.FindParent(_parent, _sp.parentId);
-        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
-        {
-            GameManager.gm.AppendLogLine($"Parent room not found", "red");
-            return null;
-        }
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_sp.name}";
-        if (GameManager.gm.allItems.Contains(hierarchyName))
-        {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
-            return null;
-        }
-
-        // pos1XYm = startPos - pos2XYm = endPos
-        Vector2 pos1 = JsonUtility.FromJson<Vector2>(_sp.attributes["startPos"]);
-        Vector2 pos2 = JsonUtility.FromJson<Vector2>(_sp.attributes["endPos"]);
-
-        float length = Vector2.Distance(pos1, pos2);
-        float height = parent.GetComponent<Room>().walls.GetChild(0).localScale.y;
-        float angle = Vector3.SignedAngle(Vector3.right, pos2 - pos1, Vector3.up);
-        // Debug.Log($"[{_sp.name}]=> {angle}");
-
-        GameObject separator = Instantiate(GameManager.gm.separatorModel);
-        separator.name = _sp.name;
-        separator.transform.parent = parent;
-
-        // Set textured box
-        separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
-        separator.transform.GetChild(0).localPosition = new Vector3(length, height, 0) / 2;
-        Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
-        rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
-
-        // Place the separator in the right place
-        Vector3 roomScale = parent.GetComponent<Room>().technicalZone.localScale * -5;
-        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
-        separator.transform.localPosition += new Vector3(pos1.x, 0, pos1.y);
-        separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
-
-        OgreeObject sp = separator.GetComponent<OgreeObject>();
-        sp.UpdateFromSApiObject(_sp);
-
-        string hn = sp.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, separator);
-
-        return sp;
     }
 
     ///<summary>
@@ -243,25 +192,5 @@ public class BuildingGenerator : MonoBehaviour
         wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -(_dim.z / 2 + _offset));
         wallRight.localPosition = new Vector3(_dim.x / 2 + _offset, wallFront.localScale.y / 2, 0);
         wallLeft.localPosition = new Vector3(-(_dim.x / 2 + _offset), wallFront.localScale.y / 2, 0);
-    }
-
-    ///<summary>
-    /// Convert ReadFromJson.SSeparator to SSeparatorInfos and call CreateSeparator().
-    ///</summary>
-    ///<param name="_sepData">Data from json</param>
-    ///<param name="_root">The room of the separator</param>
-    private void CreateSeparatorFromJson(ReadFromJson.SSeparator _sepData, Transform _root)
-    {
-        SApiObject sp = new SApiObject();
-        sp.description = new List<string>();
-        sp.attributes = new Dictionary<string, string>();
-
-        sp.name = _sepData.name;
-        Vector2 pos1 = new Vector2(_sepData.pos1XYm[0], _sepData.pos1XYm[1]);
-        sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
-        Vector2 pos2 = new Vector2(_sepData.pos2XYm[0], _sepData.pos2XYm[1]);
-        sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
-
-        BuildingGenerator.instance.CreateSeparator(sp, _root);
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -517,8 +517,6 @@ public class ConsoleController : MonoBehaviour
             await CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             await CreateRoom(str[1]);
-        else if (str[0] == "separator" || str[0] == "sp")
-            await CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
@@ -704,45 +702,6 @@ public class ConsoleController : MonoBehaviour
                     await ApiManager.instance.PostObject(ro);
                 else
                     BuildingGenerator.instance.CreateRoom(ro, parent);
-            }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
-    ///<summary>
-    /// Parse a "create separator" command and call BuildingGenerator.CreateSeparator().
-    ///</summary>
-    ///<param name="_input">String with separator data to parse</param>
-    private async Task CreateSeparator(string _input)
-    {
-        _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-
-            Transform parent;
-            SApiObject sp = new SApiObject();
-            sp.description = new List<string>();
-            sp.attributes = new Dictionary<string, string>();
-
-            sp.category = "separator";
-            Vector2 pos1 = Utils.ParseVector2(data[1]);
-            sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
-            Vector2 pos2 = Utils.ParseVector2(data[2]);
-            sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
-
-            IsolateParent(data[0], out parent, out sp.name);
-            if (parent)
-            {
-                sp.parentId = parent.GetComponent<OgreeObject>().id;
-                sp.domain = parent.GetComponent<OgreeObject>().domain;
-
-                if (ApiManager.instance.isInit)
-                    await ApiManager.instance.PostObject(sp);
-                else
-                    BuildingGenerator.instance.CreateSeparator(sp, parent);
             }
         }
         else
