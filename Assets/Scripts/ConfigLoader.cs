@@ -95,7 +95,7 @@ public class ConfigLoader
     {
         try
         {
-            StreamReader jsonCongif = File.OpenText("OGREE 3D_Data/config.json");
+            StreamReader jsonCongif = File.OpenText("OGrEE-3D_Data/config.json");
             GameManager.gm.AppendLogLine("Load custom config file", "green");
             return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
