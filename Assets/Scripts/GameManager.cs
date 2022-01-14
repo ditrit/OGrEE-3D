@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GameObject debugPanel = null;
-    public DetailsSlider detailsSlider = null;
+    public DetailsInputField detailsInputField = null;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -262,12 +262,12 @@ public class GameManager : MonoBehaviour
     private void SelectItem(GameObject _obj)
     {
         if (currentItems.Count == 0)
-            detailsSlider.ActiveSlider(true);
+            detailsInputField.ActiveInputField(true);
 
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
-        detailsSlider.UpdateSlider(currentItems[0].GetComponent<OgreeObject>().currentLod);
+        detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
 
     ///<summary>
@@ -279,8 +279,8 @@ public class GameManager : MonoBehaviour
         currentItems.Remove(_obj);
         if (currentItems.Count == 0)
         {
-            detailsSlider.UpdateSlider(0);
-            detailsSlider.ActiveSlider(false);
+            detailsInputField.UpdateInputField("0");
+            detailsInputField.ActiveInputField(false);
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
