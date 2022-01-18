@@ -18,8 +18,8 @@ public class ReadFromJson
         public int[] reservedArea;
         public SSeparator[] separators;
         public SColor[] colors;
-        public STiles[] tiles;
-        public SRows[] rows;
+        public STile[] tiles;
+        public SRow[] rows;
     }
 
     [System.Serializable]
@@ -30,7 +30,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    public struct STiles
+    public struct STile
     {
         public string location;
         public string name;
@@ -40,7 +40,7 @@ public class ReadFromJson
     }
 
     [System.Serializable]
-    public struct SRows
+    public struct SRow
     {
         public string name;
         public string locationY; // should be posY

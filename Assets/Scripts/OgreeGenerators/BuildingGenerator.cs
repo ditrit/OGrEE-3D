@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -158,12 +159,37 @@ public class BuildingGenerator : MonoBehaviour
         if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
         {
             ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
+
             room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
-            foreach (ReadFromJson.SSeparator sep in template.separators)
+            if (template.separators != null)
             {
-                string sepDefinition = $"[{sep.startPosXYm[0]},{sep.startPosXYm[1]}]@[{sep.endPosXYm[0]},{sep.endPosXYm[1]}]";
-                room.AddSeparator(sepDefinition);
+                foreach (ReadFromJson.SSeparator sep in template.separators)
+                    room.AddSeparator(sep);
+            }
+
+            if (template.tiles != null)
+            {
+                List<ReadFromJson.STile> tiles = new List<ReadFromJson.STile>();
+                foreach (ReadFromJson.STile t in template.tiles)
+                    tiles.Add(t);
+                room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
+            }
+
+            if (template.rows != null)
+            {
+                List<ReadFromJson.SRow> rows = new List<ReadFromJson.SRow>();
+                foreach (ReadFromJson.SRow r in template.rows)
+                    rows.Add(r);
+                room.attributes["rows"] = JsonConvert.SerializeObject(rows);
+            }
+
+            if (template.colors != null)
+            {
+                List<ReadFromJson.SColor> colors = new List<ReadFromJson.SColor>();
+                foreach (ReadFromJson.SColor c in template.colors)
+                    colors.Add(c);
+                room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
         }
 
