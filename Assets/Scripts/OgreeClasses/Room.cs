@@ -436,6 +436,12 @@ public class Room : Building
     ///<param name="_input">The startPos and endPos of the new separator</param>
     public void AddSeparator(string _input)
     {
+        if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
+        {
+            GameManager.gm.AppendLogLine("Syntax error","red");
+            return;
+        }
+
         string[] data = _input.Split('@');
         Vector2 startPos = Utils.ParseVector2(data[0]);
         Vector2 endPos = Utils.ParseVector2(data[1]);
