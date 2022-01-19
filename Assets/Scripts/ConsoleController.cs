@@ -162,7 +162,7 @@ public class ConsoleController : MonoBehaviour
             MoveCamera(_input.Substring(7));
         else if (_input.StartsWith("api."))
             CallApi(_input.Substring(4));
-        else if (_input.Contains(".") && _input.Contains("="))
+        else if (_input.Contains(":") && _input.Contains("="))
             SetAttribute(_input);
         else
         {
@@ -979,35 +979,30 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string pattern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
+        string pattern = "^[a-zA-Z0-9._]+\\:[a-zA-Z0-9.]+=.+$";
         if (Regex.IsMatch(_input, pattern))
         {
-            string[] data = _input.Split('=');
+            string[] data = _input.Split(new char[] { ':', '=' });
 
             // Can be a selection...
-            if (data[0].Count(f => (f == '.')) == 1)
+            if (data[0] == "selection" || data[0] == "_")
             {
-                string[] attr = data[0].Split('.');
-                if (attr[0] == "selection" || attr[0] == "_")
-                {
-                    SetMultiAttribute(attr[1], data[1]);
-                    GameManager.gm.UpdateGuiInfos();
-                    UnlockController();
-                    return;
-                }
+                SetMultiAttribute(data[1], data[2]);
+                GameManager.gm.UpdateGuiInfos();
+                UnlockController();
+                return;
+
             }
             // ...else is an OgreeObject
-            Transform obj;
-            string attrName;
-            IsolateParent(data[0], out obj, out attrName);
+            GameObject obj = GameManager.gm.FindByAbsPath(data[0]);
             if (obj)
             {
                 if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    if (attrName == "details")
-                        obj.GetComponent<OgreeObject>().LoadChildren(data[1]);
+                    if (data[1] == "details")
+                        obj.GetComponent<OgreeObject>().LoadChildren(data[2]);
                     else
-                        obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
+                        obj.GetComponent<OgreeObject>().SetAttribute(data[1], data[2]);
                     GameManager.gm.UpdateGuiInfos();
                 }
                 else
