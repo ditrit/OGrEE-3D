@@ -25,7 +25,7 @@ public class TcpConnection
     private TcpClient connectedTcpClient;
     #endregion
 
-    private readonly Queue<string> incomingQueue = new Queue<string>();
+    public readonly Queue<string> incomingQueue = new Queue<string>();
     private bool threadRunning = false;
 
     public void StartConnection(int _receivePort)

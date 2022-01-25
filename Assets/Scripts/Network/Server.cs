@@ -54,6 +54,12 @@ public class Server : MonoBehaviour
             else if (protocol == eConnectionType.tcp)
                 tcpConnection.Send(msg);
         }
+
+        if (tcpConnection.incomingQueue.Count > 0)
+        {
+            string msg = tcpConnection.incomingQueue.Dequeue();
+            GameManager.gm.AppendLogLine(msg);
+        }
     }
 
     private void OnDestroy()
