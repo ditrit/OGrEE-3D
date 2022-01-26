@@ -23,7 +23,6 @@ public class CustomRendererOutline : MonoBehaviour
         defaultMaterial = GameManager.gm.defaultMat;
         transparentMaterial = GameManager.gm.alphaMat;
 
-        // if (GetComponent<OObject>())
         if (GameManager.gm.allItems.ContainsValue(gameObject))
             isActive = true;
 
@@ -232,5 +231,11 @@ public class CustomRendererOutline : MonoBehaviour
         renderer.material.SetTexture("_BumpMap", mat.GetTexture("_BumpMap"));
         renderer.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
         renderer.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
+
+        if (GetComponent<OObject>().isHidden)
+        {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+        }
     }
 }

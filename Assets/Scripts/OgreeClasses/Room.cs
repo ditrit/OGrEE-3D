@@ -474,7 +474,7 @@ public class Room : Building
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.gm.separatorModel);
-        separator.transform.parent = transform;
+        separator.transform.parent = walls;
 
         // Set textured box
         separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
