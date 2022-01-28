@@ -431,7 +431,7 @@ public class ObjectGenerator : MonoBehaviour
 
         GameObject newGr = Instantiate(GameManager.gm.labeledBoxModel);
         newGr.name = _gr.name;
-        newGr.transform.parent = _parent;
+        newGr.transform.parent = parent;
 
         // According to group type, set pos, rot & scale
         Vector3 pos = Vector3.zero;

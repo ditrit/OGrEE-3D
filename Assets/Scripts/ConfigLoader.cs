@@ -13,9 +13,8 @@ public class ConfigLoader
         public string verbose;
         public string fullscreen;
         public Dictionary<string, string> textures;
-        public string db_url;
-        public string db_login;
-        public string db_token;
+        public string api_url;
+        public string api_token;
     }
 
     private SConfig config;
@@ -59,7 +58,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen", "--serverUrl", "--serverLogin", "--serverToken" };
+        string[] args = new string[] { "--verbose", "--fullscreen", "--apiUrl", "--apiToken" };
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -74,13 +73,10 @@ public class ConfigLoader
                         config.fullscreen = str;
                         break;
                     case 2:
-                        config.db_url = str;
+                        config.api_url = str;
                         break;
                     case 3:
-                        config.db_login = str;
-                        break;
-                    case 4:
-                        config.db_token = str;
+                        config.api_token = str;
                         break;
                 }
 
@@ -95,7 +91,7 @@ public class ConfigLoader
     {
         try
         {
-            StreamReader jsonCongif = File.OpenText("OGREE 3D_Data/config.json");
+            StreamReader jsonCongif = File.OpenText("OGrEE-3D_Data/config.json");
             GameManager.gm.AppendLogLine("Load custom config file", "green");
             return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
@@ -136,10 +132,10 @@ public class ConfigLoader
     public async Task<bool> ConnectToApi()
     {
 #if API_DEBUG
-        config.db_url = "https://ogree.chibois.net";
-        config.db_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
+        config.api_url = "https://ogree.chibois.net";
+        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
 #endif
-        await ApiManager.instance.Initialize(config.db_url, config.db_token);
+        await ApiManager.instance.Initialize(config.api_url, config.api_token);
         return ApiManager.instance.isInit;
     }
 

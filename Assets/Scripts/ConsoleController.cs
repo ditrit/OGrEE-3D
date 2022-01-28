@@ -162,7 +162,7 @@ public class ConsoleController : MonoBehaviour
             MoveCamera(_input.Substring(7));
         else if (_input.StartsWith("api."))
             CallApi(_input.Substring(4));
-        else if (_input.Contains(".") && _input.Contains("="))
+        else if (_input.Contains(":") && _input.Contains("="))
             SetAttribute(_input);
         else
         {
@@ -517,16 +517,14 @@ public class ConsoleController : MonoBehaviour
             await CreateBuilding(str[1]);
         else if (str[0] == "room" || str[0] == "ro")
             await CreateRoom(str[1]);
-        else if (str[0] == "separator" || str[0] == "sp")
-            CreateSeparator(str[1]);
         else if (str[0] == "rack" || str[0] == "rk")
             await CreateRack(str[1]);
         else if (str[0] == "device" || str[0] == "dv")
             await CreateDevice(str[1]);
         else if (str[0] == "group" || str[0] == "gr")
-            CreateGroup(str[1]);
+            await CreateGroup(str[1]);
         else if (str[0] == "corridor" || str[0] == "co")
-            CreateCorridor(str[1]);
+            await CreateCorridor(str[1]);
         else if (str[0] == "sensor" || str[0] == "se")
             CreateSensor(str[1]);
         else
@@ -711,42 +709,6 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Parse a "create separator" command and call BuildingGenerator.CreateSeparator().
-    ///</summary>
-    ///<param name="_input">String with separator data to parse</param>
-    private void CreateSeparator(string _input)
-    {
-        _input = Regex.Replace(_input, " ", "");
-        string pattern = "^[^@\\s]+@\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-
-            Transform parent;
-            SApiObject sp = new SApiObject();
-            sp.description = new List<string>();
-            sp.attributes = new Dictionary<string, string>();
-
-            sp.category = "separator";
-            Vector2 pos1 = Utils.ParseVector2(data[1]);
-            sp.attributes["startPos"] = JsonUtility.ToJson(pos1);
-            Vector2 pos2 = Utils.ParseVector2(data[2]);
-            sp.attributes["endPos"] = JsonUtility.ToJson(pos2);
-
-            IsolateParent(data[0], out parent, out sp.name);
-            if (parent)
-            {
-                sp.parentId = parent.GetComponent<OgreeObject>().id;
-                sp.domain = parent.GetComponent<OgreeObject>().domain;
-
-                BuildingGenerator.instance.CreateSeparator(sp, parent);
-            }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
-    }
-
-    ///<summary>
     /// Parse a "create rack" command and call ObjectGenerator.CreateRack().
     ///</summary>
     ///<param name="_input">String with rack data to parse</param>
@@ -895,7 +857,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create group" command and call ObjectGenerator.CreateGroup().
     ///</summary>
     ///<param name="_input">String with rackgroup data to parse</param>
-    private void CreateGroup(string _input)
+    private async Task CreateGroup(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+(,[^@\\s\\},]+)*\\}$";
@@ -916,7 +878,10 @@ public class ConsoleController : MonoBehaviour
                 gr.parentId = parent.GetComponent<OgreeObject>().id;
                 gr.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateGroup(gr, parent);
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(gr);
+                else
+                    ObjectGenerator.instance.CreateGroup(gr, parent);
             }
         }
         else
@@ -927,7 +892,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create corridor" command and call ObjectGenerator.CreateCorridor().
     ///</summary>
     ///<param name="_input">String with corridor data to parse</param>
-    private void CreateCorridor(string _input)
+    private async Task CreateCorridor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@\\{[^@\\s\\},]+,[^@\\s\\}]+\\}@(cold|warm)$";
@@ -949,7 +914,10 @@ public class ConsoleController : MonoBehaviour
                 co.parentId = parent.GetComponent<OgreeObject>().id;
                 co.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateCorridor(co, parent);
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostObject(co);
+                else
+                    ObjectGenerator.instance.CreateCorridor(co, parent);
             }
         }
         else
@@ -1011,35 +979,30 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private void SetAttribute(string _input)
     {
-        string pattern = "^[a-zA-Z0-9._]+\\.[a-zA-Z0-9.]+=.+$";
+        string pattern = "^[a-zA-Z0-9._]+\\:[a-zA-Z0-9.]+=.+$";
         if (Regex.IsMatch(_input, pattern))
         {
-            string[] data = _input.Split('=');
+            string[] data = _input.Split(new char[] { ':', '=' });
 
             // Can be a selection...
-            if (data[0].Count(f => (f == '.')) == 1)
+            if (data[0] == "selection" || data[0] == "_")
             {
-                string[] attr = data[0].Split('.');
-                if (attr[0] == "selection" || attr[0] == "_")
-                {
-                    SetMultiAttribute(attr[1], data[1]);
-                    GameManager.gm.UpdateGuiInfos();
-                    UnlockController();
-                    return;
-                }
+                SetMultiAttribute(data[1], data[2]);
+                GameManager.gm.UpdateGuiInfos();
+                UnlockController();
+                return;
+
             }
             // ...else is an OgreeObject
-            Transform obj;
-            string attrName;
-            IsolateParent(data[0], out obj, out attrName);
+            GameObject obj = GameManager.gm.FindByAbsPath(data[0]);
             if (obj)
             {
                 if (obj.GetComponent<OgreeObject>() != null)
                 {
-                    if (attrName == "details")
-                        obj.GetComponent<OgreeObject>().LoadChildren(data[1]);
+                    if (data[1] == "details")
+                        obj.GetComponent<OgreeObject>().LoadChildren(data[2]);
                     else
-                        obj.GetComponent<OgreeObject>().SetAttribute(attrName, data[1]);
+                        obj.GetComponent<OgreeObject>().SetAttribute(data[1], data[2]);
                     GameManager.gm.UpdateGuiInfos();
                 }
                 else

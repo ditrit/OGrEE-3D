@@ -7,6 +7,7 @@ using UnityEngine;
 public class OObject : OgreeObject
 {
     public Color color;
+    public bool isHidden = false;
 
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
@@ -92,11 +93,13 @@ public class OObject : OgreeObject
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = false;
             dod?.ToggleLabel(false);
+            isHidden = true;
         }
         else
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             dod?.ToggleLabel(true);
+            isHidden = false;
         }
     }
 

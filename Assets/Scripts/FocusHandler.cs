@@ -239,6 +239,12 @@ public class FocusHandler : MonoBehaviour
         }
         GetComponent<OObject>().ToggleSlots(_value.ToString());
         transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+
+        if (GetComponent<OObject>().isHidden)
+        {
+            transform.GetChild(0).GetComponent<Renderer>().enabled = false;
+            GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+        }
     }
 
     ///<summary>
@@ -293,7 +299,7 @@ public class FocusHandler : MonoBehaviour
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
-                            wall.GetComponent<Renderer>().enabled = _value;
+                            wall.GetComponentInChildren<Renderer>().enabled = _value;
                         if (go.transform.Find("tilesNameRoot"))
                         {
                             foreach (Transform child in go.transform.Find("tilesNameRoot"))

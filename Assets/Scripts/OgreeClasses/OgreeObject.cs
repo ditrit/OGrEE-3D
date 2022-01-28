@@ -241,7 +241,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             }
 
             SetCurrentLod(lvl);
-            GameManager.gm.detailsSlider.UpdateSlider(currentLod);
+            if (GameManager.gm.currentItems.Contains(gameObject))
+                GameManager.gm.detailsInputField.UpdateInputField(currentLod.ToString());
         }
     }
 

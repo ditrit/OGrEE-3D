@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 
@@ -102,12 +103,12 @@ public class GUIObjectInfos : MonoBehaviour
             // If rack, display pos by tile name if available
             if (_obj.category == "rack")
             {
-                string roomTemplate = _obj.transform.parent.GetComponent<Room>().attributes["template"];
-                if (!string.IsNullOrEmpty(roomTemplate))
+                Room room = _obj.transform.parent.GetComponent<Room>();
+                if (room.attributes.ContainsKey("tiles"))
                 {
-                    ReadFromJson.STiles tileData = new ReadFromJson.STiles();
-                    ReadFromJson.STiles[] tiles = GameManager.gm.roomTemplates[roomTemplate].tiles;
-                    foreach (ReadFromJson.STiles t in tiles)
+                    List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(room.attributes["tiles"]);
+                    ReadFromJson.STile tileData = new ReadFromJson.STile();
+                    foreach (ReadFromJson.STile t in tiles)
                     {
                         if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
                             tileData = t;

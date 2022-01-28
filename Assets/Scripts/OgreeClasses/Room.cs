@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 
@@ -218,13 +219,10 @@ public class Room : Building
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
                 {
-                    if (GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
-                        GenerateTileName(_root, pos, tileID, GameManager.gm.roomTemplates[attributes["template"]]);
-                    else
-                        GenerateTileName(_root, pos, tileID, new ReadFromJson.SRoomFromJson());
+                    GenerateTileName(_root, pos, tileID);
                 }
                 else if (_mode == "color")
-                    GenerateTileColor(_root, pos, tileID, GameManager.gm.roomTemplates[attributes["template"]]);
+                    GenerateTileColor(_root, pos, tileID);
             }
         }
     }
@@ -235,8 +233,7 @@ public class Room : Building
     ///<param name="_root">The root to parent the tile</param>
     ///<param name="_pos">The position of the current tile</param>
     ///<param name="_id">The id of the current tile</param>
-    ///<param name="_data">The room data from json template. Empty one if no templated one</param>
-    private void GenerateTileName(Transform _root, Vector2 _pos, string _id, ReadFromJson.SRoomFromJson _data)
+    private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
         GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
         tileText.name = $"Text_{_id}";
@@ -244,16 +241,18 @@ public class Room : Building
         tileText.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
         tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
 
-        // Select the right tile from _data.tiles
-        ReadFromJson.STiles tileData = new ReadFromJson.STiles();
-        if (!string.IsNullOrEmpty(_data.slug))
+        // Select the right tile from attributes["tiles"]
+        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        if (attributes.ContainsKey("tiles"))
         {
-            foreach (ReadFromJson.STiles tile in _data.tiles)
+            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
+            foreach (ReadFromJson.STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
             }
         }
+
         if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
             tileText.GetComponent<TextMeshPro>().text = tileData.label;
         else
@@ -266,16 +265,24 @@ public class Room : Building
     ///<param name="_root">The root to parent the tile</param>
     ///<param name="_pos"> The position of the current tile</param>
     ///<param name="_id">The id of the current tile</param>
-    ///<param name="_data">The room data from json template</param>
-    private void GenerateTileColor(Transform _root, Vector2 _pos, string _id, ReadFromJson.SRoomFromJson _data)
+    private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
-        // Select the right tile from _data.tiles
-        ReadFromJson.STiles tileData = new ReadFromJson.STiles();
-        foreach (ReadFromJson.STiles tile in _data.tiles)
+        // Select the right tile from attributes["tiles"]
+        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        if (attributes.ContainsKey("tiles"))
         {
-            if (tile.location.Trim() == _id)
-                tileData = tile;
+            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
+            foreach (ReadFromJson.STile tile in tiles)
+            {
+                if (tile.location.Trim() == _id)
+                    tileData = tile;
+            }
         }
+
+        List<ReadFromJson.SColor> customColors = new List<ReadFromJson.SColor>();
+        if (attributes.ContainsKey("customColors"))
+            customColors = JsonConvert.DeserializeObject<List<ReadFromJson.SColor>>(attributes["customColors"]);
+
         if (!string.IsNullOrEmpty(tileData.location))
         {
             if (!string.IsNullOrEmpty(tileData.texture) || !string.IsNullOrEmpty(tileData.color))
@@ -303,7 +310,7 @@ public class Room : Building
                     Color customColor = new Color();
                     if (tileData.color.StartsWith("@"))
                     {
-                        foreach (ReadFromJson.SColor color in _data.colors)
+                        foreach (ReadFromJson.SColor color in customColors)
                         {
                             if (color.name == tileData.color.Substring(1))
                                 ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
@@ -368,6 +375,10 @@ public class Room : Building
                     ParseAreas(_value);
                     updateAttr = true;
                     break;
+                case "separator":
+                    AddSeparator(_value);
+                    updateAttr = true;
+                    break;
                 case "tilesName":
                     ToggleTilesName(_value);
                     break;
@@ -417,6 +428,68 @@ public class Room : Building
         }
         else
             GameManager.gm.AppendLogLine("Syntax error", "red");
+    }
+
+    ///<summary>
+    /// Parse and add a separator to attributes["separators"] and instantiate it.
+    ///</summary>
+    ///<param name="_input">The startPos and endPos of the new separator</param>
+    public void AddSeparator(string _input)
+    {
+        if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
+        {
+            GameManager.gm.AppendLogLine("Syntax error","red");
+            return;
+        }
+
+        string[] data = _input.Split('@');
+        Vector2 startPos = Utils.ParseVector2(data[0]);
+        Vector2 endPos = Utils.ParseVector2(data[1]);
+
+        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator();
+        separator.startPosXYm = new float[] { startPos.x, startPos.y };
+        separator.endPosXYm = new float[] { endPos.x, endPos.y };
+        AddSeparator(separator);
+    }
+
+    ///<summary>
+    /// Add a separator to attributes["separators"] and instantiate it.
+    ///</summary>
+    ///<param name="_input">The separator data to add</param>
+    public void AddSeparator(ReadFromJson.SSeparator _sep)
+    {
+        List<ReadFromJson.SSeparator> separators;
+        if (attributes.ContainsKey("separators"))
+            separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(attributes["separators"]);
+        else
+            separators = new List<ReadFromJson.SSeparator>();
+        separators.Add(_sep);
+        attributes["separators"] = JsonConvert.SerializeObject(separators);
+
+        Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
+        Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
+
+        float length = Vector2.Distance(startPos, endPos);
+        float height = walls.GetChild(0).localScale.y;
+        float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
+
+        GameObject separator = Instantiate(GameManager.gm.separatorModel);
+        separator.transform.parent = walls;
+
+        // Set textured box
+        separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
+        separator.transform.GetChild(0).localPosition = new Vector3(length, height, 0) / 2;
+        Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
+        rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
+
+        // Place the separator in the right place
+        Vector3 roomScale = technicalZone.localScale * -5;
+        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+
+        // Apply wanted transform
+        separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
+        separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+
     }
 
     ///<summary>

@@ -6,7 +6,6 @@
         "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
     },
 
-    "db_url": "",
-    "db_login": "",
-    "db_token": ""
+    "api_url": "",
+    "api_token": ""
 }
