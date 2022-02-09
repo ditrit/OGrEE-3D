@@ -77,10 +77,10 @@ public class CliParser// : MonoBehaviour
                 CreateObjectFromData(_input);
                 break;
             case "modify":
-                // to do
+                ModifyObject(_input);
                 break;
             case "interact":
-                // to do
+                InteractWithObject(_input);
                 break;
             case "ui":
                 ManipulateUi(_input);
@@ -132,6 +132,75 @@ public class CliParser// : MonoBehaviour
                 break;
             case "group":
                 ObjectGenerator.instance.CreateGroup(obj);
+                break;
+        }
+    }
+
+    ///
+    private void ModifyObject(string _input)
+    {
+        SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
+        OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
+
+        // Case domain for all OgreeObjects
+        // Case color/temperature for racks
+        // Case color/temperature for devices
+
+        // Case of a separator modification in a room
+        if (newData.category == "room" && newData.attributes.ContainsKey("separators"))
+        {
+            Room room = (Room)obj;
+            if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
+                || !room.attributes.ContainsKey("separators"))
+            {
+                foreach (Transform wall in room.walls)
+                {
+                    if (wall.name.Contains("separator"))
+                        Object.Destroy(wall.gameObject);
+                }
+                List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
+                foreach (ReadFromJson.SSeparator sep in separators)
+                    room.AddSeparator(sep);
+            }
+        }
+
+        obj.UpdateFromSApiObject(newData);
+    }
+
+    ///
+    private void InteractWithObject(string _data)
+    {
+        List<string> usableParams;
+        SInteract command = JsonConvert.DeserializeObject<SInteract>(_data);
+        OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
+        switch (obj.category)
+        {
+            case "room":
+                Room room = (Room)obj;
+                usableParams = new List<string>() { "tilesName", "tilesColor" };
+                if (usableParams.Contains(command.param))
+                    room.SetAttribute(command.param, command.value);
+                else
+                    Debug.LogWarning("Incorrect room interaction");
+                break;
+            case "rack":
+                Rack rack = (Rack)obj;
+                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS", "U" };
+                if (usableParams.Contains(command.param))
+                    rack.SetAttribute(command.param, command.value);
+                else
+                    Debug.LogWarning("Incorrect rack interaction");
+                break;
+            case "device":
+                OObject device = (OObject)obj;
+                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS" };
+                if (usableParams.Contains(command.param))
+                    device.SetAttribute(command.param, command.value);
+                else
+                    Debug.LogWarning("Incorrect device interaction");
+                break;
+            default:
+                usableParams = new List<string>() {""};
                 break;
         }
     }
