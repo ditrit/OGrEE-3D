@@ -148,6 +148,9 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
 
+        newRack.AddComponent<BoxCollider>();
+        newRack.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
+        newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
         return rack;
     }
 
@@ -356,6 +359,9 @@ public class ObjectGenerator : MonoBehaviour
         else
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
+        go.AddComponent<BoxCollider>();
+        go.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
+        go.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
         return go;
     }
 
