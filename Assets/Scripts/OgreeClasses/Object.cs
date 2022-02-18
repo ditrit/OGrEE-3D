@@ -9,6 +9,17 @@ public class OObject : OgreeObject
     public Color color;
     public bool isHidden = false;
 
+    private void Awake()
+    {
+        EventManager.Instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        EventManager.Instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>
@@ -75,6 +86,26 @@ public class OObject : OgreeObject
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
+    ///
+    public override void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    {
+        name = _src.name;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        if (domain != _src.domain)
+        {
+            domain = _src.domain;
+            UpdateColorByTenant();
+        }
+        description = _src.description;
+        if (_copyAttr)
+        {
+            attributes = _src.attributes;
+            
+        }
+    }
+
     ///<summary>
     /// Update object's alpha according to _input, true or false.
     ///</summary>
@@ -126,6 +157,13 @@ public class OObject : OgreeObject
             attributes.Remove("color");
             GameManager.gm.AppendLogLine("Unknown color", "yellow");
         }
+    }
+
+    ///
+    private void UpdateColorByTenant(UpdateTenantEvent _event)
+    {
+        if (_event.name == domain)
+            UpdateColorByTenant();
     }
 
     ///<summary>

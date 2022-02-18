@@ -1002,7 +1002,11 @@ public class ConsoleController : MonoBehaviour
                     if (data[1] == "details")
                         obj.GetComponent<OgreeObject>().LoadChildren(data[2]);
                     else
+                    {
                         obj.GetComponent<OgreeObject>().SetAttribute(data[1], data[2]);
+                        if (obj.GetComponent<OgreeObject>().category == "tenant" && data[1] == "color")
+                            EventManager.Instance.Raise(new UpdateTenantEvent { name = obj.name });
+                    }
                     GameManager.gm.UpdateGuiInfos();
                 }
                 else

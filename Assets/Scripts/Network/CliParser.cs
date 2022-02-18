@@ -143,8 +143,12 @@ public class CliParser// : MonoBehaviour
         OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
 
         // Case domain for all OgreeObjects
-        // Case color/temperature for racks
-        // Case color/temperature for devices
+        bool tenantColorChanged = false;
+        if (newData.category == "tenant" && obj.attributes["color"] != newData.attributes["color"])
+            tenantColorChanged = true;
+
+        // Case color/temperature for racks & devices
+        
 
         // Case of a separator modification in a room
         if (newData.category == "room" && newData.attributes.ContainsKey("separators"))
@@ -165,6 +169,8 @@ public class CliParser// : MonoBehaviour
         }
 
         obj.UpdateFromSApiObject(newData);
+        if (tenantColorChanged)
+            EventManager.Instance.Raise(new UpdateTenantEvent { name = newData.name });
     }
 
     ///
@@ -200,7 +206,7 @@ public class CliParser// : MonoBehaviour
                     Debug.LogWarning("Incorrect device interaction");
                 break;
             default:
-                usableParams = new List<string>() {""};
+                usableParams = new List<string>() { "" };
                 break;
         }
     }

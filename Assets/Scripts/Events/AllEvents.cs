@@ -47,3 +47,8 @@ public class ChangeCursorEvent : CustomEvent
     public CursorChanger.CursorType type;
 }
 
+public class UpdateTenantEvent : CustomEvent
+{
+    public string name;
+}
+
