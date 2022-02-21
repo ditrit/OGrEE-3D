@@ -16,6 +16,7 @@ public class CameraControl : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI infosTMP = null;
+    [SerializeField] private TextMeshPro infosTMPVR = null;
 
     [Header("Parameters")]
     [Range(5, 20)]
@@ -235,6 +236,10 @@ public class CameraControl : MonoBehaviour
         if (!isReady)
             infosTMP.text += " (Waiting)";
         infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
+        infosTMPVR.text = $"Camera pos: [{transform.position.x.ToString("0.##")};{transform.position.z.ToString("0.##")};{transform.position.y.ToString("0.##")}]";
+        if (!isReady)
+            infosTMPVR.text += " (Waiting)";
+        infosTMPVR.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
     }
 
     ///<summary>

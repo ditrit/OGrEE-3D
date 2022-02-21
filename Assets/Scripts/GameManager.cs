@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
 
         consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
+        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 
         //consoleController.RunCommandString("camera.move=[-0.5,3,2.9]@[46,-90]");
 
@@ -110,6 +111,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 
