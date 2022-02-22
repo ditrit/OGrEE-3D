@@ -106,12 +106,12 @@ public class GameManager : MonoBehaviour
 
         consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
         consoleController.RunCommandString(">");
+        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 #endif
     }
 
     private void Update()
     {
-        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
         if (Input.GetKeyDown(KeyCode.Escape))
             menu.SetActive(!menu.activeSelf);
 

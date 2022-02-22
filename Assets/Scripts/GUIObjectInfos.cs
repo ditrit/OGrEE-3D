@@ -10,6 +10,7 @@ public class GUIObjectInfos : MonoBehaviour
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
     [SerializeField] private TextMeshProUGUI tmpName = null;
+    [SerializeField] private TextMeshPro tmpNameVR = null;
     [SerializeField] private TextMeshProUGUI tmpTenantName = null;
     [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
     [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
@@ -44,9 +45,15 @@ public class GUIObjectInfos : MonoBehaviour
         else
         {
             if (_obj)
+            {
                 tmpName.text = _obj.name;
+                tmpNameVR.text = _obj.name;
+            }
             else
+            {
                 tmpName.text = "";
+                tmpNameVR.text = "";
+            }
             tmpTenantName.text = "";
             tmpTenantContact.text = "";
             tmpTenantPhone.text = "";
@@ -82,6 +89,7 @@ public class GUIObjectInfos : MonoBehaviour
     {
         int i = 1;
         tmpName.text = _obj.hierarchyName;
+        tmpNameVR.text = _obj.hierarchyName;
         if (!string.IsNullOrEmpty(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
@@ -178,9 +186,9 @@ public class GUIObjectInfos : MonoBehaviour
 
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
-        RectTransform rtVR = tmpAttributesVR.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, i * 30);
-        rtVR.sizeDelta = new Vector2(0, i * 30);
+        //RectTransform rtVR = tmpAttributesVR.transform.parent.GetComponent<RectTransform>();
+        //rtVR.sizeDelta = new Vector2(0, i * 30);
     }
 
     ///<summary>
