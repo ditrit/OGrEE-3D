@@ -150,7 +150,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<BoxCollider>().enabled = true;
         newRack.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
         newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
-        newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
+        newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
         newRack.AddComponent<HandInteractionHandler>();
         return rack;
     }

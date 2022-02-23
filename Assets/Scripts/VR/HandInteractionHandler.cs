@@ -26,11 +26,11 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
+        SelectThis();
     }
 
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
     {
-        SelectThis();
     }
 
     public void SelectThis()

@@ -88,9 +88,8 @@ public class GameManager : MonoBehaviour
         ToggleApi();
 #endif
 
-
 #if !PROD
-        consoleController.RunCommandString("+tn:DEMO@123456");
+        /*consoleController.RunCommandString("+tn:DEMO@123456");
         consoleController.RunCommandString("+si:DEMO.BETA @NW");
         consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
         consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
@@ -102,11 +101,10 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
         consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 
-        //consoleController.RunCommandString("camera.move=[-0.5,3,2.9]@[46,-90]");
-
         consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
         consoleController.RunCommandString(">");
-        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
+        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); */
+
 #endif
     }
 
@@ -512,6 +510,7 @@ public class GameManager : MonoBehaviour
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
         }
+        StartCoroutine(TestAPI());
     }
 
     ///<summary>
@@ -668,6 +667,13 @@ public class GameManager : MonoBehaviour
     public void QuitApp()
     {
         Application.Quit();
+    }
+
+    IEnumerator TestAPI()
+    {
+        consoleController.RunCommandString("api.get=tenants?name=CED");
+        yield return new WaitForSeconds(2);
+        consoleController.RunCommandString("CED:details=6");
     }
 
 }
