@@ -19,11 +19,11 @@ public class Group : OObject
     ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
-        // bool updateAttr = false;
+        bool updateAttr = false;
         if (_param.StartsWith("description"))
         {
             SetDescription(_param.Substring(11), _value);
-            // updateAttr = true;
+            updateAttr = true;
         }
         else
         {
@@ -38,7 +38,7 @@ public class Group : OObject
                 case "domain":
                     SetDomain(_value);
                     UpdateColorByTenant();
-                    // updateAttr = true;
+                    updateAttr = true;
                     break;
                 case "color":
                     SetColor(_value);
@@ -54,12 +54,12 @@ public class Group : OObject
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
-                    // updateAttr = true;
+                    updateAttr = true;
                     break;
             }
         }
-        // if (updateAttr && ApiManager.instance.isInit)
-        //     PutData();
+        if (updateAttr && ApiManager.instance.isInit)
+            PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
