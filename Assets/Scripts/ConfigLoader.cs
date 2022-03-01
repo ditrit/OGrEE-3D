@@ -169,4 +169,12 @@ public class ConfigLoader
             GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
+
+    ///<summary>
+    /// Get registered API url.
+    ///</summary>
+    public string GetApiUrl()
+    {
+        return config.api_url;
+    }
 }

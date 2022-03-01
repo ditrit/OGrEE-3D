@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Button apiBtn = null;
+    [SerializeField] private TextMeshProUGUI apiUrl = null;
+
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
@@ -489,6 +491,7 @@ public class GameManager : MonoBehaviour
         {
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
+            apiUrl.text = "";
             AppendLogLine("Disconnected from API", "green");
         }
         else
@@ -498,6 +501,7 @@ public class GameManager : MonoBehaviour
                 ChangeApiButton("Connected to Api", Color.green);
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
+            apiUrl.text = configLoader.GetApiUrl();
         }
     }
 

@@ -742,9 +742,18 @@ public class ConsoleController : MonoBehaviour
             else // ...else: is template name
             {
                 rk.attributes["template"] = data[2];
-                if (GameManager.gm.objectTemplates.ContainsKey(data[2]))
+                OgreeObject template = null;
+
+                if (GameManager.gm.objectTemplates.ContainsKey(rk.attributes["template"]))
+                    template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
+                else if (ApiManager.instance.isInit)
                 {
-                    OgreeObject template = GameManager.gm.objectTemplates[data[2]].GetComponent<OgreeObject>();
+                    await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}");
+                    template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
+                }
+
+                if (template)
+                {
                     rk.attributes["size"] = template.attributes["size"];
                     rk.attributes["sizeUnit"] = template.attributes["sizeUnit"];
                     rk.attributes["height"] = template.attributes["height"];
@@ -829,13 +838,30 @@ public class ConsoleController : MonoBehaviour
                     dv.attributes["height"] = (sizeU * GameManager.gm.uSize * 1000).ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
-                else if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
+                else
                 {
-                    OgreeObject template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
-                    dv.attributes["size"] = template.attributes["size"];
-                    dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
-                    dv.attributes["height"] = template.attributes["height"];
-                    dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                    OgreeObject template = null;
+
+                    if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
+                        template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
+                    else if (ApiManager.instance.isInit)
+                    {
+                        await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}");
+                        template = GameManager.gm.objectTemplates[dv.attributes["template"]]?.GetComponent<OgreeObject>();
+                    }
+
+                    if (template)
+                    {
+                        dv.attributes["size"] = template.attributes["size"];
+                        dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
+                        dv.attributes["height"] = template.attributes["height"];
+                        dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                    }
+                    else
+                    {
+                        GameManager.gm.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", "yellow");
+                        return;
+                    }
                 }
 
                 if (ApiManager.instance.isInit)
