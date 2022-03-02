@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4289392459610177182}
   - component: {fileID: 3916099357972168395}
   - component: {fileID: 4991055209020205873}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelLeft (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 5827657634915763814}
   - component: {fileID: 182440315454369039}
   - component: {fileID: 7079262208642835191}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelFront (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -351,7 +351,7 @@ GameObject:
   - component: {fileID: 3293605717960793945}
   - component: {fileID: 900678627643471639}
   - component: {fileID: 7045867512332830116}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelBottom (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -523,7 +523,7 @@ GameObject:
   - component: {fileID: 1441711565567638446}
   - component: {fileID: 2917862830198339369}
   - component: {fileID: 974978794431618937}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelRear (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -694,7 +694,7 @@ GameObject:
   - component: {fileID: 2756453064248392137}
   - component: {fileID: 2633159542549976067}
   - component: {fileID: 280631025753518186}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -788,7 +788,7 @@ GameObject:
   - component: {fileID: 2092619551378889811}
   - component: {fileID: 6299635990443873303}
   - component: {fileID: 2450663112004535449}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelTop (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -963,7 +963,7 @@ GameObject:
   - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
   - component: {fileID: 7641173002511634591}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabeledBox
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -1103,7 +1103,7 @@ GameObject:
   - component: {fileID: 6124591923334373531}
   - component: {fileID: 5632311123266586153}
   - component: {fileID: 3970544498558124524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LabelRight (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}

@@ -10,13 +10,11 @@ public class GUIObjectInfos : MonoBehaviour
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
     [SerializeField] private TextMeshProUGUI tmpName = null;
-    [SerializeField] private TextMeshPro tmpNameVR = null;
     [SerializeField] private TextMeshProUGUI tmpTenantName = null;
     [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
     [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
     [SerializeField] private TextMeshProUGUI tmpTenantEmail = null;
     [SerializeField] private TextMeshProUGUI tmpAttributes = null;
-    [SerializeField] private TextMeshPro tmpAttributesVR = null;
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
@@ -45,21 +43,14 @@ public class GUIObjectInfos : MonoBehaviour
         else
         {
             if (_obj)
-            {
                 tmpName.text = _obj.name;
-                tmpNameVR.text = _obj.name;
-            }
             else
-            {
                 tmpName.text = "";
-                tmpNameVR.text = "";
-            }
             tmpTenantName.text = "";
             tmpTenantContact.text = "";
             tmpTenantPhone.text = "";
             tmpTenantEmail.text = "";
             tmpAttributes.text = "";
-            tmpAttributesVR.text = "";
         }
     }
 
@@ -76,6 +67,7 @@ public class GUIObjectInfos : MonoBehaviour
         objList.text = "";
         foreach (GameObject obj in _objects)
             objList.text += $"{obj.GetComponent<OgreeObject>().hierarchyName}\n";
+
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, _objects.Count * 20);
@@ -89,7 +81,6 @@ public class GUIObjectInfos : MonoBehaviour
     {
         int i = 1;
         tmpName.text = _obj.hierarchyName;
-        tmpNameVR.text = _obj.hierarchyName;
         if (!string.IsNullOrEmpty(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
@@ -100,7 +91,6 @@ public class GUIObjectInfos : MonoBehaviour
         }
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
-        tmpAttributesVR.text = $"<b><u>{_obj.category}</u></b>\n";
 
         // Display posXY if available
         if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
@@ -108,7 +98,6 @@ public class GUIObjectInfos : MonoBehaviour
         {
             Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
             tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
-            tmpAttributesVR.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
             i++;
 
             // If rack, display pos by tile name if available
@@ -127,7 +116,6 @@ public class GUIObjectInfos : MonoBehaviour
                     if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
                     {
                         tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
-                        tmpAttributesVR.text += $"<b>tile's label:</b> {tileData.label}\n";
                         i++;
                     }
                 }
@@ -138,7 +126,6 @@ public class GUIObjectInfos : MonoBehaviour
         if (_obj.attributes.ContainsKey("orientation"))
         {
             tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
-            tmpAttributesVR.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
             i++;
         }
 
@@ -147,7 +134,6 @@ public class GUIObjectInfos : MonoBehaviour
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
             tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
-            tmpAttributesVR.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
             i++;
         }
 
@@ -155,7 +141,6 @@ public class GUIObjectInfos : MonoBehaviour
         if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
         {
             tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
-            tmpAttributesVR.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
             i++;
         }
 
@@ -166,7 +151,6 @@ public class GUIObjectInfos : MonoBehaviour
                 && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template"))
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
-                tmpAttributesVR.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
                 i++;
             }
         }
@@ -175,11 +159,9 @@ public class GUIObjectInfos : MonoBehaviour
         if (_obj.description.Count != 0)
         {
             tmpAttributes.text += "<b>description:</b>\n";
-            tmpAttributesVR.text += "<b>description:</b>\n";
             for (int j = 0; j < _obj.description.Count; j++)
             {
                 tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
-                tmpAttributesVR.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
                 i++;
             }
         }
@@ -187,8 +169,6 @@ public class GUIObjectInfos : MonoBehaviour
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, i * 30);
-        //RectTransform rtVR = tmpAttributesVR.transform.parent.GetComponent<RectTransform>();
-        //rtVR.sizeDelta = new Vector2(0, i * 30);
     }
 
     ///<summary>

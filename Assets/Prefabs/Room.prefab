@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4174214755756367569}
   - component: {fileID: 1835345964953101484}
-  m_Layer: 0
+  - component: {fileID: 476784172462783701}
+  m_Layer: 31
   m_Name: Room
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -75,6 +76,25 @@ MonoBehaviour:
   technicalZone: {fileID: 2859817786028861529}
   tilesEdges: {fileID: 9208373176663619532}
   nameText: {fileID: 1070277913875691498}
+--- !u!114 &476784172462783701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405515581002141253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b55691ad5b034fe6966763a6e23818d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trackedTargetType: 0
+  trackedHandness: 3
+  trackedHandJoint: 2
+  transformOverride: {fileID: 0}
+  additionalOffset: {x: 0, y: 0, z: 0}
+  additionalRotation: {x: 0, y: 0, z: 0}
+  updateSolvers: 1
 --- !u!1 &760801759331240274
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,7 +104,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2447770562802736307}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +141,7 @@ GameObject:
   - component: {fileID: 242284506942257203}
   - component: {fileID: 7708351798833328396}
   - component: {fileID: 3471810081836724425}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: WallBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +236,7 @@ GameObject:
   - component: {fileID: 3365353608229013826}
   - component: {fileID: 1208652190700097600}
   - component: {fileID: 904376214907747946}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Edges
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -311,7 +331,7 @@ GameObject:
   - component: {fileID: 4004042035225332991}
   - component: {fileID: 7758688635003005176}
   - component: {fileID: 1070277913875691498}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Name (TMP)
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -482,7 +502,7 @@ GameObject:
   - component: {fileID: 1929187354686808558}
   - component: {fileID: 9056470987056043149}
   - component: {fileID: 1308270758738705897}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: WallFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -577,7 +597,7 @@ GameObject:
   - component: {fileID: 5437607689402005017}
   - component: {fileID: 2237391720910239568}
   - component: {fileID: 420249738805503412}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: WallLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -672,7 +692,7 @@ GameObject:
   - component: {fileID: 786790555099764963}
   - component: {fileID: 285044568111511908}
   - component: {fileID: 1199770973943004719}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Usable
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -768,7 +788,7 @@ GameObject:
   - component: {fileID: 2724232468795436489}
   - component: {fileID: 8927800679417718819}
   - component: {fileID: 5539480369655972155}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: WallRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -863,7 +883,7 @@ GameObject:
   - component: {fileID: 956258858737848589}
   - component: {fileID: 3718986459724464817}
   - component: {fileID: 1098095864911264524}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Technical
   m_TagString: Selectable
   m_Icon: {fileID: 0}
@@ -959,7 +979,7 @@ GameObject:
   - component: {fileID: 6483412950565553711}
   - component: {fileID: 5653075607279017886}
   - component: {fileID: 5767605650972853016}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Reserved
   m_TagString: Selectable
   m_Icon: {fileID: 0}

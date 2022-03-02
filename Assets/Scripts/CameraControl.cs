@@ -16,7 +16,6 @@ public class CameraControl : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI infosTMP = null;
-    [SerializeField] private TextMeshPro infosTMPVR = null;
 
     [Header("Parameters")]
     [Range(5, 20)]
@@ -236,10 +235,6 @@ public class CameraControl : MonoBehaviour
         if (!isReady)
             infosTMP.text += " (Waiting)";
         infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
-        infosTMPVR.text = $"Camera pos: [{transform.position.x.ToString("0.##")};{transform.position.z.ToString("0.##")};{transform.position.y.ToString("0.##")}]";
-        if (!isReady)
-            infosTMPVR.text += " (Waiting)";
-        infosTMPVR.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
     }
 
     ///<summary>
@@ -252,7 +247,7 @@ public class CameraControl : MonoBehaviour
         if (string.IsNullOrEmpty(target.label))
         {
             RegisterTransform();
-            MoveToObject(_e.obj.transform);
+            //MoveToObject(_e.obj.transform);
         }
         else
         {
@@ -330,7 +325,7 @@ public class CameraControl : MonoBehaviour
         {
             case 0:
                 // Debug.Log("0");
-                transform.position += new Vector3(0, 0, offset);
+                transform.position += new Vector3(0, 0, offset - 1);
                 transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
             case 90:

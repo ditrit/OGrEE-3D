@@ -2,12 +2,27 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Rack : OObject
 {
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
     private Transform uRoot;
+
+    private void Start()
+    {
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelect);
+        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselect);
+    }
+    
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelect);
+        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselect);
+    }
+       
 
     private void OnEnable()
     {
@@ -300,4 +315,30 @@ public class Rack : OObject
         }
         Utils.SwitchAllCollidersInRacks(false);
     }
+
+    public void OnSelect(OnSelectItemEvent _e)
+    {
+        Rack rack =_e.obj.GetComponent<Rack>();
+        if (rack)
+        {
+            rack.ToggleU("true");
+            GameManager.gm.AppendLogLine($"U helpers toggled for {rack.name}.", "yellow");
+        }
+        else
+            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
+    }
+
+    private void OnDeselect(OnDeselectItemEvent _e)
+    {
+        Rack rack = _e.obj.GetComponent<Rack>();
+        if (rack)
+        {
+            rack.ToggleU("false");
+            GameManager.gm.AppendLogLine($"U helpers toggled for {rack.name}.", "yellow");
+        }
+        else
+            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
+    }
+
 }
+

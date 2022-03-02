@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     static public GameManager gm;
     public ConsoleController consoleController;
     private ConfigLoader configLoader = new ConfigLoader();
+    public bool hololens = true;
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -88,23 +89,26 @@ public class GameManager : MonoBehaviour
         ToggleApi();
 #endif
 
+
 #if !PROD
-        /*consoleController.RunCommandString("+tn:DEMO@123456");
+        consoleController.RunCommandString("+tn:DEMO@ff0000");
         consoleController.RunCommandString("+si:DEMO.BETA @NW");
-        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
-        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
+        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[0,0,0]");
+        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[0,0,0]@+N + W");
 
 
         consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
         consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
+        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis01@1@1");
+        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20@20@2");
+        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20.BLADE@blade01");
+        //consoleController.RunCommandString("+ dv:DEMO.BETA.A.R1.A00.chassis20.BLADE.CPU@cpu1");
 
-        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
-        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
+
+        //consoleController.RunCommandString("camera.move=[-0.5,3,2.9]@[46,-90]");
 
         consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
         consoleController.RunCommandString(">");
-        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); */
-
 #endif
     }
 
@@ -158,7 +162,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void SingleClick()
     {
+
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
+
+
         if (objectHit && objectHit.tag == "Selectable")
         {
             bool canSelect = false;
@@ -510,7 +517,6 @@ public class GameManager : MonoBehaviour
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
         }
-        StartCoroutine(TestAPI());
     }
 
     ///<summary>
@@ -667,13 +673,6 @@ public class GameManager : MonoBehaviour
     public void QuitApp()
     {
         Application.Quit();
-    }
-
-    IEnumerator TestAPI()
-    {
-        consoleController.RunCommandString("api.get=tenants?name=CED");
-        yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED:details=6");
     }
 
 }

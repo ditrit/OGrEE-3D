@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Microsoft.MixedReality.Toolkit.UI;
 
-public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
+public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, IMixedRealityPointerHandler
 {
 
     #region Event handlers
@@ -26,16 +26,45 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
-        SelectThis();
+        UnselectThis();
     }
 
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
     {
     }
 
+    void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData _eventData)
+    {
+        SelectThis();
+    }
+
+    void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData _eventData)
+    {
+    }
+
+    void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData _eventData)
+    {
+        FocusThis();
+    }
+
+    void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData _eventData)
+    {
+
+    }
     public void SelectThis()
     {
         GameManager.gm.SetCurrentItem(gameObject);
     }
+
+    public void UnselectThis()
+    {
+        GameManager.gm.SetCurrentItem(null);
+    }
+
+    public void FocusThis()
+    {
+        GameManager.gm.FocusItem(gameObject);
+    }
+
 }
 

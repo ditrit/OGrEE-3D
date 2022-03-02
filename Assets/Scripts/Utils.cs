@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using Microsoft.MixedReality.Toolkit.Input;
 
 public static class Utils
 {
@@ -106,7 +107,10 @@ public static class Utils
     public static GameObject RaycastFromCameraToMouse()
     {
         RaycastHit hit;
+        //Vector3 pointerPosition = new Vector3();
+        //pointerPosition = Microsoft.MixedReality.Toolkit.Input.IMixedRealityPointer.Position;
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        //IMixedRealityRaycastProvider.Raycast(out MixedRealityRaycastHit);
         if (hit.collider)
         {
             // Debug.Log(hit.collider.transform.parent.name);

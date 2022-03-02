@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Orness
-  productName: OGrEE-3D
+  productName: OGrEE-3D-AR
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -46,7 +46,7 @@ PlayerSettings:
   defaultScreenHeight: 1080
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
-  m_StereoRenderingPath: 1
+  m_StereoRenderingPath: 2
   m_ActiveColorSpace: 1
   m_MTRendering: 1
   mipStripping: 0
@@ -127,13 +127,18 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 2.6
+  bundleVersion: 1.0
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 11400000, guid: f3ba5d11d047b7a41821f27c4855f927, type: 2}
-  - {fileID: 9029318565453216758, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
-  - {fileID: 7943852015859112686, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: -7172676021702587011, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
+  - {fileID: 5604438126760133931, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -262,7 +267,14 @@ PlayerSettings:
   AndroidMinifyDebug: 0
   AndroidValidateAppBundleSize: 1
   AndroidAppBundleSizeToValidate: 150
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 0}
+      m_Width: 128
+      m_Height: 128
+      m_Kind: 0
   m_BuildTargetPlatformIcons:
   - m_BuildTarget: Android
     m_Icons:
@@ -688,7 +700,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
-    7: OCULUSINTEGRATION_PRESENT;API_DEBUG
+    7: OCULUSINTEGRATION_PRESENT
     14: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
@@ -710,15 +722,16 @@ PlayerSettings:
     Standalone: 3
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Template3D
+  metroPackageName: OGrEE-3D-AR
   metroPackageVersion: 1.0.0.0
-  metroCertificatePath: 
+  metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Template_3D
-  wsaImages: {}
+  metroCertificateSubject: Orness
+  metroCertificateIssuer: Orness
+  metroCertificateNotAfter: 003a394e0e46d901
+  metroApplicationDescription: OGrEE-3D-AR
+  wsaImages:
+    2031716: 
   metroTileShortName: OGREE 3D
   metroTileShowName: 0
   metroMediumTileShowName: 0
@@ -734,6 +747,7 @@ PlayerSettings:
   metroSplashScreenUseBackgroundColor: 0
   platformCapabilities:
     WindowsStoreApps:
+      CodeGeneration: False
       OfflineMapsManagement: False
       HumanInterfaceDevice: False
       Location: False
@@ -746,21 +760,21 @@ PlayerSettings:
       InternetClientServer: False
       VideosLibrary: False
       Objects3D: False
-      InternetClient: False
       RemoteSystem: False
       BlockedChatMessages: False
       PhoneCall: False
       UserDataTasks: False
       Appointments: False
       SystemManagement: False
-      SpatialPerception: False
-      Microphone: False
+      SpatialPerception: True
+      Microphone: True
       SharedUserCertificates: False
       InputInjectionBrokered: False
       PicturesLibrary: False
       RemovableStorage: False
-      WebCam: False
+      WebCam: True
       VoipCall: False
+      GazeInput: True
       UserAccountInformation: False
       UserNotificationListener: False
       PhoneCallHistoryPublic: False
@@ -768,7 +782,7 @@ PlayerSettings:
       RecordedCallsFolder: False
       Contacts: False
       Proximity: False
-      CodeGeneration: False
+      InternetClient: True
       BackgroundMediaPlayback: False
       EnterpriseAuthentication: False
   metroTargetDeviceFamilies:

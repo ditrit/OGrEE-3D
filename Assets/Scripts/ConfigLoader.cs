@@ -132,7 +132,7 @@ public class ConfigLoader
     public async Task<bool> ConnectToApi()
     {
 #if API_DEBUG
-        config.api_url = "https://api.ogree.ditrit.io";
+        config.api_url = "https://ogree.chibois.net";
         config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
 #endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
