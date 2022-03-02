@@ -49,7 +49,6 @@ Material:
     - _BumpFace: 0
     - _BumpOutline: 0
     - _ColorMask: 15
-    - _CullMode: 0
     - _Diffuse: 0.5
     - _FaceDilate: 0
     - _FaceUVSpeedX: 0
@@ -2853,24 +2852,24 @@ MonoBehaviour:
   m_FontWeightTable:
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
-  - regularTypeface: {fileID: 11400000, guid: 3651d4295db21e841a60fb9e7272faf3, type: 2}
-    italicTypeface: {fileID: 11400000, guid: b68043008d4323b43a3c73da8b9df229, type: 2}
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
-  - regularTypeface: {fileID: 11400000, guid: 2370eb2ddc5d9f54baea71047b857f5b, type: 2}
-    italicTypeface: {fileID: 11400000, guid: 6943d2cc14a637947b7b88d429cb7901, type: 2}
-  - regularTypeface: {fileID: 0}
-    italicTypeface: {fileID: 11400000, guid: 65d1240244aa2a9479291172d0a73556, type: 2}
-  - regularTypeface: {fileID: 11400000, guid: 6b422bf6211e57e43970dc8406c32ad3, type: 2}
-    italicTypeface: {fileID: 11400000, guid: 4cf9bcfdddbeb6747b40b9801ccec3b8, type: 2}
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
-  - regularTypeface: {fileID: 11400000, guid: 7024698f8a993024b9e33c539cc378b8, type: 2}
-    italicTypeface: {fileID: 11400000, guid: a48d88881cbf55c4c81c1cc5340cb23b, type: 2}
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
-  - regularTypeface: {fileID: 11400000, guid: c9e82894fcd2f644093e6b67e74605b9, type: 2}
-    italicTypeface: {fileID: 11400000, guid: 3b338e0af2f42564ca3960095742fb08, type: 2}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
+  - regularTypeface: {fileID: 0}
+    italicTypeface: {fileID: 0}
   fontWeights:
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}

@@ -131,6 +131,7 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 11400000, guid: f3ba5d11d047b7a41821f27c4855f927, type: 2}
   - {fileID: 9029318565453216758, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
   - {fileID: 7943852015859112686, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
@@ -688,7 +689,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
-    7: OCULUSINTEGRATION_PRESENT;API_DEBUG
+    7: OCULUSINTEGRATION_PRESENT;API_DEBUG;VR
     14: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
@@ -745,8 +746,8 @@ PlayerSettings:
       PrivateNetworkClientServer: False
       InternetClientServer: False
       VideosLibrary: False
+      BackgroundMediaPlayback: False
       Objects3D: False
-      InternetClient: False
       RemoteSystem: False
       BlockedChatMessages: False
       PhoneCall: False
@@ -767,9 +768,9 @@ PlayerSettings:
       PointOfService: False
       RecordedCallsFolder: False
       Contacts: False
+      InternetClient: False
       Proximity: False
       CodeGeneration: False
-      BackgroundMediaPlayback: False
       EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: False

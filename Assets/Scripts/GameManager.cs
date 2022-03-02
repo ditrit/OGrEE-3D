@@ -20,6 +20,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
 
+    [Header("VR")]
+    [SerializeField] private TextMeshPro apiButtonVRText = null;
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
@@ -66,7 +70,7 @@ public class GameManager : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
 
-    #region UnityMethods
+#region UnityMethods
 
     private void Awake()
     {
@@ -85,11 +89,11 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
 #if API_DEBUG
-        ToggleApi();
+        //ToggleApi();
 #endif
 
 #if !PROD
-        /*consoleController.RunCommandString("+tn:DEMO@123456");
+        consoleController.RunCommandString("+tn:DEMO@123456");
         consoleController.RunCommandString("+si:DEMO.BETA @NW");
         consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
         consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
@@ -103,7 +107,7 @@ public class GameManager : MonoBehaviour
 
         consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
         consoleController.RunCommandString(">");
-        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); */
+        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); 
 
 #endif
     }
@@ -128,7 +132,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DoubleClickDetection(Time.time));
     }
 
-    #endregion
+#endregion
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -522,7 +526,9 @@ public class GameManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
-    }
+        apiButtonVRText.text = _str;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
+        }
 
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
