@@ -167,7 +167,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 3916099357972168395}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &1127454818295820940
@@ -337,7 +336,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 182440315454369039}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &1156212130034177927
@@ -509,7 +507,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 900678627643471639}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &3389016435152933070
@@ -679,7 +676,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2917862830198339369}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &4254767957273672101
@@ -946,7 +942,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 6299635990443873303}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &6010235731161253863
@@ -962,7 +957,6 @@ GameObject:
   - component: {fileID: -7375449237141215194}
   - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
-  - component: {fileID: 7641173002511634591}
   m_Layer: 0
   m_Name: LabeledBox
   m_TagString: Selectable
@@ -1076,22 +1070,6 @@ LODGroup:
     - renderer: {fileID: 6299635990443873303}
     - renderer: {fileID: 900678627643471639}
   m_Enabled: 1
---- !u!54 &7641173002511634591
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0
@@ -1259,6 +1237,5 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 5632311123266586153}
   m_maskType: 0
-  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0

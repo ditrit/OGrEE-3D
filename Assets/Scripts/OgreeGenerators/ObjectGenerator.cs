@@ -147,11 +147,9 @@ public class ObjectGenerator : MonoBehaviour
                 }
             }
         }
-        newRack.GetComponent<BoxCollider>().enabled = true;
-        newRack.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
-        newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
-        newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
-        newRack.AddComponent<HandInteractionHandler>();
+        newRack.transform.GetChild(0).gameObject.GetComponent<Collider>().enabled = true;
+        newRack.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
+        newRack.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
         return rack;
     }
 
@@ -360,8 +358,12 @@ public class ObjectGenerator : MonoBehaviour
         else
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
-        go.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
-        go.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
+        go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+        Microsoft.MixedReality.Toolkit.UI.ObjectManipulator objectManipulator = go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
+        objectManipulator.HostTransform = go.transform;
+        go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
+        go.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
+        go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
         return go;
     }
 
