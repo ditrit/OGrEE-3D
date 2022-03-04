@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -425,6 +425,16 @@ public class GameManager : MonoBehaviour
     public void AppendLogLine(string _line, string _color = "white")
     {
         consoleController.AppendLogLine(_line, _color);
+    }
+
+    ///<summary>
+    /// Save API url and token in config.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        configLoader.RegisterApi(_url, _token);
     }
 
     ///<summary>

@@ -15,6 +15,12 @@ public class CliParser// : MonoBehaviour
         public string data;
     }
 
+    struct SLogin
+    {
+        public string api_url;
+        public string api_token;
+    }
+
     struct SInteract
     {
         public string id;
@@ -49,6 +55,9 @@ public class CliParser// : MonoBehaviour
         SData command = JsonConvert.DeserializeObject<SData>(_input);
         switch (command.type)
         {
+            case "login":
+                Login(command.data);
+                break;
             case "load template":
                 rfJson.CreateObjTemplateJson(command.data);
                 break;
@@ -92,6 +101,17 @@ public class CliParser// : MonoBehaviour
                 GameManager.gm.AppendLogLine("Unknown type", "red");
                 break;
         }
+    }
+
+    ///<summary>
+    /// Connect client to the API with.
+    ///</summary>
+    ///<param name="_input">Login credentials given by CLI</param>
+    private void Login(string _input)
+    {
+        SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
+        GameManager.gm.RegisterApi(logData.api_url, logData.api_token);
+        GameManager.gm.ToggleApi();
     }
 
     ///<summary>
@@ -148,7 +168,7 @@ public class CliParser// : MonoBehaviour
             tenantColorChanged = true;
 
         // Case color/temperature for racks & devices
-        
+
 
         // Case of a separator modification in a room
         if (newData.category == "room" && newData.attributes.ContainsKey("separators"))
