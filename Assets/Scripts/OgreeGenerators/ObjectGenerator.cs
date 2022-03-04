@@ -364,8 +364,8 @@ public class ObjectGenerator : MonoBehaviour
         //go.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
         //go.GetComponent<BoxCollider>().enabled = true;
         //go.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
-        go.AddComponent<HandInteractionHandler>();
-        go.layer = 7;
+        //go.AddComponent<HandInteractionHandler>();
+        //go.layer = 7;
         return go;
     }
 

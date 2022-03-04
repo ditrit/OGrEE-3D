@@ -26,7 +26,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
-        UnselectThis();
+        SelectThis();
     }
 
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
@@ -35,7 +35,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData _eventData)
     {
-        SelectThis();
+        FocusThis();
     }
 
     void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData _eventData)
@@ -44,7 +44,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData _eventData)
     {
-        FocusThis();
+        //FocusThis();
     }
 
     void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData _eventData)
