@@ -17,8 +17,9 @@ public class Rack : OObject
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselect);
     }
     
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelect);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselect);
     }
@@ -197,6 +198,8 @@ public class Rack : OObject
             GenerateUHelpers();
         else if (_value == "false" && uRoot)
             Destroy(uRoot.gameObject);
+        else if (_value == "true" && uRoot)
+            GameManager.gm.AppendLogLine("Ca marche bien" , "green");
     }
     public void ToggleU()
     {
@@ -234,19 +237,19 @@ public class Rack : OObject
     ///<param name="_corner">Corner of the column</param>
     private void GenerateUColumn(string _corner)
     {
-        Vector3 boxSize = transform.GetChild(0).localScale;
+        Vector3 boxSize = transform.GetChild(0).localScale * transform.localScale.x;
 
         // By defalut, attributes["heightUnit"] == "U"
-        float scale = GameManager.gm.uSize;
+        float scale = GameManager.gm.uSize * transform.localScale.x;
         int max = (int)Utils.ParseDecFrac(attributes["height"]);
         if (attributes["heightUnit"] == "OU")
         {
-            scale = GameManager.gm.ouSize;
+            scale = GameManager.gm.ouSize * transform.localScale.x;
             max = (int)Utils.ParseDecFrac(attributes["height"]);
         }
         else if (attributes["heightUnit"] == "cm")
         {
-            scale = GameManager.gm.uSize;
+            scale = GameManager.gm.uSize * transform.localScale.x;
             max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));
         }
 
@@ -318,26 +321,20 @@ public class Rack : OObject
 
     public void OnSelect(OnSelectItemEvent _e)
     {
-        Rack rack =_e.obj.GetComponent<Rack>();
-        if (rack)
+        if (_e.obj == gameObject)
         {
-            rack.ToggleU("true");
-            GameManager.gm.AppendLogLine($"U helpers toggled for {rack.name}.", "yellow");
+            ToggleU("true");
+            GameManager.gm.AppendLogLine($"U helpers ON for {name}.", "yellow");
         }
-        else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
     }
 
     private void OnDeselect(OnDeselectItemEvent _e)
     {
-        Rack rack = _e.obj.GetComponent<Rack>();
-        if (rack)
+        if (_e.obj == gameObject)
         {
-            rack.ToggleU("false");
-            GameManager.gm.AppendLogLine($"U helpers toggled for {rack.name}.", "yellow");
+            ToggleU("false");
+            GameManager.gm.AppendLogLine($"U helpers deselect {name}.", "yellow");
         }
-        else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
     }
 
 }

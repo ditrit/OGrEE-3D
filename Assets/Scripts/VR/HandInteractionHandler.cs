@@ -17,6 +17,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     public float doubleClickTimeLimit = 0.25f;
     private float timerSelectionVR = 0;
     private bool hasAlreadyFocused = false;
+    private bool isAlreadySelected = false;
     private void Start()
     {
     }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -233,9 +233,14 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
+        StartCoroutine(SetCurrentItemsCoRoutine(_obj));
+    }
+    private IEnumerator SetCurrentItemsCoRoutine(GameObject _obj)
+    {
         //Clear current selection
         for (int i = currentItems.Count - 1; i >= 0; i--)
             DeselectItem(currentItems[i]);
+        yield return new WaitForEndOfFrame();
 
         if (_obj)
         {
@@ -247,7 +252,6 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
         UpdateGuiInfos();
     }
-
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
@@ -340,7 +344,8 @@ public class GameManager : MonoBehaviour
             // SetCurrentItem(_obj);
         }
         else
-            UnfocusItem();
+            //UnfocusItem();
+            return;
     }
 
     ///<summary>
@@ -531,13 +536,13 @@ public class GameManager : MonoBehaviour
     IEnumerator TestAPI()
     {
         consoleController.RunCommandString("api.get=sites?name=BETA");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1/racks/A02");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         consoleController.RunCommandString("CED.BETA.A.R1.A02:details=3");
     }
 
