@@ -148,11 +148,11 @@ public class ObjectGenerator : MonoBehaviour
                 }
             }
         }
-        newRack.GetComponent<BoxCollider>().enabled = true;
+        newRack.transform.GetChild(0).GetComponent<BoxCollider>().enabled = true;
         //newRack.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
         //newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
-        newRack.AddComponent<NearInteractionTouchableVolume>();
-        newRack.AddComponent<HandInteractionHandler>();
+        newRack.transform.GetChild(0).gameObject.AddComponent<NearInteractionTouchableVolume>();
+        newRack.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
         return rack;
     }
 

@@ -10,24 +10,27 @@ public class TapToPlaceBack : MonoBehaviour
 
     public void TtpAgain()
     {
-        OgreeObject rack = GameManager.gm.currentItems[0].GetComponent<OgreeObject>();
+        Transform t = GameManager.gm.currentItems[0].transform;
+
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine($"Select a rack to place it again", "yellow");
+            GameManager.gm.AppendLogLine($"Select a rack or one of its child to place it again", "yellow");
         }
 
         else
         {
-            if (rack.category == "rack")
+            while(t != null)
             {
-                rack.GetComponent<BoundsControl>().enabled = true;
-                rack.GetComponent<ObjectManipulator>().enabled = true;
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    t.GetChild(0).GetComponent<BoundsControl>().enabled = true;
+                    t.GetChild(0).GetComponent<ObjectManipulator>().enabled = true;
+                    //t.GetChild(0).GetComponent<BoxCollider>().enabled = true;
+                    return;
+                }
+                t = t.parent.transform;
             }
-
-            else
-            {
-                GameManager.gm.AppendLogLine($"Cannot place other object than rack", "red");
-            }
+            GameManager.gm.AppendLogLine($"Cannot place other object than rack", "red");
         }
     }
 }

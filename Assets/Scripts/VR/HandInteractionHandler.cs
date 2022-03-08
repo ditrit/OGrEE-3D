@@ -55,7 +55,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     }
     public void SelectThis()
     {
-        GameManager.gm.SetCurrentItem(gameObject);
+        GameManager.gm.SetCurrentItem(transform.parent.gameObject);
     }
 
     public void UnselectThis()
@@ -65,11 +65,11 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     public void FocusThis()
     {
-        GameManager.gm.FocusItem(gameObject);
+        GameManager.gm.FocusItem(transform.parent.gameObject);
     }
     private void Update()
     {
-        timerSelectionVR += Time.deltaTime;
+        
     }
 }
 

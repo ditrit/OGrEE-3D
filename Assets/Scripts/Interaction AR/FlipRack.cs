@@ -9,24 +9,26 @@ public class FlipRack : MonoBehaviour
 
     public void Rotate()
     {
-        OgreeObject rack = GameManager.gm.currentItems[0].GetComponent<OgreeObject>();
+        Transform t = GameManager.gm.currentItems[0].transform;
+
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine($"Select a rack to rotate it", "yellow");
+            GameManager.gm.AppendLogLine($"Select a rack or one of its child to rotate it", "yellow");
         }
 
         else
         {
-            if (rack.category == "rack")
+            while(t != null)
             {
-                Vector3 rotationToAdd = new Vector3(rack.transform.eulerAngles.x, rack.transform.eulerAngles.y + tiltAngle, rack.transform.eulerAngles.z);
-                rack.transform.eulerAngles = rotationToAdd;
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    Vector3 rotationToAdd = new Vector3(t.eulerAngles.x, t.eulerAngles.y + tiltAngle, t.eulerAngles.z);
+                    t.transform.eulerAngles = rotationToAdd;
+                    return;
+                }
+                t = t.parent.transform;
             }
-
-            else
-            {
-                GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
-            }
+            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
         }
     }
 }

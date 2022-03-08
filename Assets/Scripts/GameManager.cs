@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     [Header("VR")]
     [SerializeField] private TextMeshPro apiButtonVRText = null;
     [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+    [SerializeField] private TextMeshPro focusTextVR = null;
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -374,10 +375,19 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
+
+#if VR
+            focusTextVR.text = $"Focus on {objName}";
+#endif
             focusText.text = $"Focus on {objName}";
         }
         else
+        {
             focusText.text = "No focus";
+#if VR
+            focusTextVR.text = "No focus";
+#endif
+        }
 
         AppendLogLine(focusText.text, "green");
     }
