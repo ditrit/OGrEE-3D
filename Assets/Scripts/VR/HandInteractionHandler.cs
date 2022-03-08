@@ -14,8 +14,9 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     public TouchEvent OnTouchUpdated;
     #endregion
 
-
-
+    public float doubleClickTimeLimit = 0.25f;
+    private float timerSelectionVR = 0;
+    private bool hasAlreadyFocused = false;
     private void Start()
     {
     }
@@ -44,7 +45,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData _eventData)
     {
-        //FocusThis();
+
     }
 
     void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData _eventData)
@@ -65,6 +66,9 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     {
         GameManager.gm.FocusItem(gameObject);
     }
-
+    private void Update()
+    {
+        timerSelectionVR += Time.deltaTime;
+    }
 }
 

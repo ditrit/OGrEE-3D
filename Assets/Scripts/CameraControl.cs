@@ -47,12 +47,12 @@ public class CameraControl : MonoBehaviour
     {
         if (EventSystem.current.currentSelectedGameObject)
             return;
-
+/*
         if (humanMode)
             FPSControls();
         else
             FreeModeControls();
-
+*/
         if (isReady && targetPos.Count > 0)
         {
             // Code for Waiting targetPos.y seconds

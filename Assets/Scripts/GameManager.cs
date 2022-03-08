@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
 
+    [Header("VR")]
+    [SerializeField] private TextMeshPro apiButtonVRText = null;
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
@@ -89,7 +93,7 @@ public class GameManager : MonoBehaviour
         ToggleApi();
 #endif
 
-
+/*
 #if !PROD
         consoleController.RunCommandString("+tn:DEMO@ff0000");
         consoleController.RunCommandString("+si:DEMO.BETA @NW");
@@ -110,6 +114,7 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
         consoleController.RunCommandString(">");
 #endif
+*/
     }
 
     private void Update()
@@ -121,7 +126,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-
+/*
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
         {
@@ -130,6 +135,7 @@ public class GameManager : MonoBehaviour
 
         if (clickCount == 1 && coroutineAllowed)
             StartCoroutine(DoubleClickDetection(Time.time));
+            */
     }
 
     #endregion
@@ -517,6 +523,22 @@ public class GameManager : MonoBehaviour
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
         }
+        
+        StartCoroutine(TestAPI());
+
+    }
+
+    IEnumerator TestAPI()
+    {
+        consoleController.RunCommandString("api.get=sites?name=BETA");
+        yield return new WaitForSeconds(1);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A");
+        yield return new WaitForSeconds(1);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1");
+        yield return new WaitForSeconds(1);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1/racks/A02");
+        yield return new WaitForSeconds(1);
+        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=3");
     }
 
     ///<summary>
@@ -528,6 +550,8 @@ public class GameManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
+        apiButtonVRText.text = _str;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
     }
 
     ///<summary>
