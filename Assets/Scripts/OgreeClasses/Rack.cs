@@ -13,15 +13,15 @@ public class Rack : OObject
 
     private void Start()
     {
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusObject);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusObject);
     }
     
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusObject);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusObject);
     }
        
 
@@ -319,7 +319,7 @@ public class Rack : OObject
         Utils.SwitchAllCollidersInRacks(false);
     }
 
-    public void OnFocusItem(OnFocusEvent _e)
+    public void OnFocusObject(OnFocusEvent _e)
     {
         if (_e.obj == gameObject)
         {
@@ -328,7 +328,7 @@ public class Rack : OObject
         }
     }
 
-    private void OnUnFocusItem(OnUnFocusEvent _e)
+    private void OnUnFocusObject(OnUnFocusEvent _e)
     {
         if (_e.obj == gameObject)
         {

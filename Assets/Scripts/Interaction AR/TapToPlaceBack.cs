@@ -25,7 +25,10 @@ public class TapToPlaceBack : MonoBehaviour
                 {
                     t.GetChild(0).GetComponent<BoundsControl>().enabled = true;
                     t.GetChild(0).GetComponent<ObjectManipulator>().enabled = true;
-                    //t.GetChild(0).GetComponent<BoxCollider>().enabled = true;
+                    Collider collider = t.GetChild(0).GetComponent<BoxCollider>();
+                    //if (collider.enabled == false)
+                        //collider.enabled = true;
+
                     return;
                 }
                 t = t.parent.transform;

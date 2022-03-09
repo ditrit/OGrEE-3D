@@ -796,7 +796,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetObject: {fileID: 382823270839367371}
-  boundsOverride: {fileID: 7387853021447548810}
+  boundsOverride: {fileID: 4012234162031736585}
   boundsCalculationMethod: 1
   activation: 0
   flattenAxis: 0

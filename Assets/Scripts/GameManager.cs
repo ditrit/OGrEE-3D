@@ -296,6 +296,7 @@ public class GameManager : MonoBehaviour
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
 
@@ -313,6 +314,7 @@ public class GameManager : MonoBehaviour
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -342,7 +344,7 @@ public class GameManager : MonoBehaviour
             focus.Add(_obj);
             UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            // SetCurrentItem(_obj);
+            //SetCurrentItem(_obj);
         }
         else
             //UnfocusItem();
@@ -361,10 +363,20 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-        // if (focus.Count > 0)
-        //     SetCurrentItem(focus[focus.Count - 1]);
-        // else
-        //     SetCurrentItem(null);
+
+        if (currentItems.Count > 0)
+            DeselectItem(currentItems[0]);
+        //if (focus.Count > 0)
+        //    StartCoroutine(SelectItemCoRoutine());
+        UpdateGuiInfos();
+        //else
+        //    SetCurrentItem(null);
+    }
+
+    private IEnumerator SelectItemCoRoutine()
+    {
+        yield return new WaitForSeconds(1);
+        SelectItem(focus[focus.Count - 1]);
     }
 
     ///<summary>
@@ -546,14 +558,15 @@ public class GameManager : MonoBehaviour
     IEnumerator TestAPI()
     {
         consoleController.RunCommandString("api.get=sites?name=BETA");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1");
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
         consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1/racks/A02");
         yield return new WaitForSeconds(2);
         consoleController.RunCommandString("CED.BETA.A.R1.A02:details=3");
+        //yield return new WaitForSeconds(2);
     }
 
     ///<summary>
