@@ -194,7 +194,8 @@ public class FocusHandler : MonoBehaviour
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
             else
-                OwnObjectsList.Add(child.gameObject);
+                if (child.name != "uRoot")
+                    OwnObjectsList.Add(child.gameObject);
         }
     }
 

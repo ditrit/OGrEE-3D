@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshPro apiButtonVRText = null;
     [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
     [SerializeField] private TextMeshPro focusTextVR = null;
+    private float nextSelectionTimeLimit = 1.0f;
+    private float lastSelectionTime = 0.0f;
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -198,7 +200,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double click on a gameObject.
     ///</summary>
     private void DoubleClick()
     {
@@ -299,6 +301,30 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new ImportFinishedEvent());
         detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
+    
+    ///<summary>
+    /// Wait some time before selecting and focusing again.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    public void WaitBeforeNewSelection(GameObject _g)
+    {
+        if (Time.time > lastSelectionTime + nextSelectionTimeLimit)
+        {
+            SetCurrentItem(_g);
+            StartCoroutine(FocusThis(_g));
+            lastSelectionTime = Time.time;
+        }
+    }
+
+    ///<summary>
+    /// Coroutine to wait for end of frame before focusing.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    private IEnumerator FocusThis(GameObject _g)
+    {
+        yield return new WaitForEndOfFrame();
+        GameManager.gm.FocusItem(_g);
+    }
 
     ///<summary>
     /// Remove _obj from currentItems, disable outline if possible.
@@ -344,6 +370,7 @@ public class GameManager : MonoBehaviour
             focus.Add(_obj);
             UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.Instance.Raise(new ImportFinishedEvent());
             //SetCurrentItem(_obj);
         }
         else
@@ -361,8 +388,12 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         if (focus.Count > 0)
+        {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+        }
 
         if (currentItems.Count > 0)
             DeselectItem(currentItems[0]);

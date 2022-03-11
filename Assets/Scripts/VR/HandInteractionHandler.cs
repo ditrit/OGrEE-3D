@@ -14,10 +14,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     public TouchEvent OnTouchUpdated;
     #endregion
 
-    public float doubleClickTimeLimit = 0.25f;
-    private float timerSelectionVR = 0;
-    private bool hasAlreadyFocused = false;
-    private bool isAlreadySelected = false;
+
     private void Start()
     {
     }
@@ -28,8 +25,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
-        SelectThis();
-        StartCoroutine(FocusThis());
+        GameManager.gm.WaitBeforeNewSelection(transform.parent.gameObject);
     }
 
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
@@ -38,7 +34,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
 
     void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData _eventData)
     {
-        //FocusThis();
+
     }
 
     void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData _eventData)
@@ -56,27 +52,12 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     }
     public void SelectThis()
     {
-        GameManager.gm.SetCurrentItem(transform.parent.gameObject);
+
     }
 
     public void UnselectThis()
     {
         GameManager.gm.SetCurrentItem(null);
-    }
-/*
-    public void FocusThis()
-    {
-        GameManager.gm.FocusItem(transform.parent.gameObject);
-    }
-    */
-    private IEnumerator FocusThis()
-    {
-        yield return new WaitForEndOfFrame();
-        GameManager.gm.FocusItem(transform.parent.gameObject);
-    }
-    private void Update()
-    {
-        
     }
 }
 
