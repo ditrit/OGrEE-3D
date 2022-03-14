@@ -236,14 +236,9 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     public void SetCurrentItem(GameObject _obj)
     {
-        StartCoroutine(SetCurrentItemsCoRoutine(_obj));
-    }
-    private IEnumerator SetCurrentItemsCoRoutine(GameObject _obj)
-    {
         //Clear current selection
         for (int i = currentItems.Count - 1; i >= 0; i--)
             DeselectItem(currentItems[i]);
-        yield return new WaitForEndOfFrame();
 
         if (_obj)
         {
@@ -255,6 +250,7 @@ public class GameManager : MonoBehaviour
             currentItemText.text = "Ogree3D";
         UpdateGuiInfos();
     }
+
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
@@ -300,6 +296,7 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         EventManager.Instance.Raise(new ImportFinishedEvent());
         detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+        UpdateGuiInfos();
     }
     
     ///<summary>
@@ -395,19 +392,24 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new ImportFinishedEvent());
         }
 
-        if (currentItems.Count > 0)
-            DeselectItem(currentItems[0]);
+        //if (currentItems.Count > 0)
+        //    DeselectItem(currentItems[0]);
         //if (focus.Count > 0)
         //    StartCoroutine(SelectItemCoRoutine());
-        UpdateGuiInfos();
+        //UpdateGuiInfos();
         //else
         //    SetCurrentItem(null);
     }
 
-    private IEnumerator SelectItemCoRoutine()
+    public void ReturnButton()
     {
-        yield return new WaitForSeconds(1);
-        SelectItem(focus[focus.Count - 1]);
+        UnfocusItem();
+    }
+
+    private IEnumerator FocusItemCoRoutine(GameObject _obj)
+    {
+        yield return new WaitForEndOfFrame();
+        FocusItem(_obj);
     }
 
     ///<summary>

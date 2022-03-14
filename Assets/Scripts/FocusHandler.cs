@@ -78,8 +78,8 @@ public class FocusHandler : MonoBehaviour
     private void OnSelectItem(OnSelectItemEvent e)
     {
         if (e.obj.Equals(gameObject))
-        {
-            UpdateChildMeshRenderers(true);
+        {   if (!isFocused)
+                UpdateChildMeshRenderers(true);
             isSelected = true;
         }
 
