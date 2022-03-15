@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -166,12 +166,10 @@ public class GameManager : MonoBehaviour
                     SetCurrentItem(objectHit);
             }
         }
+        else if (focus.Count > 0)
+            SetCurrentItem(focus[focus.Count - 1]);
         else
-        {
-            if (currentItems.Count > 0)
-                AppendLogLine("Empty selection.", "green");
             SetCurrentItem(null);
-        }
     }
 
     ///<summary>
@@ -222,7 +220,10 @@ public class GameManager : MonoBehaviour
             currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         }
         else
+        {
+            AppendLogLine("Empty selection.", "green");
             currentItemText.text = "Ogree3D";
+        }
         UpdateGuiInfos();
     }
 

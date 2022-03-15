@@ -153,6 +153,9 @@ public class CliParser// : MonoBehaviour
             case "group":
                 ObjectGenerator.instance.CreateGroup(obj);
                 break;
+            default:
+                GameManager.gm.AppendLogLine($"Unknown object type ({obj.category})", "yellow");
+                break;
         }
     }
 
