@@ -244,6 +244,20 @@ public class ObjectGenerator : MonoBehaviour
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new Vector2(boxSize.x, boxSize.z);
             height = boxSize.y;
+
+            Microsoft.MixedReality.Toolkit.UI.ObjectManipulator objectManipulator = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
+            objectManipulator.HostTransform = newDevice.transform;
+            newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
+            newDevice.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
+            newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
+            Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint rotationAxisConstraint = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>();
+            rotationAxisConstraint.ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
+            Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint moveAxisConstraint = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>();
+            moveAxisConstraint.ConstraintOnMovement = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
+            Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint minMaxScaleConstraint = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>();
+            minMaxScaleConstraint.RelativeToInitialState = true;
+            minMaxScaleConstraint.ScaleMinimum = 1;
+            minMaxScaleConstraint.ScaleMaximum = 1;
         }
         else
         {
@@ -299,7 +313,6 @@ public class ObjectGenerator : MonoBehaviour
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
             newDevice.GetComponent<OObject>().color = Color.white;
         }
-
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
@@ -359,11 +372,7 @@ public class ObjectGenerator : MonoBehaviour
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-        Microsoft.MixedReality.Toolkit.UI.ObjectManipulator objectManipulator = go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
-        objectManipulator.HostTransform = go.transform;
-        go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
-        go.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
-        go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
+   
         return go;
     }
 

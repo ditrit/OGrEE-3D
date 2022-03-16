@@ -677,9 +677,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator TestAPI()
     {
-        consoleController.RunCommandString("api.get=tenants?name=CED");
+        consoleController.RunCommandString("api.get=sites?name=BETA");
         yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED:details=6");
+        consoleController.RunCommandString("CED.BETA:details=3");
+        yield return new WaitForSeconds(2);
+        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=2");
+
+
     }
 
 }
