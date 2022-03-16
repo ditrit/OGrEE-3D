@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class ObjectGenerator : MonoBehaviour
 {
@@ -149,8 +150,6 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
         newRack.transform.GetChild(0).GetComponent<BoxCollider>().enabled = true;
-        //newRack.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
-        //newRack.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
         newRack.transform.GetChild(0).gameObject.AddComponent<NearInteractionTouchableVolume>();
         newRack.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
         return rack;
@@ -365,6 +364,7 @@ public class ObjectGenerator : MonoBehaviour
         //Microsoft.MixedReality.Toolkit.UI.ObjectManipulator objectManipulator = go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
         //objectManipulator.HostTransform = go.transform;
         //go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
+        //go.transform.GetChild(0).gameObject.AddComponent<BoundsControl>();
         go.transform.GetChild(0).gameObject.AddComponent<NearInteractionTouchableVolume>();
         go.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
         return go;

@@ -27,6 +27,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshPro focusTextVR = null;
     private float nextSelectionTimeLimit = 1.0f;
     private float lastSelectionTime = 0.0f;
+    public Camera m_camera;
+    string s_sites = "NOE";
+    string t_tenants = "EDF";
+    string b_buildings = "BI2";
+    string r_room = "C8";
+    string rc_rack = "C05";
+
+    GameObject rackInScene;
+
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -89,35 +98,19 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
-
+        m_camera = Camera.main;
         UpdateFocusText();
+        consoleController.RunCommandString(".cmds:C:/Users/vince/Nextcloud/Ogree/4_customers/__EDF__/EDF.NOE.BI2.C8.C05_only.ocli");
+        StartCoroutine(MoveRacktoCamera());
 
 #if API_DEBUG
         ToggleApi();
 #endif
-
-/*
+       
 #if !PROD
-        consoleController.RunCommandString("+tn:DEMO@ff0000");
-        consoleController.RunCommandString("+si:DEMO.BETA @NW");
-        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[0,0,0]");
-        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[0,0,0]@+N + W");
 
-
-        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
-        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
-        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis01@1@1");
-        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20@20@2");
-        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20.BLADE@blade01");
-        //consoleController.RunCommandString("+ dv:DEMO.BETA.A.R1.A00.chassis20.BLADE.CPU@cpu1");
-
-
-        //consoleController.RunCommandString("camera.move=[-0.5,3,2.9]@[46,-90]");
-
-        consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
-        consoleController.RunCommandString(">");
 #endif
-*/
+
     }
 
     private void Update()
@@ -142,6 +135,22 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    private IEnumerator MoveRacktoCamera()
+    {
+        yield return new WaitForSeconds(4);
+        rackInScene = GameObject.Find("/" + t_tenants + "/" + s_sites + "/" + b_buildings + "/" + r_room + "/" + rc_rack);
+        if (rackInScene != null)
+        {
+            AppendLogLine("Rack Found in the scene after loading from API", "green");
+        }
+        else 
+        {
+            AppendLogLine("NOT Found", "red");
+        }
+        MoveObjectToCamera(rackInScene);
+
+    }
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -590,16 +599,39 @@ public class GameManager : MonoBehaviour
 
     IEnumerator TestAPI()
     {
-        consoleController.RunCommandString("api.get=sites?name=BETA");
+
+        consoleController.RunCommandString("api.get=sites?name="+ s_sites);
         yield return new WaitForSeconds(0.5f);
-        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A");
+        consoleController.RunCommandString("api.get=tenants/" + t_tenants + "/sites/" + s_sites + "/buildings/" + b_buildings);
         yield return new WaitForSeconds(0.5f);
-        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1");
+        consoleController.RunCommandString("api.get=tenants/" + t_tenants + "/sites/" + s_sites + "/buildings/" + b_buildings + "/rooms/" + r_room);
         yield return new WaitForSeconds(0.5f);
-        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1/racks/A02");
+        consoleController.RunCommandString("api.get=tenants/" + t_tenants + "/sites/" + s_sites + "/buildings/" + b_buildings + "/rooms/" + r_room + "/racks/" + rc_rack);
         yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=3");
-        //yield return new WaitForSeconds(2);
+        consoleController.RunCommandString(t_tenants + "." + s_sites + "." + b_buildings + "." + r_room + "." + rc_rack + ":details=3");
+        yield return new WaitForSeconds(2);
+        GameObject rack = GameObject.Find("/" + t_tenants + "/" + s_sites + "/" + b_buildings + "/" + r_room + "/" + rc_rack);
+        if (rack != null)
+            AppendLogLine("Rack Found in the scene after loading from API", "green");
+        else 
+            AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+        MoveObjectToCamera(rack);
+        yield return new WaitForSeconds(2);
+    }
+
+    ///<summary>
+    /// Move targeted object in front of the camera.
+    ///</summary>
+    public void MoveObjectToCamera(GameObject _obj)
+    {
+        
+        float speed = 10f * Time.deltaTime;
+        Vector3 offset = new Vector3(0.0f, 0.0f, 1.0f);
+        Vector3 newPostion = new Vector3(m_camera.transform.position.x, 0.0f, m_camera.transform.position.z);
+        Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
+
+        _obj.transform.position = newPostion + offset;
+        _obj.transform.localRotation = Quaternion.Euler(newRotation);
     }
 
     ///<summary>
