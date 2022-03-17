@@ -102,8 +102,8 @@ public class GameManager : MonoBehaviour
         StartCoroutine(configLoader.LoadTextures());
         m_camera = Camera.main;
         UpdateFocusText();
-        consoleController.RunCommandString(".cmds:C:/Users/vince/Nextcloud/Ogree/4_customers/__EDF__/EDF.NOE.BI2.C8.C05_only.ocli");
-        StartCoroutine(MoveRacktoCamera());
+        //consoleController.RunCommandString(".cmds:C:/Users/vince/Nextcloud/Ogree/4_customers/__EDF__/EDF.NOE.BI2.C8.C05_only.ocli");
+        //StartCoroutine(MoveRacktoCamera());
 
 #if API_DEBUG
         ToggleApi();
@@ -630,7 +630,7 @@ public class GameManager : MonoBehaviour
             AppendLogLine("Rack Found in the scene after loading from API", "green");
         else 
             AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        MoveObjectToCamera(rack);
+        //MoveObjectToCamera(rack);
         yield return new WaitForSeconds(2);
     }
 
