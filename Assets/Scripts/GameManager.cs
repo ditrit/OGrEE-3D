@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentItemText = null;
     [SerializeField] private Button reloadBtn = null;
     [SerializeField] private Button apiBtn = null;
+    [SerializeField] private TextMeshProUGUI apiUrl = null;
+
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
@@ -200,12 +202,10 @@ public class GameManager : MonoBehaviour
                     SetCurrentItem(objectHit);
             }
         }
+        else if (focus.Count > 0)
+            SetCurrentItem(focus[focus.Count - 1]);
         else
-        {
-            if (currentItems.Count > 0)
-                AppendLogLine("Empty selection.", "green");
             SetCurrentItem(null);
-        }
     }
 
     ///<summary>
@@ -256,7 +256,10 @@ public class GameManager : MonoBehaviour
             currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
         }
         else
+        {
+            AppendLogLine("Empty selection.", "green");
             currentItemText.text = "Ogree3D";
+        }
         UpdateGuiInfos();
     }
 
@@ -519,6 +522,16 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Save API url and token in config.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        configLoader.RegisterApi(_url, _token);
+    }
+
+    ///<summary>
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
     ///<param name="_lastPath">The command file path to store</param>
@@ -582,6 +595,7 @@ public class GameManager : MonoBehaviour
         {
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
+            apiUrl.text = "";
             AppendLogLine("Disconnected from API", "green");
         }
         else
@@ -591,6 +605,7 @@ public class GameManager : MonoBehaviour
                 ChangeApiButton("Connected to Api", Color.green);
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
+            apiUrl.text = configLoader.GetApiUrl();
         }
         
         StartCoroutine(TestAPI());

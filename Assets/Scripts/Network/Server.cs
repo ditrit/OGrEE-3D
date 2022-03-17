@@ -15,6 +15,8 @@ public class Server : MonoBehaviour
         tcp
     }
 
+    CliParser parser = new CliParser();
+
     [Header("Client config")]
     [SerializeField] private eConnectionType protocol;
     private UdpConnection udpConnection;
@@ -59,6 +61,7 @@ public class Server : MonoBehaviour
         {
             string msg = tcpConnection.incomingQueue.Dequeue();
             GameManager.gm.AppendLogLine(msg);
+            parser.DeserializeInput(msg);
         }
     }
 

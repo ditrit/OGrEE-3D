@@ -158,7 +158,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.Orness.OGrEE3D
   buildNumber:
-    Standalone: 2.6
+    Standalone: 2.7
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
@@ -760,6 +760,10 @@ PlayerSettings:
       InternetClientServer: False
       VideosLibrary: False
       Objects3D: False
+<<<<<<< HEAD
+=======
+      InternetClient: False
+>>>>>>> 77e8d045ae5c69e2191dc18d1b4f178b2c623490
       RemoteSystem: False
       BlockedChatMessages: False
       PhoneCall: False
