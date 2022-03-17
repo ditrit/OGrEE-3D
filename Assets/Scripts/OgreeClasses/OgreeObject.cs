@@ -302,6 +302,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
     }
 
+    ///<summary>
+    /// Reset object's posistion to its original position
+    ///</summary>
     public void ResetPosition()
     {
         transform.localPosition = originalLocalPosition;

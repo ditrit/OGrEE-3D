@@ -345,6 +345,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Toggle renderer of all _obj parents in the hierarchy recursively until _obj is a rack
+    ///</summary>
+    ///<param name="_obj">The object whose <b>parents' renderers</b> will be updated</param>
+    ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
         Debug.Log(gameObject);
@@ -356,6 +361,10 @@ public class FocusHandler : MonoBehaviour
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
     }
 
+    ///<summary>
+    /// Disable renderer of _obj all _obj parents in the hierarchy recursively until _obj is a rack, then enable the renderer of _obj if _obj is a rack
+    ///</summary>
+    ///<param name="_obj">The object whose <b>own and parents' renderers</b> will be updated</param>
     private void ResetToRack(GameObject _obj)
     {
         if (_obj.GetComponent<OgreeObject>().category == "rack")

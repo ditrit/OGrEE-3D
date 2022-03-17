@@ -14,16 +14,14 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
-    private float timerSelectionVR = 0;
-    private float leftHandTouchTimer = 0;
-    private float rightHandTouchTimer = 0;
     private bool leftHandInContact = false;
     private bool rightHandInContact = false;
     private bool hasAlreadyFocused = false;
-    private void Start()
-    {
-    }
 
+    ///<summary>
+    /// Check which hand is currently exiting the object's collider and update the booleans
+    ///</summary>
+    ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData _eventData)
     {
         switch (_eventData.Handedness)
@@ -37,9 +35,12 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
         hasAlreadyFocused = false;
     }
 
+    ///<summary>
+    /// Check which hand is currently entering the object's collider and update the booleans
+    ///</summary>
+    ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
-        Debug.Log("SELECTION");
         SelectThis();
         switch (_eventData.Handedness)
         {
@@ -51,6 +52,10 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
         }
     }
 
+    ///<summary>
+    /// Check which hand is currently touching the object's collider and focus on the object if both hands are in contact
+    ///</summary>
+    ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
     {
         if (leftHandInContact && rightHandInContact && !hasAlreadyFocused)
@@ -60,21 +65,20 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
         }
     }
 
+    ///<summary>
+    /// Select this object
+    ///</summary>
     public void SelectThis()
     {
         GameManager.gm.SetCurrentItem(transform.parent.gameObject);
-        timerSelectionVR = 0;
     }
+    ///<summary>
+    /// Focus this object
+    ///</summary>
     public void FocusThis()
     {
         GameManager.gm.FocusItem(transform.parent.gameObject);
-        timerSelectionVR = 0;
     }
-    private void Update()
-    {
-        timerSelectionVR += Time.deltaTime;
-        rightHandTouchTimer += Time.deltaTime;
-        leftHandTouchTimer += Time.deltaTime;
-    }
+
 }
 
