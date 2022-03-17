@@ -79,7 +79,8 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            SetMaterial(selectedMaterial);
+            if (!isFocused)
+                SetMaterial(selectedMaterial);
             isSelected = true;
         }
 

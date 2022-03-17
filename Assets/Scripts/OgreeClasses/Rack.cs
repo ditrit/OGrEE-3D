@@ -94,6 +94,7 @@ public class Rack : OObject
                     break;
                 case "temperature":
                     SetTemperature(_value);
+                    updateAttr = true;
                     break;
                 default:
                     if (attributes.ContainsKey(_param))

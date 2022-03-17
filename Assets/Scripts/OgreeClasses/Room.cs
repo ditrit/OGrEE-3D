@@ -218,9 +218,7 @@ public class Room : Building
 
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
-                {
                     GenerateTileName(_root, pos, tileID);
-                }
                 else if (_mode == "color")
                     GenerateTileColor(_root, pos, tileID);
             }
