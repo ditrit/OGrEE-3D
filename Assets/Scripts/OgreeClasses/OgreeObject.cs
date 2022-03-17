@@ -13,6 +13,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
+    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -24,6 +25,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
+
 
     public void OnBeforeSerialize()
     {
@@ -41,6 +43,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         attributes = new Dictionary<string, string>();
         for (int i = 0; i != Mathf.Min(attributesKeys.Count, attributesValues.Count); i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
+    }
+
+    private void Start()
+    {
+        originalLocalPosition = transform.localPosition;
     }
 
     private void OnEnable()
@@ -293,5 +300,13 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             foreach (OgreeObject go in objsToDel)
                 go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
+    }
+
+    ///<summary>
+    /// Reset object's posistion to its original position
+    ///</summary>
+    public void ResetPosition()
+    {
+        transform.localPosition = originalLocalPosition;
     }
 }

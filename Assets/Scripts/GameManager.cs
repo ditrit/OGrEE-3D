@@ -22,6 +22,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
 
+    [Header("VR")]
+    [SerializeField] private TextMeshPro apiButtonVRText = null;
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
     [SerializeField] private GameObject infosPanel = null;
@@ -68,7 +72,7 @@ public class GameManager : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
 
-    #region UnityMethods
+#region UnityMethods
 
     private void Awake()
     {
@@ -87,15 +91,26 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
 #if API_DEBUG
-        ToggleApi();
+        //ToggleApi();
 #endif
 
 #if !PROD
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
+//        consoleController.RunCommandString("+tn:DEMO@123456");
+//        consoleController.RunCommandString("+si:DEMO.BETA @NW");
+//        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
+//        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
+
+
+//        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
+//        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
+
+//        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
+//        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
+
+//        consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
+//        consoleController.RunCommandString(">");
+//        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); 
+
 #endif
     }
 
@@ -119,7 +134,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DoubleClickDetection(Time.time));
     }
 
-    #endregion
+#endregion
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -514,6 +529,7 @@ public class GameManager : MonoBehaviour
                 ChangeApiButton("Fail to connected to Api", Color.red);
             apiUrl.text = configLoader.GetApiUrl();
         }
+        StartCoroutine(TestAPI());
     }
 
     ///<summary>
@@ -525,7 +541,9 @@ public class GameManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
-    }
+        apiButtonVRText.text = _str;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
+        }
 
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
@@ -670,6 +688,21 @@ public class GameManager : MonoBehaviour
     public void QuitApp()
     {
         Application.Quit();
+    }
+
+
+    ///<summary>
+    /// Get some objects from the API (VR)
+    ///</summary>
+    IEnumerator TestAPI()
+    {
+        consoleController.RunCommandString("api.get=sites?name=BETA");
+        yield return new WaitForSeconds(2);
+        consoleController.RunCommandString("CED.BETA:details=3");
+        yield return new WaitForSeconds(2);
+        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=2");
+
+
     }
 
 }
