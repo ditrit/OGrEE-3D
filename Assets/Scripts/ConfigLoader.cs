@@ -126,13 +126,24 @@ public class ConfigLoader
     }
 
     ///<summary>
+    /// Save API url and token in config.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        config.api_url = _url;
+        config.api_token = _token;
+    }
+
+    ///<summary>
     /// Send a get request to the given url. If no error, initialize ApiManager.
     ///</summary>
     ///<returns>The value of ApiManager.isInit</returns>
     public async Task<bool> ConnectToApi()
     {
 #if API_DEBUG
-        config.api_url = "https://ogree.chibois.net";
+        config.api_url = "https://api.ogree.ditrit.io";
         config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
 #endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
@@ -168,5 +179,13 @@ public class ConfigLoader
             GameManager.gm.AppendLogLine("Load default texture for perf29", "yellow");
             GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
+    }
+
+    ///<summary>
+    /// Get registered API url.
+    ///</summary>
+    public string GetApiUrl()
+    {
+        return config.api_url;
     }
 }
