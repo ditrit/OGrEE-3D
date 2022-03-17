@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -114,5 +114,20 @@ public static class Utils
         }
         else
             return null;
+    }
+
+    ///<summary>
+    /// Get an object from GameManager.allItems by it's id.
+    ///</summary>
+    ///<param name="_id">The id to search</param>
+    public static GameObject GetObjectById(string _id)
+    {
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        {
+            GameObject obj = (GameObject)de.Value;
+            if (obj.GetComponent<OgreeObject>().id == _id)
+                return obj;
+        }
+        return null;
     }
 }

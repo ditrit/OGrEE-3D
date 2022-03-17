@@ -191,7 +191,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
     ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
-    public void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    public virtual void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
     {
         name = _src.name;
         id = _src.id;

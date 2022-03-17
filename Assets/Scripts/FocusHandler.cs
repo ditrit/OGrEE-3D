@@ -79,8 +79,11 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            EventManager.Instance.Raise(new ImportFinishedEvent());
-            UpdateChildMeshRenderers(true, true);
+            if (!isFocused)
+            {
+                EventManager.Instance.Raise(new ImportFinishedEvent());
+                UpdateChildMeshRenderers(true, true);
+            }
             isSelected = true;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             UpdateParentRenderers(gameObject, false);

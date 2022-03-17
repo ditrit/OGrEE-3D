@@ -9,6 +9,17 @@ public class OObject : OgreeObject
     public Color color;
     public bool isHidden = false;
 
+    private void Awake()
+    {
+        EventManager.Instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        EventManager.Instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
+    }
+
     ///<summary>
     /// Check for a _param attribute and assign _value to it.
     ///</summary>
@@ -60,6 +71,7 @@ public class OObject : OgreeObject
                     break;
                 case "temperature":
                     SetTemperature(_value);
+                    updateAttr = true;
                     break;
                 default:
                     if (attributes.ContainsKey(_param))
@@ -73,6 +85,37 @@ public class OObject : OgreeObject
         if (updateAttr && ApiManager.instance.isInit)
             PutData();
         GetComponent<DisplayObjectData>().UpdateLabels();
+    }
+
+    ///<summary>
+    /// Update the OObject attributes with given SApiObject.
+    ///</summary>
+    ///<param name="_src">The SApiObject used to update attributes</param>
+    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
+    public override void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    {
+        name = _src.name;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        if (domain != _src.domain)
+        {
+            domain = _src.domain;
+            UpdateColorByTenant();
+        }
+        description = _src.description;
+        if (_copyAttr)
+        {
+            if (attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature")
+                && attributes["temperature"] != _src.attributes["temperature"])
+                SetTemperature(_src.attributes["temperature"]);
+            else if (!attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature"))
+                SetTemperature(_src.attributes["temperature"]);
+            else if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
+                Destroy(transform.Find("sensor").gameObject);
+
+            attributes = _src.attributes;
+        }
     }
 
     ///<summary>
@@ -126,6 +169,13 @@ public class OObject : OgreeObject
             attributes.Remove("color");
             GameManager.gm.AppendLogLine("Unknown color", "yellow");
         }
+    }
+
+    ///
+    private void UpdateColorByTenant(UpdateTenantEvent _event)
+    {
+        if (_event.name == domain)
+            UpdateColorByTenant();
     }
 
     ///<summary>

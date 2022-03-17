@@ -127,7 +127,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 2.6
+  bundleVersion: 2.7
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
@@ -154,7 +154,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.Orness.OGrEE3D
   buildNumber:
-    Standalone: 2.6
+    Standalone: 2.7
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
@@ -748,6 +748,7 @@ PlayerSettings:
       InternetClientServer: False
       VideosLibrary: False
       Objects3D: False
+      InternetClient: False
       RemoteSystem: False
       BlockedChatMessages: False
       PhoneCall: False
