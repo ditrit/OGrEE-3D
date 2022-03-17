@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     static public GameManager gm;
     public ConsoleController consoleController;
     private ConfigLoader configLoader = new ConfigLoader();
+    public bool hololens = true;
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI currentItemText = null;
@@ -21,6 +22,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private TextMeshProUGUI focusText = null;
+
+    [Header("VR")]
+    [SerializeField] private TextMeshPro apiButtonVRText = null;
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+    [SerializeField] private TextMeshPro focusTextVR = null;
+    private float nextSelectionTimeLimit = 1.0f;
+    private float lastSelectionTime = 0.0f;
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -90,13 +98,28 @@ public class GameManager : MonoBehaviour
         ToggleApi();
 #endif
 
+/*
 #if !PROD
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
+        consoleController.RunCommandString("+tn:DEMO@ff0000");
+        consoleController.RunCommandString("+si:DEMO.BETA @NW");
+        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[0,0,0]");
+        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[0,0,0]@+N + W");
+
+
+        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
+        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
+        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis01@1@1");
+        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20@20@2");
+        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis20.BLADE@blade01");
+        //consoleController.RunCommandString("+ dv:DEMO.BETA.A.R1.A00.chassis20.BLADE.CPU@cpu1");
+
+
+        //consoleController.RunCommandString("camera.move=[-0.5,3,2.9]@[46,-90]");
+
+        consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
+        consoleController.RunCommandString(">");
 #endif
+*/
     }
 
     private void Update()
@@ -108,7 +131,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-
+/*
         if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
             && Input.GetMouseButtonUp(0))
         {
@@ -117,6 +140,7 @@ public class GameManager : MonoBehaviour
 
         if (clickCount == 1 && coroutineAllowed)
             StartCoroutine(DoubleClickDetection(Time.time));
+            */
     }
 
     #endregion
@@ -149,7 +173,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void SingleClick()
     {
+
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
+
+
         if (objectHit && objectHit.tag == "Selectable")
         {
             bool canSelect = false;
@@ -173,7 +200,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double click on a gameObject.
     ///</summary>
     private void DoubleClick()
     {
@@ -270,7 +297,33 @@ public class GameManager : MonoBehaviour
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+        UpdateGuiInfos();
+    }
+    
+    ///<summary>
+    /// Wait some time before selecting and focusing again.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    public void WaitBeforeNewSelection(GameObject _g)
+    {
+        if (Time.time > lastSelectionTime + nextSelectionTimeLimit)
+        {
+            SetCurrentItem(_g);
+            StartCoroutine(FocusThis(_g));
+            lastSelectionTime = Time.time;
+        }
+    }
+
+    ///<summary>
+    /// Coroutine to wait for end of frame before focusing.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    private IEnumerator FocusThis(GameObject _g)
+    {
+        yield return new WaitForEndOfFrame();
+        GameManager.gm.FocusItem(_g);
     }
 
     ///<summary>
@@ -287,6 +340,7 @@ public class GameManager : MonoBehaviour
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -316,10 +370,12 @@ public class GameManager : MonoBehaviour
             focus.Add(_obj);
             UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            // SetCurrentItem(_obj);
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+            //SetCurrentItem(_obj);
         }
         else
-            UnfocusItem();
+            //UnfocusItem();
+            return;
     }
 
     ///<summary>
@@ -332,12 +388,31 @@ public class GameManager : MonoBehaviour
         UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         if (focus.Count > 0)
+        {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-        // if (focus.Count > 0)
-        //     SetCurrentItem(focus[focus.Count - 1]);
-        // else
-        //     SetCurrentItem(null);
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+        }
+
+        //if (currentItems.Count > 0)
+        //    DeselectItem(currentItems[0]);
+        //if (focus.Count > 0)
+        //    StartCoroutine(SelectItemCoRoutine());
+        //UpdateGuiInfos();
+        //else
+        //    SetCurrentItem(null);
+    }
+
+    public void ReturnButton()
+    {
+        UnfocusItem();
+    }
+
+    private IEnumerator FocusItemCoRoutine(GameObject _obj)
+    {
+        yield return new WaitForEndOfFrame();
+        FocusItem(_obj);
     }
 
     ///<summary>
@@ -348,10 +423,19 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
+
+#if VR
+            focusTextVR.text = $"Focus on {objName}";
+#endif
             focusText.text = $"Focus on {objName}";
         }
         else
+        {
             focusText.text = "No focus";
+#if VR
+            focusTextVR.text = "No focus";
+#endif
+        }
 
         AppendLogLine(focusText.text, "green");
     }
@@ -514,6 +598,23 @@ public class GameManager : MonoBehaviour
                 ChangeApiButton("Fail to connected to Api", Color.red);
             apiUrl.text = configLoader.GetApiUrl();
         }
+        
+        StartCoroutine(TestAPI());
+
+    }
+
+    IEnumerator TestAPI()
+    {
+        consoleController.RunCommandString("api.get=sites?name=BETA");
+        yield return new WaitForSeconds(0.5f);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A");
+        yield return new WaitForSeconds(0.5f);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1");
+        yield return new WaitForSeconds(0.5f);
+        consoleController.RunCommandString("api.get=tenants/CED/sites/BETA/buildings/A/rooms/R1/racks/A02");
+        yield return new WaitForSeconds(2);
+        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=3");
+        //yield return new WaitForSeconds(2);
     }
 
     ///<summary>
@@ -525,6 +626,8 @@ public class GameManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
+        apiButtonVRText.text = _str;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
     }
 
     ///<summary>

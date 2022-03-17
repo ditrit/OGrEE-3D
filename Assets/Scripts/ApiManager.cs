@@ -356,6 +356,9 @@ public class ApiManager : MonoBehaviour
         }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
         EventManager.Instance.Raise(new ImportFinishedEvent());
+        await Task.Delay(1000);
+        EventManager.Instance.Raise(new ImportFinishedEvent());
+
     }
 
     ///<summary>

@@ -12,6 +12,8 @@ TagManager:
   - 
   - Water
   - UI
+  - Rack
+  - Device
   - 
   - 
   - 
@@ -35,9 +37,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - Spatial Awareness
   m_SortingLayers:
   - name: Default
     uniqueID: 0

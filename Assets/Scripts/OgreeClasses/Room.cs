@@ -36,7 +36,7 @@ public class Room : Building
             GameManager.gm.AppendLogLine("Can't modify areas if room has a rack in it.", "yellow");
             return;
         }
-        tilesEdges.gameObject.SetActive(true);
+        //tilesEdges.gameObject.SetActive(true);
 
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);

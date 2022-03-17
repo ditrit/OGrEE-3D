@@ -47,12 +47,12 @@ public class CameraControl : MonoBehaviour
     {
         if (EventSystem.current.currentSelectedGameObject)
             return;
-
+/*
         if (humanMode)
             FPSControls();
         else
             FreeModeControls();
-
+*/
         if (isReady && targetPos.Count > 0)
         {
             // Code for Waiting targetPos.y seconds
@@ -247,7 +247,7 @@ public class CameraControl : MonoBehaviour
         if (string.IsNullOrEmpty(target.label))
         {
             RegisterTransform();
-            MoveToObject(_e.obj.transform);
+            //MoveToObject(_e.obj.transform);
         }
         else
         {
@@ -325,7 +325,7 @@ public class CameraControl : MonoBehaviour
         {
             case 0:
                 // Debug.Log("0");
-                transform.position += new Vector3(0, 0, offset);
+                transform.position += new Vector3(0, 0, offset - 1);
                 transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
             case 90:
