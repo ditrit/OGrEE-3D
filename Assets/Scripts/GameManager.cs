@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
     public ConsoleController consoleController;
+    public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
 
     [Header("References")]
@@ -426,6 +427,7 @@ public class GameManager : MonoBehaviour
     public void AppendLogLine(string _line, string _color = "white")
     {
         consoleController.AppendLogLine(_line, _color);
+        server.Send(_line);
     }
 
     ///<summary>

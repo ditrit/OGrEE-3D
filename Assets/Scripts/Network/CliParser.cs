@@ -52,7 +52,15 @@ public class CliParser// : MonoBehaviour
     public void DeserializeInput(string _input)
     {
         GameObject obj = null;
-        SData command = JsonConvert.DeserializeObject<SData>(_input);
+        SData command = new SData();
+        try
+        {
+            command = JsonConvert.DeserializeObject<SData>(_input);
+        }
+        catch (System.Exception)
+        {
+            GameManager.gm.AppendLogLine("Received data with unknow format.", "red");
+        }
         switch (command.type)
         {
             case "login":

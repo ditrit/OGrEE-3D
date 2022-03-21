@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public class TcpConnection
+public class TcpConnection : AConnection
 {
     #region private members 	
     /// <summary> 	
@@ -25,10 +25,9 @@ public class TcpConnection
     private TcpClient connectedTcpClient;
     #endregion
 
-    public readonly Queue<string> incomingQueue = new Queue<string>();
     private bool threadRunning = false;
 
-    public void StartConnection(int _receivePort)
+    public override void StartConnection(int _receivePort)
     {
         try
         {
@@ -78,9 +77,8 @@ public class TcpConnection
                             lock (incomingQueue)
                             {
                                 incomingQueue.Enqueue(clientMessage);
-
-                                Debug.Log("=> Client message received: " + clientMessage);
-                                Send("Roger Roger");
+                                // Debug.Log("=> Client message received: " + clientMessage);
+                                // Send("Roger Roger");
                             }
                         }
                     }
@@ -93,7 +91,7 @@ public class TcpConnection
         }
     }
 
-    public string[] GetMessages()
+    public override string[] GetMessages()
     {
         string[] pendingMessages = new string[0];
         lock (incomingQueue)
@@ -112,7 +110,7 @@ public class TcpConnection
     /// <summary> 	
     /// Send message to client using socket connection. 	
     /// </summary> 	
-    public void Send(string _message)
+    public override void Send(string _message)
     {
         if (connectedTcpClient == null)
             return;
@@ -136,7 +134,7 @@ public class TcpConnection
         }
     }
 
-    public void Stop()
+    public override void Stop()
     {
         threadRunning = false;
         if (receiveThread.IsAlive)

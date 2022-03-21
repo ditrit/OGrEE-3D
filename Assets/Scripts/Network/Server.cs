@@ -19,8 +19,7 @@ public class Server : MonoBehaviour
 
     [Header("Client config")]
     [SerializeField] private eConnectionType protocol;
-    private UdpConnection udpConnection;
-    private TcpConnection tcpConnection;
+    private AConnection connection;
 
     [SerializeField] private int receivePort;
     // private string sendIP; // 192.168.1.28
@@ -28,20 +27,16 @@ public class Server : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private bool triggerSend = false;
-    [SerializeField] private string msg;
+    [SerializeField] private string debugMsg;
 
     private void Start()
     {
         if (protocol == eConnectionType.udp)
-        {
-            udpConnection = new UdpConnection();
-            udpConnection.StartConnection(/*sendIP, sendPort, */receivePort);
-        }
+            connection = new UdpConnection();
         else if (protocol == eConnectionType.tcp)
-        {
-            tcpConnection = new TcpConnection();
-            tcpConnection.StartConnection(receivePort);
-        }
+            connection = new TcpConnection();
+
+        connection.StartConnection(receivePort);
     }
 
     private void Update()
@@ -50,16 +45,12 @@ public class Server : MonoBehaviour
         if (triggerSend)
         {
             triggerSend = false;
-
-            if (protocol == eConnectionType.udp)
-                udpConnection.Send(msg);
-            else if (protocol == eConnectionType.tcp)
-                tcpConnection.Send(msg);
+            connection.Send(debugMsg);
         }
 
-        if (tcpConnection.incomingQueue.Count > 0)
+        if (connection.incomingQueue.Count > 0)
         {
-            string msg = tcpConnection.incomingQueue.Dequeue();
+            string msg = connection.incomingQueue.Dequeue();
             GameManager.gm.AppendLogLine(msg);
             parser.DeserializeInput(msg);
         }
@@ -67,10 +58,16 @@ public class Server : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (protocol == eConnectionType.udp)
-            udpConnection.Stop();
-        else if (protocol == eConnectionType.tcp)
-            tcpConnection.Stop();
+        connection.Stop();
+    }
+
+    ///<summary>
+    /// Send a message to the client.
+    ///</summary>
+    ///<param name="_msg">The message to send</param>
+    public void Send(string _msg)
+    {
+        connection.Send(_msg + "\n");
     }
 
 }
