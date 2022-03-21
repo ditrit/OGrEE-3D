@@ -137,21 +137,7 @@ public class CameraControl : MonoBehaviour
             targetRot.RemoveAt(0);
         }
     }
-    ///<summary>
-    /// Move targeted object in front of the camera.
-    ///</summary>
-    public void MoveObjectToCamera(GameObject _obj)
-    {
-        
-        float speed = 10f * Time.deltaTime;
-        Vector3 offset = new Vector3(0.0f, 0.0f, 1.0f);
-        Vector3 newPostion = new Vector3(m_camera.transform.position.x, 0.0f, m_camera.transform.position.z);
-        Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
 
-        _obj.transform.position = newPostion + offset;
-        _obj.transform.localRotation = Quaternion.Euler(newRotation);
-    }
-    
     ///<summary>
     /// Wait _f seconds before authorising MoveToTarget(). 
     ///</summary>

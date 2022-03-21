@@ -102,8 +102,6 @@ public class GameManager : MonoBehaviour
         StartCoroutine(configLoader.LoadTextures());
         m_camera = Camera.main;
         UpdateFocusText();
-        //consoleController.RunCommandString(".cmds:C:/Users/vince/Nextcloud/Ogree/4_customers/__EDF__/EDF.NOE.BI2.C8.C05_only.ocli");
-        //StartCoroutine(MoveRacktoCamera());
 
 #if API_DEBUG
         ToggleApi();
@@ -150,7 +148,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine("NOT Found", "red");
         }
-        MoveObjectToCamera(rackInScene);
+        Utils.MoveObjectToCamera(rackInScene, m_camera);
 
     }
 
@@ -630,23 +628,8 @@ public class GameManager : MonoBehaviour
             AppendLogLine("Rack Found in the scene after loading from API", "green");
         else 
             AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        //MoveObjectToCamera(rack);
+        Utils.MoveObjectToCamera(rack, m_camera);
         yield return new WaitForSeconds(2);
-    }
-
-    ///<summary>
-    /// Move targeted object in front of the camera.
-    ///</summary>
-    public void MoveObjectToCamera(GameObject _obj)
-    {
-        
-        float speed = 10f * Time.deltaTime;
-        Vector3 offset = new Vector3(0.0f, 0.0f, 1.0f);
-        Vector3 newPostion = new Vector3(m_camera.transform.position.x, 0.0f, m_camera.transform.position.z);
-        Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
-
-        _obj.transform.position = newPostion + offset;
-        _obj.transform.localRotation = Quaternion.Euler(newRotation);
     }
 
     ///<summary>
