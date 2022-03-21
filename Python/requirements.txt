@@ -1,0 +1,5 @@
+torch >= 1.11.0
+torchvision >= 0.12.0
+opencv-python == 4.5.4.60
+Pillow >= 8.0.1
+requests >= 2.25.0
