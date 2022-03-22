@@ -427,7 +427,14 @@ public class GameManager : MonoBehaviour
     public void AppendLogLine(string _line, string _color = "white")
     {
         consoleController.AppendLogLine(_line, _color);
-        server.Send(_line);
+        try
+        {
+            server.Send(_line);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
     }
 
     ///<summary>

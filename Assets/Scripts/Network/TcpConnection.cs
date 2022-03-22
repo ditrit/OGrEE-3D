@@ -125,7 +125,7 @@ public class TcpConnection : AConnection
                 byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message);
                 // Write byte array to socketConnection stream.               
                 stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                Debug.Log("Server sent his message - should be received by client");
+                // Debug.Log("Server sent his message - should be received by client");
             }
         }
         catch (SocketException socketException)

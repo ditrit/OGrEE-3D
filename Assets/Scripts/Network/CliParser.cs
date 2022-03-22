@@ -91,19 +91,19 @@ public class CliParser// : MonoBehaviour
                     GameManager.gm.AppendLogLine("Error on focus", "red");
                 break;
             case "create":
-                CreateObjectFromData(_input);
+                CreateObjectFromData(command.data);
                 break;
             case "modify":
-                ModifyObject(_input);
+                ModifyObject(command.data);
                 break;
             case "interact":
-                InteractWithObject(_input);
+                InteractWithObject(command.data);
                 break;
             case "ui":
-                ManipulateUi(_input);
+                ManipulateUi(command.data);
                 break;
             case "camera":
-                ManipulateCamera(_input);
+                ManipulateCamera(command.data);
                 break;
             default:
                 GameManager.gm.AppendLogLine("Unknown type", "red");
