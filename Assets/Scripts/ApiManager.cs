@@ -291,6 +291,7 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
+            _json = Regex.Replace(_json, "\\[(null,)*null\\]", "[]"); // RUSTINE DE LA MORT
             // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
             // if (resp.data.children == null)

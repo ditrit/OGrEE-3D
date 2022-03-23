@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
 
-#region UnityMethods
+    #region UnityMethods
 
     private void Awake()
     {
@@ -95,21 +95,22 @@ public class GameManager : MonoBehaviour
 #endif
 
 #if !PROD
-//        consoleController.RunCommandString("+tn:DEMO@123456");
-//        consoleController.RunCommandString("+si:DEMO.BETA @NW");
-//        consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
-//        consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
+        //consoleController.RunCommandString(".cmds:C:/Users/trios/Nextcloud/Ogree/4_customers/__DEMO__/_TIM/fbxModels.ocli");
+        //consoleController.RunCommandString("+tn:DEMO@123456");
+        //consoleController.RunCommandString("+si:DEMO.BETA @NW");
+        //consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
+        //consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
 
 
-//        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
-//        consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
+        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
+        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
 
-//        consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
-//        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
+        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
+        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 
-//        consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
-//        consoleController.RunCommandString(">");
-//        consoleController.RunCommandString("=DEMO.BETA.A.R1.A03"); 
+        //consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
+        //consoleController.RunCommandString(">");
+        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 
 #endif
     }
@@ -134,7 +135,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DoubleClickDetection(Time.time));
     }
 
-#endregion
+    #endregion
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -543,7 +544,7 @@ public class GameManager : MonoBehaviour
         apiBtn.GetComponent<Image>().color = _color;
         apiButtonVRText.text = _str;
         apiButtonVRBackPlate.material.SetColor("_Color", _color);
-        }
+    }
 
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
@@ -698,9 +699,7 @@ public class GameManager : MonoBehaviour
     {
         consoleController.RunCommandString("api.get=sites?name=BETA");
         yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED.BETA:details=3");
-        yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED.BETA.A.R1.A02:details=2");
+        consoleController.RunCommandString("CED.BETA:details=5");
 
 
     }

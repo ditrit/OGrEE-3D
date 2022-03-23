@@ -5,7 +5,8 @@ using UnityEngine;
 public class ButonResetPosition : MonoBehaviour
 {
     private bool focused = false;
-    private GameObject selectedObject;
+    private GameObject selectedObject = null;
+    private GameObject focusedObject = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +19,7 @@ public class ButonResetPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy && selectedObject != null)
         {
             CheckChildrenPositions();
         }
@@ -29,13 +30,14 @@ public class ButonResetPosition : MonoBehaviour
     ///</summary>
     public void ResetAllPositions()
     {
-        for (int i = 0; i < transform.parent.childCount; i++)
+        for (int i = 0; i < selectedObject.transform.childCount; i++)
         {
-            if (transform.parent.GetChild(i).GetComponent<OgreeObject>() == null)
+            OgreeObject ogree = selectedObject.transform.GetChild(i).GetComponent<OgreeObject>();
+            if (ogree == null)
             {
                 continue;
             }
-            transform.parent.GetChild(i).GetComponent<OgreeObject>().ResetPosition();
+            ogree.ResetPosition();
         }
     }
 
@@ -44,31 +46,21 @@ public class ButonResetPosition : MonoBehaviour
     ///</summary>
     private void CheckChildrenPositions()
     {
-        for (int i = 0; i < transform.parent.childCount; i++)
+        for (int i = 0; i < selectedObject.transform.childCount; i++)
         {
-            Transform ithChild = transform.parent.GetChild(i);
+            Transform ithChild = selectedObject.transform.GetChild(i);
             OgreeObject ogree = ithChild.GetComponent<OgreeObject>();
             if (ogree == null)
             {
                 continue;
             }
-            if (ithChild.localPosition.x < ogree.originalLocalPosition.x)
+            if (ithChild.localPosition.z < ogree.originalLocalPosition.z)
             {
                 ogree.ResetPosition();
             }
         }
     }
 
-    ///<summary>
-    /// Set the ResetPosition buton to the correct position and rotation on selection
-    ///</summary>
-    ///<param name="_position">the position of the buton </param>
-    ///<param name="_rotation">the rotation of the buton </param>
-    private void InitButton(Vector3 _position, Quaternion _rotation)
-    {
-        gameObject.transform.localPosition = _position;
-        gameObject.transform.localRotation = _rotation;
-    }
 
     ///<summary>
     /// When called set the buton active, set the selected object as its parent and initialise it
@@ -76,10 +68,13 @@ public class ButonResetPosition : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        gameObject.SetActive(true);
-        gameObject.transform.parent = _e.obj.transform;
-        InitButton(new Vector3(_e.obj.transform.localScale.x / 2, _e.obj.transform.localScale.y / 2, _e.obj.transform.localScale.z / 2), Quaternion.Euler(0, -180, 0));
         selectedObject = _e.obj;
+        Vector3 parentSize = selectedObject.transform.GetChild(0).lossyScale;
+        transform.position = selectedObject.transform.GetChild(0).position;
+        transform.localRotation = Quaternion.Euler(0, -90, 0);
+        transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.06f) / 2;
+        gameObject.SetActive(true);
+
 
     }
 
@@ -90,6 +85,7 @@ public class ButonResetPosition : MonoBehaviour
     private void OnDeselectItem(OnDeselectItemEvent _e)
     {
         gameObject.SetActive(false);
+        selectedObject = null;
     }
     private void OnFocusItem(OnFocusEvent _e)
     {
@@ -98,6 +94,7 @@ public class ButonResetPosition : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         focused = false;
+        focusedObject = null;
     }
 
     ///<summary>
@@ -105,12 +102,33 @@ public class ButonResetPosition : MonoBehaviour
     ///</summary>
     public void ButonFocus()
     {
-        if (focused)
+        if (focused && focusedObject == selectedObject)
         {
             GameManager.gm.UnfocusItem();
-        } else
+        }
+        else
         {
             GameManager.gm.FocusItem(selectedObject);
+            focusedObject = selectedObject;
         }
+    }
+    ///<summary>
+    /// I should move this (WIP)
+    ///</summary>
+    public void ButonDeselect()
+    {
+        if (focused || selectedObject == null)
+        {
+            return;
+        }
+            if (selectedObject != null && selectedObject.transform.parent.GetComponent<OObject>() != null)
+            {
+                GameManager.gm.SetCurrentItem(selectedObject.transform.parent.gameObject);
+            }
+            else
+            {
+                print(selectedObject);
+                GameManager.gm.SetCurrentItem(null);
+            }
     }
 }

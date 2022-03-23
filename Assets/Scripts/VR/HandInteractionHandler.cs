@@ -14,9 +14,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
-    private bool leftHandInContact = false;
-    private bool rightHandInContact = false;
-    private bool hasAlreadyFocused = false;
 
     ///<summary>
     /// Check which hand is currently exiting the object's collider and update the booleans
@@ -24,15 +21,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData _eventData)
     {
-        switch (_eventData.Handedness)
-        {
-            case Handedness.Left:
-                leftHandInContact = false; break;
-            case Handedness.Right:
-                rightHandInContact = false; break;
-            default: break;
-        }
-        hasAlreadyFocused = false;
     }
 
     ///<summary>
@@ -42,14 +30,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
     {
         SelectThis();
-        switch (_eventData.Handedness)
-        {
-            case Handedness.Left:
-                leftHandInContact = true; break;
-            case Handedness.Right:
-                rightHandInContact = true; break;
-            default: break;
-        }
     }
 
     ///<summary>
@@ -58,11 +38,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
     {
-        if (leftHandInContact && rightHandInContact && !hasAlreadyFocused)
-        {
-            FocusThis();
-            hasAlreadyFocused = true;
-        }
     }
 
     ///<summary>
@@ -71,13 +46,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public void SelectThis()
     {
         GameManager.gm.SetCurrentItem(transform.parent.gameObject);
-    }
-    ///<summary>
-    /// Focus this object
-    ///</summary>
-    public void FocusThis()
-    {
-        GameManager.gm.FocusItem(transform.parent.gameObject);
     }
 
 }

@@ -89,6 +89,10 @@ public class FocusHandler : MonoBehaviour
             UpdateParentRenderers(gameObject, false);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
+        else if (e.obj == transform.parent.gameObject)
+        {
+            UpdateChildMeshRenderers(false, false);
+        }
 
     }
 
@@ -355,7 +359,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        Debug.Log(gameObject);
         if (_obj.GetComponent<OgreeObject>().category == "rack")
         {
             return;
