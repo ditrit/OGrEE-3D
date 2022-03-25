@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
+
 [RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
 {
@@ -102,6 +103,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(configLoader.LoadTextures());
         m_camera = Camera.main;
         UpdateFocusText();
+        
 
 #if API_DEBUG
         ToggleApi();

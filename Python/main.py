@@ -4,26 +4,42 @@ import cv2
 import API_GET
 from PIL import Image
 import sys
+from os.path import exists
+import os.path
+
+
 
 #Read API URL and Headers from conf file
-f = open("conf.txt", "r")
-url = str(f.readline()[:-1])
-token = str(f.readline())
-headers = {
-    'Authorization': token
-}
-f.close()
+pathToConfFile = "{}\\conf.json".format(os.path.dirname(__file__))
+file_exists = exists(pathToConfFile)
+if file_exists:
+    f = open(pathToConfFile, "r")
+
+    url = str(f.readline()[:-1])
+    token = str(f.readline())
+    headers = {
+        'Authorization': token
+    }
+    f.close()
+else:
+    print("\nCannot find configuration file")
+    sys.exit()
 
 def main():
     img, tenantName = parsing()
+    pathToRegexfile = '{}\\regex{}.json'.format(os.path.dirname(__file__), tenantName)
+    file_exists = exists(pathToRegexfile)
+    if not file_exists:
+        print("\nCannot find regex file")
+        return
     siteAvailable = API_GET.GetSitesNames(tenantName, url, headers)
     if not siteAvailable:
         print("\nThe tenant name is wrong or there are no available sites for this tenant")
         return
-    results = OCR.PerformOCR(img)
+    results = OCR.PerformOCR(img, 'easyocr')
     for (bbox, text, prob) in results:
         text = OCR.ReplaceSymbol(text)
-        site, room, rack, output = OCR.RecoverSiteRoomRack(text, prob, bbox, img, siteAvailable)
+        site, room, rack, output = OCR.RecoverSiteRoomRack(text, bbox, img, pathToRegexfile, siteAvailable)
         if site is not None and room is not None and rack is not None:
             OCR.DisplayImage(output)
             return
