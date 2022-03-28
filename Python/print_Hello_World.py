@@ -25,8 +25,9 @@ else:
     sys.exit()
 
 def main(img, arg2):
-    #Convert byte-like image into a numpy array
-    nparr = np.fromstring(img, np.uint8)
+    site, room, rack = None, None, None
+    #Convert byte-like image into a numpy array, then into an array usable with opencv
+    nparr = np.frombuffer(img, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     tenantName = parsing(arg2)
@@ -48,6 +49,7 @@ def main(img, arg2):
     #Perform OCR on the img with the specified technology
     results = OCR.PerformOCR(img, 'easyocr')
     for (bbox, text, prob) in results:
+        print(text)
         text = OCR.ReplaceSymbol(text)
 
         #Recover the name of the site, room and rack if possible
@@ -55,7 +57,7 @@ def main(img, arg2):
         if site is not None and room is not None and rack is not None:
             return site, room, rack
     print("\nCould not find rack label on the picture, please try again\n")
-
+    OCR.DisplayImage(img)
     return site, room, rack
 
 def parsing(arg2):
