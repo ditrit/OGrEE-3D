@@ -700,6 +700,8 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString("api.get=sites?name=BETA");
         yield return new WaitForSeconds(2);
         consoleController.RunCommandString("CED.BETA:details=5");
+        //yield return new WaitForSeconds(2);
+        //consoleController.RunCommandString("=CED.BETA.A.R1.A02");
 
 
     }

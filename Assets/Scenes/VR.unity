@@ -5915,7 +5915,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b1ea5b2078e1141a6023ed119f164d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 90352355}
 --- !u!120 &836642674
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -7803,8 +7802,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.892624
+  m_Value: -0.000019729932
+  m_Size: 0.89212465
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9725,7 +9724,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1008847287}
   m_Direction: 0
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99999976
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10437,7 +10436,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.028843}
+  m_AnchoredPosition: {x: 0, y: 34.029503}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1410114691
@@ -12204,9 +12203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea352ee929205314d940a64dd0071a16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AlwaysShowCollider: 1
-  IncludeCollidersInChildren: 1
-  GizmoColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1589266275
 GameObject:
   m_ObjectHideFlags: 0
@@ -13829,11 +13825,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5914895578856604739, guid: 7e71469d26cfa104497dde222c384910,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: ec72a3a105768f746b556a8dfdae61a8, type: 2}
     - target: {fileID: 8723977275934652973, guid: 7e71469d26cfa104497dde222c384910,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8723977275934652973, guid: 7e71469d26cfa104497dde222c384910,
+        type: 3}
+      propertyPath: iconQuadTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 559e1da0e65611c4f93ec931e1e6a8a2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e71469d26cfa104497dde222c384910, type: 3}
 --- !u!1 &1780799916

@@ -14,38 +14,58 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
+    private static bool canSelect = true;
+    //public GameObject sphere;
 
+    private void Start()
+    {
+        //sphere = Resources.Load<GameObject>("Sphere");
+    }
     ///<summary>
-    /// Check which hand is currently exiting the object's collider and update the booleans
+    /// Called when a hand is exiting the object's collider
     ///</summary>
     ///<param name="_eventData">The HandTrackingInputEventData</param>
-    void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData _eventData)
+    void IMixedRealityTouchHandler.OnTouchCompleted(HandTrackingInputEventData eventData)
     {
     }
 
     ///<summary>
-    /// Check which hand is currently entering the object's collider and update the booleans
+    /// Called when a hand is entering the object's collider and select this object  
     ///</summary>
     ///<param name="_eventData">The HandTrackingInputEventData</param>
-    void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData _eventData)
+    void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
+        //Instantiate(sphere, eventData.InputData, Quaternion.identity);
         SelectThis();
     }
 
     ///<summary>
-    /// Check which hand is currently touching the object's collider and focus on the object if both hands are in contact
+    /// Called when a hand is in the object's collider 
     ///</summary>
     ///<param name="_eventData">The HandTrackingInputEventData</param>
-    void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData _eventData)
+    void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
     {
+    }
+
+    public void SelectThis()
+    {
+        StartCoroutine(SelectThisCoroutine());
     }
 
     ///<summary>
     /// Select this object
     ///</summary>
-    public void SelectThis()
+    public IEnumerator SelectThisCoroutine()
     {
-        GameManager.gm.SetCurrentItem(transform.parent.gameObject);
+        if(canSelect)
+        {
+            canSelect = false;
+            GameManager.gm.SetCurrentItem(transform.parent.gameObject);
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.5f);
+            canSelect = true;
+        }
+
     }
 
 }

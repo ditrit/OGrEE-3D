@@ -79,11 +79,8 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            if (!isFocused)
-            {
-                EventManager.Instance.Raise(new ImportFinishedEvent());
-                UpdateChildMeshRenderers(true, true);
-            }
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+            UpdateChildMeshRenderers(true, true);
             isSelected = true;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             UpdateParentRenderers(gameObject, false);
@@ -93,7 +90,6 @@ public class FocusHandler : MonoBehaviour
         {
             UpdateChildMeshRenderers(false, false);
         }
-
     }
 
     ///<summary>
@@ -148,6 +144,9 @@ public class FocusHandler : MonoBehaviour
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
             EventManager.Instance.Raise(new ImportFinishedEvent());
+            OnSelectItemEvent selectItemEvent = new OnSelectItemEvent();
+            selectItemEvent.obj = gameObject;
+            EventManager.Instance.Raise(selectItemEvent);
         }
     }
 
@@ -192,10 +191,12 @@ public class FocusHandler : MonoBehaviour
         FillListsWithChildren();
         FillMeshRendererLists();
         if (transform.GetChild(0).GetComponent<Renderer>().enabled
-            && transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f)
+            && (transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f
+                || (isFocused && !isSelected && transform.GetChild(0).GetComponent<Collider>().enabled)))
         {
             UpdateChildMeshRenderers(false);
         }
+
     }
 
     ///<summary>
@@ -368,7 +369,7 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// Disable renderer of _obj all _obj parents in the hierarchy recursively until _obj is a rack, then enable the renderer of _obj if _obj is a rack
+    /// Disable renderer of all _obj parents in the hierarchy recursively until _obj is a rack, then enable the renderer of _obj if _obj is a rack
     ///</summary>
     ///<param name="_obj">The object whose <b>own and parents' renderers</b> will be updated</param>
     private void ResetToRack(GameObject _obj)

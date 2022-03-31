@@ -105,6 +105,7 @@ public class ButonResetPosition : MonoBehaviour
         if (focused && focusedObject == selectedObject)
         {
             GameManager.gm.UnfocusItem();
+
         }
         else
         {
@@ -117,18 +118,17 @@ public class ButonResetPosition : MonoBehaviour
     ///</summary>
     public void ButonDeselect()
     {
-        if (focused || selectedObject == null)
+        if (selectedObject == null)
         {
             return;
         }
-            if (selectedObject != null && selectedObject.transform.parent.GetComponent<OObject>() != null)
-            {
-                GameManager.gm.SetCurrentItem(selectedObject.transform.parent.gameObject);
-            }
-            else
-            {
-                print(selectedObject);
-                GameManager.gm.SetCurrentItem(null);
-            }
+        if (selectedObject.transform.parent.GetComponent<OObject>() != null)
+        {
+            GameManager.gm.SetCurrentItem(selectedObject.transform.parent.gameObject);
+        }
+        else
+        {
+            GameManager.gm.SetCurrentItem(null);
+        }
     }
 }
