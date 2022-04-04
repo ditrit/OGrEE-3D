@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb41c8335e2ca96449f3991db5fa5702, type: 3}
   m_Name: IconSet
   m_EditorClassIdentifier: 
-  quadIcons: []
+  quadIcons:
+  - {fileID: 2800000, guid: 9d7744a7447b9e4489d8f7be45789d40, type: 3}
+  - {fileID: 2800000, guid: f84fbfd718d2d9341bcf3701f87321b3, type: 3}
   spriteIcons: []
   charIconFont: {fileID: 0}
   charIcons:
