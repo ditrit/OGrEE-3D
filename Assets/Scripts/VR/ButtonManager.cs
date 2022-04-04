@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ButtonResetPosition : MonoBehaviour
+public class ButtonManager : MonoBehaviour
 {
     private bool focused = false;
     private GameObject selectedObject = null;
@@ -85,13 +85,13 @@ public class ButtonResetPosition : MonoBehaviour
         //Placing buttonDeselect
         buttonDeselect.transform.position = selectedObject.transform.GetChild(0).position;
         buttonDeselect.transform.localRotation = Quaternion.Euler(0, -90, 0);
-        buttonDeselect.transform.position += new Vector3(parentSize.z + 0.12f, parentSize.y + 0.06f, parentSize.x - 0.06f) / 2;
+        buttonDeselect.transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.12f) / 2;
         buttonDeselect.SetActive(true);
 
         //Placing buttonToggleFocus
         buttonToggleFocus.transform.position = selectedObject.transform.GetChild(0).position;
         buttonToggleFocus.transform.localRotation = Quaternion.Euler(0, -90, 0);
-        buttonToggleFocus.transform.position += new Vector3(parentSize.z + 0.18f, parentSize.y + 0.06f, parentSize.x - 0.06f) / 2;
+        buttonToggleFocus.transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.18f) / 2;
         buttonToggleFocus.SetActive(true);
 
 
@@ -145,7 +145,7 @@ public class ButtonResetPosition : MonoBehaviour
     ///</summary>
     public void ButonDeselect()
     {
-        if (selectedObject == null ||(focused && focusedObject == selectedObject))
+        if (selectedObject == null || (focused && focusedObject == selectedObject))
         {
             return;
         }

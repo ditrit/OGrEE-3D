@@ -84,6 +84,10 @@ public class FocusHandler : MonoBehaviour
             isSelected = true;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             UpdateParentRenderers(gameObject, false);
+            if (GetComponent<OObject>().category == "rack")
+            {
+                UpdateOwnMeshRenderers(false);
+            }
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
         else if (e.obj == transform.parent.gameObject)
@@ -103,11 +107,7 @@ public class FocusHandler : MonoBehaviour
             EventManager.Instance.Raise(new ImportFinishedEvent());
             isSelected = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
-            if (gameObject.GetComponent<OgreeObject>().category != "rack")
-            {
-                ResetToRack(gameObject);
-                transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-            }
+            ResetToRack(gameObject);
         }
     }
 
@@ -144,9 +144,7 @@ public class FocusHandler : MonoBehaviour
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
             EventManager.Instance.Raise(new ImportFinishedEvent());
-            OnSelectItemEvent selectItemEvent = new OnSelectItemEvent();
-            selectItemEvent.obj = gameObject;
-            EventManager.Instance.Raise(selectItemEvent);
+            EventManager.Instance.Raise(new OnSelectItemEvent() { obj = gameObject });
         }
     }
 
@@ -377,9 +375,9 @@ public class FocusHandler : MonoBehaviour
         if (_obj.GetComponent<OgreeObject>().category == "rack")
         {
             _obj.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(true);
+            _obj.GetComponent<FocusHandler>().UpdateChildMeshRenderers(false);
             return;
         }
-        _obj.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
         ResetToRack(_obj.transform.parent.gameObject);
     }
 }
