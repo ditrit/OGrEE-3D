@@ -20,12 +20,12 @@ def PerformOCR(img, method):
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         boxes = pytesseract.image_to_data(img)
         text = pytesseract.image_to_string(img)
-        print(boxes)
+        # print(boxes)
         print(text)
         return
 
 
-def DrawBoundingBoxAddText(img, bbox, text):
+def DrawBoundingBoxAddTextCropped(img, bbox, text):
     # unpack the bounding box
     (tl, tr, br, bl) = bbox
     tl = (int(tl[0]), int(tl[1]))
@@ -37,9 +37,27 @@ def DrawBoundingBoxAddText(img, bbox, text):
     # with the OCR'd text itself
     text = cleanup_text(text)
     output = cv2.rectangle(img, tl, br, (0, 255, 0), 2)
-    cv2.putText(img, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 4)
+    cv2.putText(img, text, (bl[0], bl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 4)
 
     return output
+
+
+def DrawBoundingBoxAddTextNoCropped(img, bbox, text):
+    # unpack the bounding box
+    (tl, tr, br, bl) = bbox
+    tl = (int(tl[0]), int(tl[1]))
+    tr = (int(tr[0]), int(tr[1]))
+    br = (int(br[0]), int(br[1]))
+    bl = (int(bl[0]), int(bl[1]))
+
+    # cleanup the text and draw the box surrounding the text along
+    # with the OCR'd text itself
+    text = cleanup_text(text)
+    output = cv2.rectangle(img, tl, br, (0, 255, 0), 2)
+    cv2.putText(img, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 4)
+
+    return output
+
 
 def DisplayImage(img):
     #Display the image provided
@@ -55,27 +73,62 @@ def ReplaceSymbol(text):
     text = text.replace("Ø", "0")
     return text
 
-def RecoverSiteRoomRack(text, bbox, img, regexfile, siteAvailable):
+def RecoverRack(text, bbox, img, regexfile):
     #parse the text provided into 3 variables site, room, rack if possible
-    site, room, rack = None, None, None
+    rack = None
     output = img
+    firstCharacterOfRackLabel = text[0]
+    firstCharacterOfRackLabel = firstCharacterOfRackLabel.replace("0", "Q")
+    firstCharacterOfRackLabel = firstCharacterOfRackLabel.replace("O", "Q")
+
+    correctLabel = firstCharacterOfRackLabel
+    for i in range(1, len(text)):
+        characterToReplace = text[i]
+        characterToReplace = characterToReplace.replace("O", "0")
+        characterToReplace = characterToReplace.replace("o", "0")
+        characterToReplace = characterToReplace.replace("Q", "0")
+        correctLabel += characterToReplace
+
+    correctLabel = correctLabel.replace("-0", "-Q")
+    correctLabel = correctLabel.replace("-O", "-Q")
+    f = open(regexfile, 'r')
+    Lines = f.readlines()
+    for line in Lines:
+        labelMatcher = re.compile(line.strip())
+        if labelMatcher.findall(correctLabel):
+            rackLabel = labelMatcher.findall(correctLabel)[0]
+            # output = DrawBoundingBoxAddText(img, bbox, rackLabel)
+            rack = rackLabel
+            f.close()
+            return rack, output
+    f.close()
+    return rack, output
+
+def RecoverSiteRoom(text, bbox, img, regexfile, siteAvailable):
+    #parse the text provided into 3 variables site, room, rack if possible
+    site, room = None, None
+    output = img
+
     if text[:3] in siteAvailable:
+        text = text.replace("I", "1")
+        text = text.replace("T", "1")
+        text = text.replace("CS", "C5")
         f = open(regexfile, 'r')
         Lines = f.readlines()
         for line in Lines:
             labelMatcher = re.compile(line.strip())
-            if labelMatcher.match(text):
-                output = DrawBoundingBoxAddText(img, bbox, text)
-                site = text[:3]
-                room = text[3:5]
-                rack = text[6:]
-                print("\n Site = {} \n Room = {} \n Rack = {}".format(site, room, rack))
-                return site, room, rack, output
+            if labelMatcher.findall(text):
+                siteRoomLabel = labelMatcher.findall(text)[0]
+                # output = DrawBoundingBoxAddText(img, bbox, siteRoomLabel)
+                site = siteRoomLabel[:3]
+                if site == "NOE":
+                    room = siteRoomLabel[3:5]
+                elif site == "PCY":
+                    room = siteRoomLabel[3]
+                f.close()
+                return site, room, output
         f.close()
-        print("\nLabel does not respect the regular expression")
-        print("The label read was: {}".format(text))
-        return site, room, rack, output
+        return site, room, output
     else:
-        # print("\nLabel is incorrect, it should start with 'NOE' or 'PCY'")
-        # print("The label read was :{}".format(text))
-        return site, room, rack, output
+        return site, room, output
+

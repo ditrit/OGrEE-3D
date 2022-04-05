@@ -9,15 +9,39 @@ public class Photo_Capture : MonoBehaviour
 {
 
     public string host = "192.168.120.231";
-    public string port = "6000";
+    public string port = "5000";
+    UnityEngine.TouchScreenKeyboard keyboard;
+    string keyboardText;
     private PhotoCapture photoCaptureObject = null;
 
     // Start is called before the first frame update
     private void Start()
     {
-        var devices = WebCamTexture.devices;
-        PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+        //PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+    }
 
+    void Update()
+    {
+        if (keyboard != null)
+        {
+            keyboardText = keyboard.text;
+            // Do stuff with keyboardText
+        }
+
+    }
+
+    public void OpenKeyBoard()
+    {
+        keyboard = TouchScreenKeyboard.Open("text to edit", TouchScreenKeyboardType.NumbersAndPunctuation);
+    }
+
+    public void GetHost()
+    {
+        host = keyboardText;
+    }
+    public void CapturePhoto()
+    {
+        PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
     }
 
     void OnPhotoCaptureCreated(PhotoCapture captureObject)
@@ -104,6 +128,7 @@ public class Photo_Capture : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", byteArray);
         form.AddField("Tenant_Name", "EDF");
+        Debug.Log("Start POST request");
         UnityWebRequest www = UnityWebRequest.Post("http://" + host + ":" + port, form);
         yield return www.SendWebRequest();
 
@@ -113,7 +138,6 @@ public class Photo_Capture : MonoBehaviour
         }
         else
         {
-            Debug.Log("Form upload complete!");
             Debug.Log(www.downloadHandler.text);
         }
     }

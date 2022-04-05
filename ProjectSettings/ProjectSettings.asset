@@ -139,7 +139,7 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: -7172676021702587011, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
   - {fileID: 5604438126760133931, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
-  metroInputSource: 0
+  metroInputSource: 2
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
   xboxOneDisableKinectGpuReservation: 1
@@ -749,7 +749,7 @@ PlayerSettings:
     WindowsStoreApps:
       EnterpriseAuthentication: False
       OfflineMapsManagement: False
-      HumanInterfaceDevice: False
+      HumanInterfaceDevice: True
       Location: False
       Chat: False
       Bluetooth: False

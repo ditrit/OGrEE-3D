@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 
 def GetSitesNames(tenantName, url, headers):

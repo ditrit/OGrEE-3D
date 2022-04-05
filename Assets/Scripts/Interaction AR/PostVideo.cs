@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 public class PostVideo : MonoBehaviour
 {
     public string host = "192.168.120.231";
-    public string port = "6000";
+    public string port = "5000";
 
 
     // Start is called before the first frame update
