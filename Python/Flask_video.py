@@ -4,7 +4,6 @@ import API_GET
 import Utils
 from gevent.pywsgi import WSGIServer
 import Label_processing_Unity
-import ShapeDetector
 import time
 import numpy as np
 import cv2
@@ -19,12 +18,15 @@ app = Flask(__name__)
 pathToConfFile = "{}\\conf.json".format(os.path.dirname(__file__))
 url, token, headers = Utils.GetUrlAndToken(pathToConfFile)
 
+#####################################################################################################################
+#####################################################################################################################
+
 @app.route('/', methods=['POST'])
 def DownloadFile():
     # request.form to get form parameter
-    start = time.time()
     print("\n\nBeginning the processing of the image...")
-    print("\nReceived request at time: {}".format(start))
+    start = time.time()
+
     img = request.files["Label_Rack"].read()
     tenantName = request.form["Tenant_Name"]
     current = time.time()
@@ -34,11 +36,6 @@ def DownloadFile():
     nparr = np.frombuffer(img, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    #Crop the image around the label to reduce processing time for OCR
-    cropped_image = ShapeDetector.ShapeAndColorDetector(img)
-    print("\nCropped image in: {} s".format(time.time() - current))
-    current = time.time()
-
     #Return the sites that are available for the tenant provided
     siteAvailable = API_GET.GetSitesNames(tenantName, url, headers)
     if not siteAvailable:
@@ -46,33 +43,18 @@ def DownloadFile():
         return
     print("\nPerformed API GET in: {} s".format(time.time() - current))
 
-    #Perform OCR + post-processing on the cropped_image to recover the name of the site, room and rack
-    site, room, rack = Label_processing_Unity.main(cropped_image, tenantName, siteAvailable, True)
+    json = Label_processing_Unity.OCRAndCorrection(img, tenantName, siteAvailable)
+    return json
 
-    #return label if it was found
-    if site is not None and room is not None and rack is not None:
-        json = site + room + '-' + rack
-        print("\nTotal time: {} s".format(time.time() - start))
-        print("\nThe label read is: {}".format(json))
-        return json
-    else:
-        print("\nCould not find rack label on cropped image. Trying on the full image.")
-        site, room, rack = Label_processing_Unity.main(img, tenantName, siteAvailable, False)
-        if site is not None and room is not None and rack is not None:
-            json = site + room + '-' + rack
-            print("\nTotal time: {} s".format(time.time() - start))
-            print("\nThe label read is: {}".format(json))
-            return json
-        if site is None or room is None or rack is None:
-            json = "\nCould not find rack label on the picture, please try again"
-            print("\nTotal time: {} s".format(time.time() - start))
-            print("\nThe label read is: {}".format(json))
-            return json
+#####################################################################################################################
+#####################################################################################################################
 
 @app.route('/', methods=['GET'])
 def returnToto():
     return "connected to the flaskAPI"
 
+#####################################################################################################################
+#####################################################################################################################
 
 if __name__ == "__main__":
 

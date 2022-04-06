@@ -1,0 +1,9 @@
+{ "customer" : "EDF",
+  "regexps"  : [
+      {  "regexp" : "NOEC[1-8]-[A-Z][0-9]{2}[b|BIS]?",  "type": "rack", "site": "NOE",  "room" : [ "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8" ], "background" : [ "orange" ]          },
+      {  "regexp" : "LT[A-B]-MD[Z-A][0-9]",             "type": "rack", "site": "NOE",  "room" : [ "LTB", "LTA" ],                                   "background" : [ "orange", "white" ] },
+      {  "regexp" : "PCY[124]-[A-Z][0-9]{2}[b|BIS]?",   "type": "rack", "site": "PCY",  "room" : [ "UC1", "UC2", "UC4" ],                            "background" : [ "orange" ]          },
+      {  "regexp" : "{MDI}? ?[0-9]{2}[A-Z][0-9]{2}",    "type": "mdi",  "site": "PCY",  "room" : [ "UC1", "UC2", "UC4" ],                            "background" : [ "red", "yellow" ]   },
+      {  "regexp" : "[AB][1-4] ?QF[0-9]{2}",            "type": "mdi",  "site": "NOE",  "room" : [ "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8" ], "background" : [ "white" ]           }
+    ]
+}

@@ -1,15 +1,23 @@
+import sys
+
 import OCR
 from os.path import exists
 import os.path
+import os
+import ShapeDetector
 import time
-import cv2
+import re
+
+import Utils
 
 path = os.path.dirname(__file__)
 
+#####################################################################################################################
+#####################################################################################################################
 
-def main(img, tenantName, siteAvailable, isCropped):
+def main(img, site, regexp, type, isCropped):
     #Initialize var site, room, rack to avoid exceptions
-    site, room, rack = None, None, None
+    room, rack = None, None
 
     # Flag for detecting if the next text is supposed to be the rack
     isNextTextRack = False
@@ -17,18 +25,12 @@ def main(img, tenantName, siteAvailable, isCropped):
     #Flag for detecting if the label is separated for Site+Room and Rack
     isLabelSeparated = True
 
-    #Specify the path to the regular expression of the labels
-    pathToRegexfile = '{}\\regex{}.json'.format(os.path.dirname(__file__), tenantName)
-
-    #Check if the regexfil exists
-    pathToRegexfileSiteRoomOnly = '{}\\regex{}SiteRoom.json'.format(os.path.dirname(__file__), tenantName)
-    pathToRegexfileRackOnly = '{}\\regex{}Rack.json'.format(os.path.dirname(__file__), tenantName)
-    file_exists3 = exists(pathToRegexfileSiteRoomOnly)
-    file_exists2 = exists(pathToRegexfileRackOnly)
-
-    if not file_exists2 or not file_exists3:
-        print("\nCannot find one or all regex file")
-        return
+    #Split the regexp into 2 regex: Site+Room and rack
+    if type == 'rack':
+        regexSiteRoom, regexRack = Utils.RegexSiteRoomRackSpliter(regexp)
+    else:
+        print("Did not implement code for non rack object yet")
+        sys.exit()
 
     #Perform OCR on the img with the specified technology
     current = time.time()
@@ -47,6 +49,10 @@ def main(img, tenantName, siteAvailable, isCropped):
         print("Read line {}: {}".format(lineNumber, text))
         lineNumber += 1
 
+
+    labelMatcherSiteRoom = re.compile(regexSiteRoom)
+    labelMatcherRack = re.compile(regexRack)
+
     for (bbox, text, prob) in results:
         text = OCR.ReplaceSymbol(text)
 
@@ -56,10 +62,10 @@ def main(img, tenantName, siteAvailable, isCropped):
 
         # Case where the label is full (Site + Room + Rack), we can do all the processing in one go (one text)
         if not isLabelSeparated:
-            site, room, output = OCR.RecoverSiteRoom(text, bbox, img, pathToRegexfileSiteRoomOnly, siteAvailable)
+            site, room, output = OCR.RecoverSiteRoom(text, img, labelMatcherSiteRoom, site)
             print("\n Site = {} \n Room = {} \n Rack = {} (SR non-separ)".format(site, room, rack))
             if site is not None and room is not None:
-                rack, output = OCR.RecoverRack(text, bbox, img, pathToRegexfileRackOnly)
+                rack, output = OCR.RecoverRack(text, img, labelMatcherRack)
                 print("\n Site = {} \n Room = {} \n Rack = {} (R non-separ)".format(site, room, rack))
                 OCR.DisplayImage(imgAndtext)
                 print("\nPerformed rack label detection and correction in: {} s".format(time.time() - current))
@@ -69,10 +75,10 @@ def main(img, tenantName, siteAvailable, isCropped):
         # Case where the label is seperated in 2 text
         else:
             if not isNextTextRack:
-                site, room, output = OCR.RecoverSiteRoom(text, bbox, img, pathToRegexfileSiteRoomOnly, siteAvailable)
+                site, room, output = OCR.RecoverSiteRoom(text, img, labelMatcherSiteRoom, site)
                 print("\n Site = {} \n Room = {} \n Rack = {} (SR separ)".format(site, room, rack))
             if isNextTextRack:
-                rack, output = OCR.RecoverRack(text, bbox, img, pathToRegexfileRackOnly)
+                rack, output = OCR.RecoverRack(text, img, labelMatcherRack)
                 print("\n Site = {} \n Room = {} \n Rack = {} (R separ)".format(site, room, rack))
                 if rack is not None:
                     OCR.DisplayImage(imgAndtext)
@@ -86,7 +92,44 @@ def main(img, tenantName, siteAvailable, isCropped):
     OCR.DisplayImage(imgAndtext)
     return site, room, rack
 
+#####################################################################################################################
+#####################################################################################################################
 
+def OCRAndCorrection(img, site, regexp, type, background):
+    print("\n\n\nBeginning the processing of the image...")
+    json = None
+    start = time.time()
+    current = start
+
+    #Cropping the image
+    croppedImage = ShapeDetector.ShapeAndColorDetector(img, background)
+    print("\nCropped image in: {} s".format(time.time() - current))
+
+    # Perform OCR + post-processing on the cropped_image to recover the name of the site, room and rack
+    site, room, rack = main(croppedImage, site, regexp, type, True)
+    # return label if it was found
+    if site is not None and room is not None and rack is not None:
+        json = site + room + '-' + rack
+        print("\nTotal time: {} s".format(time.time() - start))
+        print("\nThe label read is: {}".format(json))
+        return json
+    else:
+        print("\nCould not find rack label on cropped image. Trying on the full image.")
+        site, room, rack = main(img, site, regexp, type, False)
+        if site is not None and room is not None and rack is not None:
+            json = site + room + '-' + rack
+            print("\nTotal time: {} s".format(time.time() - start))
+            print("\nThe label read is: {}".format(json))
+            return json
+        if site is None or room is None or rack is None:
+            json = "\nCould not find rack label on the picture, please try again"
+            print("\nTotal time: {} s".format(time.time() - start))
+            print("\nThe label read is: {}".format(json))
+            return json
+    return json
+
+#####################################################################################################################
+#####################################################################################################################
 
 
 

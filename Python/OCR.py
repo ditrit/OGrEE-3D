@@ -3,16 +3,22 @@ import easyocr
 import pytesseract
 import re
 
-#Configuration langage of the OCR, use norwegian to have the Ø symbol
+# Configuration langage of the OCR, use norwegian to have the Ø symbol
 reader = easyocr.Reader(['no', 'fr'])
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
+#####################################################################################################################
+#####################################################################################################################
+
 def cleanup_text(text):
-	#strip out non-ASCII text so we can draw the text on the image using OpenCV
-	return "".join([c if ord(c) < 128 else "" for c in text]).strip()
+    # strip out non-ASCII text so we can draw the text on the image using OpenCV
+    return "".join([c if ord(c) < 128 else "" for c in text]).strip()
+
+#####################################################################################################################
+#####################################################################################################################
 
 def PerformOCR(img, method):
-    #perform OCR on the image provided
+    # perform OCR on the image provided
     if method == 'easyocr':
         results = reader.readtext(img)
         return results
@@ -24,6 +30,8 @@ def PerformOCR(img, method):
         print(text)
         return
 
+#####################################################################################################################
+#####################################################################################################################
 
 def DrawBoundingBoxAddTextCropped(img, bbox, text):
     # unpack the bounding box
@@ -41,6 +49,8 @@ def DrawBoundingBoxAddTextCropped(img, bbox, text):
 
     return output
 
+#####################################################################################################################
+#####################################################################################################################
 
 def DrawBoundingBoxAddTextNoCropped(img, bbox, text):
     # unpack the bounding box
@@ -58,23 +68,31 @@ def DrawBoundingBoxAddTextNoCropped(img, bbox, text):
 
     return output
 
+#####################################################################################################################
+#####################################################################################################################
 
 def DisplayImage(img):
-    #Display the image provided
+    # Display the image provided
     cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
     cv2.resizeWindow('Output', 1000, 1000)
     cv2.imshow("Output", img)
     cv2.waitKey(0)
     return
 
+#####################################################################################################################
+#####################################################################################################################
+
 def ReplaceSymbol(text):
-    #Remove blank spaces in the text and turn Ø into 0
+    # Remove blank spaces in the text and turn Ø into 0
     text = text.replace(" ", "")
     text = text.replace("Ø", "0")
     return text
 
-def RecoverRack(text, bbox, img, regexfile):
-    #parse the text provided into 3 variables site, room, rack if possible
+#####################################################################################################################
+#####################################################################################################################
+
+def RecoverRack(text, img, labelMatcher):
+    # parse the text provided into 3 variables site, room, rack if possible
     rack = None
     output = img
     firstCharacterOfRackLabel = text[0]
@@ -91,44 +109,31 @@ def RecoverRack(text, bbox, img, regexfile):
 
     correctLabel = correctLabel.replace("-0", "-Q")
     correctLabel = correctLabel.replace("-O", "-Q")
-    f = open(regexfile, 'r')
-    Lines = f.readlines()
-    for line in Lines:
-        labelMatcher = re.compile(line.strip())
-        if labelMatcher.findall(correctLabel):
-            rackLabel = labelMatcher.findall(correctLabel)[0]
-            # output = DrawBoundingBoxAddText(img, bbox, rackLabel)
-            rack = rackLabel
-            f.close()
-            return rack, output
-    f.close()
+
+    if labelMatcher.findall(correctLabel):
+        rackLabel = labelMatcher.findall(correctLabel)[0]
+        rack = rackLabel
     return rack, output
 
-def RecoverSiteRoom(text, bbox, img, regexfile, siteAvailable):
-    #parse the text provided into 3 variables site, room, rack if possible
-    site, room = None, None
+#####################################################################################################################
+#####################################################################################################################
+
+def RecoverSiteRoom(text, img, labelMatcher, site):
+    # parse the text provided into 3 variables site, room, rack if possible
+    room = None
     output = img
 
-    if text[:3] in siteAvailable:
-        text = text.replace("I", "1")
-        text = text.replace("T", "1")
-        text = text.replace("CS", "C5")
-        f = open(regexfile, 'r')
-        Lines = f.readlines()
-        for line in Lines:
-            labelMatcher = re.compile(line.strip())
-            if labelMatcher.findall(text):
-                siteRoomLabel = labelMatcher.findall(text)[0]
-                # output = DrawBoundingBoxAddText(img, bbox, siteRoomLabel)
-                site = siteRoomLabel[:3]
-                if site == "NOE":
-                    room = siteRoomLabel[3:5]
-                elif site == "PCY":
-                    room = siteRoomLabel[3]
-                f.close()
-                return site, room, output
-        f.close()
-        return site, room, output
-    else:
-        return site, room, output
+    text = text.replace("I", "1")
+    text = text.replace("T", "1")
+    text = text.replace("CS", "C5")
 
+    if labelMatcher.findall(text):
+        siteRoomLabel = labelMatcher.findall(text)[0]
+        if site == "NOE":
+            room = siteRoomLabel[3:5]
+        elif site == "PCY":
+            room = siteRoomLabel[3]
+    return site, room, output
+
+#####################################################################################################################
+#####################################################################################################################
