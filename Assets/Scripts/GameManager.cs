@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     [Header("VR")]
     [SerializeField] private TextMeshPro apiButtonVRText = null;
     [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+    [SerializeField] private TextMeshPro apiUrlVR = null;
+    [SerializeField] private TextMeshPro focusTextVR = null;
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -365,9 +367,13 @@ public class GameManager : MonoBehaviour
         {
             string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
+            focusTextVR.text = $"Focus on {objName}";
         }
         else
+        {
             focusText.text = "No focus";
+            focusTextVR.text = "No focus";
+        }
 
         AppendLogLine(focusText.text, "green");
     }
@@ -519,6 +525,7 @@ public class GameManager : MonoBehaviour
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
             apiUrl.text = "";
+            apiUrlVR.text = "";
             AppendLogLine("Disconnected from API", "green");
         }
         else
@@ -529,6 +536,7 @@ public class GameManager : MonoBehaviour
             else
                 ChangeApiButton("Fail to connected to Api", Color.red);
             apiUrl.text = configLoader.GetApiUrl();
+            apiUrlVR.text = configLoader.GetApiUrl();
         }
         StartCoroutine(TestAPI());
     }
