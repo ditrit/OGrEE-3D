@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Threading.Tasks;
 
 [RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
@@ -447,6 +448,17 @@ public class GameManager : MonoBehaviour
         configLoader.RegisterApi(_url, _token);
     }
 
+    ///
+    public async Task ConnectToApi()
+    {
+        await configLoader.ConnectToApi();
+        if (ApiManager.instance.isInit)
+            ChangeApiButton("Connected to Api", Color.green);
+        else
+            ChangeApiButton("Fail to connected to Api", Color.red);
+        apiUrl.text = configLoader.GetApiUrl();
+    }
+
     ///<summary>
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
@@ -516,12 +528,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            await configLoader.ConnectToApi();
-            if (ApiManager.instance.isInit)
-                ChangeApiButton("Connected to Api", Color.green);
-            else
-                ChangeApiButton("Fail to connected to Api", Color.red);
-            apiUrl.text = configLoader.GetApiUrl();
+            await ConnectToApi();
         }
     }
 

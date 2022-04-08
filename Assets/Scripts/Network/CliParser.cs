@@ -9,11 +9,11 @@ public class CliParser// : MonoBehaviour
     ///<summary>
     /// Standard structure, helps to know which kind of data in received.
     ///</summary>
-    struct SData
-    {
-        public string type;
-        public string data;
-    }
+    // struct SData
+    // {
+    //     public string type;
+    //     public string data;
+    // }
 
     struct SLogin
     {
@@ -52,58 +52,58 @@ public class CliParser// : MonoBehaviour
     public void DeserializeInput(string _input)
     {
         GameObject obj = null;
-        SData command = new SData();
+        Hashtable command = new Hashtable();
         try
         {
-            command = JsonConvert.DeserializeObject<SData>(_input);
+            command = JsonConvert.DeserializeObject<Hashtable>(_input);
         }
         catch (System.Exception)
         {
             GameManager.gm.AppendLogLine("Received data with unknow format.", "red");
         }
-        switch (command.type)
+        switch (command["type"])
         {
             case "login":
-                Login(command.data);
+                Login(command["data"].ToString());
                 break;
             case "load template":
-                rfJson.CreateObjTemplateJson(command.data);
+                rfJson.CreateObjTemplateJson(command["data"].ToString());
                 break;
             case "select":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.SetCurrentItem(obj);
                 else
                     GameManager.gm.AppendLogLine("Error on select", "red");
                 break;
             case "delete":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
                 else
                     GameManager.gm.AppendLogLine("Error on delete", "red");
                 break;
             case "focus":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.FocusItem(obj);
                 else
                     GameManager.gm.AppendLogLine("Error on focus", "red");
                 break;
             case "create":
-                CreateObjectFromData(command.data);
+                CreateObjectFromData(command["data"].ToString());
                 break;
             case "modify":
-                ModifyObject(command.data);
+                ModifyObject(command["data"].ToString());
                 break;
             case "interact":
-                InteractWithObject(command.data);
+                InteractWithObject(command["data"].ToString());
                 break;
             case "ui":
-                ManipulateUi(command.data);
+                ManipulateUi(command["data"].ToString());
                 break;
             case "camera":
-                ManipulateCamera(command.data);
+                ManipulateCamera(command["data"].ToString());
                 break;
             default:
                 GameManager.gm.AppendLogLine("Unknown type", "red");
@@ -115,11 +115,11 @@ public class CliParser// : MonoBehaviour
     /// Connect client to the API with.
     ///</summary>
     ///<param name="_input">Login credentials given by CLI</param>
-    private void Login(string _input)
+    private async void Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         GameManager.gm.RegisterApi(logData.api_url, logData.api_token);
-        GameManager.gm.ToggleApi();
+        await GameManager.gm.ConnectToApi();
     }
 
     ///<summary>
