@@ -182,20 +182,33 @@ public class CliParser// : MonoBehaviour
 
 
         // Case of a separator modification in a room
-        if (newData.category == "room" && newData.attributes.ContainsKey("separators"))
+        if (newData.category == "room")
         {
             Room room = (Room)obj;
-            if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
-                || !room.attributes.ContainsKey("separators"))
+            if (newData.attributes.ContainsKey("separators"))
             {
-                foreach (Transform wall in room.walls)
+                if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
+                    || !room.attributes.ContainsKey("separators"))
                 {
-                    if (wall.name.Contains("separator"))
-                        Object.Destroy(wall.gameObject);
+                    foreach (Transform wall in room.walls)
+                    {
+                        if (wall.name.Contains("separator"))
+                            Object.Destroy(wall.gameObject);
+                    }
+                    List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
+                    foreach (ReadFromJson.SSeparator sep in separators)
+                        room.AddSeparator(sep);
                 }
-                List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
-                foreach (ReadFromJson.SSeparator sep in separators)
-                    room.AddSeparator(sep);
+            }
+            if (newData.attributes.ContainsKey("reserved"))
+            {
+                if ((room.attributes.ContainsKey("reserved") && room.attributes["reserved"] != newData.attributes["reserved"])
+                    || !room.attributes.ContainsKey("reserved"))
+                {
+                    SMargin reserved = JsonUtility.FromJson<SMargin>(newData.attributes["reserved"]);
+                    SMargin technical = JsonUtility.FromJson<SMargin>(newData.attributes["technical"]);
+                    room.SetAreas(reserved, technical);
+                }
             }
         }
 

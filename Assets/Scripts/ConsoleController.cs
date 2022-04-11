@@ -579,9 +579,9 @@ public class ConsoleController : MonoBehaviour
             si.category = "site";
             IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
-            si.attributes["usableColor"] = "DBEDF2";
-            si.attributes["reservedColor"] = "F2F2F2";
-            si.attributes["technicalColor"] = "EBF2DE";
+            // si.attributes["usableColor"] = "DBEDF2";
+            // si.attributes["reservedColor"] = "F2F2F2";
+            // si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
             {
                 si.parentId = parent.GetComponent<OgreeObject>().id;

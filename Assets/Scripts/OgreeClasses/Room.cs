@@ -402,9 +402,21 @@ public class Room : Building
     public void UpdateZonesColor()
     {
         OgreeObject site = transform.parent.parent.GetComponentInParent<OgreeObject>();
-        usableZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["usableColor"]);
-        reservedZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["reservedColor"]);
-        technicalZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["technicalColor"]);
+
+        if (site.attributes.ContainsKey("usableColor"))
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["usableColor"]);
+        else
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("DBEDF2");
+
+        if (site.attributes.ContainsKey("reservedColor"))
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
+        else
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("F2F2F2");
+
+        if (site.attributes.ContainsKey("technicalColor"))
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
+        else
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("EBF2DE");
     }
 
     ///<summary>
@@ -436,7 +448,7 @@ public class Room : Building
     {
         if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
         {
-            GameManager.gm.AppendLogLine("Syntax error","red");
+            GameManager.gm.AppendLogLine("Syntax error", "red");
             return;
         }
 
@@ -489,16 +501,4 @@ public class Room : Building
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
     }
-
-    ///<summary>
-    /// Set a Color with an hexadecimal value
-    ///</summary>
-    ///<param name="_hex">The hexadecimal value, without '#'</param>
-    private Color ParseColor(string _hex)
-    {
-        Color newColor;
-        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
-        return newColor;
-    }
-
 }

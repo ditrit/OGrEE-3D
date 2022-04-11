@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -129,5 +129,17 @@ public static class Utils
                 return obj;
         }
         return null;
+    }
+
+    ///<summary>
+    /// Set a Color with an hexadecimal value
+    ///</summary>
+    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    ///<returns>The wanted color</returns>
+    public static Color ParseColor(string _hex)
+    {
+        Color newColor;
+        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
+        return newColor;
     }
 }
