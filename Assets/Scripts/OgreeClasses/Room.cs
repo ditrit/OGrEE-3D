@@ -409,14 +409,14 @@ public class Room : Building
             usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("DBEDF2");
 
         if (site.attributes.ContainsKey("reservedColor"))
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
         else
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("F2F2F2");
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor("F2F2F2");
 
         if (site.attributes.ContainsKey("technicalColor"))
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
         else
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor("EBF2DE");
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor("EBF2DE");
     }
 
     ///<summary>
