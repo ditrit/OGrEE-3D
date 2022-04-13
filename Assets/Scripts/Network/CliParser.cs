@@ -167,7 +167,10 @@ public class CliParser// : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Deserialize given SApiObject and apply modification to corresponding object.
+    ///</summary>
+    ///<param name="_input">The SApiObject to deserialize</param>
     private void ModifyObject(string _input)
     {
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
@@ -179,9 +182,28 @@ public class CliParser// : MonoBehaviour
             tenantColorChanged = true;
 
         // Case color/temperature for racks & devices
+        if (newData.category == "rack" || newData.category == "device")
+        {
+            OObject item = (OObject)obj;
+            if (newData.attributes.ContainsKey("color"))
+            {
+                if ((obj.attributes.ContainsKey("color") && obj.attributes["color"] != newData.attributes["color"])
+                    || !item.attributes.ContainsKey("color"))
+                {
+                    item.SetColor(newData.attributes["color"]);
+                }
+            }
+            if (newData.attributes.ContainsKey("temperature"))
+            {
+                if ((obj.attributes.ContainsKey("temperature") && obj.attributes["temperature"] != newData.attributes["temperature"])
+                    || !item.attributes.ContainsKey("temperature"))
+                {
+                    item.SetTemperature(newData.attributes["temperature"]);
+                }
+            }
+        }
 
-
-        // Case of a separator modification in a room
+        // Case of a separator/areas modification in a room
         if (newData.category == "room")
         {
             Room room = (Room)obj;
@@ -217,7 +239,10 @@ public class CliParser// : MonoBehaviour
             EventManager.Instance.Raise(new UpdateTenantEvent { name = newData.name });
     }
 
-    ///
+    ///<summary>
+    /// Deserialize a SInteract command and run it.
+    ///</summary>
+    ///<param name="_data">The serialized command to execute</param>
     private void InteractWithObject(string _data)
     {
         List<string> usableParams;
