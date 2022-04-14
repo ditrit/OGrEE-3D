@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     string t_tenants = "EDF";
     string b_buildings = "BI2";
     string r_room = "C8";
-    string rc_rack = "C05";
+    string rc_rack = "B05";
 
     GameObject rackInScene;
 
@@ -608,8 +608,13 @@ public class GameManager : MonoBehaviour
             apiUrl.text = configLoader.GetApiUrl();
         }
         
-        StartCoroutine(TestAPI());
+        //StartCoroutine(TestAPI());
 
+    }
+    public IEnumerator CleanScene()
+    {
+        consoleController.RunCommandString("-EDF");
+        yield return new WaitForSeconds(0.5f);
     }
 
     IEnumerator TestAPI()
@@ -633,6 +638,21 @@ public class GameManager : MonoBehaviour
         Utils.MoveObjectToCamera(rack, m_camera);
         yield return new WaitForSeconds(2);
     }
+
+    public IEnumerator LoadDetailsRackAPI(string _customer, string _site, string _building, string _room, string _rack)
+    {
+        GameObject rack = GameObject.Find("/" + _customer + "/" + _site + "/" + _building + "/" + _room + "/" + _rack);
+        //FindByAbsPath();
+        if (rack != null)
+            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
+        else 
+            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+        Utils.MoveObjectToCamera(rack, m_camera);
+        consoleController.RunCommandString(_customer + "." + _site + "." + _building + "." + _room + "." + _rack + ":details=3");
+        //_rack.GetComponenet<OgreeObject>().LoadChildren
+        yield return new WaitForEndOfFrame();
+    }
+
 
     ///<summary>
     /// Change text and color of apiBtn.
