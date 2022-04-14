@@ -111,6 +111,7 @@ public class ButtonManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent _e)
     {
         focused = true;
+        focusedObject = _e.obj;
     }
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
@@ -125,19 +126,13 @@ public class ButtonManager : MonoBehaviour
     {
         if (focused && focusedObject == selectedObject)
         {
-            GameObject temp = selectedObject;
-            while (GameManager.gm.focus.Count > 0)
-            {
-                GameManager.gm.UnfocusItem();
-                GameManager.gm.SetCurrentItem(selectedObject.transform.parent.gameObject);
-            }
-            GameManager.gm.SetCurrentItem(temp);
+            GameManager.gm.UnfocusItem();
+            GameManager.gm.SetCurrentItem(selectedObject);
 
         }
         else
         {
             GameManager.gm.FocusItem(selectedObject);
-            focusedObject = selectedObject;
         }
     }
     ///<summary>

@@ -194,7 +194,7 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                CreateItemFromJson(response);
+                await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
                 CreateTemplateFromJson(response);
             else
@@ -230,7 +230,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                CreateItemFromJson(responseStr);
+                await CreateItemFromJson(responseStr);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -278,7 +278,7 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private async void CreateItemFromJson(string _json)
+    private async Task CreateItemFromJson(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
         List<SApiObject> logicalObjects = new List<SApiObject>();

@@ -343,15 +343,9 @@ public class ObjectGenerator : MonoBehaviour
             objectManipulator.HostTransform = newDevice.transform;
             newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
             newDevice.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
-            //newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
             Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable nearInteractionTouchable = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
             nearInteractionTouchable.SetLocalForward(new Vector3(0, 0, 1));
             nearInteractionTouchable.SetLocalCenter(new Vector3(0, 0, 0.5f));
-            //nearInteractionTouchable = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
-            //nearInteractionTouchable.SetLocalForward(new Vector3(0, 1, 0));
-            //nearInteractionTouchable.SetLocalUp(new Vector3(0, 0, -1));
-            //nearInteractionTouchable.SetLocalCenter(new Vector3(0, 0.5f, 0));
-            //newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchableVolume>();
             Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint rotationAxisConstraint = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>();
             rotationAxisConstraint.ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.XAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis | Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.ZAxis;
             Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint moveAxisConstraint = newDevice.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>();
@@ -361,13 +355,12 @@ public class ObjectGenerator : MonoBehaviour
             minMaxScaleConstraint.ScaleMinimum = 1;
             minMaxScaleConstraint.ScaleMaximum = 1;
         }
+        FocusHandler focus = dv.GetComponent<FocusHandler>();
+        focus.FillListsWithChildren();
+        focus.FillMeshRendererLists();
+        focus.UpdateOwnMeshRenderers(false);
+        focus.UpdateChildMeshRenderers(false, false);
         return dv;
-    }
-
-    IEnumerator TrucVR(GameObject newDevice)
-    {
-        yield return new WaitForEndOfFrame();
-            
     }
 
     ///<summary>
@@ -777,7 +770,11 @@ public class ObjectGenerator : MonoBehaviour
 
         string hn = sensor.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newSensor);
-
+        FocusHandler focus = newSensor.GetComponent<FocusHandler>();
+        focus.FillListsWithChildren();
+        focus.FillMeshRendererLists();
+        focus.UpdateOwnMeshRenderers(false);
+        focus.UpdateChildMeshRenderers(false, false);
         return sensor;
     }
 

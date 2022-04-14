@@ -17,10 +17,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     private static bool canSelect = true;
     //public GameObject sphere;
 
-    private void Start()
-    {
-        //sphere = Resources.Load<GameObject>("Sphere");
-    }
     ///<summary>
     /// Called when a hand is exiting the object's collider
     ///</summary>
