@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UnityEngine;
+
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
@@ -219,7 +221,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void LoadChildren(string _level)
+    public async Task LoadChildren(string _level)
     {
         int lvl = 0;
         int.TryParse(_level, out lvl);
@@ -253,7 +255,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+        //GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
 
         if (_level != 0)
         {

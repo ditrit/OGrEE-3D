@@ -11,10 +11,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Perfs.unity
     guid: 433c71604d91f4648ac629314723776c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/AR.unity
     guid: 83975a579f1467a4cb320c6da90f7be2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TestVincent.unity
     guid: ad394a88b23945b4ca1bb76d1efe112e
   m_configObjects:

@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Threading.Tasks;
 
 public class ReadFromJson
 {

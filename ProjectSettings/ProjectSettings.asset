@@ -137,6 +137,19 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: -7172676021702587011, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
   - {fileID: 5604438126760133931, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
   metroInputSource: 2
@@ -720,6 +733,7 @@ PlayerSettings:
   gcWBarrierValidation: 0
   apiCompatibilityLevelPerPlatform:
     Standalone: 3
+    WSA: 3
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: OGrEE-3D-AR
@@ -747,7 +761,7 @@ PlayerSettings:
   metroSplashScreenUseBackgroundColor: 0
   platformCapabilities:
     WindowsStoreApps:
-      EnterpriseAuthentication: False
+      CodeGeneration: False
       OfflineMapsManagement: False
       HumanInterfaceDevice: True
       Location: False
@@ -783,8 +797,8 @@ PlayerSettings:
       Contacts: False
       Proximity: False
       InternetClient: True
-      CodeGeneration: False
       BackgroundMediaPlayback: False
+      EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: False
     Holographic: False

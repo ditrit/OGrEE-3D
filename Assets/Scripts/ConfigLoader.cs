@@ -144,8 +144,8 @@ public class ConfigLoader
     {
 #if API_DEBUG
         //config.api_url = "http://172.24.94.236:3001";
-        //config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA";
-        //config.api_url = "https://api.ogree.ditrit.io";
+        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA";
+        config.api_url = "https://v.api.ogree.ditrit.io";
         //config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
 #endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
