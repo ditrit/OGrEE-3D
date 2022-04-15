@@ -448,7 +448,9 @@ public class GameManager : MonoBehaviour
         configLoader.RegisterApi(_url, _token);
     }
 
-    ///
+    ///<summary>
+    /// Connect the client to registered API in configLoader.
+    ///</summary>
     public async Task ConnectToApi()
     {
         await configLoader.ConnectToApi();
@@ -457,6 +459,16 @@ public class GameManager : MonoBehaviour
         else
             ChangeApiButton("Fail to connected to Api", Color.red);
         apiUrl.text = configLoader.GetApiUrl();
+    }
+
+    ///<summary>
+    /// Get a color value from ConfigLoader and parse it into a Color.
+    ///</summary>
+    ///<param name="_askedColor">The color to get</param>
+    ///<returns>The corresponding Color of Color.White if not found</returns>
+    public Color GetColorFromCongif(string _askedColor)
+    {
+        return Utils.ParseColor(configLoader.GetColor(_askedColor));
     }
 
     ///<summary>
