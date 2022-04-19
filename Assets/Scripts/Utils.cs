@@ -51,6 +51,7 @@ public static class Utils
     ///<param name="_input">The string which contains the float</param>
     public static float ParseDecFrac(string _input)
     {
+        _input = _input.Replace(",", ".");
         if (_input.Contains("/"))
         {
             string[] div = _input.Split('/');
