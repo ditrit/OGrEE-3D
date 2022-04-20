@@ -4,21 +4,35 @@ using UnityEngine;
 
 public class ScaleBehaviour : MonoBehaviour
 {
-    private void OnEnable()
+    private Microsoft.MixedReality.Toolkit.Utilities.Solvers.SolverHandler solver;
+    bool done = false;
+
+    private void Start()
     {
-        transform.parent.localScale = Vector3.one;
+        solver = GetComponent<Microsoft.MixedReality.Toolkit.Utilities.Solvers.SolverHandler>();
     }
 
     public void ResetScale(GameObject obj)
     {
-        StartCoroutine(Reset(obj));
-
+        obj.transform.localScale = Vector3.one;
     }
 
-    private IEnumerator Reset(GameObject obj)
+    private void Update()
     {
-        yield return new WaitForEndOfFrame();
-        obj.transform.localScale = Vector3.one;
-
+        if (solver.UpdateSolvers)
+        {
+            if (!done)
+            {
+                ResetScale(gameObject);
+                done = true;
+            }
+        }
+        else
+        {
+            if (done)
+            {
+                done = false;
+            }
+        }
     }
 }

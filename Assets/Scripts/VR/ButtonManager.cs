@@ -7,6 +7,7 @@ public class ButtonManager : MonoBehaviour
     private bool focused = false;
     private GameObject selectedObject = null;
     private GameObject focusedObject = null;
+    private bool front = true;
 
     [Header("Butons")]
     [SerializeField] private GameObject buttonResetPosition;
@@ -15,6 +16,7 @@ public class ButtonManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        EventManager.Instance.AddListener<ChangeOrientationEvent>(OnChangeOrientation);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
@@ -78,20 +80,20 @@ public class ButtonManager : MonoBehaviour
 
         //Placing buttonResetPosition
         buttonResetPosition.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonResetPosition.transform.localRotation = Quaternion.Euler(0, -90, 0);
-        buttonResetPosition.transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.06f) / 2;
+        buttonResetPosition.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
+        buttonResetPosition.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.06f : parentSize.x - 0.06f) / 2;
         buttonResetPosition.SetActive(true);
 
         //Placing buttonDeselect
         buttonDeselect.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonDeselect.transform.localRotation = Quaternion.Euler(0, -90, 0);
-        buttonDeselect.transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.12f) / 2;
+        buttonDeselect.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
+        buttonDeselect.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.12f : parentSize.x - 0.12f) / 2;
         buttonDeselect.SetActive(true);
 
         //Placing buttonToggleFocus
         buttonToggleFocus.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonToggleFocus.transform.localRotation = Quaternion.Euler(0, -90, 0);
-        buttonToggleFocus.transform.position += new Vector3(parentSize.z + 0.06f, parentSize.y + 0.06f, parentSize.x - 0.18f) / 2;
+        buttonToggleFocus.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
+        buttonToggleFocus.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.18f : parentSize.x - 0.18f) / 2;
         buttonToggleFocus.SetActive(true);
 
 
@@ -117,6 +119,12 @@ public class ButtonManager : MonoBehaviour
     {
         focused = false;
         focusedObject = null;
+    }
+
+    private void OnChangeOrientation(ChangeOrientationEvent _e)
+    {
+        print("BOU" + _e.front);
+        front = _e.front;
     }
 
     ///<summary>

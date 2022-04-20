@@ -20,13 +20,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GUIObjectInfos objInfos = null;
     [SerializeField] private Toggle toggleWireframe = null;
-    [SerializeField] private TextMeshProUGUI focusText = null;
+    [SerializeField] private TMP_Text focusText = null;
 
     [Header("VR")]
     [SerializeField] private TextMeshPro apiButtonVRText = null;
     [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
     [SerializeField] private TextMeshPro apiUrlVR = null;
-    [SerializeField] private TextMeshPro focusTextVR = null;
 
     [Header("UI")]
     [SerializeField] private GameObject menu = null;
@@ -367,12 +366,10 @@ public class GameManager : MonoBehaviour
         {
             string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
-            focusTextVR.text = $"Focus on {objName}";
         }
         else
         {
             focusText.text = "No focus";
-            focusTextVR.text = "No focus";
         }
 
         AppendLogLine(focusText.text, "green");

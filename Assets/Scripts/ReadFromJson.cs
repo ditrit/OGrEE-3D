@@ -317,11 +317,7 @@ public class ReadFromJson
                     obj.attributes[kvp.Key] = kvp.Value;
             }
             obj.UpdateHierarchyName();
-            FocusHandler focus = obj.GetComponent<FocusHandler>();
-            focus.FillListsWithChildren();
-            focus.FillMeshRendererLists();
-            focus.UpdateOwnMeshRenderers(false);
-            focus.UpdateChildMeshRenderers(false, false);
+            obj.GetComponent<FocusHandler>().InitHandler();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

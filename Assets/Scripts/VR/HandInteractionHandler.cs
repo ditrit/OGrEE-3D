@@ -15,7 +15,8 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchUpdated;
     #endregion
     private static bool canSelect = true;
-    //public GameObject sphere;
+    public bool isARack = false;
+    public bool front;
 
     ///<summary>
     /// Called when a hand is exiting the object's collider
@@ -31,7 +32,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
-        //Instantiate(sphere, eventData.InputData, Quaternion.identity);
         SelectThis();
     }
 
@@ -45,6 +45,13 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
 
     public void SelectThis()
     {
+        if (isARack)
+        {
+            if (front)
+                FrontSelected();
+            else
+                BackSelected();
+        }
         StartCoroutine(SelectThisCoroutine());
     }
 
@@ -62,6 +69,19 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
             canSelect = true;
         }
 
+    }
+
+    public void FrontSelected()
+    {
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y == 0 });
+        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(true,false);
+        print(gameObject.name + " front");
+    }
+    public void BackSelected()
+    {
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y != 0 });
+        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(false,false);
+        print(gameObject.name + " back");
     }
 
 }

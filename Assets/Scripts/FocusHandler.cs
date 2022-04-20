@@ -20,6 +20,8 @@ public class FocusHandler : MonoBehaviour
     public bool isHovered = false;
     public bool isFocused = false;
 
+    private bool isFrontOriented = true;
+
     private void Start()
     {
         if (GameManager.gm.allItems.ContainsValue(gameObject))
@@ -81,7 +83,7 @@ public class FocusHandler : MonoBehaviour
         {
             UpdateChildMeshRenderers(true, true);
             isSelected = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
             if (GetComponent<OObject>().category == "rack")
             {
@@ -100,7 +102,7 @@ public class FocusHandler : MonoBehaviour
         if (e.obj.Equals(gameObject))
         {
             isSelected = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+            ToggleCollider(gameObject, false);
             ResetToRack();
         }
     }
@@ -118,7 +120,7 @@ public class FocusHandler : MonoBehaviour
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
         }
     }
@@ -133,7 +135,7 @@ public class FocusHandler : MonoBehaviour
         {
             UpdateOtherObjectsMeshRenderers(true);
             isFocused = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
         }
     }
@@ -245,7 +247,7 @@ public class FocusHandler : MonoBehaviour
                 mr.enabled = _value;
         }
         GetComponent<OObject>().ToggleSlots(_value.ToString());
-        transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        ToggleCollider(gameObject, _value);
 
         if (GetComponent<OObject>().isHidden)
         {
@@ -376,5 +378,58 @@ public class FocusHandler : MonoBehaviour
             return;
         }
         transform.parent.GetComponent<FocusHandler>().ResetToRack();
+    }
+
+    public void InitHandler()
+    {
+        FillListsWithChildren();
+        FillMeshRendererLists();
+        if (GetComponent<OgreeObject>().category != "rack")
+        {
+            UpdateOwnMeshRenderers(false);
+        }
+    }
+
+    public void ChangeOrientation(bool _front, bool _self = true)
+    {
+        if (isFrontOriented == _front)
+        {
+            return;
+        }
+        isFrontOriented = _front;
+        if (_self)
+        {
+            Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable touchable = transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
+            if (touchable != null)
+            {
+                if (_front)
+                {
+                    touchable.SetLocalForward(new Vector3(0, 0, 1));
+                    touchable.SetLocalCenter(new Vector3(0, 0, 0.5f));
+                }
+                else
+                {
+                    touchable.SetLocalForward(new Vector3(0, 0, -1));
+                    touchable.SetLocalCenter(new Vector3(0, 0, -0.5f));
+                }
+            }
+        }
+        foreach (GameObject child in ogreeChildObjects)
+        {
+            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
+        }
+    }
+
+    public void ToggleCollider(GameObject _obj, bool _enabled)
+    {
+        if (_obj.GetComponent<OgreeObject>().category == "rack")
+        {
+            _obj.transform.GetChild(1).GetComponent<Collider>().enabled = _enabled;
+            _obj.transform.GetChild(2).GetComponent<Collider>().enabled = _enabled;
+        }
+        else
+        {
+            _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
+        }
     }
 }
