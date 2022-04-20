@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using TriLibCore;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Threading.Tasks;
 
 public class ModelLoader : MonoBehaviour
 {
     public static ModelLoader instance;
+    private bool isLocked = false;
 
     private void Awake()
     {
@@ -21,8 +23,9 @@ public class ModelLoader : MonoBehaviour
     ///</summary>
     ///<param name="_object">The Object to update</param>
     ///<param name="_modelPath">The path of the 3D model to load with TriLib</param>
-    public void ReplaceBox(GameObject _object, string _modelPath)
+    public async Task ReplaceBox(GameObject _object, string _modelPath)
     {
+        isLocked = true;
         Destroy(_object.transform.GetChild(0).gameObject);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
@@ -35,6 +38,8 @@ public class ModelLoader : MonoBehaviour
         AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                             _object, assetLoaderOptions, null, "fbx");
 
+        while(isLocked)
+            await Task.Delay(10);
     }
 
     // This event is called when the model loading progress changes.
@@ -84,7 +89,7 @@ public class ModelLoader : MonoBehaviour
     // This event is also called after a critical loading error, so you can clean up any resource you want to.
     private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
     {
-
+        isLocked = false;
     }
 
 }

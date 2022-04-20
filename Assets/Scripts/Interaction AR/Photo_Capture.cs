@@ -111,29 +111,26 @@ public class Photo_Capture : MonoBehaviour
     {
         quadButtonPhoto.GetComponent<Renderer>().material = green;
     }
-    public async Task SetBuilding(string _room)
-    {
-        string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
-        building = await ApiManager.instance.GetObjectName($"buildings/" + data);
-    }
-    
-    public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
-    {
-        GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
-        GameManager.gm.DeleteItem(room, false);
-        await ApiManager.instance.GetObject($"sites/"+ _site);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
-        await GameManager.gm.LoadDetailsRackAPI(_customer, _site, _building, _room, _rack);
-    }
 
+
+
+
+
+
+
+    ///<summary>
+    /// Call the function that takes a picture
+    ///</summary>
     public void CapturePhoto()
     {
         PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
     }
 
-    void OnPhotoCaptureCreated(PhotoCapture captureObject)
+    ///<summary>
+    /// Set parameters and format of the picture to take
+    ///</summary>
+    ///<param name="captureObject">Photo</param>
+    private void OnPhotoCaptureCreated(PhotoCapture captureObject)
     {
         photoCaptureObject = captureObject;
 
@@ -148,12 +145,20 @@ public class Photo_Capture : MonoBehaviour
         captureObject.StartPhotoModeAsync(c, OnPhotoModeStarted);
     }
 
-    void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult result)
+    ///<summary>
+    /// Release the camera
+    ///</summary>
+    ///<param name="result">result of the pipe</param>
+    private void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult result)
     {
         photoCaptureObject.Dispose();
         photoCaptureObject = null;
     }
     
+    ///<summary>
+    /// take a picture
+    ///</summary>
+    ///<param name="result">result of the pipe</param>
     private void OnPhotoModeStarted(PhotoCapture.PhotoCaptureResult result)
     {
         if (result.success)
@@ -166,7 +171,12 @@ public class Photo_Capture : MonoBehaviour
         }
     }
 
-    async void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
+    ///<summary>
+    /// process on memoty the photo
+    ///</summary>
+    ///<param name="result">result of the pipe</param>
+    ///<param name="photoCaptureFrame">frame captured</param>
+    private async void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
     {
         if (result.success)
         {
@@ -182,6 +192,40 @@ public class Photo_Capture : MonoBehaviour
         photoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
     }
 
+    ///<summary>
+    /// Retrieve parent building of a room
+    ///</summary>
+    ///<param name="_room">string refering to a room</param>
+    public async Task SetBuilding(string _room)
+    {
+        string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
+        building = await ApiManager.instance.GetObjectName($"buildings/" + data);
+    }
+
+    ///<summary>
+    /// Load the 3D model of a rack
+    ///</summary>
+    ///<param name="_customer">string refering to a customer</param>
+    ///<param name="_site">string refering to a site</param>
+    ///<param name="_building">string refering to a building</param>
+    ///<param name="_room">string refering to a room</param>
+    ///<param name="_rack">string refering to a rack</param>
+    public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
+    {
+        GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
+        GameManager.gm.DeleteItem(room, false);
+        await ApiManager.instance.GetObject($"sites/"+ _site);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
+        GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
+        await GameManager.gm.LoadDetailsRackAPI(rack);
+    }
+
+    ///<summary>
+    /// Send picture to API and receive json
+    ///</summary>
+    ///<param name="_byteArray"> image in the format of a byte array</param>
     public async void UploadByteAsync(byte[] byteArray)
     {
         WWWForm form = new WWWForm();

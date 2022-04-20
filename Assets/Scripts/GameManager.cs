@@ -640,15 +640,18 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2);
     }
 
-    public async Task LoadDetailsRackAPI(string _customer, string _site, string _building, string _room, string _rack)
+    ///<summary>
+    /// Load the 3D model of a rack
+    ///</summary>
+    ///<param name="_rack">string refering to a rack</param>
+    public async Task LoadDetailsRackAPI(GameObject _rack)
     {
-        GameObject rack = FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
-        if (rack != null)
+        if (_rack != null)
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(rack, m_camera);
-        await rack.GetComponent<OgreeObject>().LoadChildren("3");
+        Utils.MoveObjectToCamera(_rack, m_camera);
+        await _rack.GetComponent<OgreeObject>().LoadChildren("3");
     }
 
 

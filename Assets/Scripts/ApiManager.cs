@@ -199,7 +199,7 @@ public class ApiManager : MonoBehaviour
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
                 await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
-                CreateTemplateFromJson(response);
+                await CreateTemplateFromJson(response);
             else
                 GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
@@ -363,7 +363,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                CreateTemplateFromJson(responseStr);
+                await CreateTemplateFromJson(responseStr);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -405,7 +405,6 @@ public class ApiManager : MonoBehaviour
             {
                 Debug.Log("Get template from API");
                 await GetObject($"obj-templates/{obj.attributes["template"]}");
-                //await Task.Delay(2000);
             }
 
             switch (obj.category)
@@ -453,23 +452,16 @@ public class ApiManager : MonoBehaviour
         }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
         EventManager.Instance.Raise(new ImportFinishedEvent());
-        await Task.Delay(1000);
-        EventManager.Instance.Raise(new ImportFinishedEvent());
-
     }
 
     ///<summary>
     /// Use the given template json to instantiate an object template.
     ///</summary>
     ///<param name="_json">The json given by the API</param>
-    private void CreateTemplateFromJson(string _json)
+    private async Task CreateTemplateFromJson(string _json)
     {
-        Debug.Log("Avant la serialization");
-        Debug.Log(_json);
         STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-        Debug.Log("après serialization");
-        rfJson.CreateObjectTemplate(resp.data);
-        Debug.Log("après create object template");
+        await rfJson.CreateObjectTemplate(resp.data);
     }
 
     ///<summary>
