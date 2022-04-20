@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Threading.Tasks;
 
 public class ReadFromJson
 {
@@ -112,7 +113,7 @@ public class ReadFromJson
     /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public void CreateObjTemplateJson(string _json)
+    public async void CreateObjTemplateJson(string _json)
     {
         STemplate data;
         try
@@ -124,14 +125,14 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
             return;
         }
-        CreateObjectTemplate(data);
+        await CreateObjectTemplate(data);
     }
 
     ///<summary>
     /// Create a rack or a device from received data and add it to correct GameManager list
     ///</summary>
     ///<param name="_data">The data template</param>
-    public void CreateObjectTemplate(STemplate _data)
+    public async Task CreateObjectTemplate(STemplate _data)
     {
         if (_data.category != "rack" && _data.category != "device")
         {
@@ -191,7 +192,7 @@ public class ReadFromJson
         {
             newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
@@ -199,7 +200,7 @@ public class ReadFromJson
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
 

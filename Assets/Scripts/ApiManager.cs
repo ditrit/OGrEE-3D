@@ -194,9 +194,9 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                CreateItemFromJson(response);
+                await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
-                CreateTemplateFromJson(response);
+                await CreateTemplateFromJson(response);
             else
                 GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
@@ -230,7 +230,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                CreateItemFromJson(responseStr);
+                await CreateItemFromJson(responseStr);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -263,7 +263,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                CreateTemplateFromJson(responseStr);
+                await CreateTemplateFromJson(responseStr);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -278,7 +278,7 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private async void CreateItemFromJson(string _json)
+    private async Task CreateItemFromJson(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
         List<SApiObject> logicalObjects = new List<SApiObject>();
@@ -291,12 +291,8 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
-            // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            // if (resp.data.children == null)
-            //     physicalObjects.Add(resp.data);
-            // else
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
         foreach (SApiObject obj in physicalObjects)
@@ -307,7 +303,7 @@ public class ApiManager : MonoBehaviour
             if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
                 && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
             {
-                Debug.Log("Get template from API");
+                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
                 await GetObject($"obj-templates/{obj.attributes["template"]}");
             }
 
@@ -362,10 +358,10 @@ public class ApiManager : MonoBehaviour
     /// Use the given template json to instantiate an object template.
     ///</summary>
     ///<param name="_json">The json given by the API</param>
-    private void CreateTemplateFromJson(string _json)
+    private async Task CreateTemplateFromJson(string _json)
     {
         STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-        rfJson.CreateObjectTemplate(resp.data);
+        await rfJson.CreateObjectTemplate(resp.data);
     }
 
     ///<summary>
