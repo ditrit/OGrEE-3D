@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json.Utilities;
 
 public class ApiManager : MonoBehaviour
 {
@@ -56,6 +57,8 @@ public class ApiManager : MonoBehaviour
 
     private void Awake()
     {
+        AotHelper.EnsureList<ReadFromJson.STemplateChild>();
+        AotHelper.EnsureList<int>();
         if (!instance)
             instance = this;
         else
@@ -192,7 +195,7 @@ public class ApiManager : MonoBehaviour
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            //GameManager.gm.AppendLogLine(response);
+            GameManager.gm.AppendLogLine(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
                 await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
@@ -402,7 +405,7 @@ public class ApiManager : MonoBehaviour
             {
                 Debug.Log("Get template from API");
                 await GetObject($"obj-templates/{obj.attributes["template"]}");
-                await Task.Delay(2000);
+                //await Task.Delay(2000);
             }
 
             switch (obj.category)

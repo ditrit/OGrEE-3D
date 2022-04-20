@@ -64,3 +64,5 @@ crashlytics-build.properties
 
 
 Assets/Resources/config.json
+Packages/manifest.json
+Packages/packages-lock.json

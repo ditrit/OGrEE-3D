@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using TMPro;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System;
 
 
 
@@ -34,16 +35,16 @@ public class Photo_Capture : MonoBehaviour
     public GameObject quadButtonPcy;
     public GameObject quadButtonMaison;
     public GameObject quadButtonTelephone;
+    public GameObject quadButtonPhoto;
     public Material red;
     public Material green;
+    public Material yellow;
     private PhotoCapture photoCaptureObject = null;
-    //public ApiManager apiManager;
     public TextMeshPro apiResponseTMP = null;
 
     // Start is called before the first frame update
     private void Start()
     {
-        //PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
         customerAndSite = customer + '.' + site;
         SetHostTelephone();
         if (currentHost == maisonHost)
@@ -96,6 +97,20 @@ public class Photo_Capture : MonoBehaviour
         quadButtonPcy.GetComponent<Renderer>().material = green;
     }
 
+    public void RequestSentColor()
+    {
+        quadButtonPhoto.GetComponent<Renderer>().material = yellow;
+    }
+
+    public void RequestFailColor()
+    {
+        quadButtonPhoto.GetComponent<Renderer>().material = red;
+    }
+
+    public void RequestSuccessColor()
+    {
+        quadButtonPhoto.GetComponent<Renderer>().material = green;
+    }
     public async Task SetBuilding(string _room)
     {
         string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
@@ -104,15 +119,13 @@ public class Photo_Capture : MonoBehaviour
     
     public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
     {
-        //StartCoroutine(GameManager.gm.CleanScene());
+        GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
+        GameManager.gm.DeleteItem(room, false);
         await ApiManager.instance.GetObject($"sites/"+ _site);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
-        //GameManager.gm.DeleteItem(EDF)
-        Debug.Log("before details");
-        StartCoroutine(GameManager.gm.LoadDetailsRackAPI(_customer, _site, _building, _room, _rack));
-        Debug.Log("all done");
+        await GameManager.gm.LoadDetailsRackAPI(_customer, _site, _building, _room, _rack);
     }
 
     public void CapturePhoto()
@@ -163,78 +176,18 @@ public class Photo_Capture : MonoBehaviour
             byte[] imageByteArray = imageBufferList.ToArray();
             if (imageByteArray != null)
             {
-                //StartCoroutine(UploadByte(imageByteArray));
                 UploadByteAsync(imageByteArray);
             }
         }
         photoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
     }
 
-
-
-        /* Upload the chosen video file to the movie server */
-        IEnumerator UploadByte(byte[] byteArray)
-    {
-        WWWForm form = new WWWForm();
-        form.AddBinaryData("Label_Rack", byteArray);
-        form.AddField("Tenant_Name", customerAndSite);
-        apiResponseTMP.text = string.Format("Start POST request with url = {0} and site = {1}", currentHost, customerAndSite);
-        UnityWebRequest www = UnityWebRequest.Post("http://" + currentHost + ":" + port, form);
-        yield return www.SendWebRequest();
-        if (www.result == UnityWebRequest.Result.ConnectionError)
-        {
-            apiResponseTMP.text = www.error;
-        }
-        else
-        {
-            string text = www.downloadHandler.text;
-            Label labelReceived = JsonUtility.FromJson<Label>(text);
-            
-            site = labelReceived.site;
-            if (site == "PCY")
-            {
-                room = "UC" + labelReceived.room;
-            }
-            else
-            {
-                room = labelReceived.room;
-            }
-            rack = labelReceived.rack;
-
-            apiResponseTMP.text = string.Format("The label read is {0}{1}-{2}", site, room, rack);
-            if (room == null || room == "")
-            {
-                apiResponseTMP.text = apiResponseTMP.text + "\nCannot find parent building because room is void";
-            }
-
-            else
-            {
-
-                yield return SetBuilding(room);
-                yield return new WaitForSeconds(0.5f);
-                if (building == "error" || building == null)
-                {
-                    GameManager.gm.AppendLogLine(building);
-                    Debug.Log("Dans la if condition avant de charger le modèle 3D");
-                    apiResponseTMP.text = apiResponseTMP.text + "\nError while getting the parent building of the room";
-                }
-                else
-                {
-                    //StartCoroutine(GameManager.gm.LoadSingleRackAPI(customer, site, building, room, rack));
-                    yield return LoadSingleRack(customer, site, building, room, rack);
-                }
-            }
-        }
-    }
-    
-
-
-
     public async void UploadByteAsync(byte[] byteArray)
     {
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", byteArray);
         form.AddField("Tenant_Name", customerAndSite);
+        RequestSentColor();
         apiResponseTMP.text = string.Format("Start POST request with url = {0} and site = {1}", currentHost, customerAndSite);
         using (UnityWebRequest www = UnityWebRequest.Post("http://" + currentHost + ":" + port, form))
         {
@@ -244,13 +197,16 @@ public class Photo_Capture : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
                 apiResponseTMP.text = www.error;
+                RequestFailColor();
             }
             else
             {
+                RequestSuccessColor();
                 string text = www.downloadHandler.text;
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
                 
                 site = labelReceived.site;
+
                 if (site == "PCY")
                 {
                     room = "UC" + labelReceived.room;
@@ -259,28 +215,28 @@ public class Photo_Capture : MonoBehaviour
                 {
                     room = labelReceived.room;
                 }
+                room = labelReceived.room;
                 rack = labelReceived.rack;
 
                 apiResponseTMP.text = string.Format("The label read is {0}{1}-{2}", site, room, rack);
-                if (room == null || room == "")
+                if (string.IsNullOrEmpty(room))
                 {
                     apiResponseTMP.text = apiResponseTMP.text + "\nCannot find parent building because room is void";
                 }
 
-                else
+                else if (!string.IsNullOrEmpty(rack))
                 {
-
                     await SetBuilding(room);
                     if (building == "error" || building == null)
                     {
                         GameManager.gm.AppendLogLine(building);
-                        Debug.Log("Dans la if condition avant de charger le modèle 3D");
                         apiResponseTMP.text = apiResponseTMP.text + "\nError while getting the parent building of the room";
                     }
                     else
                     {
-                        //StartCoroutine(GameManager.gm.LoadSingleRackAPI(customer, site, building, room, rack));
+                        apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
                         await LoadSingleRack(customer, site, building, room, rack);
+                        apiResponseTMP.text = string.Format("The label read is {0}{1}-{2}", site, room, rack) + "\nRack Loaded in Scene";
                     }
                 }
             }

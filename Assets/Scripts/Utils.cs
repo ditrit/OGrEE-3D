@@ -137,9 +137,8 @@ public static class Utils
 
     public static void MoveObjectToCamera(GameObject _obj, Camera m_camera)
     {
-        float speed = 10f * Time.deltaTime;
         float localAngleCameraRadian = Mathf.Deg2Rad * m_camera.transform.eulerAngles.y;
-        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian), .0f, Mathf.Cos(localAngleCameraRadian));
+        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian) * 1.5f, -0.7f, Mathf.Cos(localAngleCameraRadian) * 1.5f);
         GameManager.gm.AppendLogLine(offset.ToString(), "green");
         Vector3 newPostion = new Vector3(m_camera.transform.position.x, 0.0f, m_camera.transform.position.z);
         Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
