@@ -939,8 +939,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleApi
         m_Mode: 1
         m_Arguments:
@@ -2115,8 +2115,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleUHelpers
         m_Mode: 1
         m_Arguments:
@@ -3884,8 +3884,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: GuiToggleCS
         m_Mode: 1
         m_Arguments:
@@ -5576,7 +5576,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2022-04-19 #3be1173'
+  m_text: 'B: 2022-04-21 #ffaf3a0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8613,7 +8613,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.1}
+  m_AnchoredPosition: {x: 0, y: 217.10011}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1306448110
@@ -8932,7 +8932,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1337625305
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9001,8 +9001,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleRacksMaterials
         m_Mode: 0
         m_Arguments:
@@ -10988,6 +10988,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1595579782}
   - component: {fileID: 1595579781}
+  - component: {fileID: 1595579791}
   - component: {fileID: 1595579788}
   - component: {fileID: 1595579785}
   - component: {fileID: 1595579784}
@@ -11017,17 +11018,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   consoleController: {fileID: 773900188}
   server: {fileID: 1407285865}
-  currentItemText: {fileID: 1510264671}
-  reloadBtn: {fileID: 1890827699}
-  apiBtn: {fileID: 184299213}
-  apiUrl: {fileID: 39982717}
-  objInfos: {fileID: 879283141}
-  toggleWireframe: {fileID: 1337625306}
-  focusText: {fileID: 1346455887}
-  menu: {fileID: 1389592958}
-  infosPanel: {fileID: 879283137}
-  debugPanel: {fileID: 670787554}
-  detailsInputField: {fileID: 791282066}
   defaultMat: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
   alphaMat: {fileID: 2100000, guid: fd47b8c3b6ff4fe4c917c6163fee83e1, type: 2}
   wireframeMat: {fileID: 2100000, guid: a84e4f4a4b62cbb4695bc277f37f8d99, type: 2}
@@ -11184,6 +11174,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   savedObjectThatWeHover: {fileID: 0}
+--- !u!114 &1595579791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595579780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6848231a40fbc149b3363200ad4a67a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuPanel: {fileID: 1389592958}
+  toggleWireframe: {fileID: 1337625306}
+  focusText: {fileID: 1346455887}
+  reloadBtn: {fileID: 1890827699}
+  apiBtn: {fileID: 184299213}
+  apiUrl: {fileID: 39982717}
+  currentItemText: {fileID: 1510264671}
+  debugPanel: {fileID: 670787554}
+  infosPanel: {fileID: 879283137}
+  objInfos: {fileID: 879283141}
+  detailsInputField: {fileID: 791282066}
 --- !u!1 &1605645519
 GameObject:
   m_ObjectHideFlags: 0
@@ -12235,8 +12248,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleTilesColor
         m_Mode: 1
         m_Arguments:
@@ -15316,7 +15329,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0
+  m_Value: -0.00000056227685
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -15536,8 +15549,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleTilesName
         m_Mode: 1
         m_Arguments:

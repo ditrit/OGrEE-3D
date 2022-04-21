@@ -129,7 +129,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColorByTenant();
-        GameManager.gm.SetRackMaterial(newRack.transform);
+        // GameManager.gm.SetRackMaterial(newRack.transform);
 
         string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);

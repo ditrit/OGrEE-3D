@@ -294,15 +294,15 @@ public class CliParser// : MonoBehaviour
                 break;
             case "infos":
                 if (manip.data == "true")
-                    GameManager.gm.MovePanel("infos", true);
+                    UiManager.instance.MovePanel("infos", true);
                 else
-                    GameManager.gm.MovePanel("infos", false);
+                    UiManager.instance.MovePanel("infos", false);
                 break;
             case "debug":
                 if (manip.data == "true")
-                    GameManager.gm.MovePanel("debug", true);
+                    UiManager.instance.MovePanel("debug", true);
                 else
-                    GameManager.gm.MovePanel("debug", false);
+                    UiManager.instance.MovePanel("debug", false);
                 break;
             case "highlight":
                 GameObject obj = Utils.GetObjectById(manip.data);

@@ -1014,7 +1014,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0] == "selection" || data[0] == "_")
             {
                 SetMultiAttribute(data[1], data[2]);
-                GameManager.gm.UpdateGuiInfos();
+                UiManager.instance.UpdateGuiInfos();
                 UnlockController();
                 return;
 
@@ -1033,7 +1033,7 @@ public class ConsoleController : MonoBehaviour
                         if (obj.GetComponent<OgreeObject>().category == "tenant" && data[1] == "color")
                             EventManager.Instance.Raise(new UpdateTenantEvent { name = obj.name });
                     }
-                    GameManager.gm.UpdateGuiInfos();
+                    UiManager.instance.UpdateGuiInfos();
                 }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
@@ -1088,7 +1088,7 @@ public class ConsoleController : MonoBehaviour
                         rk.MoveRack(Utils.ParseVector2(data[1]), false);
                     else
                         rk.MoveRack(Utils.ParseVector2(data[1]), true);
-                    GameManager.gm.UpdateGuiInfos();
+                    UiManager.instance.UpdateGuiInfos();
                     GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
                 }
                 else
@@ -1148,23 +1148,23 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('=');
             switch (data[0])
             {
-                case "wireframe":
-                    if (data[1] == "true")
-                        GameManager.gm.ToggleRacksMaterials(true);
-                    else
-                        GameManager.gm.ToggleRacksMaterials(false);
-                    break;
+                // case "wireframe":
+                //     if (data[1] == "true")
+                //         UiManager.instance.ToggleRacksMaterials(true);
+                //     else
+                //         UiManager.instance.ToggleRacksMaterials(false);
+                //     break;
                 case "infos":
                     if (data[1] == "true")
-                        GameManager.gm.MovePanel("infos", true);
+                        UiManager.instance.MovePanel("infos", true);
                     else
-                        GameManager.gm.MovePanel("infos", false);
+                        UiManager.instance.MovePanel("infos", false);
                     break;
                 case "debug":
                     if (data[1] == "true")
-                        GameManager.gm.MovePanel("debug", true);
+                        UiManager.instance.MovePanel("debug", true);
                     else
-                        GameManager.gm.MovePanel("debug", false);
+                        UiManager.instance.MovePanel("debug", false);
                     break;
             }
         }

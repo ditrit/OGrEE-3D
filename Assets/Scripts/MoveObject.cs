@@ -62,7 +62,7 @@ public class MoveObject : MonoBehaviour
                     obj.GetComponent<Rack>().DragRack(new Vector2(x, y));
             }
         }
-        GameManager.gm.UpdateGuiInfos();
+        UiManager.instance.UpdateGuiInfos();
     }
 
 }

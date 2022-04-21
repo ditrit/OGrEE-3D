@@ -1,8 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 
@@ -14,26 +12,10 @@ public class GameManager : MonoBehaviour
     public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
 
-    [Header("References")]
-    [SerializeField] private TextMeshProUGUI currentItemText = null;
-    [SerializeField] private Button reloadBtn = null;
-    [SerializeField] private Button apiBtn = null;
-    [SerializeField] private TextMeshProUGUI apiUrl = null;
-
-    [SerializeField] private GUIObjectInfos objInfos = null;
-    [SerializeField] private Toggle toggleWireframe = null;
-    [SerializeField] private TextMeshProUGUI focusText = null;
-
-    [Header("UI")]
-    [SerializeField] private GameObject menu = null;
-    [SerializeField] private GameObject infosPanel = null;
-    [SerializeField] private GameObject debugPanel = null;
-    public DetailsInputField detailsInputField = null;
-
     [Header("Materials")]
     public Material defaultMat;
     public Material alphaMat;
-    public Material wireframeMat;
+    // public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
@@ -86,7 +68,7 @@ public class GameManager : MonoBehaviour
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
 
-        UpdateFocusText();
+        UiManager.instance.UpdateFocusText();
 
 #if API_DEBUG
         ToggleApi();
@@ -103,9 +85,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            menu.SetActive(!menu.activeSelf);
-
 #if !PROD
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
@@ -219,14 +198,14 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
+            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
         else
         {
             AppendLogLine("Empty selection.", "green");
-            currentItemText.text = "Ogree3D";
+            UiManager.instance.SetCurrentItemText("Ogree3D");
         }
-        UpdateGuiInfos();
+        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
@@ -251,13 +230,13 @@ public class GameManager : MonoBehaviour
         }
 
         if (currentItems.Count > 1)
-            currentItemText.text = "Selection";
+            UiManager.instance.SetCurrentItemText("Selection");
         else if (currentItems.Count == 1)
-            currentItemText.text = currentItems[0].GetComponent<OgreeObject>().hierarchyName;
+            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         else
-            currentItemText.text = "Ogree3D";
+            UiManager.instance.SetCurrentItemText("Ogree3D");
 
-        UpdateGuiInfos();
+        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
@@ -267,12 +246,12 @@ public class GameManager : MonoBehaviour
     private void SelectItem(GameObject _obj)
     {
         if (currentItems.Count == 0)
-            detailsInputField.ActiveInputField(true);
+            UiManager.instance.detailsInputField.ActiveInputField(true);
 
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
-        detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+        UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
 
     ///<summary>
@@ -284,8 +263,8 @@ public class GameManager : MonoBehaviour
         currentItems.Remove(_obj);
         if (currentItems.Count == 0)
         {
-            detailsInputField.UpdateInputField("0");
-            detailsInputField.ActiveInputField(false);
+            UiManager.instance.detailsInputField.UpdateInputField("0");
+            UiManager.instance.detailsInputField.ActiveInputField(false);
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
@@ -316,9 +295,8 @@ public class GameManager : MonoBehaviour
         if (canFocus == true)
         {
             focus.Add(_obj);
-            UpdateFocusText();
+            UiManager.instance.UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            // SetCurrentItem(_obj);
         }
         else
             UnfocusItem();
@@ -331,31 +309,11 @@ public class GameManager : MonoBehaviour
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
-        UpdateFocusText();
+        UiManager.instance.UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-        // if (focus.Count > 0)
-        //     SetCurrentItem(focus[focus.Count - 1]);
-        // else
-        //     SetCurrentItem(null);
-    }
-
-    ///<summary>
-    /// Update focusText according to focus' last item.
-    ///</summary>
-    private void UpdateFocusText()
-    {
-        if (focus.Count > 0)
-        {
-            string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
-            focusText.text = $"Focus on {objName}";
-        }
-        else
-            focusText.text = "No focus";
-
-        AppendLogLine(focusText.text, "green");
     }
 
     ///<summary>
@@ -408,19 +366,6 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Call GUIObjectInfos 'UpdateFields' method according to currentItems.Count.
-    ///</summary>
-    public void UpdateGuiInfos()
-    {
-        if (currentItems.Count == 0)
-            objInfos.UpdateSingleFields(null);
-        else if (currentItems.Count == 1)
-            objInfos.UpdateSingleFields(currentItems[0]);
-        else
-            objInfos.UpdateMultiFields(currentItems);
-    }
-
-    ///<summary>
     /// Display a message in the CLI.
     ///</summary>
     ///<param name="_line">The text to display</param>
@@ -455,10 +400,10 @@ public class GameManager : MonoBehaviour
     {
         await configLoader.ConnectToApi();
         if (ApiManager.instance.isInit)
-            ChangeApiButton("Connected to Api", Color.green);
+            UiManager.instance.ChangeApiButton("Connected to Api", Color.green);
         else
-            ChangeApiButton("Fail to connected to Api", Color.red);
-        apiUrl.text = configLoader.GetApiUrl();
+            UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
+        UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
     }
 
     ///<summary>
@@ -481,7 +426,7 @@ public class GameManager : MonoBehaviour
             lastCmdFilePath = _lastPath;
         if (!string.IsNullOrEmpty(lastCmdFilePath))
         {
-            reloadBtn.interactable = _value;
+            UiManager.instance.SetReloadBtn(_value);
             EventManager.Instance.Raise(new ImportFinishedEvent());
         }
     }
@@ -493,7 +438,7 @@ public class GameManager : MonoBehaviour
     {
         SetCurrentItem(null);
         focus.Clear();
-        UpdateFocusText();
+        UiManager.instance.UpdateFocusText();
 
         List<GameObject> tenants = new List<GameObject>();
         foreach (DictionaryEntry de in allItems)
@@ -527,170 +472,19 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
-    ///</summary>
-    public async void ToggleApi()
-    {
-        if (ApiManager.instance.isInit)
-        {
-            ApiManager.instance.isInit = false;
-            ChangeApiButton("Connect to Api", Color.white);
-            apiUrl.text = "";
-            AppendLogLine("Disconnected from API", "green");
-        }
-        else
-        {
-            await ConnectToApi();
-        }
-    }
-
-    ///<summary>
-    /// Change text and color of apiBtn.
-    ///</summary>
-    ///<param name="_str">The new text of the button</param>
-    ///<param name="_color">The new color of the button</param>
-    private void ChangeApiButton(string _str, Color _color)
-    {
-        apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
-        apiBtn.GetComponent<Image>().color = _color;
-    }
-
-    ///<summary>
-    /// Called by GUI button: If currentItem is a room, toggle tiles name.
-    ///</summary>
-    public void ToggleTilesName()
-    {
-        if (currentItems.Count == 0)
-        {
-            AppendLogLine("Empty selection.", "yellow");
-            return;
-        }
-
-        Room currentRoom = currentItems[0].GetComponent<Room>();
-        if (currentRoom)
-        {
-            currentRoom.ToggleTilesName();
-            AppendLogLine($"Tiles name toggled for {currentItems[0].name}.", "yellow");
-        }
-        else
-            AppendLogLine("Selected item must be a room", "red");
-    }
-
-    ///<summary>
-    /// Called by GUI button: If currentItem is a room, toggle tiles color.
-    ///</summary>
-    public void ToggleTilesColor()
-    {
-        if (currentItems.Count == 0)
-        {
-            AppendLogLine("Empty selection.", "yellow");
-            return;
-        }
-
-        Room currentRoom = currentItems[0].GetComponent<Room>();
-        if (currentRoom)
-        {
-            if (!roomTemplates.ContainsKey(currentRoom.attributes["template"]))
-            {
-                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
-                return;
-            }
-            currentRoom.ToggleTilesColor();
-            AppendLogLine($"Tiles color toggled for {currentItems[0].name}.", "yellow");
-        }
-        else
-            AppendLogLine("Selected item must be a room", "red");
-    }
-
-    ///<summary>
-    /// Called by GUI button: if currentItem is a rack, toggle U helpers.
-    ///</summary>
-    public void ToggleUHelpers()
-    {
-        if (currentItems.Count == 0)
-        {
-            AppendLogLine("Empty selection.", "yellow");
-            return;
-        }
-
-        Rack rack = currentItems[0].GetComponent<Rack>();
-        if (rack)
-        {
-            rack.ToggleU();
-            AppendLogLine($"U helpers toggled for {currentItems[0].name}.", "yellow");
-        }
-        else
-            AppendLogLine("Selected item must be a rack.", "red");
-    }
-
-    ///<summary>
-    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
-    ///</summary>
-    public void GuiToggleCS()
-    {
-        if (currentItems.Count == 0)
-        {
-            AppendLogLine("Empty selection.", "yellow");
-            return;
-        }
-
-        foreach (GameObject obj in currentItems)
-        {
-            if (obj.GetComponent<OObject>())
-                obj.GetComponent<OObject>().ToggleCS();
-        }
-    }
-
-    ///<summary>
-    /// Called by GUI checkbox.
-    /// Change material of all Racks.
-    ///</summary>
-    ///<param name="_value">The checkbox value</param>
-    public void ToggleRacksMaterials(bool _value)
-    {
-        toggleWireframe.isOn = _value;
-        isWireframe = _value;
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
-        {
-            GameObject obj = (GameObject)de.Value;
-            string cat = obj.GetComponent<OgreeObject>()?.category;
-            if (cat == "rack" || cat == "rackGroup" || cat == "corridor")
-                SetRackMaterial(obj.transform);
-        }
-    }
-
-    ///<summary>
     /// Set material of a rack according to isWireframe value.
     ///</summary>
     ///<param name="_rack">The rack to set the material</param>
-    public void SetRackMaterial(Transform _rack)
-    {
-        Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
-        Color color = r.material.color;
-        if (isWireframe)
-            r.material = GameManager.gm.wireframeMat;
-        else
-            r.material = GameManager.gm.defaultMat;
-        r.material.color = color;
-    }
-
-    ///<summary>
-    /// Set animator triger of _panel according to its current state and _value
-    ///</summary>
-    ///<param name="_panel">The panel to modify</param>
-    ///<param name="_value">Should the panel be "on"?</param>
-    public void MovePanel(string _panel, bool _value)
-    {
-        Animator anim = null;
-        if (_panel == "infos")
-            anim = infosPanel.GetComponent<Animator>();
-        else if (_panel == "debug")
-            anim = debugPanel.GetComponent<Animator>();
-
-        if ((_value == true && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOff"))
-            || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
-            anim.SetTrigger("Transition");
-    }
+    // public void SetRackMaterial(Transform _rack)
+    // {
+    //     Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
+    //     Color color = r.material.color;
+    //     if (isWireframe)
+    //         r.material = GameManager.gm.wireframeMat;
+    //     else
+    //         r.material = GameManager.gm.defaultMat;
+    //     r.material.color = color;
+    // }
 
     ///<summary>
     /// Quit the application.
