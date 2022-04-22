@@ -212,7 +212,7 @@ public class FocusHandler : MonoBehaviour
     ///<summary>
     /// Fills the Mesh renderer Lists from the OgreeChildObjects and SlotsChildObjects lists.
     ///</summary>
-    public void FillMeshRendererLists()
+    private void FillMeshRendererLists()
     {
         ogreeChildMeshRendererList.Clear();
         slotChildMeshRendererList.Clear();
@@ -238,7 +238,7 @@ public class FocusHandler : MonoBehaviour
     /// When called enables/disables the MeshRenderers located in the OwnObjectsList depending on the boolean argument.
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
-    public void UpdateOwnMeshRenderers(bool _value)
+    private void UpdateOwnMeshRenderers(bool _value)
     {
         foreach (GameObject go in OwnObjectsList)
         {
@@ -261,7 +261,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
     ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    public void UpdateChildMeshRenderers(bool _value, bool _collider = false)
+    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
@@ -277,6 +277,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// When called enables/disables the child MeshRenderers located in the OgreeChildMeshRendererList and SlotChildMeshRendererList <b> of all children (even indirect) recursively </b>depending on the boolean argument.
+    ///</summary>
+    ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
+    ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
     private void UpdateChildMeshRenderersRec(bool _value, bool _collider = false)
     {
         UpdateChildMeshRenderers(_value, _collider);
@@ -380,6 +385,9 @@ public class FocusHandler : MonoBehaviour
         transform.parent.GetComponent<FocusHandler>().ResetToRack();
     }
 
+    ///<summary>
+    /// Initialise the renderer and gameobject lists and hide the object if it isn't a rack <br></br><i>will disappear soon</i>
+    ///</summary>
     public void InitHandler()
     {
         FillListsWithChildren();
@@ -390,6 +398,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Change the selectable face of the object (if <paramref name="_self"/> is true) to be the front or the back face
+    ///</summary>
+    ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
+    ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
     public void ChangeOrientation(bool _front, bool _self = true)
     {
         if (isFrontOriented == _front)
@@ -420,6 +433,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Toggle the collider(s) of an object <br></br><i>Due to the change in the rack prefab, all OgreeObject don't have the same numbers and hierarchy of colliders anymore</i>
+    ///</summary>
+    ///<param name="_obj">The object whose collider(s) will be updated</param>
+    ///<param name="_enabled">state of the collider(s)</param>
     public void ToggleCollider(GameObject _obj, bool _enabled)
     {
         if (_obj.GetComponent<OgreeObject>().category == "rack")

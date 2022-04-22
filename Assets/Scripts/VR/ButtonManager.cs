@@ -72,7 +72,7 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// When called set the buton active, set the selected object as its parent and initialise it
     ///</summary>
-    ///<param name="e">The event's instance</param>
+    ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         selectedObject = _e.obj;
@@ -102,7 +102,7 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// When called set the buton inactive
     ///</summary>
-    ///<param name="e">The event's instance</param>
+    ///<param name="_e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent _e)
     {
         buttonResetPosition.SetActive(false);
@@ -110,41 +110,55 @@ public class ButtonManager : MonoBehaviour
         buttonToggleFocus.SetActive(false);
         selectedObject = null;
     }
+    ///<summary>
+    /// When called set the focus variables accordingly
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent _e)
     {
         focused = true;
         focusedObject = _e.obj;
     }
+
+    ///<summary>
+    /// When called set the focus variables accordingly
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         focused = false;
         focusedObject = null;
     }
 
+    ///<summary>
+    /// When called change the front boolean accordingly
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnChangeOrientation(ChangeOrientationEvent _e)
     {
-        print("BOU" + _e.front);
         front = _e.front;
     }
 
     ///<summary>
-    /// I should move this (WIP)
+    /// Focus the selected object or defocus according to the current state (selection, focus)
     ///</summary>
     public void ButonFocus()
     {
         if (focused && focusedObject == selectedObject)
         {
+            //selectedObject.GetComponent<OgreeObject>().LoadChildren("0");
             GameManager.gm.UnfocusItem();
             GameManager.gm.SetCurrentItem(selectedObject);
 
         }
         else
         {
+            //selectedObject.GetComponent<OgreeObject>().LoadChildren("1");
             GameManager.gm.FocusItem(selectedObject);
         }
     }
     ///<summary>
-    /// I should move this (WIP)
+    /// Select the selected object's parent if the selected object is not a rack, deselect if it is
     ///</summary>
     public void ButonDeselect()
     {

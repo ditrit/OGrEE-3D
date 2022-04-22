@@ -43,6 +43,9 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     {
     }
 
+    ///<summary>
+    /// Call the couroutine to select an object and update which face is selected
+    ///</summary>
     public void SelectThis()
     {
         if (isARack)
@@ -71,17 +74,22 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
 
     }
 
+    ///<summary>
+    /// Raise a ChangeOrientationEvent to update which face is currently selected in all objects
+    ///</summary>
     public void FrontSelected()
     {
         EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y == 0 });
         transform.parent.GetComponent<FocusHandler>().ChangeOrientation(true,false);
-        print(gameObject.name + " front");
     }
+
+    ///<summary>
+    /// Raise a ChangeOrientationEvent to update which face is currently selected in all objects
+    ///</summary>
     public void BackSelected()
     {
         EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y != 0 });
         transform.parent.GetComponent<FocusHandler>().ChangeOrientation(false,false);
-        print(gameObject.name + " back");
     }
 
 }
