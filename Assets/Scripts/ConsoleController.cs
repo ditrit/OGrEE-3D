@@ -63,7 +63,7 @@ public class ConsoleController : MonoBehaviour
         else
             _line = $"<color={_color}>{_line}</color>";
 
-        // Troncade too long strings
+        // Troncate too long strings
         int limit = 103;
         if (_line.Length > limit)
             _line = _line.Substring(0, limit) + "[...]"; 

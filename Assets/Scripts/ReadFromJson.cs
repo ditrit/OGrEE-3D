@@ -321,7 +321,6 @@ public class ReadFromJson
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
-        // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
         dod.SetLabel("#name");
 

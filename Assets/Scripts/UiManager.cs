@@ -12,6 +12,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Top")]
     // [SerializeField] private Toggle toggleWireframe = null;
+    [SerializeField] private Button focusBtn = null;
     [SerializeField] private TMP_Text focusText = null;
 
     [Header("Panel Bottom")]
@@ -36,10 +37,37 @@ public class UiManager : MonoBehaviour
             Destroy(this);
     }
 
+    private void Start()
+    {
+        focusBtn.interactable = false;
+
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+    }
+
+    ///
+    private void OnSelectItem(OnSelectItemEvent _e)
+    {
+        focusBtn.interactable = true;
+    }
+
+    ///
+    private void OnDeselectItem(OnDeselectItemEvent _e)
+    {
+        if (GameManager.gm.currentItems.Count == 0)
+            focusBtn.interactable = false;
     }
 
     ///<summary>
@@ -233,6 +261,13 @@ public class UiManager : MonoBehaviour
         }
         else
             await GameManager.gm.ConnectToApi();
+    }
+
+    ///
+    public void FocusSelected()
+    {
+        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
+            GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
     }
 
     ///
