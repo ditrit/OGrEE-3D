@@ -235,6 +235,21 @@ public class UiManager : MonoBehaviour
             await GameManager.gm.ConnectToApi();
     }
 
+    ///
+    public void ToggleCLI(bool _value)
+    {
+        if (_value)
+        {
+            GameManager.gm.writeCLI = true;
+            GameManager.gm.AppendLogLine("Enable CLI", "yellow");
+        }
+        else
+        {
+            GameManager.gm.AppendLogLine("Disable CLI", "yellow");
+            GameManager.gm.writeCLI = false;
+        }
+    }
+
     ///<summary>
     /// Called by GUI checkbox: Change material of all Racks.
     ///</summary>

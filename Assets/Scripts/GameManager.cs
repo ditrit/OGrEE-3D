@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -51,6 +51,8 @@ public class GameManager : MonoBehaviour
     private float doubleClickTimeLimit = 0.25f;
     private bool coroutineAllowed = true;
     private int clickCount = 0;
+
+    public bool writeCLI = true;
 
     #region UnityMethods
 
@@ -372,6 +374,9 @@ public class GameManager : MonoBehaviour
     ///<param name="_color">The color of the text. Default is white</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
+        if (!writeCLI)
+            return;
+
         consoleController.AppendLogLine(_line, _color);
         try
         {

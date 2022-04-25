@@ -42,6 +42,9 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_color">The color of the line, white by default</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
+        if (!GameManager.gm.writeCLI)
+            return;
+
         if (_color == "yellow")
             Debug.LogWarning(_line);
         else if (_color == "red")
@@ -59,6 +62,11 @@ public class ConsoleController : MonoBehaviour
         }
         else
             _line = $"<color={_color}>{_line}</color>";
+
+        // Troncade too long strings
+        int limit = 103;
+        if (_line.Length > limit)
+            _line = _line.Substring(0, limit) + "[...]"; 
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
