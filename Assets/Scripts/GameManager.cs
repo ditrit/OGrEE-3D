@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
         UiManager.instance.UpdateFocusText();
 
 #if API_DEBUG
-        ToggleApi();
+        UiManager.instance.ToggleApi();
 #endif
 
 #if !PROD
@@ -166,7 +166,10 @@ public class GameManager : MonoBehaviour
             if (objectHit.GetComponent<Group>())
                 objectHit.GetComponent<Group>().ToggleContent("true");
             else
+            {
+                SetCurrentItem(objectHit);
                 FocusItem(objectHit);
+            }
         }
         else if (focus.Count > 0)
             UnfocusItem();
@@ -315,7 +318,12 @@ public class GameManager : MonoBehaviour
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
+        {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            SetCurrentItem(focus[0]);
+        }
+        else
+            SetCurrentItem(null);
     }
 
     ///<summary>
