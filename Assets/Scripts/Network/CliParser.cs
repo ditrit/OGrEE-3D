@@ -324,14 +324,15 @@ public class CliParser// : MonoBehaviour
     private void ManipulateCamera(string _input)
     {
         SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
+        Vector3 refinedPos = new Vector3(manip.position.x, manip.position.z, manip.position.y);
         CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
         switch (manip.command)
         {
             case "move":
-                cc.MoveCamera(manip.position, manip.rotation);
+                cc.MoveCamera(refinedPos, manip.rotation);
                 break;
             case "translate":
-                cc.TranslateCamera(manip.position, manip.rotation);
+                cc.TranslateCamera(refinedPos, manip.rotation);
                 break;
             case "wait":
                 cc.WaitCamera(manip.rotation.y);
