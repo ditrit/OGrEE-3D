@@ -67,13 +67,13 @@ public class ApiManager : MonoBehaviour
 
     private void Update()
     {
-        if (isReady && requestsToSend.Count > 0)
+        /*if (isReady && requestsToSend.Count > 0)
         {
             if (requestsToSend.Peek().type == "put")
                 PutHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
-        }
+        }*/
     }
 
     ///<summary>

@@ -6,10 +6,7 @@ using System.Linq;
 using UnityEngine.Networking;
 using TMPro;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System;
-
-
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class Label
 {
@@ -20,7 +17,18 @@ public class Label
 
 public class Photo_Capture : MonoBehaviour
 {
-    public HttpClient httpClient;
+    [SerializeField]
+    [Tooltip("Assign DialogLarge_192x192.prefab")]
+    private GameObject dialogPrefabLarge;
+
+    /// <summary>
+    /// Large Dialog example prefab to display
+    /// </summary>
+    public GameObject DialogPrefabLarge
+    {
+        get => dialogPrefabLarge;
+        set => dialogPrefabLarge = value;
+    }
     private string currentHost = "";
     public string maisonHost = "192.168.1.38";
     public string telephoneHost = "192.168.17.231";
@@ -113,11 +121,6 @@ public class Photo_Capture : MonoBehaviour
     }
 
 
-
-
-
-
-
     ///<summary>
     /// Call the function that takes a picture
     ///</summary>
@@ -195,7 +198,7 @@ public class Photo_Capture : MonoBehaviour
     ///<summary>
     /// Retrieve parent building of a room
     ///</summary>
-    ///<param name="_room">string refering to a room</param>
+    ///<param name="_room">string refering to a room name</param>
     public async Task SetBuilding(string _room)
     {
         string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
@@ -255,17 +258,19 @@ public class Photo_Capture : MonoBehaviour
                 {
                     room = "UC" + labelReceived.room;
                 }
-                else
-                {
-                    room = labelReceived.room;
-                }
                 room = labelReceived.room;
+                room = room.Substring(3);
                 rack = labelReceived.rack;
 
-                apiResponseTMP.text = string.Format("The label read is {0}{1}-{2}", site, room, rack);
+                apiResponseTMP.text = string.Format("The label read is {0}-{1}", room, rack);
+
+                if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
+                {
+                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room and the rack label";
+                }
                 if (string.IsNullOrEmpty(room))
                 {
-                    apiResponseTMP.text = apiResponseTMP.text + "\nCannot find parent building because room is void";
+                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room label";
                 }
 
                 else if (!string.IsNullOrEmpty(rack))
@@ -280,9 +285,16 @@ public class Photo_Capture : MonoBehaviour
                     {
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
                         await LoadSingleRack(customer, site, building, room, rack);
-                        apiResponseTMP.text = string.Format("The label read is {0}{1}-{2}", site, room, rack) + "\nRack Loaded in Scene";
+                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.OK, "Confirmation Dialog", "Cliquer sur 'Confirmation' pour placer le rack devant vous", true);
+                        /*while (myDialog.State != DialogState.Closed)
+                        {
+                            await Task.Delay(100);
+                        }*/
+                        apiResponseTMP.text = string.Format("The label read is {0}-{1}", site, room, rack) + "\nRack Loaded in Scene";
                     }
                 }
+
+
             }
         }
     }

@@ -158,8 +158,6 @@ public class ConsoleController : MonoBehaviour
             MoveRack(_input.Substring(1));
         else if (_input.StartsWith("ui."))
             ParseUiCommand(_input.Substring(3));
-        else if (_input.StartsWith("camera."))
-            MoveCamera(_input.Substring(7));
         else if (_input.StartsWith("api."))
             CallApi(_input.Substring(4));
         else if (_input.Contains(":") && _input.Contains("="))
@@ -1107,34 +1105,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a camera command and call the corresonding CameraControl method.
     ///</summary>
     ///<param name="_input">The input to parse</param>
-    private void MoveCamera(string _input)
-    {
-        string pattern = "^(move|translate|wait)=(\\[[0-9.-]+,[0-9.-]+,[0-9.-]+\\]@\\[[0-9.-]+,[0-9.-]+\\]|[0-9.]+)$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('=', '@');
-            CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
-            switch (data[0])
-            {
-                case "move":
-                    cc.MoveCamera(Utils.ParseVector3(data[1]), Utils.ParseVector2(data[2]));
-                    break;
-                case "translate":
-                    cc.TranslateCamera(Utils.ParseVector3(data[1]), Utils.ParseVector2(data[2]));
-                    break;
-                case "wait":
-                    cc.WaitCamera(Utils.ParseDecFrac(data[1]));
-                    break;
-                default:
-                    AppendLogLine("Unknown Camera control", "yellow");
-                    break;
-            }
-        }
-        else
-            AppendLogLine("Syntax error", "red");
 
-        UnlockController();
-    }
 
     ///<summary>
     /// Parse an ui command and call the corresponding method.

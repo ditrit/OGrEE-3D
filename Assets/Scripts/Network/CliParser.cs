@@ -94,9 +94,6 @@ public class CliParser// : MonoBehaviour
             case "ui":
                 ManipulateUi(_input);
                 break;
-            case "camera":
-                ManipulateCamera(_input);
-                break;
             default:
                 GameManager.gm.AppendLogLine("Unknown type", "red");
                 break;
@@ -271,29 +268,4 @@ public class CliParser// : MonoBehaviour
         }
     }
 
-    ///<summary>
-    /// Parse a camera command and execute it.
-    ///</summary>
-    ///<param name="_input">The SCameraManip to deserialize</param>
-    private void ManipulateCamera(string _input)
-    {
-        SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
-        CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
-        switch (manip.command)
-        {
-            case "move":
-                cc.MoveCamera(manip.position, manip.rotation);
-                break;
-            case "translate":
-                cc.TranslateCamera(manip.position, manip.rotation);
-                break;
-            case "wait":
-                cc.WaitCamera(manip.rotation.y);
-                break;
-            default:
-                GameManager.gm.AppendLogLine("Unknown command", "red");
-                break;
-        }
-
-    }
 }
