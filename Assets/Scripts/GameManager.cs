@@ -4,13 +4,24 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 
-[RequireComponent(typeof(MoveObject))]
+
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
     public ConsoleController consoleController;
     public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
+    public bool hololens = true;
+
+    [Header("VR")]
+    [SerializeField] private TextMeshPro apiButtonVRText = null;
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+    [SerializeField] private TextMeshPro focusTextVR = null;
+    private float nextSelectionTimeLimit = 1.0f;
+    private float lastSelectionTime = 0.0f;
+    public Camera m_camera;
+
+    GameObject rackInScene;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -69,20 +80,18 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
-
         UiManager.instance.UpdateFocusText();
+        m_camera = Camera.main;
+
 
 #if API_DEBUG
         UiManager.instance.ToggleApi();
 #endif
-
+       
 #if !PROD
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
+
 #endif
+
     }
 
     private void Update()
@@ -91,18 +100,25 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-
-        if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
-            && Input.GetMouseButtonUp(0))
-        {
-            clickCount++;
-        }
-
-        if (clickCount == 1 && coroutineAllowed)
-            StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
+
+    private IEnumerator MoveRacktoCamera()
+    {
+        yield return new WaitForSeconds(4);
+        rackInScene = GameObject.Find("/" + t_tenants + "/" + s_sites + "/" + b_buildings + "/" + r_room + "/" + rc_rack);
+        if (rackInScene != null)
+        {
+            AppendLogLine("Rack Found in the scene after loading from API", "green");
+        }
+        else 
+        {
+            AppendLogLine("NOT Found", "red");
+        }
+        Utils.MoveObjectToCamera(rackInScene, m_camera);
+
+    }
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -132,7 +148,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void SingleClick()
     {
+
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
+
+
         if (objectHit && objectHit.tag == "Selectable")
         {
             bool canSelect = false;
@@ -156,7 +175,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double click on a gameObject.
     ///</summary>
     private void DoubleClick()
     {
@@ -258,6 +277,30 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
+    
+    ///<summary>
+    /// Wait some time before selecting and focusing again.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    public void WaitBeforeNewSelection(GameObject _g)
+    {
+        if (Time.time > lastSelectionTime + nextSelectionTimeLimit)
+        {
+            SetCurrentItem(_g);
+            StartCoroutine(FocusThis(_g));
+            lastSelectionTime = Time.time;
+        }
+    }
+
+    ///<summary>
+    /// Coroutine to wait for end of frame before focusing.
+    ///</summary>
+    ///<param name="_g">The GameObject to select</param>
+    private IEnumerator FocusThis(GameObject _g)
+    {
+        yield return new WaitForEndOfFrame();
+        GameManager.gm.FocusItem(_g);
+    }
 
     ///<summary>
     /// Remove _obj from currentItems, disable outline if possible.
@@ -273,6 +316,7 @@ public class GameManager : MonoBehaviour
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -304,7 +348,8 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
-            UnfocusItem();
+            //UnfocusItem();
+            return;
     }
 
     ///<summary>
@@ -317,6 +362,7 @@ public class GameManager : MonoBehaviour
         UiManager.instance.UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -324,6 +370,42 @@ public class GameManager : MonoBehaviour
         }
         else
             SetCurrentItem(null);
+    }
+
+    public void ReturnButton()
+    {
+        UnfocusItem();
+    }
+
+    private IEnumerator FocusItemCoRoutine(GameObject _obj)
+    {
+        yield return new WaitForEndOfFrame();
+        FocusItem(_obj);
+    }
+
+    ///<summary>
+    /// Update focusText according to focus' last item.
+    ///</summary>
+    private void UpdateFocusText()
+    {
+        if (focus.Count > 0)
+        {
+            string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
+
+#if VR
+            focusTextVR.text = $"Focus on {objName}";
+#endif
+            focusText.text = $"Focus on {objName}";
+        }
+        else
+        {
+            focusText.text = "No focus";
+#if VR
+            focusTextVR.text = "No focus";
+#endif
+        }
+
+        AppendLogLine(focusText.text, "green");
     }
 
     ///<summary>
@@ -483,21 +565,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
+    
+    public IEnumerator CleanScene()
+    {
+        consoleController.RunCommandString("-EDF");
+        yield return new WaitForSeconds(0.5f);
+    }
 
-    ///<summary>
-    /// Set material of a rack according to isWireframe value.
-    ///</summary>
-    ///<param name="_rack">The rack to set the material</param>
-    // public void SetRackMaterial(Transform _rack)
-    // {
-    //     Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
-    //     Color color = r.material.color;
-    //     if (isWireframe)
-    //         r.material = GameManager.gm.wireframeMat;
-    //     else
-    //         r.material = GameManager.gm.defaultMat;
-    //     r.material.color = color;
-    // }
+
 
     ///<summary>
     /// Quit the application.

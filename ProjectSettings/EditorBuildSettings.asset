@@ -5,10 +5,27 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main.unity
     guid: 63fabc4ebfd3e2f4db49cbf2c7e83316
   - enabled: 0
     path: Assets/Scenes/Perfs.unity
     guid: 433c71604d91f4648ac629314723776c
-  m_configObjects: {}
+  - enabled: 1
+    path: Assets/Scenes/AR.unity
+    guid: 83975a579f1467a4cb320c6da90f7be2
+  - enabled: 0
+    path: Assets/Scenes/TestVincent.unity
+    guid: ad394a88b23945b4ca1bb76d1efe112e
+  - enabled: 0
+    path: Assets/Scenes/Appli_vide.unity
+    guid: 787700af40e4fb1419b4c2f9bf7f3ca0
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f3ba5d11d047b7a41821f27c4855f927,
+      type: 2}
+    Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: f9c6a617347f74841830f6986257b118,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: fbe7e4eb2a81f7646b021fef555eb322,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 1cbcf211406dbc84cb0904e00c68c399,
+      type: 2}

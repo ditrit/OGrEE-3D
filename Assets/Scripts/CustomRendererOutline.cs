@@ -47,8 +47,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+        //EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
+        //EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
     }
@@ -64,8 +64,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+        //EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
+        //EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
     }
@@ -153,7 +153,7 @@ public class CustomRendererOutline : MonoBehaviour
             }
         }
     }
-
+    /*
     ///<summary>
     /// When called checks if he is the GameObject hovered on and change its material.
     ///</summary>
@@ -193,7 +193,7 @@ public class CustomRendererOutline : MonoBehaviour
             isHovered = false;
         }
     }
-
+    */
     ///<summary>
     /// Change the material for highlightMaterial if this gameObject is highlighted.
     ///</summary>

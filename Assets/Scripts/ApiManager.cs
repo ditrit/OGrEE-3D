@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json.Utilities;
 
 public class ApiManager : MonoBehaviour
 {
@@ -56,6 +57,8 @@ public class ApiManager : MonoBehaviour
 
     private void Awake()
     {
+        AotHelper.EnsureList<ReadFromJson.STemplateChild>();
+        AotHelper.EnsureList<int>();
         if (!instance)
             instance = this;
         else
@@ -64,13 +67,13 @@ public class ApiManager : MonoBehaviour
 
     private void Update()
     {
-        if (isReady && requestsToSend.Count > 0)
+        /*if (isReady && requestsToSend.Count > 0)
         {
             if (requestsToSend.Peek().type == "put")
                 PutHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
-        }
+        }*/
     }
 
     ///<summary>
@@ -103,7 +106,7 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an PUT request from _input.
+    /// Create a PUT request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to put</param>
     public void CreatePutRequest(OgreeObject _obj)
@@ -203,6 +206,103 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
+
+
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
+    public async Task<string> GetObjectParentId(string _input)
+    {
+        
+        List<SApiObject> physicalObjects = new List<SApiObject>();
+        List<SApiObject> logicalObjects = new List<SApiObject>();
+
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return "error";
+        }
+
+        string fullPath = $"{server}/{_input}";
+        try
+        {
+            string response = await httpClient.GetStringAsync(fullPath);
+            //GameManager.gm.AppendLogLine(response);
+            if (Regex.IsMatch(response, "\"data\":{\"objects\":\\["))
+            {
+                SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(response);
+                foreach (SApiObject obj in resp.data.objects)
+                    physicalObjects.Add(obj);
+            }
+            else
+            {
+                SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
+                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            }
+
+            foreach (SApiObject obj in physicalObjects)
+            {
+                return obj.parentId;
+            }
+            return "error";
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+            return "error";
+        }
+    }
+
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
+    public async Task<string> GetObjectName(string _input)
+    {
+        
+        List<SApiObject> physicalObjects = new List<SApiObject>();
+        List<SApiObject> logicalObjects = new List<SApiObject>();
+
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return "error";
+        }
+
+        string fullPath = $"{server}/{_input}";
+        try
+        {
+            string response = await httpClient.GetStringAsync(fullPath);
+            //GameManager.gm.AppendLogLine(response);
+            if (Regex.IsMatch(response, "\"data\":{\"objects\":\\["))
+            {
+                SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(response);
+                foreach (SApiObject obj in resp.data.objects)
+                    physicalObjects.Add(obj);
+            }
+            else
+            {
+                SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
+                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            }
+
+            foreach (SApiObject obj in physicalObjects)
+            {
+                return obj.name;
+            }
+            return "error";
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+            return "error";
         }
     }
 
