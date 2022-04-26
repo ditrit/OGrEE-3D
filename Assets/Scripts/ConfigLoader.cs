@@ -13,6 +13,7 @@ public class ConfigLoader
         public string verbose;
         public string fullscreen;
         public Dictionary<string, string> textures;
+        public Dictionary<string, string> colors;
         public string api_url;
         public string api_token;
     }
@@ -189,5 +190,20 @@ public class ConfigLoader
     public string GetApiUrl()
     {
         return config.api_url;
+    }
+
+    ///<summary>
+    /// Get a color in hexadecimal format from loaded colors.
+    ///</summary>
+    ///<param name="_askedColor">The color key to get</param>
+    ///<returns>The color value</returns>
+    public string GetColor(string _askedColor)
+    {
+        foreach (KeyValuePair<string, string> kvp in config.colors)
+        {
+            if (kvp.Key == _askedColor)
+                return kvp.Value;
+        }
+        return null;
     }
 }

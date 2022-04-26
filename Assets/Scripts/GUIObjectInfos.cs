@@ -6,15 +6,15 @@ using UnityEngine;
 
 public class GUIObjectInfos : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI tmpBtnName = null;
+    [SerializeField] private TMP_Text tmpBtnName = null;
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
-    [SerializeField] private TextMeshProUGUI tmpName = null;
-    [SerializeField] private TextMeshProUGUI tmpTenantName = null;
-    [SerializeField] private TextMeshProUGUI tmpTenantContact = null;
-    [SerializeField] private TextMeshProUGUI tmpTenantPhone = null;
-    [SerializeField] private TextMeshProUGUI tmpTenantEmail = null;
-    [SerializeField] private TextMeshProUGUI tmpAttributes = null;
+    [SerializeField] private TMP_Text tmpName = null;
+    [SerializeField] private TMP_Text tmpTenantName = null;
+    [SerializeField] private TMP_Text tmpTenantContact = null;
+    [SerializeField] private TMP_Text tmpTenantPhone = null;
+    [SerializeField] private TMP_Text tmpTenantEmail = null;
+    [SerializeField] private TMP_Text tmpAttributes = null;
 
 #if VR
     [Header("VR")]
@@ -28,7 +28,7 @@ public class GUIObjectInfos : MonoBehaviour
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
-    [SerializeField] private TextMeshProUGUI objList = null;
+    [SerializeField] private TMP_Text objList = null;
 
     private void Start()
     {

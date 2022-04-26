@@ -5,6 +5,11 @@
         "perf22": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png",
         "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
     },
+    "colors": {
+        "usableZone": "DBEDF2",
+        "reservedZone": "F2F2F2",
+        "technicalZone": "EBF2DE"
+    },
 
     "api_url": "http://172.19.50.224:3001",
     "api_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA"

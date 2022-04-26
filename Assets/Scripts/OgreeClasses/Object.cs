@@ -150,7 +150,7 @@ public class OObject : OgreeObject
     /// Set a Color with an hexadecimal value
     ///</summary>
     ///<param name="_hex">The hexadecimal value, without '#'</param>
-    protected void SetColor(string _hex)
+    public void SetColor(string _hex)
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = new Color();
@@ -286,7 +286,7 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    protected void SetTemperature(string _value)
+    public void SetTemperature(string _value)
     {
         if (Regex.IsMatch(_value, "^[0-9.]+$"))
         {

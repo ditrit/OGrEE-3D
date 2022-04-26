@@ -392,7 +392,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
         foreach (SApiObject obj in physicalObjects)
@@ -403,7 +403,7 @@ public class ApiManager : MonoBehaviour
             if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
                 && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
             {
-                Debug.Log("Get template from API");
+                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
                 await GetObject($"obj-templates/{obj.attributes["template"]}");
             }
 
