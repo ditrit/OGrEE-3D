@@ -320,7 +320,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(focus[0]);
+            SetCurrentItem(focus[focus.Count - 1]);
         }
         else
             SetCurrentItem(null);
