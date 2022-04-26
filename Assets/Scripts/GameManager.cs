@@ -630,21 +630,6 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Load the 3D model of a rack
-    ///</summary>
-    ///<param name="_rack">string refering to a rack</param>
-    public async Task LoadDetailsRackAPI(GameObject _rack)
-    {
-        if (_rack != null)
-            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
-        else 
-            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(_rack, m_camera);
-        await _rack.GetComponent<OgreeObject>().LoadChildren("3");
-    }
-
-
-    ///<summary>
     /// Change text and color of apiBtn.
     ///</summary>
     ///<param name="_str">The new text of the button</param>

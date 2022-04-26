@@ -222,7 +222,12 @@ public class Photo_Capture : MonoBehaviour
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
-        await GameManager.gm.LoadDetailsRackAPI(rack);
+        if (rack != null)
+            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
+        else 
+            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera);
+        await rack.GetComponent<OgreeObject>().LoadChildren("3");
     }
 
     ///<summary>
@@ -235,8 +240,8 @@ public class Photo_Capture : MonoBehaviour
         form.AddBinaryData("Label_Rack", byteArray);
         form.AddField("Tenant_Name", customerAndSite);
         RequestSentColor();
-        apiResponseTMP.text = string.Format("Start POST request with url = {0} and site = {1}", currentHost, customerAndSite);
-        using (UnityWebRequest www = UnityWebRequest.Post("http://" + currentHost + ":" + port, form))
+        apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
+        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}:{port}", form))
         {
             www.SendWebRequest();
             while (!www.isDone)
@@ -262,7 +267,7 @@ public class Photo_Capture : MonoBehaviour
                 room = room.Substring(3);
                 rack = labelReceived.rack;
 
-                apiResponseTMP.text = string.Format("The label read is {0}-{1}", room, rack);
+                apiResponseTMP.text = $"The label read is {site}{room}-{rack}";
 
                 if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
                 {
@@ -284,13 +289,13 @@ public class Photo_Capture : MonoBehaviour
                     else
                     {
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
-                        await LoadSingleRack(customer, site, building, room, rack);
-                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.OK, "Confirmation Dialog", "Cliquer sur 'Confirmation' pour placer le rack devant vous", true);
-                        /*while (myDialog.State != DialogState.Closed)
+                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Rack Trouvé !", $"Cliquer sur 'Confirm' pour placer le rack {site}{room}-{rack} devant vous", true);
+                        while (myDialog.State != DialogState.Closed)
                         {
                             await Task.Delay(100);
-                        }*/
-                        apiResponseTMP.text = string.Format("The label read is {0}-{1}", site, room, rack) + "\nRack Loaded in Scene";
+                        }
+                        await LoadSingleRack(customer, site, building, room, rack);
+                        apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";
                     }
                 }
 
