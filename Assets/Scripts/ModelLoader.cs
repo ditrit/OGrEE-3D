@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TriLibCore;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Threading.Tasks;
 
 public class ModelLoader : MonoBehaviour
 {
@@ -37,8 +37,7 @@ public class ModelLoader : MonoBehaviour
         UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
         AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                             _object, assetLoaderOptions, null, "fbx");
-
-        while(isLocked)
+        while (isLocked)
             await Task.Delay(10);
     }
 
@@ -55,7 +54,7 @@ public class ModelLoader : MonoBehaviour
     // You can use this to show a message to the user.
     private void OnError(IContextualizedError contextualizedError)
     {
-        Debug.Log("TriLib Error: " + contextualizedError);
+        Debug.LogError("TriLib Error: " + contextualizedError);
     }
 
     // This event is called when all model GameObjects and Meshes have been loaded.

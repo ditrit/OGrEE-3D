@@ -9,11 +9,11 @@ public class CliParser// : MonoBehaviour
     ///<summary>
     /// Standard structure, helps to know which kind of data in received.
     ///</summary>
-    struct SData
-    {
-        public string type;
-        public string data;
-    }
+    // struct SData
+    // {
+    //     public string type;
+    //     public string data;
+    // }
 
     struct SLogin
     {
@@ -52,47 +52,58 @@ public class CliParser// : MonoBehaviour
     public void DeserializeInput(string _input)
     {
         GameObject obj = null;
-        SData command = JsonConvert.DeserializeObject<SData>(_input);
-        switch (command.type)
+        Hashtable command = new Hashtable();
+        try
+        {
+            command = JsonConvert.DeserializeObject<Hashtable>(_input);
+        }
+        catch (System.Exception)
+        {
+            GameManager.gm.AppendLogLine("Received data with unknow format.", "red");
+        }
+        switch (command["type"])
         {
             case "login":
-                Login(command.data);
+                Login(command["data"].ToString());
                 break;
             case "load template":
-                rfJson.CreateObjTemplateJson(command.data);
+                rfJson.CreateObjTemplateJson(command["data"].ToString());
                 break;
             case "select":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.SetCurrentItem(obj);
                 else
                     GameManager.gm.AppendLogLine("Error on select", "red");
                 break;
             case "delete":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
                 else
                     GameManager.gm.AppendLogLine("Error on delete", "red");
                 break;
             case "focus":
-                obj = Utils.GetObjectById(command.data);
+                obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     GameManager.gm.FocusItem(obj);
                 else
                     GameManager.gm.AppendLogLine("Error on focus", "red");
                 break;
             case "create":
-                CreateObjectFromData(_input);
+                CreateObjectFromData(command["data"].ToString());
                 break;
             case "modify":
-                ModifyObject(_input);
+                ModifyObject(command["data"].ToString());
                 break;
             case "interact":
-                InteractWithObject(_input);
+                InteractWithObject(command["data"].ToString());
                 break;
             case "ui":
-                ManipulateUi(_input);
+                ManipulateUi(command["data"].ToString());
+                break;
+            case "camera":
+                ManipulateCamera(command["data"].ToString());
                 break;
             default:
                 GameManager.gm.AppendLogLine("Unknown type", "red");
@@ -104,11 +115,11 @@ public class CliParser// : MonoBehaviour
     /// Connect client to the API with.
     ///</summary>
     ///<param name="_input">Login credentials given by CLI</param>
-    private void Login(string _input)
+    private async void Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         GameManager.gm.RegisterApi(logData.api_url, logData.api_token);
-        GameManager.gm.ToggleApi();
+        await GameManager.gm.ConnectToApi();
     }
 
     ///<summary>
@@ -156,7 +167,10 @@ public class CliParser// : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Deserialize given SApiObject and apply modification to corresponding object.
+    ///</summary>
+    ///<param name="_input">The SApiObject to deserialize</param>
     private void ModifyObject(string _input)
     {
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
@@ -168,23 +182,55 @@ public class CliParser// : MonoBehaviour
             tenantColorChanged = true;
 
         // Case color/temperature for racks & devices
+        if (newData.category == "rack" || newData.category == "device")
+        {
+            OObject item = (OObject)obj;
+            if (newData.attributes.ContainsKey("color"))
+            {
+                if ((obj.attributes.ContainsKey("color") && obj.attributes["color"] != newData.attributes["color"])
+                    || !item.attributes.ContainsKey("color"))
+                {
+                    item.SetColor(newData.attributes["color"]);
+                }
+            }
+            if (newData.attributes.ContainsKey("temperature"))
+            {
+                if ((obj.attributes.ContainsKey("temperature") && obj.attributes["temperature"] != newData.attributes["temperature"])
+                    || !item.attributes.ContainsKey("temperature"))
+                {
+                    item.SetTemperature(newData.attributes["temperature"]);
+                }
+            }
+        }
 
-
-        // Case of a separator modification in a room
-        if (newData.category == "room" && newData.attributes.ContainsKey("separators"))
+        // Case of a separator/areas modification in a room
+        if (newData.category == "room")
         {
             Room room = (Room)obj;
-            if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
-                || !room.attributes.ContainsKey("separators"))
+            if (newData.attributes.ContainsKey("separators"))
             {
-                foreach (Transform wall in room.walls)
+                if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
+                    || !room.attributes.ContainsKey("separators"))
                 {
-                    if (wall.name.Contains("separator"))
-                        Object.Destroy(wall.gameObject);
+                    foreach (Transform wall in room.walls)
+                    {
+                        if (wall.name.Contains("separator"))
+                            Object.Destroy(wall.gameObject);
+                    }
+                    List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
+                    foreach (ReadFromJson.SSeparator sep in separators)
+                        room.AddSeparator(sep);
                 }
-                List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
-                foreach (ReadFromJson.SSeparator sep in separators)
-                    room.AddSeparator(sep);
+            }
+            if (newData.attributes.ContainsKey("reserved"))
+            {
+                if ((room.attributes.ContainsKey("reserved") && room.attributes["reserved"] != newData.attributes["reserved"])
+                    || !room.attributes.ContainsKey("reserved"))
+                {
+                    SMargin reserved = JsonUtility.FromJson<SMargin>(newData.attributes["reserved"]);
+                    SMargin technical = JsonUtility.FromJson<SMargin>(newData.attributes["technical"]);
+                    room.SetAreas(reserved, technical);
+                }
             }
         }
 
@@ -193,7 +239,10 @@ public class CliParser// : MonoBehaviour
             EventManager.Instance.Raise(new UpdateTenantEvent { name = newData.name });
     }
 
-    ///
+    ///<summary>
+    /// Deserialize a SInteract command and run it.
+    ///</summary>
+    ///<param name="_data">The serialized command to execute</param>
     private void InteractWithObject(string _data)
     {
         List<string> usableParams;
@@ -240,20 +289,22 @@ public class CliParser// : MonoBehaviour
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
         {
-            case "delay":
-                // ?? Still needed ??
+            case "delay": // ?? Still needed ??
+                float time = Utils.ParseDecFrac(manip.data);
+                GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+                GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
                 break;
             case "infos":
                 if (manip.data == "true")
-                    GameManager.gm.MovePanel("infos", true);
+                    UiManager.instance.MovePanel("infos", true);
                 else
-                    GameManager.gm.MovePanel("infos", false);
+                    UiManager.instance.MovePanel("infos", false);
                 break;
             case "debug":
                 if (manip.data == "true")
-                    GameManager.gm.MovePanel("debug", true);
+                    UiManager.instance.MovePanel("debug", true);
                 else
-                    GameManager.gm.MovePanel("debug", false);
+                    UiManager.instance.MovePanel("debug", false);
                 break;
             case "highlight":
                 GameObject obj = Utils.GetObjectById(manip.data);
@@ -268,4 +319,30 @@ public class CliParser// : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Parse a camera command and execute it.
+    ///</summary>
+    ///<param name="_input">The SCameraManip to deserialize</param>
+    private void ManipulateCamera(string _input)
+    {
+        SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
+        Vector3 refinedPos = new Vector3(manip.position.x, manip.position.z, manip.position.y);
+        CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
+        switch (manip.command)
+        {
+            case "move":
+                cc.MoveCamera(refinedPos, manip.rotation);
+                break;
+            case "translate":
+                cc.TranslateCamera(refinedPos, manip.rotation);
+                break;
+            case "wait":
+                cc.WaitCamera(manip.rotation.y);
+                break;
+            default:
+                GameManager.gm.AppendLogLine("Unknown command", "red");
+                break;
+        }
+
+    }
 }
