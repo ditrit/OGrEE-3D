@@ -129,7 +129,7 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColorByTenant();
-        GameManager.gm.SetRackMaterial(newRack.transform);
+        // GameManager.gm.SetRackMaterial(newRack.transform);
 
         string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);
@@ -238,7 +238,7 @@ public class ObjectGenerator : MonoBehaviour
 
         if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            newDevice = GenerateBasicDevice(parent, float.Parse(_dv.attributes["height"]), slot);
+            newDevice = GenerateBasicDevice(parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new Vector2(boxSize.x, boxSize.z);
             height = boxSize.y;
