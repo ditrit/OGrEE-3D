@@ -178,15 +178,8 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e)
     {
-        FillListsWithChildren();
-        FillMeshRendererLists();
-        if (transform.GetChild(0).GetComponent<Renderer>().enabled
-            && (transform.GetChild(0).GetComponent<Renderer>().material.color.a == 1f
-                || (isFocused && !isSelected && transform.GetChild(0).GetComponent<Collider>().enabled)))
-        {
+        if (GetComponent<OgreeObject>().category != "device")
             UpdateChildMeshRenderersRec(false);
-        }
-
     }
 
     ///<summary>
@@ -220,10 +213,7 @@ public class FocusHandler : MonoBehaviour
         foreach (GameObject gameObject in ogreeChildObjects)
         {
             foreach (GameObject ownObject in gameObject.GetComponent<FocusHandler>().OwnObjectsList)
-            {
                 ogreeChildMeshRendererList.Add(ownObject.GetComponent<MeshRenderer>());
-
-            }
         }
 
         foreach (GameObject gameObject in slotsChildObjects)
@@ -278,17 +268,17 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// When called enables/disables the child MeshRenderers located in the OgreeChildMeshRendererList and SlotChildMeshRendererList <b> of all children (even indirect) recursively </b>depending on the boolean argument.
+    /// When called fills lists and enables/disables children's MeshRenderers recursively.
     ///</summary>
-    ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
-    ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    private void UpdateChildMeshRenderersRec(bool _value, bool _collider = false)
+    ///<param name="_value">Boolean value used when calling UpdateChildMeshRenderers</param>
+    private void UpdateChildMeshRenderersRec(bool _value)
     {
-        UpdateChildMeshRenderers(_value, _collider);
+        FillListsWithChildren();
+        FillMeshRendererLists();
+
+        UpdateChildMeshRenderers(_value);
         foreach (GameObject child in ogreeChildObjects)
-        {
-            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value, _collider);
-        }
+            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
     }
 
     ///<summary>

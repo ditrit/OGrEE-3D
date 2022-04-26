@@ -42,6 +42,9 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_color">The color of the line, white by default</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
+        if (!GameManager.gm.writeCLI)
+            return;
+
         if (_color == "yellow")
             Debug.LogWarning(_line);
         else if (_color == "red")
@@ -59,6 +62,11 @@ public class ConsoleController : MonoBehaviour
         }
         else
             _line = $"<color={_color}>{_line}</color>";
+
+        // Troncate too long strings
+        int limit = 103;
+        if (_line.Length > limit)
+            _line = _line.Substring(0, limit) + "[...]"; 
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -579,9 +587,9 @@ public class ConsoleController : MonoBehaviour
             si.category = "site";
             IsolateParent(data[0], out parent, out si.name);
             si.attributes["orientation"] = data[1];
-            si.attributes["usableColor"] = "DBEDF2";
-            si.attributes["reservedColor"] = "F2F2F2";
-            si.attributes["technicalColor"] = "EBF2DE";
+            // si.attributes["usableColor"] = "DBEDF2";
+            // si.attributes["reservedColor"] = "F2F2F2";
+            // si.attributes["technicalColor"] = "EBF2DE";
             if (parent)
             {
                 si.parentId = parent.GetComponent<OgreeObject>().id;
@@ -1014,7 +1022,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0] == "selection" || data[0] == "_")
             {
                 SetMultiAttribute(data[1], data[2]);
-                GameManager.gm.UpdateGuiInfos();
+                UiManager.instance.UpdateGuiInfos();
                 UnlockController();
                 return;
 
@@ -1033,7 +1041,7 @@ public class ConsoleController : MonoBehaviour
                         if (obj.GetComponent<OgreeObject>().category == "tenant" && data[1] == "color")
                             EventManager.Instance.Raise(new UpdateTenantEvent { name = obj.name });
                     }
-                    GameManager.gm.UpdateGuiInfos();
+                    UiManager.instance.UpdateGuiInfos();
                 }
                 else
                     AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
@@ -1088,7 +1096,7 @@ public class ConsoleController : MonoBehaviour
                         rk.MoveRack(Utils.ParseVector2(data[1]), false);
                     else
                         rk.MoveRack(Utils.ParseVector2(data[1]), true);
-                    GameManager.gm.UpdateGuiInfos();
+                    UiManager.instance.UpdateGuiInfos();
                     GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
                 }
                 else
@@ -1148,23 +1156,23 @@ public class ConsoleController : MonoBehaviour
             string[] data = _input.Split('=');
             switch (data[0])
             {
-                case "wireframe":
-                    if (data[1] == "true")
-                        GameManager.gm.ToggleRacksMaterials(true);
-                    else
-                        GameManager.gm.ToggleRacksMaterials(false);
-                    break;
+                // case "wireframe":
+                //     if (data[1] == "true")
+                //         UiManager.instance.ToggleRacksMaterials(true);
+                //     else
+                //         UiManager.instance.ToggleRacksMaterials(false);
+                //     break;
                 case "infos":
                     if (data[1] == "true")
-                        GameManager.gm.MovePanel("infos", true);
+                        UiManager.instance.MovePanel("infos", true);
                     else
-                        GameManager.gm.MovePanel("infos", false);
+                        UiManager.instance.MovePanel("infos", false);
                     break;
                 case "debug":
                     if (data[1] == "true")
-                        GameManager.gm.MovePanel("debug", true);
+                        UiManager.instance.MovePanel("debug", true);
                     else
-                        GameManager.gm.MovePanel("debug", false);
+                        UiManager.instance.MovePanel("debug", false);
                     break;
             }
         }
@@ -1213,6 +1221,7 @@ public class ConsoleController : MonoBehaviour
                 AppendLogLine("Delay is a value between 0 and 2s", "yellow");
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+            GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
         }
         else
             AppendLogLine("Syntax error", "red");

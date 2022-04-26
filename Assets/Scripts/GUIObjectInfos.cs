@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class GUIObjectInfos : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI tmpBtnName = null;
+    [SerializeField] private TMP_Text tmpBtnName = null;
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
     [SerializeField] private TMP_Text tmpName = null;
@@ -18,7 +18,7 @@ public class GUIObjectInfos : MonoBehaviour
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
-    [SerializeField] private TextMeshProUGUI objList = null;
+    [SerializeField] private TMP_Text objList = null;
 
     private void Start()
     {

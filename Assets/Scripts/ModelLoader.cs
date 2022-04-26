@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TriLibCore;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -7,6 +8,7 @@ using UnityEngine.Networking;
 public class ModelLoader : MonoBehaviour
 {
     public static ModelLoader instance;
+    private bool isLocked = false;
 
     private void Awake()
     {
@@ -21,8 +23,9 @@ public class ModelLoader : MonoBehaviour
     ///</summary>
     ///<param name="_object">The Object to update</param>
     ///<param name="_modelPath">The path of the 3D model to load with TriLib</param>
-    public void ReplaceBox(GameObject _object, string _modelPath)
+    public async Task ReplaceBox(GameObject _object, string _modelPath)
     {
+        isLocked = true;
         Destroy(_object.transform.GetChild(0).gameObject);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
@@ -34,7 +37,8 @@ public class ModelLoader : MonoBehaviour
         UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
         AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                             _object, assetLoaderOptions, null, "fbx");
-
+        while (isLocked)
+            await Task.Delay(10);
     }
 
     // This event is called when the model loading progress changes.
@@ -50,7 +54,7 @@ public class ModelLoader : MonoBehaviour
     // You can use this to show a message to the user.
     private void OnError(IContextualizedError contextualizedError)
     {
-        Debug.Log("TriLib Error: " + contextualizedError);
+        Debug.LogError("TriLib Error: " + contextualizedError);
     }
 
     // This event is called when all model GameObjects and Meshes have been loaded.
@@ -84,7 +88,7 @@ public class ModelLoader : MonoBehaviour
     // This event is also called after a critical loading error, so you can clean up any resource you want to.
     private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
     {
-
+        isLocked = false;
     }
 
 }
