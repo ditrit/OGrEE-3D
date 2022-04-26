@@ -289,8 +289,10 @@ public class CliParser// : MonoBehaviour
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
         {
-            case "delay":
-                // ?? Still needed ??
+            case "delay": // ?? Still needed ??
+                float time = Utils.ParseDecFrac(manip.data);
+                GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+                GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
                 break;
             case "infos":
                 if (manip.data == "true")

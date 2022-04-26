@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Server : MonoBehaviour
@@ -24,6 +20,7 @@ public class Server : MonoBehaviour
     [SerializeField] private int receivePort;
     // private string sendIP; // 192.168.1.28
     // private int sendPort; // 5600 ?
+    public int timer = 0;
 
     [Header("Debug")]
     [SerializeField] private bool triggerSend = false;
@@ -39,7 +36,7 @@ public class Server : MonoBehaviour
         connection.StartConnection(receivePort);
     }
 
-    private void Update()
+    private async void Update()
     {
         // Debug from Editor
         if (triggerSend)
@@ -51,6 +48,7 @@ public class Server : MonoBehaviour
         if (connection.incomingQueue.Count > 0)
         {
             string msg = connection.incomingQueue.Dequeue();
+            await Task.Delay(timer);
             GameManager.gm.AppendLogLine(msg);
             parser.DeserializeInput(msg);
         }

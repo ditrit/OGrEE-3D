@@ -4552,6 +4552,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   consoleController: {fileID: 773900188}
+  server: {fileID: 1407285865}
   slider: {fileID: 1157218563}
   value: {fileID: 1629995874}
 --- !u!95 &670787557
@@ -5786,7 +5787,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2022-04-25 #13c68a9'
+  m_text: 'B: 2022-04-26 #944d599'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8957,7 +8958,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09998}
+  m_AnchoredPosition: {x: 0, y: 217.10007}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1306448110
@@ -10357,6 +10358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   protocol: 1
   receivePort: 5500
+  timer: 0
   triggerSend: 0
   debugMsg: Hello
 --- !u!1 &1408815681
@@ -15846,8 +15848,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.5658
+  m_Value: -0.0000002811384
+  m_Size: 0.56576884
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
