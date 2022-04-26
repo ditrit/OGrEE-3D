@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
@@ -142,25 +143,28 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// Focus the selected object or defocus according to the current state (selection, focus)
     ///</summary>
-    public void ButonFocus()
+    public async void ButtonToggleFocusAsync()
     {
         if (focused && focusedObject == selectedObject)
         {
-            //selectedObject.GetComponent<OgreeObject>().LoadChildren("0");
+            GameObject temp = selectedObject;
+            await selectedObject.GetComponent<OgreeObject>().LoadChildren("0");
+            temp.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            temp.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
             GameManager.gm.UnfocusItem();
-            GameManager.gm.SetCurrentItem(selectedObject);
+            GameManager.gm.SetCurrentItem(temp);
 
         }
         else
         {
-            //selectedObject.GetComponent<OgreeObject>().LoadChildren("1");
+            await selectedObject.GetComponent<OgreeObject>().LoadChildren("1");
             GameManager.gm.FocusItem(selectedObject);
         }
     }
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
     ///</summary>
-    public void ButonDeselect()
+    public void ButtonSelectParent()
     {
         if (selectedObject == null || (focused && focusedObject == selectedObject))
         {
