@@ -43,9 +43,13 @@ public class GUIObjectInfos : MonoBehaviour
         else
         {
             if (_obj)
+            {
                 tmpName.text = _obj.name;
+            }
             else
+            {
                 tmpName.text = "";
+            }
             tmpTenantName.text = "";
             tmpTenantContact.text = "";
             tmpTenantPhone.text = "";
@@ -67,7 +71,6 @@ public class GUIObjectInfos : MonoBehaviour
         objList.text = "";
         foreach (GameObject obj in _objects)
             objList.text += $"{obj.GetComponent<OgreeObject>().hierarchyName}\n";
-
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, _objects.Count * 20);
@@ -167,8 +170,12 @@ public class GUIObjectInfos : MonoBehaviour
         }
 
         // Set correct height for scroll view
+#if !VR
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, i * 30);
+#endif
+        //RectTransform rtVR = tmpAttributesVR.transform.parent.GetComponent<RectTransform>();
+        //rtVR.sizeDelta = new Vector2(0, i * 30);
     }
 
     ///<summary>

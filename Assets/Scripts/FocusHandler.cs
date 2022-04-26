@@ -20,6 +20,8 @@ public class FocusHandler : MonoBehaviour
     public bool isHovered = false;
     public bool isFocused = false;
 
+    private bool isFrontOriented = true;
+
     private void Start()
     {
         if (GameManager.gm.allItems.ContainsValue(gameObject))
@@ -81,10 +83,12 @@ public class FocusHandler : MonoBehaviour
         {
             UpdateChildMeshRenderers(true, true);
             isSelected = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
             if (GetComponent<OObject>().category == "rack")
+            {
                 UpdateOwnMeshRenderers(false);
+            }
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
     }
@@ -98,7 +102,7 @@ public class FocusHandler : MonoBehaviour
         if (e.obj.Equals(gameObject))
         {
             isSelected = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             ResetToRack();
         }
     }
@@ -116,7 +120,7 @@ public class FocusHandler : MonoBehaviour
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
         }
     }
@@ -129,10 +133,9 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
-            // UpdateChildMeshRenderers(false);
             UpdateOtherObjectsMeshRenderers(true);
             isFocused = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
         }
     }
@@ -182,7 +185,7 @@ public class FocusHandler : MonoBehaviour
     ///<summary>
     /// Fills the 3 Child list with their corresponding content.
     ///</summary>
-    private void FillListsWithChildren()
+    public void FillListsWithChildren()
     {
         ogreeChildObjects.Clear();
         OwnObjectsList.Clear();
@@ -234,7 +237,7 @@ public class FocusHandler : MonoBehaviour
                 mr.enabled = _value;
         }
         GetComponent<OObject>().ToggleSlots(_value.ToString());
-        transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        ToggleCollider(gameObject, _value);
 
         if (GetComponent<OObject>().isHidden)
         {
@@ -370,5 +373,71 @@ public class FocusHandler : MonoBehaviour
             return;
         }
         transform.parent.GetComponent<FocusHandler>().ResetToRack();
+    }
+
+    ///<summary>
+    /// Initialise the renderer and gameobject lists and hide the object if it isn't a rack <br></br><i>will disappear soon</i>
+    ///</summary>
+    public void InitHandler()
+    {
+        FillListsWithChildren();
+        FillMeshRendererLists();
+        if (GetComponent<OgreeObject>().category != "rack")
+        {
+            UpdateOwnMeshRenderers(false);
+        }
+    }
+
+    ///<summary>
+    /// Change the selectable face of the object (if <paramref name="_self"/> is true) to be the front or the back face
+    ///</summary>
+    ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
+    ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
+    public void ChangeOrientation(bool _front, bool _self = true)
+    {
+        if (isFrontOriented == _front)
+        {
+            return;
+        }
+        isFrontOriented = _front;
+        if (_self)
+        {
+            Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable touchable = transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>();
+            if (touchable != null)
+            {
+                if (_front)
+                {
+                    touchable.SetLocalForward(new Vector3(0, 0, 1));
+                    touchable.SetLocalCenter(new Vector3(0, 0, 0.5f));
+                }
+                else
+                {
+                    touchable.SetLocalForward(new Vector3(0, 0, -1));
+                    touchable.SetLocalCenter(new Vector3(0, 0, -0.5f));
+                }
+            }
+        }
+        foreach (GameObject child in ogreeChildObjects)
+        {
+            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
+        }
+    }
+
+    ///<summary>
+    /// Toggle the collider(s) of an object <br></br><i>Due to the change in the rack prefab, all OgreeObject don't have the same numbers and hierarchy of colliders anymore</i>
+    ///</summary>
+    ///<param name="_obj">The object whose collider(s) will be updated</param>
+    ///<param name="_enabled">state of the collider(s)</param>
+    public void ToggleCollider(GameObject _obj, bool _enabled)
+    {
+        if (_obj.GetComponent<OgreeObject>().category == "rack")
+        {
+            _obj.transform.GetChild(1).GetComponent<Collider>().enabled = _enabled;
+            _obj.transform.GetChild(2).GetComponent<Collider>().enabled = _enabled;
+        }
+        else
+        {
+            _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
+        }
     }
 }
