@@ -693,7 +693,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
-    7: OCULUSINTEGRATION_PRESENT;API_DEBUG;VR
+    7: OCULUSINTEGRATION_PRESENT;API_DEBUG;VR;PROD
     14: 
   additionalCompilerArguments: {}
   platformArchitecture: {}

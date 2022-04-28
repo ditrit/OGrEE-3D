@@ -11,9 +11,7 @@ public class ButtonManager : MonoBehaviour
     private bool front = true;
 
     [Header("Butons")]
-    [SerializeField] private GameObject buttonResetPosition;
-    [SerializeField] private GameObject buttonDeselect;
-    [SerializeField] private GameObject buttonToggleFocus;
+    [SerializeField] private GameObject buttonWrapper;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,12 +20,13 @@ public class ButtonManager : MonoBehaviour
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        buttonWrapper.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (buttonResetPosition.activeInHierarchy && selectedObject != null)
+        if (buttonWrapper.activeInHierarchy && selectedObject != null)
         {
             CheckChildrenPositions();
         }
@@ -71,44 +70,31 @@ public class ButtonManager : MonoBehaviour
 
 
     ///<summary>
-    /// When called set the buton active, set the selected object as its parent and initialise it
+    /// When called set the button active, set the selected object as its parent and initialise it
     ///</summary>
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         selectedObject = _e.obj;
+        buttonWrapper.transform.SetParent(selectedObject.transform);
         Vector3 parentSize = selectedObject.transform.GetChild(0).lossyScale;
 
-        //Placing buttonResetPosition
-        buttonResetPosition.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonResetPosition.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
-        buttonResetPosition.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.06f : parentSize.x - 0.06f) / 2;
-        buttonResetPosition.SetActive(true);
-
-        //Placing buttonDeselect
-        buttonDeselect.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonDeselect.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
-        buttonDeselect.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.12f : parentSize.x - 0.12f) / 2;
-        buttonDeselect.SetActive(true);
-
-        //Placing buttonToggleFocus
-        buttonToggleFocus.transform.position = selectedObject.transform.GetChild(0).position;
-        buttonToggleFocus.transform.localRotation = Quaternion.Euler(0, front ? 90 : -90, 0);
-        buttonToggleFocus.transform.position += new Vector3(front ? -parentSize.z - 0.06f : parentSize.z + 0.06f, parentSize.y + 0.06f, front ? -parentSize.x + 0.18f : parentSize.x - 0.18f) / 2;
-        buttonToggleFocus.SetActive(true);
-
+        //Placing buttons
+        buttonWrapper.transform.localPosition = Vector3.zero;
+        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x + 0.18f : parentSize.x - 0.18f, parentSize.y + 0.06f, front ? parentSize.z + 0.06f : -parentSize.z - 0.06f) / 2;
+        buttonWrapper.transform.SetParent(null);
+        buttonWrapper.SetActive(true);
 
     }
 
     ///<summary>
-    /// When called set the buton inactive
+    /// When called set the button inactive
     ///</summary>
     ///<param name="_e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent _e)
     {
-        buttonResetPosition.SetActive(false);
-        buttonDeselect.SetActive(false);
-        buttonToggleFocus.SetActive(false);
+        buttonWrapper.SetActive(false);
         selectedObject = null;
     }
     ///<summary>
@@ -152,7 +138,7 @@ public class ButtonManager : MonoBehaviour
             temp.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
             temp.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
             GameManager.gm.UnfocusItem();
-            GameManager.gm.SetCurrentItem(temp);
+            temp.GetComponent<FocusHandler>().ToggleCollider(temp, true);
 
         }
         else

@@ -26,7 +26,7 @@ public class Server : MonoBehaviour
     [SerializeField] private bool triggerSend = false;
     [SerializeField] private string debugMsg;
 
-    private void Start()
+    private void Awake()
     {
         if (protocol == eConnectionType.udp)
             connection = new UdpConnection();
@@ -67,5 +67,6 @@ public class Server : MonoBehaviour
     {
         connection.Send(_msg + "\n");
     }
+
 
 }

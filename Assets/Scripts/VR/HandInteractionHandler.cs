@@ -50,6 +50,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     {
         if (isARack)
         {
+            print(transform.parent.GetComponent<OObject>().attributes["orientation"]);
             if (front)
                 FrontSelected();
             else
@@ -79,7 +80,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///</summary>
     public void FrontSelected()
     {
-        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y == 0 });
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = true });
         transform.parent.GetComponent<FocusHandler>().ChangeOrientation(true,false);
     }
 
@@ -88,7 +89,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///</summary>
     public void BackSelected()
     {
-        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y != 0 });
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = false });
         transform.parent.GetComponent<FocusHandler>().ChangeOrientation(false,false);
     }
 
