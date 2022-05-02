@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 ///<summary>
@@ -77,10 +78,11 @@ public class FocusHandler : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent e)
+    private async void OnSelectItem(OnSelectItemEvent e)
     {
         if (e.obj.Equals(gameObject))
         {
+            await GetComponent<OgreeObject>().LoadChildren("1");
             UpdateChildMeshRenderers(true, true);
             isSelected = true;
             ToggleCollider(gameObject, false);
@@ -122,6 +124,12 @@ public class FocusHandler : MonoBehaviour
             isFocused = true;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+
+        }
+        if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            print(gameObject);
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -251,7 +259,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
     ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
+    public void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {

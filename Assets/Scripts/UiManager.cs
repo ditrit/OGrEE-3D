@@ -28,6 +28,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos = null;
     public DetailsInputField detailsInputField = null;
 
+    [Header("VR")]
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+
+
 
     private void Awake()
     {
@@ -108,6 +112,7 @@ public class UiManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
     }
 
     ///<summary>

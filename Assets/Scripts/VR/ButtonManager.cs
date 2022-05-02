@@ -6,6 +6,7 @@ using UnityEngine;
 public class ButtonManager : MonoBehaviour
 {
     private bool focused = false;
+    private bool editMode = false;
     private GameObject selectedObject = null;
     private GameObject focusedObject = null;
     private bool front = true;
@@ -26,20 +27,18 @@ public class ButtonManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (buttonWrapper.activeInHierarchy && selectedObject != null)
-        {
-            CheckChildrenPositions();
-        }
+
     }
 
     ///<summary>
     /// Reset all children's positions to their original value
     ///</summary>
-    public void ResetAllPositions()
+    ///<param name="_obj">The parent</param>
+    public void ResetAllPositions(GameObject _obj)
     {
-        for (int i = 0; i < selectedObject.transform.childCount; i++)
+        for (int i = 0; i < _obj.transform.childCount; i++)
         {
-            OgreeObject ogree = selectedObject.transform.GetChild(i).GetComponent<OgreeObject>();
+            OgreeObject ogree = _obj.transform.GetChild(i).GetComponent<OgreeObject>();
             if (ogree == null)
             {
                 continue;
@@ -82,7 +81,7 @@ public class ButtonManager : MonoBehaviour
         //Placing buttons
         buttonWrapper.transform.localPosition = Vector3.zero;
         buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x + 0.18f : parentSize.x - 0.18f, parentSize.y + 0.06f, front ? parentSize.z + 0.06f : -parentSize.z - 0.06f) / 2;
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x : parentSize.x, parentSize.y + 0.06f, front ? parentSize.z : -parentSize.z) / 2;
         buttonWrapper.transform.SetParent(null);
         buttonWrapper.SetActive(true);
 
@@ -129,28 +128,23 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// Focus the selected object or defocus according to the current state (selection, focus)
     ///</summary>
-    public async void ButtonToggleFocusAsync()
+    public void ButonToggleFocus()
     {
         if (focused && focusedObject == selectedObject)
         {
-            GameObject temp = selectedObject;
-            await selectedObject.GetComponent<OgreeObject>().LoadChildren("0");
-            temp.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            temp.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
             GameManager.gm.UnfocusItem();
-            temp.GetComponent<FocusHandler>().ToggleCollider(temp, true);
+            selectedObject.GetComponent<FocusHandler>().ToggleCollider(selectedObject, true);
 
         }
         else
         {
-            await selectedObject.GetComponent<OgreeObject>().LoadChildren("1");
             GameManager.gm.FocusItem(selectedObject);
         }
     }
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
     ///</summary>
-    public void ButtonSelectParent()
+    public async void ButtonSelectParent()
     {
         if (selectedObject == null || (focused && focusedObject == selectedObject))
         {
@@ -159,10 +153,85 @@ public class ButtonManager : MonoBehaviour
         if (selectedObject.transform.parent.GetComponent<OObject>() != null)
         {
             GameManager.gm.SetCurrentItem(selectedObject.transform.parent.gameObject);
+            await GetComponent<OgreeObject>().LoadChildren("0");
+            GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            GetComponent<FocusHandler>().ogreeChildObjects.Clear();
         }
         else
         {
             GameManager.gm.SetCurrentItem(null);
+        }
+    }
+
+    public void ButtonResetPosition()
+    {
+        ResetAllPositions(selectedObject);
+    }
+
+    public void ButtonEditMode()
+    {
+        if (!focused)
+            return;
+        if (!editMode)
+        {
+            editMode = true;
+            ResetAllPositions(focusedObject);
+
+            //enable collider used for manipulation
+            focusedObject.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+
+            //disable rack colliders used for selection
+            if (focusedObject.GetComponent<OgreeObject>().category == "rack")
+            {
+                focusedObject.transform.GetChild(1).GetComponent<Collider>().enabled = false;
+                focusedObject.transform.GetChild(2).GetComponent<Collider>().enabled = false;
+            }
+            else //disable selection on the devices collider
+            {
+                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = false;
+            }
+
+            //disable children colliders
+            focusedObject.GetComponent<FocusHandler>().UpdateChildMeshRenderers(true);
+
+            for (int i = 0; i < focusedObject.transform.childCount; i++)
+            {
+                OgreeObject ogree = focusedObject.transform.GetChild(i).GetComponent<OgreeObject>();
+                if (ogree == null)
+                {
+                    continue;
+                }
+                focusedObject.transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            }
+
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+        }
+        else
+        {
+            editMode = false;
+            focusedObject.GetComponent<OgreeObject>().ResetPosition();
+
+            if (focusedObject.GetComponent<OgreeObject>().category == "rack")
+            {
+                focusedObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+                focusedObject.transform.GetChild(1).GetComponent<Collider>().enabled = true;
+                focusedObject.transform.GetChild(2).GetComponent<Collider>().enabled = true;
+            }
+            else
+            {
+                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = true;
+            }
+            focusedObject.GetComponent<FocusHandler>().UpdateChildMeshRenderers(true, true);
+
+            for (int i = 0; i < focusedObject.transform.childCount; i++)
+            {
+                OgreeObject ogree = focusedObject.transform.GetChild(i).GetComponent<OgreeObject>();
+                if (ogree == null)
+                {
+                    continue;
+                }
+                focusedObject.transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            }
         }
     }
 }

@@ -15,6 +15,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public List<string> description = new List<string>();
     public string domain; // = tenant
     public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -49,6 +51,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     private void Start()
     {
         originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 
     private void OnEnable()
@@ -309,5 +313,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public void ResetPosition()
     {
         transform.localPosition = originalLocalPosition;
+        transform.localRotation = originalLocalRotation;
+        transform.localScale = originalLocalScale;
     }
 }
