@@ -8,15 +8,23 @@ public class ButtonManager : MonoBehaviour
     private bool editMode = false;
     private bool front = true;
 
-    [Header("Butons")]
+    [Header("Buttons")]
     [SerializeField] private GameObject buttonWrapper;
+    [SerializeField] private GameObject buttonEdit;
+    [SerializeField] private GameObject buttonSelectParent;
+    [SerializeField] private GameObject buttonToggleFocus;
+
+    private Color defaultBackplateColor;
     // Start is called before the first frame update
     void Start()
     {
         EventManager.Instance.AddListener<ChangeOrientationEvent>(OnChangeOrientation);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         buttonWrapper.SetActive(false);
+        defaultBackplateColor = buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.color;
     }
 
     ///<summary>
@@ -60,8 +68,8 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// When called set the button active, set the selected object as its parent and initialise it
     ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent _e)
+    ///<param name="e">The event's instance</param>
+    private void OnSelectItem(OnSelectItemEvent e)
     {
         buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
         Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
@@ -78,8 +86,8 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// When called set the button inactive
     ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent _e)
+    ///<param name="e">The event's instance</param>
+    private void OnDeselectItem(OnDeselectItemEvent e)
     {
         buttonWrapper.SetActive(false);
     }
@@ -87,10 +95,23 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// When called change the front boolean accordingly
     ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnChangeOrientation(ChangeOrientationEvent _e)
+    ///<param name="e">The event's instance</param>
+    private void OnChangeOrientation(ChangeOrientationEvent e)
     {
-        front = _e.front;
+        front = e.front;
+    }
+
+    private void OnEditModeIn(EditModeInEvent e)
+    {
+        buttonToggleFocus.SetActive(false);
+        buttonSelectParent.SetActive(false);
+        buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color",Color.green);
+    }
+    private void OnEditModeOut(EditModeOutEvent e)
+    {
+        buttonToggleFocus.SetActive(true);
+        buttonSelectParent.SetActive(true);
+        buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", defaultBackplateColor);
     }
 
     ///<summary>
@@ -132,6 +153,9 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Prevents the user from reselecting too quickly
+    ///</summary>
     private IEnumerator SelectionDelay()
     {
         HandInteractionHandler.canSelect = false;
@@ -140,6 +164,9 @@ public class ButtonManager : MonoBehaviour
         HandInteractionHandler.canSelect = true;
     }
 
+    ///<summary>
+    /// See ResetAllPositions
+    ///</summary>
     public void ButtonResetPosition()
     {
         ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
@@ -150,61 +177,15 @@ public class ButtonManager : MonoBehaviour
         if (GameManager.gm.focus.Count == 0)
             return;
         GameObject focusedObject = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-        CustomRendererOutline rendererOutline = focusedObject.GetComponent<CustomRendererOutline>();
         if (!editMode)
         {
             editMode = true;
-            rendererOutline.SetMaterial(rendererOutline.editMaterial);
-
-            //enable collider used for manipulation
-            focusedObject.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-
-            //disable rack colliders used for selection
-            if (focusedObject.GetComponent<OgreeObject>().category != "rack")
-            {
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = false;
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = true;
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-            }
-
-            //disable children colliders
-            focusedObject.GetComponent<FocusHandler>().UpdateChildMeshRenderers(true);
-
-            for (int i = 0; i < focusedObject.transform.childCount; i++)
-            {
-                OgreeObject ogree = focusedObject.transform.GetChild(i).GetComponent<OgreeObject>();
-                if (ogree == null)
-                {
-                    continue;
-                }
-                focusedObject.transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-            }
-
+            EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
         {
             editMode = false;
-            rendererOutline.SetMaterial(rendererOutline.focusMaterial);
-
-            focusedObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-
-            if (focusedObject.GetComponent<OgreeObject>().category != "rack")
-            {
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = true;
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = false;
-                focusedObject.transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-            }
-            focusedObject.GetComponent<FocusHandler>().UpdateChildMeshRenderers(true, true);
-
-            for (int i = 0; i < focusedObject.transform.childCount; i++)
-            {
-                OgreeObject ogree = focusedObject.transform.GetChild(i).GetComponent<OgreeObject>();
-                if (ogree == null)
-                {
-                    continue;
-                }
-                focusedObject.transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-            }
+            EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
     }
 }

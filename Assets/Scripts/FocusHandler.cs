@@ -50,6 +50,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -67,6 +70,9 @@ public class FocusHandler : MonoBehaviour
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+
+        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
@@ -128,7 +134,6 @@ public class FocusHandler : MonoBehaviour
         }
         if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            print(gameObject);
             transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
         }
     }
@@ -146,6 +151,64 @@ public class FocusHandler : MonoBehaviour
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
             GetComponent<OgreeObject>().ResetPosition();
+        }
+    }
+
+    private void OnEditModeIn(EditModeInEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+
+            //enable collider used for manipulation
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+
+            //disable rack colliders used for selection
+            if (GetComponent<OgreeObject>().category != "rack")
+            {
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            }
+
+            //disable children colliders
+            UpdateChildMeshRenderers(true);
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                OgreeObject ogree = transform.GetChild(i).GetComponent<OgreeObject>();
+                if (ogree == null ||ogree.category == "sensor")
+                {
+                    continue;
+                }
+                transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            }
+        }
+    }
+
+    private void OnEditModeOut(EditModeOutEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+
+            if (GetComponent<OgreeObject>().category != "rack")
+            {
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            }
+            UpdateChildMeshRenderers(true, true);
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                OgreeObject ogree = transform.GetChild(i).GetComponent<OgreeObject>();
+                if (ogree == null)
+                {
+                    continue;
+                }
+                transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            }
         }
     }
 

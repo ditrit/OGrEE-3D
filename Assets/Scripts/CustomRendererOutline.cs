@@ -48,6 +48,9 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -64,6 +67,9 @@ public class CustomRendererOutline : MonoBehaviour
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+
+        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
@@ -152,6 +158,22 @@ public class CustomRendererOutline : MonoBehaviour
                 GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
                 newFocus.GetComponent<CustomRendererOutline>().SetMaterial(focusMaterial);
             }
+        }
+    }
+
+    private void OnEditModeIn(EditModeInEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            SetMaterial(editMaterial);
+        }
+    }
+
+    private void OnEditModeOut(EditModeOutEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            SetMaterial(focusMaterial);
         }
     }
 
