@@ -8,6 +8,7 @@ public class CustomRendererOutline : MonoBehaviour
     public Material mouseHoverMaterial;
     public Material highlightMaterial;
     public Material focusMaterial;
+    public Material editMaterial;
     private Material defaultMaterial;
     private Material transparentMaterial;
 
@@ -222,7 +223,7 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    private void SetMaterial(Material _newMat)
+    public void SetMaterial(Material _newMat)
     {
         Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
         Material mat = renderer.material;

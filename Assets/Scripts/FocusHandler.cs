@@ -145,6 +145,7 @@ public class FocusHandler : MonoBehaviour
             isFocused = false;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
+            GetComponent<OgreeObject>().ResetPosition();
         }
     }
 

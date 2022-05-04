@@ -98,6 +98,8 @@ MonoBehaviour:
   description: []
   domain: 
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
@@ -159,6 +161,7 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
+  editMaterial: {fileID: 2100000, guid: 8795381f36ef913469ade927d7690adc, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
