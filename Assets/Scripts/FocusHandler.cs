@@ -21,7 +21,7 @@ public class FocusHandler : MonoBehaviour
     public bool isHovered = false;
     public bool isFocused = false;
 
-    private bool isFrontOriented = true;
+    public bool isFrontOriented = true;
 
     private void Start()
     {
@@ -88,8 +88,6 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj.Equals(gameObject))
         {
-            await GetComponent<OgreeObject>().LoadChildren("1");
-            UpdateChildMeshRenderers(true, true);
             isSelected = true;
             ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
@@ -98,6 +96,9 @@ public class FocusHandler : MonoBehaviour
                 UpdateOwnMeshRenderers(false);
             }
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            await GetComponent<OgreeObject>().LoadChildren("1");
+            ChangeOrientation(isFrontOriented, false);
+            UpdateChildMeshRenderers(true, true);
         }
     }
 
@@ -132,7 +133,7 @@ public class FocusHandler : MonoBehaviour
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
 
         }
-        if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
             transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
         }
@@ -152,6 +153,11 @@ public class FocusHandler : MonoBehaviour
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
             GetComponent<OgreeObject>().ResetPosition();
         }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            GetComponent<OgreeObject>().ResetPosition();
+        }
     }
 
     private void OnEditModeIn(EditModeInEvent e)
@@ -165,23 +171,19 @@ public class FocusHandler : MonoBehaviour
             //disable rack colliders used for selection
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = false;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = true;
                 transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
             }
 
             //disable children colliders
             UpdateChildMeshRenderers(true);
-
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                OgreeObject ogree = transform.GetChild(i).GetComponent<OgreeObject>();
-                if (ogree == null ||ogree.category == "sensor")
-                {
-                    continue;
-                }
-                transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-            }
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
         }
     }
 
@@ -194,21 +196,18 @@ public class FocusHandler : MonoBehaviour
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionTouchable>().enabled = true;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>().enabled = false;
                 transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
             }
             UpdateChildMeshRenderers(true, true);
 
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                OgreeObject ogree = transform.GetChild(i).GetComponent<OgreeObject>();
-                if (ogree == null)
-                {
-                    continue;
-                }
-                transform.GetChild(i).GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-            }
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
         }
     }
 
@@ -467,6 +466,11 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
     public void ChangeOrientation(bool _front, bool _self = true)
     {
+
+        foreach (GameObject child in ogreeChildObjects)
+        {
+            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
+        }
         if (isFrontOriented == _front)
         {
             return;
@@ -488,10 +492,6 @@ public class FocusHandler : MonoBehaviour
                     touchable.SetLocalCenter(new Vector3(0, 0, -0.5f));
                 }
             }
-        }
-        foreach (GameObject child in ogreeChildObjects)
-        {
-            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
         }
     }
 

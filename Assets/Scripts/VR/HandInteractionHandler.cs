@@ -51,7 +51,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     {
         if (isARack)
         {
-            print(transform.parent.GetComponent<OObject>().attributes["orientation"]);
             if (front)
                 FrontSelected();
             else

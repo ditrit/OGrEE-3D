@@ -531,7 +531,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2);
         consoleController.RunCommandString("CED.BETA:details=3");
         //yield return new WaitForSeconds(2);
-        //consoleController.RunCommandString("=CED.BETA.A.R1.A02");
+        //consoleController.RunCommandString("EDF.NOE.BI2:details=2");
 
 
     }

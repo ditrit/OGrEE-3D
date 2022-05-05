@@ -696,6 +696,8 @@ GameObject:
   - component: {fileID: 5472215424121809831}
   - component: {fileID: 8376138954405355199}
   - component: {fileID: 8950902018713588102}
+  - component: {fileID: 245170220423181377}
+  - component: {fileID: 9035393202419204769}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Selectable
@@ -907,6 +909,39 @@ MonoBehaviour:
   handType: 3
   proximityType: 3
   constraintOnMovement: -1
+  useLocalSpaceForConstraint: 0
+--- !u!114 &245170220423181377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4254767957273672101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 820f94d57893bf843a0cd6d93313fe6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  scaleMinimum: 1
+  scaleMaximum: 1
+  relativeToInitialState: 1
+--- !u!114 &9035393202419204769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4254767957273672101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  constraintOnRotation: -1
   useLocalSpaceForConstraint: 0
 --- !u!1 &5787917316046418944
 GameObject:
@@ -1182,6 +1217,7 @@ MonoBehaviour:
   isSelected: 0
   isHovered: 0
   isFocused: 0
+  isFrontOriented: 1
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0

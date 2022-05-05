@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonToggleFocus;
+    [SerializeField] private ParentConstraint parentConstraint;
 
     private Color defaultBackplateColor;
     // Start is called before the first frame update
@@ -21,6 +23,8 @@ public class ButtonManager : MonoBehaviour
         EventManager.Instance.AddListener<ChangeOrientationEvent>(OnChangeOrientation);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         buttonWrapper.SetActive(false);
@@ -78,8 +82,19 @@ public class ButtonManager : MonoBehaviour
         buttonWrapper.transform.localPosition = Vector3.zero;
         buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
         buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x : parentSize.x, parentSize.y + 0.06f, front ? parentSize.z : -parentSize.z) / 2;
+        ConstraintSource source = new ConstraintSource
+        {
+            weight = 1,
+            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
+        };
+        parentConstraint.SetSource(0, source);
+        parentConstraint.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
+        parentConstraint.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
         buttonWrapper.transform.SetParent(null);
+
+        parentConstraint.constraintActive = true;
         buttonWrapper.SetActive(true);
+        buttonEdit.SetActive(false);
 
     }
 
@@ -90,6 +105,15 @@ public class ButtonManager : MonoBehaviour
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
         buttonWrapper.SetActive(false);
+    }
+
+    private void OnFocusItem(OnFocusEvent e)
+    {
+        buttonEdit.SetActive(true);
+    }
+    private void OnUnFocusItem(OnUnFocusEvent e)
+    {
+        buttonEdit.SetActive(false);
     }
 
     ///<summary>
@@ -105,7 +129,7 @@ public class ButtonManager : MonoBehaviour
     {
         buttonToggleFocus.SetActive(false);
         buttonSelectParent.SetActive(false);
-        buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color",Color.green);
+        buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.green);
     }
     private void OnEditModeOut(EditModeOutEvent e)
     {
@@ -121,8 +145,8 @@ public class ButtonManager : MonoBehaviour
     {
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1])
         {
-            GameManager.gm.UnfocusItem();
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
+            GameManager.gm.UnfocusItem();
 
         }
         else
@@ -170,6 +194,9 @@ public class ButtonManager : MonoBehaviour
     public void ButtonResetPosition()
     {
         ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetPosition();
+
+
     }
 
     public void ButtonEditMode()
