@@ -12,6 +12,8 @@ public class ConfigLoader
     {
         public string verbose;
         public string fullscreen;
+        public string cachePath;
+        public float cacheLimitMo;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
         public string api_url;
@@ -20,6 +22,7 @@ public class ConfigLoader
 
     private SConfig config;
     private bool verbose = false;
+    private string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file, look for CLI overrides and starts with --file if given.
@@ -29,7 +32,7 @@ public class ConfigLoader
         config = LoadConfigFile();
         OverrideConfig();
 
-        ApplyConfig(config);
+        ApplyConfig();
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
@@ -107,12 +110,12 @@ public class ConfigLoader
     ///<summary>
     /// For each SConfig value, call corresponding method.
     ///</summary>
-    ///<param name="_config">The SConfig to apply</param>
-    private void ApplyConfig(SConfig _config)
+    private void ApplyConfig()
     {
-        verbose = (_config.verbose == "true");
+        verbose = (config.verbose == "true");
 
-        FullScreenMode((_config.fullscreen == "true"));
+        FullScreenMode((config.fullscreen == "true"));
+        CreateCacheDir();
     }
 
     ///<summary> 
@@ -124,6 +127,44 @@ public class ConfigLoader
         if (verbose)
             GameManager.gm.AppendLogLine($"Fullscreen: {_value}");
         Screen.fullScreen = _value;
+    }
+
+    ///<summary>
+    /// Create a cache folder in the given directory.
+    ///</summary>
+    private void CreateCacheDir()
+    {
+        string fullPath = config.cachePath + cacheDirName;
+        try
+        {
+            if (!Directory.Exists(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", "green");
+            }
+        }
+        catch (IOException ex)
+        {
+            Debug.LogError(ex.Message);
+        }
+    }
+
+    ///<summary>
+    /// Get the path of the cache directory from config.
+    ///</summary>
+    ///<returns>The path of the cache directory</returns>
+    public string GetCacheDir()
+    {
+        return config.cachePath + cacheDirName;
+    }
+
+    ///<summary>
+    /// Get the limit size in Mo of the cache from config.
+    ///</summary>
+    ///<returns>The limit size (Mo) of the cache</returns>
+    public float GetCacheLimit()
+    {
+        return config.cacheLimitMo;
     }
 
     ///<summary>

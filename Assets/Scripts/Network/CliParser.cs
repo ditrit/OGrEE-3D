@@ -118,7 +118,7 @@ public class CliParser// : MonoBehaviour
     private async void Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
-        GameManager.gm.RegisterApi(logData.api_url, logData.api_token);
+        GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
         await GameManager.gm.ConnectToApi();
     }
 
@@ -165,6 +165,7 @@ public class CliParser// : MonoBehaviour
                 GameManager.gm.AppendLogLine($"Unknown object type ({obj.category})", "yellow");
                 break;
         }
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
