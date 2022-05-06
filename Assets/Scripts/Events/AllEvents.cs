@@ -52,3 +52,7 @@ public class UpdateTenantEvent : CustomEvent
     public string name;
 }
 
+public class ChangeOrientationEvent : CustomEvent
+{
+    public bool front;
+}

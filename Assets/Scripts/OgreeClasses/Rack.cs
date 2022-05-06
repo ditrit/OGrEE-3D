@@ -13,15 +13,15 @@ public class Rack : OObject
 
     private void Start()
     {
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusObject);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusObject);
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectObject);
+        //EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectObject);
     }
     
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusObject);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusObject);
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectObject);
+        //EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectObject);
     }
        
 
@@ -320,7 +320,7 @@ public class Rack : OObject
         Utils.SwitchAllCollidersInRacks(false);
     }
 
-    public void OnFocusObject(OnFocusEvent _e)
+    public void OnSelectObject(OnSelectItemEvent _e)
     {
         if (_e.obj == gameObject)
         {
@@ -329,14 +329,14 @@ public class Rack : OObject
         }
     }
 
-    private void OnUnFocusObject(OnUnFocusEvent _e)
+    /*private void OnDeselectObject(OnDeselectItemEvent _e)
     {
         if (_e.obj == gameObject)
         {
             ToggleU("false");
             GameManager.gm.AppendLogLine($"U helpers OFF {name}.", "yellow");
         }
-    }
+    }*/
 
 }
 

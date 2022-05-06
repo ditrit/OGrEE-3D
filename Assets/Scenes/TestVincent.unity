@@ -445,6 +445,54 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &261697930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 261697932}
+  - component: {fileID: 261697931}
+  m_Layer: 0
+  m_Name: Grid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &261697931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261697930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702cd938d3864b4418bd48857c170758, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 5
+  height: 5
+  gridSpaceSize: 0.2
+  gridCellPrefab: {fileID: 7312236900178354374, guid: 30f635fcb57947b4cbf1f986d63ccb66,
+    type: 3}
+--- !u!4 &261697932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261697930}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.77095145, y: 0.6986319, z: 0.78075194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &296993500
 GameObject:
   m_ObjectHideFlags: 0
@@ -5584,7 +5632,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 4280060060418531301}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6dd8f2349f505c24f96999fa533a8e76, type: 3}
   m_Name: 
@@ -11555,6 +11603,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager_Test
       objectReference: {fileID: 0}
+    - target: {fileID: 4280060060866540642, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4280060060866540653, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
         type: 3}
       propertyPath: host
@@ -11564,6 +11617,11 @@ PrefabInstance:
         type: 3}
       propertyPath: site
       value: PCY
+      objectReference: {fileID: 0}
+    - target: {fileID: 4280060060866540653, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4280060060866540653, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
         type: 3}
@@ -12488,7 +12546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7435250093801407323
 Transform:
   m_ObjectHideFlags: 0

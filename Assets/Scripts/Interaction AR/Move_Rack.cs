@@ -31,7 +31,7 @@ public class Move_Rack : MonoBehaviour
             {
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
-                    t.position += new Vector3(0.0f, (2 * sliderY.SliderEndDistance * sliderY.SliderValue + sliderY.SliderStartDistance) /100, 0.0f);
+                    t.position += new Vector3(0.0f, (2 * sliderY.SliderEndDistance * sliderY.SliderValue + sliderY.SliderStartDistance) /20, 0.0f);
                     return;
                 }
                 t = t.parent.transform;
@@ -45,7 +45,7 @@ public class Move_Rack : MonoBehaviour
         Transform t = GameManager.gm.currentItems[0].transform;
 
         float localAngleCameraRadian = Mathf.Deg2Rad * t.eulerAngles.y;
-        float offset = (2 * sliderX.SliderEndDistance * sliderX.SliderValue + sliderX.SliderStartDistance) /100;
+        float offset = (2 * sliderX.SliderEndDistance * sliderX.SliderValue + sliderX.SliderStartDistance) /20;
 
         if (GameManager.gm.currentItems.Count == 0)
         {

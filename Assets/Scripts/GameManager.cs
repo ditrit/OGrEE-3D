@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
+using TMPro;
 
 
 public class GameManager : MonoBehaviour
@@ -11,17 +12,10 @@ public class GameManager : MonoBehaviour
     public ConsoleController consoleController;
     public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
-    public bool hololens = true;
 
-    [Header("VR")]
-    [SerializeField] private TextMeshPro apiButtonVRText = null;
-    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
-    [SerializeField] private TextMeshPro focusTextVR = null;
     private float nextSelectionTimeLimit = 1.0f;
     private float lastSelectionTime = 0.0f;
     public Camera m_camera;
-
-    GameObject rackInScene;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -54,7 +48,7 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    public bool isWireframe;
+
 
     public List<GameObject> focus = new List<GameObject>();
 
@@ -103,22 +97,6 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-
-    private IEnumerator MoveRacktoCamera()
-    {
-        yield return new WaitForSeconds(4);
-        rackInScene = GameObject.Find("/" + t_tenants + "/" + s_sites + "/" + b_buildings + "/" + r_room + "/" + rc_rack);
-        if (rackInScene != null)
-        {
-            AppendLogLine("Rack Found in the scene after loading from API", "green");
-        }
-        else 
-        {
-            AppendLogLine("NOT Found", "red");
-        }
-        Utils.MoveObjectToCamera(rackInScene, m_camera);
-
-    }
 
     ///<summary>
     /// Check if simple or double click and call corresponding method.
@@ -287,19 +265,9 @@ public class GameManager : MonoBehaviour
         if (Time.time > lastSelectionTime + nextSelectionTimeLimit)
         {
             SetCurrentItem(_g);
-            StartCoroutine(FocusThis(_g));
+            //FocusItem(_g);
             lastSelectionTime = Time.time;
         }
-    }
-
-    ///<summary>
-    /// Coroutine to wait for end of frame before focusing.
-    ///</summary>
-    ///<param name="_g">The GameObject to select</param>
-    private IEnumerator FocusThis(GameObject _g)
-    {
-        yield return new WaitForEndOfFrame();
-        GameManager.gm.FocusItem(_g);
     }
 
     ///<summary>
@@ -383,30 +351,6 @@ public class GameManager : MonoBehaviour
         FocusItem(_obj);
     }
 
-    ///<summary>
-    /// Update focusText according to focus' last item.
-    ///</summary>
-    private void UpdateFocusText()
-    {
-        if (focus.Count > 0)
-        {
-            string objName = focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
-
-#if VR
-            focusTextVR.text = $"Focus on {objName}";
-#endif
-            focusText.text = $"Focus on {objName}";
-        }
-        else
-        {
-            focusText.text = "No focus";
-#if VR
-            focusTextVR.text = "No focus";
-#endif
-        }
-
-        AppendLogLine(focusText.text, "green");
-    }
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.

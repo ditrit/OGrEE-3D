@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using TMPro;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 
 public class Label
 {
@@ -31,14 +32,15 @@ public class Photo_Capture : MonoBehaviour
     }
     private string currentHost = "";
     public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.17.231";
+    public string telephoneHost = "192.168.228.231";
     public string customer = "EDF";
-    public string site = "PCY";
+    public string site = "NOE";
     private string building;
     private string room;
     private string rack;
     private string customerAndSite;
     public string port = "5000";
+    public GameObject ButtonPicture;
     public GameObject quadButtonNoe;
     public GameObject quadButtonPcy;
     public GameObject quadButtonMaison;
@@ -205,6 +207,15 @@ public class Photo_Capture : MonoBehaviour
         building = await ApiManager.instance.GetObjectName($"buildings/" + data);
     }
 
+    private void OnClosedDialogEvent(DialogResult _obj)
+    {
+
+        if (_obj.Result == DialogButtonType.Confirm)
+        {
+            
+        }
+    }
+
     ///<summary>
     /// Load the 3D model of a rack
     ///</summary>
@@ -228,6 +239,7 @@ public class Photo_Capture : MonoBehaviour
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
         Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera);
         await rack.GetComponent<OgreeObject>().LoadChildren("3");
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -251,12 +263,11 @@ public class Photo_Capture : MonoBehaviour
                 apiResponseTMP.text = www.error;
                 RequestFailColor();
             }
+
             else
             {
-                RequestSuccessColor();
                 string text = www.downloadHandler.text;
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
-                
                 site = labelReceived.site;
 
                 if (site == "PCY")
@@ -264,18 +275,25 @@ public class Photo_Capture : MonoBehaviour
                     room = "UC" + labelReceived.room;
                 }
                 room = labelReceived.room;
-                room = room.Substring(3);
+                if (room.Length > 3)
+                    room = room.Substring(3);
                 rack = labelReceived.rack;
 
                 apiResponseTMP.text = $"The label read is {site}{room}-{rack}";
-
                 if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
                 {
+                    RequestFailColor();
                     apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room and the rack label";
                 }
-                if (string.IsNullOrEmpty(room))
+                else if (string.IsNullOrEmpty(room))
                 {
+                    RequestFailColor();
                     apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room label";
+                }
+                else if (string.IsNullOrEmpty(rack))
+                {
+                    RequestFailColor();
+                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the rack label";
                 }
 
                 else if (!string.IsNullOrEmpty(rack))
@@ -283,23 +301,40 @@ public class Photo_Capture : MonoBehaviour
                     await SetBuilding(room);
                     if (building == "error" || building == null)
                     {
+                        RequestFailColor();
                         GameManager.gm.AppendLogLine(building);
                         apiResponseTMP.text = apiResponseTMP.text + "\nError while getting the parent building of the room";
                     }
                     else
                     {
+                        RequestSuccessColor();
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
-                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Rack Trouvé !", $"Cliquer sur 'Confirm' pour placer le rack {site}{room}-{rack} devant vous", true);
+
+                        ButtonPicture.SetActive(false);
+                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Rack Trouvé !", $"Cliquez sur 'Confirm' pour placer le rack {site}{room}-{rack} devant vous.'\n'Cliquez sur 'Cancel' si l'étiquette a mal été lue et que vous souhaitez reprendre une photo.", true);
+                        myDialog.GetComponent<ConstantViewSize>().enabled = false;
                         while (myDialog.State != DialogState.Closed)
                         {
                             await Task.Delay(100);
                         }
-                        await LoadSingleRack(customer, site, building, room, rack);
-                        apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";
+
+                        if (myDialog.Result.Result == DialogButtonType.Confirm)
+                        {
+                            await LoadSingleRack(customer, site, building, room, rack);
+                            apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";        
+                        }
+
+                        if (myDialog.Result.Result == DialogButtonType.Cancel)
+                        {
+                            ButtonPicture.SetActive(true);    
+                        }
                     }
                 }
 
-
+                else
+                {
+                    RequestFailColor();
+                }
             }
         }
     }
