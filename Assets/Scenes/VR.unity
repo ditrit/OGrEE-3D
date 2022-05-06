@@ -8062,8 +8062,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.89205664
+  m_Value: -0.0000017936319
+  m_Size: 0.8913231
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9113,6 +9113,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1183181555}
   m_CullTransparentMesh: 0
+--- !u!1 &1224179683 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5135629249856748320, guid: 2eed0cf81eb8cde49931927b4b44ce2a,
+    type: 3}
+  m_PrefabInstance: {fileID: 75233375}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1250569374
 GameObject:
   m_ObjectHideFlags: 0
@@ -10523,6 +10529,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374125311}
   m_CullTransparentMesh: 0
+--- !u!1 &1375868095 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3474411884748476878, guid: 7e71469d26cfa104497dde222c384910,
+    type: 3}
+  m_PrefabInstance: {fileID: 1443134066}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1386803468
 GameObject:
   m_ObjectHideFlags: 0
@@ -10690,7 +10702,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.02879}
+  m_AnchoredPosition: {x: 0, y: 34.028843}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped
@@ -14026,6 +14038,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1780799916}
   m_CullTransparentMesh: 0
+--- !u!1 &1849522918 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2850759456330660476, guid: 1d0247bea8caa054b83ff4d0e0f884c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 2137901327}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1865545554
 GameObject:
   m_ObjectHideFlags: 0
@@ -14304,6 +14322,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1883399028}
   - component: {fileID: 1883399029}
+  - component: {fileID: 1883399030}
   m_Layer: 0
   m_Name: Moving Buttons
   m_TagString: Untagged
@@ -14342,6 +14361,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonWrapper: {fileID: 1883399027}
+  buttonEdit: {fileID: 1375868095}
+  buttonSelectParent: {fileID: 1849522918}
+  buttonToggleFocus: {fileID: 1224179683}
+  parentConstraint: {fileID: 1883399030}
+--- !u!1773428102 &1883399030
+ParentConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883399027}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: 0}
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_RotationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 0}
+    weight: 1
 --- !u!1 &1885539395
 GameObject:
   m_ObjectHideFlags: 0
