@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Threading.Tasks;
 
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
@@ -28,6 +29,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
 
+
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -44,6 +46,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         attributes = new Dictionary<string, string>();
         for (int i = 0; i != Mathf.Min(attributesKeys.Count, attributesValues.Count); i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
+    }
+
+    private void Start()
+    {
+        originalLocalPosition = transform.localPosition;
     }
 
     private void OnEnable()

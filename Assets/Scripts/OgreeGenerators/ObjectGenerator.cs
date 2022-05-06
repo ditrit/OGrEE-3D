@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.UI;
 
 public class ObjectGenerator : MonoBehaviour
@@ -149,9 +150,6 @@ public class ObjectGenerator : MonoBehaviour
                 }
             }
         }
-        newRack.transform.GetChild(0).GetComponent<BoxCollider>().enabled = true;
-        newRack.transform.GetChild(0).gameObject.AddComponent<NearInteractionTouchableVolume>();
-        newRack.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
         return rack;
     }
 
@@ -246,6 +244,7 @@ public class ObjectGenerator : MonoBehaviour
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new Vector2(boxSize.x, boxSize.z);
             height = boxSize.y;
+
         }
         else
         {
@@ -301,7 +300,6 @@ public class ObjectGenerator : MonoBehaviour
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
             newDevice.GetComponent<OObject>().color = Color.white;
         }
-
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
@@ -339,7 +337,7 @@ public class ObjectGenerator : MonoBehaviour
                 }
             }
         }
-
+        dv.GetComponent<FocusHandler>().InitHandler();
         return dv;
     }
 
@@ -361,12 +359,7 @@ public class ObjectGenerator : MonoBehaviour
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-        //Microsoft.MixedReality.Toolkit.UI.ObjectManipulator objectManipulator = go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>();
-        //objectManipulator.HostTransform = go.transform;
-        //go.transform.GetChild(0).gameObject.AddComponent<Microsoft.MixedReality.Toolkit.Input.NearInteractionGrabbable>();
-        //go.transform.GetChild(0).gameObject.AddComponent<BoundsControl>();
-        go.transform.GetChild(0).gameObject.AddComponent<NearInteractionTouchableVolume>();
-        go.transform.GetChild(0).gameObject.AddComponent<HandInteractionHandler>();
+   
         return go;
     }
 
@@ -755,7 +748,7 @@ public class ObjectGenerator : MonoBehaviour
 
         string hn = sensor.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newSensor);
-
+        newSensor.GetComponent<FocusHandler>().InitHandler();
         return sensor;
     }
 
