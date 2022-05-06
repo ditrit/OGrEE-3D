@@ -245,7 +245,7 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    public void SetMaterial(Material _newMat)
+    private void SetMaterial(Material _newMat)
     {
         Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
         Material mat = renderer.material;

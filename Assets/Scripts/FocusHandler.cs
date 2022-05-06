@@ -95,10 +95,10 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
     }
 
