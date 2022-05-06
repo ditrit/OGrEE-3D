@@ -95,11 +95,12 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
+        
     }
 
     ///<summary>
@@ -268,8 +269,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else
-                if (child.name != "uRoot")
+            else if (child.name != "uRoot")
                 OwnObjectsList.Add(child.gameObject);
         }
     }

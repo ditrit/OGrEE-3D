@@ -1,10 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UnityEngine;
 using System.Threading.Tasks;
-
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
@@ -17,6 +15,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public List<string> description = new List<string>();
     public string domain; // = tenant
     public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -51,6 +51,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     private void Start()
     {
         originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 
     private void OnEnable()
@@ -263,7 +265,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        //GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
 
         if (_level != 0)
         {
@@ -311,5 +313,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public void ResetPosition()
     {
         transform.localPosition = originalLocalPosition;
+        transform.localRotation = originalLocalRotation;
+        transform.localScale = originalLocalScale;
     }
 }

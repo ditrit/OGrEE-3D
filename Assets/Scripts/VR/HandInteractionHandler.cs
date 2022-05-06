@@ -5,8 +5,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
+using System.Threading.Tasks;
 
-public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, IMixedRealityPointerHandler
+public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
 {
 
     #region Event handlers
@@ -14,7 +15,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
-    private static bool canSelect = true;
+    public static bool canSelect = true;
     public bool isARack = false;
     public bool front;
 
@@ -32,7 +33,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
-        GameManager.gm.WaitBeforeNewSelection(transform.parent.gameObject);
+        SelectThis();
     }
 
     ///<summary>
@@ -41,26 +42,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchUpdated(HandTrackingInputEventData eventData)
     {
-
-    }
-
-    void IMixedRealityPointerHandler.OnPointerClicked(MixedRealityPointerEventData _eventData)
-    {
-        GameManager.gm.WaitBeforeNewSelection(transform.parent.gameObject);
-    }
-
-    void IMixedRealityPointerHandler.OnPointerDown(MixedRealityPointerEventData _eventData)
-    {
-    }
-
-    void IMixedRealityPointerHandler.OnPointerUp(MixedRealityPointerEventData _eventData)
-    {
-
-    }
-
-    void IMixedRealityPointerHandler.OnPointerDragged(MixedRealityPointerEventData _eventData)
-    {
-
     }
 
     ///<summary>
@@ -83,12 +64,20 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     ///</summary>
     public IEnumerator SelectThisCoroutine()
     {
-        if(canSelect)
+        if (canSelect)
         {
             canSelect = false;
+            if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] != transform.parent.parent.gameObject)
+            {
+                GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
+                Task task = previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
+                yield return new WaitUntil(() => task.IsCompleted);
+                previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+                previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+            }
             GameManager.gm.SetCurrentItem(transform.parent.gameObject);
             yield return new WaitForEndOfFrame();
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1.5f);
             canSelect = true;
         }
 
@@ -99,8 +88,8 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     ///</summary>
     public void FrontSelected()
     {
-        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y == 0 });
-        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(true,false);
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = true });
+        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(true, false);
     }
 
     ///<summary>
@@ -108,8 +97,8 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler, 
     ///</summary>
     public void BackSelected()
     {
-        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = transform.parent.localRotation.y != 0 });
-        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(false,false);
+        EventManager.Instance.Raise(new ChangeOrientationEvent() { front = false });
+        transform.parent.GetComponent<FocusHandler>().ChangeOrientation(false, false);
     }
 
 }

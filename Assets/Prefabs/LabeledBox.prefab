@@ -695,9 +695,9 @@ GameObject:
   - component: {fileID: 7875496163010335191}
   - component: {fileID: 5472215424121809831}
   - component: {fileID: 8376138954405355199}
-  - component: {fileID: 8892312434628029712}
   - component: {fileID: 8950902018713588102}
-  - component: {fileID: 1288800983793762150}
+  - component: {fileID: 245170220423181377}
+  - component: {fileID: 9035393202419204769}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Selectable
@@ -845,7 +845,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4254767957273672101}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5afd5316c63705643b3daba5a6e923bd, type: 3}
   m_Name: 
@@ -894,22 +894,6 @@ MonoBehaviour:
   localCenter: {x: 0, y: 0, z: 0.5}
   bounds: {x: 1, y: 1}
   touchableCollider: {fileID: 280631025753518186}
---- !u!114 &8892312434628029712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4254767957273672101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  handType: 3
-  proximityType: 3
-  constraintOnRotation: -1
-  useLocalSpaceForConstraint: 0
 --- !u!114 &8950902018713588102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -926,7 +910,7 @@ MonoBehaviour:
   proximityType: 3
   constraintOnMovement: -1
   useLocalSpaceForConstraint: 0
---- !u!114 &1288800983793762150
+--- !u!114 &245170220423181377
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -943,6 +927,22 @@ MonoBehaviour:
   scaleMinimum: 1
   scaleMaximum: 1
   relativeToInitialState: 1
+--- !u!114 &9035393202419204769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4254767957273672101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b3e6359c9750ad4fb8a05c9b8704d7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handType: 3
+  proximityType: 3
+  constraintOnRotation: -1
+  useLocalSpaceForConstraint: 0
 --- !u!1 &5787917316046418944
 GameObject:
   m_ObjectHideFlags: 0
@@ -1190,6 +1190,7 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
+  editMaterial: {fileID: 2100000, guid: 8795381f36ef913469ade927d7690adc, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
@@ -1216,6 +1217,7 @@ MonoBehaviour:
   isSelected: 0
   isHovered: 0
   isFocused: 0
+  isFrontOriented: 1
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0

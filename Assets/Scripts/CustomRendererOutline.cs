@@ -8,6 +8,7 @@ public class CustomRendererOutline : MonoBehaviour
     public Material mouseHoverMaterial;
     public Material highlightMaterial;
     public Material focusMaterial;
+    public Material editMaterial;
     private Material defaultMaterial;
     private Material transparentMaterial;
 
@@ -47,8 +48,9 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        //EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        //EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+
 
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
     }
@@ -64,8 +66,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        //EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        //EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
     }
@@ -153,7 +155,23 @@ public class CustomRendererOutline : MonoBehaviour
             }
         }
     }
-    /*
+
+    private void OnEditModeIn(EditModeInEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            SetMaterial(editMaterial);
+        }
+    }
+
+    private void OnEditModeOut(EditModeOutEvent e)
+    {
+        if (e.obj.Equals(gameObject))
+        {
+            SetMaterial(focusMaterial);
+        }
+    }
+
     ///<summary>
     /// When called checks if he is the GameObject hovered on and change its material.
     ///</summary>
@@ -193,7 +211,7 @@ public class CustomRendererOutline : MonoBehaviour
             isHovered = false;
         }
     }
-    */
+
     ///<summary>
     /// Change the material for highlightMaterial if this gameObject is highlighted.
     ///</summary>
@@ -222,7 +240,7 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    private void SetMaterial(Material _newMat)
+    public void SetMaterial(Material _newMat)
     {
         Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
         Material mat = renderer.material;
