@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 ///<summary>
@@ -20,7 +21,7 @@ public class FocusHandler : MonoBehaviour
     public bool isHovered = false;
     public bool isFocused = false;
 
-    private bool isFrontOriented = true;
+    public bool isFrontOriented = true;
 
     private void Start()
     {
@@ -49,6 +50,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+
         EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -67,6 +71,9 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
+        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
+
         EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
@@ -77,11 +84,10 @@ public class FocusHandler : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent e)
+    private async void OnSelectItem(OnSelectItemEvent e)
     {
         if (e.obj.Equals(gameObject))
         {
-            UpdateChildMeshRenderers(true, true);
             isSelected = true;
             ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
@@ -90,6 +96,9 @@ public class FocusHandler : MonoBehaviour
                 UpdateOwnMeshRenderers(false);
             }
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            await GetComponent<OgreeObject>().LoadChildren("1");
+            ChangeOrientation(isFrontOriented, false);
+            UpdateChildMeshRenderers(true, true);
         }
     }
 
@@ -122,6 +131,11 @@ public class FocusHandler : MonoBehaviour
             isFocused = true;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -137,6 +151,63 @@ public class FocusHandler : MonoBehaviour
             isFocused = false;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
+            GetComponent<OgreeObject>().ResetPosition();
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            GetComponent<OgreeObject>().ResetPosition();
+        }
+    }
+
+    private void OnEditModeIn(EditModeInEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+
+            //enable collider used for manipulation
+            transform.GetChild(0).GetComponent<Collider>().enabled = true;
+
+            //disable rack colliders used for selection
+            if (GetComponent<OgreeObject>().category != "rack")
+            {
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+            }
+
+            //disable children colliders
+            UpdateChildMeshRenderers(true);
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+        }
+    }
+
+    private void OnEditModeOut(EditModeOutEvent e)
+    {
+        if (e.obj == gameObject)
+        {
+
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+
+            if (GetComponent<OgreeObject>().category != "rack")
+            {
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
+                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+            }
+            UpdateChildMeshRenderers(true, true);
+
+        }
+        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
+        {
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
         }
     }
 
@@ -199,7 +270,7 @@ public class FocusHandler : MonoBehaviour
                 slotsChildObjects.Add(child.gameObject);
             else
                 if (child.name != "uRoot")
-                    OwnObjectsList.Add(child.gameObject);
+                OwnObjectsList.Add(child.gameObject);
         }
     }
 
@@ -252,7 +323,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
     ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
+    public void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
@@ -396,6 +467,11 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
     public void ChangeOrientation(bool _front, bool _self = true)
     {
+
+        foreach (GameObject child in ogreeChildObjects)
+        {
+            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
+        }
         if (isFrontOriented == _front)
         {
             return;
@@ -417,10 +493,6 @@ public class FocusHandler : MonoBehaviour
                     touchable.SetLocalCenter(new Vector3(0, 0, -0.5f));
                 }
             }
-        }
-        foreach (GameObject child in ogreeChildObjects)
-        {
-            child.GetComponent<FocusHandler>().ChangeOrientation(_front);
         }
     }
 

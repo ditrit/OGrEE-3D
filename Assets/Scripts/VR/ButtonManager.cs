@@ -14,6 +14,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonResetPosition;
     [SerializeField] private GameObject buttonDeselect;
     [SerializeField] private GameObject buttonToggleFocus;
+    
     // Start is called before the first frame update
     void Start()
     {

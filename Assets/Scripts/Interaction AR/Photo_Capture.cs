@@ -56,7 +56,7 @@ public class Photo_Capture : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostTelephone();
+        SetHostMaison();
         if (currentHost == maisonHost)
         {
             SetHostMaison();
@@ -238,7 +238,7 @@ public class Photo_Capture : MonoBehaviour
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
         Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera);
-        await rack.GetComponent<OgreeObject>().LoadChildren("3");
+        //await rack.GetComponent<OgreeObject>().LoadChildren("3");
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
