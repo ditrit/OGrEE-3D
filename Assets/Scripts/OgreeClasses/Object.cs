@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -288,30 +288,40 @@ public class OObject : OgreeObject
     ///<param name="_value">The temperature value</param>
     public void SetTemperature(string _value)
     {
-        if (Regex.IsMatch(_value, "^[0-9.]+$"))
+        if (category == "corridor")
         {
-            attributes["temperature"] = _value;
-            GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
-            if (sensor)
-                sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+            if (Regex.IsMatch(_value, "^(cold|warm)$"))
+                attributes["temperature"] = _value;
             else
-            {
-                SApiObject se = new SApiObject();
-                se.description = new List<string>();
-                se.attributes = new Dictionary<string, string>();
-
-                se.name = "sensor"; // ?
-                se.category = "sensor";
-                se.attributes["formFactor"] = "ext";
-                se.attributes["temperature"] = _value;
-                se.parentId = id;
-                se.domain = domain;
-
-                ObjectGenerator.instance.CreateSensor(se, transform);
-            }
+                GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", "yellow");
         }
         else
-            GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+        {
+            if (Regex.IsMatch(_value, "^[0-9.]+$"))
+            {
+                attributes["temperature"] = _value;
+                GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
+                if (sensor)
+                    sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+                else
+                {
+                    SApiObject se = new SApiObject();
+                    se.description = new List<string>();
+                    se.attributes = new Dictionary<string, string>();
+
+                    se.name = "sensor"; // ?
+                    se.category = "sensor";
+                    se.attributes["formFactor"] = "ext";
+                    se.attributes["temperature"] = _value;
+                    se.parentId = id;
+                    se.domain = domain;
+
+                    ObjectGenerator.instance.CreateSensor(se, transform);
+                }
+            }
+            else
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+        }
     }
 
 }
