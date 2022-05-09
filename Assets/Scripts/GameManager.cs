@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 
-[RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
@@ -92,11 +91,8 @@ public class GameManager : MonoBehaviour
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
 
-        if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
-            && Input.GetMouseButtonUp(0))
-        {
+        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
             clickCount++;
-        }
 
         if (clickCount == 1 && coroutineAllowed)
             StartCoroutine(DoubleClickDetection(Time.time));

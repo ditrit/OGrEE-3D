@@ -5787,7 +5787,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2022-04-26 #8ee4d7d'
+  m_text: 'B: 2022-05-09 #7865349'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -11341,8 +11341,6 @@ GameObject:
   - component: {fileID: 1595579784}
   - component: {fileID: 1595579783}
   - component: {fileID: 1595579789}
-  - component: {fileID: 1595579786}
-  - component: {fileID: 1595579790}
   - component: {fileID: 1595579787}
   m_Layer: 0
   m_Name: GameManager
@@ -11447,21 +11445,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88f67080af84f7941ad4475b12fe305b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1595579786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1595579780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80f1070dbaf2103418541e4a1c881356, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  origin: {x: 0, y: 0, z: 0}
-  dest: {x: 0, y: 0, z: 0}
-  hasDrag: 0
 --- !u!114 &1595579787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11508,19 +11491,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19d4acf235c688e42bdc9d07fd40ade1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1595579790
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1595579780}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35b0566274456e4293d466ba6106bf2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  savedObjectThatWeHover: {fileID: 0}
 --- !u!114 &1595579791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15849,7 +15819,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.55380994
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
