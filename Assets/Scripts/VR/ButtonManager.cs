@@ -15,6 +15,8 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonToggleFocus;
     [SerializeField] private ParentConstraint parentConstraint;
+    [SerializeField] private float verticalOffset = 0.06f;
+    [SerializeField] private float horizontalOffset = 0f;
 
     private Color defaultBackplateColor;
     // Start is called before the first frame update
@@ -81,7 +83,7 @@ public class ButtonManager : MonoBehaviour
         //Placing buttons
         buttonWrapper.transform.localPosition = Vector3.zero;
         buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x : parentSize.x, parentSize.y + 0.06f, front ? parentSize.z : -parentSize.z) / 2;
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset: parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
         ConstraintSource source = new ConstraintSource
         {
             weight = 1,
