@@ -17,7 +17,6 @@ public class FocusHandler : MonoBehaviour
     public bool isActive = false;
 
     public bool isSelected = false;
-    public bool isHovered = false;
     public bool isFocused = false;
 
     private void Start()
@@ -40,15 +39,11 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void SubscribeEvents()
     {
-
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
-
-        EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -58,15 +53,11 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void UnsubscribeEvents()
     {
-
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
-
-        EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -134,38 +125,6 @@ public class FocusHandler : MonoBehaviour
             isFocused = false;
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
-        }
-    }
-
-    ///<summary>
-    /// When called checks if he is the GameObject hovered on and if true activates all of his child's mesh renderers.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnMouseHover(OnMouseHoverEvent e)
-    {
-        if (GameManager.gm.focus.Count > 0
-            && (!transform.parent || GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject))
-            return;
-
-        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
-        {
-            UpdateChildMeshRenderers(true);
-            isHovered = true;
-        }
-
-    }
-
-    ///<summary>
-    /// When called checks if he is the GameObject hovered on and if true deactivates all of his child's mesh renderers.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnMouseUnHover(OnMouseUnHoverEvent e)
-    {
-        if (e.obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
-            && !isSelected && !isFocused)
-        {
-            UpdateChildMeshRenderers(false);
-            isHovered = false;
         }
     }
 
@@ -349,10 +308,8 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        if (_obj.GetComponent<OgreeObject>().category == "rack")
-        {
+        if (_obj.transform.parent.GetComponent<OgreeObject>().category == "room")
             return;
-        }
         _obj.transform.parent.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
     }
@@ -364,7 +321,7 @@ public class FocusHandler : MonoBehaviour
     private void ResetToRack()
     {
         UpdateChildMeshRenderers(false);
-        if (GetComponent<OgreeObject>().category == "rack")
+        if (transform.parent.GetComponent<OgreeObject>().category == "room")
         {
             UpdateOwnMeshRenderers(true);
             return;

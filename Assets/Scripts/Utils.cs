@@ -143,4 +143,15 @@ public static class Utils
         ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
         return newColor;
     }
+
+    ///<summary>
+    /// Get a lightest version of the inverted color.
+    ///</summary>
+    ///<param name="_color">The base color</param>
+    ///<returns>The new color</returns>
+    public static Color InvertColor(Color _color)
+    {
+        float max = _color.maxColorComponent;
+        return new Color(max - _color.r / 3, max - _color.g / 3, max - _color.b / 3, _color.a);
+    }
 }

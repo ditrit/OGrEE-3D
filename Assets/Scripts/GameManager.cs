@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     [Header("Materials")]
     public Material defaultMat;
     public Material alphaMat;
-    // public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
