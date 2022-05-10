@@ -19,6 +19,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private float horizontalOffset = 0f;
 
     private Color defaultBackplateColor;
+    private Vector3 editScale;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +32,16 @@ public class ButtonManager : MonoBehaviour
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         buttonWrapper.SetActive(false);
         defaultBackplateColor = buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.color;
+    }
+
+    private void Update()
+    {
+        if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
+        {
+            float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
+            parentConstraint.SetTranslationOffset(0, parentConstraint.GetTranslationOffset(0) * scaleDiff);
+            editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
+        }
     }
 
     ///<summary>
@@ -209,7 +220,9 @@ public class ButtonManager : MonoBehaviour
         if (!editMode)
         {
             editMode = true;
-            EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
+
+            editScale = focusedObject.transform.localScale;
+                EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
         {
