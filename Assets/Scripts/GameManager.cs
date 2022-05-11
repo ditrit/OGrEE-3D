@@ -201,6 +201,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
+            HighlightULocation();
             UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
         else
@@ -210,6 +211,60 @@ public class GameManager : MonoBehaviour
             
         }
         UiManager.instance.UpdateGuiInfos();
+    }
+
+    ///<summary>
+    /// Highlight the ULocation at the same height than the selected device.
+    ///</summary>
+    ///<param name="_obj">The object to save. If null, set default text</param>
+    public void HighlightULocation()
+    {
+
+        if (currentItems[0].GetComponent<OgreeObject>().category != "rack")
+        {
+            float difference;
+            Transform t = currentItems[0].transform.GetChild(0);
+            float center = t.position.y;
+            if (t.GetComponent<BoxCollider>().enabled)
+                difference = t.GetComponent<BoxCollider>().bounds.extents.y;
+            else
+            {
+                t.GetComponent<BoxCollider>().enabled = true;
+                difference = t.GetComponent<BoxCollider>().bounds.extents.y;  
+                t.GetComponent<BoxCollider>().enabled = false;
+            }
+
+            float lowerBound = center - difference;
+            float upperBound = center + difference;
+            t = currentItems[0].transform;
+            while(t != null)
+            {
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    GameObject uRoot = t.Find("uRoot").gameObject;
+                    for (int i = 0; i < uRoot.transform.childCount; i++)
+                    {
+                        if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
+                        {
+                            uRoot.transform.GetChild(i).gameObject.SetActive(true);
+                        }
+                        else
+                            uRoot.transform.GetChild(i).gameObject.SetActive(false);
+                    }
+                    return;
+                }
+                t = t.parent.transform;
+            }
+            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
+        }
+        else
+        {
+            GameObject uRoot = currentItems[0].transform.Find("uRoot").gameObject;
+            for (int i = 0; i < uRoot.transform.childCount; i++)
+            {
+                uRoot.transform.GetChild(i).gameObject.SetActive(true);
+            }
+        }
     }
 
     ///<summary>

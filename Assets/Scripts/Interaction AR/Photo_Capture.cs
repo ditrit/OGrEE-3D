@@ -260,6 +260,7 @@ public class Photo_Capture : MonoBehaviour
         form.AddBinaryData("Label_Rack", byteArray);
         form.AddField("Tenant_Name", customerAndSite);
         RequestSentColor();
+        apiResponseTMP.gameObject.SetActive(true);
         apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
         using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}:{port}", form))
         {
@@ -319,8 +320,8 @@ public class Photo_Capture : MonoBehaviour
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
 
                         ButtonPicture.SetActive(false);
+                        apiResponseTMP.gameObject.SetActive(false);
                         Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Found Rack !", $"Please click on 'Confirm' to place the rack {site}{room}-{rack}.\nClick on 'Cancel' if the label was misread or if you want to take another picture.", true);
-                        //myDialog.GetComponent<ConstantViewSize>().enabled = false;
                         myDialog.GetComponent<Follow>().MinDistance = 0.5f;
                         myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
                         myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
@@ -335,12 +336,13 @@ public class Photo_Capture : MonoBehaviour
                         if (myDialog.Result.Result == DialogButtonType.Confirm)
                         {
                             await LoadSingleRack(customer, site, building, room, rack);
-                            apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";        
+                            //apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";        
                         }
 
                         if (myDialog.Result.Result == DialogButtonType.Cancel)
                         {
                             ButtonPicture.SetActive(true);    
+                            apiResponseTMP.gameObject.SetActive(true);
                         }
                     }
                 }

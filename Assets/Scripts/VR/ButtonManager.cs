@@ -172,12 +172,19 @@ public class ButtonManager : MonoBehaviour
         }
         if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.GetComponent<OObject>() != null)
         {
+            GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
             GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.gameObject);
             StartCoroutine(SelectionDelay());
-            if (transform.childCount > 0)
-                await GetComponent<OgreeObject>().LoadChildren("0");
-            GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
+            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+            if (GameManager.gm.focus.Count > 0)
+            {
+                if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+                {
+                    buttonEdit.SetActive(true);
+                }
+            }
         }
         else
         {

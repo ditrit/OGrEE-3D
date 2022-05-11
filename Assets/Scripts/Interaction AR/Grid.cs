@@ -16,7 +16,7 @@ public class Grid : MonoBehaviour
 
     private void Start()
     {
-        //CreateGrid();
+
     }
 
     ///<summary>
@@ -28,7 +28,7 @@ public class Grid : MonoBehaviour
     {   
         if (!isFirstGrid)
         {
-            GameObject previousGrid = transform.Find("Grid").gameObject;
+            GameObject previousGrid = transform.Find("GridForULocation").gameObject;
 
             if (_name == currentGridName)
             {
@@ -64,12 +64,12 @@ public class Grid : MonoBehaviour
         Vector2 size = new Vector2(transform.GetChild(0).localScale.x, transform.GetChild(0).localScale.z)/10; 
         size *= boxscale;
         grid.transform.localScale = new Vector3 (size.x, 1, size.y); 
-        grid.transform.GetChild(0).GetComponent<Renderer>().material.mainTextureScale = size * 10 * gridSize / boxscale; //multiplier par 10
-        grid.transform.GetChild(1).GetComponent<Renderer>().material.mainTextureScale = size * 10 * gridSize / boxscale; //multiplier par 10
+        grid.transform.GetChild(0).GetComponent<Renderer>().material.mainTextureScale = size * 10 * gridSize / boxscale; 
+        grid.transform.GetChild(1).GetComponent<Renderer>().material.mainTextureScale = size * 10 * gridSize / boxscale; 
         Vector3 newPosition = new Vector3();
         newPosition = grid.transform.position;
-        newPosition.y = _height - GameManager.gm.uSize/2; //retirer pour placer en bas du U au lieu du milieu 22.25 /1000
+        newPosition.y = _height - GameManager.gm.uSize/2; 
         grid.transform.position = newPosition;
-        grid.name = "Grid";
+        grid.name = "GridForULocation";
     }
 }

@@ -21836,8 +21836,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 459241515}
   m_HandleRect: {fileID: 459241514}
   m_Direction: 2
-  m_Value: 0.00000009884237
-  m_Size: 0.013972057
+  m_Value: 0.00000009884236
+  m_Size: 0.013972056
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -28530,9 +28530,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17724b62217d2a4087d0245a35d7133, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Speed: 0
-  sliderX: {fileID: 0}
-  sliderY: {fileID: 0}
 --- !u!114 &560516241
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32378,7 +32375,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &659218716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63696,7 +63693,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1290224122
 RectTransform:
   m_ObjectHideFlags: 0
@@ -63704,16 +63701,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1290224121}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.012000024}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0346}
+  m_LocalScale: {x: 0.6666667, y: 0.6666667, z: 0.6666667}
   m_Children: []
-  m_Father: {fileID: 1956899547}
-  m_RootOrder: 4
+  m_Father: {fileID: 7938006477502197876}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.12199998, y: -0.157}
+  m_AnchoredPosition: {x: 0.0039, y: 0.083}
   m_SizeDelta: {x: 0.1622, y: 0.1785}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1290224123
@@ -98540,7 +98537,6 @@ Transform:
   - {fileID: 1037870042}
   - {fileID: 373782322}
   - {fileID: 1650093168}
-  - {fileID: 1290224122}
   m_Father: {fileID: 659218722}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -113239,6 +113235,7 @@ Transform:
   - {fileID: 7938006475461946630}
   - {fileID: 7938006476490439270}
   - {fileID: 7938006476389891616}
+  - {fileID: 1290224122}
   m_Father: {fileID: 90352358}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

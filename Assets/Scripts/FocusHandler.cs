@@ -269,7 +269,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "uRoot")
+            else if (child.name != "uRoot" && child.name != "GridForULocation")
                 OwnObjectsList.Add(child.gameObject);
         }
     }
