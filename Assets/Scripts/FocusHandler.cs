@@ -258,7 +258,10 @@ public class FocusHandler : MonoBehaviour
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in bd.walls)
+                        {
                             wall.GetComponent<Renderer>().enabled = _value;
+                            wall.GetComponent<Collider>().enabled = _value;
+                        }
                         break;
                     case "room":
                         Room ro = go.GetComponent<Room>();
@@ -268,7 +271,10 @@ public class FocusHandler : MonoBehaviour
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
+                        {
                             wall.GetComponentInChildren<Renderer>().enabled = _value;
+                            wall.GetComponentInChildren<Collider>().enabled = _value;
+                        }
                         if (go.transform.Find("tilesNameRoot"))
                         {
                             foreach (Transform child in go.transform.Find("tilesNameRoot"))
@@ -308,7 +314,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        if (_obj.transform.parent.GetComponent<OgreeObject>().category == "room")
+        if (_obj.GetComponent<OgreeObject>().category == "rack" || _obj.GetComponent<OgreeObject>().category == "corridor")
             return;
         _obj.transform.parent.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
@@ -321,7 +327,7 @@ public class FocusHandler : MonoBehaviour
     private void ResetToRack()
     {
         UpdateChildMeshRenderers(false);
-        if (transform.parent.GetComponent<OgreeObject>().category == "room")
+        if (GetComponent<OgreeObject>().category == "rack" || GetComponent<OgreeObject>().category == "corridor")
         {
             UpdateOwnMeshRenderers(true);
             return;
