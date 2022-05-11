@@ -126,9 +126,19 @@ public class CliParser// : MonoBehaviour
     /// Deserialize given SApiObject and call the good generator.
     ///</summary>
     ///<param name="_input">The SApiObject to deserialize</param>
-    private void CreateObjectFromData(string _input)
+    private async void CreateObjectFromData(string _input)
     {
         SApiObject obj = JsonConvert.DeserializeObject<SApiObject>(_input);
+
+        if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
+            await ApiManager.instance.GetObject($"tenants?name={obj.domain}");
+        if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
+            && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
+        {
+            Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
+            await ApiManager.instance.GetObject($"obj-templates/{obj.attributes["template"]}");
+        }
+
         switch (obj.category)
         {
             case "tenant":
