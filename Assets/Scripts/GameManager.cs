@@ -207,6 +207,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine("Empty selection.", "green");
             UiManager.instance.SetCurrentItemText("Ogree3D");
+            
         }
         UiManager.instance.UpdateGuiInfos();
     }
@@ -511,10 +512,21 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
     
+    ///<summary>
+    /// Clean AR scene from all existing tenants.
+    ///</summary>
     public IEnumerator CleanScene()
     {
-        consoleController.RunCommandString("-EDF");
-        yield return new WaitForSeconds(0.5f);
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        yield return new WaitForEndOfFrame();
     }
 
 

@@ -38,6 +38,6 @@ using UnityEngine;
 
     public static string EN_005(string site, string room, string rack)
     { 
-        return $"Cliquer sur 'Confirm' pour placer le rack {site}{room}-{rack}";
+        return $"Cliquer sur 'Confirm' pour placer le rack {site}{room}-{rack}. '\n'Cliquez sur 'Cancel' si l'étiquette a mal été lue et que vous souhaitez reprendre une photo.";
     }
  }

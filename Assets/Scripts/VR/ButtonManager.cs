@@ -75,7 +75,13 @@ public class ButtonManager : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+        Transform test = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform;
+        if (buttonWrapper == null)
+        {
+            Debug.Log("Button Wrapper destroyed");
+        }
+        //buttonWrapper.SetActive(true);
+        buttonWrapper.transform.SetParent(test);
         Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
 
         //Placing buttons
@@ -105,6 +111,7 @@ public class ButtonManager : MonoBehaviour
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
         buttonWrapper.SetActive(false);
+
     }
 
     private void OnFocusItem(OnFocusEvent e)
@@ -167,7 +174,8 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.gameObject);
             StartCoroutine(SelectionDelay());
-            await GetComponent<OgreeObject>().LoadChildren("0");
+            if (transform.childCount > 0)
+                await GetComponent<OgreeObject>().LoadChildren("0");
             GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
             GetComponent<FocusHandler>().ogreeChildObjects.Clear();
         }

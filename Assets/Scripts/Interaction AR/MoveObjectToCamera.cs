@@ -5,14 +5,16 @@ using UnityEngine;
 public class MoveObjectToCamera : MonoBehaviour
 {
     public Camera m_camera;
-    ///<summary>
-    /// Move Object in front of the camera.
-    ///</summary>
 
     void Start()
     {
         m_camera = Camera.main;
     }
+
+    ///<summary>
+    /// Modify an object position and rotation to place it in front of the main camera.
+    ///</summary>
+    ///<param name="_obj">Object to place in front of the camera</param>
     public void MoveObjectToCameraFunction(GameObject _obj)
     {
         

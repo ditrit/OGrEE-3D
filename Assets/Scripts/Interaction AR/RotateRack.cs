@@ -7,6 +7,10 @@ public class RotateRack : MonoBehaviour
 
     public float tiltAngle = 180;
 
+    ///<summary>
+    /// Rotate a rack from 180° if it is selected or if one of its children are selected.
+    ///</summary>
+    ///<param name="_height">World position y to place the grid</param>
     public void Rotate()
     {
         Transform t = GameManager.gm.currentItems[0].transform;

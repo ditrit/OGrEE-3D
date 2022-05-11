@@ -32,7 +32,7 @@ public class Photo_Capture : MonoBehaviour
     }
     private string currentHost = "";
     public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.228.231";
+    public string telephoneHost = "192.168.229.231";
     public string customer = "EDF";
     public string site = "NOE";
     private string building;
@@ -56,7 +56,7 @@ public class Photo_Capture : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostMaison();
+        SetHostTelephone();
         if (currentHost == maisonHost)
         {
             SetHostMaison();
@@ -238,7 +238,15 @@ public class Photo_Capture : MonoBehaviour
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
         Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera);
-        //await rack.GetComponent<OgreeObject>().LoadChildren("3");
+        /*rack.AddComponent<TapToPlace>();
+        rack.GetComponent<TapToPlace>().AutoStart = true;
+        rack.GetComponent<TapToPlace>().KeepOrientationVertical = true;
+        rack.GetComponent<TapToPlace>().MagneticSurfaces[0] = LayerMask.GetMask("Nothing");
+        rack.GetComponent<SolverHandler>().AdditionalOffset = new Vector3(0, -0.2f, 0);*/
+        OgreeObject ogree = rack.GetComponent<OgreeObject>();
+        ogree.originalLocalRotation = rack.transform.localRotation;
+        ogree.originalLocalPosition = rack.transform.localPosition;
+
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
@@ -311,8 +319,14 @@ public class Photo_Capture : MonoBehaviour
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
 
                         ButtonPicture.SetActive(false);
-                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Rack Trouvé !", $"Cliquez sur 'Confirm' pour placer le rack {site}{room}-{rack} devant vous.'\n'Cliquez sur 'Cancel' si l'étiquette a mal été lue et que vous souhaitez reprendre une photo.", true);
-                        myDialog.GetComponent<ConstantViewSize>().enabled = false;
+                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Found Rack !", $"Please click on 'Confirm' to place the rack {site}{room}-{rack}.\nClick on 'Cancel' if the label was misread or if you want to take another picture.", true);
+                        //myDialog.GetComponent<ConstantViewSize>().enabled = false;
+                        myDialog.GetComponent<Follow>().MinDistance = 0.5f;
+                        myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
+                        myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+                        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
+                        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
+                        myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
                         while (myDialog.State != DialogState.Closed)
                         {
                             await Task.Delay(100);

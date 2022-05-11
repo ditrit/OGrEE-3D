@@ -33,7 +33,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
-        SelectThis();
+            SelectThis();
     }
 
     ///<summary>

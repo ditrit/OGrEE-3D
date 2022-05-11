@@ -38,6 +38,6 @@ using UnityEngine;
 
     public static string EN_005(string site, string room, string rack)
     { 
-        return $"Please click on 'Confirm' to place the rack {site}{room}-{rack}";
+        return $"Please click on 'Confirm' to place the rack {site}{room}-{rack}. '\n'Click on 'Cancel' if the label was misread or if you want to take another picture.";
     }
  }

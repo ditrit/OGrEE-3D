@@ -5,9 +5,8 @@ using UnityEngine;
 public class DisableIfNotSelected : MonoBehaviour
 {
     public GameObject returnButton;
-    public GameObject Sliders;
 
-    public void Update()
+    /*public void Update()
 
     {
         if (GameManager.gm.currentItems.Count == 0)
@@ -15,7 +14,6 @@ public class DisableIfNotSelected : MonoBehaviour
             transform.GetChild(2).gameObject.SetActive(false);
             transform.GetChild(1).gameObject.SetActive(false);
             transform.GetChild(0).gameObject.SetActive(false);
-            Sliders.SetActive(false);
         }
 
         
@@ -25,5 +23,5 @@ public class DisableIfNotSelected : MonoBehaviour
             transform.GetChild(1).gameObject.SetActive(true);
             transform.GetChild(0).gameObject.SetActive(true);
         }
-    }
+    }*/
 }
