@@ -164,6 +164,7 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
+            Transform box = transform.GetChild(0);
 
             //enable collider used for manipulation
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
@@ -171,9 +172,11 @@ public class FocusHandler : MonoBehaviour
             //disable rack colliders used for selection
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+                box.GetComponent<HandInteractionHandler>().enabled = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.BoundsControl.BoundsControl>().Active = true;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
 
             //disable children colliders
@@ -181,9 +184,8 @@ public class FocusHandler : MonoBehaviour
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+            Transform box = transform.GetChild(0);
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
         }
     }
 
@@ -191,23 +193,26 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
+            Transform box = transform.GetChild(0);
 
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            box.GetComponent<Collider>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+                box.GetComponent<HandInteractionHandler>().enabled = true;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.BoundsControl.BoundsControl>().Active = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = true;
             }
             UpdateChildMeshRenderers(true, true);
 
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+            Transform box = transform.GetChild(0);
+
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -268,7 +273,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else
+            else if (child.name != "rigRoot")
                 OwnObjectsList.Add(child.gameObject);
         }
     }
@@ -291,7 +296,11 @@ public class FocusHandler : MonoBehaviour
         {
             MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer meshRenderer in SlotChildMeshRenderers)
+            {
+                if (meshRenderer.gameObject.name.StartsWith("link_") || meshRenderer.gameObject.name == "visuals" || meshRenderer.gameObject.name == "box display")
+                    continue;
                 slotChildMeshRendererList.Add(meshRenderer);
+            }
         }
     }
 
@@ -372,8 +381,10 @@ public class FocusHandler : MonoBehaviour
                     case "building":
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
-                        foreach (Transform wall in bd.walls)
+                        foreach (Transform wall in bd.walls) {
                             wall.GetComponent<Renderer>().enabled = _value;
+                            wall.GetComponent<Collider>().enabled = _value;
+                        }
                         break;
                     case "room":
                         Room ro = go.GetComponent<Room>();
@@ -383,7 +394,10 @@ public class FocusHandler : MonoBehaviour
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
+                        {
                             wall.GetComponentInChildren<Renderer>().enabled = _value;
+                            wall.GetComponent<Collider>().enabled = _value;
+                        }
                         if (go.transform.Find("tilesNameRoot"))
                         {
                             foreach (Transform child in go.transform.Find("tilesNameRoot"))

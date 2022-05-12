@@ -15,9 +15,16 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
+
     public static bool canSelect = true;
+    public bool canSelectDebug;
     public bool isARack = false;
     public bool front;
+
+    private void Update()
+    {
+        canSelectDebug = canSelect;
+    }
 
     ///<summary>
     /// Called when a hand is exiting the object's collider

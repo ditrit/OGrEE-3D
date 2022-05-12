@@ -177,23 +177,26 @@ public class ButtonManager : MonoBehaviour
         {
             return;
         }
-        if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.GetComponent<OObject>() != null)
+
+        GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
+
+        if (previousSelected.transform.parent.GetComponent<OObject>() != null)
         {
-            GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.gameObject);
-            StartCoroutine(SelectionDelay());
-            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
-            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-            if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            GameManager.gm.SetCurrentItem(previousSelected.transform.parent.gameObject);
+            if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             {
                 buttonEdit.SetActive(true);
             }
         }
         else
         {
+            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
+            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
             GameManager.gm.SetCurrentItem(null);
         }
+
+        StartCoroutine(SelectionDelay());
     }
 
     ///<summary>
@@ -202,9 +205,11 @@ public class ButtonManager : MonoBehaviour
     private IEnumerator SelectionDelay()
     {
         HandInteractionHandler.canSelect = false;
+        print("CanSelect : " + HandInteractionHandler.canSelect);
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1.5f);
         HandInteractionHandler.canSelect = true;
+        print("CanSelect : " + HandInteractionHandler.canSelect);
     }
 
     ///<summary>
