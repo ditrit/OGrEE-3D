@@ -22,8 +22,7 @@ public class Sensor : OObject
     /// Update the Sensor attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
-    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
-    public override void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
         id = _src.id;
@@ -31,8 +30,7 @@ public class Sensor : OObject
         category = _src.category;
         domain = _src.domain;
         description = _src.description;
-        if (_copyAttr)
-            attributes = _src.attributes;
+        attributes = _src.attributes;
     }
 
     ///<summary>

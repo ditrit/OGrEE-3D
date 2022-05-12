@@ -322,16 +322,10 @@ public class ApiManager : MonoBehaviour
                     BuildingGenerator.instance.CreateRoom(obj);
                     break;
                 case "rack":
-                    if (obj.attributes["template"] == "")
                         ObjectGenerator.instance.CreateRack(obj);
-                    else
-                        ObjectGenerator.instance.CreateRack(obj, null, false);
                     break;
                 case "device":
-                    if (obj.attributes["template"] == "")
                         ObjectGenerator.instance.CreateDevice(obj);
-                    else
-                        ObjectGenerator.instance.CreateDevice(obj, null, false);
                     break;
                 case "corridor":
                     ObjectGenerator.instance.CreateCorridor(obj);

@@ -49,7 +49,7 @@ public class DisplayObjectData : MonoBehaviour
             else if (oObj.attributes["sizeUnit"] == "cm")
                 size /= 100;
 
-            float height = float.Parse(oObj.attributes["height"]);
+            float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == "U")
                 height *= GameManager.gm.uSize;
             else if (oObj.attributes["heightUnit"] == "mm")

@@ -52,6 +52,11 @@ public class ConsoleController : MonoBehaviour
         else
             Debug.Log(_line);
 
+        // Troncate too long strings
+        int limit = 103;
+        if (_line.Length > limit)
+            _line = _line.Substring(0, limit) + "[...]";
+
         if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
         {
             _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
@@ -62,11 +67,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             _line = $"<color={_color}>{_line}</color>";
-
-        // Troncate too long strings
-        int limit = 103;
-        if (_line.Length > limit)
-            _line = _line.Substring(0, limit) + "[...]"; 
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -734,10 +734,6 @@ public class ConsoleController : MonoBehaviour
             rk.attributes = new Dictionary<string, string>();
 
             rk.category = "rack";
-            Vector2 pos = Utils.ParseVector2(data[1]);
-            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
-            rk.attributes["posXYUnit"] = "tile";
-
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = Utils.ParseVector3(data[2], false);
@@ -751,7 +747,6 @@ public class ConsoleController : MonoBehaviour
             {
                 rk.attributes["template"] = data[2];
                 OgreeObject template = null;
-
                 if (GameManager.gm.objectTemplates.ContainsKey(rk.attributes["template"]))
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 else if (ApiManager.instance.isInit)
@@ -762,10 +757,12 @@ public class ConsoleController : MonoBehaviour
 
                 if (template)
                 {
-                    rk.attributes["size"] = template.attributes["size"];
-                    rk.attributes["sizeUnit"] = template.attributes["sizeUnit"];
-                    rk.attributes["height"] = template.attributes["height"];
-                    rk.attributes["heightUnit"] = template.attributes["heightUnit"];
+                    rk.description = template.description;
+                    foreach (KeyValuePair<string, string> kvp in template.attributes)
+                    {
+                        if (kvp.Key != "template")
+                            rk.attributes[kvp.Key] = kvp.Value;
+                    }
                 }
                 else
                 {
@@ -773,6 +770,9 @@ public class ConsoleController : MonoBehaviour
                     return;
                 }
             }
+            Vector2 pos = Utils.ParseVector2(data[1]);
+            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
+            rk.attributes["posXYUnit"] = "tile";
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
@@ -783,12 +783,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(rk);
                 else
-                {
-                    if (rk.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateRack(rk, parent);
-                    else
-                        ObjectGenerator.instance.CreateRack(rk, parent, false);
-                }
+                    ObjectGenerator.instance.CreateRack(rk, parent);
             }
         }
         else
@@ -813,14 +808,6 @@ public class ConsoleController : MonoBehaviour
             dv.attributes = new Dictionary<string, string>();
 
             dv.category = "device";
-            float posU;
-            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
-            {
-                dv.attributes["posU"] = posU.ToString();
-                dv.attributes["slot"] = "";
-            }
-            else
-                dv.attributes["slot"] = data[1];
             float sizeU;
             if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
             {
@@ -829,15 +816,10 @@ public class ConsoleController : MonoBehaviour
             }
             else
                 dv.attributes["template"] = data[2];
-            if (data.Length == 4)
-                dv.attributes["orientation"] = data[3];
-            else
-                dv.attributes["orientation"] = "front";
+
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {
-                dv.parentId = parent.GetComponent<OgreeObject>().id;
-                dv.domain = parent.GetComponent<OgreeObject>().domain;
                 if (dv.attributes["template"] == "")
                 {
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
@@ -860,10 +842,12 @@ public class ConsoleController : MonoBehaviour
 
                     if (template)
                     {
-                        dv.attributes["size"] = template.attributes["size"];
-                        dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
-                        dv.attributes["height"] = template.attributes["height"];
-                        dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                        dv.description = template.description;
+                        foreach (KeyValuePair<string, string> kvp in template.attributes)
+                        {
+                            if (kvp.Key != "template")
+                                dv.attributes[kvp.Key] = kvp.Value;
+                        }
                     }
                     else
                     {
@@ -871,16 +855,26 @@ public class ConsoleController : MonoBehaviour
                         return;
                     }
                 }
+                float posU;
+                if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+                {
+                    dv.attributes["posU"] = posU.ToString();
+                    dv.attributes["slot"] = "";
+                }
+                else
+                    dv.attributes["slot"] = data[1];
+                if (data.Length == 4)
+                    dv.attributes["orientation"] = data[3];
+                else
+                    dv.attributes["orientation"] = "front";
+
+                dv.parentId = parent.GetComponent<OgreeObject>().id;
+                dv.domain = parent.GetComponent<OgreeObject>().domain;
 
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(dv);
                 else
-                {
-                    if (dv.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateDevice(dv, parent);
-                    else
-                        ObjectGenerator.instance.CreateDevice(dv, parent, false);
-                }
+                    ObjectGenerator.instance.CreateDevice(dv, parent);
             }
         }
         else
