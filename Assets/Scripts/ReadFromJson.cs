@@ -86,11 +86,7 @@ public class ReadFromJson
 
     #endregion
 
-    ///<summary>
-    /// Store room data in GameManager.roomTemplates.
-    ///</summary>
-    ///<param name="_json">Json to parse</param>
-    public void CreateRoomTemplate(string _json)
+    public void CreateRoomTemplateJson(string _json)
     {
         SRoomFromJson roomData;
         try
@@ -102,11 +98,19 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
             return;
         }
+        CreateRoomTemplate(roomData);
+    }
 
-        if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
+    ///<summary>
+    /// Store room data in GameManager.roomTemplates.
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateRoomTemplate(SRoomFromJson _data)
+    {
+        if (GameManager.gm.roomTemplates.ContainsKey(_data.slug))
             return;
 
-        GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
+        GameManager.gm.roomTemplates.Add(_data.slug, _data);
     }
 
     ///<summary>

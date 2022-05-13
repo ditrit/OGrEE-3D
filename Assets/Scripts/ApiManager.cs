@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
@@ -39,6 +38,13 @@ public class ApiManager : MonoBehaviour
         public string message;
         public string status;
         public ReadFromJson.STemplate data;
+    }
+
+    private struct SRoomResp
+    {
+        public string message;
+        public string status;
+        public ReadFromJson.SRoomFromJson data;
     }
 
     public static ApiManager instance;
@@ -196,7 +202,9 @@ public class ApiManager : MonoBehaviour
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
                 await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
-                await CreateTemplateFromJson(response);
+                await CreateTemplateFromJson(response, "obj");
+            else if (response.Contains("successfully got room_template"))
+                await CreateTemplateFromJson(response, "room");
             else
                 GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
@@ -244,8 +252,9 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
-    ///<param name="_obj">The serialized STemplate to post</param>
-    public async Task PostTemplateObject(string _json)
+    ///<param name="_json">The serialized STemplate to post</param>
+    ///<param name="_type">obj or room</param>
+    public async Task PostTemplateObject(string _json, string _type)
     {
         if (!isInit)
         {
@@ -253,7 +262,7 @@ public class ApiManager : MonoBehaviour
             return;
         }
         Debug.Log(_json);
-        string fullPath = $"{server}/obj-templates";
+        string fullPath = $"{server}/{_type}-templates";
 
         StringContent content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json");
         try
@@ -263,7 +272,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                await CreateTemplateFromJson(responseStr);
+                await CreateTemplateFromJson(responseStr, _type);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -322,10 +331,10 @@ public class ApiManager : MonoBehaviour
                     BuildingGenerator.instance.CreateRoom(obj);
                     break;
                 case "rack":
-                        ObjectGenerator.instance.CreateRack(obj);
+                    ObjectGenerator.instance.CreateRack(obj);
                     break;
                 case "device":
-                        ObjectGenerator.instance.CreateDevice(obj);
+                    ObjectGenerator.instance.CreateDevice(obj);
                     break;
                 case "corridor":
                     ObjectGenerator.instance.CreateCorridor(obj);
@@ -349,13 +358,21 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Use the given template json to instantiate an object template.
+    /// Use the given template json to instantiate an object or a room template.
     ///</summary>
     ///<param name="_json">The json given by the API</param>
-    private async Task CreateTemplateFromJson(string _json)
+    private async Task CreateTemplateFromJson(string _json, string _type)
     {
-        STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-        await rfJson.CreateObjectTemplate(resp.data);
+        if (_type == "obj")
+        {
+            STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
+            await rfJson.CreateObjectTemplate(resp.data);
+        }
+        else if (_type == "room")
+        {
+            SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
+            rfJson.CreateRoomTemplate(resp.data);
+        }
     }
 
     ///<summary>

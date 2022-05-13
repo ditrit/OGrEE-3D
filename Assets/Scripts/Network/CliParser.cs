@@ -132,6 +132,14 @@ public class CliParser// : MonoBehaviour
 
         if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
             await ApiManager.instance.GetObject($"tenants?name={obj.domain}");
+
+        if (obj.category == "room" && !string.IsNullOrEmpty(obj.attributes["template"])
+            && !GameManager.gm.roomTemplates.ContainsKey(obj.attributes["template"]))
+        {
+            Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
+            await ApiManager.instance.GetObject($"room-templates/{obj.attributes["template"]}");
+        }
+
         if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
             && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
         {
@@ -154,10 +162,10 @@ public class CliParser// : MonoBehaviour
                 BuildingGenerator.instance.CreateRoom(obj);
                 break;
             case "rack":
-                    ObjectGenerator.instance.CreateRack(obj);
+                ObjectGenerator.instance.CreateRack(obj);
                 break;
             case "device":
-                    ObjectGenerator.instance.CreateDevice(obj);
+                ObjectGenerator.instance.CreateDevice(obj);
                 break;
             case "corridor":
                 ObjectGenerator.instance.CreateCorridor(obj);

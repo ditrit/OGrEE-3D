@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -285,6 +285,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 Debug.Log($"[Delete] {obj.hierarchyName}");
                 GameManager.gm.DeleteItem(obj.gameObject, false);
             }
+            GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
+            GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
         }
         else
         {

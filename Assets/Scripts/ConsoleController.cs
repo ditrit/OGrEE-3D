@@ -432,11 +432,16 @@ public class ConsoleController : MonoBehaviour
         if (!string.IsNullOrEmpty(json))
         {
             if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
-                rfJson.CreateRoomTemplate(json);
+            {
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostTemplateObject(json, "room");
+                else
+                    rfJson.CreateRoomTemplateJson(json);
+            }
             else // rack or device
             {
                 if (ApiManager.instance.isInit)
-                    await ApiManager.instance.PostTemplateObject(json);
+                    await ApiManager.instance.PostTemplateObject(json, "obj");
                 else
                     rfJson.CreateObjTemplateJson(json);
             }
@@ -675,21 +680,32 @@ public class ConsoleController : MonoBehaviour
             {
                 ro.attributes["template"] = "";
                 ro.attributes["orientation"] = data[3];
+                ro.attributes["floorUnit"] = "t";
                 size = Utils.ParseVector3(data[2]);
-            }
-            else if (GameManager.gm.roomTemplates.ContainsKey(data[2]))
-            {
-                ro.attributes["template"] = data[2];
-                ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
-                ro.attributes["floorUnit"] = GameManager.gm.roomTemplates[data[2]].floorUnit;
-                size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
-                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
-                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
             }
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
-                return;
+                ro.attributes["template"] = data[2];
+                ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+                if (GameManager.gm.roomTemplates.ContainsKey(ro.attributes["template"]))
+                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                else if (ApiManager.instance.isInit)
+                {
+                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}");
+                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                }
+
+                if (!string.IsNullOrEmpty(template.slug))
+                {
+                    ro.attributes["orientation"] = template.orientation;
+                    ro.attributes["floorUnit"] = template.floorUnit;
+                    size = new Vector3(template.sizeWDHm[0], template.sizeWDHm[2], template.sizeWDHm[1]);
+                }
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
+                    return;
+                }
             }
             ro.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             ro.attributes["sizeUnit"] = "m";
@@ -697,8 +713,6 @@ public class ConsoleController : MonoBehaviour
             ro.attributes["heightUnit"] = "m";
             if (data.Length == 5)
                 ro.attributes["floorUnit"] = data[4];
-            else
-                ro.attributes["floorUnit"] = "t";
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
