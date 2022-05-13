@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 ///<summary>
 /// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
 ///</summary>
@@ -22,6 +23,12 @@ public class FocusHandler : MonoBehaviour
     public bool isFocused = false;
 
     public bool isFrontOriented = true;
+
+    public BoxDisplayConfiguration boxDisplayConfiguration;
+    public ScaleHandlesConfiguration scaleHandlesConfiguration;
+    public RotationHandlesConfiguration rotationHandlesConfiguration;
+    public LinksConfiguration linksConfiguration;
+    public ProximityEffectConfiguration proximityEffectConfiguration;
 
     private void Start()
     {
@@ -95,6 +102,7 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
+            print("début await");
             await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
@@ -135,7 +143,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -155,7 +163,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<MoveAxisConstraint>().enabled = true;
             GetComponent<OgreeObject>().ResetPosition();
         }
     }
@@ -172,11 +180,31 @@ public class FocusHandler : MonoBehaviour
             //disable rack colliders used for selection
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+                box.GetComponent<MinMaxScaleConstraint>().enabled = false;
+                box.GetComponent<RotationAxisConstraint>().enabled = false;
                 box.GetComponent<HandInteractionHandler>().enabled = false;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.BoundsControl.BoundsControl>().Active = true;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+                if (box.GetComponent<BoundsControl>() == null)
+                {
+                    BoundsControl boundsControl = box.gameObject.AddComponent<BoundsControl>();
+                    boundsControl.Target = gameObject;
+                    boundsControl.BoundsOverride = box.GetComponent<BoxCollider>();
+                    boundsControl.BoundsControlActivation = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.BoundsControlActivationType.ActivateManually;
+                    boundsControl.BoxDisplayConfig = boxDisplayConfiguration;
+                    boundsControl.ScaleHandlesConfig = scaleHandlesConfiguration;
+                    boundsControl.RotationHandlesConfig = rotationHandlesConfiguration;
+                    boundsControl.LinksConfig = linksConfiguration;
+                    boundsControl.HandleProximityEffectConfig = proximityEffectConfiguration;
+                    boundsControl.Active = true;
+                    Destroy(gameObject.GetComponent<Collider>());
+                }
+                try
+                {
+                    box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+                }
+                catch (System.Exception exception)
+                {
+                    Debug.LogError(exception.Message);
+                }
             }
 
             //disable children colliders
@@ -185,7 +213,7 @@ public class FocusHandler : MonoBehaviour
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
             Transform box = transform.GetChild(0);
-            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            box.GetComponent<MoveAxisConstraint>().enabled = true;
         }
     }
 
@@ -200,10 +228,10 @@ public class FocusHandler : MonoBehaviour
             if (GetComponent<OgreeObject>().category != "rack")
             {
                 box.GetComponent<HandInteractionHandler>().enabled = true;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.BoundsControl.BoundsControl>().Active = false;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = true;
+                box.GetComponent<MinMaxScaleConstraint>().enabled = true;
+                box.GetComponent<RotationAxisConstraint>().enabled = true;
+                box.GetComponent<BoundsControl>().Active = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
             UpdateChildMeshRenderers(true, true);
 
@@ -212,7 +240,7 @@ public class FocusHandler : MonoBehaviour
         {
             Transform box = transform.GetChild(0);
 
-            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            box.GetComponent<MoveAxisConstraint>().enabled = false;
         }
     }
 
