@@ -83,7 +83,7 @@ public class ButtonManager : MonoBehaviour
 
 
     ///<summary>
-    /// When called set the button active, set the selected object as its parent and initialise it
+    /// When called set the buttonWrapper active, set the selected object as its parent (via a parent constraint) and initialise it
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
@@ -112,7 +112,7 @@ public class ButtonManager : MonoBehaviour
     }
 
     ///<summary>
-    /// When called set the button inactive
+    /// When called set the buttonWrapper inactive
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
@@ -121,10 +121,21 @@ public class ButtonManager : MonoBehaviour
         buttonWrapper.SetActive(false);
     }
 
+
+    ///<summary>
+    /// When called set the edit button active
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent e)
     {
         buttonEdit.SetActive(true);
     }
+
+
+    ///<summary>
+    /// When called set the edit button inactive
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
         buttonEdit.SetActive(false);
@@ -139,12 +150,22 @@ public class ButtonManager : MonoBehaviour
         front = e.front;
     }
 
+
+    ///<summary>
+    /// When called set the focus button and the select parent button inactive and change the color of the edit button
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent e)
     {
         buttonToggleFocus.SetActive(false);
         buttonSelectParent.SetActive(false);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.green);
     }
+
+    ///<summary>
+    /// When called set the focus button and the select parent button active and change the color of the edit button
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent e)
     {
         buttonToggleFocus.SetActive(true);
@@ -170,6 +191,7 @@ public class ButtonManager : MonoBehaviour
     }
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
+    /// if we deselect a rack, unload its children
     ///</summary>
     public async void ButtonSelectParent()
     {
@@ -223,6 +245,10 @@ public class ButtonManager : MonoBehaviour
 
     }
 
+
+    ///<summary>
+    /// Toggle the edit mode (raise an EditModeInEvent or an EditModdeOutEvent) if we already are focused on a object
+    ///</summary>
     public void ButtonEditMode()
     {
         if (GameManager.gm.focus.Count == 0)

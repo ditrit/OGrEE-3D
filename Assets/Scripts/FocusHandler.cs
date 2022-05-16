@@ -168,6 +168,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and.
+    /// If it is, enable the colliders used for the edit mode, instantiate the BoundControls components and disable the children collliders.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent e)
     {
         if (e.obj == gameObject)
@@ -197,14 +202,7 @@ public class FocusHandler : MonoBehaviour
                     boundsControl.Active = true;
                     Destroy(gameObject.GetComponent<Collider>());
                 }
-                try
-                {
                     box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
-                }
-                catch (System.Exception exception)
-                {
-                    Debug.LogError(exception.Message);
-                }
             }
 
             //disable children colliders
@@ -217,6 +215,11 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and.
+    /// If it is, disable the colliders used for the edit mode and enable the children collliders.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent e)
     {
         if (e.obj == gameObject)
