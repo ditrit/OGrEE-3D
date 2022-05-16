@@ -56,7 +56,7 @@ public class Photo_Capture : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostTelephone();
+        SetHostMaison();
         if (currentHost == maisonHost)
         {
             SetHostMaison();

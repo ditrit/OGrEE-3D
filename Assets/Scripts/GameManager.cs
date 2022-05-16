@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
+    private async Task Start()
     {
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
@@ -80,11 +80,13 @@ public class GameManager : MonoBehaviour
 
 
 #if API_DEBUG
-        //ToggleApi();
+        
 #endif
        
 #if !PROD
-
+        await Task.Delay(1000);
+        var photo_capture = new Photo_Capture();
+        await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","E04");
 #endif
 
     }
@@ -443,7 +445,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
     public void DeleteItem(GameObject _toDel, bool _serverDelete)
     {
-        SetCurrentItem(null);
+        //SetCurrentItem(null); Fix de Vincent car impossible de réselectionner un objet après avoir cliquer sur Button Select Parent.
 
         // Should count type of deleted objects
         if (_serverDelete)
