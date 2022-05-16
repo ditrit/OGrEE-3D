@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TMPro;
 
 
+
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
@@ -13,8 +14,7 @@ public class GameManager : MonoBehaviour
     public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
 
-    private float nextSelectionTimeLimit = 1.0f;
-    private float lastSelectionTime = 0.0f;
+    [Header("AR")]
     public Camera m_camera;
 
     [Header("Materials")]
@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
 #if !PROD
         await Task.Delay(1000);
         var photo_capture = new Photo_Capture();
-        await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","E04");
+        await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","C05");
 #endif
 
     }
@@ -197,15 +197,29 @@ public class GameManager : MonoBehaviour
     {
         //Clear current selection
         for (int i = currentItems.Count - 1; i >= 0; i--)
+        {
+            Transform t = currentItems[i].transform;
+            while(t != null)
+            {
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    GameObject uRoot = t.Find("uRoot").gameObject;
+                    uRoot.SetActive(false);
+                    break;
+                }
+                t = t.parent.transform;
+            }
             DeselectItem(currentItems[i]);
+        }
 
         if (_obj)
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            HighlightULocation();
+            UManager.um.HighlightULocation();
             UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
+        
         else
         {
             AppendLogLine("Empty selection.", "green");
@@ -213,60 +227,6 @@ public class GameManager : MonoBehaviour
             
         }
         UiManager.instance.UpdateGuiInfos();
-    }
-
-    ///<summary>
-    /// Highlight the ULocation at the same height than the selected device.
-    ///</summary>
-    ///<param name="_obj">The object to save. If null, set default text</param>
-    public void HighlightULocation()
-    {
-
-        if (currentItems[0].GetComponent<OgreeObject>().category != "rack")
-        {
-            float difference;
-            Transform t = currentItems[0].transform.GetChild(0);
-            float center = t.position.y;
-            if (t.GetComponent<BoxCollider>().enabled)
-                difference = t.GetComponent<BoxCollider>().bounds.extents.y;
-            else
-            {
-                t.GetComponent<BoxCollider>().enabled = true;
-                difference = t.GetComponent<BoxCollider>().bounds.extents.y;  
-                t.GetComponent<BoxCollider>().enabled = false;
-            }
-
-            float lowerBound = center - difference;
-            float upperBound = center + difference;
-            t = currentItems[0].transform;
-            while(t != null)
-            {
-                if (t.GetComponent<OgreeObject>().category == "rack")
-                {
-                    GameObject uRoot = t.Find("uRoot").gameObject;
-                    for (int i = 0; i < uRoot.transform.childCount; i++)
-                    {
-                        if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
-                        {
-                            uRoot.transform.GetChild(i).gameObject.SetActive(true);
-                        }
-                        else
-                            uRoot.transform.GetChild(i).gameObject.SetActive(false);
-                    }
-                    return;
-                }
-                t = t.parent.transform;
-            }
-            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
-        }
-        else
-        {
-            GameObject uRoot = currentItems[0].transform.Find("uRoot").gameObject;
-            for (int i = 0; i < uRoot.transform.childCount; i++)
-            {
-                uRoot.transform.GetChild(i).gameObject.SetActive(true);
-            }
-        }
     }
 
     ///<summary>
@@ -315,19 +275,6 @@ public class GameManager : MonoBehaviour
         UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
     
-    ///<summary>
-    /// Wait some time before selecting and focusing again.
-    ///</summary>
-    ///<param name="_g">The GameObject to select</param>
-    public void WaitBeforeNewSelection(GameObject _g)
-    {
-        if (Time.time > lastSelectionTime + nextSelectionTimeLimit)
-        {
-            SetCurrentItem(_g);
-            //FocusItem(_g);
-            lastSelectionTime = Time.time;
-        }
-    }
 
     ///<summary>
     /// Remove _obj from currentItems, disable outline if possible.
