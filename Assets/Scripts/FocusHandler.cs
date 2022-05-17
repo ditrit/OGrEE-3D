@@ -182,29 +182,35 @@ public class FocusHandler : MonoBehaviour
             //enable collider used for manipulation
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
-            //disable rack colliders used for selection
+            BoundsControl boundsControl = box.GetComponent<BoundsControl>();
+            if (boundsControl == null)
+            {
+                boundsControl = box.gameObject.AddComponent<BoundsControl>();
+                boundsControl.Target = gameObject;
+                boundsControl.BoundsOverride = box.GetComponent<BoxCollider>();
+                boundsControl.BoundsControlActivation = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.BoundsControlActivationType.ActivateManually;
+                boundsControl.BoxDisplayConfig = boxDisplayConfiguration;
+                boundsControl.ScaleHandlesConfig = scaleHandlesConfiguration;
+                boundsControl.RotationHandlesConfig = rotationHandlesConfiguration;
+                boundsControl.LinksConfig = linksConfiguration;
+                boundsControl.HandleProximityEffectConfig = proximityEffectConfiguration;
+                boundsControl.Active = true;
+                Destroy(gameObject.GetComponent<Collider>());
+            }
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+
             if (GetComponent<OgreeObject>().category != "rack")
             {
+                box.GetComponent<HandInteractionHandler>().enabled = false;
                 box.GetComponent<MinMaxScaleConstraint>().enabled = false;
                 box.GetComponent<RotationAxisConstraint>().enabled = false;
-                box.GetComponent<HandInteractionHandler>().enabled = false;
-                if (box.GetComponent<BoundsControl>() == null)
-                {
-                    BoundsControl boundsControl = box.gameObject.AddComponent<BoundsControl>();
-                    boundsControl.Target = gameObject;
-                    boundsControl.BoundsOverride = box.GetComponent<BoxCollider>();
-                    boundsControl.BoundsControlActivation = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.BoundsControlActivationType.ActivateManually;
-                    boundsControl.BoxDisplayConfig = boxDisplayConfiguration;
-                    boundsControl.ScaleHandlesConfig = scaleHandlesConfiguration;
-                    boundsControl.RotationHandlesConfig = rotationHandlesConfiguration;
-                    boundsControl.LinksConfig = linksConfiguration;
-                    boundsControl.HandleProximityEffectConfig = proximityEffectConfiguration;
-                    boundsControl.Active = true;
-                    Destroy(gameObject.GetComponent<Collider>());
-                }
-                    box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
-
+            else
+            {
+                boundsControl.ScaleHandlesConfig.ShowScaleHandles = false;
+                boundsControl.RotationHandlesConfig.ShowHandleForX = false;
+                boundsControl.RotationHandlesConfig.ShowHandleForZ = false;
+            }
             //disable children colliders
             UpdateChildMeshRenderers(true);
         }
@@ -231,11 +237,12 @@ public class FocusHandler : MonoBehaviour
             if (GetComponent<OgreeObject>().category != "rack")
             {
                 box.GetComponent<HandInteractionHandler>().enabled = true;
-                box.GetComponent<MinMaxScaleConstraint>().enabled = true;
-                box.GetComponent<RotationAxisConstraint>().enabled = true;
-                box.GetComponent<BoundsControl>().Active = false;
-                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
+            box.GetComponent<MinMaxScaleConstraint>().enabled = true;
+            box.GetComponent<RotationAxisConstraint>().enabled = true;
+            box.GetComponent<BoundsControl>().Active = false;
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+
             UpdateChildMeshRenderers(true, true);
 
         }
@@ -412,7 +419,8 @@ public class FocusHandler : MonoBehaviour
                     case "building":
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
-                        foreach (Transform wall in bd.walls) {
+                        foreach (Transform wall in bd.walls)
+                        {
                             wall.GetComponent<Renderer>().enabled = _value;
                             wall.GetComponent<Collider>().enabled = _value;
                         }
