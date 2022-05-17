@@ -94,7 +94,7 @@ public class ButtonManager : MonoBehaviour
         //Placing buttons
         buttonWrapper.transform.localPosition = Vector3.zero;
         buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset: parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
         ConstraintSource source = new ConstraintSource
         {
             weight = 1,
@@ -107,7 +107,16 @@ public class ButtonManager : MonoBehaviour
 
         parentConstraint.constraintActive = true;
         buttonWrapper.SetActive(true);
-        buttonEdit.SetActive(false);
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+        {
+            buttonSelectParent.SetActive(false);
+            buttonEdit.SetActive(true);
+        }
+        else
+        {
+            buttonSelectParent.SetActive(true);
+            buttonEdit.SetActive(false);
+        }
 
     }
 
@@ -129,6 +138,8 @@ public class ButtonManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent e)
     {
         buttonEdit.SetActive(true);
+        if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
     }
 
 
@@ -139,6 +150,11 @@ public class ButtonManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
         buttonEdit.SetActive(false);
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
+        else
+            buttonSelectParent.SetActive(true);
+
     }
 
     ///<summary>
@@ -169,7 +185,10 @@ public class ButtonManager : MonoBehaviour
     private void OnEditModeOut(EditModeOutEvent e)
     {
         buttonToggleFocus.SetActive(true);
-        buttonSelectParent.SetActive(true);
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
+        else
+            buttonSelectParent.SetActive(true);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", defaultBackplateColor);
     }
 
@@ -259,7 +278,7 @@ public class ButtonManager : MonoBehaviour
             editMode = true;
 
             editScale = focusedObject.transform.localScale;
-                EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
+            EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
         {
