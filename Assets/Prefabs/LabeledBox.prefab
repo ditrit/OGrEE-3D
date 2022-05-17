@@ -1228,6 +1228,8 @@ MonoBehaviour:
   linksConfiguration: {fileID: 11400000, guid: 6f2cdf9f9685ed64a92cc96e7371b303, type: 2}
   proximityEffectConfiguration: {fileID: 11400000, guid: 7e19f5aa73f87a94c86c4bb1e8820df8,
     type: 2}
+  translationConfiguration: {fileID: 11400000, guid: 1a1a02849bc5e814990aac1717836e8f,
+    type: 2}
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0

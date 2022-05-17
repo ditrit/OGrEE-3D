@@ -29,6 +29,7 @@ public class FocusHandler : MonoBehaviour
     public RotationHandlesConfiguration rotationHandlesConfiguration;
     public LinksConfiguration linksConfiguration;
     public ProximityEffectConfiguration proximityEffectConfiguration;
+    public TranslationHandlesConfiguration translationConfiguration;
 
     private void Start()
     {
@@ -194,9 +195,9 @@ public class FocusHandler : MonoBehaviour
                 boundsControl.RotationHandlesConfig = rotationHandlesConfiguration;
                 boundsControl.LinksConfig = linksConfiguration;
                 boundsControl.HandleProximityEffectConfig = proximityEffectConfiguration;
-                boundsControl.Active = true;
                 Destroy(gameObject.GetComponent<Collider>());
             }
+            boundsControl.Active = true;
             box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
@@ -210,6 +211,7 @@ public class FocusHandler : MonoBehaviour
                 boundsControl.ScaleHandlesConfig.ShowScaleHandles = false;
                 boundsControl.RotationHandlesConfig.ShowHandleForX = false;
                 boundsControl.RotationHandlesConfig.ShowHandleForZ = false;
+                boundsControl.TranslationHandlesConfig = translationConfiguration;
             }
             //disable children colliders
             UpdateChildMeshRenderers(true);

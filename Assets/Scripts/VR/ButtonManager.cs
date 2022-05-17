@@ -322,5 +322,6 @@ public class ButtonManager : MonoBehaviour
     {
         front = !front;
         PlaceButton();
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ChangeOrientation(front);
     }
 }
