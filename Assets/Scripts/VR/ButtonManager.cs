@@ -14,7 +14,9 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonToggleFocus;
-    [SerializeField] private ParentConstraint parentConstraint;
+    [SerializeField] private GameObject buttonChangeOrientation;
+    [SerializeField] private ParentConstraint parentConstraintButtonWrapper;
+    [SerializeField] private ParentConstraint parentConstraintButtonChangeOrientation;
     [SerializeField] private float verticalOffset = 0.06f;
     [SerializeField] private float horizontalOffset = 0f;
 
@@ -39,7 +41,8 @@ public class ButtonManager : MonoBehaviour
         if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
         {
             float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
-            parentConstraint.SetTranslationOffset(0, parentConstraint.GetTranslationOffset(0) * scaleDiff);
+            parentConstraintButtonWrapper.SetTranslationOffset(0, parentConstraintButtonWrapper.GetTranslationOffset(0) * scaleDiff);
+            parentConstraintButtonChangeOrientation.SetTranslationOffset(0, parentConstraintButtonChangeOrientation.GetTranslationOffset(0) * scaleDiff);
             editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
         }
     }
@@ -88,25 +91,8 @@ public class ButtonManager : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
-        Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
+        PlaceButton();
 
-        //Placing buttons
-        buttonWrapper.transform.localPosition = Vector3.zero;
-        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
-        ConstraintSource source = new ConstraintSource
-        {
-            weight = 1,
-            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
-        };
-        parentConstraint.SetSource(0, source);
-        parentConstraint.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
-        parentConstraint.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
-        buttonWrapper.transform.SetParent(null);
-
-        parentConstraint.constraintActive = true;
-        buttonWrapper.SetActive(true);
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
         {
             buttonSelectParent.SetActive(false);
@@ -128,6 +114,7 @@ public class ButtonManager : MonoBehaviour
     {
         buttonEdit.SetActive(true);
         buttonWrapper.SetActive(false);
+        buttonChangeOrientation.SetActive(false);
     }
 
 
@@ -285,5 +272,55 @@ public class ButtonManager : MonoBehaviour
             editMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
+    }
+
+    private void PlaceButton()
+    {
+
+        buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+        Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
+
+        //Placing buttons
+        buttonWrapper.transform.localPosition = Vector3.zero;
+        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
+        ConstraintSource source = new ConstraintSource
+        {
+            weight = 1,
+            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
+        };
+        parentConstraintButtonWrapper.SetSource(0, source);
+        parentConstraintButtonWrapper.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
+        parentConstraintButtonWrapper.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
+        buttonWrapper.transform.SetParent(null);
+
+        parentConstraintButtonWrapper.constraintActive = true;
+        buttonWrapper.SetActive(true);
+
+
+        buttonChangeOrientation.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+
+        //Placing buttons
+        buttonChangeOrientation.transform.localPosition = Vector3.zero;
+        buttonChangeOrientation.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonChangeOrientation.transform.localPosition += new Vector3(!front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, !front ? parentSize.z : -parentSize.z) / 2;
+        ConstraintSource sourceBis = new ConstraintSource
+        {
+            weight = 1,
+            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
+        };
+        parentConstraintButtonChangeOrientation.SetSource(0, source);
+        parentConstraintButtonChangeOrientation.SetTranslationOffset(0, buttonChangeOrientation.transform.localPosition);
+        parentConstraintButtonChangeOrientation.SetRotationOffset(0, buttonChangeOrientation.transform.localEulerAngles);
+        buttonChangeOrientation.transform.SetParent(null);
+
+        parentConstraintButtonChangeOrientation.constraintActive = true;
+        buttonChangeOrientation.SetActive(true);
+    }
+
+    public void ButtonChangeOrientation()
+    {
+        front = !front;
+        PlaceButton();
     }
 }
