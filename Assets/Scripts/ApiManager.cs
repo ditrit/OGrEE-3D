@@ -8,9 +8,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json.Utilities;
+using UnityEngine.UI;
+using TMPro;
+using Microsoft.MixedReality.Toolkit.Utilities;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class ApiManager : MonoBehaviour
 {
+    public GameObject parentList;
+    public TMP_Text textObjResponse;
+    public GameObject buttonList;
     public struct SRequest
     {
         public string type;
@@ -67,13 +74,13 @@ public class ApiManager : MonoBehaviour
 
     private void Update()
     {
-        /*if (isReady && requestsToSend.Count > 0)
+        if (isReady && requestsToSend.Count > 0)
         {
-            if (requestsToSend.Peek().type == "put")
-                PutHttpData();
+            if (requestsToSend.Peek().type == "get")
+                GetHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
-        }*/
+        }
     }
 
     ///<summary>
@@ -121,6 +128,21 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Create a GET request.
+    ///</summary>
+    ///<param name="_obj">The OgreeObject to put</param>
+    public void CreateGetRequest(string _tenants)
+    {
+        SRequest request = new SRequest();
+        request.type = "get";
+
+        request.path = $"/tenants/{_tenants}/sites";
+        request.json = "";
+        requestsToSend.Enqueue(request);
+    }
+
+
+    ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to delete</param>
@@ -156,6 +178,58 @@ public class ApiManager : MonoBehaviour
         isReady = true;
     }
 
+    ///<summary>
+    /// Send a put request to the api.
+    ///</summary>
+    public async void GetHttpData()
+    {
+        isReady = false;
+
+        SRequest req = requestsToSend.Dequeue();
+        string fullPath = server + req.path;
+        try
+        {
+            HttpResponseMessage response = await httpClient.GetAsync(fullPath);
+            string responseStr = response.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(responseStr);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+
+        isReady = true;
+    }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api.
+    ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
+    public async Task GetObjectVincent(string _input)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return;
+        }
+        string fullPath = $"{server}/{_input}";
+        Debug.Log($"fullpath is {fullPath}");
+        try
+        {
+            HttpResponseMessage responseHTTP = await httpClient.GetAsync(fullPath);
+            string response = responseHTTP.Content.ReadAsStringAsync().Result;
+            GameManager.gm.AppendLogLine(response);
+            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
+                CreateItemFromJsonVincent(response, _input);
+            else
+                GameManager.gm.AppendLogLine("Unknown object received", "red");
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+        }
+    }
     ///<summary>
     /// Send a delete request to the api.
     ///</summary>
@@ -209,8 +283,6 @@ public class ApiManager : MonoBehaviour
         }
     }
 
-
-
     ///<summary>
     /// Avoid requestsToSend 
     /// Get an Object from the api. Create an ogreeObject with response.
@@ -232,7 +304,6 @@ public class ApiManager : MonoBehaviour
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            //GameManager.gm.AppendLogLine(response);
             if (Regex.IsMatch(response, "\"data\":{\"objects\":\\["))
             {
                 SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(response);
@@ -280,7 +351,6 @@ public class ApiManager : MonoBehaviour
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            //GameManager.gm.AppendLogLine(response);
             if (Regex.IsMatch(response, "\"data\":{\"objects\":\\["))
             {
                 SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(response);
@@ -449,6 +519,45 @@ public class ApiManager : MonoBehaviour
                     ObjectGenerator.instance.CreateGroup(obj);
                     break;
             }
+        }
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
+        EventManager.Instance.Raise(new ImportFinishedEvent());
+    }
+
+    ///<summary>
+    /// Create an Ogree item from Json.
+    /// Look in request path to the type of object to create
+    ///</summary>
+    ///<param name="_json">The API response to use</param>
+    private void CreateItemFromJsonVincent(string _json, string _input)
+    {
+        List<SApiObject> physicalObjects = new List<SApiObject>();
+        List<SApiObject> logicalObjects = new List<SApiObject>();
+
+        if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
+        {
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);
+            foreach (SApiObject obj in resp.data.objects)
+                physicalObjects.Add(obj);
+        }
+        else
+        {
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
+            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+        }
+        GridObjectCollection gridCollection = parentList.GetComponent<GridObjectCollection>();
+        foreach (SApiObject obj in physicalObjects)
+        {
+            Debug.Log("boucle physical objects "+obj.name);
+            GameObject g = Instantiate(buttonList, new Vector3(0, 0, 0), Quaternion.identity, parentList.transform);
+            g.name = obj.name;
+            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = obj.name;
+            //g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(GetObjectVincent(_input));
+            gridCollection.UpdateCollection();
+        }
+        foreach (SApiObject obj in logicalObjects)
+        {
+            Debug.Log("boucle logical objects"+obj.name);
         }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
         EventManager.Instance.Raise(new ImportFinishedEvent());

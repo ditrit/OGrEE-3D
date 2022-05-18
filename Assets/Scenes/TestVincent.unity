@@ -1499,6 +1499,27 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!1 &358666376 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4280060060866540642, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
+    type: 3}
+  m_PrefabInstance: {fileID: 4280060060418531301}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &358666379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 358666376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320277df7b0f90345b701b56c180b883, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isInit: 0
+  isReady: 0
+  server: 
 --- !u!1 &378816845
 GameObject:
   m_ObjectHideFlags: 0
@@ -4429,13 +4450,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1360282918}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 702cd938d3864b4418bd48857c170758, type: 3}
+  m_Script: {fileID: 11500000, guid: 007f29a842507df4e86a844f551c69a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilesEdgesPrefab: {fileID: 6980816583262872820, guid: 25a88b3ad6ca434429ce62c0ab6cf225,
-    type: 3}
-  gridSize: 6
-  boxscale: 1.5
+  maisonHost: 192.168.1.38
+  telephoneHost: 192.168.229.231
+  customer: EDF
+  site: NOE
+  port: 5000
+  apiResponseTMP: {fileID: 0}
 --- !u!65 &1360282920
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5657,7 +5680,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 4280060060418531301}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 358666376}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6dd8f2349f505c24f96999fa533a8e76, type: 3}
@@ -11611,7 +11634,7 @@ PrefabInstance:
     - target: {fileID: 4280060060866540642, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4280060060866540653, guid: 00cc60390c14ada4eabe45d8c3ecfa1d,
         type: 3}
@@ -11713,7 +11736,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4280060060866540652, guid: 00cc60390c14ada4eabe45d8c3ecfa1d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 00cc60390c14ada4eabe45d8c3ecfa1d, type: 3}
 --- !u!4 &4356712309293426769
 Transform:
