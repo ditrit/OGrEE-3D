@@ -400,11 +400,11 @@ public class FocusHandler : MonoBehaviour
     private void UpdateChildMeshRenderersRec(bool _value)
     {
         FillListsWithChildren();
+        foreach (GameObject child in ogreeChildObjects)
+            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
         FillMeshRendererLists();
 
         UpdateChildMeshRenderers(_value);
-        foreach (GameObject child in ogreeChildObjects)
-            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
     }
 
     ///<summary>
