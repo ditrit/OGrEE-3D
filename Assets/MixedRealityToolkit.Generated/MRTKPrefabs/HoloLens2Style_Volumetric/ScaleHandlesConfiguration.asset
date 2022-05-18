@@ -22,5 +22,5 @@ MonoBehaviour:
   drawTetherWhenManipulating: 1
   handlesIgnoreCollider: {fileID: 0}
   handleSlatePrefab: {fileID: 100000, guid: a6473ac7ac982fb488db53a454bf0a3c, type: 3}
-  showScaleHandles: 0
+  showScaleHandles: 1
   scaleBehavior: 0

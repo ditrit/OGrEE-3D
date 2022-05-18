@@ -205,12 +205,18 @@ public class FocusHandler : MonoBehaviour
                 box.GetComponent<HandInteractionHandler>().enabled = false;
                 box.GetComponent<MinMaxScaleConstraint>().enabled = false;
                 box.GetComponent<RotationAxisConstraint>().enabled = false;
+                scaleHandlesConfiguration.ShowScaleHandles = true;
+                rotationHandlesConfiguration.ShowHandleForX = true;
+                rotationHandlesConfiguration.ShowHandleForZ = true;
+                boundsControl.TranslationHandlesConfig = null;
             }
             else
             {
-                boundsControl.ScaleHandlesConfig.ShowScaleHandles = false;
-                boundsControl.RotationHandlesConfig.ShowHandleForX = false;
-                boundsControl.RotationHandlesConfig.ShowHandleForZ = false;
+                box.GetComponent<MinMaxScaleConstraint>().enabled = true;
+                box.GetComponent<RotationAxisConstraint>().enabled = true;
+                scaleHandlesConfiguration.ShowScaleHandles = false;
+                rotationHandlesConfiguration.ShowHandleForX = false;
+                rotationHandlesConfiguration.ShowHandleForZ = false;
                 boundsControl.TranslationHandlesConfig = translationConfiguration;
             }
             //disable children colliders

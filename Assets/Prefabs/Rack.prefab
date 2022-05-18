@@ -150,7 +150,7 @@ MonoBehaviour:
     type: 2}
   scaleHandlesConfiguration: {fileID: 11400000, guid: 1ff24b45b5ce2e64cbc6dc16068df114,
     type: 2}
-  rotationHandlesConfiguration: {fileID: 11400000, guid: 2ba8ed2120d57174abc0355b90fa6eae,
+  rotationHandlesConfiguration: {fileID: 11400000, guid: 538f4bc9b8864b2459e9212b9495898c,
     type: 2}
   linksConfiguration: {fileID: 11400000, guid: 6f2cdf9f9685ed64a92cc96e7371b303, type: 2}
   proximityEffectConfiguration: {fileID: 11400000, guid: 7e19f5aa73f87a94c86c4bb1e8820df8,
