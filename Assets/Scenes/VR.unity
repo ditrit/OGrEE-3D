@@ -7926,7 +7926,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: -0.000005380896
+  m_Value: -0.000014349055
   m_Size: 0.8926295
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -10554,7 +10554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.029022}
+  m_AnchoredPosition: {x: 0, y: 34.02928}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped
@@ -13203,38 +13203,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1689342065}
   m_CullTransparentMesh: 0
---- !u!1 &1689492005 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5964503629750013083, guid: 46de769a2d9f4c94ba997d22c0313228,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338946236029651621}
-  m_PrefabAsset: {fileID: 0}
---- !u!1773428102 &1689492006
-ParentConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1689492005}
-  m_Enabled: 1
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0, y: 0, z: 0}
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_TranslationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_RotationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 1
-  m_AffectTranslationZ: 1
-  m_AffectRotationX: 1
-  m_AffectRotationY: 1
-  m_AffectRotationZ: 1
-  m_IsContraintActive: 0
-  m_IsLocked: 0
-  m_Sources:
-  - sourceTransform: {fileID: 0}
-    weight: 1
 --- !u!1 &1690270590
 GameObject:
   m_ObjectHideFlags: 0
@@ -13561,18 +13529,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &1722120506 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338946236029651621}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 462aaafa26f255244ac459b3d1ad65a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1730009391
 GameObject:
   m_ObjectHideFlags: 0
@@ -16609,21 +16565,6 @@ PrefabInstance:
       propertyPath: parentConstraint
       value: 
       objectReference: {fileID: 2046788154}
-    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: buttonChangeOrientation
-      value: 
-      objectReference: {fileID: 1689492005}
-    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: parentConstraintButtonWrapper
-      value: 
-      objectReference: {fileID: 2046788154}
-    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: parentConstraintButtonChangeOrientation
-      value: 
-      objectReference: {fileID: 1689492006}
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: m_RootOrder
@@ -16683,26 +16624,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Moving Buttons
-      objectReference: {fileID: 0}
-    - target: {fileID: 5972467116492977061, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5972467116492977061, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1722120506}
-    - target: {fileID: 5972467116492977061, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ButtonChangeOrientation
-      objectReference: {fileID: 0}
-    - target: {fileID: 5972467116492977061, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ButtonManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6168494507637929393, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
