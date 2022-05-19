@@ -1158,18 +1158,12 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void ParseUiCommand(string _input)
     {
-        string pattern = "^(wireframe|infos|debug)=(true|false)$";
+        string pattern = "^(infos|debug)=(true|false)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('=');
             switch (data[0])
             {
-                // case "wireframe":
-                //     if (data[1] == "true")
-                //         UiManager.instance.ToggleRacksMaterials(true);
-                //     else
-                //         UiManager.instance.ToggleRacksMaterials(false);
-                //     break;
                 case "infos":
                     if (data[1] == "true")
                         UiManager.instance.MovePanel("infos", true);

@@ -11,8 +11,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GameObject menuPanel = null;
 
     [Header("Panel Top")]
-    // [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private Button focusBtn = null;
+    [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
 
     [Header("Panel Bottom")]
@@ -40,6 +40,7 @@ public class UiManager : MonoBehaviour
     private void Start()
     {
         focusBtn.interactable = false;
+        selectParentBtn.interactable = false;
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
@@ -61,13 +62,17 @@ public class UiManager : MonoBehaviour
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         focusBtn.interactable = true;
+        selectParentBtn.interactable = true;
     }
 
     ///
     private void OnDeselectItem(OnDeselectItemEvent _e)
     {
         if (GameManager.gm.currentItems.Count == 0)
+        {
             focusBtn.interactable = false;
+            selectParentBtn.interactable = false;
+        }
     }
 
     ///<summary>
@@ -263,11 +268,24 @@ public class UiManager : MonoBehaviour
             await GameManager.gm.ConnectToApi();
     }
 
-    ///
+    ///<summary>
+    /// Called by GUI button: Focus selected object.
+    ///</summary>
     public void FocusSelected()
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
             GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Select the parent of the selected object.
+    ///</summary>
+    public void SelectParentItem()
+    {
+        if (GameManager.gm.currentItems.Count == 0)
+            return;
+
+        GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
     ///
@@ -284,23 +302,5 @@ public class UiManager : MonoBehaviour
             GameManager.gm.writeCLI = false;
         }
     }
-
-    ///<summary>
-    /// Called by GUI checkbox: Change material of all Racks.
-    ///</summary>
-    ///<param name="_value">The checkbox value</param>
-    // public void ToggleRacksMaterials(bool _value)
-    // {
-    //     toggleWireframe.isOn = _value;
-    //     GameManager.gm.isWireframe = _value;
-    //     foreach (DictionaryEntry de in GameManager.gm.allItems)
-    //     {
-    //         GameObject obj = (GameObject)de.Value;
-    //         string cat = obj.GetComponent<OgreeObject>()?.category;
-    //         if (cat == "rack" || cat == "group" || cat == "corridor")
-    //             GameManager.gm.SetRackMaterial(obj.transform);
-    //     }
-    // }
-
     #endregion
 }
