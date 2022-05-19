@@ -305,13 +305,20 @@ public class ApiManager : MonoBehaviour
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
         foreach (SApiObject obj in physicalObjects)
         {
             if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
                 await GetObject($"tenants?name={obj.domain}");
+
+            if (obj.category == "room" && !string.IsNullOrEmpty(obj.attributes["template"])
+                && !GameManager.gm.roomTemplates.ContainsKey(obj.attributes["template"]))
+            {
+                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
+                await GetObject($"room-templates/{obj.attributes["template"]}");
+            }
 
             if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
                 && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
@@ -378,25 +385,6 @@ public class ApiManager : MonoBehaviour
             rfJson.CreateRoomTemplate(resp.data);
         }
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-    }
-
-    ///<summary>
-    /// Parse a nested SApiObject and add each item to a given list.
-    ///</summary>
-    ///<param name="_physicalList">The list of physical objects to complete</param>
-    ///<param name="_logicalList">The list of logical objects to complete</param>
-    ///<param name="_src">The head of nested SApiObjects</param>
-    private void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
-    {
-        if (_src.category == "group")
-            _logicalList.Add(_src);
-        else
-            _physicalList.Add(_src);
-        if (_src.children != null)
-        {
-            foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_physicalList, _logicalList, obj);
-        }
     }
 
     ///<summary>

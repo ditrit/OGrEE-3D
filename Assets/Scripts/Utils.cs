@@ -154,4 +154,23 @@ public static class Utils
         float max = _color.maxColorComponent;
         return new Color(max - _color.r / 3, max - _color.g / 3, max - _color.b / 3, _color.a);
     }
+
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_physicalList">The list of physical objects to complete</param>
+    ///<param name="_logicalList">The list of logical objects to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
+    public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
+    {
+        if (_src.category == "group")
+            _logicalList.Add(_src);
+        else
+            _physicalList.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_physicalList, _logicalList, obj);
+        }
+    }
 }
