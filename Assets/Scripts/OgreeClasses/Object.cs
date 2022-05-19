@@ -283,7 +283,7 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
+    public async void SetTemperature(string _value)
     {
         if (category == "corridor")
         {
@@ -313,7 +313,7 @@ public class OObject : OgreeObject
                     se.parentId = id;
                     se.domain = domain;
 
-                    ObjectGenerator.instance.CreateSensor(se, transform);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(se, transform);
                 }
             }
             else

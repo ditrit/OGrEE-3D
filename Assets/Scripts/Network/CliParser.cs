@@ -134,68 +134,10 @@ public class CliParser// : MonoBehaviour
         Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
 
         foreach (SApiObject obj in physicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await ApiManager.instance.GetObject($"tenants?name={obj.domain}");
-
-            if (obj.category == "room" && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.roomTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
-                await ApiManager.instance.GetObject($"room-templates/{obj.attributes["template"]}");
-            }
-
-            if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
-                await ApiManager.instance.GetObject($"obj-templates/{obj.attributes["template"]}");
-            }
-
-            switch (obj.category)
-            {
-                case "tenant":
-                    CustomerGenerator.instance.CreateTenant(obj);
-                    break;
-                case "site":
-                    CustomerGenerator.instance.CreateSite(obj);
-                    break;
-                case "building":
-                    BuildingGenerator.instance.CreateBuilding(obj);
-                    break;
-                case "room":
-                    BuildingGenerator.instance.CreateRoom(obj);
-                    break;
-                case "rack":
-                    ObjectGenerator.instance.CreateRack(obj);
-                    break;
-                case "device":
-                    ObjectGenerator.instance.CreateDevice(obj);
-                    break;
-                case "corridor":
-                    ObjectGenerator.instance.CreateCorridor(obj);
-                    break;
-                default:
-                    GameManager.gm.AppendLogLine($"Unknown object type ({obj.category})", "yellow");
-                    break;
-            }
-        }
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        
         foreach (SApiObject obj in logicalObjects)
-        {
-            if (!GameManager.gm.allItems.Contains(obj.domain))
-                await ApiManager.instance.GetObject($"tenants?name={obj.domain}");
-
-            switch (obj.category)
-            {
-                case "group":
-                    ObjectGenerator.instance.CreateGroup(obj);
-                    break;
-                default:
-                    GameManager.gm.AppendLogLine($"Unknown object type ({obj.category})", "yellow");
-                    break;
-            }
-        }
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
     }
 
     ///<summary>

@@ -314,7 +314,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        if (_obj.GetComponent<OgreeObject>().category == "rack" || _obj.GetComponent<OgreeObject>().category == "corridor")
+        if (_obj.GetComponent<OgreeObject>().category != "device")
             return;
         _obj.transform.parent.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
@@ -327,7 +327,7 @@ public class FocusHandler : MonoBehaviour
     private void ResetToRack()
     {
         UpdateChildMeshRenderers(false);
-        if (GetComponent<OgreeObject>().category == "rack" || GetComponent<OgreeObject>().category == "corridor")
+        if (GetComponent<OgreeObject>().category != "device")
         {
             UpdateOwnMeshRenderers(true);
             return;

@@ -59,7 +59,6 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
     private ReadFromJson rfJson = new ReadFromJson();
-    private Coroutine waitCoroutine = null;
 
     private void Awake()
     {
@@ -309,63 +308,12 @@ public class ApiManager : MonoBehaviour
         }
 
         foreach (SApiObject obj in physicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            if (obj.category == "room" && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.roomTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
-                await GetObject($"room-templates/{obj.attributes["template"]}");
-            }
-
-            if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
-                await GetObject($"obj-templates/{obj.attributes["template"]}");
-            }
-
-            switch (obj.category)
-            {
-                case "tenant":
-                    CustomerGenerator.instance.CreateTenant(obj);
-                    break;
-                case "site":
-                    CustomerGenerator.instance.CreateSite(obj);
-                    break;
-                case "building":
-                    BuildingGenerator.instance.CreateBuilding(obj);
-                    break;
-                case "room":
-                    BuildingGenerator.instance.CreateRoom(obj);
-                    break;
-                case "rack":
-                    ObjectGenerator.instance.CreateRack(obj);
-                    break;
-                case "device":
-                    ObjectGenerator.instance.CreateDevice(obj);
-                    break;
-                case "corridor":
-                    ObjectGenerator.instance.CreateCorridor(obj);
-                    break;
-            }
-        }
         foreach (SApiObject obj in logicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            switch (obj.category)
-            {
-                case "group":
-                    ObjectGenerator.instance.CreateGroup(obj);
-                    break;
-            }
-        }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
-        ResetCoroutine();
     }
 
     ///<summary>
@@ -386,26 +334,4 @@ public class ApiManager : MonoBehaviour
         }
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
-
-    ///<summary>
-    /// If a waitCoroutine is running, stop it. Then, start a new one.
-    ///</summary>
-    private void ResetCoroutine()
-    {
-        if (waitCoroutine != null)
-            StopCoroutine(waitCoroutine);
-        waitCoroutine = StartCoroutine(WaitAndRaiseEvent());
-    }
-
-    ///<summary>
-    /// Wait 1 second and raise ImportFinished et ChangeCursor envents
-    ///</summary>
-    private IEnumerator WaitAndRaiseEvent()
-    {
-        yield return new WaitForSeconds(1f);
-        EventManager.Instance.Raise(new ImportFinishedEvent());
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        Debug.Log("[] event raised !");
-    }
-
 }

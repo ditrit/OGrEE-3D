@@ -567,7 +567,7 @@ public class ConsoleController : MonoBehaviour
             if (ApiManager.instance.isInit)
                 await ApiManager.instance.PostObject(tn);
             else
-                CustomerGenerator.instance.CreateTenant(tn);
+                await OgreeGenerator.instance.CreateItemFromSApiObject(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -603,7 +603,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(si);
                 else
-                    CustomerGenerator.instance.CreateSite(si, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(si, parent);
             }
         }
         else
@@ -647,7 +647,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(bd);
                 else
-                    BuildingGenerator.instance.CreateBuilding(bd, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(bd, parent);
             }
         }
         else
@@ -723,7 +723,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(ro);
                 else
-                    BuildingGenerator.instance.CreateRoom(ro, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(ro, parent);
             }
         }
         else
@@ -797,7 +797,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(rk);
                 else
-                    ObjectGenerator.instance.CreateRack(rk, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(rk, parent);
             }
         }
         else
@@ -888,7 +888,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(dv);
                 else
-                    ObjectGenerator.instance.CreateDevice(dv, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(dv, parent);
             }
         }
         else
@@ -923,7 +923,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(gr);
                 else
-                    ObjectGenerator.instance.CreateGroup(gr, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(gr, parent);
             }
         }
         else
@@ -959,7 +959,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(co);
                 else
-                    ObjectGenerator.instance.CreateCorridor(co, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(co, parent);
             }
         }
         else
@@ -970,7 +970,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create sensor" command and call ObjectGenerator.CreateSensor().
     ///</summary>
     ///<param name="_input">String with sensor data to parse</param>
-    private void CreateSensor(string _input)
+    private async void CreateSensor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(ext@[0-9.]+|int@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@[0-9.]+)$";
@@ -1004,7 +1004,7 @@ public class ConsoleController : MonoBehaviour
                 se.parentId = parent.GetComponent<OgreeObject>().id;
                 se.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateSensor(se, parent);
+                await OgreeGenerator.instance.CreateItemFromSApiObject(se, parent);
             }
         }
         else

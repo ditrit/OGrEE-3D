@@ -5,16 +5,6 @@ using UnityEngine;
 
 public class ObjectGenerator : MonoBehaviour
 {
-    public static ObjectGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
