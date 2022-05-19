@@ -690,9 +690,9 @@ GameObject:
   - component: {fileID: 2756453064248392137}
   - component: {fileID: 2633159542549976067}
   - component: {fileID: 280631025753518186}
+  - component: {fileID: 6392177900671365294}
+  - component: {fileID: 1476886475083446869}
   - component: {fileID: 925329239593856406}
-  - component: {fileID: 6956998015766487094}
-  - component: {fileID: 7875496163010335191}
   - component: {fileID: 5472215424121809831}
   - component: {fileID: 8376138954405355199}
   - component: {fileID: 8950902018713588102}
@@ -781,21 +781,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &925329239593856406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4254767957273672101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a98de877dee5fc341b4eb59dfdab266c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  autoConstraintSelection: 1
-  selectedConstraints: []
---- !u!114 &6956998015766487094
+--- !u!114 &6392177900671365294
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -838,20 +824,34 @@ MonoBehaviour:
   onHoverExited:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &7875496163010335191
+--- !u!114 &1476886475083446869
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4254767957273672101}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5afd5316c63705643b3daba5a6e923bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 0
   IsBoundsHandles: 0
+--- !u!114 &925329239593856406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4254767957273672101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98de877dee5fc341b4eb59dfdab266c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoConstraintSelection: 1
+  selectedConstraints: []
 --- !u!114 &5472215424121809831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1127,6 +1127,7 @@ GameObject:
   - component: {fileID: -7375449237141215194}
   - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
+  - component: {fileID: 4055006019252844647}
   m_Layer: 0
   m_Name: LabeledBox
   m_TagString: Selectable
@@ -1218,6 +1219,17 @@ MonoBehaviour:
   isHovered: 0
   isFocused: 0
   isFrontOriented: 1
+  boxDisplayConfiguration: {fileID: 11400000, guid: 29d72152ec84a4f439ade1cab15da9b2,
+    type: 2}
+  scaleHandlesConfiguration: {fileID: 11400000, guid: 1ff24b45b5ce2e64cbc6dc16068df114,
+    type: 2}
+  rotationHandlesConfiguration: {fileID: 11400000, guid: 2ba8ed2120d57174abc0355b90fa6eae,
+    type: 2}
+  linksConfiguration: {fileID: 11400000, guid: 6f2cdf9f9685ed64a92cc96e7371b303, type: 2}
+  proximityEffectConfiguration: {fileID: 11400000, guid: 7e19f5aa73f87a94c86c4bb1e8820df8,
+    type: 2}
+  translationConfiguration: {fileID: 11400000, guid: 1a1a02849bc5e814990aac1717836e8f,
+    type: 2}
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0
@@ -1242,6 +1254,20 @@ LODGroup:
     - renderer: {fileID: 6299635990443873303}
     - renderer: {fileID: 900678627643471639}
   m_Enabled: 1
+--- !u!114 &4055006019252844647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98de877dee5fc341b4eb59dfdab266c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoConstraintSelection: 1
+  selectedConstraints: []
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0

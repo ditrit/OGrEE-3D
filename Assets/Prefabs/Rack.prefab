@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5666233796082005944}
   - component: {fileID: -4847266291842506605}
   - component: {fileID: 4507776248461121190}
-  - component: {fileID: -2811269542296861343}
+  - component: {fileID: -8983734977160870219}
   m_Layer: 0
   m_Name: Rack
   m_TagString: Selectable
@@ -147,6 +147,17 @@ MonoBehaviour:
   isHovered: 0
   isFocused: 0
   isFrontOriented: 1
+  boxDisplayConfiguration: {fileID: 114158987510220008, guid: e9e54ebd208487c409e32502a50a1f20,
+    type: 3}
+  scaleHandlesConfiguration: {fileID: 11400000, guid: 1ff24b45b5ce2e64cbc6dc16068df114,
+    type: 2}
+  rotationHandlesConfiguration: {fileID: 11400000, guid: 2ba8ed2120d57174abc0355b90fa6eae,
+    type: 2}
+  linksConfiguration: {fileID: 11400000, guid: 6f2cdf9f9685ed64a92cc96e7371b303, type: 2}
+  proximityEffectConfiguration: {fileID: 11400000, guid: 7e19f5aa73f87a94c86c4bb1e8820df8,
+    type: 2}
+  translationConfiguration: {fileID: 11400000, guid: 1a1a02849bc5e814990aac1717836e8f,
+    type: 2}
 --- !u!114 &4507776248461121190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,7 +180,7 @@ MonoBehaviour:
   isHovered: 0
   isHighlighted: 0
   isFocused: 0
---- !u!114 &-2811269542296861343
+--- !u!114 &-8983734977160870219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -184,7 +195,7 @@ MonoBehaviour:
   gridCellPrefab: {fileID: 6234101797070000029, guid: 25a88b3ad6ca434429ce62c0ab6cf225,
     type: 3}
   gridSize: 10
-  boxscale: 2
+  boxscale: 1.5
 --- !u!1 &581781385037581641
 GameObject:
   m_ObjectHideFlags: 0

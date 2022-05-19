@@ -191,7 +191,7 @@ public class Photo_Capture : MonoBehaviour
             byte[] imageByteArray = imageBufferList.ToArray();
             if (imageByteArray != null)
             {
-                UploadByteAsync(imageByteArray);
+                await UploadByteAsync(imageByteArray);
             }
         }
         photoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
@@ -254,7 +254,7 @@ public class Photo_Capture : MonoBehaviour
     /// Send picture to API and receive json
     ///</summary>
     ///<param name="_byteArray"> image in the format of a byte array</param>
-    public async void UploadByteAsync(byte[] byteArray)
+    public async Task UploadByteAsync(byte[] byteArray)
     {
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", byteArray);

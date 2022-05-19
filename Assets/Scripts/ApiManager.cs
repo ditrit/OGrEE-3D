@@ -10,14 +10,11 @@ using UnityEngine;
 using Newtonsoft.Json.Utilities;
 using UnityEngine.UI;
 using TMPro;
-using Microsoft.MixedReality.Toolkit.Utilities;
-using Microsoft.MixedReality.Toolkit.UI;
+
+
 
 public class ApiManager : MonoBehaviour
 {
-    public GameObject parentList;
-    public TMP_Text textObjResponse;
-    public GameObject buttonList;
     public struct SRequest
     {
         public string type;
@@ -61,7 +58,9 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
     ReadFromJson rfJson = new ReadFromJson();
-
+    [Header("AR")]
+    [SerializeField] private List<string> previousCalls = new List<string>();
+    [SerializeField] private List<string> parentNames = new List<string>();
     private void Awake()
     {
         AotHelper.EnsureList<ReadFromJson.STemplateChild>();
@@ -206,8 +205,23 @@ public class ApiManager : MonoBehaviour
     /// Get an Object from the api.
     ///</summary>
     ///<param name="_input">The path to add a base server for API GET request</param>
-    public async Task GetObjectVincent(string _input)
+    public async void GetObjectVincent(string _input, string _parentName)
     {
+        try
+        {
+            string previousCall = previousCalls[previousCalls.Count - 2];
+            if (previousCall == _input)
+            {
+                previousCalls.RemoveAt(previousCalls.Count - 1);
+                previousCalls.RemoveAt(previousCalls.Count - 1);
+                parentNames.RemoveAt(parentNames.Count - 1);
+                parentNames.RemoveAt(parentNames.Count - 1);
+            }
+        }
+        catch
+        {
+            Debug.Log("No previous calls");
+        }
         if (!isInit)
         {
             GameManager.gm.AppendLogLine("Not connected to API", "yellow");
@@ -221,7 +235,11 @@ public class ApiManager : MonoBehaviour
             string response = responseHTTP.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                CreateItemFromJsonVincent(response, _input);
+            {
+                previousCalls.Add(_input);
+                parentNames.Add(_parentName);
+                CreateListFromJsonVincent(response);                
+            }
             else
                 GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
@@ -230,6 +248,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
     }
+
     ///<summary>
     /// Send a delete request to the api.
     ///</summary>
@@ -526,13 +545,12 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Create an Ogree item from Json.
-    /// Look in request path to the type of object to create
+    /// Look in request path to the type of object to create a 3D list with the response.
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private void CreateItemFromJsonVincent(string _json, string _input)
+    private void CreateListFromJsonVincent(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
 
         if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
@@ -540,26 +558,10 @@ public class ApiManager : MonoBehaviour
             foreach (SApiObject obj in resp.data.objects)
                 physicalObjects.Add(obj);
         }
-        else
-        {
-            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
-        }
-        GridObjectCollection gridCollection = parentList.GetComponent<GridObjectCollection>();
-        foreach (SApiObject obj in physicalObjects)
-        {
-            Debug.Log("boucle physical objects "+obj.name);
-            GameObject g = Instantiate(buttonList, new Vector3(0, 0, 0), Quaternion.identity, parentList.transform);
-            g.name = obj.name;
-            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = obj.name;
-            //g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(GetObjectVincent(_input));
-            gridCollection.UpdateCollection();
-        }
-        foreach (SApiObject obj in logicalObjects)
-        {
-            Debug.Log("boucle logical objects"+obj.name);
-        }
-        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
+        ListGenerator.instance.ClearParentList();
+        //ListGenerator.instance.CreateList(physicalObjects, parentName);
+        ListGenerator.instance.InstantiateByIndex(physicalObjects, parentNames, 0, previousCalls);
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count} object(s) created", "green");
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 

@@ -49,7 +49,7 @@ public class APIResponseAsLIst : MonoBehaviour
     {
         await Task.Delay(1000);
         //ApiManager.instance.CreateGetRequest("EDF");
-        await ApiManager.instance.GetObjectVincent("tenants/EDF/sites");
+        ApiManager.instance.GetObjectVincent("tenants/EDF/sites", "EDF");
         //ApiManager.instance.GetHttpData();
     }
 

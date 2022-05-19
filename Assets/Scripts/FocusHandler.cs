@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
 
 ///<summary>
 /// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
@@ -22,6 +24,13 @@ public class FocusHandler : MonoBehaviour
     public bool isFocused = false;
 
     public bool isFrontOriented = true;
+
+    public BoxDisplayConfiguration boxDisplayConfiguration;
+    public ScaleHandlesConfiguration scaleHandlesConfiguration;
+    public RotationHandlesConfiguration rotationHandlesConfiguration;
+    public LinksConfiguration linksConfiguration;
+    public ProximityEffectConfiguration proximityEffectConfiguration;
+    public TranslationHandlesConfiguration translationConfiguration;
 
     private void Start()
     {
@@ -100,7 +109,6 @@ public class FocusHandler : MonoBehaviour
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
         }
-        
     }
 
     ///<summary>
@@ -136,7 +144,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
+            transform.GetChild(0).GetComponent<MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -156,59 +164,95 @@ public class FocusHandler : MonoBehaviour
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
+            transform.GetChild(0).GetComponent<MoveAxisConstraint>().enabled = true;
             GetComponent<OgreeObject>().ResetPosition();
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and.
+    /// If it is, enable the colliders used for the edit mode, instantiate the BoundControls components and disable the children collliders.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent e)
     {
         if (e.obj == gameObject)
         {
+            Transform box = transform.GetChild(0);
 
             //enable collider used for manipulation
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
-            //disable rack colliders used for selection
+            BoundsControl boundsControl = box.GetComponent<BoundsControl>();
+            if (boundsControl == null)
+            {
+                boundsControl = box.gameObject.AddComponent<BoundsControl>();
+                boundsControl.Target = gameObject;
+                boundsControl.BoundsOverride = box.GetComponent<BoxCollider>();
+                boundsControl.BoundsControlActivation = Microsoft.MixedReality.Toolkit.UI.BoundsControlTypes.BoundsControlActivationType.ActivateManually;
+                boundsControl.BoxDisplayConfig = boxDisplayConfiguration;
+                boundsControl.ScaleHandlesConfig = scaleHandlesConfiguration;
+                boundsControl.RotationHandlesConfig = rotationHandlesConfiguration;
+                boundsControl.LinksConfig = linksConfiguration;
+                boundsControl.HandleProximityEffectConfig = proximityEffectConfiguration;
+                Destroy(gameObject.GetComponent<Collider>());
+            }
+            boundsControl.Active = true;
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+                box.GetComponent<HandInteractionHandler>().enabled = false;
+                box.GetComponent<MinMaxScaleConstraint>().enabled = false;
+                box.GetComponent<RotationAxisConstraint>().enabled = false;
             }
-
+            else
+            {
+                boundsControl.ScaleHandlesConfig.ShowScaleHandles = false;
+                boundsControl.RotationHandlesConfig.ShowHandleForX = false;
+                boundsControl.RotationHandlesConfig.ShowHandleForZ = false;
+                boundsControl.TranslationHandlesConfig = translationConfiguration;
+            }
             //disable children colliders
             UpdateChildMeshRenderers(true);
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+            Transform box = transform.GetChild(0);
+            box.GetComponent<MoveAxisConstraint>().enabled = true;
         }
     }
 
+    ///<summary>
+    /// When called checks if he is the GameObject focused on and.
+    /// If it is, disable the colliders used for the edit mode and enable the children collliders.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent e)
     {
         if (e.obj == gameObject)
         {
+            Transform box = transform.GetChild(0);
 
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            box.GetComponent<Collider>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = true;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = true;
-                transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = true;
+                box.GetComponent<HandInteractionHandler>().enabled = true;
             }
+            box.GetComponent<MinMaxScaleConstraint>().enabled = true;
+            box.GetComponent<RotationAxisConstraint>().enabled = true;
+            box.GetComponent<BoundsControl>().Active = false;
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
+
             UpdateChildMeshRenderers(true, true);
 
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MoveAxisConstraint>().enabled = false;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.MinMaxScaleConstraint>().enabled = false;
-            transform.GetChild(0).GetComponent<Microsoft.MixedReality.Toolkit.UI.RotationAxisConstraint>().enabled = false;
+            Transform box = transform.GetChild(0);
+
+            box.GetComponent<MoveAxisConstraint>().enabled = false;
         }
     }
 
@@ -269,7 +313,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "uRoot" && child.name != "GridForULocation")
+            else if (child.name != "uRoot" && child.name != "GridForULocation" && child.name != "rigRoot")
                 OwnObjectsList.Add(child.gameObject);
         }
     }
@@ -292,7 +336,11 @@ public class FocusHandler : MonoBehaviour
         {
             MeshRenderer[] SlotChildMeshRenderers = gameObject.GetComponentsInChildren<MeshRenderer>();
             foreach (MeshRenderer meshRenderer in SlotChildMeshRenderers)
+            {
+                if (meshRenderer.gameObject.name.StartsWith("link_") || meshRenderer.gameObject.name == "visuals" || meshRenderer.gameObject.name == "box display")
+                    continue;
                 slotChildMeshRendererList.Add(meshRenderer);
+            }
         }
     }
 
@@ -374,7 +422,10 @@ public class FocusHandler : MonoBehaviour
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in bd.walls)
+                        {
                             wall.GetComponent<Renderer>().enabled = _value;
+                            wall.GetComponent<Collider>().enabled = _value;
+                        }
                         break;
                     case "room":
                         Room ro = go.GetComponent<Room>();
@@ -384,7 +435,10 @@ public class FocusHandler : MonoBehaviour
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
+                        {
                             wall.GetComponentInChildren<Renderer>().enabled = _value;
+                            wall.GetComponent<Collider>().enabled = _value;
+                        }
                         if (go.transform.Find("tilesNameRoot"))
                         {
                             foreach (Transform child in go.transform.Find("tilesNameRoot"))

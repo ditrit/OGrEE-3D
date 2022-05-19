@@ -215,6 +215,7 @@ public class Rack : OObject
     ///</summary>
     private void GenerateUHelpers()
     {
+        //Bouger dans U manager en rajoutant en paramètre le transform et le uroot
         Vector3 rootPos;
         Transform box = transform.GetChild(0);
         if (box.childCount == 0)

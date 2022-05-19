@@ -14,9 +14,14 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonToggleFocus;
-    [SerializeField] private ParentConstraint parentConstraint;
+    [SerializeField] private GameObject buttonChangeOrientation;
+    [SerializeField] private ParentConstraint parentConstraintButtonWrapper;
+    [SerializeField] private ParentConstraint parentConstraintButtonChangeOrientation;
+    [SerializeField] private float verticalOffset = 0.06f;
+    [SerializeField] private float horizontalOffset = 0f;
 
     private Color defaultBackplateColor;
+    private Vector3 editScale;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +34,17 @@ public class ButtonManager : MonoBehaviour
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         buttonWrapper.SetActive(false);
         defaultBackplateColor = buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.color;
+    }
+
+    private void Update()
+    {
+        if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
+        {
+            float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
+            parentConstraintButtonWrapper.SetTranslationOffset(0, parentConstraintButtonWrapper.GetTranslationOffset(0) * scaleDiff);
+            parentConstraintButtonChangeOrientation.SetTranslationOffset(0, parentConstraintButtonChangeOrientation.GetTranslationOffset(0) * scaleDiff);
+            editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
+        }
     }
 
     ///<summary>
@@ -70,57 +86,62 @@ public class ButtonManager : MonoBehaviour
 
 
     ///<summary>
-    /// When called set the button active, set the selected object as its parent and initialise it
+    /// When called set the buttonWrapper active, set the selected object as its parent (via a parent constraint) and initialise it
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        Transform test = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform;
-        if (buttonWrapper == null)
+        PlaceButton();
+
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
         {
-            Debug.Log("Button Wrapper destroyed");
+            buttonSelectParent.SetActive(false);
+            buttonEdit.SetActive(true);
         }
-        //buttonWrapper.SetActive(true);
-        buttonWrapper.transform.SetParent(test);
-        Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
-
-        //Placing buttons
-        buttonWrapper.transform.localPosition = Vector3.zero;
-        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x : parentSize.x, parentSize.y + 0.06f, front ? parentSize.z : -parentSize.z) / 2;
-        ConstraintSource source = new ConstraintSource
+        else
         {
-            weight = 1,
-            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
-        };
-        parentConstraint.SetSource(0, source);
-        parentConstraint.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
-        parentConstraint.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
-        buttonWrapper.transform.SetParent(null);
-
-        parentConstraint.constraintActive = true;
-        buttonWrapper.SetActive(true);
-        buttonEdit.SetActive(false);
+            buttonSelectParent.SetActive(true);
+            buttonEdit.SetActive(false);
+        }
 
     }
 
     ///<summary>
-    /// When called set the button inactive
+    /// When called set the buttonWrapper inactive
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnDeselectItem(OnDeselectItemEvent e)
     {
+        buttonEdit.SetActive(true);
         buttonWrapper.SetActive(false);
-
+        buttonChangeOrientation.SetActive(false);
     }
 
+
+    ///<summary>
+    /// When called set the edit button active
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent e)
     {
         buttonEdit.SetActive(true);
+        if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
     }
+
+
+    ///<summary>
+    /// When called set the edit button inactive
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
         buttonEdit.SetActive(false);
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
+        else
+            buttonSelectParent.SetActive(true);
+
     }
 
     ///<summary>
@@ -132,16 +153,29 @@ public class ButtonManager : MonoBehaviour
         front = e.front;
     }
 
+
+    ///<summary>
+    /// When called set the focus button and the select parent button inactive and change the color of the edit button
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent e)
     {
         buttonToggleFocus.SetActive(false);
         buttonSelectParent.SetActive(false);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.green);
     }
+
+    ///<summary>
+    /// When called set the focus button and the select parent button active and change the color of the edit button
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent e)
     {
         buttonToggleFocus.SetActive(true);
-        buttonSelectParent.SetActive(true);
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            buttonSelectParent.SetActive(false);
+        else
+            buttonSelectParent.SetActive(true);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", defaultBackplateColor);
     }
 
@@ -163,6 +197,7 @@ public class ButtonManager : MonoBehaviour
     }
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
+    /// if we deselect a rack, unload its children
     ///</summary>
     public async void ButtonSelectParent()
     {
@@ -170,26 +205,27 @@ public class ButtonManager : MonoBehaviour
         {
             return;
         }
-        if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.GetComponent<OObject>() != null)
+
+        GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
+
+        if (previousSelected.transform.parent.GetComponent<OObject>() != null)
         {
-            GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.parent.gameObject);
-            StartCoroutine(SelectionDelay());
-            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
-            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-            if (GameManager.gm.focus.Count > 0)
+            GameManager.gm.SetCurrentItem(previousSelected.transform.parent.gameObject);
+            if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             {
-                if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
-                {
-                    buttonEdit.SetActive(true);
-                }
+                buttonEdit.SetActive(true);
             }
         }
         else
         {
+            Debug.Log("dans la boucle else du Button Manager");
+            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
+            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
             GameManager.gm.SetCurrentItem(null);
         }
+
+        StartCoroutine(SelectionDelay());
     }
 
     ///<summary>
@@ -198,9 +234,11 @@ public class ButtonManager : MonoBehaviour
     private IEnumerator SelectionDelay()
     {
         HandInteractionHandler.canSelect = false;
+        print("CanSelect : " + HandInteractionHandler.canSelect);
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1.5f);
         HandInteractionHandler.canSelect = true;
+        print("CanSelect : " + HandInteractionHandler.canSelect);
     }
 
     ///<summary>
@@ -214,6 +252,10 @@ public class ButtonManager : MonoBehaviour
 
     }
 
+
+    ///<summary>
+    /// Toggle the edit mode (raise an EditModeInEvent or an EditModdeOutEvent) if we already are focused on a object
+    ///</summary>
     public void ButtonEditMode()
     {
         if (GameManager.gm.focus.Count == 0)
@@ -222,6 +264,8 @@ public class ButtonManager : MonoBehaviour
         if (!editMode)
         {
             editMode = true;
+
+            editScale = focusedObject.transform.localScale;
             EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
@@ -229,5 +273,56 @@ public class ButtonManager : MonoBehaviour
             editMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
+    }
+
+    private void PlaceButton()
+    {
+
+        buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+        Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
+
+        //Placing buttons
+        buttonWrapper.transform.localPosition = Vector3.zero;
+        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
+        ConstraintSource source = new ConstraintSource
+        {
+            weight = 1,
+            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
+        };
+        parentConstraintButtonWrapper.SetSource(0, source);
+        parentConstraintButtonWrapper.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
+        parentConstraintButtonWrapper.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
+        buttonWrapper.transform.SetParent(null);
+
+        parentConstraintButtonWrapper.constraintActive = true;
+        buttonWrapper.SetActive(true);
+
+
+        buttonChangeOrientation.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+
+        //Placing buttons
+        buttonChangeOrientation.transform.localPosition = Vector3.zero;
+        buttonChangeOrientation.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonChangeOrientation.transform.localPosition += new Vector3(!front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, !front ? parentSize.z : -parentSize.z) / 2;
+        ConstraintSource sourceBis = new ConstraintSource
+        {
+            weight = 1,
+            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
+        };
+        parentConstraintButtonChangeOrientation.SetSource(0, source);
+        parentConstraintButtonChangeOrientation.SetTranslationOffset(0, buttonChangeOrientation.transform.localPosition);
+        parentConstraintButtonChangeOrientation.SetRotationOffset(0, buttonChangeOrientation.transform.localEulerAngles);
+        buttonChangeOrientation.transform.SetParent(null);
+
+        parentConstraintButtonChangeOrientation.constraintActive = true;
+        buttonChangeOrientation.SetActive(true);
+    }
+
+    public void ButtonChangeOrientation()
+    {
+        front = !front;
+        PlaceButton();
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ChangeOrientation(front);
     }
 }
