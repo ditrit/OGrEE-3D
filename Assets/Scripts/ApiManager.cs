@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -58,7 +58,8 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
-    ReadFromJson rfJson = new ReadFromJson();
+    private ReadFromJson rfJson = new ReadFromJson();
+    private Coroutine waitCoroutine = null;
 
     private void Awake()
     {
@@ -194,6 +195,8 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Not connected to API", "yellow");
             return;
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+
         string fullPath = $"{server}/{_input}";
         try
         {
@@ -211,6 +214,7 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         }
     }
 
@@ -354,7 +358,7 @@ public class ApiManager : MonoBehaviour
             }
         }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+        ResetCoroutine();
     }
 
     ///<summary>
@@ -373,6 +377,7 @@ public class ApiManager : MonoBehaviour
             SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
             rfJson.CreateRoomTemplate(resp.data);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 
     ///<summary>
@@ -392,6 +397,27 @@ public class ApiManager : MonoBehaviour
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_physicalList, _logicalList, obj);
         }
+    }
+
+    ///<summary>
+    /// If a waitCoroutine is running, stop it. Then, start a new one.
+    ///</summary>
+    private void ResetCoroutine()
+    {
+        if (waitCoroutine != null)
+            StopCoroutine(waitCoroutine);
+        waitCoroutine = StartCoroutine(WaitAndRaiseEvent());
+    }
+
+    ///<summary>
+    /// Wait 1 second and raise ImportFinished et ChangeCursor envents
+    ///</summary>
+    private IEnumerator WaitAndRaiseEvent()
+    {
+        yield return new WaitForSeconds(1f);
+        EventManager.Instance.Raise(new ImportFinishedEvent());
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        Debug.Log("[] event raised !");
     }
 
 }

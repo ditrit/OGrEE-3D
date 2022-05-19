@@ -134,7 +134,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e)
     {
-        if (GetComponent<OgreeObject>().category != "device")
+        if (GetComponent<OObject>().category != "device")
             UpdateChildMeshRenderersRec(false);
     }
 
@@ -230,11 +230,11 @@ public class FocusHandler : MonoBehaviour
     private void UpdateChildMeshRenderersRec(bool _value)
     {
         FillListsWithChildren();
-        FillMeshRendererLists();
-
-        UpdateChildMeshRenderers(_value);
         foreach (GameObject child in ogreeChildObjects)
             child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
+
+        FillMeshRendererLists();
+        UpdateChildMeshRenderers(_value);
     }
 
     ///<summary>
