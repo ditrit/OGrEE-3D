@@ -13,6 +13,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonWrapper;
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
+    [SerializeField] private GameObject buttonResetPosition;
     [SerializeField] private GameObject buttonToggleFocus;
     [SerializeField] private GameObject buttonChangeOrientation;
     [SerializeField] private ParentConstraint parentConstraintButtonWrapper;
@@ -95,11 +96,13 @@ public class ButtonManager : MonoBehaviour
 
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
         {
+            buttonResetPosition.SetActive(true);
             buttonSelectParent.SetActive(false);
             buttonEdit.SetActive(true);
         }
         else
         {
+            buttonResetPosition.SetActive(false);
             buttonSelectParent.SetActive(true);
             buttonEdit.SetActive(false);
         }
@@ -124,6 +127,7 @@ public class ButtonManager : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent e)
     {
+        buttonResetPosition.SetActive(true);
         buttonEdit.SetActive(true);
         if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             buttonSelectParent.SetActive(false);
@@ -138,9 +142,15 @@ public class ButtonManager : MonoBehaviour
     {
         buttonEdit.SetActive(false);
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+        {
             buttonSelectParent.SetActive(false);
+            buttonResetPosition.SetActive(true);
+        }
         else
+        {
             buttonSelectParent.SetActive(true);
+            buttonResetPosition.SetActive(false);
+        }
 
     }
 

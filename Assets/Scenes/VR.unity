@@ -7926,8 +7926,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: -0.000014349055
-  m_Size: 0.8926295
+  m_Value: -0.0000062777117
+  m_Size: 0.8925757
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10554,7 +10554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.02928}
+  m_AnchoredPosition: {x: 0, y: 34.02897}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped
@@ -13640,6 +13640,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1780799916}
   m_CullTransparentMesh: 0
+--- !u!1 &1817370051 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8800078079876257456, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1865545554
 GameObject:
   m_ObjectHideFlags: 0
@@ -16565,6 +16571,11 @@ PrefabInstance:
       propertyPath: parentConstraint
       value: 
       objectReference: {fileID: 2046788154}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: buttonResetPosition
+      value: 
+      objectReference: {fileID: 1817370051}
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: m_RootOrder
