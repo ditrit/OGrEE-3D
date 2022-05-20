@@ -20,8 +20,7 @@ public class ListGenerator : MonoBehaviour
     private GameObject buttonRight;
     private GameObject buttonReturn;
     private GameObject resulstInfos;
-    private GameObject buttonVisualize;
-    public int numberOfResultsPerPage = 5;
+    public int numberOfResultsPerPage;
     private string[] array;
 
     private void Awake()
@@ -36,7 +35,7 @@ public class ListGenerator : MonoBehaviour
     void Start()
     {
         gridCollection = parentList.GetComponent<GridObjectCollection>();  
-
+        numberOfResultsPerPage = gridCollection.Rows;
         Vector3 offsetLeft = new Vector3 (-0.2f, 0, 0);
         buttonLeft = Instantiate(buttonLeftPrefab, parentListAndButtons.transform.position + offsetLeft, Quaternion.identity, parentListAndButtons.transform);
         buttonLeft.SetActive(false);
@@ -45,19 +44,16 @@ public class ListGenerator : MonoBehaviour
         buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight , Quaternion.identity, parentListAndButtons.transform);
         buttonRight.SetActive(false);
 
-        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (-0.2f, +0.1f, 0) , Quaternion.identity, parentListAndButtons.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (-0.2f, (numberOfResultsPerPage -1) * 0.03f, 0) , Quaternion.identity, parentListAndButtons.transform);
         buttonReturn.SetActive(false);
-
-        buttonVisualize = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (0.2f, +0.1f, 0) , Quaternion.identity, parentListAndButtons.transform);
-        buttonVisualize.SetActive(false);
 
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0.25f, -0.15f, 0);
+        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0,numberOfResultsPerPage * -0.03f, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
-        tmp.rectTransform.sizeDelta  = new Vector2 (0.1f, 0.05f);
-        tmp.fontSize = 0.1f;
+        tmp.rectTransform.sizeDelta  = new Vector2 (0.2f, 0.05f);
+        tmp.fontSize = 0.2f;
     }
 
     // Update is called once per frame
