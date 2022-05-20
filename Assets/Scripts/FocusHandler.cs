@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
-
 ///<summary>
 /// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
 ///</summary>
@@ -198,20 +197,25 @@ public class FocusHandler : MonoBehaviour
                 Destroy(gameObject.GetComponent<Collider>());
             }
             boundsControl.Active = true;
-            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
                 box.GetComponent<HandInteractionHandler>().enabled = false;
                 box.GetComponent<MinMaxScaleConstraint>().enabled = false;
                 box.GetComponent<RotationAxisConstraint>().enabled = false;
+                scaleHandlesConfiguration.ShowScaleHandles = true;
+                rotationHandlesConfiguration.ShowHandleForX = true;
+                rotationHandlesConfiguration.ShowHandleForZ = true;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
             else
             {
-                boundsControl.ScaleHandlesConfig.ShowScaleHandles = false;
-                boundsControl.RotationHandlesConfig.ShowHandleForX = false;
-                boundsControl.RotationHandlesConfig.ShowHandleForZ = false;
-                boundsControl.TranslationHandlesConfig = translationConfiguration;
+                box.GetComponent<MinMaxScaleConstraint>().enabled = true;
+                box.GetComponent<RotationAxisConstraint>().enabled = true;
+                scaleHandlesConfiguration.ShowScaleHandles = false;
+                rotationHandlesConfiguration.ShowHandleForX = false;
+                rotationHandlesConfiguration.ShowHandleForZ = false;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = true;
             }
             //disable children colliders
             UpdateChildMeshRenderers(true);
@@ -394,11 +398,11 @@ public class FocusHandler : MonoBehaviour
     private void UpdateChildMeshRenderersRec(bool _value)
     {
         FillListsWithChildren();
+        foreach (GameObject child in ogreeChildObjects)
+            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
         FillMeshRendererLists();
 
         UpdateChildMeshRenderers(_value);
-        foreach (GameObject child in ogreeChildObjects)
-            child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
     }
 
     ///<summary>

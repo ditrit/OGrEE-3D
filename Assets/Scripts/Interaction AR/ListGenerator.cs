@@ -52,7 +52,7 @@ public class ListGenerator : MonoBehaviour
         resulstInfos.transform.SetParent(parentListAndButtons.transform);
         resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0,numberOfResultsPerPage * -0.03f, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
-        tmp.rectTransform.sizeDelta  = new Vector2 (0.2f, 0.05f);
+        tmp.rectTransform.sizeDelta  = new Vector2 (0.25f, 0.05f);
         tmp.fontSize = 0.2f;
     }
 
@@ -158,7 +158,6 @@ public class ListGenerator : MonoBehaviour
 
     public void CreateList(List<SApiObject> _physicalObjects, string parentName)
     {
-        gridCollection.UpdateCollection();
         /*if (_physicalObjects.Count > numberOfResultsPerPage)
             buttonRight.SetActive(true);*/
 
@@ -197,7 +196,7 @@ public class ListGenerator : MonoBehaviour
         {
             Destroy(parentList.transform.GetChild(i).gameObject);
         }
-        await Task.Delay(5);
+        await Task.Delay(1);
         gridCollection.UpdateCollection();
     }
 }

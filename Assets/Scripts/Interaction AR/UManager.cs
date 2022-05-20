@@ -27,6 +27,8 @@ public class UManager : MonoBehaviour
     {
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusModeIn);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnFocusModeOut);
     }
 
     void Update()
@@ -42,11 +44,22 @@ public class UManager : MonoBehaviour
         isFocused = true;
     }
 
+    private void OnFocusModeIn(OnFocusEvent _e)
+    {
+        objFocused = _e.obj;
+        initialYPosition = _e.obj.transform.position.y;
+        isFocused = true;
+    }
+
     private void OnEditModeOut(EditModeOutEvent _e)
     {
         isFocused = false;
     }
 
+    private void OnFocusModeOut(OnUnFocusEvent _e)
+    {
+        isFocused = false;
+    }
     ///<summary>
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
