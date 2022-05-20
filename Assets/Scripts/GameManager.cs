@@ -449,7 +449,6 @@ public class GameManager : MonoBehaviour
         else
             UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
         UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
-        StartCoroutine(TestAPI());
     }
 
     ///<summary>
