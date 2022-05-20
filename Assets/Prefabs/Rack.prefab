@@ -147,11 +147,11 @@ MonoBehaviour:
   isHovered: 0
   isFocused: 0
   isFrontOriented: 1
-  boxDisplayConfiguration: {fileID: 114158987510220008, guid: e9e54ebd208487c409e32502a50a1f20,
-    type: 3}
+  boxDisplayConfiguration: {fileID: 11400000, guid: 29d72152ec84a4f439ade1cab15da9b2,
+    type: 2}
   scaleHandlesConfiguration: {fileID: 11400000, guid: 1ff24b45b5ce2e64cbc6dc16068df114,
     type: 2}
-  rotationHandlesConfiguration: {fileID: 11400000, guid: 2ba8ed2120d57174abc0355b90fa6eae,
+  rotationHandlesConfiguration: {fileID: 11400000, guid: 538f4bc9b8864b2459e9212b9495898c,
     type: 2}
   linksConfiguration: {fileID: 11400000, guid: 6f2cdf9f9685ed64a92cc96e7371b303, type: 2}
   proximityEffectConfiguration: {fileID: 11400000, guid: 7e19f5aa73f87a94c86c4bb1e8820df8,
@@ -282,6 +282,7 @@ MonoBehaviour:
   OnTouchUpdated:
     m_PersistentCalls:
       m_Calls: []
+  canSelectDebug: 0
   isARack: 1
   front: 0
 --- !u!1 &2368179890683896667
@@ -1112,6 +1113,7 @@ MonoBehaviour:
   OnTouchUpdated:
     m_PersistentCalls:
       m_Calls: []
+  canSelectDebug: 0
   isARack: 1
   front: 1
 --- !u!1 &8172590280824650153

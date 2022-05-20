@@ -248,7 +248,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                Debug.Log(apiCall);
                 await ApiManager.instance.GetObject(apiCall);
             }
 

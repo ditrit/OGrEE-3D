@@ -110,9 +110,37 @@ MonoBehaviour:
   buttonEdit: {fileID: 8800078080613064985}
   buttonSelectParent: {fileID: 7897151900132686294}
   buttonToggleFocus: {fileID: 960063623271418330}
-  parentConstraint: {fileID: 0}
+  buttonChangeOrientation: {fileID: 5964503629750013083}
+  parentConstraintButtonWrapper: {fileID: 7227986775921416591}
+  parentConstraintButtonChangeOrientation: {fileID: 4312792178929180523}
   verticalOffset: 0.06
   horizontalOffset: 0
+--- !u!1773428102 &4312792178929180523
+ParentConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5964503629750013083}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: 0}
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_RotationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 0}
+    weight: 1
 --- !u!1001 &3798644525945217753
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -175,6 +203,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7373808911636337020, guid: d7292b607c8ea044ca3b20418f4d9e99,
+        type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 5338946237367757264}
     - target: {fileID: 7381772948034907714, guid: d7292b607c8ea044ca3b20418f4d9e99,
         type: 3}
       propertyPath: m_Name
@@ -182,6 +215,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7292b607c8ea044ca3b20418f4d9e99, type: 3}
+--- !u!1 &5964503629750013083 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7381772948034907714, guid: d7292b607c8ea044ca3b20418f4d9e99,
+    type: 3}
+  m_PrefabInstance: {fileID: 3798644525945217753}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6168494507637929393 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7002422335089579880, guid: d7292b607c8ea044ca3b20418f4d9e99,
