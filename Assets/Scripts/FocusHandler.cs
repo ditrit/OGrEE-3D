@@ -198,7 +198,6 @@ public class FocusHandler : MonoBehaviour
                 Destroy(gameObject.GetComponent<Collider>());
             }
             boundsControl.Active = true;
-            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
@@ -208,7 +207,7 @@ public class FocusHandler : MonoBehaviour
                 scaleHandlesConfiguration.ShowScaleHandles = true;
                 rotationHandlesConfiguration.ShowHandleForX = true;
                 rotationHandlesConfiguration.ShowHandleForZ = true;
-                boundsControl.TranslationHandlesConfig = null;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
             }
             else
             {
@@ -217,7 +216,7 @@ public class FocusHandler : MonoBehaviour
                 scaleHandlesConfiguration.ShowScaleHandles = false;
                 rotationHandlesConfiguration.ShowHandleForX = false;
                 rotationHandlesConfiguration.ShowHandleForZ = false;
-                boundsControl.TranslationHandlesConfig = translationConfiguration;
+                box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = true;
             }
             //disable children colliders
             UpdateChildMeshRenderers(true);
