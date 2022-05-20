@@ -18,6 +18,7 @@ public class Label
 
 public class Photo_Capture : MonoBehaviour
 {
+    public static Photo_Capture instance;
     [SerializeField]
     [Tooltip("Assign DialogLarge_192x192.prefab")]
     private GameObject dialogPrefabLarge;
@@ -52,6 +53,14 @@ public class Photo_Capture : MonoBehaviour
     private PhotoCapture photoCaptureObject = null;
     public TextMeshPro apiResponseTMP = null;
 
+    private void Awake()
+    {
+        if (!instance)
+            instance = this;
+        else
+            Destroy(this);
+    }
+    
     // Start is called before the first frame update
     private void Start()
     {

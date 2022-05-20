@@ -164,4 +164,10 @@ public static class Utils
         _obj.transform.position = newPostion + offset;
         _obj.transform.localRotation = Quaternion.Euler(newRotation);
     }
+
+    public static string[] SplitRackHierarchyName(string _hierarchyName)
+    {
+        string[] array = _hierarchyName.Split('.');
+        return array;
+    }
 }

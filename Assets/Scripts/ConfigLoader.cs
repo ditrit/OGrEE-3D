@@ -16,6 +16,7 @@ public class ConfigLoader
         public Dictionary<string, string> colors;
         public string api_url;
         public string api_token;
+        public string tenant;
     }
 
     private SConfig config;
@@ -28,7 +29,7 @@ public class ConfigLoader
     {
         config = LoadConfigFile();
         OverrideConfig();
-
+        APIResponseAsLIst.instance.InitializeTenant(config.tenant);
         ApplyConfig(config);
 
         string startFile = GetArg("--file");

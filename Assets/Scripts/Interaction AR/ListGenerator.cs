@@ -20,7 +20,9 @@ public class ListGenerator : MonoBehaviour
     private GameObject buttonRight;
     private GameObject buttonReturn;
     private GameObject resulstInfos;
+    private GameObject buttonVisualize;
     public int numberOfResultsPerPage = 5;
+    private string[] array;
 
     private void Awake()
     {
@@ -46,17 +48,16 @@ public class ListGenerator : MonoBehaviour
         buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (-0.2f, +0.1f, 0) , Quaternion.identity, parentListAndButtons.transform);
         buttonReturn.SetActive(false);
 
+        buttonVisualize = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (0.2f, +0.1f, 0) , Quaternion.identity, parentListAndButtons.transform);
+        buttonVisualize.SetActive(false);
+
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0.25f, -0.1f, 0);
+        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0.25f, -0.15f, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
-        tmp.fontSize = 0.1f;
         tmp.rectTransform.sizeDelta  = new Vector2 (0.1f, 0.05f);
-        tmp.autoSizeTextContainer = true;
-        tmp.fontSizeMax = 0.1f;
-        tmp.fontSizeMin = 0.05f;
-        tmp.ForceMeshUpdate( true );
+        tmp.fontSize = 0.1f;
     }
 
     // Update is called once per frame
@@ -72,9 +73,10 @@ public class ListGenerator : MonoBehaviour
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
     ///<param name="_pageNumber">Number of the pahe to display</param>
 
-    public void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
+    public async void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
     {   
-        bool isSites = false;
+        bool isSite = false;
+        bool isRack = false;
 
         int maxNumberOfPage = 0;
 
@@ -117,11 +119,12 @@ public class ListGenerator : MonoBehaviour
             SApiObject obj = _physicalObjects[i];
             string category = obj.category;
             string subCat = null;
+            string fullname = _parentNames[_parentNames.Count - 1] + "." + obj.name;
             switch (category)
             {
                 case "site":
                     subCat = "buildings";
-                    isSites = true;
+                    isSite = true;
                     break;
                 case "building":
                     subCat = "rooms";
@@ -129,16 +132,26 @@ public class ListGenerator : MonoBehaviour
                 case "room":
                     subCat = "racks";
                     break;
+                case "rack":
+                    isRack = true;
+                    break;
             }
             string nextCall = $"{category}s/{obj.id}/{subCat}";
             GameObject g = Instantiate(buttonPrefab, Vector3.zero , Quaternion.identity, parentList.transform);
-            string fullname = _parentNames[_parentNames.Count - 1] + "." + obj.name;
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(nextCall, fullname));
+            if (!isRack)
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(nextCall, fullname));
+            else
+            {
+                array = Utils.SplitRackHierarchyName(fullname);
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async() => await Photo_Capture.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]));
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => parentListAndButtons.SetActive(false));
+
+            }
             gridCollection.UpdateCollection();
         }
-        if (isSites)
+        if (isSite)
             buttonReturn.SetActive(false);
         else
             buttonReturn.SetActive(true);

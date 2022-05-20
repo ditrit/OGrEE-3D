@@ -32,26 +32,41 @@ manually create the texts gameobjects.*/
 
 public class APIResponseAsLIst : MonoBehaviour
 {
-    private string currentHost = "";
-    public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.229.231";
-    public string customer = "EDF";
-    public string site = "NOE";
-    private string building;
-    private string room;
-    private string rack;
-    private string customerAndSite;
-    public string port = "5000";
-    public TextMeshPro apiResponseTMP = null;
+    public static APIResponseAsLIst instance;
+    private string tenant;
+
+    private void Awake()
+    {
+        if (!instance)
+            instance = this;
+        else
+            Destroy(this);
+    }
 
     // Start is called before the first frame update
     private async Task Start()
     {
         await Task.Delay(1000);
         //ApiManager.instance.CreateGetRequest("EDF");
-        ApiManager.instance.GetObjectVincent("tenants/EDF/sites", "EDF");
+        ApiManager.instance.GetObjectVincent("tenants/EDF/sites", tenant);
         //ApiManager.instance.GetHttpData();
     }
 
-    
+    public void InitializeTenant(string _tenant)
+    {
+        tenant = _tenant;
+    }
+
+    public void ToggleParentListAndButtons(GameObject parentListAndButtons)
+    {
+        if (parentListAndButtons.activeSelf)
+        {
+            parentListAndButtons.SetActive(false);
+        }
+        else
+        {
+            parentListAndButtons.SetActive(true);
+            ApiManager.instance.GetObjectVincent("tenants/EDF/sites", tenant);
+        }
+    }
 }
