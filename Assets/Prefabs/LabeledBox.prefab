@@ -873,6 +873,7 @@ MonoBehaviour:
   OnTouchUpdated:
     m_PersistentCalls:
       m_Calls: []
+  canSelectDebug: 0
   isARack: 0
   front: 0
 --- !u!114 &8376138954405355199

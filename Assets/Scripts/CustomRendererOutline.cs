@@ -51,7 +51,6 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
     }
 
