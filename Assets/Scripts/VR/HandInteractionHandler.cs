@@ -15,7 +15,6 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     public TouchEvent OnTouchStarted;
     public TouchEvent OnTouchUpdated;
     #endregion
-
     public static bool canSelect = true;
     public bool canSelectDebug;
     public bool isARack = false;
@@ -40,7 +39,7 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)
     {
-        SelectThis();
+            SelectThis();
     }
 
     ///<summary>

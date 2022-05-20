@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
+using TMPro;
 
-[RequireComponent(typeof(MoveObject))]
+
+
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
@@ -12,6 +14,8 @@ public class GameManager : MonoBehaviour
     public Server server;
     private ConfigLoader configLoader = new ConfigLoader();
 
+    [Header("AR")]
+    public Camera m_camera;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -44,7 +48,7 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    public bool isWireframe;
+
 
     public List<GameObject> focus = new List<GameObject>();
 
@@ -65,37 +69,26 @@ public class GameManager : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
+    private async Task Start()
     {
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
-
         UiManager.instance.UpdateFocusText();
+        m_camera = Camera.main;
+        UiManager.instance.ToggleApi();
+
 
 #if API_DEBUG
-        //ToggleApi();
+        
 #endif
-
+       
 #if !PROD
-        //consoleController.RunCommandString(".cmds:C:/Users/trios/Nextcloud/Ogree/4_customers/__DEMO__/_TIM/fbxModels.ocli");
-        //consoleController.RunCommandString("+tn:DEMO@123456");
-        //consoleController.RunCommandString("+si:DEMO.BETA @NW");
-        //consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
-        //consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
-
-
-        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
-        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
-
-        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
-        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
-
-        //consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
-        //consoleController.RunCommandString(">");
-        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
-
+        await Task.Delay(1000);
+        var photo_capture = new Photo_Capture();
+        await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","C05");
 #endif
+
     }
 
     private void Update()
@@ -104,15 +97,6 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-
-        if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
-            && Input.GetMouseButtonUp(0))
-        {
-            clickCount++;
-        }
-
-        if (clickCount == 1 && coroutineAllowed)
-            StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
@@ -145,7 +129,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     private void SingleClick()
     {
+
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
+
+
         if (objectHit && objectHit.tag == "Selectable")
         {
             bool canSelect = false;
@@ -169,7 +156,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double click on a gameObject.
     ///</summary>
     private void DoubleClick()
     {
@@ -210,18 +197,34 @@ public class GameManager : MonoBehaviour
     {
         //Clear current selection
         for (int i = currentItems.Count - 1; i >= 0; i--)
+        {
+            Transform t = currentItems[i].transform;
+            while(t != null)
+            {
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    GameObject uRoot = t.Find("uRoot").gameObject;
+                    uRoot.SetActive(false);
+                    break;
+                }
+                t = t.parent.transform;
+            }
             DeselectItem(currentItems[i]);
+        }
 
         if (_obj)
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
+            UManager.um.HighlightULocation();
             UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
+        
         else
         {
             AppendLogLine("Empty selection.", "green");
             UiManager.instance.SetCurrentItemText("Ogree3D");
+            
         }
         UiManager.instance.UpdateGuiInfos();
     }
@@ -271,6 +274,7 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
+    
 
     ///<summary>
     /// Remove _obj from currentItems, disable outline if possible.
@@ -286,6 +290,7 @@ public class GameManager : MonoBehaviour
         }
 
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -317,7 +322,8 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
-            UnfocusItem();
+            //UnfocusItem();
+            return;
     }
 
     ///<summary>
@@ -330,6 +336,7 @@ public class GameManager : MonoBehaviour
         UiManager.instance.UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.Instance.Raise(new ImportFinishedEvent());
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -338,6 +345,18 @@ public class GameManager : MonoBehaviour
         else
             SetCurrentItem(null);
     }
+
+    public void ReturnButton()
+    {
+        UnfocusItem();
+    }
+
+    private IEnumerator FocusItemCoRoutine(GameObject _obj)
+    {
+        yield return new WaitForEndOfFrame();
+        FocusItem(_obj);
+    }
+
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
@@ -373,7 +392,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
     public void DeleteItem(GameObject _toDel, bool _serverDelete)
     {
-        SetCurrentItem(null);
+        SetCurrentItem(null); //Fix de Vincent car impossible de réselectionner un objet après avoir cliquer sur Button Select Parent.
 
         // Should count type of deleted objects
         if (_serverDelete)
@@ -497,21 +516,25 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
-
+    
     ///<summary>
-    /// Set material of a rack according to isWireframe value.
+    /// Clean AR scene from all existing tenants.
     ///</summary>
-    ///<param name="_rack">The rack to set the material</param>
-    // public void SetRackMaterial(Transform _rack)
-    // {
-    //     Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
-    //     Color color = r.material.color;
-    //     if (isWireframe)
-    //         r.material = GameManager.gm.wireframeMat;
-    //     else
-    //         r.material = GameManager.gm.defaultMat;
-    //     r.material.color = color;
-    // }
+    public IEnumerator CleanScene()
+    {
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        yield return new WaitForEndOfFrame();
+    }
+
+
 
     ///<summary>
     /// Quit the application.
@@ -521,18 +544,4 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-
-    ///<summary>
-    /// Get some objects from the API (VR)
-    ///</summary>
-    IEnumerator TestAPI()
-    {
-        consoleController.RunCommandString("api.get=sites?name=BETA");
-        yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED.BETA:details=3");
-        //yield return new WaitForSeconds(2);
-        //consoleController.RunCommandString("EDF.NOE.BI2:details=2");
-
-
-    }
 }

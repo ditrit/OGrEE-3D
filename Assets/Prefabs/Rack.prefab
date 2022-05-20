@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5666233796082005944}
   - component: {fileID: -4847266291842506605}
   - component: {fileID: 4507776248461121190}
+  - component: {fileID: -8983734977160870219}
   m_Layer: 0
   m_Name: Rack
   m_TagString: Selectable
@@ -179,6 +180,22 @@ MonoBehaviour:
   isHovered: 0
   isHighlighted: 0
   isFocused: 0
+--- !u!114 &-8983734977160870219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382823270839367371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702cd938d3864b4418bd48857c170758, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridCellPrefab: {fileID: 6234101797070000029, guid: 25a88b3ad6ca434429ce62c0ab6cf225,
+    type: 3}
+  gridSize: 10
+  boxscale: 1.5
 --- !u!1 &581781385037581641
 GameObject:
   m_ObjectHideFlags: 0

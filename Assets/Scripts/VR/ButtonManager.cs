@@ -120,6 +120,16 @@ public class ButtonManager : MonoBehaviour
         buttonChangeOrientation.SetActive(false);
     }
 
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+        {
+            buttonSelectParent.SetActive(false);
+            buttonEdit.SetActive(true);
+        }
+        else
+        {
+            buttonSelectParent.SetActive(true);
+            buttonEdit.SetActive(false);
+        }
 
     ///<summary>
     /// When called set the edit button active

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Selectable
+  - ULocation
   layers:
   - Default
   - TransparentFX
@@ -12,8 +13,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Rack
+  - Device
   - 
   - 
   - 

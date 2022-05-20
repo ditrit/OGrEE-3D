@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.UI.BoundsControl;
+
 ///<summary>
 /// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
 ///</summary>
@@ -103,7 +104,6 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            print("début await");
             await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
@@ -198,6 +198,7 @@ public class FocusHandler : MonoBehaviour
                 Destroy(gameObject.GetComponent<Collider>());
             }
             boundsControl.Active = true;
+            box.GetComponent<Microsoft.MixedReality.Toolkit.UI.ObjectManipulator>().enabled = false;
 
             if (GetComponent<OgreeObject>().category != "rack")
             {
@@ -318,7 +319,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "rigRoot")
+            else if (child.name != "uRoot" && child.name != "GridForULocation" && child.name != "rigRoot")
                 OwnObjectsList.Add(child.gameObject);
         }
     }

@@ -91,6 +91,8 @@ public class GUIObjectInfos : MonoBehaviour
             tmpTenantContact.text = IfInDictionary(domain.attributes, "mainContact");
             tmpTenantPhone.text = IfInDictionary(domain.attributes, "mainPhone");
             tmpTenantEmail.text = IfInDictionary(domain.attributes, "mainEmail");
+#if VR
+#endif
         }
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";

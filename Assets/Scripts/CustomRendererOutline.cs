@@ -51,9 +51,6 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
-
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
     }
 
@@ -70,9 +67,6 @@ public class CustomRendererOutline : MonoBehaviour
 
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
-
-        EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
     }
@@ -245,7 +239,7 @@ public class CustomRendererOutline : MonoBehaviour
     ///</summary>
     ///<param name="_renderer">The Renderer of the object to modify</param>
     ///<param name="_newMat">The Material to assign</param>
-    private void SetMaterial(Material _newMat)
+    public void SetMaterial(Material _newMat)
     {
         Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
         Material mat = renderer.material;
