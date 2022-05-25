@@ -33,8 +33,6 @@ public class ModelLoader : MonoBehaviour
         Uri filePath = new Uri($"{GameManager.gm.configLoader.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
-        Destroy(_object.transform.GetChild(0).gameObject);
-
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
         // BoxCollider added later
         assetLoaderOptions.GenerateColliders = false;
@@ -71,7 +69,7 @@ public class ModelLoader : MonoBehaviour
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
         // Debug.Log($"{sizeMo}Mo / {GameManager.gm.configLoader.GetCacheLimit()}");
-        
+
         if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
         {
             GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", "yellow");
@@ -80,8 +78,16 @@ public class ModelLoader : MonoBehaviour
 
         if (!File.Exists(_filePath))
         {
-            WebClient client = new WebClient();
-            await client.DownloadFileTaskAsync(_url, _filePath);
+            try
+            {
+                WebClient client = new WebClient();
+                await client.DownloadFileTaskAsync(_url, _filePath);
+            }
+            catch (System.Exception _e)
+            {
+                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", "red");
+                File.Delete(_filePath);
+            }
         }
         else
             Debug.Log("Template is already in cache");
@@ -128,12 +134,15 @@ public class ModelLoader : MonoBehaviour
         triLibObj.GetComponent<Renderer>().enabled = false;
         triLibObj.GetComponent<Collider>().enabled = false;
 #endif
+        // Destroy(triLibWrapper.GetChild(1).gameObject);
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.
     // This event is also called after a critical loading error, so you can clean up any resource you want to.
     private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
     {
+        // Destroy basic box
+        Destroy(assetLoaderContext.WrapperGameObject.transform.GetChild(1).gameObject);
         isLocked = false;
     }
 

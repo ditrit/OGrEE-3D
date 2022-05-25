@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Button focusBtn = null;
     [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
+    [SerializeField] private TMP_Text toggleLabelsText = null;
 
     [Header("Panel Bottom")]
     [SerializeField] private Button reloadBtn = null;
@@ -23,6 +25,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel = null;
+
     [Header("Panel Infos")]
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
@@ -39,6 +42,7 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
+        menuPanel.SetActive(false);
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
 
@@ -301,6 +305,29 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Disable CLI", "yellow");
             GameManager.gm.writeCLI = false;
         }
+    }
+
+    ///<summary>
+    /// Send a ToggleLabelEvent and change the toggle text.
+    ///</summary>
+    public void ToggleLabels(bool _value)
+    {
+        EventManager.Instance.Raise(new ToggleLabelEvent() { value = _value });
+        if (_value)
+            toggleLabelsText.text = "Hide labels";
+        else
+            toggleLabelsText.text = "Display labels";
+    }
+
+    ///<summary>
+    /// Delete all files stored in cache directory.
+    ///</summary>
+    public void ClearCache()
+    {
+        DirectoryInfo dir = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        foreach (FileInfo file in dir.GetFiles())
+            file.Delete();
+        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", "green");
     }
     #endregion
 }

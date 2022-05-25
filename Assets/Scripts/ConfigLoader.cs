@@ -134,6 +134,8 @@ public class ConfigLoader
     ///</summary>
     private void CreateCacheDir()
     {
+        if (!config.cachePath.EndsWith("/"))
+            config.cachePath += "/";
         string fullPath = config.cachePath + cacheDirName;
         try
         {
