@@ -103,7 +103,6 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            print("début await");
             await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
@@ -134,6 +133,7 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
+            print(name);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
@@ -520,7 +520,7 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// Change the selectable face of the object (if <paramref name="_self"/> is true) to be the front or the back face
+    /// Change the selectable face of the object (if <paramref name="_self"/> is true) and of all of its children to be the front or the back face
     ///</summary>
     ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
     ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
@@ -571,5 +571,19 @@ public class FocusHandler : MonoBehaviour
         {
             _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
         }
+    }
+
+
+    ///<summary>
+    /// Go back to the rack this object is a child of and change its selectable face (if <paramref name="_self"/> is true) and of all of its children to be the front or the back face
+    ///</summary>
+    ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
+    ///<param name="_self">should the rack change its orientation or just its children ?</param>
+    public void ChangeOrientationFromRack(bool _front, bool _self = true)
+    {
+        if (GetComponent<OgreeObject>().category == "rack")
+            ChangeOrientation(_front, _self);
+        else
+            transform.parent.GetComponent<FocusHandler>().ChangeOrientationFromRack(_front);
     }
 }
