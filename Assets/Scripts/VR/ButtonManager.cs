@@ -204,6 +204,7 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.gm.FocusItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
         }
+        StartCoroutine(SelectionDelay());
     }
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
@@ -243,11 +244,9 @@ public class ButtonManager : MonoBehaviour
     private IEnumerator SelectionDelay()
     {
         HandInteractionHandler.canSelect = false;
-        print("CanSelect : " + HandInteractionHandler.canSelect);
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1.5f);
         HandInteractionHandler.canSelect = true;
-        print("CanSelect : " + HandInteractionHandler.canSelect);
     }
 
     ///<summary>
