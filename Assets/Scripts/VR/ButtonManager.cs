@@ -198,13 +198,11 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
             GameManager.gm.UnfocusItem();
-            print("preums");
 
         }
         else
         {
             GameManager.gm.FocusItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
-            print("deuz");
         }
         StartCoroutine(SelectionDelay());
     }

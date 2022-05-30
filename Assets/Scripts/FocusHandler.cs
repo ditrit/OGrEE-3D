@@ -133,7 +133,6 @@ public class FocusHandler : MonoBehaviour
     {
         if (e.obj == gameObject)
         {
-            print(name);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
