@@ -63,6 +63,7 @@ public class TcpConnection : AConnection
                 Byte[] bytes = new Byte[1024];
                 using (connectedTcpClient = tcpListener.AcceptTcpClient())
                 {
+                    string completeMessage = "";
                     // Get a stream object for reading 					
                     using (NetworkStream stream = connectedTcpClient.GetStream())
                     {
@@ -74,11 +75,14 @@ public class TcpConnection : AConnection
                             Array.Copy(bytes, 0, incommingData, 0, length);
                             // Convert byte array to string message. 							
                             string clientMessage = Encoding.ASCII.GetString(incommingData);
-                            lock (incomingQueue)
+                            completeMessage += clientMessage;
+                            if (completeMessage[completeMessage.Length - 1] == '}')
                             {
-                                incomingQueue.Enqueue(clientMessage);
-                                // Debug.Log("=> Client message received: " + clientMessage);
-                                // Send("Roger Roger");
+                                lock (incomingQueue)
+                                {
+                                    incomingQueue.Enqueue(completeMessage);
+                                    completeMessage = "";
+                                }
                             }
                         }
                     }
