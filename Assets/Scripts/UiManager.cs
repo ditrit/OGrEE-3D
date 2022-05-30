@@ -10,6 +10,9 @@ public class UiManager : MonoBehaviour
     static public UiManager instance;
 
     [SerializeField] private GameObject menuPanel = null;
+    
+    [Header("Updated Canvas")]
+    [SerializeField] private TMP_Text mouseName;
 
     [Header("Panel Top")]
     [SerializeField] private Button focusBtn = null;
@@ -45,6 +48,7 @@ public class UiManager : MonoBehaviour
         menuPanel.SetActive(false);
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
+        mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
@@ -54,6 +58,12 @@ public class UiManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
+        
+        if (mouseName.gameObject.activeSelf)
+        {
+            mouseName.transform.position = Input.mousePosition;
+            NameUnderMouse();
+        }
     }
 
     private void OnDestroy()
@@ -77,6 +87,18 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
         }
+    }
+
+    ///<summary>
+    /// Get the object under the mouse and displays its hierarchyName in mouseName text.
+    ///</summary>
+    private void NameUnderMouse()
+    {
+        GameObject obj = Utils.RaycastFromCameraToMouse();
+        if (obj && obj.GetComponent<OgreeObject>())
+            mouseName.text = obj.GetComponent<OgreeObject>().hierarchyName;
+        else
+            mouseName.text = "";
     }
 
     ///<summary>
@@ -313,6 +335,7 @@ public class UiManager : MonoBehaviour
     public void ToggleLabels(bool _value)
     {
         EventManager.Instance.Raise(new ToggleLabelEvent() { value = _value });
+        mouseName.gameObject.SetActive(!_value);
         if (_value)
             toggleLabelsText.text = "Hide labels";
         else
