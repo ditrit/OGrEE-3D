@@ -6,7 +6,7 @@
             filter: invert(100%);
         }
             </style>
-            <img src="https://github.com/ditrit/OGrEE-3D/blob/dev-vr/pictures_wiki/EditButton.svg" class="invert_effect" width="100" />
+            <img src="https://github.com/ditrit/OGrEE-3D/blob/dev-vr/pictures_wiki/EditButton.png" class="invert_effect" width="100" />
         </div>
     </foreignObject>
 </svg>
