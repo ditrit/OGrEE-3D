@@ -46,9 +46,10 @@ public class APIResponseAsLIst : MonoBehaviour
     // Start is called before the first frame update
     private async Task Start()
     {
-        await Task.Delay(1000);
+        await Task.Delay(100);
         //ApiManager.instance.CreateGetRequest("EDF");
-        ApiManager.instance.GetObjectVincent("tenants/EDF/sites", tenant);
+        ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
+        transform.parent.gameObject.SetActive(false);
         //ApiManager.instance.GetHttpData();
     }
 

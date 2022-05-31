@@ -22,6 +22,10 @@ MonoBehaviour:
   - {fileID: 2800000, guid: 47687274b20883545be126be46e36e7d, type: 3}
   - {fileID: 2800000, guid: 19eda8121dd174045801314f69fd0610, type: 3}
   - {fileID: 2800000, guid: 01f4d1ef1b7d4974a930248c489abed1, type: 3}
+  - {fileID: 2800000, guid: 179a539a4970a27448c49564db0b1297, type: 3}
+  - {fileID: 2800000, guid: ff1fbdbe3b8332e41b01752be3b610de, type: 3}
+  - {fileID: 2800000, guid: 90f153441d0d1314ab5ae49d7332f366, type: 3}
+  - {fileID: 2800000, guid: 2d5401b6030f93b478c33c93f5488c35, type: 3}
   spriteIcons: []
   charIconFont: {fileID: 0}
   charIcons:

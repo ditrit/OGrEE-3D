@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
         
 #endif
        
-#if !PROD
+#if RACK
         await Task.Delay(1000);
         var photo_capture = new Photo_Capture();
         await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","C05");

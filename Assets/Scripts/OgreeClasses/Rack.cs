@@ -241,29 +241,38 @@ public class Rack : OObject
     {
         Vector3 boxSize = transform.GetChild(0).localScale * transform.localScale.x;
 
-        // By defalut, attributes["heightUnit"] == "U"
+        // By defalut, attributes["heightUnit"] == "OU"
         float scale = GameManager.gm.uSize * transform.localScale.x;
         int max = (int)Utils.ParseDecFrac(attributes["height"]);
-        if (attributes["heightUnit"] == "OU")
-        {
-            scale = GameManager.gm.ouSize * transform.localScale.x;
-            max = (int)Utils.ParseDecFrac(attributes["height"]);
-        }
-        else if (attributes["heightUnit"] == "cm")
+
+        if (attributes["heightUnit"] == "cm")
         {
             scale = GameManager.gm.uSize * transform.localScale.x;
-            max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));
+            max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));            
         }
 
         if (!string.IsNullOrEmpty(attributes["template"]))
         {
             Transform firstSlot = null;
+            int minHeight = 0;
             foreach (Transform child in transform)
             {
-                if (child.GetComponent<Slot>())
+                if (child.GetComponent<Slot>() && child.GetComponent<Slot>().orient == "horizontal")
                 {
-                    firstSlot = child;
-                    break;
+                    if (firstSlot)
+                    {
+                        int height = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        if (height < minHeight)
+                            firstSlot = child;  
+                        else if (height > max)
+                            max = height;                         
+                    }
+                    else
+                    {
+                        firstSlot = child;
+                        minHeight = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        max = minHeight;
+                    }
                 }
             }
             if (firstSlot)

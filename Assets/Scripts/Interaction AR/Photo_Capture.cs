@@ -226,6 +226,22 @@ public class Photo_Capture : MonoBehaviour
     }
 
     ///<summary>
+    /// Activate a Gameobject if it is not active. Deactivate it if it is active.
+    ///</summary>
+    ///<param name="_g">Gameobject to activate/deactivate</param>
+    public void ToggleGameobject(GameObject _g)
+    {
+        if (_g.activeSelf)
+        {
+            _g.SetActive(false);
+        }
+        else
+        {
+            _g.SetActive(true);
+        }
+    }
+
+    ///<summary>
     /// Load the 3D model of a rack
     ///</summary>
     ///<param name="_customer">string refering to a customer</param>
@@ -259,6 +275,11 @@ public class Photo_Capture : MonoBehaviour
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
+    public void MoveObjectToCamera(GameObject _g)
+    {
+        Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera);
+    }
+    
     ///<summary>
     /// Send picture to API and receive json
     ///</summary>

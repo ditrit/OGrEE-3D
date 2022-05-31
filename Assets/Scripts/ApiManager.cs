@@ -234,6 +234,7 @@ public class ApiManager : MonoBehaviour
             HttpResponseMessage responseHTTP = await httpClient.GetAsync(fullPath);
             string response = responseHTTP.Content.ReadAsStringAsync().Result;
             GameManager.gm.AppendLogLine(response);
+            Debug.Log(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
             {
                 previousCalls.Add(_input);

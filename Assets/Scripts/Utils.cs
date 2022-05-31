@@ -165,6 +165,10 @@ public static class Utils
         _obj.transform.localRotation = Quaternion.Euler(newRotation);
     }
 
+    ///<summary>
+    /// Split a string into substring using '.' as a separator. Intended for a rack name.
+    ///</summary>
+    ///<param name="_hierarchyName">Hierarchy name of the rack</param>
     public static string[] SplitRackHierarchyName(string _hierarchyName)
     {
         string[] array = _hierarchyName.Split('.');

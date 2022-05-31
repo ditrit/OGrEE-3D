@@ -15,6 +15,10 @@ public class ListGenerator : MonoBehaviour
     public GameObject buttonRightPrefab;
     public GameObject buttonLeftPrefab;
     public GameObject buttonReturnPrefab;
+    public GameObject buildingIcon;
+    public GameObject siteIcon;
+    public GameObject roomIcon;
+    public GameObject rackIcon;
     private GridObjectCollection gridCollection;
     private GameObject buttonLeft;
     private GameObject buttonRight;
@@ -34,32 +38,39 @@ public class ListGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gridCollection = parentList.GetComponent<GridObjectCollection>();  
+        siteIcon.SetActive(true);
+        buildingIcon.SetActive(false);
+        roomIcon.SetActive(false);
+        rackIcon.SetActive(false);
+
+        gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
-        Vector3 offsetLeft = new Vector3 (-0.2f, 0, 0);
+
+        Vector3 offsetLeft = new Vector3(-0.15f, 0, 0);
         buttonLeft = Instantiate(buttonLeftPrefab, parentListAndButtons.transform.position + offsetLeft, Quaternion.identity, parentListAndButtons.transform);
         buttonLeft.SetActive(false);
 
-        Vector3 offsetRight = new Vector3 (0.2f, 0, 0);
-        buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight , Quaternion.identity, parentListAndButtons.transform);
+        Vector3 offsetRight = new Vector3(0.15f, 0, 0);
+        buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight, Quaternion.identity, parentListAndButtons.transform);
         buttonRight.SetActive(false);
 
-        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3 (-0.2f, (numberOfResultsPerPage -1) * 0.03f, 0) , Quaternion.identity, parentListAndButtons.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, parentListAndButtons.transform);
         buttonReturn.SetActive(false);
 
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3 (0,numberOfResultsPerPage * -0.03f, 0);
+        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
-        tmp.rectTransform.sizeDelta  = new Vector2 (0.25f, 0.05f);
+        tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.2f;
+        tmp.alignment = TextAlignmentOptions.Center;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     ///<summary>
@@ -70,17 +81,17 @@ public class ListGenerator : MonoBehaviour
     ///<param name="_pageNumber">Number of the pahe to display</param>
 
     public async void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
-    {   
+    {
         bool isSite = false;
         bool isRack = false;
 
         int maxNumberOfPage = 0;
 
-        if (_physicalObjects.Count  % numberOfResultsPerPage == 0)
-            maxNumberOfPage = _physicalObjects.Count  / numberOfResultsPerPage;
+        if (_physicalObjects.Count % numberOfResultsPerPage == 0)
+            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage;
         else
-            maxNumberOfPage = _physicalObjects.Count  / numberOfResultsPerPage +1;
-        
+            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage + 1;
+
         ClearParentList();
         TextMeshPro tmp = resulstInfos.GetComponent<TextMeshPro>();
         tmp.text = $"{_physicalObjects.Count} Results. Page {_pageNumber + 1} / {maxNumberOfPage}";
@@ -110,7 +121,7 @@ public class ListGenerator : MonoBehaviour
             iteratorUpperBound = (_pageNumber + 1) * numberOfResultsPerPage - 1;
 
         Debug.Log($"Number of Results: {_physicalObjects.Count}, Page Number: {_pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
-        for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++) 
+        for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
         {
             SApiObject obj = _physicalObjects[i];
             string category = obj.category;
@@ -120,28 +131,47 @@ public class ListGenerator : MonoBehaviour
             {
                 case "site":
                     subCat = "buildings";
+                    siteIcon.SetActive(true);
+                    buildingIcon.SetActive(false);
+                    roomIcon.SetActive(false);
+                    rackIcon.SetActive(false);
                     isSite = true;
                     break;
                 case "building":
                     subCat = "rooms";
+                    siteIcon.SetActive(true);
+                    buildingIcon.SetActive(true);
+                    roomIcon.SetActive(false);
+                    rackIcon.SetActive(false);                    
                     break;
                 case "room":
                     subCat = "racks";
+                    siteIcon.SetActive(true);
+                    buildingIcon.SetActive(true);
+                    roomIcon.SetActive(true);
+                    rackIcon.SetActive(false);                    
                     break;
                 case "rack":
                     isRack = true;
+                    siteIcon.SetActive(true);
+                    buildingIcon.SetActive(true);
+                    roomIcon.SetActive(true);
+                    rackIcon.SetActive(true);                    
                     break;
             }
             string nextCall = $"{category}s/{obj.id}/{subCat}";
-            GameObject g = Instantiate(buttonPrefab, Vector3.zero , Quaternion.identity, parentList.transform);
+            GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
             if (!isRack)
                 g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(nextCall, fullname));
             else
             {
-                array = Utils.SplitRackHierarchyName(fullname);
-                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async() => await Photo_Capture.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]));
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
+                {
+                    array = Utils.SplitRackHierarchyName(fullname);
+                    await Photo_Capture.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
+                });
                 g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => parentListAndButtons.SetActive(false));
 
             }
@@ -151,8 +181,8 @@ public class ListGenerator : MonoBehaviour
             buttonReturn.SetActive(false);
         else
             buttonReturn.SetActive(true);
-            buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(_previousCalls[_previousCalls.Count - 2], _parentNames[_parentNames.Count - 2]));
+        buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+        buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(_previousCalls[_previousCalls.Count - 2], _parentNames[_parentNames.Count - 2]));
 
     }
 
@@ -181,7 +211,7 @@ public class ListGenerator : MonoBehaviour
                     break;
             }
             string call = $"{category}s/{obj.id}/{subCat}";
-            GameObject g = Instantiate(buttonPrefab, Vector3.zero , Quaternion.identity, parentList.transform);
+            GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
             string fullname = parentName + "." + obj.name;
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
