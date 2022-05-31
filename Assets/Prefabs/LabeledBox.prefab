@@ -814,10 +814,34 @@ MonoBehaviour:
   elasticsManager: {fileID: 0}
   onManipulationStarted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7355064272856159692}
+        m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
+        m_MethodName: OnHoverIn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onManipulationEnded:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7355064272856159692}
+        m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
+        m_MethodName: OnHoverOut
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onHoverEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -1129,6 +1153,7 @@ GameObject:
   - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
   - component: {fileID: 4055006019252844647}
+  - component: {fileID: 7355064272856159692}
   m_Layer: 0
   m_Name: LabeledBox
   m_TagString: Selectable
@@ -1269,6 +1294,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConstraintSelection: 1
   selectedConstraints: []
+--- !u!114 &7355064272856159692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 389a720e6b9188e4f8f94d79772fc0b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  yPositionDelta: 0
+  initialYPosition: 0
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0

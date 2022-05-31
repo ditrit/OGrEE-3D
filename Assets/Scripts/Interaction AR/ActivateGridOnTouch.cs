@@ -26,7 +26,7 @@ public class ActivateGridOnTouch : MonoBehaviour, IMixedRealityTouchHandler
     }
 
     ///<summary>
-    /// Called when a hand is entering the object's collider. Create a Grid at the height of the object object.
+    /// Called when a hand is entering the object's collider. Create a Grid at the height of the object.
     ///</summary>
     ///<param name="_eventData">The HandTrackingInputEventData</param>
     void IMixedRealityTouchHandler.OnTouchStarted(HandTrackingInputEventData eventData)

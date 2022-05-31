@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Microsoft.MixedReality.Toolkit.Input;
 
 public class UManager : MonoBehaviour
 {
     static public UManager um;
     public float yPositionDelta = 0.0f;
     public float initialYPosition = 0.0f;
-    private GameObject objFocused;
     public string cornerRearLeft = "rearLeft";
     public string cornerRearRight = "rearRight";
     public string cornerFrontLeft = "frontLeft";
@@ -23,43 +23,6 @@ public class UManager : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
-    {
-        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusModeIn);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnFocusModeOut);
-    }
-
-    void Update()
-    {
-        if (isFocused)
-            yPositionDelta = objFocused.transform.position.y - initialYPosition;
-    }
-
-    private void OnEditModeIn(EditModeInEvent _e)
-    {
-        objFocused = _e.obj;
-        initialYPosition = _e.obj.transform.position.y;
-        isFocused = true;
-    }
-
-    private void OnFocusModeIn(OnFocusEvent _e)
-    {
-        objFocused = _e.obj;
-        initialYPosition = _e.obj.transform.position.y;
-        isFocused = true;
-    }
-
-    private void OnEditModeOut(EditModeOutEvent _e)
-    {
-        isFocused = false;
-    }
-
-    private void OnFocusModeOut(OnUnFocusEvent _e)
-    {
-        isFocused = false;
-    }
     ///<summary>
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
@@ -80,8 +43,8 @@ public class UManager : MonoBehaviour
                 t.GetComponent<BoxCollider>().enabled = false;
             }
 
-            float lowerBound = center - difference - yPositionDelta;
-            float upperBound = center + difference - yPositionDelta;
+            float lowerBound = center - difference - GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>().yPositionDelta;
+            float upperBound = center + difference - GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>().yPositionDelta;
             t = GameManager.gm.currentItems[0].transform;
             while(t != null)
             {
