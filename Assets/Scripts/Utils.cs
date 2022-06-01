@@ -153,13 +153,17 @@ public static class Utils
     ///</summary>
     ///<param name="_obj">object to move</param>
     ///<param name="m_camera"main camera of the scene</param>
-    public static void MoveObjectToCamera(GameObject _obj, Camera m_camera)
+    ///<param name="_distanceZ"distance on the z axis in meters to the camera to place the object</param>
+    ///<param name="_distanceY">distance on the y axis in meters from head level </param>
+    ///<param name="_angleY">Rotation to add on the y axis in degrees </param>
+    ///<param name="_angleX">Rotation to add on the x axis in degrees </param>
+    public static void MoveObjectToCamera(GameObject _obj, Camera m_camera, float _distanceZ, float _distanceY, int _angleY, int _angleX)
     {
         float localAngleCameraRadian = Mathf.Deg2Rad * m_camera.transform.eulerAngles.y;
-        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian) * 1.5f, -0.7f, Mathf.Cos(localAngleCameraRadian) * 1.5f);
+        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian) * _distanceZ, _distanceY, Mathf.Cos(localAngleCameraRadian) * _distanceZ);
 
         Vector3 newPostion = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_camera.transform.position.z);
-        Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
+        Vector3 newRotation = new Vector3(_angleX, m_camera.transform.eulerAngles.y + _angleY, 0.0f);
 
         _obj.transform.position = newPostion + offset;
         _obj.transform.localRotation = Quaternion.Euler(newRotation);
@@ -169,6 +173,7 @@ public static class Utils
     /// Split a string into substring using '.' as a separator. Intended for a rack name.
     ///</summary>
     ///<param name="_hierarchyName">Hierarchy name of the rack</param>
+    ///<returns>The array containing each part of the name</returns>
     public static string[] SplitRackHierarchyName(string _hierarchyName)
     {
         string[] array = _hierarchyName.Split('.');

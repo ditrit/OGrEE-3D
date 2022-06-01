@@ -33,7 +33,7 @@ public class Photo_Capture : MonoBehaviour
     }
     private string currentHost = "";
     public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.229.231";
+    public string telephoneHost = "192.168.152.231";
     public string customer = "EDF";
     public string site = "NOE";
     private string building;
@@ -65,7 +65,7 @@ public class Photo_Capture : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostMaison();
+        SetHostTelephone();
         if (currentHost == maisonHost)
         {
             SetHostMaison();
@@ -216,15 +216,6 @@ public class Photo_Capture : MonoBehaviour
         building = await ApiManager.instance.GetObjectName($"buildings/" + data);
     }
 
-    private void OnClosedDialogEvent(DialogResult _obj)
-    {
-
-        if (_obj.Result == DialogButtonType.Confirm)
-        {
-            
-        }
-    }
-
     ///<summary>
     /// Activate a Gameobject if it is not active. Deactivate it if it is active.
     ///</summary>
@@ -251,8 +242,8 @@ public class Photo_Capture : MonoBehaviour
     ///<param name="_rack">string refering to a rack</param>
     public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
     {
-        GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
-        GameManager.gm.DeleteItem(room, false);
+        GameObject customer = GameManager.gm.FindByAbsPath(_customer);
+        GameManager.gm.DeleteItem(customer, false);
         await ApiManager.instance.GetObject($"sites/"+ _site);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
@@ -262,22 +253,12 @@ public class Photo_Capture : MonoBehaviour
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera);
-        /*rack.AddComponent<TapToPlace>();
-        rack.GetComponent<TapToPlace>().AutoStart = true;
-        rack.GetComponent<TapToPlace>().KeepOrientationVertical = true;
-        rack.GetComponent<TapToPlace>().MagneticSurfaces[0] = LayerMask.GetMask("Nothing");
-        rack.GetComponent<SolverHandler>().AdditionalOffset = new Vector3(0, -0.2f, 0);*/
+        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
         OgreeObject ogree = rack.GetComponent<OgreeObject>();
         ogree.originalLocalRotation = rack.transform.localRotation;
         ogree.originalLocalPosition = rack.transform.localPosition;
 
         EventManager.Instance.Raise(new ImportFinishedEvent());
-    }
-
-    public void MoveObjectToCamera(GameObject _g)
-    {
-        Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera);
     }
     
     ///<summary>

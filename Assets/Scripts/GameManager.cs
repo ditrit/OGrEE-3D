@@ -533,7 +533,47 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
     }
 
+    ///<summary>
+    /// Move a rack in front of the camera.
+    ///</summary>
+    public void MoveRackToCamera()
+    {
+        if (GameManager.gm.currentItems.Count == 0)
+        {
+            var goArray = FindObjectsOfType<GameObject>();
+            for (var i = 0; i < goArray.Length; i++) 
+            {
+                if (goArray[i].layer == LayerMask.NameToLayer("Rack")) 
+                {
+                    Utils.MoveObjectToCamera(goArray[i], m_camera, 1.5f, -0.7f, 90, 0);
+                }
+            }
+            GameManager.gm.AppendLogLine($"No Rack to move in the scene", "yellow");
+        }
 
+        else
+        {
+            Transform t = GameManager.gm.currentItems[0].transform;
+            while(t != null)
+            {
+                if (t.GetComponent<OgreeObject>().category == "rack")
+                {
+                    Utils.MoveObjectToCamera(t.gameObject, m_camera, 1.5f, -0.7f, 90, 0);
+                    return;
+                }
+                t = t.parent.transform;
+            }
+            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
+        } 
+    }
+
+    ///<summary>
+    /// Move a gameobject in front of the camera.
+    ///</summary>
+    public void MoveMenuToCamera(GameObject _g)
+    {
+        Utils.MoveObjectToCamera(_g, m_camera, 0.6f, -0.35f, 0, 25);
+    }
 
     ///<summary>
     /// Quit the application.

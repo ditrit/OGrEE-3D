@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -4847266291842506605}
   - component: {fileID: 4507776248461121190}
   - component: {fileID: -8983734977160870219}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rack
   m_TagString: Selectable
   m_Icon: {fileID: 0}

@@ -10,12 +10,10 @@ public class DeltaPositionManager : MonoBehaviour
     public void OnHoverIn()
     {
         initialYPosition = transform.position.y;
-        Debug.Log($"intialYposition: {initialYPosition}");
     }
 
     public void OnHoverOut()
     {
         yPositionDelta = transform.position.y - initialYPosition;
-        Debug.Log($"Yposition Delta: {yPositionDelta}");
     }
 }
