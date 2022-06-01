@@ -22,34 +22,17 @@ public class Photo_Capture : MonoBehaviour
     [SerializeField]
     [Tooltip("Assign DialogLarge_192x192.prefab")]
     private GameObject dialogPrefabLarge;
-
-    /// <summary>
-    /// Large Dialog example prefab to display
-    /// </summary>
-    public GameObject DialogPrefabLarge
-    {
-        get => dialogPrefabLarge;
-        set => dialogPrefabLarge = value;
-    }
-    private string currentHost = "";
-    public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.152.231";
-    public string customer = "EDF";
-    public string site = "NOE";
+    private string currentHost;
+    public string customer;
+    private string site = "NOE";
     private string building;
     private string room;
     private string rack;
     private string customerAndSite;
-    public string port = "5000";
     public GameObject ButtonPicture;
     public GameObject quadButtonNoe;
     public GameObject quadButtonPcy;
-    public GameObject quadButtonMaison;
-    public GameObject quadButtonTelephone;
     public GameObject quadButtonPhoto;
-    public Material red;
-    public Material green;
-    public Material yellow;
     private PhotoCapture photoCaptureObject = null;
     public TextMeshPro apiResponseTMP = null;
 
@@ -60,21 +43,11 @@ public class Photo_Capture : MonoBehaviour
         else
             Destroy(this);
     }
-    
+
     // Start is called before the first frame update
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostTelephone();
-        if (currentHost == maisonHost)
-        {
-            SetHostMaison();
-        }
-
-        if (currentHost == telephoneHost)
-        {
-            SetHostTelephone();
-        }
 
         if (customerAndSite == "EDF.PCY")
         {
@@ -87,50 +60,39 @@ public class Photo_Capture : MonoBehaviour
         }
     }
 
-
-    public void SetHostMaison()
+    /// <summary>
+    /// Large Dialog example prefab to display
+    /// </summary>
+    public GameObject DialogPrefabLarge
     {
-        currentHost = maisonHost;
-        quadButtonMaison.GetComponent<Renderer>().material = green;
-        quadButtonTelephone.GetComponent<Renderer>().material = red;
+        get => dialogPrefabLarge;
+        set => dialogPrefabLarge = value;
     }
 
-    public void SetHostTelephone()
+    /// <summary>
+    /// Retrieve python appi url and tenant from config file.
+    /// </summary>
+    ///<param name="_python_api_url">The url from the python api that reads the label</param>
+    ///<param name="_tenant">The tenant from the conf file</param>
+    public void InitializeApiUrlAndTenant(string _python_api_url, string _tenant)
     {
-        currentHost = telephoneHost;
-        quadButtonMaison.GetComponent<Renderer>().material = red;
-        quadButtonTelephone.GetComponent<Renderer>().material = green;
+        currentHost = _python_api_url;
+        customer = _tenant;
     }
 
     public void SetSiteNoe()
     {
         customerAndSite = "EDF.NOE";
-        quadButtonNoe.GetComponent<Renderer>().material = green;
-        quadButtonPcy.GetComponent<Renderer>().material = red;
+        quadButtonNoe.GetComponent<Renderer>().material.color = Color.green;
+        quadButtonPcy.GetComponent<Renderer>().material.color = Color.red;
     }
 
     public void SetSitePcy()
     {
         customerAndSite = "EDF.PCY";
-        quadButtonNoe.GetComponent<Renderer>().material = red;
-        quadButtonPcy.GetComponent<Renderer>().material = green;
+        quadButtonNoe.GetComponent<Renderer>().material.color = Color.red;
+        quadButtonPcy.GetComponent<Renderer>().material.color = Color.green;
     }
-
-    public void RequestSentColor()
-    {
-        quadButtonPhoto.GetComponent<Renderer>().material = yellow;
-    }
-
-    public void RequestFailColor()
-    {
-        quadButtonPhoto.GetComponent<Renderer>().material = red;
-    }
-
-    public void RequestSuccessColor()
-    {
-        quadButtonPhoto.GetComponent<Renderer>().material = green;
-    }
-
 
     ///<summary>
     /// Call the function that takes a picture
@@ -244,6 +206,7 @@ public class Photo_Capture : MonoBehaviour
     {
         GameObject customer = GameManager.gm.FindByAbsPath(_customer);
         GameManager.gm.DeleteItem(customer, false);
+
         await ApiManager.instance.GetObject($"sites/"+ _site);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
@@ -254,10 +217,11 @@ public class Photo_Capture : MonoBehaviour
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
         Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
-        OgreeObject ogree = rack.GetComponent<OgreeObject>();
-        ogree.originalLocalRotation = rack.transform.localRotation;
-        ogree.originalLocalPosition = rack.transform.localPosition;
 
+        OgreeObject ogree = rack.GetComponent<OgreeObject>();
+        ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
+        ogree.originalLocalPosition = rack.transform.localPosition;
+        
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
     
@@ -270,10 +234,10 @@ public class Photo_Capture : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", byteArray);
         form.AddField("Tenant_Name", customerAndSite);
-        RequestSentColor();
+        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.yellow;
         apiResponseTMP.gameObject.SetActive(true);
         apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
-        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}:{port}", form))
+        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}", form))
         {
             www.SendWebRequest();
             while (!www.isDone)
@@ -281,7 +245,7 @@ public class Photo_Capture : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
                 apiResponseTMP.text = www.error;
-                RequestFailColor();
+        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
             }
 
             else
@@ -302,17 +266,17 @@ public class Photo_Capture : MonoBehaviour
                 apiResponseTMP.text = $"The label read is {site}{room}-{rack}";
                 if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
                 {
-                    RequestFailColor();
+                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
                     apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room and the rack label";
                 }
                 else if (string.IsNullOrEmpty(room))
                 {
-                    RequestFailColor();
+                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
                     apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room label";
                 }
                 else if (string.IsNullOrEmpty(rack))
                 {
-                    RequestFailColor();
+                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
                     apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the rack label";
                 }
 
@@ -321,13 +285,13 @@ public class Photo_Capture : MonoBehaviour
                     await SetBuilding(room);
                     if (building == "error" || building == null)
                     {
-                        RequestFailColor();
+                        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
                         GameManager.gm.AppendLogLine(building);
                         apiResponseTMP.text = apiResponseTMP.text + "\nError while getting the parent building of the room";
                     }
                     else
                     {
-                        RequestSuccessColor();
+                        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.green;
                         apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
 
                         ButtonPicture.SetActive(false);
@@ -360,7 +324,7 @@ public class Photo_Capture : MonoBehaviour
 
                 else
                 {
-                    RequestFailColor();
+                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
                 }
             }
         }

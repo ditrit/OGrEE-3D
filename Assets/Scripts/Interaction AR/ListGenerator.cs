@@ -79,7 +79,6 @@ public class ListGenerator : MonoBehaviour
     ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
     ///<param name="_pageNumber">Number of the pahe to display</param>
-
     public async void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
     {
         bool isSite = false;
@@ -183,42 +182,70 @@ public class ListGenerator : MonoBehaviour
             buttonReturn.SetActive(true);
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(_previousCalls[_previousCalls.Count - 2], _parentNames[_parentNames.Count - 2]));
-
     }
 
-    public void CreateList(List<SApiObject> _physicalObjects, string parentName)
+    public async void InstantiateMenuForSite(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
     {
-        /*if (_physicalObjects.Count > numberOfResultsPerPage)
-            buttonRight.SetActive(true);*/
+        bool isSite = false;
+        bool isRack = false;
 
-        foreach (SApiObject obj in _physicalObjects)
+        int maxNumberOfPage = 0;
+
+        if (_physicalObjects.Count % numberOfResultsPerPage == 0)
+            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage;
+        else
+            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage + 1;
+
+        ClearParentList();
+        TextMeshPro tmp = resulstInfos.GetComponent<TextMeshPro>();
+        tmp.text = $"{_physicalObjects.Count} Results. Page {_pageNumber + 1} / {maxNumberOfPage}";
+        if (_pageNumber > 0)
         {
+            buttonLeft.SetActive(true);
+            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => instance.InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber - 1, _previousCalls));
+        }
+        else
+            buttonLeft.SetActive(false);
+
+        if (_pageNumber + 1 < maxNumberOfPage)
+        {
+            buttonRight.SetActive(true);
+            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber + 1, _previousCalls));
+        }
+        else
+            buttonRight.SetActive(false);
+
+        int iteratorUpperBound = 0;
+
+        if (_pageNumber + 1 == maxNumberOfPage)
+            iteratorUpperBound = _physicalObjects.Count - 1;
+        else
+            iteratorUpperBound = (_pageNumber + 1) * numberOfResultsPerPage - 1;
+
+        Debug.Log($"Number of Results: {_physicalObjects.Count}, Page Number: {_pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
+        for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
+        {
+            SApiObject obj = _physicalObjects[i];
             string category = obj.category;
             string subCat = null;
+            string fullname = _parentNames[_parentNames.Count - 1] + "." + obj.name;
             switch (category)
             {
-                case "tenant":
-                    subCat = "sites";
-                    break;
                 case "site":
                     subCat = "buildings";
-                    break;
-                case "building":
-                    subCat = "rooms";
-                    break;
-                case "room":
-                    subCat = "devices";
+                    isSite = true;
                     break;
             }
-            string call = $"{category}s/{obj.id}/{subCat}";
             GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
-            string fullname = parentName + "." + obj.name;
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(call, fullname));
+            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => Photo_Capture.instance.site = obj.name);
             gridCollection.UpdateCollection();
         }
     }
+
 
     public async void ClearParentList()
     {

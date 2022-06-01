@@ -17,6 +17,7 @@ public class ConfigLoader
         public string api_url;
         public string api_token;
         public string tenant;
+        public string python_api_url;
     }
 
     private SConfig config;
@@ -30,6 +31,7 @@ public class ConfigLoader
         config = LoadConfigFile();
         OverrideConfig();
         APIResponseAsLIst.instance.InitializeTenant(config.tenant);
+        Photo_Capture.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
         ApplyConfig(config);
 
         string startFile = GetArg("--file");

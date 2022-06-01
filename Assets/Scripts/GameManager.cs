@@ -559,6 +559,9 @@ public class GameManager : MonoBehaviour
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
                     Utils.MoveObjectToCamera(t.gameObject, m_camera, 1.5f, -0.7f, 90, 0);
+                    OgreeObject ogree = t.gameObject.GetComponent<OgreeObject>();
+                    ogree.originalLocalRotation = t.gameObject.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
+                    ogree.originalLocalPosition = t.gameObject.transform.localPosition;
                     return;
                 }
                 t = t.parent.transform;
