@@ -109,6 +109,7 @@ MonoBehaviour:
   buttonWrapper: {fileID: 2574679693225809895}
   buttonEdit: {fileID: 8800078080613064985}
   buttonSelectParent: {fileID: 7897151900132686294}
+  buttonResetPosition: {fileID: 8800078079876257456}
   buttonToggleFocus: {fileID: 960063623271418330}
   buttonChangeOrientation: {fileID: 5964503629750013083}
   parentConstraintButtonWrapper: {fileID: 7227986775921416591}
@@ -731,6 +732,12 @@ PrefabInstance:
       objectReference: {fileID: 2800000, guid: 559e1da0e65611c4f93ec931e1e6a8a2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e71469d26cfa104497dde222c384910, type: 3}
+--- !u!1 &8800078079876257456 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3474411884748476878, guid: 7e71469d26cfa104497dde222c384910,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946237807576958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9042349551310745498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3993389204492511460, guid: 7e71469d26cfa104497dde222c384910,

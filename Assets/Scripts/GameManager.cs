@@ -430,7 +430,7 @@ public class GameManager : MonoBehaviour
         else
             UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
         UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
-        StartCoroutine(TestAPI());
+        //StartCoroutine(TestAPI());
     }
 
     ///<summary>
@@ -530,8 +530,6 @@ public class GameManager : MonoBehaviour
         consoleController.RunCommandString("api.get=sites?name=BETA");
         yield return new WaitForSeconds(2);
         consoleController.RunCommandString("CED.BETA:details=3");
-        //yield return new WaitForSeconds(2);
-        //consoleController.RunCommandString("EDF.NOE.BI2:details=2");
 
 
     }

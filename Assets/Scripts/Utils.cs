@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using Microsoft.MixedReality.Toolkit.Input;
 
 public static class Utils
 {
@@ -107,7 +108,10 @@ public static class Utils
     public static GameObject RaycastFromCameraToMouse()
     {
         RaycastHit hit;
+        //Vector3 pointerPosition = new Vector3();
+        //pointerPosition = Microsoft.MixedReality.Toolkit.Input.IMixedRealityPointer.Position;
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        //IMixedRealityRaycastProvider.Raycast(out MixedRealityRaycastHit);
         if (hit.collider)
         {
             // Debug.Log(hit.collider.transform.parent.name);
@@ -142,5 +146,33 @@ public static class Utils
         Color newColor;
         ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
         return newColor;
+    }
+  
+    ///<summary>
+    /// Move object in front of the camera
+    ///</summary>
+    ///<param name="_obj">object to move</param>
+    ///<param name="m_camera"main camera of the scene</param>
+    public static void MoveObjectToCamera(GameObject _obj, Camera m_camera)
+    {
+        float localAngleCameraRadian = Mathf.Deg2Rad * m_camera.transform.eulerAngles.y;
+        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian) * 1.5f, -0.7f, Mathf.Cos(localAngleCameraRadian) * 1.5f);
+
+        Vector3 newPostion = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_camera.transform.position.z);
+        Vector3 newRotation = new Vector3(0.0f, m_camera.transform.eulerAngles.y + 90, 0.0f);
+
+        _obj.transform.position = newPostion + offset;
+        _obj.transform.localRotation = Quaternion.Euler(newRotation);
+    }
+
+    ///<summary>
+    /// Split a string into substring using '.' as a separator.
+    ///</summary>
+    ///<param name="_hierarchyName">Hierarchy name of the object</param>
+    public static string[] SplitHierarchyName(string _hierarchyName)
+    {
+        char[] charSeparators = new char[] { '.' };
+        string[] array = _hierarchyName.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
+        return array;
     }
 }

@@ -255,7 +255,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
     ///</summary>
-    public async void ToggleApi()
+    public async void ToggleApi(GameObject _APIMenu = null)
     {
         if (ApiManager.instance.isInit)
         {
@@ -265,7 +265,11 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Disconnected from API", "green");
         }
         else
+        {
             await GameManager.gm.ConnectToApi();
+            if (_APIMenu != null)
+                APIResponseAsLIst.instance.ToggleParentListAndButtons(_APIMenu);
+        }
     }
 
     ///
