@@ -218,14 +218,13 @@ public class ListGenerator : MonoBehaviour
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () => 
         {
-            previousCalls.RemoveAt(previousCalls.Count - 1);
-            previousCalls.RemoveAt(previousCalls.Count - 1);
-            parentNames.RemoveAt(parentNames.Count - 1);
-            parentNames.RemoveAt(parentNames.Count - 1);
+            string prevCall = previousCalls[previousCalls.Count - 2];
+            string prevName = parentNames[parentNames.Count - 2];
 
-            previousCalls.Add(previousCalls[previousCalls.Count - 2]);
-            parentNames.Add(parentNames[parentNames.Count - 2]);            
-            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(previousCalls[previousCalls.Count - 2], parentNames[parentNames.Count - 2]);
+            previousCalls.RemoveAt(previousCalls.Count - 1);
+            parentNames.RemoveAt(parentNames.Count - 1);
+          
+            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(prevCall, prevName);
             ClearParentList();
             InstantiateByIndex(physicalObjects, 0);
         });
