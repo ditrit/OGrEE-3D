@@ -25,13 +25,12 @@ public class Photo_Capture : MonoBehaviour
     private string currentHost;
     public string customer;
     public string site = "NOE";
+    public string deviceType = "rack";
     private string building;
     private string room;
     private string rack;
     private string customerAndSite;
     public GameObject ButtonPicture;
-    public GameObject quadButtonNoe;
-    public GameObject quadButtonPcy;
     public GameObject quadButtonPhoto;
     private PhotoCapture photoCaptureObject = null;
     public TextMeshPro apiResponseTMP = null;
@@ -48,16 +47,6 @@ public class Photo_Capture : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-
-        if (customerAndSite == "EDF.PCY")
-        {
-            SetSitePcy();
-        }
-
-        if (customerAndSite == "EDF.NOE")
-        {
-            SetSiteNoe();
-        }
     }
 
     /// <summary>
@@ -78,20 +67,6 @@ public class Photo_Capture : MonoBehaviour
     {
         currentHost = _python_api_url;
         customer = _tenant;
-    }
-
-    public void SetSiteNoe()
-    {
-        customerAndSite = "EDF.NOE";
-        quadButtonNoe.GetComponent<Renderer>().material.color = Color.green;
-        quadButtonPcy.GetComponent<Renderer>().material.color = Color.red;
-    }
-
-    public void SetSitePcy()
-    {
-        customerAndSite = "EDF.PCY";
-        quadButtonNoe.GetComponent<Renderer>().material.color = Color.red;
-        quadButtonPcy.GetComponent<Renderer>().material.color = Color.green;
     }
 
     ///<summary>

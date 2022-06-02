@@ -21,15 +21,19 @@ public class MenuChoiceSite : MonoBehaviour
     private GameObject buttonRight;
     private GameObject resulstInfos;
     public int numberOfResultsPerPage;
-    private string tenant = "EDF";
+    private string tenant;
     [SerializeField] private List<string> parentNames = new List<string>();
+    private bool bool1 = false;
+    private bool bool2 = false;
 
     // Start is called before the first frame update
     private async Task Start()
     {
+        await Task.Delay(10);
+        tenant = ListGenerator.instance.tenant;
         parentNames.Add(tenant);
         siteIcon.SetActive(true);
-        rackIcon.SetActive(false);
+        rackIcon.SetActive(true);
 
         gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
@@ -45,29 +49,48 @@ public class MenuChoiceSite : MonoBehaviour
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, 0);
+        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3(0, 0, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
-        tmp.fontSize = 0.2f;
+        tmp.fontSize = 0.12f;
         tmp.alignment = TextAlignmentOptions.Center;
 
-        await Task.Delay(100);
-        parentListAndButtons.SetActive(false);
+        GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+        g.transform.localPosition = new Vector3 (0, -0.08f, 0);
+        g.name = "rack";
+        g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + g.name;
+        g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
+        {
+            Photo_Capture.instance.deviceType = g.name;
+            bool1 = true;
+        });
+
+        GameObject gmdi = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+        gmdi.transform.localPosition = new Vector3 (0, -0.13f, 0);
+        gmdi.name = "mdi";
+        gmdi.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + gmdi.name;
+        gmdi.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
+        {
+            Photo_Capture.instance.deviceType = gmdi.name;
+            bool1 = true;
+        });
+        gridCollection.UpdateCollection();
+
+        await Task.Delay(50);
+        List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
+        InstantiateMenuForSite(physicalObjects, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (bool1 && bool2)
+            parentListAndButtons.SetActive(false);
     }
 
     public async void InstantiateMenuForSite(List<SApiObject> _physicalObjects, int _pageNumber)
     {
-        bool isSite = false;
-        bool isRack = false;
-
         int maxNumberOfPage = 0;
-
         if (_physicalObjects.Count % numberOfResultsPerPage == 0)
             maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage;
         else
@@ -105,22 +128,16 @@ public class MenuChoiceSite : MonoBehaviour
         for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
         {
             SApiObject obj = _physicalObjects[i];
-            string category = obj.category;
-            string subCat = null;
             string fullname = parentNames[parentNames.Count - 1] + "." + obj.name;
-            switch (category)
-            {
-                case "site":
-                    subCat = "buildings";
-                    isSite = true;
-                    break;
-            }
 
             GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
             g.name = fullname;
-            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => Photo_Capture.instance.site = obj.name);
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => parentListAndButtons.SetActive(false));
+            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Current site = " + fullname;
+            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
+            {
+            Photo_Capture.instance.site = obj.name;
+            bool2 = true;
+            });
             gridCollection.UpdateCollection();
         }
     }

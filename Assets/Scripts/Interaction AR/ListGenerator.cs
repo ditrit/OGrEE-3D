@@ -28,7 +28,7 @@ public class ListGenerator : MonoBehaviour
     private string[] array;
     [SerializeField] private List<string> previousCalls = new List<string>();
     [SerializeField] private List<string> parentNames = new List<string>();
-    private string tenant;
+    public string tenant;
 
     private void Awake()
     {
