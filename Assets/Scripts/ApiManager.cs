@@ -58,9 +58,7 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
     ReadFromJson rfJson = new ReadFromJson();
-    [Header("AR")]
-    [SerializeField] private List<string> previousCalls = new List<string>();
-    [SerializeField] private List<string> parentNames = new List<string>();
+
     private void Awake()
     {
         AotHelper.EnsureList<ReadFromJson.STemplateChild>();
@@ -205,48 +203,37 @@ public class ApiManager : MonoBehaviour
     /// Get an Object from the api.
     ///</summary>
     ///<param name="_input">The path to add a base server for API GET request</param>
-    public async void GetObjectVincent(string _input, string _parentName)
+    public async Task<List<SApiObject>> GetObjectVincent(string _input, string _parentName)
     {
-        try
-        {
-            string previousCall = previousCalls[previousCalls.Count - 2];
-            if (previousCall == _input)
-            {
-                previousCalls.RemoveAt(previousCalls.Count - 1);
-                previousCalls.RemoveAt(previousCalls.Count - 1);
-                parentNames.RemoveAt(parentNames.Count - 1);
-                parentNames.RemoveAt(parentNames.Count - 1);
-            }
-        }
-        catch
-        {
-            Debug.Log("No previous calls");
-        }
         if (!isInit)
         {
             GameManager.gm.AppendLogLine("Not connected to API", "yellow");
-            return;
+            return null;
         }
-        string fullPath = $"{server}/{_input}";
-        Debug.Log($"fullpath is {fullPath}");
-        try
+        else
         {
-            HttpResponseMessage responseHTTP = await httpClient.GetAsync(fullPath);
-            string response = responseHTTP.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(response);
-            Debug.Log(response);
-            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
+            string fullPath = $"{server}/{_input}";
+            Debug.Log($"fullpath is {fullPath}");
+            try
             {
-                previousCalls.Add(_input);
-                parentNames.Add(_parentName);
-                CreateListFromJsonVincent(response);                
+                HttpResponseMessage responseHTTP = await httpClient.GetAsync(fullPath);
+                string response = responseHTTP.Content.ReadAsStringAsync().Result;
+                GameManager.gm.AppendLogLine(response);
+                Debug.Log(response);
+                if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
+                {
+                    List<SApiObject> physicalObjects = CreateListFromJsonVincent(response); 
+                    return physicalObjects;          
+                }
+                else
+                    GameManager.gm.AppendLogLine("Unknown object received", "red");
+                    return null;
             }
-            else
-                GameManager.gm.AppendLogLine("Unknown object received", "red");
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            catch (HttpRequestException e)
+            {
+                GameManager.gm.AppendLogLine(e.Message, "red");
+                return null;
+            }
         }
     }
 
@@ -549,7 +536,7 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create a 3D list with the response.
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private void CreateListFromJsonVincent(string _json)
+    private List<SApiObject> CreateListFromJsonVincent(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
 
@@ -559,11 +546,11 @@ public class ApiManager : MonoBehaviour
             foreach (SApiObject obj in resp.data.objects)
                 physicalObjects.Add(obj);
         }
-        ListGenerator.instance.ClearParentList();
-        //ListGenerator.instance.CreateList(physicalObjects, parentName);
-        ListGenerator.instance.InstantiateByIndex(physicalObjects, parentNames, 0, previousCalls);
-        GameManager.gm.AppendLogLine($"{physicalObjects.Count} object(s) created", "green");
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+        return physicalObjects;
+        //ListGenerator.instance.ClearParentList();
+        //ListGenerator.instance.InstantiateByIndex(physicalObjects, 0);
+        //GameManager.gm.AppendLogLine($"{physicalObjects.Count} object(s) created", "green");
+        //EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>

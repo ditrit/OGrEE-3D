@@ -19,10 +19,8 @@ public class APIResponseAsLIst : MonoBehaviour
     private async Task Start()
     {
         await Task.Delay(100);
-        //ApiManager.instance.CreateGetRequest("EDF");
         ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
         transform.parent.gameObject.SetActive(false);
-        //ApiManager.instance.GetHttpData();
     }
 
     public void InitializeTenant(string _tenant)

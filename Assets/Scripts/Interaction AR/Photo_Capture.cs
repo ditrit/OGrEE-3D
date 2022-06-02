@@ -24,7 +24,7 @@ public class Photo_Capture : MonoBehaviour
     private GameObject dialogPrefabLarge;
     private string currentHost;
     public string customer;
-    private string site = "NOE";
+    public string site = "NOE";
     private string building;
     private string room;
     private string rack;
@@ -221,7 +221,7 @@ public class Photo_Capture : MonoBehaviour
         OgreeObject ogree = rack.GetComponent<OgreeObject>();
         ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
         ogree.originalLocalPosition = rack.transform.localPosition;
-        
+
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
     

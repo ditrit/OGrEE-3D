@@ -26,6 +26,9 @@ public class ListGenerator : MonoBehaviour
     private GameObject resulstInfos;
     public int numberOfResultsPerPage;
     private string[] array;
+    [SerializeField] private List<string> previousCalls = new List<string>();
+    [SerializeField] private List<string> parentNames = new List<string>();
+    private string tenant;
 
     private void Awake()
     {
@@ -36,8 +39,10 @@ public class ListGenerator : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    private async Task Start()
     {
+        previousCalls.Add($"tenants/{tenant}/sites");
+        parentNames.Add(tenant);
         siteIcon.SetActive(true);
         buildingIcon.SetActive(false);
         roomIcon.SetActive(false);
@@ -65,6 +70,9 @@ public class ListGenerator : MonoBehaviour
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.2f;
         tmp.alignment = TextAlignmentOptions.Center;
+
+        await Task.Delay(100);
+        parentListAndButtons.SetActive(false);
     }
 
     // Update is called once per frame
@@ -73,13 +81,33 @@ public class ListGenerator : MonoBehaviour
 
     }
 
+    public void InitializeTenant(string _tenant)
+    {
+        tenant = _tenant;
+    }
+
+    public async void ToggleParentListAndButtons()
+    {
+        if (parentListAndButtons.activeSelf)
+        {
+            parentListAndButtons.SetActive(false);
+        }
+        else
+        {
+            parentListAndButtons.SetActive(true);
+            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
+            ClearParentList();
+            InstantiateByIndex(physicalObjects, 0);
+        }
+    }
+
     ///<summary>
     /// Instantiate Buttons for the objects on the provided pageNumber.
     ///</summary>
     ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
     ///<param name="_pageNumber">Number of the pahe to display</param>
-    public async void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
+    public async void InstantiateByIndex(List<SApiObject> _physicalObjects, int _pageNumber)
     {
         bool isSite = false;
         bool isRack = false;
@@ -98,7 +126,7 @@ public class ListGenerator : MonoBehaviour
         {
             buttonLeft.SetActive(true);
             buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => instance.InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber - 1, _previousCalls));
+            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => instance.InstantiateByIndex(_physicalObjects, _pageNumber - 1));
         }
         else
             buttonLeft.SetActive(false);
@@ -107,7 +135,7 @@ public class ListGenerator : MonoBehaviour
         {
             buttonRight.SetActive(true);
             buttonRight.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber + 1, _previousCalls));
+            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => InstantiateByIndex(_physicalObjects, _pageNumber + 1));
         }
         else
             buttonRight.SetActive(false);
@@ -125,7 +153,7 @@ public class ListGenerator : MonoBehaviour
             SApiObject obj = _physicalObjects[i];
             string category = obj.category;
             string subCat = null;
-            string fullname = _parentNames[_parentNames.Count - 1] + "." + obj.name;
+            string fullname = parentNames[parentNames.Count - 1] + "." + obj.name;
             switch (category)
             {
                 case "site":
@@ -163,7 +191,14 @@ public class ListGenerator : MonoBehaviour
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
             if (!isRack)
-                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(nextCall, fullname));
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () => 
+                {
+                    previousCalls.Add(nextCall);
+                    parentNames.Add(fullname);
+                    List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(nextCall, fullname);
+                    ClearParentList();
+                    InstantiateByIndex(physicalObjects, 0);
+                });
             else
             {
                 g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
@@ -181,71 +216,20 @@ public class ListGenerator : MonoBehaviour
         else
             buttonReturn.SetActive(true);
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-        buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(_previousCalls[_previousCalls.Count - 2], _parentNames[_parentNames.Count - 2]));
+        buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () => 
+        {
+            previousCalls.RemoveAt(previousCalls.Count - 1);
+            previousCalls.RemoveAt(previousCalls.Count - 1);
+            parentNames.RemoveAt(parentNames.Count - 1);
+            parentNames.RemoveAt(parentNames.Count - 1);
+
+            previousCalls.Add(previousCalls[previousCalls.Count - 2]);
+            parentNames.Add(parentNames[parentNames.Count - 2]);            
+            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(previousCalls[previousCalls.Count - 2], parentNames[parentNames.Count - 2]);
+            ClearParentList();
+            InstantiateByIndex(physicalObjects, 0);
+        });
     }
-
-    public async void InstantiateMenuForSite(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
-    {
-        bool isSite = false;
-        bool isRack = false;
-
-        int maxNumberOfPage = 0;
-
-        if (_physicalObjects.Count % numberOfResultsPerPage == 0)
-            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage;
-        else
-            maxNumberOfPage = _physicalObjects.Count / numberOfResultsPerPage + 1;
-
-        ClearParentList();
-        TextMeshPro tmp = resulstInfos.GetComponent<TextMeshPro>();
-        tmp.text = $"{_physicalObjects.Count} Results. Page {_pageNumber + 1} / {maxNumberOfPage}";
-        if (_pageNumber > 0)
-        {
-            buttonLeft.SetActive(true);
-            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => instance.InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber - 1, _previousCalls));
-        }
-        else
-            buttonLeft.SetActive(false);
-
-        if (_pageNumber + 1 < maxNumberOfPage)
-        {
-            buttonRight.SetActive(true);
-            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => InstantiateByIndex(_physicalObjects, _parentNames, _pageNumber + 1, _previousCalls));
-        }
-        else
-            buttonRight.SetActive(false);
-
-        int iteratorUpperBound = 0;
-
-        if (_pageNumber + 1 == maxNumberOfPage)
-            iteratorUpperBound = _physicalObjects.Count - 1;
-        else
-            iteratorUpperBound = (_pageNumber + 1) * numberOfResultsPerPage - 1;
-
-        Debug.Log($"Number of Results: {_physicalObjects.Count}, Page Number: {_pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
-        for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
-        {
-            SApiObject obj = _physicalObjects[i];
-            string category = obj.category;
-            string subCat = null;
-            string fullname = _parentNames[_parentNames.Count - 1] + "." + obj.name;
-            switch (category)
-            {
-                case "site":
-                    subCat = "buildings";
-                    isSite = true;
-                    break;
-            }
-            GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
-            g.name = fullname;
-            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => Photo_Capture.instance.site = obj.name);
-            gridCollection.UpdateCollection();
-        }
-    }
-
 
     public async void ClearParentList()
     {
