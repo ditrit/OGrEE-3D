@@ -15,12 +15,8 @@ public class ListGenerator : MonoBehaviour
     public GameObject buttonRightPrefab;
     public GameObject buttonLeftPrefab;
     public GameObject buttonReturnPrefab;
-    public GameObject buildingIcon;
-    public GameObject siteIcon;
-    public GameObject roomIcon;
-    public GameObject rackIcon;
-    public GameObject buttonGoDown;
-    public GameObject buttonLoad;
+    public GameObject buttonLoadPrefab;
+    public GameObject buttonUnLoadPrefab;
 
     private GridObjectCollection gridCollection;
     private GameObject buttonLeft;
@@ -43,23 +39,19 @@ public class ListGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        siteIcon.SetActive(true);
-        buildingIcon.SetActive(false);
-        roomIcon.SetActive(false);
-        rackIcon.SetActive(false);
 
         gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
 
-        Vector3 offsetLeft = new Vector3(-0.15f, 0, 0);
+        Vector3 offsetLeft = new Vector3(-0.25f, 0, 0);
         buttonLeft = Instantiate(buttonLeftPrefab, parentListAndButtons.transform.position + offsetLeft, Quaternion.identity, parentListAndButtons.transform);
         buttonLeft.SetActive(false);
 
-        Vector3 offsetRight = new Vector3(0.15f, 0, 0);
+        Vector3 offsetRight = new Vector3(0.25f, 0, 0);
         buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight, Quaternion.identity, parentListAndButtons.transform);
         buttonRight.SetActive(false);
 
-        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, parentListAndButtons.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3(-0.25f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, parentListAndButtons.transform);
         buttonReturn.SetActive(false);
 
         resulstInfos = new GameObject();
@@ -73,11 +65,6 @@ public class ListGenerator : MonoBehaviour
         print(tmp.fontSize);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     ///<summary>
     /// Instantiate Buttons for the objects on the provided pageNumber.
@@ -86,7 +73,7 @@ public class ListGenerator : MonoBehaviour
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
     ///<param name="_pageNumber">Number of the pahe to display</param>
 
-    public async void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
+    public void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
     {
         bool isTenant = false;
         bool isRack = false;
@@ -137,46 +124,51 @@ public class ListGenerator : MonoBehaviour
             {
                 case "tenant":
                     subCat = "sites";
-                    siteIcon.SetActive(false);
-                    buildingIcon.SetActive(false);
-                    roomIcon.SetActive(false);
-                    rackIcon.SetActive(false);
                     isTenant = true;
                     break;
                 case "site":
                     subCat = "buildings";
-                    siteIcon.SetActive(true);
-                    buildingIcon.SetActive(false);
-                    roomIcon.SetActive(false);
-                    rackIcon.SetActive(false);
                     break;
                 case "building":
                     subCat = "rooms";
-                    siteIcon.SetActive(true);
-                    buildingIcon.SetActive(true);
-                    roomIcon.SetActive(false);
-                    rackIcon.SetActive(false);
                     break;
                 case "room":
                     subCat = "racks";
-                    siteIcon.SetActive(true);
-                    buildingIcon.SetActive(true);
-                    roomIcon.SetActive(true);
-                    rackIcon.SetActive(false);
                     break;
                 case "rack":
                     isRack = true;
-                    siteIcon.SetActive(true);
-                    buildingIcon.SetActive(true);
-                    roomIcon.SetActive(true);
-                    rackIcon.SetActive(true);
                     break;
             }
             string nextCall = $"{category}s/{obj.id}/{subCat}";
-            GameObject button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
+            GameObject empty = new GameObject(fullname + " buttons");
+            empty.transform.parent = parentList.transform;
+            empty.transform.localScale = Vector3.one;
+
+            GameObject button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, empty.transform);
             button.name = fullname;
             button.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            AssignButtonFunction(button, fullname,nextCall);
+            if (!isRack)
+            {
+                button.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
+                {
+                    ApiManager.instance.GetObjectVincent(nextCall, fullname);
+                });
+            }
+
+            GameObject buttonLoadItem = Instantiate(buttonLoadPrefab, Vector3.zero, Quaternion.identity, empty.transform);
+            buttonLoadItem.transform.Translate(button.GetComponent<Collider>().bounds.size.x * 0.5f + buttonLoadItem.GetComponent<Collider>().bounds.size.x * 0.5f, 0, 0);
+            buttonLoadItem.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
+            {
+                await LoadOObject(fullname);
+            });
+
+            GameObject buttonUnLoadItem = Instantiate(buttonUnLoadPrefab, Vector3.zero, Quaternion.identity, empty.transform);
+            buttonUnLoadItem.transform.Translate(- button.GetComponent<Collider>().bounds.size.x * 0.5f - buttonUnLoadItem.GetComponent<Collider>().bounds.size.x * 0.5f, 0, 0);
+            buttonUnLoadItem.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
+            {
+                UnLoadOObject(fullname);
+            });
+
             gridCollection.UpdateCollection();
         }
         if (isTenant)
@@ -188,53 +180,10 @@ public class ListGenerator : MonoBehaviour
 
     }
 
-    public void AssignButtonFunction(GameObject _button, string _fullname, string _nextCall)
-    {
-        _button.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
-        {
-            selectionnedObject = _fullname;
-            selectionnedObjectNextCall = _nextCall;
-
-        });
-    }
-
-    public void CreateList(List<SApiObject> _physicalObjects, string parentName)
-    {
-        /*if (_physicalObjects.Count > numberOfResultsPerPage)
-            buttonRight.SetActive(true);*/
-
-        foreach (SApiObject obj in _physicalObjects)
-        {
-            string category = obj.category;
-            string subCat = null;
-            switch (category)
-            {
-                case "tenant":
-                    subCat = "sites";
-                    break;
-                case "site":
-                    subCat = "buildings";
-                    break;
-                case "building":
-                    subCat = "rooms";
-                    break;
-                case "room":
-                    subCat = "devices";
-                    break;
-            }
-            string call = $"{category}s/{obj.id}/{subCat}";
-            GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
-            string fullname = parentName + "." + obj.name;
-            g.name = fullname;
-            g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
-            g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => ApiManager.instance.GetObjectVincent(call, fullname));
-            gridCollection.UpdateCollection();
-        }
-    }
 
     public async void ClearParentList()
     {
-        for (int i = 0; i <= parentList.transform.childCount - 1; i++)
+        for (int i = 0; i < parentList.transform.childCount; i++)
         {
             Destroy(parentList.transform.GetChild(i).gameObject);
         }
@@ -242,15 +191,72 @@ public class ListGenerator : MonoBehaviour
         gridCollection.UpdateCollection();
     }
 
-    public async void ButtonLoad()
+
+    ///<summary>
+    /// Load the 3D model of an OObject
+    ///</summary>
+    ///<param name="_fullname">full hierarchy name of the object</param>
+    public async Task LoadOObject(string _fullname)
     {
-        await Photo_Capture.instance.LoadOObject(selectionnedObject);
+
+        string[] splittedName = Utils.SplitHierarchyName(_fullname);
+        GameObject oObject;
+        switch (splittedName.Length)
+        {
+            case 0:
+                throw new System.Exception("fullname is empty or not formatted : " + _fullname);
+            case 1:
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                oObject = GameManager.gm.FindByAbsPath(splittedName[0]);
+                break;
+            case 2:
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
+                oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1]);
+                break;
+            case 3:
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
+                oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2]);
+                break;
+
+            case 4:
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3]);
+                oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2] + "." + splittedName[3]);
+                break;
+            case 5:
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3] + "/racks/" + splittedName[4]);
+                oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2] + "." + splittedName[3] + "." + splittedName[4]);
+                break;
+            default:
+                throw new System.Exception("fullname is empty or not formatted : " + _fullname);
+
+        }
+
+        if (oObject != null)
+            GameManager.gm.AppendLogLine("OObject Found in the scene after loading from API", "green");
+        else
+            GameManager.gm.AppendLogLine("OObject NOT Found in the scene after loading from API", "red");
+
+        OgreeObject ogree = oObject.GetComponent<OgreeObject>();
+        ogree.originalLocalRotation = oObject.transform.localRotation;
+        ogree.originalLocalPosition = oObject.transform.localPosition;
+
+        await ogree.LoadChildren((5 - splittedName.Length).ToString());
+        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
-    public void ButtonGoDown()
+    public void UnLoadOObject(string _fullname)
     {
-        print(selectionnedObject);
-        print(selectionnedObjectNextCall);
-        ApiManager.instance.GetObjectVincent(selectionnedObjectNextCall, selectionnedObject);
+        _fullname = _fullname.Remove(0, 1);
+        Destroy(GameManager.gm.FindByAbsPath(_fullname));
     }
 }

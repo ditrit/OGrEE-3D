@@ -521,16 +521,4 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-
-    ///<summary>
-    /// Get some objects from the API (VR)
-    ///</summary>
-    IEnumerator TestAPI()
-    {
-        consoleController.RunCommandString("api.get=sites?name=BETA");
-        yield return new WaitForSeconds(2);
-        consoleController.RunCommandString("CED.BETA:details=3");
-
-
-    }
 }
