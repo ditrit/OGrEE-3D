@@ -95,6 +95,7 @@ public class ListGenerator : MonoBehaviour
         else
         {
             parentListAndButtons.SetActive(true);
+            parentListAndButtons.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
             List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
             ClearParentList();
             InstantiateByIndex(physicalObjects, 0);

@@ -5,6 +5,7 @@ using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 
 public class MenuChoiceSite : MonoBehaviour
 {
@@ -21,7 +22,9 @@ public class MenuChoiceSite : MonoBehaviour
     private GameObject buttonRight;
     private GameObject resulstInfos;
     public int numberOfResultsPerPage;
+    public GameObject menu;
     private string tenant;
+    [SerializeField][Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabLarge;
     [SerializeField] private List<string> parentNames = new List<string>();
     private bool bool1 = false;
     private bool bool2 = false;
@@ -56,6 +59,8 @@ public class MenuChoiceSite : MonoBehaviour
         tmp.alignment = TextAlignmentOptions.Center;
 
         GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+        GameObject gmdi = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+
         g.transform.localPosition = new Vector3 (0, -0.08f, 0);
         g.name = "rack";
         g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + g.name;
@@ -63,9 +68,11 @@ public class MenuChoiceSite : MonoBehaviour
         {
             Photo_Capture.instance.deviceType = g.name;
             bool1 = true;
+            gmdi.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
+            g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.green;
         });
 
-        GameObject gmdi = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+
         gmdi.transform.localPosition = new Vector3 (0, -0.13f, 0);
         gmdi.name = "mdi";
         gmdi.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + gmdi.name;
@@ -73,6 +80,8 @@ public class MenuChoiceSite : MonoBehaviour
         {
             Photo_Capture.instance.deviceType = gmdi.name;
             bool1 = true;
+            gmdi.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.green;
+            g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
         });
         gridCollection.UpdateCollection();
 
@@ -85,9 +94,30 @@ public class MenuChoiceSite : MonoBehaviour
     void Update()
     {
         if (bool1 && bool2)
+        {
             parentListAndButtons.SetActive(false);
+            parentListAndButtons.transform.SetParent(menu.transform);
+            parentListAndButtons.transform.localPosition = Vector3.zero;    
+
+            Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Don't know what to do?", $"Try saying 'photo' while looking at a label to take a picture", true);
+            myDialog.GetComponent<Follow>().MinDistance = 0.5f;
+            myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
+            myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+            myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
+            myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
+            myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
+        }
     }
 
+    /// <summary>
+    /// Large Dialog example prefab to display
+    /// </summary>
+    public GameObject DialogPrefabLarge
+    {
+        get => dialogPrefabLarge;
+        set => dialogPrefabLarge = value;
+    }
+    
     public async void InstantiateMenuForSite(List<SApiObject> _physicalObjects, int _pageNumber)
     {
         int maxNumberOfPage = 0;
@@ -135,8 +165,19 @@ public class MenuChoiceSite : MonoBehaviour
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Current site = " + fullname;
             g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
             {
-            Photo_Capture.instance.site = obj.name;
-            bool2 = true;
+                Photo_Capture.instance.site = obj.name;
+                if (bool2)
+                {
+                    for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
+                    {
+                        string name = parentNames[parentNames.Count - 1] + "." +  _physicalObjects[i].name;
+                        if (name != fullname)
+                            transform.Find($"{name}/BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
+                    }
+                }
+                g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.green;
+                bool2 = true;
+
             });
             gridCollection.UpdateCollection();
         }
