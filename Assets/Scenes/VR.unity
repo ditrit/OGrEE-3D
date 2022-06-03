@@ -4360,6 +4360,7 @@ MonoBehaviour:
   objInfos: {fileID: 169366882}
   detailsInputField: {fileID: 1907922015}
   apiButtonVRBackPlate: {fileID: 2245298683547687608}
+  apiButtonVRText: {fileID: 1374298684}
 --- !u!114 &560516250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4372,7 +4373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5384880f4b2784a429a2288293430b7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VRcamera: {fileID: 90352357}
+  mixedRealtyPlaySpace: {fileID: 53137975}
   lastRoomLoaded: {fileID: 0}
 --- !u!1 &561568554
 GameObject:
@@ -8215,8 +8216,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: -0.000023317236
-  m_Size: 0.89261425
+  m_Value: -0.0000062777117
+  m_Size: 0.8926295
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10682,6 +10683,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374125311}
   m_CullTransparentMesh: 0
+--- !u!114 &1374298684 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 960990185031062218, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
+    type: 3}
+  m_PrefabInstance: {fileID: 2245298683547687607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1386803468
 GameObject:
   m_ObjectHideFlags: 0
@@ -10849,7 +10862,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.029583}
+  m_AnchoredPosition: {x: 0, y: 34.02901}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped
