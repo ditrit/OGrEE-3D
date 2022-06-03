@@ -7,7 +7,6 @@ public class TeleportHandler : MonoBehaviour
 
     public static TeleportHandler instance;
     public GameObject mixedRealtyPlaySpace;
-    public GameObject debugCube;
     private bool shouldTP = false;
     private void Awake()
     {
@@ -30,20 +29,18 @@ public class TeleportHandler : MonoBehaviour
     {
         if (shouldTP)
         {
-            print("second imp");
-            StartCoroutine(Test());
+            StartCoroutine(GetEmptyPosInRoomDelayed());
             //mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom() + Vector3.up * mixedRealtyPlaySpace.transform.GetChild(0).position.y;
             shouldTP = false;
         }
         if (lastRoomLoaded != previousRoomLoaded)
         {
-            print("first imp");
             shouldTP = true;
             previousRoomLoaded = lastRoomLoaded;
         }
     }
 
-    private IEnumerator Test()
+    private IEnumerator GetEmptyPosInRoomDelayed()
     {
         yield return new WaitForFixedUpdate();
         mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom() + Vector3.up * mixedRealtyPlaySpace.transform.GetChild(0).position.y;
@@ -63,8 +60,6 @@ public class TeleportHandler : MonoBehaviour
             for (int i = 0; i < x; i++)
             {
                 Vector3 pos = lastRoomLoaded.usableZone.TransformPoint(rootPos + new Vector3(i / lastRoomLoaded.usableZone.transform.lossyScale.x, 0, j / lastRoomLoaded.usableZone.transform.lossyScale.z) * GameManager.gm.tileSize);
-                Instantiate(debugCube, pos + GameManager.gm.tileSize * Vector3.up, Quaternion.identity);
-                print(pos);
                 if (IsTileFree(pos))
                     return pos;
             }
@@ -74,10 +69,8 @@ public class TeleportHandler : MonoBehaviour
 
     private bool IsTileFree(Vector3 _pos)
     {
-        Collider[] hitColliders = Physics.OverlapSphere(_pos +  GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize / 2);
-        for (int i = 0; i < hitColliders.Length; i++)
-            print("collider :" + hitColliders[i].name);
-        return false;
+        Collider[] hitColliders = Physics.OverlapSphere(_pos + GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize / 2);
+        return hitColliders.Length > 0;
     }
     private void OnDrawGizmos()
     {
