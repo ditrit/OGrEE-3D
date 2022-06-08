@@ -63,9 +63,9 @@ public class ApiListener : MonoBehaviour
     /// </summary>
     ///<param name="_python_api_url">The url from the python api that reads the label</param>
     ///<param name="_tenant">The tenant from the conf file</param>
-    public void InitializeApiUrlAndTenant(string _python_api_url, string _tenant)
+    public void InitializeApiUrlAndTenant(string _pythonApiUrl, string _tenant)
     {
-        currentHost = _python_api_url;
+        currentHost = _pythonApiUrl;
         customer = _tenant;
     }
 
@@ -80,10 +80,10 @@ public class ApiListener : MonoBehaviour
     ///<summary>
     /// Set parameters and format of the picture to take
     ///</summary>
-    ///<param name="captureObject">Photo</param>
-    private void OnPhotoCaptureCreated(PhotoCapture captureObject)
+    ///<param name="_captureObject">Photo</param>
+    private void OnPhotoCaptureCreated(PhotoCapture _captureObject)
     {
-        photoCaptureObject = captureObject;
+        photoCaptureObject = _captureObject;
 
         Resolution cameraResolution = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).First();
 
@@ -93,14 +93,14 @@ public class ApiListener : MonoBehaviour
         c.cameraResolutionHeight = cameraResolution.height;
         c.pixelFormat = CapturePixelFormat.JPEG;
 
-        captureObject.StartPhotoModeAsync(c, OnPhotoModeStarted);
+        _captureObject.StartPhotoModeAsync(c, OnPhotoModeStarted);
     }
 
     ///<summary>
     /// Release the camera
     ///</summary>
-    ///<param name="result">result of the pipe</param>
-    private void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult result)
+    ///<param name="_result">result of the pipe</param>
+    private void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult _result)
     {
         photoCaptureObject.Dispose();
         photoCaptureObject = null;
@@ -109,10 +109,10 @@ public class ApiListener : MonoBehaviour
     ///<summary>
     /// take a picture
     ///</summary>
-    ///<param name="result">result of the pipe</param>
-    private void OnPhotoModeStarted(PhotoCapture.PhotoCaptureResult result)
+    ///<param name="_result">result of the pipe</param>
+    private void OnPhotoModeStarted(PhotoCapture.PhotoCaptureResult _result)
     {
-        if (result.success)
+        if (_result.success)
         {
             photoCaptureObject.TakePhotoAsync(OnCapturedPhotoToMemory);
         }
@@ -123,17 +123,17 @@ public class ApiListener : MonoBehaviour
     }
 
     ///<summary>
-    /// process on memoty the photo
+    /// process the photo on memory
     ///</summary>
-    ///<param name="result">result of the pipe</param>
-    ///<param name="photoCaptureFrame">frame captured</param>
-    private async void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult result, PhotoCaptureFrame photoCaptureFrame)
+    ///<param name="_result">result of the pipe</param>
+    ///<param name="_photoCaptureFrame">frame captured</param>
+    private async void OnCapturedPhotoToMemory(PhotoCapture.PhotoCaptureResult _result, PhotoCaptureFrame _photoCaptureFrame)
     {
-        if (result.success)
+        if (_result.success)
         {
             List<byte> imageBufferList = new List<byte>();
             // Copy the raw IMFMediaBuffer data into our empty byte list.
-            photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
+            _photoCaptureFrame.CopyRawImageDataIntoBuffer(imageBufferList);
             byte[] imageByteArray = imageBufferList.ToArray();
             if (imageByteArray != null)
             {
@@ -143,14 +143,14 @@ public class ApiListener : MonoBehaviour
         photoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
     }
 
-///<summary>
+    ///<summary>
     /// Send picture to API and receive json
     ///</summary>
     ///<param name="_byteArray"> image in the format of a byte array</param>
-    public async Task UploadByteAsync(byte[] byteArray)
+    public async Task UploadByteAsync(byte[] _byteArray)
     {
         WWWForm form = new WWWForm();
-        form.AddBinaryData("Label_Rack", byteArray);
+        form.AddBinaryData("Label_Rack", _byteArray);
         form.AddField("Tenant_Name", customerAndSite);
         quadButtonPhoto.GetComponent<Renderer>().material.color = Color.yellow;
         apiResponseTMP.gameObject.SetActive(true);
@@ -317,9 +317,9 @@ public class ApiListener : MonoBehaviour
     }
     
     ///<summary>
-    /// Send picture to API and receive json
+    /// Configure A Dialog with fixed parameters
     ///</summary>
-    ///<param name="_byteArray"> image in the format of a byte array</param>
+    ///<param name="_myDialog"> The Dialog box to update</param>
     public void ConfigureDialog(Dialog _myDialog)
     {
         _myDialog.GetComponent<Follow>().MinDistance = 0.5f;

@@ -53,7 +53,6 @@ public class UManager : MonoBehaviour
                 t.GetComponent<BoxCollider>().enabled = false;
             }
             DeltaPositionManager delta = GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>();
-            Vector3 scale = delta.finalScale;
             float rotation = delta.yRotation;
             float lowerBound = center - difference - delta.yPositionDelta;
             float upperBound = center + difference - delta.yPositionDelta;
@@ -111,6 +110,10 @@ public class UManager : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Disable Uhelpers when entering in edit mode.
+    ///</summary>
+    ///<param name="_e">Event raised when entering edit mode</param>
     public void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;

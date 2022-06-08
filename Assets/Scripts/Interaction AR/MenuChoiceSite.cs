@@ -13,7 +13,7 @@ public class MenuChoiceSite : MonoBehaviour
     public static ListGenerator instance;
     public GameObject GameManagerTest;
     public GameObject parentList;
-    public GameObject parentListAndButtons;
+    public GameObject SettingsMenu;
     public GameObject buttonPrefab;
     public GameObject buttonRightPrefab;
     public GameObject buttonLeftPrefab;
@@ -47,24 +47,24 @@ public class MenuChoiceSite : MonoBehaviour
         numberOfResultsPerPage = gridCollection.Rows;
 
         Vector3 offsetLeft = new Vector3(-0.15f, 0, 0);
-        buttonLeft = Instantiate(buttonLeftPrefab, parentListAndButtons.transform.position + offsetLeft, Quaternion.identity, parentListAndButtons.transform);
+        buttonLeft = Instantiate(buttonLeftPrefab, SettingsMenu.transform.position + offsetLeft, Quaternion.identity, SettingsMenu.transform);
         buttonLeft.SetActive(false);
 
         Vector3 offsetRight = new Vector3(0.15f, 0, 0);
-        buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight, Quaternion.identity, parentListAndButtons.transform);
+        buttonRight = Instantiate(buttonRightPrefab, SettingsMenu.transform.position + offsetRight, Quaternion.identity, SettingsMenu.transform);
         buttonRight.SetActive(false);
 
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
-        resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3(0, 0, 0);
+        resulstInfos.transform.SetParent(SettingsMenu.transform);
+        resulstInfos.transform.position = SettingsMenu.transform.position + new Vector3(0, 0, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.12f;
         tmp.alignment = TextAlignmentOptions.Center;
 
-        GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
-        GameObject gmdi = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentListAndButtons.transform);
+        GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, SettingsMenu.transform);
+        GameObject gmdi = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, SettingsMenu.transform);
 
         g.transform.localPosition = new Vector3 (0, -0.08f, 0);
         g.name = "rack";
@@ -95,22 +95,28 @@ public class MenuChoiceSite : MonoBehaviour
         InstantiateMenuForSite(physicalObjects, 0);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Large Dialog example prefab to display
+    /// </summary>
+    public GameObject DialogPrefabLarge
+    {
+        get => dialogPrefabLarge;
+        set => dialogPrefabLarge = value;
+    }
+
+    ///<summary>
+    /// Open a dialog with voice commands when settings are done
+    ///</summary>
     void Update()
     {
         if (bool1 && bool2 && bool3)
         {
-            parentListAndButtons.SetActive(false);
-            parentListAndButtons.transform.SetParent(menu.transform);
-            parentListAndButtons.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
+            SettingsMenu.SetActive(false);
+            SettingsMenu.transform.SetParent(menu.transform);
+            SettingsMenu.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
             Destroy(transform.parent.Find("Backplate").gameObject);
             myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
-            myDialog.GetComponent<Follow>().MinDistance = 0.5f;
-            myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
-            myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-            myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
-            myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
-            myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
+            ApiListener.instance.ConfigureDialog(myDialog);
             bool3 = false;
         }
 
@@ -124,26 +130,20 @@ public class MenuChoiceSite : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Open the dialog with voice commands when called
+    ///</summary>
     public void ToggleHelpMenu()
     {
         myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
-        myDialog.GetComponent<Follow>().MinDistance = 0.5f;
-        myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
-        myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
-        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
-        myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
-    }
-
-    /// <summary>
-    /// Large Dialog example prefab to display
-    /// </summary>
-    public GameObject DialogPrefabLarge
-    {
-        get => dialogPrefabLarge;
-        set => dialogPrefabLarge = value;
+        ApiListener.instance.ConfigureDialog(myDialog);
     }
     
+    ///<summary>
+    /// Instantiate Buttons for the provided objects on the given pageNumber. Buttons set variables in ApiListener class
+    ///</summary>
+    ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
+    ///<param name="_pageNumber">Number of the pahe to display</param>
     public void InstantiateMenuForSite(List<SApiObject> _physicalObjects, int _pageNumber)
     {
         int maxNumberOfPage = 0;
@@ -209,6 +209,9 @@ public class MenuChoiceSite : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Destroy the buttons that were instantiated and update the grid collection
+    ///</summary>
     public async void ClearParentList()
     {
         for (int i = 0; i <= parentList.transform.childCount - 1; i++)

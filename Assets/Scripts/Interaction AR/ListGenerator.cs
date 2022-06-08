@@ -10,7 +10,7 @@ public class ListGenerator : MonoBehaviour
 {
     public static ListGenerator instance;
     public GameObject parentList;
-    public GameObject parentListAndButtons;
+    public GameObject SearchMenu;
     public GameObject buttonPrefab;
     public GameObject buttonRightPrefab;
     public GameObject buttonLeftPrefab;
@@ -46,15 +46,12 @@ public class ListGenerator : MonoBehaviour
         InitializeIcons();
         InitializeButtons();
         await Task.Delay(100);
-        parentListAndButtons.SetActive(false);
+        SearchMenu.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    ///<summary>
+    /// Activate the site icon, deactivate all other icons
+    ///</summary>
     public void InitializeIcons()
     {
         siteIcon.SetActive(true);
@@ -63,47 +60,57 @@ public class ListGenerator : MonoBehaviour
         rackIcon.SetActive(false);
     }
 
+    ///<summary>
+    /// Initialize the left, right, return buttons as well as the result infos tmp
+    ///</summary>
     public void InitializeButtons()
     {
         gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
 
         Vector3 offsetLeft = new Vector3(-0.15f, 0, 0);
-        buttonLeft = Instantiate(buttonLeftPrefab, parentListAndButtons.transform.position + offsetLeft, Quaternion.identity, parentListAndButtons.transform);
+        buttonLeft = Instantiate(buttonLeftPrefab, SearchMenu.transform.position + offsetLeft, Quaternion.identity, SearchMenu.transform);
         buttonLeft.SetActive(false);
 
         Vector3 offsetRight = new Vector3(0.15f, 0, 0);
-        buttonRight = Instantiate(buttonRightPrefab, parentListAndButtons.transform.position + offsetRight, Quaternion.identity, parentListAndButtons.transform);
+        buttonRight = Instantiate(buttonRightPrefab, SearchMenu.transform.position + offsetRight, Quaternion.identity, SearchMenu.transform);
         buttonRight.SetActive(false);
 
-        buttonReturn = Instantiate(buttonReturnPrefab, parentListAndButtons.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, parentListAndButtons.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, SearchMenu.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, SearchMenu.transform);
         buttonReturn.SetActive(false);
 
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
-        resulstInfos.transform.SetParent(parentListAndButtons.transform);
-        resulstInfos.transform.position = parentListAndButtons.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, 0);
+        resulstInfos.transform.SetParent(SearchMenu.transform);
+        resulstInfos.transform.position = SearchMenu.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.2f;
         tmp.alignment = TextAlignmentOptions.Center;
     }
 
+    ///<summary>
+    /// Initialize the local variable tenant with the config file
+    ///</summary>
+    ///<param name="_tenant">Tenant name from the config file</param>
     public void InitializeTenant(string _tenant)
     {
         tenant = _tenant;
     }
 
-    public async void ToggleParentListAndButtons()
+    ///<summary>
+    /// Deactivate the search menu if active, active it and set it on the site selection if not active.
+    ///</summary>
+    public async void ToggleSearchMenu()
     {
-        if (parentListAndButtons.activeSelf)
+        if (SearchMenu.activeSelf)
         {
-            parentListAndButtons.SetActive(false);
+            SearchMenu.SetActive(false);
         }
         else
         {
-            parentListAndButtons.SetActive(true);
-            parentListAndButtons.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
+            SearchMenu.SetActive(true);
+            SearchMenu.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
             List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
             ClearParentList();
             InstantiateByIndex(physicalObjects, 0);
@@ -111,7 +118,7 @@ public class ListGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate Buttons for the objects on the provided pageNumber.
+    /// Instantiate Buttons for the provided objects on the given pageNumber. Load 3D models when a rack is selected.
     ///</summary>
     ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
@@ -215,7 +222,7 @@ public class ListGenerator : MonoBehaviour
                     array = Utils.SplitRackHierarchyName(fullname);
                     await ApiListener.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
                 });
-                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => parentListAndButtons.SetActive(false));
+                g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => SearchMenu.SetActive(false));
 
             }
             gridCollection.UpdateCollection();
@@ -239,6 +246,9 @@ public class ListGenerator : MonoBehaviour
         });
     }
 
+    ///<summary>
+    /// Destroy the buttons that were instantiated and update the grid collection
+    ///</summary>
     public async void ClearParentList()
     {
         for (int i = 0; i <= parentList.transform.childCount - 1; i++)

@@ -817,7 +817,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7355064272856159692}
         m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
-        m_MethodName: OnHoverIn
+        m_MethodName: OnMovingObject
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -832,7 +832,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7355064272856159692}
         m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
-        m_MethodName: OnHoverOut
+        m_MethodName: OnStoppingObject
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1308,6 +1308,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   yPositionDelta: 0
   initialYPosition: 0
+  isFirstMove: 1
+  yRotation: 0
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0

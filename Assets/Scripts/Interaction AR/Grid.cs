@@ -14,11 +14,6 @@ public class Grid : MonoBehaviour
     private bool isFirstGrid = true;
     string currentGridName;
 
-    private void Start()
-    {
-
-    }
-
     ///<summary>
     /// Handle removing of current grid and creation of new grid.
     ///</summary>
