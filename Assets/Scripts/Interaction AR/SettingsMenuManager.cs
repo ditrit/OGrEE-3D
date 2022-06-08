@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.Input;
 
-public class MenuChoiceSite : MonoBehaviour
+public class SettingsMenuManager : MonoBehaviour
 {
-    public static ListGenerator instance;
+    public static SettingsMenuManager instance;
     public GameObject GameManagerTest;
     public GameObject parentList;
     public GameObject SettingsMenu;
@@ -38,7 +38,7 @@ public class MenuChoiceSite : MonoBehaviour
     private async Task Start()
     {
         await Task.Delay(10);
-        tenant = ListGenerator.instance.tenant;
+        tenant = SearchMenuManager.instance.tenant;
         parentNames.Add(tenant);
         siteIcon.SetActive(true);
         rackIcon.SetActive(true);

@@ -6,9 +6,9 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
 
-public class ListGenerator : MonoBehaviour
+public class SearchMenuManager : MonoBehaviour
 {
-    public static ListGenerator instance;
+    public static SearchMenuManager instance;
     public GameObject parentList;
     public GameObject SearchMenu;
     public GameObject buttonPrefab;

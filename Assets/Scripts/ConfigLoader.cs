@@ -30,7 +30,7 @@ public class ConfigLoader
     {
         config = LoadConfigFile();
         OverrideConfig();
-        ListGenerator.instance.InitializeTenant(config.tenant);
+        SearchMenuManager.instance.InitializeTenant(config.tenant);
         ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
         ApplyConfig(config);
 
