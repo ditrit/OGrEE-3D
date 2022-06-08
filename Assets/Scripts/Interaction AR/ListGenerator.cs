@@ -17,6 +17,7 @@ public class ListGenerator : MonoBehaviour
     public GameObject buttonReturnPrefab;
     public GameObject buttonLoadPrefab;
     public GameObject buttonUnLoadPrefab;
+    public GameObject GridMenuTemplate;
 
     private GridObjectCollection gridCollection;
     private GameObject buttonLeft;
@@ -71,7 +72,7 @@ public class ListGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
-    ///<param name="_pageNumber">Number of the pahe to display</param>
+    ///<param name="_pageNumber">Number of the page to display</param>
 
     public void InstantiateByIndex(List<SApiObject> _physicalObjects, List<string> _parentNames, int _pageNumber, List<string> _previousCalls)
     {
