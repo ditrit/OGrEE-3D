@@ -42,10 +42,10 @@ public class SearchMenuManager : MonoBehaviour
     private async Task Start()
     {
         previousCalls.Add($"tenants/{tenant}/sites");
+        await Task.Delay(1000);
         parentNames.Add(tenant);
         InitializeIcons();
         InitializeButtons();
-        await Task.Delay(100);
         SearchMenu.SetActive(false);
     }
 

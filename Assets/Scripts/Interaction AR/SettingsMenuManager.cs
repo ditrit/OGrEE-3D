@@ -54,13 +54,16 @@ public class SettingsMenuManager : MonoBehaviour
         buttonRight = Instantiate(buttonRightPrefab, SettingsMenu.transform.position + offsetRight, Quaternion.identity, SettingsMenu.transform);
         buttonRight.SetActive(false);
 
+
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(SettingsMenu.transform);
         resulstInfos.transform.position = SettingsMenu.transform.position + new Vector3(0, 0, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
+        SettingsMenu.SetActive(true);  // bug with tmp font size when object is not active
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.12f;
+        SettingsMenu.SetActive(false);
         tmp.alignment = TextAlignmentOptions.Center;
 
         GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, SettingsMenu.transform);
@@ -90,7 +93,7 @@ public class SettingsMenuManager : MonoBehaviour
         });
         gridCollection.UpdateCollection();
 
-        await Task.Delay(50);
+        await Task.Delay(1000);
         List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
         InstantiateMenuForSite(physicalObjects, 0);
     }
@@ -114,7 +117,7 @@ public class SettingsMenuManager : MonoBehaviour
             SettingsMenu.SetActive(false);
             SettingsMenu.transform.SetParent(menu.transform);
             SettingsMenu.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
-            Destroy(transform.parent.Find("Backplate").gameObject);
+            Destroy(SettingsMenu.transform.Find("Backplate").gameObject);
             myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
             ApiListener.instance.ConfigureDialog(myDialog);
             bool3 = false;
