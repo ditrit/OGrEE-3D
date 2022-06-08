@@ -16,9 +16,9 @@ public class Label
     public string rack;
 }
 
-public class Photo_Capture : MonoBehaviour
+public class ApiListener : MonoBehaviour
 {
-    public static Photo_Capture instance;
+    public static ApiListener instance;
     [SerializeField]
     [Tooltip("Assign DialogLarge_192x192.prefab")]
     private GameObject dialogPrefabLarge;
@@ -143,64 +143,7 @@ public class Photo_Capture : MonoBehaviour
         photoCaptureObject.StopPhotoModeAsync(OnStoppedPhotoMode);
     }
 
-    ///<summary>
-    /// Retrieve parent building of a room
-    ///</summary>
-    ///<param name="_room">string refering to a room name</param>
-    public async Task SetBuilding(string _room)
-    {
-        string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
-        building = await ApiManager.instance.GetObjectName($"buildings/" + data);
-    }
-
-    ///<summary>
-    /// Activate a Gameobject if it is not active. Deactivate it if it is active.
-    ///</summary>
-    ///<param name="_g">Gameobject to activate/deactivate</param>
-    public void ToggleGameobject(GameObject _g)
-    {
-        if (_g.activeSelf)
-        {
-            _g.SetActive(false);
-        }
-        else
-        {
-            _g.SetActive(true);
-        }
-    }
-
-    ///<summary>
-    /// Load the 3D model of a rack
-    ///</summary>
-    ///<param name="_customer">string refering to a customer</param>
-    ///<param name="_site">string refering to a site</param>
-    ///<param name="_building">string refering to a building</param>
-    ///<param name="_room">string refering to a room</param>
-    ///<param name="_rack">string refering to a rack</param>
-    public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
-    {
-        GameObject customer = GameManager.gm.FindByAbsPath(_customer);
-        GameManager.gm.DeleteItem(customer, false);
-
-        await ApiManager.instance.GetObject($"sites/"+ _site);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
-        GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
-        if (rack != null)
-            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
-        else 
-            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
-
-        OgreeObject ogree = rack.GetComponent<OgreeObject>();
-        ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
-        ogree.originalLocalPosition = rack.transform.localPosition;
-
-        EventManager.Instance.Raise(new ImportFinishedEvent());
-    }
-    
-    ///<summary>
+///<summary>
     /// Send picture to API and receive json
     ///</summary>
     ///<param name="_byteArray"> image in the format of a byte array</param>
@@ -220,7 +163,7 @@ public class Photo_Capture : MonoBehaviour
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
                 apiResponseTMP.text = www.error;
-        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
+                quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
             }
 
             else
@@ -272,12 +215,7 @@ public class Photo_Capture : MonoBehaviour
                         ButtonPicture.SetActive(false);
                         apiResponseTMP.gameObject.SetActive(false);
                         Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Found Rack !", $"Please click on 'Confirm' to place the rack {site}{room}-{rack}.\nClick on 'Cancel' if the label was misread or if you want to take another picture.", true);
-                        myDialog.GetComponent<Follow>().MinDistance = 0.5f;
-                        myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
-                        myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-                        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
-                        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
-                        myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
+                        ConfigureDialog(myDialog);
                         while (myDialog.State != DialogState.Closed)
                         {
                             await Task.Delay(100);
@@ -286,7 +224,6 @@ public class Photo_Capture : MonoBehaviour
                         if (myDialog.Result.Result == DialogButtonType.Confirm)
                         {
                             await LoadSingleRack(customer, site, building, room, rack);
-                            //apiResponseTMP.text = $"The label read is {site}{room}-{rack}" + "\nRack Loaded in Scene";        
                         }
 
                         if (myDialog.Result.Result == DialogButtonType.Cancel)
@@ -305,4 +242,91 @@ public class Photo_Capture : MonoBehaviour
         }
     }
 
+    ///<summary>
+    /// Retrieve parent building of a room
+    ///</summary>
+    ///<param name="_room">string refering to a room name</param>
+    public async Task SetBuilding(string _room)
+    {
+        string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
+        building = await ApiManager.instance.GetObjectName($"buildings/" + data);
+    }
+
+    ///<summary>
+    /// Activate a Gameobject if it is not active. Deactivate it if it is active.
+    ///</summary>
+    ///<param name="_g">Gameobject to activate/deactivate</param>
+    public void ToggleGameobject(GameObject _g)
+    {
+        if (_g.activeSelf)
+        {
+            _g.SetActive(false);
+        }
+        else
+        {
+            _g.SetActive(true);
+        }
+    }
+
+    ///<summary>
+    /// Activate a Gameobject if it is not active and move it in front of the camera. Deactivate it if it is active.
+    ///</summary>
+    ///<param name="_g">Gameobject to activate/deactivate</param>
+    public void ToggleAndMoveGameobject(GameObject _g)
+    {
+        if (_g.activeSelf)
+        {
+            _g.SetActive(false);
+        }
+        else
+        {
+            _g.SetActive(true);
+            Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera, 0.6f, -0.35f, 0, 25);
+        }
+    }
+
+    ///<summary>
+    /// Load the 3D model of a rack
+    ///</summary>
+    ///<param name="_customer">string refering to a customer</param>
+    ///<param name="_site">string refering to a site</param>
+    ///<param name="_building">string refering to a building</param>
+    ///<param name="_room">string refering to a room</param>
+    ///<param name="_rack">string refering to a rack</param>
+    public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
+    {
+        GameObject customer = GameManager.gm.FindByAbsPath(_customer);
+        GameManager.gm.DeleteItem(customer, false);
+
+        await ApiManager.instance.GetObject($"sites/"+ _site);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
+        GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
+        if (rack != null)
+            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
+        else 
+            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
+
+        OgreeObject ogree = rack.GetComponent<OgreeObject>();
+        ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
+        ogree.originalLocalPosition = rack.transform.localPosition;
+
+        EventManager.Instance.Raise(new ImportFinishedEvent());
+    }
+    
+    ///<summary>
+    /// Send picture to API and receive json
+    ///</summary>
+    ///<param name="_byteArray"> image in the format of a byte array</param>
+    public void ConfigureDialog(Dialog _myDialog)
+    {
+        _myDialog.GetComponent<Follow>().MinDistance = 0.5f;
+        _myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
+        _myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        _myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
+        _myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
+        _myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
+    }
 }

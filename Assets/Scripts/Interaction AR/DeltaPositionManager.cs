@@ -13,7 +13,42 @@ public class DeltaPositionManager : MonoBehaviour
 {
     public float yPositionDelta = 0.0f;
     public float initialYPosition = 0.0f;
+    public Vector3 initialScale = Vector3.one;
+    public Vector3 finalScale = Vector3.one;
+    public float halfheightBox = 0f;
+    public float centerbefore;
+    public float centerafter;
     public bool isFirstMove = true;
+    public float yRotation;
+
+    private void Start()
+    {
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+    }
+
+    private void OnEditModeIn(EditModeInEvent _e)
+    {
+        Transform t = transform.GetChild(0);
+        centerbefore = t.position.y;
+        if (t.GetComponent<BoxCollider>().enabled)
+            halfheightBox = t.GetComponent<BoxCollider>().bounds.extents.y;
+        else
+        {
+            t.GetComponent<BoxCollider>().enabled = true;
+            halfheightBox = t.GetComponent<BoxCollider>().bounds.extents.y;  
+            t.GetComponent<BoxCollider>().enabled = false;
+        }
+    }
+
+    private void OnEditModeOut(EditModeOutEvent _e)
+    {
+        finalScale = _e.obj.transform.lossyScale;
+        Transform t = transform.GetChild(0);
+        centerafter = t.position.y;
+        yRotation = transform.eulerAngles.y;
+
+    }
 
     public void OnHoverIn()
     {

@@ -85,8 +85,8 @@ public class GameManager : MonoBehaviour
        
 #if RACK
         await Task.Delay(1000);
-        var photo_capture = new Photo_Capture();
-        await photo_capture.LoadSingleRack("EDF","NOE","BI2","C8","C05");
+        var api_listener = new ApiListener();
+        await api_listener.LoadSingleRack("EDF","NOE","BI2","C8","C05");
 #endif
 
     }

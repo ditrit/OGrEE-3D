@@ -14,6 +14,7 @@ public class UManager : MonoBehaviour
     public string cornerFrontLeft = "frontLeft";
     public string cornerFrontRight = "frontRight";
     public bool isFocused = false;
+    public bool wasEdited = false;
 
     private void Awake()
     {
@@ -21,6 +22,11 @@ public class UManager : MonoBehaviour
             um = this;
         else
             Destroy(this);
+    }
+
+    private void Start()
+    {
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
     }
 
     ///<summary>
@@ -31,6 +37,10 @@ public class UManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "rack")
         {
+            if(wasEdited)
+            {
+                return;
+            }
             float difference;
             Transform t = GameManager.gm.currentItems[0].transform.GetChild(0);
             float center = t.position.y;
@@ -42,9 +52,11 @@ public class UManager : MonoBehaviour
                 difference = t.GetComponent<BoxCollider>().bounds.extents.y;  
                 t.GetComponent<BoxCollider>().enabled = false;
             }
-
-            float lowerBound = center - difference - GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>().yPositionDelta;
-            float upperBound = center + difference - GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>().yPositionDelta;
+            DeltaPositionManager delta = GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>();
+            Vector3 scale = delta.finalScale;
+            float rotation = delta.yRotation;
+            float lowerBound = center - difference - delta.yPositionDelta;
+            float upperBound = center + difference - delta.yPositionDelta;
             t = GameManager.gm.currentItems[0].transform;
             while(t != null)
             {
@@ -76,7 +88,6 @@ public class UManager : MonoBehaviour
                 }
                 t = t.parent.transform;
             }
-            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
         }
         else
         {
@@ -96,6 +107,40 @@ public class UManager : MonoBehaviour
                 if( Regex.IsMatch(name, cornerFrontRight, RegexOptions.IgnoreCase) )
                     obj.GetComponent<Renderer>().material.color = Color.green;  
             }
+            wasEdited = false;
+        }
+    }
+
+    public void OnEditModeIn(EditModeInEvent _e)
+    {
+        wasEdited = true;
+        ToggleU("false");
+    }
+
+    ///<summary>
+    /// Toggle U location cubes.
+    ///</summary>
+    ///<param name="_value">True or false value</param>
+    public void ToggleU(string _value)
+    {
+        if (_value != "true" && _value != "false")
+        {
+            GameManager.gm.AppendLogLine("U value has to be true or false", "yellow");
+            return;
+        }
+        Transform t = GameManager.gm.currentItems[0].transform;
+        while(t != null)
+        {
+            if (t.GetComponent<OgreeObject>().category == "rack")
+            {
+                GameObject uRoot = t.Find("uRoot").gameObject;
+                if (_value == "true")
+                    uRoot.SetActive(true);
+                else if (_value == "false")
+                    uRoot.SetActive(false);
+                return;
+            }
+            t = t.parent.transform;
         }
     }
 }

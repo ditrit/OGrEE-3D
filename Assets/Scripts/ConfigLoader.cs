@@ -31,7 +31,7 @@ public class ConfigLoader
         config = LoadConfigFile();
         OverrideConfig();
         ListGenerator.instance.InitializeTenant(config.tenant);
-        Photo_Capture.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
+        ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
         ApplyConfig(config);
 
         string startFile = GetArg("--file");

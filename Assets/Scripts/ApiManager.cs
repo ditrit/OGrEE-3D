@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -202,8 +202,9 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Get an Object from the api.
     ///</summary>
-    ///<param name="_input">The path to add a base server for API GET request</param>
-    public async Task<List<SApiObject>> GetObjectVincent(string _input, string _parentName)
+    ///<param name="_input">The endpoint to add to the base server address for API GET request</param>
+    ///<returns>A list containing all the objects in the json</returns>
+    public async Task<List<SApiObject>> GetObjectVincent(string _input)
     {
         if (!isInit)
         {
@@ -532,10 +533,10 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create an Ogree item from Json.
     /// Look in request path to the type of object to create a 3D list with the response.
     ///</summary>
     ///<param name="_json">The API response to use</param>
+    ///<returns>A list containing all the objects in the json</returns>
     private List<SApiObject> CreateListFromJsonVincent(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
@@ -547,10 +548,6 @@ public class ApiManager : MonoBehaviour
                 physicalObjects.Add(obj);
         }
         return physicalObjects;
-        //ListGenerator.instance.ClearParentList();
-        //ListGenerator.instance.InstantiateByIndex(physicalObjects, 0);
-        //GameManager.gm.AppendLogLine($"{physicalObjects.Count} object(s) created", "green");
-        //EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>

@@ -43,11 +43,28 @@ public class ListGenerator : MonoBehaviour
     {
         previousCalls.Add($"tenants/{tenant}/sites");
         parentNames.Add(tenant);
+        InitializeIcons();
+        InitializeButtons();
+        await Task.Delay(100);
+        parentListAndButtons.SetActive(false);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    public void InitializeIcons()
+    {
         siteIcon.SetActive(true);
         buildingIcon.SetActive(false);
         roomIcon.SetActive(false);
         rackIcon.SetActive(false);
+    }
 
+    public void InitializeButtons()
+    {
         gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
 
@@ -70,15 +87,6 @@ public class ListGenerator : MonoBehaviour
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.2f;
         tmp.alignment = TextAlignmentOptions.Center;
-
-        await Task.Delay(100);
-        parentListAndButtons.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public void InitializeTenant(string _tenant)
@@ -96,7 +104,7 @@ public class ListGenerator : MonoBehaviour
         {
             parentListAndButtons.SetActive(true);
             parentListAndButtons.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
-            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
+            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
             ClearParentList();
             InstantiateByIndex(physicalObjects, 0);
         }
@@ -108,7 +116,7 @@ public class ListGenerator : MonoBehaviour
     ///<param name="_physicalObjects">List of the data for each object in the API response to use</param>
     ///<param name="_parentName">Name of the parent starting from the tenant</param>
     ///<param name="_pageNumber">Number of the pahe to display</param>
-    public async void InstantiateByIndex(List<SApiObject> _physicalObjects, int _pageNumber)
+    public void InstantiateByIndex(List<SApiObject> _physicalObjects, int _pageNumber)
     {
         bool isSite = false;
         bool isRack = false;
@@ -196,7 +204,7 @@ public class ListGenerator : MonoBehaviour
                 {
                     previousCalls.Add(nextCall);
                     parentNames.Add(fullname);
-                    List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(nextCall, fullname);
+                    List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(nextCall);
                     ClearParentList();
                     InstantiateByIndex(physicalObjects, 0);
                 });
@@ -205,7 +213,7 @@ public class ListGenerator : MonoBehaviour
                 g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
                 {
                     array = Utils.SplitRackHierarchyName(fullname);
-                    await Photo_Capture.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
+                    await ApiListener.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
                 });
                 g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => parentListAndButtons.SetActive(false));
 
@@ -225,7 +233,7 @@ public class ListGenerator : MonoBehaviour
             previousCalls.RemoveAt(previousCalls.Count - 1);
             parentNames.RemoveAt(parentNames.Count - 1);
           
-            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(prevCall, prevName);
+            List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent(prevCall);
             ClearParentList();
             InstantiateByIndex(physicalObjects, 0);
         });

@@ -6,10 +6,12 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using Microsoft.MixedReality.Toolkit.Input;
 
 public class MenuChoiceSite : MonoBehaviour
 {
     public static ListGenerator instance;
+    public GameObject GameManagerTest;
     public GameObject parentList;
     public GameObject parentListAndButtons;
     public GameObject buttonPrefab;
@@ -28,6 +30,9 @@ public class MenuChoiceSite : MonoBehaviour
     [SerializeField] private List<string> parentNames = new List<string>();
     private bool bool1 = false;
     private bool bool2 = false;
+    private bool bool3 = true;
+    private bool bool4 = true;
+    private Dialog myDialog;
 
     // Start is called before the first frame update
     private async Task Start()
@@ -66,7 +71,7 @@ public class MenuChoiceSite : MonoBehaviour
         g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + g.name;
         g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
         {
-            Photo_Capture.instance.deviceType = g.name;
+            ApiListener.instance.deviceType = g.name;
             bool1 = true;
             gmdi.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
             g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.green;
@@ -78,7 +83,7 @@ public class MenuChoiceSite : MonoBehaviour
         gmdi.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + gmdi.name;
         gmdi.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
         {
-            Photo_Capture.instance.deviceType = gmdi.name;
+            ApiListener.instance.deviceType = gmdi.name;
             bool1 = true;
             gmdi.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.green;
             g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
@@ -86,27 +91,48 @@ public class MenuChoiceSite : MonoBehaviour
         gridCollection.UpdateCollection();
 
         await Task.Delay(50);
-        List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites", tenant);
+        List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
         InstantiateMenuForSite(physicalObjects, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (bool1 && bool2)
+        if (bool1 && bool2 && bool3)
         {
             parentListAndButtons.SetActive(false);
             parentListAndButtons.transform.SetParent(menu.transform);
-            parentListAndButtons.transform.localPosition = Vector3.zero;    
-
-            Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Don't know what to do?", $"Try saying 'photo' while looking at a label to take a picture", true);
+            parentListAndButtons.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
+            Destroy(transform.parent.Find("Backplate").gameObject);
+            myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
             myDialog.GetComponent<Follow>().MinDistance = 0.5f;
             myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
             myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
             myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
             myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
+            bool3 = false;
         }
+
+        if (!bool3 && bool4)
+        {
+            if (myDialog.State != DialogState.Closed)
+            {
+                GameManagerTest.GetComponent<SpeechInputHandler>().enabled = true;
+                bool4 = false;
+            }
+        }
+    }
+
+    public void ToggleHelpMenu()
+    {
+        myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
+        myDialog.GetComponent<Follow>().MinDistance = 0.5f;
+        myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
+        myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
+        myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
+        myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
     }
 
     /// <summary>
@@ -118,7 +144,7 @@ public class MenuChoiceSite : MonoBehaviour
         set => dialogPrefabLarge = value;
     }
     
-    public async void InstantiateMenuForSite(List<SApiObject> _physicalObjects, int _pageNumber)
+    public void InstantiateMenuForSite(List<SApiObject> _physicalObjects, int _pageNumber)
     {
         int maxNumberOfPage = 0;
         if (_physicalObjects.Count % numberOfResultsPerPage == 0)
@@ -165,7 +191,7 @@ public class MenuChoiceSite : MonoBehaviour
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Current site = " + fullname;
             g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
             {
-                Photo_Capture.instance.site = obj.name;
+                ApiListener.instance.site = obj.name;
                 if (bool2)
                 {
                     for (int i = _pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)

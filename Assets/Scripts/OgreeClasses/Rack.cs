@@ -199,9 +199,8 @@ public class Rack : OObject
             GenerateUHelpers();
         else if (_value == "false" && uRoot)
             Destroy(uRoot.gameObject);
-        else if (_value == "true" && uRoot)
-            GameManager.gm.AppendLogLine("Ca marche bien" , "green");
     }
+    
     public void ToggleU()
     {
         if (uRoot)

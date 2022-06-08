@@ -21,30 +21,15 @@ public class NewAPIListener : MonoBehaviour
     [SerializeField]
     [Tooltip("Assign DialogLarge_192x192.prefab")]
     private GameObject dialogPrefabLarge;
-
-    /// <summary>
-    /// Large Dialog example prefab to display
-    /// </summary>
-    public GameObject DialogPrefabLarge
-    {
-        get => dialogPrefabLarge;
-        set => dialogPrefabLarge = value;
-    }
     private string currentHost = "";
-    public string maisonHost = "192.168.1.38";
-    public string telephoneHost = "192.168.152.231";
     public string customer = "EDF";
     public string site = "NOE";
+    public string deviceType = "rack";
     private string building;
     private string room;
     private string rack;
     private string customerAndSite;
-    public string port = "5000";
     public GameObject ButtonPicture;
-    public GameObject quadButtonNoe;
-    public GameObject quadButtonPcy;
-    public GameObject quadButtonMaison;
-    public GameObject quadButtonTelephone;
     public GameObject quadButtonPhoto;
     private PhotoCapture photoCaptureObject = null;
     public TextMeshPro apiResponseTMP = null;
@@ -62,55 +47,15 @@ public class NewAPIListener : MonoBehaviour
     private void Start()
     {
         customerAndSite = customer + '.' + site;
-        SetHostTelephone();
-        if (currentHost == maisonHost)
-        {
-            SetHostMaison();
-        }
-
-        if (currentHost == telephoneHost)
-        {
-            SetHostTelephone();
-        }
-
-        if (customerAndSite == "EDF.PCY")
-        {
-            SetSitePcy();
-        }
-
-        if (customerAndSite == "EDF.NOE")
-        {
-            SetSiteNoe();
-        }
     }
 
-
-    public void SetHostMaison()
+    /// <summary>
+    /// Large Dialog example prefab to display
+    /// </summary>
+    public GameObject DialogPrefabLarge
     {
-        currentHost = maisonHost;
-        quadButtonMaison.GetComponent<Renderer>().material.color = Color.green;
-        quadButtonTelephone.GetComponent<Renderer>().material.color = Color.red;
-    }
-
-    public void SetHostTelephone()
-    {
-        currentHost = telephoneHost;
-        quadButtonMaison.GetComponent<Renderer>().material.color = Color.red;
-        quadButtonTelephone.GetComponent<Renderer>().material.color = Color.green;
-    }
-
-    public void SetSiteNoe()
-    {
-        customerAndSite = "EDF.NOE";
-        quadButtonNoe.GetComponent<Renderer>().material.color = Color.green;
-        quadButtonPcy.GetComponent<Renderer>().material.color = Color.red;
-    }
-
-    public void SetSitePcy()
-    {
-        customerAndSite = "EDF.PCY";
-        quadButtonNoe.GetComponent<Renderer>().material.color = Color.red;
-        quadButtonPcy.GetComponent<Renderer>().material.color = Color.green;
+        get => dialogPrefabLarge;
+        set => dialogPrefabLarge = value;
     }
 
     public void RequestSentColor()
@@ -271,7 +216,7 @@ public class NewAPIListener : MonoBehaviour
         RequestSentColor();
         apiResponseTMP.gameObject.SetActive(true);
         apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
-        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}:{port}", form))
+        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}", form))
         {
             www.SendWebRequest();
             while (!www.isDone)
@@ -364,5 +309,4 @@ public class NewAPIListener : MonoBehaviour
             }
         }
     }
-
 }

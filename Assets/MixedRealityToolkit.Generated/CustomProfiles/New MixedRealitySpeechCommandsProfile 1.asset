@@ -59,7 +59,7 @@ MonoBehaviour:
       description: None
       axisConstraint: 0
   - localizationKey: 
-    keyword: List
+    keyword: Search
     keyCode: 0
     action:
       id: 0
@@ -80,14 +80,7 @@ MonoBehaviour:
       description: None
       axisConstraint: 0
   - localizationKey: 
-    keyword: Show menu
-    keyCode: 0
-    action:
-      id: 0
-      description: None
-      axisConstraint: 0
-  - localizationKey: 
-    keyword: Hide menu
+    keyword: Help
     keyCode: 0
     action:
       id: 0
