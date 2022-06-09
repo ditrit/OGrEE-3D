@@ -270,7 +270,7 @@ public class UiManager : MonoBehaviour
         {
             await GameManager.gm.ConnectToApi();
             if (_APIMenu != null)
-                APIResponseAsLIst.instance.ToggleParentListAndButtons(_APIMenu);
+                _APIMenu.SetActive(true);
         }
     }
 

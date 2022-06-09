@@ -16,6 +16,9 @@ public class APIMenuHandler : GridMenuHandler
     public GameObject buttonUnLoadPrefab;
 
     private bool isTenant;
+    private List<string> previousCalls = new List<string>();
+    private List<string> parentNames = new List<string>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,22 +33,31 @@ public class APIMenuHandler : GridMenuHandler
         List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu("tenants", null);
         if (tmp != null)
         {
+            previousCalls.Add("tenants");
+            parentNames.Add("");
             physicalObjects = tmp;
             pageNumber = 0;
             UpdateGrid(physicalObjects.Count, AssignButtonFunction);
-        } 
+        }
     }
 
-    private void AssignButtonFunction(int index)
+
+    ///<summary>
+    /// Instantiates three buttons: one to load the object, one to delete it and one to display the list of its children
+    ///</summary>
+    ///<param name="_index">the element index in physicalObjects</param>
+    private void AssignButtonFunction(int _index)
     {
         isTenant = false;
         bool isRack = false;
-
-        SApiObject obj = physicalObjects[index];
+        print(_index);
+        print(physicalObjects[_index]);
+        SApiObject obj = physicalObjects[_index];
         string category = obj.category;
         string subCat = null;
 
-        string fullname = ApiManager.instance.parentNames[ApiManager.instance.parentNames.Count - 1] + "." + obj.name;
+        string fullname = parentNames[parentNames.Count - 1] + "." + obj.name;
+        print(_index);
         switch (category)
         {
             case "tenant":
@@ -80,6 +92,8 @@ public class APIMenuHandler : GridMenuHandler
                 List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(nextCall, fullname);
                 if (tmp != null)
                 {
+                    previousCalls.Add(nextCall);
+                    parentNames.Add(fullname);
                     physicalObjects = tmp;
                     pageNumber = 0;
                     UpdateGrid(physicalObjects.Count, AssignButtonFunction);
@@ -101,7 +115,6 @@ public class APIMenuHandler : GridMenuHandler
             UnLoadOObject(fullname);
         });
 
-        gridCollection.UpdateCollection();
     }
 
     ///<summary>
@@ -166,23 +179,39 @@ public class APIMenuHandler : GridMenuHandler
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
+
+    ///<summary>
+    /// Load the 3D model of an OObject
+    ///</summary>
+    ///<param name="_fullname">full hierarchy name of the object</param>
     public void UnLoadOObject(string _fullname)
     {
-        _fullname = _fullname.Remove(0, 1);
+        if (_fullname[0] == '.')
+            _fullname = _fullname.Remove(0, 1);
         Destroy(GameManager.gm.FindByAbsPath(_fullname));
     }
 
-    protected new void UpdateGrid(int ObjectNumber, GridButtonDelegate buttonDelegate)
+
+    ///<summary>
+    /// Calls UpdateGridDefault then set the return button according to the previous call
+    ///</summary>
+    ///<param name="_objectNumber">the total number of elements</param>
+    ///<param name="_elementDelegate">the function to apply to each displayed element index</param>
+    protected new void UpdateGrid(int _elementNumber, ElementDelegate _elementDelegate)
     {
-        UpdateGridDefault(ObjectNumber, buttonDelegate);
+        UpdateGridDefault(_elementNumber, _elementDelegate);
 
         buttonReturn.SetActive(!isTenant);
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
         {
-            List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(ApiManager.instance.previousCalls[ApiManager.instance.previousCalls.Count - 2], ApiManager.instance.parentNames[ApiManager.instance.parentNames.Count - 2]);
+            List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(previousCalls[previousCalls.Count - 2], parentNames[parentNames.Count - 2]);
             if (tmp != null)
             {
+                string prevCall = previousCalls[previousCalls.Count - 2];
+
+                previousCalls.RemoveAt(previousCalls.Count - 1);
+                parentNames.RemoveAt(parentNames.Count - 1);
                 physicalObjects = tmp;
                 pageNumber = 0;
                 UpdateGrid(physicalObjects.Count, AssignButtonFunction);

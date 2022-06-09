@@ -6,6 +6,9 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
 
+//Parent class to build a list menu with an unknow/variable number of items
+//Make a new class inheriting from this one and customise your menu here
+
 public class GridMenuHandler : MonoBehaviour
 {
     public GameObject parentList;
@@ -16,21 +19,26 @@ public class GridMenuHandler : MonoBehaviour
     public int numberOfResultsPerPage;
     protected int pageNumber;
 
-    protected delegate void GridButtonDelegate(int buttonIndex);
+    protected delegate void ElementDelegate(int _elementIndex);
 
-    protected void UpdateGridDefault(int ObjectNumber, GridButtonDelegate buttonDelegate)
+    ///<summary>
+    /// Builds the list of items in the menu and applies to each displayed item index the function passed in argument
+    ///</summary>
+    ///<param name="_objectNumber">the total number of elements</param>
+    ///<param name="_elementDelegate">the function to apply to each displayed element index</param>
+    protected void UpdateGridDefault(int _objectNumber, ElementDelegate _elementDelegate)
     {
 
         int maxNumberOfPage = 0;
 
-        if (ObjectNumber % numberOfResultsPerPage == 0)
-            maxNumberOfPage = ObjectNumber / numberOfResultsPerPage;
+        if (_objectNumber % numberOfResultsPerPage == 0)
+            maxNumberOfPage = _objectNumber / numberOfResultsPerPage;
         else
-            maxNumberOfPage = ObjectNumber / numberOfResultsPerPage + 1;
+            maxNumberOfPage = _objectNumber / numberOfResultsPerPage + 1;
 
         ClearParentList();
         TextMeshPro tmp = resulstInfos.GetComponent<TextMeshPro>();
-        tmp.text = $"{ObjectNumber} Results. Page {pageNumber + 1} / {maxNumberOfPage}";
+        tmp.text = $"{_objectNumber} Results. Page {pageNumber + 1} / {maxNumberOfPage}";
         if (pageNumber > 0)
         {
             buttonLeft.SetActive(true);
@@ -38,7 +46,7 @@ public class GridMenuHandler : MonoBehaviour
             buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
             {
                 pageNumber -= 1;
-                UpdateGrid(ObjectNumber, buttonDelegate);
+                UpdateGrid(_objectNumber, _elementDelegate);
             });
         }
         else
@@ -51,7 +59,7 @@ public class GridMenuHandler : MonoBehaviour
             buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
             {
                 pageNumber += 1;
-                UpdateGrid(ObjectNumber, buttonDelegate);
+                UpdateGrid(_objectNumber, _elementDelegate);
             });
         }
         else
@@ -60,18 +68,24 @@ public class GridMenuHandler : MonoBehaviour
         int iteratorUpperBound = 0;
 
         if (pageNumber + 1 == maxNumberOfPage)
-            iteratorUpperBound = ObjectNumber - 1;
+            iteratorUpperBound = _objectNumber - 1;
         else
             iteratorUpperBound = (pageNumber + 1) * numberOfResultsPerPage - 1;
 
-        Debug.Log($"Number of Results: {ObjectNumber}, Page Number: {pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
+        Debug.Log($"Number of Results: {_objectNumber}, Page Number: {pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
         for (int i = pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
         {
-            buttonDelegate(i);
+            print(i);
+            _elementDelegate(i);
         }
 
+        gridCollection.UpdateCollection();
     }
 
+
+    ///<summary>
+    /// Deletes all displayed items
+    ///</summary>
     protected async void ClearParentList()
     {
         for (int i = 0; i < parentList.transform.childCount; i++)
@@ -82,9 +96,15 @@ public class GridMenuHandler : MonoBehaviour
         gridCollection.UpdateCollection();
     }
 
-    protected void UpdateGrid(int ObjectNumber, GridButtonDelegate buttonDelegate)
+
+    ///<summary>
+    ///Override this function in a child class to add actions to be performed when updating the list display but don't forget to keep the call to UpdateGridDefault
+    ///</summary>
+    ///<param name="_objectNumber">the total number of elements</param>
+    ///<param name="_elementDelegate">the function to apply to each displayed element index</param>
+    protected void UpdateGrid(int _objectNumber, ElementDelegate _elementDelegate)
     {
-        UpdateGridDefault(ObjectNumber, buttonDelegate);
+        UpdateGridDefault(_objectNumber, _elementDelegate);
     }
 
 

@@ -5,9 +5,13 @@ using UnityEngine;
 public class TeleportHandler : MonoBehaviour
 {
 
+    public Room lastRoomLoaded = null;
     public static TeleportHandler instance;
     public GameObject mixedRealtyPlaySpace;
+
     private bool shouldTP = false;
+    private Room previousRoomLoaded = null;
+
     private void Awake()
     {
         if (!instance)
@@ -16,8 +20,6 @@ public class TeleportHandler : MonoBehaviour
             Destroy(this);
     }
 
-    public Room lastRoomLoaded = null;
-    private Room previousRoomLoaded = null;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,11 +27,15 @@ public class TeleportHandler : MonoBehaviour
 
     }
 
+    ///<summary>
+    /// When called, checks if children of the last loaded room are loaded and teleport to the last loaded room if yes.
+    ///</summary>
+    ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e)
     {
         if (shouldTP)
         {
-            StartCoroutine(GetEmptyPosInRoomDelayed());
+            StartCoroutine(TeleportToRoomDelayed(lastRoomLoaded));
             //mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom() + Vector3.up * mixedRealtyPlaySpace.transform.GetChild(0).position.y;
             shouldTP = false;
         }
@@ -40,57 +46,63 @@ public class TeleportHandler : MonoBehaviour
         }
     }
 
-    private IEnumerator GetEmptyPosInRoomDelayed()
+
+    ///<summary>
+    /// Wait for the end of the frame to teleport
+    ///</summary>
+    private IEnumerator TeleportToRoomDelayed(Room _room)
     {
         yield return new WaitForFixedUpdate();
-        mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom() + Vector3.up * mixedRealtyPlaySpace.transform.GetChild(0).position.y;
+        TeleportToRoom(_room);
 
     }
 
-    private Vector3 GetEmptyPosInRoom()
-    {
-        float x = (lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].x - lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].x) / GameManager.gm.tileSize * lastRoomLoaded.usableZone.transform.localScale.x;
-        float z = (lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].z - lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].z) / GameManager.gm.tileSize * lastRoomLoaded.usableZone.transform.localScale.z;
 
-        Vector3 rootPos = lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120];
-        rootPos += new Vector3(GameManager.gm.tileSize / lastRoomLoaded.usableZone.transform.lossyScale.x, 0.002f, GameManager.gm.tileSize / lastRoomLoaded.usableZone.transform.lossyScale.z) / 2;
+    ///<summary>
+    /// Teleport to an empty tile of the room
+    ///</summary>
+    ///<param name="_room">The room to be teleported in</param>
+    public void TeleportToRoom(Room _room)
+    {
+        mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom(_room) + mixedRealtyPlaySpace.transform.GetChild(0).position;
+    }
+
+
+    ///<summary>
+    /// Return an empty tile in the usable zone of the room
+    ///</summary>
+    ///<param name="_room">The room checked</param>
+    ///<returns> A Vector3 containing the global position of the empty tile, or the center of the room if all tiles are occupied</returns>
+    private Vector3 GetEmptyPosInRoom(Room _room)
+    {
+        float x = (_room.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].x - _room.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].x) / GameManager.gm.tileSize * _room.usableZone.transform.localScale.x;
+        float z = (_room.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].z - _room.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].z) / GameManager.gm.tileSize * _room.usableZone.transform.localScale.z;
+
+        Vector3 rootPos = _room.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120];
+        rootPos += new Vector3(GameManager.gm.tileSize / _room.usableZone.transform.lossyScale.x, 0.002f, GameManager.gm.tileSize / _room.usableZone.transform.lossyScale.z) / 2;
 
         for (int j = 0; j < z; j++)
         {
             for (int i = 0; i < x; i++)
             {
-                Vector3 pos = lastRoomLoaded.usableZone.TransformPoint(rootPos + new Vector3(i / lastRoomLoaded.usableZone.transform.lossyScale.x, 0, j / lastRoomLoaded.usableZone.transform.lossyScale.z) * GameManager.gm.tileSize);
+                Vector3 pos = _room.usableZone.TransformPoint(rootPos + new Vector3(i / _room.usableZone.transform.lossyScale.x, 0, j / _room.usableZone.transform.lossyScale.z) * GameManager.gm.tileSize);
                 if (IsTileFree(pos))
                     return pos;
             }
         }
-        return lastRoomLoaded.usableZone.position;
+        return _room.usableZone.position;
     }
 
+
+    ///<summary>
+    /// Check if there are no collider on top of a position
+    ///</summary>
+    ///<param name="_pos">The position checked</param>
+    ///<<returns> If the position if free or not</returns>
     private bool IsTileFree(Vector3 _pos)
     {
         Collider[] hitColliders = Physics.OverlapSphere(_pos + GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize / 2);
         return hitColliders.Length > 0;
     }
-    private void OnDrawGizmos()
-    {
-        //if (lastRoomLoaded != null)
-        //{
-        //    float x = (lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].x - lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].x) / GameManager.gm.tileSize * lastRoomLoaded.usableZone.transform.localScale.x;
-        //    float z = (lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[0].z - lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120].z) / GameManager.gm.tileSize * lastRoomLoaded.usableZone.transform.localScale.z;
-
-        //    Vector3 rootPos = lastRoomLoaded.usableZone.GetComponent<MeshFilter>().sharedMesh.vertices[120];
-        //    rootPos += new Vector3(GameManager.gm.tileSize / lastRoomLoaded.usableZone.transform.lossyScale.x, 0.002f, GameManager.gm.tileSize / lastRoomLoaded.usableZone.transform.lossyScale.z) / 2;
-
-        //    for (int j = 0; j < z; j++)
-        //    {
-        //        for (int i = 0; i < x; i++)
-        //        {
-        //            Vector3 pos = lastRoomLoaded.usableZone.TransformPoint(rootPos + new Vector3(i / lastRoomLoaded.usableZone.transform.lossyScale.x, 0, j / lastRoomLoaded.usableZone.transform.lossyScale.z) * GameManager.gm.tileSize);
-        //            Gizmos.DrawSphere(pos + GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize/2);
-        //        }
-        //    }
-        //}
-    }
-
+  
 }
