@@ -30,7 +30,7 @@ public class APIMenuHandler : GridMenuHandler
 
     private async void OnEnable()
     {
-        List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu("tenants", null);
+        List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu("tenants");
         if (tmp != null)
         {
             previousCalls.Add("tenants");
@@ -89,7 +89,7 @@ public class APIMenuHandler : GridMenuHandler
         {
             button.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
             {
-                List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(nextCall, fullname);
+                List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(nextCall);
                 if (tmp != null)
                 {
                     previousCalls.Add(nextCall);
@@ -205,7 +205,7 @@ public class APIMenuHandler : GridMenuHandler
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
         {
-            List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(previousCalls[previousCalls.Count - 2], parentNames[parentNames.Count - 2]);
+            List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(previousCalls[previousCalls.Count - 2]);
             if (tmp != null)
             {
                 string prevCall = previousCalls[previousCalls.Count - 2];
