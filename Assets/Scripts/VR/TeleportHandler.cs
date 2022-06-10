@@ -8,6 +8,7 @@ public class TeleportHandler : MonoBehaviour
     public Room lastRoomLoaded = null;
     public static TeleportHandler instance;
     public GameObject mixedRealtyPlaySpace;
+    public GameObject mainCamera;
 
     private bool shouldTP = false;
     private Room previousRoomLoaded = null;
@@ -64,7 +65,12 @@ public class TeleportHandler : MonoBehaviour
     ///<param name="_room">The room to be teleported in</param>
     public void TeleportToRoom(Room _room)
     {
-        mixedRealtyPlaySpace.transform.position = GetEmptyPosInRoom(_room) + mixedRealtyPlaySpace.transform.GetChild(0).position;
+        Vector3 targetPosition = GetEmptyPosInRoom(_room);
+        float height = targetPosition.y;
+        targetPosition -= mainCamera.transform.position - mixedRealtyPlaySpace.transform.position;
+        targetPosition.y = height;
+
+        mixedRealtyPlaySpace.transform.position = targetPosition;
     }
 
 
@@ -101,7 +107,7 @@ public class TeleportHandler : MonoBehaviour
     ///<<returns> If the position if free or not</returns>
     private bool IsTileFree(Vector3 _pos)
     {
-        Collider[] hitColliders = Physics.OverlapSphere(_pos + GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize / 2);
+        Collider[] hitColliders = Physics.OverlapSphere(_pos + GameManager.gm.tileSize * Vector3.up, GameManager.gm.tileSize);
         return hitColliders.Length > 0;
     }
   
