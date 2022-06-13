@@ -14,6 +14,7 @@ public class APIMenuHandler : GridMenuHandler
     public GameObject buttonPrefab;
     public GameObject buttonLoadPrefab;
     public GameObject buttonUnLoadPrefab;
+    public Camera mainCamera;
 
     private bool isTenant;
     private List<string> previousCalls = new List<string>();
@@ -39,6 +40,9 @@ public class APIMenuHandler : GridMenuHandler
             pageNumber = 0;
             UpdateGrid(physicalObjects.Count, AssignButtonFunction);
         }
+        Utils.MoveObjectToCamera(gameObject, mainCamera);
+        gameObject.transform.Rotate(0, -90, 0);
+        gameObject.transform.Translate(0,0.5f,0);
     }
 
 

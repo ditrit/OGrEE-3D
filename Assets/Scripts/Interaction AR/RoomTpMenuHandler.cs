@@ -9,6 +9,7 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 public class RoomTpMenuHandler : GridMenuHandler
 {
     public GameObject buttonPrefab;
+    public Camera mainCamera;
     List<Room> rooms;
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,9 @@ public class RoomTpMenuHandler : GridMenuHandler
         rooms = GetRooms();
         pageNumber = 0;
         UpdateGrid(rooms.Count, AssignButtonFunction);
+        Utils.MoveObjectToCamera(gameObject, mainCamera);
+        gameObject.transform.Rotate(0, -90, 0);
+        gameObject.transform.Translate(0, 0.5f, 0);
     }
 
 
