@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class CustomerGenerator : MonoBehaviour
 {
-    public static CustomerGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Create OgreeObject of "tenant" category from given data.
     ///</summary>

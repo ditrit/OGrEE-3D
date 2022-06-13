@@ -15,11 +15,12 @@ public class UdpConnection : AConnection
     private string senderIp;
     private int senderPort;
 
-    public override void StartConnection(/*string _sendIp, int _sendPort, */int _receivePort)
+    public override void StartConnection(int _receivePort, int _sendPort)
     {
         try
         {
             udpClient = new UdpClient(_receivePort);
+            senderPort = _sendPort;
         }
         catch (Exception e)
         {
@@ -27,10 +28,6 @@ public class UdpConnection : AConnection
             return;
         }
         Debug.Log($"Created receiving client at ip  and port {_receivePort}");
-        // this.senderIp = _sendIp;
-        // this.senderPort = _sendPort;
-        // Debug.Log($"Set sendee at ip {_sendIp} and port {_sendPort}");
-
         StartReceiveThread();
     }
 
@@ -60,7 +57,7 @@ public class UdpConnection : AConnection
                     senderIp = remoteIpEndPoint.Address.ToString();
                     senderPort = remoteIpEndPoint.Port;
                     Debug.Log($"=> Received msg from {remoteIpEndPoint.Address.ToString()}:{remoteIpEndPoint.Port}: {returnData}");
-                    
+
                     // Then, send automatic message (debug).
                     Send("Roger Roger");
                 }

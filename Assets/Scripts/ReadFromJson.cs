@@ -86,11 +86,7 @@ public class ReadFromJson
 
     #endregion
 
-    ///<summary>
-    /// Store room data in GameManager.roomTemplates.
-    ///</summary>
-    ///<param name="_json">Json to parse</param>
-    public void CreateRoomTemplate(string _json)
+    public void CreateRoomTemplateJson(string _json)
     {
         SRoomFromJson roomData;
         try
@@ -102,11 +98,19 @@ public class ReadFromJson
             GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
             return;
         }
+        CreateRoomTemplate(roomData);
+    }
 
-        if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
+    ///<summary>
+    /// Store room data in GameManager.roomTemplates.
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateRoomTemplate(SRoomFromJson _data)
+    {
+        if (GameManager.gm.roomTemplates.ContainsKey(_data.slug))
             return;
 
-        GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
+        GameManager.gm.roomTemplates.Add(_data.slug, _data);
     }
 
     ///<summary>
@@ -190,13 +194,13 @@ public class ReadFromJson
         OgreeObject newObject;
         if (obj.category == "rack")
         {
-            newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
+            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder).Result;
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = ObjectGenerator.instance.CreateDevice(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0)).Result;
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else

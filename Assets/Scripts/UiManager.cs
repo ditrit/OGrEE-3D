@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +10,15 @@ public class UiManager : MonoBehaviour
     static public UiManager instance;
 
     [SerializeField] private GameObject menuPanel = null;
+    
+    [Header("Updated Canvas")]
+    [SerializeField] private TMP_Text mouseName;
 
     [Header("Panel Top")]
-    // [SerializeField] private Toggle toggleWireframe = null;
     [SerializeField] private Button focusBtn = null;
+    [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
+    [SerializeField] private TMP_Text toggleLabelsText = null;
 
     [Header("Panel Bottom")]
     [SerializeField] private Button reloadBtn = null;
@@ -23,6 +28,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel = null;
+
     [Header("Panel Infos")]
     [SerializeField] private GameObject infosPanel = null;
     [SerializeField] private GUIObjectInfos objInfos = null;
@@ -39,7 +45,10 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
+        menuPanel.SetActive(false);
         focusBtn.interactable = false;
+        selectParentBtn.interactable = false;
+        mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
@@ -49,6 +58,12 @@ public class UiManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
+        
+        if (mouseName.gameObject.activeSelf)
+        {
+            mouseName.transform.position = Input.mousePosition;
+            NameUnderMouse();
+        }
     }
 
     private void OnDestroy()
@@ -61,13 +76,29 @@ public class UiManager : MonoBehaviour
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         focusBtn.interactable = true;
+        selectParentBtn.interactable = true;
     }
 
     ///
     private void OnDeselectItem(OnDeselectItemEvent _e)
     {
         if (GameManager.gm.currentItems.Count == 0)
+        {
             focusBtn.interactable = false;
+            selectParentBtn.interactable = false;
+        }
+    }
+
+    ///<summary>
+    /// Get the object under the mouse and displays its hierarchyName in mouseName text.
+    ///</summary>
+    private void NameUnderMouse()
+    {
+        GameObject obj = Utils.RaycastFromCameraToMouse();
+        if (obj && obj.GetComponent<OgreeObject>())
+            mouseName.text = obj.GetComponent<OgreeObject>().hierarchyName;
+        else
+            mouseName.text = "";
     }
 
     ///<summary>
@@ -263,11 +294,24 @@ public class UiManager : MonoBehaviour
             await GameManager.gm.ConnectToApi();
     }
 
-    ///
+    ///<summary>
+    /// Called by GUI button: Focus selected object.
+    ///</summary>
     public void FocusSelected()
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
             GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Select the parent of the selected object.
+    ///</summary>
+    public void SelectParentItem()
+    {
+        if (GameManager.gm.currentItems.Count == 0)
+            return;
+
+        GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
     ///
@@ -286,21 +330,27 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI checkbox: Change material of all Racks.
+    /// Send a ToggleLabelEvent and change the toggle text.
     ///</summary>
-    ///<param name="_value">The checkbox value</param>
-    // public void ToggleRacksMaterials(bool _value)
-    // {
-    //     toggleWireframe.isOn = _value;
-    //     GameManager.gm.isWireframe = _value;
-    //     foreach (DictionaryEntry de in GameManager.gm.allItems)
-    //     {
-    //         GameObject obj = (GameObject)de.Value;
-    //         string cat = obj.GetComponent<OgreeObject>()?.category;
-    //         if (cat == "rack" || cat == "group" || cat == "corridor")
-    //             GameManager.gm.SetRackMaterial(obj.transform);
-    //     }
-    // }
+    public void ToggleLabels(bool _value)
+    {
+        EventManager.Instance.Raise(new ToggleLabelEvent() { value = _value });
+        mouseName.gameObject.SetActive(!_value);
+        if (_value)
+            toggleLabelsText.text = "Hide labels";
+        else
+            toggleLabelsText.text = "Display labels";
+    }
 
+    ///<summary>
+    /// Delete all files stored in cache directory.
+    ///</summary>
+    public void ClearCache()
+    {
+        DirectoryInfo dir = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        foreach (FileInfo file in dir.GetFiles())
+            file.Delete();
+        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", "green");
+    }
     #endregion
 }

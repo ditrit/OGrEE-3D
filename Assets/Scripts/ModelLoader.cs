@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using TriLibCore;
 using UnityEngine;
@@ -26,7 +29,9 @@ public class ModelLoader : MonoBehaviour
     public async Task ReplaceBox(GameObject _object, string _modelPath)
     {
         isLocked = true;
-        Destroy(_object.transform.GetChild(0).gameObject);
+
+        Uri filePath = new Uri($"{GameManager.gm.configLoader.GetCacheDir()}/{_object.name}.fbx");
+        await DownloadFile(_modelPath, filePath.AbsolutePath);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
         // BoxCollider added later
@@ -34,11 +39,58 @@ public class ModelLoader : MonoBehaviour
         assetLoaderOptions.ConvexColliders = false;
         assetLoaderOptions.AlphaMaterialMode = TriLibCore.General.AlphaMaterialMode.None;
 
-        UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
-        AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
-                                            _object, assetLoaderOptions, null, "fbx");
+        if (File.Exists(filePath.AbsolutePath))
+        {
+            Debug.Log($"From file: {filePath.AbsolutePath}");
+            AssetLoader.LoadModelFromFile(filePath.AbsolutePath, OnLoad, OnMaterialsLoad, OnProgress, OnError,
+                                            _object, assetLoaderOptions);
+        }
+        else
+        {
+            Debug.Log($"From url: {_modelPath}");
+            UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
+            AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
+                                                _object, assetLoaderOptions, null, "fbx");
+        }
         while (isLocked)
             await Task.Delay(10);
+    }
+
+    ///<summary>
+    /// Check cache directory size and download fbx file if it's not full.
+    ///</summary>
+    ///<param name="_url">The url to download the file</param>
+    ///<param name="_filePath">The path to write the file</param>
+    private async Task DownloadFile(string _url, string _filePath)
+    {
+        DirectoryInfo info = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        float totalSize = 0;
+        foreach (FileInfo file in info.EnumerateFiles())
+            totalSize += file.Length;
+        float sizeMo = totalSize / 1000000;
+        // Debug.Log($"{sizeMo}Mo / {GameManager.gm.configLoader.GetCacheLimit()}");
+
+        if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
+        {
+            GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", "yellow");
+            return;
+        }
+
+        if (!File.Exists(_filePath))
+        {
+            try
+            {
+                WebClient client = new WebClient();
+                await client.DownloadFileTaskAsync(_url, _filePath);
+            }
+            catch (System.Exception _e)
+            {
+                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", "red");
+                File.Delete(_filePath);
+            }
+        }
+        else
+            Debug.Log("Template is already in cache");
     }
 
     // This event is called when the model loading progress changes.
@@ -82,12 +134,15 @@ public class ModelLoader : MonoBehaviour
         triLibObj.GetComponent<Renderer>().enabled = false;
         triLibObj.GetComponent<Collider>().enabled = false;
 #endif
+        // Destroy(triLibWrapper.GetChild(1).gameObject);
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.
     // This event is also called after a critical loading error, so you can clean up any resource you want to.
     private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
     {
+        // Destroy basic box
+        Destroy(assetLoaderContext.WrapperGameObject.transform.GetChild(1).gameObject);
         isLocked = false;
     }
 

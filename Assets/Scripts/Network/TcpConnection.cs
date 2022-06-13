@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class TcpConnection : AConnection
@@ -23,15 +24,20 @@ public class TcpConnection : AConnection
     /// Create handle to connected tcp client. 	
     /// </summary> 	
     private TcpClient connectedTcpClient;
+
+    private string remoteIp;
+    private int sendPort;
     #endregion
 
     private bool threadRunning = false;
 
-    public override void StartConnection(int _receivePort)
+    ///
+    public override void StartConnection(int _receivePort, int _sendPort)
     {
         try
         {
             tcpListener = new TcpListener(IPAddress.Any, _receivePort);
+            sendPort = _sendPort;
         }
         catch (Exception e)
         {
@@ -41,9 +47,11 @@ public class TcpConnection : AConnection
         StartReceiveThread();
     }
 
+    ///
     private void StartReceiveThread()
     {
         receiveThread = new Thread(new ThreadStart(ListenForMessages));
+        // receiveThread = new Thread(new ThreadStart(ListenForMessagesLegacy));
         receiveThread.IsBackground = true;
         threadRunning = true;
         receiveThread.Start();
@@ -63,6 +71,59 @@ public class TcpConnection : AConnection
                 Byte[] bytes = new Byte[1024];
                 using (connectedTcpClient = tcpListener.AcceptTcpClient())
                 {
+                    // Catch CLI IP to be able to send messages in Send()
+                    remoteIp = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
+                    Debug.Log(remoteIp);
+
+                    string completeMessage = "";
+                    // Get a stream object for reading 					
+                    using (NetworkStream stream = connectedTcpClient.GetStream())
+                    {
+                        int length;
+                        // Read incomming stream into byte arrary. 						
+                        while (stream.DataAvailable)
+                        {
+                            length = stream.Read(bytes, 0, bytes.Length);
+                            string clientMessage = Encoding.ASCII.GetString(bytes, 0, length);
+                            Debug.Log("=>" + clientMessage);
+                            completeMessage += clientMessage;
+
+                            byte[] msg = Encoding.ASCII.GetBytes("Roger\n");
+                            stream.Write(msg, 0, msg.Length);
+                        }
+                        if (!string.IsNullOrEmpty(completeMessage))
+                        {
+                            lock (incomingQueue)
+                            {
+                                incomingQueue.Enqueue(completeMessage);
+                                completeMessage = "";
+                            }
+                        }
+                    }
+                    connectedTcpClient.Close();
+                }
+            }
+        }
+        catch (SocketException socketException)
+        {
+            Debug.Log("SocketException " + socketException.ToString());
+        }
+    }
+
+    private void ListenForMessagesLegacy()
+    {
+        try
+        {
+            tcpListener.Start();
+            Debug.Log("Tcp Server is listening");
+            while (threadRunning)
+            {
+                Byte[] bytes = new Byte[1024];
+                using (connectedTcpClient = tcpListener.AcceptTcpClient())
+                {
+                    remoteIp = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
+                    Debug.Log(remoteIp);
+                    string completeMessage = "";
                     // Get a stream object for reading 					
                     using (NetworkStream stream = connectedTcpClient.GetStream())
                     {
@@ -74,11 +135,21 @@ public class TcpConnection : AConnection
                             Array.Copy(bytes, 0, incommingData, 0, length);
                             // Convert byte array to string message. 							
                             string clientMessage = Encoding.ASCII.GetString(incommingData);
-                            lock (incomingQueue)
+                            Debug.Log("=>" + clientMessage);
+                            completeMessage += clientMessage;
+
+                            byte[] msg = Encoding.ASCII.GetBytes("Roger\n");
+                            stream.Write(msg, 0, msg.Length);
+                            Debug.Log("After sending");
+                            // stream.Close();
+                            if (completeMessage[completeMessage.Length - 1] == '}')
                             {
-                                incomingQueue.Enqueue(clientMessage);
-                                // Debug.Log("=> Client message received: " + clientMessage);
-                                // Send("Roger Roger");
+                                Debug.Log("Entering if()");
+                                lock (incomingQueue)
+                                {
+                                    incomingQueue.Enqueue(completeMessage);
+                                    completeMessage = "";
+                                }
                             }
                         }
                     }
@@ -91,6 +162,7 @@ public class TcpConnection : AConnection
         }
     }
 
+    ///
     public override string[] GetMessages()
     {
         string[] pendingMessages = new string[0];
@@ -110,23 +182,30 @@ public class TcpConnection : AConnection
     /// <summary> 	
     /// Send message to client using socket connection. 	
     /// </summary> 	
-    public override void Send(string _message)
+    public override async void Send(string _message)
     {
         if (connectedTcpClient == null)
             return;
 
         try
         {
+            // remoteIp = "192.168.254.23";
+            // remoteIp = "192.168.1.28"; // Hack for sending msg to JS TCP listener
+            Debug.Log($"Send msg to {remoteIp}:{sendPort}");
+            TcpClient client = new TcpClient(remoteIp, sendPort);
+
             // Get a stream object for writing. 			
-            NetworkStream stream = connectedTcpClient.GetStream();
+            NetworkStream stream = client.GetStream();
             if (stream.CanWrite)
             {
                 // Convert string message to byte array.                 
                 byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message);
                 // Write byte array to socketConnection stream.               
                 stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                // Debug.Log("Server sent his message - should be received by client");
+                await Task.Delay(1000);
+                stream.Close();
             }
+            client.Close();
         }
         catch (SocketException socketException)
         {
@@ -134,6 +213,7 @@ public class TcpConnection : AConnection
         }
     }
 
+    ///
     public override void Stop()
     {
         threadRunning = false;

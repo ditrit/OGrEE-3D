@@ -52,6 +52,11 @@ public class ConsoleController : MonoBehaviour
         else
             Debug.Log(_line);
 
+        // Troncate too long strings
+        int limit = 103;
+        if (_line.Length > limit)
+            _line = _line.Substring(0, limit) + "[...]";
+
         if ((_color == "yellow" || _color == "red") && cmdsHistory.ContainsKey(lastCmd))
         {
             _line = $"<color={_color}>{cmdsHistory[lastCmd]}\n{_line}</color>";
@@ -62,11 +67,6 @@ public class ConsoleController : MonoBehaviour
         }
         else
             _line = $"<color={_color}>{_line}</color>";
-
-        // Troncate too long strings
-        int limit = 103;
-        if (_line.Length > limit)
-            _line = _line.Substring(0, limit) + "[...]"; 
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -320,7 +320,10 @@ public class ConsoleController : MonoBehaviour
         {
             GameObject obj = (GameObject)GameManager.gm.allItems[_input];
             if (obj.GetComponent<OObject>())
+            {
+                GameManager.gm.SetCurrentItem(obj);
                 GameManager.gm.FocusItem(obj);
+            }
             else
                 AppendLogLine($"Can't focus \"{_input}\"", "yellow");
 
@@ -432,11 +435,16 @@ public class ConsoleController : MonoBehaviour
         if (!string.IsNullOrEmpty(json))
         {
             if (Regex.IsMatch(json, "\"category\"[ ]*:[ ]*\"room\""))
-                rfJson.CreateRoomTemplate(json);
+            {
+                if (ApiManager.instance.isInit)
+                    await ApiManager.instance.PostTemplateObject(json, "room");
+                else
+                    rfJson.CreateRoomTemplateJson(json);
+            }
             else // rack or device
             {
                 if (ApiManager.instance.isInit)
-                    await ApiManager.instance.PostTemplateObject(json);
+                    await ApiManager.instance.PostTemplateObject(json, "obj");
                 else
                     rfJson.CreateObjTemplateJson(json);
             }
@@ -562,7 +570,7 @@ public class ConsoleController : MonoBehaviour
             if (ApiManager.instance.isInit)
                 await ApiManager.instance.PostObject(tn);
             else
-                CustomerGenerator.instance.CreateTenant(tn);
+                await OgreeGenerator.instance.CreateItemFromSApiObject(tn);
         }
         else
             AppendLogLine("Syntax error", "red");
@@ -598,7 +606,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(si);
                 else
-                    CustomerGenerator.instance.CreateSite(si, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(si, parent);
             }
         }
         else
@@ -642,7 +650,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(bd);
                 else
-                    BuildingGenerator.instance.CreateBuilding(bd, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(bd, parent);
             }
         }
         else
@@ -675,21 +683,32 @@ public class ConsoleController : MonoBehaviour
             {
                 ro.attributes["template"] = "";
                 ro.attributes["orientation"] = data[3];
+                ro.attributes["floorUnit"] = "t";
                 size = Utils.ParseVector3(data[2]);
-            }
-            else if (GameManager.gm.roomTemplates.ContainsKey(data[2]))
-            {
-                ro.attributes["template"] = data[2];
-                ro.attributes["orientation"] = GameManager.gm.roomTemplates[data[2]].orientation;
-                ro.attributes["floorUnit"] = GameManager.gm.roomTemplates[data[2]].floorUnit;
-                size = new Vector3(GameManager.gm.roomTemplates[data[2]].sizeWDHm[0],
-                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[2],
-                                GameManager.gm.roomTemplates[data[2]].sizeWDHm[1]);
             }
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
-                return;
+                ro.attributes["template"] = data[2];
+                ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+                if (GameManager.gm.roomTemplates.ContainsKey(ro.attributes["template"]))
+                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                else if (ApiManager.instance.isInit)
+                {
+                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}");
+                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                }
+
+                if (!string.IsNullOrEmpty(template.slug))
+                {
+                    ro.attributes["orientation"] = template.orientation;
+                    ro.attributes["floorUnit"] = template.floorUnit;
+                    size = new Vector3(template.sizeWDHm[0], template.sizeWDHm[2], template.sizeWDHm[1]);
+                }
+                else
+                {
+                    GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
+                    return;
+                }
             }
             ro.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
             ro.attributes["sizeUnit"] = "m";
@@ -697,8 +716,6 @@ public class ConsoleController : MonoBehaviour
             ro.attributes["heightUnit"] = "m";
             if (data.Length == 5)
                 ro.attributes["floorUnit"] = data[4];
-            else
-                ro.attributes["floorUnit"] = "t";
 
             IsolateParent(data[0], out parent, out ro.name);
             if (parent)
@@ -709,7 +726,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(ro);
                 else
-                    BuildingGenerator.instance.CreateRoom(ro, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(ro, parent);
             }
         }
         else
@@ -734,10 +751,6 @@ public class ConsoleController : MonoBehaviour
             rk.attributes = new Dictionary<string, string>();
 
             rk.category = "rack";
-            Vector2 pos = Utils.ParseVector2(data[1]);
-            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
-            rk.attributes["posXYUnit"] = "tile";
-
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = Utils.ParseVector3(data[2], false);
@@ -751,7 +764,6 @@ public class ConsoleController : MonoBehaviour
             {
                 rk.attributes["template"] = data[2];
                 OgreeObject template = null;
-
                 if (GameManager.gm.objectTemplates.ContainsKey(rk.attributes["template"]))
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 else if (ApiManager.instance.isInit)
@@ -762,10 +774,12 @@ public class ConsoleController : MonoBehaviour
 
                 if (template)
                 {
-                    rk.attributes["size"] = template.attributes["size"];
-                    rk.attributes["sizeUnit"] = template.attributes["sizeUnit"];
-                    rk.attributes["height"] = template.attributes["height"];
-                    rk.attributes["heightUnit"] = template.attributes["heightUnit"];
+                    rk.description = template.description;
+                    foreach (KeyValuePair<string, string> kvp in template.attributes)
+                    {
+                        if (kvp.Key != "template")
+                            rk.attributes[kvp.Key] = kvp.Value;
+                    }
                 }
                 else
                 {
@@ -773,6 +787,9 @@ public class ConsoleController : MonoBehaviour
                     return;
                 }
             }
+            Vector2 pos = Utils.ParseVector2(data[1]);
+            rk.attributes["posXY"] = JsonUtility.ToJson(pos);
+            rk.attributes["posXYUnit"] = "tile";
             rk.attributes["orientation"] = data[3];
             IsolateParent(data[0], out parent, out rk.name);
             if (parent)
@@ -783,12 +800,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(rk);
                 else
-                {
-                    if (rk.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateRack(rk, parent);
-                    else
-                        ObjectGenerator.instance.CreateRack(rk, parent, false);
-                }
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(rk, parent);
             }
         }
         else
@@ -813,14 +825,6 @@ public class ConsoleController : MonoBehaviour
             dv.attributes = new Dictionary<string, string>();
 
             dv.category = "device";
-            float posU;
-            if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
-            {
-                dv.attributes["posU"] = posU.ToString();
-                dv.attributes["slot"] = "";
-            }
-            else
-                dv.attributes["slot"] = data[1];
             float sizeU;
             if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
             {
@@ -829,15 +833,10 @@ public class ConsoleController : MonoBehaviour
             }
             else
                 dv.attributes["template"] = data[2];
-            if (data.Length == 4)
-                dv.attributes["orientation"] = data[3];
-            else
-                dv.attributes["orientation"] = "front";
+
             IsolateParent(data[0], out parent, out dv.name);
             if (parent)
             {
-                dv.parentId = parent.GetComponent<OgreeObject>().id;
-                dv.domain = parent.GetComponent<OgreeObject>().domain;
                 if (dv.attributes["template"] == "")
                 {
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
@@ -860,10 +859,12 @@ public class ConsoleController : MonoBehaviour
 
                     if (template)
                     {
-                        dv.attributes["size"] = template.attributes["size"];
-                        dv.attributes["sizeUnit"] = template.attributes["sizeUnit"];
-                        dv.attributes["height"] = template.attributes["height"];
-                        dv.attributes["heightUnit"] = template.attributes["heightUnit"];
+                        dv.description = template.description;
+                        foreach (KeyValuePair<string, string> kvp in template.attributes)
+                        {
+                            if (kvp.Key != "template")
+                                dv.attributes[kvp.Key] = kvp.Value;
+                        }
                     }
                     else
                     {
@@ -871,16 +872,26 @@ public class ConsoleController : MonoBehaviour
                         return;
                     }
                 }
+                float posU;
+                if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+                {
+                    dv.attributes["posU"] = posU.ToString();
+                    dv.attributes["slot"] = "";
+                }
+                else
+                    dv.attributes["slot"] = data[1];
+                if (data.Length == 4)
+                    dv.attributes["orientation"] = data[3];
+                else
+                    dv.attributes["orientation"] = "front";
+
+                dv.parentId = parent.GetComponent<OgreeObject>().id;
+                dv.domain = parent.GetComponent<OgreeObject>().domain;
 
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(dv);
                 else
-                {
-                    if (dv.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateDevice(dv, parent);
-                    else
-                        ObjectGenerator.instance.CreateDevice(dv, parent, false);
-                }
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(dv, parent);
             }
         }
         else
@@ -915,7 +926,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(gr);
                 else
-                    ObjectGenerator.instance.CreateGroup(gr, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(gr, parent);
             }
         }
         else
@@ -951,7 +962,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostObject(co);
                 else
-                    ObjectGenerator.instance.CreateCorridor(co, parent);
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(co, parent);
             }
         }
         else
@@ -962,7 +973,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create sensor" command and call ObjectGenerator.CreateSensor().
     ///</summary>
     ///<param name="_input">String with sensor data to parse</param>
-    private void CreateSensor(string _input)
+    private async void CreateSensor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(ext@[0-9.]+|int@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@[0-9.]+)$";
@@ -996,7 +1007,7 @@ public class ConsoleController : MonoBehaviour
                 se.parentId = parent.GetComponent<OgreeObject>().id;
                 se.domain = parent.GetComponent<OgreeObject>().domain;
 
-                ObjectGenerator.instance.CreateSensor(se, parent);
+                await OgreeGenerator.instance.CreateItemFromSApiObject(se, parent);
             }
         }
         else
@@ -1150,18 +1161,12 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">The input to parse</param>
     private void ParseUiCommand(string _input)
     {
-        string pattern = "^(wireframe|infos|debug)=(true|false)$";
+        string pattern = "^(infos|debug)=(true|false)$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('=');
             switch (data[0])
             {
-                // case "wireframe":
-                //     if (data[1] == "true")
-                //         UiManager.instance.ToggleRacksMaterials(true);
-                //     else
-                //         UiManager.instance.ToggleRacksMaterials(false);
-                //     break;
                 case "infos":
                     if (data[1] == "true")
                         UiManager.instance.MovePanel("infos", true);
