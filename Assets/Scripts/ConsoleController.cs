@@ -320,7 +320,10 @@ public class ConsoleController : MonoBehaviour
         {
             GameObject obj = (GameObject)GameManager.gm.allItems[_input];
             if (obj.GetComponent<OObject>())
+            {
+                GameManager.gm.SetCurrentItem(obj);
                 GameManager.gm.FocusItem(obj);
+            }
             else
                 AppendLogLine($"Can't focus \"{_input}\"", "yellow");
 

@@ -86,7 +86,10 @@ public class CliParser// : MonoBehaviour
             case "focus":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
+                {
+                    GameManager.gm.SetCurrentItem(obj);
                     GameManager.gm.FocusItem(obj);
+                }
                 else
                     GameManager.gm.AppendLogLine("Error on focus", "red");
                 break;

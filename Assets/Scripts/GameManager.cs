@@ -293,6 +293,7 @@ public class GameManager : MonoBehaviour
 
         if (canFocus == true)
         {
+            _obj.SetActive(true);
             focus.Add(_obj);
             UiManager.instance.UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -340,7 +341,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Transform child in root)
             {
-                if (child.gameObject == _obj)
+                if (child.gameObject == _obj || IsInFocus(child.gameObject))
                     return true;
             }
         }
