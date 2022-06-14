@@ -59,8 +59,6 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -79,8 +77,6 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
