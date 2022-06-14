@@ -16,8 +16,8 @@ public class SelectOnMouseHover : MonoBehaviour
                 if (savedObjectThatWeHover)
                     EventManager.Instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
 
-                savedObjectThatWeHover = objectHit;
-                EventManager.Instance.Raise(new OnMouseHoverEvent { obj = objectHit });
+                //savedObjectThatWeHover = objectHit;
+                //EventManager.Instance.Raise(new OnMouseHoverEvent { obj = objectHit });
             }
         }
         else

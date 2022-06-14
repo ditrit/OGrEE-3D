@@ -182,7 +182,7 @@ public class BuildingGenerator : MonoBehaviour
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
         }
-
+        TeleportHandler.instance.lastRoomLoaded = room;
         return room;
     }
 

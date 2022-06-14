@@ -34,6 +34,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos = null;
     public DetailsInputField detailsInputField = null;
 
+    [Header("VR")]
+    [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+    [SerializeField] private TMP_Text apiButtonVRText = null;
+
+
 
     private void Awake()
     {
@@ -139,6 +144,8 @@ public class UiManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
+        apiButtonVRBackPlate.material.SetColor("_Color", _color);
+        apiButtonVRText.text = _str;
     }
 
     ///<summary>
@@ -281,7 +288,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
     ///</summary>
-    public async void ToggleApi()
+    public async void ToggleApi(GameObject _APIMenu = null)
     {
         if (ApiManager.instance.isInit)
         {
@@ -291,7 +298,11 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Disconnected from API", "green");
         }
         else
+        {
             await GameManager.gm.ConnectToApi();
+            if (_APIMenu != null)
+                _APIMenu.SetActive(true);
+        }
     }
 
     ///<summary>

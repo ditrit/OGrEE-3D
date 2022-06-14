@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
@@ -13,6 +14,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
+    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -24,6 +28,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
+
 
     public void OnBeforeSerialize()
     {
@@ -41,6 +46,13 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         attributes = new Dictionary<string, string>();
         for (int i = 0; i != Mathf.Min(attributesKeys.Count, attributesValues.Count); i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
+    }
+
+    private void Start()
+    {
+        originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 
     private void OnEnable()
@@ -217,7 +229,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void LoadChildren(string _level)
+    public async Task LoadChildren(string _level)
     {
         int lvl = 0;
         int.TryParse(_level, out lvl);
@@ -234,7 +246,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                Debug.Log(apiCall);
                 await ApiManager.instance.GetObject(apiCall);
             }
 
@@ -293,5 +304,15 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             foreach (OgreeObject go in objsToDel)
                 go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
+    }
+
+    ///<summary>
+    /// Reset object's posistion to its original position
+    ///</summary>
+    public void ResetPosition()
+    {
+        transform.localPosition = originalLocalPosition;
+        transform.localRotation = originalLocalRotation;
+        transform.localScale = originalLocalScale;
     }
 }
