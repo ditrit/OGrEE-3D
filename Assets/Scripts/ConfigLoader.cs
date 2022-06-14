@@ -35,7 +35,7 @@ public class ConfigLoader
         OverrideConfig();
         SearchMenuManager.instance.InitializeTenant(config.tenant);
         ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
-        ApplyConfig(config);
+        ApplyConfig();
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))

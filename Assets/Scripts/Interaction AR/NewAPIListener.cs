@@ -195,7 +195,7 @@ public class NewAPIListener : MonoBehaviour
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
         else 
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
+        Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90, 0);
         OgreeObject ogree = rack.GetComponent<OgreeObject>();
         ogree.originalLocalRotation = rack.transform.localRotation;
         ogree.originalLocalPosition = rack.transform.localPosition;

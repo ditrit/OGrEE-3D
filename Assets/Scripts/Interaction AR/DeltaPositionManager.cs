@@ -26,8 +26,16 @@ public class DeltaPositionManager : MonoBehaviour
             DeltaPositionManager delta = transform.parent.GetComponent<DeltaPositionManager>();
             if (isFirstMove)
             {
-                initialYPosition = delta.initialYPosition + (transform.position.y - transform.parent.position.y); //Problème ici pour les i helpers, déplcement sans focus du parent.
-                isFirstMove = false;
+                if (delta.isFirstMove)
+                {
+                    initialYPosition = transform.position.y; //Problème ici pour les i helpers, déplcement sans focus du parent.
+                    isFirstMove = false;
+                }
+                else
+                {
+                    initialYPosition = delta.initialYPosition + (transform.position.y - transform.parent.position.y); //Problème ici pour les i helpers, déplcement sans focus du parent.
+                    isFirstMove = false;
+                }
             }
         }
         else

@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public ConfigLoader configLoader = new ConfigLoader();
 
     [Header("AR")]
-    public Camera m_camera;
+    public Camera mainCamera;
 
     [Header("Materials")]
     public Material defaultMat;
@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
         UiManager.instance.UpdateFocusText();
-        m_camera = Camera.main;
+        mainCamera = Camera.main;
         UiManager.instance.ToggleApi();
 
 
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
 #endif
        
 #if RACK
-        await Task.Delay(1500);
+        await Task.Delay(2500);
         var api_listener = new ApiListener();
         await api_listener.LoadSingleRack("EDF","NOE","BI2","C8","C05");
 #endif
@@ -194,6 +194,7 @@ public class GameManager : MonoBehaviour
     public void SetCurrentItem(GameObject _obj)
     {
         //Clear current selection
+        //await GetComponent<OgreeObject>().LoadChildren("1");
         for (int i = currentItems.Count - 1; i >= 0; i--)
         {
             Transform t = currentItems[i].transform;
@@ -524,7 +525,7 @@ public class GameManager : MonoBehaviour
             {
                 if (goArray[i].layer == LayerMask.NameToLayer("Rack")) 
                 {
-                    Utils.MoveObjectToCamera(goArray[i], m_camera, 1.5f, -0.7f, 90, 0);
+                    Utils.MoveObjectToCamera(goArray[i], mainCamera, 1.5f, -0.7f, 90, 0);
                 }
             }
             GameManager.gm.AppendLogLine($"No Rack to move in the scene", "yellow");
@@ -537,7 +538,7 @@ public class GameManager : MonoBehaviour
             {
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
-                    Utils.MoveObjectToCamera(t.gameObject, m_camera, 1.5f, -0.7f, 90, 0);
+                    Utils.MoveObjectToCamera(t.gameObject, mainCamera, 1.5f, -0.7f, 90, 0);
                     OgreeObject ogree = t.gameObject.GetComponent<OgreeObject>();
                     ogree.originalLocalRotation = t.gameObject.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
                     ogree.originalLocalPosition = t.gameObject.transform.localPosition;
@@ -554,7 +555,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void MoveMenuToCamera(GameObject _g)
     {
-        Utils.MoveObjectToCamera(_g, m_camera, 0.6f, -0.35f, 0, 25);
+        Utils.MoveObjectToCamera(_g, mainCamera, 0.6f, -0.35f, 0, 25);
     }
 
     ///<summary>

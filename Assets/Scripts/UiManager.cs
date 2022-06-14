@@ -51,8 +51,8 @@ public class UiManager : MonoBehaviour
     {
         menuPanel.SetActive(false);
         focusBtn.interactable = false;
-        selectParentBtn.interactable = false;
-        mouseName.gameObject.SetActive(false);
+        //selectParentBtn.interactable = false;
+        //mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
@@ -60,14 +60,14 @@ public class UiManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        /*if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
         
         if (mouseName.gameObject.activeSelf)
         {
             mouseName.transform.position = Input.mousePosition;
             NameUnderMouse();
-        }
+        }*/
     }
 
     private void OnDestroy()
@@ -80,7 +80,7 @@ public class UiManager : MonoBehaviour
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         focusBtn.interactable = true;
-        selectParentBtn.interactable = true;
+        //selectParentBtn.interactable = true;
     }
 
     ///
@@ -89,7 +89,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
-            selectParentBtn.interactable = false;
+            //selectParentBtn.interactable = false;
         }
     }
 

@@ -50,7 +50,7 @@ public class ConsoleController : MonoBehaviour
         else if (_color == "red")
             Debug.LogError(_line);
         else
-            //Debug.Log(_line);
+            Debug.Log(_line);
 
         // Troncate too long strings
         int limit = 103;

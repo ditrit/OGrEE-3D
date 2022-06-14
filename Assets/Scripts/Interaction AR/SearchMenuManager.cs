@@ -117,7 +117,7 @@ public class SearchMenuManager : MonoBehaviour
             previousCalls.Add($"tenants/{tenant}/sites");
             parentNames.Add(tenant);
             SearchMenu.SetActive(true);
-            Utils.MoveObjectToCamera(SearchMenu, GameManager.gm.m_camera, 0.6f, -0.25f, 0, 25);
+            Utils.MoveObjectToCamera(SearchMenu, GameManager.gm.mainCamera, 0.6f, -0.25f, 0, 25);
             SearchMenu.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
             List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
             ClearParentList();

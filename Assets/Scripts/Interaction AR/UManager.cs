@@ -91,7 +91,6 @@ public class UManager : MonoBehaviour
         else
         {
             GameObject uRoot = GameManager.gm.currentItems[0].transform.Find("uRoot").gameObject;
-
             for (int i = 0; i < uRoot.transform.childCount; i++)
             {
                 GameObject obj = uRoot.transform.GetChild(i).gameObject;

@@ -332,7 +332,7 @@ public class ApiManager : MonoBehaviour
             else
             {
                 SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+                Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
             }
 
             foreach (SApiObject obj in physicalObjects)
@@ -379,7 +379,7 @@ public class ApiManager : MonoBehaviour
             else
             {
                 SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+                Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
             }
 
             foreach (SApiObject obj in physicalObjects)

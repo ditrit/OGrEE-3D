@@ -55,15 +55,16 @@ public class SettingsMenuManager : MonoBehaviour
         buttonRight.SetActive(false);
 
 
-        resulstInfos = new GameObject();
-        resulstInfos.name = "Results Infos";
+        resulstInfos = new GameObject("Results Infos");
         resulstInfos.transform.SetParent(SettingsMenu.transform);
         resulstInfos.transform.position = SettingsMenu.transform.position + new Vector3(0, 0, 0);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
+
         SettingsMenu.SetActive(true);  // bug with tmp font size when object is not active
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.12f;
         SettingsMenu.SetActive(false);
+
         tmp.alignment = TextAlignmentOptions.Center;
 
         GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, SettingsMenu.transform);
@@ -117,6 +118,7 @@ public class SettingsMenuManager : MonoBehaviour
         if (bool1 && bool2 && bool3)
         {
             SettingsMenu.SetActive(false);
+            SettingsMenu.GetComponent<Follow>().enabled = false;
             SettingsMenu.transform.SetParent(menu.transform);
             SettingsMenu.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
             SettingsMenu.transform.localRotation = Quaternion.Euler(0,0,0);

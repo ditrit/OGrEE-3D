@@ -110,7 +110,7 @@ public class ApiListener : MonoBehaviour
         photoCaptureObject.Dispose();
         photoCaptureObject = null;
     }
-    
+
     ///<summary>
     /// take a picture
     ///</summary>
@@ -157,6 +157,7 @@ public class ApiListener : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", _byteArray);
         form.AddField("Tenant_Name", customerAndSite);
+        //form.AddField("deviceType", deviceType);
         quadButtonPhoto.GetComponent<Renderer>().material.color = Color.yellow;
         apiResponseTMP.gameObject.SetActive(true);
         apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
@@ -174,6 +175,7 @@ public class ApiListener : MonoBehaviour
             else
             {
                 string text = www.downloadHandler.text;
+                Debug.Log(text);
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
                 site = labelReceived.site;
 
@@ -233,7 +235,7 @@ public class ApiListener : MonoBehaviour
 
                         if (myDialog.Result.Result == DialogButtonType.Cancel)
                         {
-                            ButtonPicture.SetActive(true);    
+                            ButtonPicture.SetActive(true);
                             apiResponseTMP.gameObject.SetActive(true);
                         }
                     }
@@ -286,7 +288,7 @@ public class ApiListener : MonoBehaviour
         else
         {
             _g.SetActive(true);
-            Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera, 0.6f, -0.25f, 0, 25);
+            Utils.MoveObjectToCamera(_g, GameManager.gm.mainCamera, 0.6f, -0.25f, 0, 25);
         }
     }
 
@@ -303,40 +305,37 @@ public class ApiListener : MonoBehaviour
         GameObject customer = GameManager.gm.FindByAbsPath(_customer);
         GameManager.gm.DeleteItem(customer, false);
 
-        await ApiManager.instance.GetObject($"sites/"+ _site);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
+        await ApiManager.instance.GetObject($"sites/" + _site);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
-        //if (rack)
-        //{
-            if (rack != null)
-                GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
-            else 
-                GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-            Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
+        if (rack == null)
+            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+        else
+        {
+            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
+            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90, 0);
 
             OgreeObject ogree = rack.GetComponent<OgreeObject>();
             ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
             ogree.originalLocalPosition = rack.transform.localPosition;
-
-            EventManager.Instance.Raise(new ImportFinishedEvent());
-            await Task.Delay(100);
+            await Task.Delay(100); // await for Uroot object to be created
             var goArray = FindObjectsOfType<GameObject>();
-            for (var i = 0; i < goArray.Length; i++) 
+            for (var i = 0; i < goArray.Length; i++)
             {
-                if (goArray[i].layer == LayerMask.NameToLayer("Rack")) 
+                if (goArray[i].layer == LayerMask.NameToLayer("Rack"))
                 {
                     if (goArray[i].transform.GetChild(2))
                     {
-                    goArray[i].transform.GetChild(2).GetComponent<HandInteractionHandler>().SelectThis();
-                    return;
+                        goArray[i].transform.GetChild(2).GetComponent<HandInteractionHandler>().SelectThis();
+                        return;
                     }
                 }
             }
-        //}
+        }
     }
-    
+
     ///<summary>
     /// Configure A Dialog with fixed parameters
     ///</summary>
