@@ -68,21 +68,24 @@ public class SearchMenuManager : MonoBehaviour
         gridCollection = parentList.GetComponent<GridObjectCollection>();
         numberOfResultsPerPage = gridCollection.Rows;
 
-        Vector3 offsetLeft = new Vector3(-0.15f, 0, 0);
+        Vector3 offsetLeft = new Vector3(-0.15f, 0, -0.02f);
         buttonLeft = Instantiate(buttonLeftPrefab, SearchMenu.transform.position + offsetLeft, Quaternion.identity, SearchMenu.transform);
+        buttonLeft.transform.localScale = new Vector3(3, 3, 3);
         buttonLeft.SetActive(false);
 
-        Vector3 offsetRight = new Vector3(0.15f, 0, 0);
+        Vector3 offsetRight = new Vector3(0.15f, 0, -0.02f);
         buttonRight = Instantiate(buttonRightPrefab, SearchMenu.transform.position + offsetRight, Quaternion.identity, SearchMenu.transform);
+        buttonRight.transform.localScale = new Vector3(3, 3, 3);
         buttonRight.SetActive(false);
 
-        buttonReturn = Instantiate(buttonReturnPrefab, SearchMenu.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, 0), Quaternion.identity, SearchMenu.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, SearchMenu.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.02f, -0.02f), Quaternion.identity, SearchMenu.transform);
+        buttonReturn.transform.localScale = new Vector3(3, 3, 3);
         buttonReturn.SetActive(false);
 
         resulstInfos = new GameObject();
         resulstInfos.name = "Results Infos";
         resulstInfos.transform.SetParent(SearchMenu.transform);
-        resulstInfos.transform.position = SearchMenu.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, 0);
+        resulstInfos.transform.position = SearchMenu.transform.position + new Vector3(0, numberOfResultsPerPage * -0.025f, -0.02f);
         TextMeshPro tmp = resulstInfos.AddComponent<TextMeshPro>();
         tmp.rectTransform.sizeDelta = new Vector2(0.25f, 0.05f);
         tmp.fontSize = 0.2f;
@@ -109,7 +112,12 @@ public class SearchMenuManager : MonoBehaviour
         }
         else
         {
+            previousCalls = new List<string>();
+            parentNames = new List<string>();
+            previousCalls.Add($"tenants/{tenant}/sites");
+            parentNames.Add(tenant);
             SearchMenu.SetActive(true);
+            Utils.MoveObjectToCamera(SearchMenu, GameManager.gm.m_camera, 0.6f, -0.25f, 0, 25);
             SearchMenu.transform.Find("Results Infos").GetComponent<TextMeshPro>().fontSize = 0.2f;
             List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
             ClearParentList();
@@ -203,7 +211,7 @@ public class SearchMenuManager : MonoBehaviour
                     break;
             }
             string nextCall = $"{category}s/{obj.id}/{subCat}";
-            GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
+            GameObject g = Instantiate(buttonPrefab, new Vector3(0,0,-0.05f), Quaternion.identity, parentList.transform);
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = fullname;
             if (!isRack)

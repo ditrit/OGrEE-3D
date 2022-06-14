@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
 #endif
        
 #if RACK
-        await Task.Delay(1000);
+        await Task.Delay(1500);
         var api_listener = new ApiListener();
         await api_listener.LoadSingleRack("EDF","NOE","BI2","C8","C05");
 #endif

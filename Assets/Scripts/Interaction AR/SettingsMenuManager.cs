@@ -72,6 +72,7 @@ public class SettingsMenuManager : MonoBehaviour
         g.transform.localPosition = new Vector3 (0, -0.08f, 0);
         g.name = "rack";
         g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + g.name;
+        g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
         g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
         {
             ApiListener.instance.deviceType = g.name;
@@ -81,9 +82,10 @@ public class SettingsMenuManager : MonoBehaviour
         });
 
 
-        gmdi.transform.localPosition = new Vector3 (0, -0.13f, 0);
+        gmdi.transform.localPosition = new Vector3 (0, -0.15f, 0);
         gmdi.name = "mdi";
         gmdi.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Device Type = " + gmdi.name;
+        gmdi.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
         gmdi.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => 
         {
             ApiListener.instance.deviceType = gmdi.name;
@@ -93,7 +95,7 @@ public class SettingsMenuManager : MonoBehaviour
         });
         gridCollection.UpdateCollection();
 
-        await Task.Delay(1000);
+        await Task.Delay(3000);
         List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
         InstantiateMenuForSite(physicalObjects, 0);
     }
@@ -117,6 +119,7 @@ public class SettingsMenuManager : MonoBehaviour
             SettingsMenu.SetActive(false);
             SettingsMenu.transform.SetParent(menu.transform);
             SettingsMenu.transform.localPosition = new Vector3 (0.02f, -0.08f, 0);    
+            SettingsMenu.transform.localRotation = Quaternion.Euler(0,0,0);
             Destroy(SettingsMenu.transform.Find("Backplate").gameObject);
             myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
             ApiListener.instance.ConfigureDialog(myDialog);
@@ -136,10 +139,12 @@ public class SettingsMenuManager : MonoBehaviour
     ///<summary>
     /// Open the dialog with voice commands when called
     ///</summary>
-    public void ToggleHelpMenu()
+    public async void ToggleHelpMenu()
     {
         myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm, "Voice Commands List", $"To take a picture of a label --> Say 'Photo'\n\nTo open a search window to choose a rack (if the search window is open, the voice command deactivate the search window) --> Say 'Search'\n\nIf a rack was loaded and you want to place it in front of you --> Say 'Move Rack'\n\nTo make the menu pop up (if the menu is open, the voice command deactivate the menu) --> Say 'Menu'\n\nTo display information about the selected object --> Say 'Info'", true);
         ApiListener.instance.ConfigureDialog(myDialog);
+        await Task.Delay(15000);
+        myDialog.DismissDialog();
     }
     
     ///<summary>
@@ -192,6 +197,7 @@ public class SettingsMenuManager : MonoBehaviour
             GameObject g = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
             g.name = fullname;
             g.transform.Find("IconAndText/TextMeshPro").GetComponent<TextMeshPro>().text = "Current site = " + fullname;
+            g.transform.Find("BackPlate/Quad").gameObject.GetComponent<Renderer>().material.color = Color.blue;
             g.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
             {
                 ApiListener.instance.site = obj.name;

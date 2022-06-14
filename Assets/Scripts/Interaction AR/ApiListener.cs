@@ -34,6 +34,7 @@ public class ApiListener : MonoBehaviour
     public GameObject quadButtonPhoto;
     private PhotoCapture photoCaptureObject = null;
     public TextMeshPro apiResponseTMP = null;
+    public bool PictureCoolDown = true;
 
     private void Awake()
     {
@@ -74,7 +75,11 @@ public class ApiListener : MonoBehaviour
     ///</summary>
     public void CapturePhoto()
     {
-        PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+        if (PictureCoolDown)
+        {
+            PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+            PictureCoolDown = false;
+        }
     }
 
     ///<summary>
@@ -160,12 +165,12 @@ public class ApiListener : MonoBehaviour
             www.SendWebRequest();
             while (!www.isDone)
                 await Task.Delay(100);
+            PictureCoolDown = true;
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
                 apiResponseTMP.text = www.error;
                 quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
             }
-
             else
             {
                 string text = www.downloadHandler.text;
@@ -281,7 +286,7 @@ public class ApiListener : MonoBehaviour
         else
         {
             _g.SetActive(true);
-            Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera, 0.6f, -0.35f, 0, 25);
+            Utils.MoveObjectToCamera(_g, GameManager.gm.m_camera, 0.6f, -0.25f, 0, 25);
         }
     }
 
@@ -303,17 +308,33 @@ public class ApiListener : MonoBehaviour
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
-        if (rack != null)
-            GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
-        else 
-            GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
-        Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
+        //if (rack)
+        //{
+            if (rack != null)
+                GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
+            else 
+                GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
+            Utils.MoveObjectToCamera(rack, GameManager.gm.m_camera, 1.5f, -0.7f, 90, 0);
 
-        OgreeObject ogree = rack.GetComponent<OgreeObject>();
-        ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
-        ogree.originalLocalPosition = rack.transform.localPosition;
+            OgreeObject ogree = rack.GetComponent<OgreeObject>();
+            ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
+            ogree.originalLocalPosition = rack.transform.localPosition;
 
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+            EventManager.Instance.Raise(new ImportFinishedEvent());
+            await Task.Delay(100);
+            var goArray = FindObjectsOfType<GameObject>();
+            for (var i = 0; i < goArray.Length; i++) 
+            {
+                if (goArray[i].layer == LayerMask.NameToLayer("Rack")) 
+                {
+                    if (goArray[i].transform.GetChild(2))
+                    {
+                    goArray[i].transform.GetChild(2).GetComponent<HandInteractionHandler>().SelectThis();
+                    return;
+                    }
+                }
+            }
+        //}
     }
     
     ///<summary>

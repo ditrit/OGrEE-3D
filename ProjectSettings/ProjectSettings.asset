@@ -713,7 +713,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
     7: OCULUSINTEGRATION_PRESENT
-    14: VR;API_DEBUG
+    14: VR;API_DEBUG;RACK
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -771,8 +771,8 @@ PlayerSettings:
       PrivateNetworkClientServer: False
       InternetClientServer: False
       VideosLibrary: False
+      BackgroundMediaPlayback: False
       Objects3D: False
-      InternetClient: True
       RemoteSystem: False
       BlockedChatMessages: False
       PhoneCall: False
@@ -794,9 +794,9 @@ PlayerSettings:
       PointOfService: False
       RecordedCallsFolder: False
       Contacts: False
+      InternetClient: True
       Proximity: False
       CodeGeneration: False
-      BackgroundMediaPlayback: False
       EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: False
