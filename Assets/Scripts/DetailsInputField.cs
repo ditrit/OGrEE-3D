@@ -31,7 +31,11 @@ public class DetailsInputField : MonoBehaviour
     ///<param name="_value">The value to set the input field</param>
     public void UpdateInputField(string _value)
     {
-        inputField.text = _value;
+        if (ApiManager.instance.isInit)
+            inputField.text = _value;
+        else
+            inputField.text = "-";
+
     }
 
     ///<summary>
@@ -40,6 +44,10 @@ public class DetailsInputField : MonoBehaviour
     ///<param name="_value">Is the inputField interactible ?</param>
     public void ActiveInputField(bool _value)
     {
-        inputField.interactable = _value;
+        if (ApiManager.instance.isInit)
+            inputField.interactable = _value;
+        else
+            inputField.interactable = false;
+
     }
 }

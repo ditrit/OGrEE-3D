@@ -65,3 +65,7 @@ public class EditModeOutEvent : CustomEvent
     public GameObject obj { get; set; }
 }
 
+public class ToggleLabelEvent : CustomEvent
+{
+    public bool value;
+}

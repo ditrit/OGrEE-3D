@@ -406,17 +406,17 @@ public class Room : Building
         if (site.attributes.ContainsKey("usableColor"))
             usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["usableColor"]);
         else
-            usableZone.GetComponent<Renderer>().material.color = GameManager.gm.GetColorFromCongif("usableZone");
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("usableZone"));
 
         if (site.attributes.ContainsKey("reservedColor"))
             reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
         else
-            reservedZone.GetComponent<Renderer>().material.color = GameManager.gm.GetColorFromCongif("reservedZone");
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("reservedZone"));
 
         if (site.attributes.ContainsKey("technicalColor"))
             technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
         else
-            technicalZone.GetComponent<Renderer>().material.color = GameManager.gm.GetColorFromCongif("technicalZone");
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("technicalZone"));
     }
 
     ///<summary>

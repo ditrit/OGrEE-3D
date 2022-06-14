@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     static public GameManager gm;
     public ConsoleController consoleController;
     public Server server;
-    private ConfigLoader configLoader = new ConfigLoader();
+    public ConfigLoader configLoader = new ConfigLoader();
 
     [Header("AR")]
     public Camera m_camera;
@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     [Header("Materials")]
     public Material defaultMat;
     public Material alphaMat;
-    // public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
@@ -48,7 +47,6 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-
 
     public List<GameObject> focus = new List<GameObject>();
 
@@ -317,6 +315,7 @@ public class GameManager : MonoBehaviour
 
         if (canFocus == true)
         {
+            _obj.SetActive(true);
             focus.Add(_obj);
             UiManager.instance.UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -340,7 +339,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(focus[0]);
+            SetCurrentItem(focus[focus.Count - 1]);
         }
         else
             SetCurrentItem(null);
@@ -378,7 +377,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Transform child in root)
             {
-                if (child.gameObject == _obj)
+                if (child.gameObject == _obj || IsInFocus(child.gameObject))
                     return true;
             }
         }
@@ -429,16 +428,6 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Save API url and token in config.
-    ///</summary>
-    ///<param name="_url">URL of the API to connect</param>
-    ///<param name="_token">Corresponding authorisation token</param>
-    public void RegisterApi(string _url, string _token)
-    {
-        configLoader.RegisterApi(_url, _token);
-    }
-
-    ///<summary>
     /// Connect the client to registered API in configLoader.
     ///</summary>
     public async Task ConnectToApi()
@@ -449,16 +438,6 @@ public class GameManager : MonoBehaviour
         else
             UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
         UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
-    }
-
-    ///<summary>
-    /// Get a color value from ConfigLoader and parse it into a Color.
-    ///</summary>
-    ///<param name="_askedColor">The color to get</param>
-    ///<returns>The corresponding Color of Color.White if not found</returns>
-    public Color GetColorFromCongif(string _askedColor)
-    {
-        return Utils.ParseColor(configLoader.GetColor(_askedColor));
     }
 
     ///<summary>

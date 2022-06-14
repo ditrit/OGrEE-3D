@@ -19,7 +19,6 @@ public class FocusHandler : MonoBehaviour
     public bool isActive = false;
 
     public bool isSelected = false;
-    public bool isHovered = false;
     public bool isFocused = false;
 
     public bool isFrontOriented = true;
@@ -51,7 +50,6 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void SubscribeEvents()
     {
-
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
@@ -61,9 +59,6 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
-
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -72,7 +67,6 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void UnsubscribeEvents()
     {
-
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
@@ -81,9 +75,6 @@ public class FocusHandler : MonoBehaviour
 
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
-
-        EventManager.Instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-        EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -261,44 +252,12 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// When called checks if he is the GameObject hovered on and if true activates all of his child's mesh renderers.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnMouseHover(OnMouseHoverEvent e)
-    {
-        if (GameManager.gm.focus.Count > 0
-            && (!transform.parent || GameManager.gm.focus[GameManager.gm.focus.Count - 1] != transform.parent.gameObject))
-            return;
-
-        if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
-        {
-            UpdateChildMeshRenderers(true);
-            isHovered = true;
-        }
-
-    }
-
-    ///<summary>
-    /// When called checks if he is the GameObject hovered on and if true deactivates all of his child's mesh renderers.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnMouseUnHover(OnMouseUnHoverEvent e)
-    {
-        if (e.obj.Equals(gameObject) && transform.GetChild(0).GetComponent<Renderer>().enabled
-            && !isSelected && !isFocused)
-        {
-            UpdateChildMeshRenderers(false);
-            isHovered = false;
-        }
-    }
-
-    ///<summary>
     /// When called, fills all the lists and does a ManualUnFocus to deactivate all useless mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e)
     {
-        if (GetComponent<OgreeObject>().category != "device")
+        if (GetComponent<OObject>().category != "device")
             UpdateChildMeshRenderersRec(false);
     }
 
@@ -400,8 +359,8 @@ public class FocusHandler : MonoBehaviour
         FillListsWithChildren();
         foreach (GameObject child in ogreeChildObjects)
             child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
-        FillMeshRendererLists();
 
+        FillMeshRendererLists();
         UpdateChildMeshRenderers(_value);
     }
 
@@ -441,7 +400,7 @@ public class FocusHandler : MonoBehaviour
                         foreach (Transform wall in ro.walls)
                         {
                             wall.GetComponentInChildren<Renderer>().enabled = _value;
-                            wall.GetComponent<Collider>().enabled = _value;
+                            wall.GetComponentInChildren<Collider>().enabled = _value;
                         }
                         if (go.transform.Find("tilesNameRoot"))
                         {
@@ -482,10 +441,8 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        if (_obj.GetComponent<OgreeObject>().category == "rack")
-        {
+        if (_obj.GetComponent<OgreeObject>().category != "device")
             return;
-        }
         _obj.transform.parent.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
     }
@@ -497,7 +454,7 @@ public class FocusHandler : MonoBehaviour
     private void ResetToRack()
     {
         UpdateChildMeshRenderers(false);
-        if (GetComponent<OgreeObject>().category == "rack")
+        if (GetComponent<OgreeObject>().category != "device")
         {
             UpdateOwnMeshRenderers(true);
             return;

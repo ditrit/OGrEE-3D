@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
@@ -46,6 +45,13 @@ public class ApiManager : MonoBehaviour
         public ReadFromJson.STemplate data;
     }
 
+    private struct SRoomResp
+    {
+        public string message;
+        public string status;
+        public ReadFromJson.SRoomFromJson data;
+    }
+
     public static ApiManager instance;
 
     private HttpClient httpClient = new HttpClient();
@@ -57,7 +63,7 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
-    ReadFromJson rfJson = new ReadFromJson();
+    private ReadFromJson rfJson = new ReadFromJson();
 
     private void Awake()
     {
@@ -273,6 +279,8 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Not connected to API", "yellow");
             return;
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+
         string fullPath = $"{server}/{_input}";
         try
         {
@@ -281,13 +289,16 @@ public class ApiManager : MonoBehaviour
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
                 await CreateItemFromJson(response);
             else if (response.Contains("successfully got obj_template"))
-                await CreateTemplateFromJson(response);
+                await CreateTemplateFromJson(response, "obj");
+            else if (response.Contains("successfully got room_template"))
+                await CreateTemplateFromJson(response, "room");
             else
                 GameManager.gm.AppendLogLine("Unknown object received", "red");
         }
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         }
     }
 
@@ -422,8 +433,9 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
-    ///<param name="_obj">The serialized STemplate to post</param>
-    public async Task PostTemplateObject(string _json)
+    ///<param name="_json">The serialized STemplate to post</param>
+    ///<param name="_type">obj or room</param>
+    public async Task PostTemplateObject(string _json, string _type)
     {
         if (!isInit)
         {
@@ -431,7 +443,7 @@ public class ApiManager : MonoBehaviour
             return;
         }
         Debug.Log(_json);
-        string fullPath = $"{server}/obj-templates";
+        string fullPath = $"{server}/{_type}-templates";
 
         StringContent content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json");
         try
@@ -441,7 +453,7 @@ public class ApiManager : MonoBehaviour
             GameManager.gm.AppendLogLine(responseStr);
 
             if (responseStr.Contains("success"))
-                await CreateTemplateFromJson(responseStr);
+                await CreateTemplateFromJson(responseStr, _type);
             else
                 GameManager.gm.AppendLogLine($"Fail to post on server", "red");
         }
@@ -470,66 +482,16 @@ public class ApiManager : MonoBehaviour
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
         foreach (SApiObject obj in physicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log($"Get template \"{obj.attributes["template"]}\" from API");
-                await GetObject($"obj-templates/{obj.attributes["template"]}");
-            }
-
-            switch (obj.category)
-            {
-                case "tenant":
-                    CustomerGenerator.instance.CreateTenant(obj);
-                    break;
-                case "site":
-                    CustomerGenerator.instance.CreateSite(obj);
-                    break;
-                case "building":
-                    BuildingGenerator.instance.CreateBuilding(obj);
-                    break;
-                case "room":
-                    BuildingGenerator.instance.CreateRoom(obj);
-                    break;
-                case "rack":
-                    if (obj.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateRack(obj);
-                    else
-                        ObjectGenerator.instance.CreateRack(obj, null, false);
-                    break;
-                case "device":
-                    if (obj.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateDevice(obj);
-                    else
-                        ObjectGenerator.instance.CreateDevice(obj, null, false);
-                    break;
-                case "corridor":
-                    ObjectGenerator.instance.CreateCorridor(obj);
-                    break;
-            }
-        }
         foreach (SApiObject obj in logicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            switch (obj.category)
-            {
-                case "group":
-                    ObjectGenerator.instance.CreateGroup(obj);
-                    break;
-            }
-        }
         GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
-        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
@@ -554,29 +516,18 @@ public class ApiManager : MonoBehaviour
     /// Use the given template json to instantiate an object template.
     ///</summary>
     ///<param name="_json">The json given by the API</param>
-    private async Task CreateTemplateFromJson(string _json)
+    private async Task CreateTemplateFromJson(string _json, string _type)
     {
-        STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-        await rfJson.CreateObjectTemplate(resp.data);
-    }
-
-    ///<summary>
-    /// Parse a nested SApiObject and add each item to a given list.
-    ///</summary>
-    ///<param name="_physicalList">The list of physical objects to complete</param>
-    ///<param name="_logicalList">The list of logical objects to complete</param>
-    ///<param name="_src">The head of nested SApiObjects</param>
-    private void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
-    {
-        if (_src.category == "group")
-            _logicalList.Add(_src);
-        else
-            _physicalList.Add(_src);
-        if (_src.children != null)
+        if (_type == "obj")
         {
-            foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_physicalList, _logicalList, obj);
+            STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
+            await rfJson.CreateObjectTemplate(resp.data);
         }
+        else if (_type == "room")
+        {
+            SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
+            rfJson.CreateRoomTemplate(resp.data);
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
-
 }
