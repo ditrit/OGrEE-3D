@@ -6,16 +6,6 @@ using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    public static BuildingGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>

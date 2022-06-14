@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -91,8 +91,7 @@ public class OObject : OgreeObject
     /// Update the OObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
-    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
-    public override void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
         id = _src.id;
@@ -104,18 +103,16 @@ public class OObject : OgreeObject
             UpdateColorByTenant();
         }
         description = _src.description;
-        if (_copyAttr)
-        {
-            if (attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature")
-                && attributes["temperature"] != _src.attributes["temperature"])
-                SetTemperature(_src.attributes["temperature"]);
-            else if (!attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature"))
-                SetTemperature(_src.attributes["temperature"]);
-            else if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
-                Destroy(transform.Find("sensor").gameObject);
 
-            attributes = _src.attributes;
-        }
+        if (attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature")
+            && attributes["temperature"] != _src.attributes["temperature"])
+            SetTemperature(_src.attributes["temperature"]);
+        else if (!attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature"))
+            SetTemperature(_src.attributes["temperature"]);
+        else if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
+            Destroy(transform.Find("sensor").gameObject);
+
+        attributes = _src.attributes;
     }
 
     ///<summary>
@@ -286,32 +283,42 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
+    public async void SetTemperature(string _value)
     {
-        if (Regex.IsMatch(_value, "^[0-9.]+$"))
+        if (category == "corridor")
         {
-            attributes["temperature"] = _value;
-            GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
-            if (sensor)
-                sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+            if (Regex.IsMatch(_value, "^(cold|warm)$"))
+                attributes["temperature"] = _value;
             else
-            {
-                SApiObject se = new SApiObject();
-                se.description = new List<string>();
-                se.attributes = new Dictionary<string, string>();
-
-                se.name = "sensor"; // ?
-                se.category = "sensor";
-                se.attributes["formFactor"] = "ext";
-                se.attributes["temperature"] = _value;
-                se.parentId = id;
-                se.domain = domain;
-
-                ObjectGenerator.instance.CreateSensor(se, transform);
-            }
+                GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", "yellow");
         }
         else
-            GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+        {
+            if (Regex.IsMatch(_value, "^[0-9.]+$"))
+            {
+                attributes["temperature"] = _value;
+                GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
+                if (sensor)
+                    sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+                else
+                {
+                    SApiObject se = new SApiObject();
+                    se.description = new List<string>();
+                    se.attributes = new Dictionary<string, string>();
+
+                    se.name = "sensor"; // ?
+                    se.category = "sensor";
+                    se.attributes["formFactor"] = "ext";
+                    se.attributes["temperature"] = _value;
+                    se.parentId = id;
+                    se.domain = domain;
+
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(se, transform);
+                }
+            }
+            else
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+        }
     }
 
 }

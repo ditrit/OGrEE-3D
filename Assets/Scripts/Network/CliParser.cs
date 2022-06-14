@@ -86,7 +86,10 @@ public class CliParser// : MonoBehaviour
             case "focus":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
+                {
+                    GameManager.gm.SetCurrentItem(obj);
                     GameManager.gm.FocusItem(obj);
+                }
                 else
                     GameManager.gm.AppendLogLine("Error on focus", "red");
                 break;
@@ -118,7 +121,7 @@ public class CliParser// : MonoBehaviour
     private async void Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
-        GameManager.gm.RegisterApi(logData.api_url, logData.api_token);
+        GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
         await GameManager.gm.ConnectToApi();
     }
 
@@ -126,45 +129,18 @@ public class CliParser// : MonoBehaviour
     /// Deserialize given SApiObject and call the good generator.
     ///</summary>
     ///<param name="_input">The SApiObject to deserialize</param>
-    private void CreateObjectFromData(string _input)
+    private async void CreateObjectFromData(string _input)
     {
-        SApiObject obj = JsonConvert.DeserializeObject<SApiObject>(_input);
-        switch (obj.category)
-        {
-            case "tenant":
-                CustomerGenerator.instance.CreateTenant(obj);
-                break;
-            case "site":
-                CustomerGenerator.instance.CreateSite(obj);
-                break;
-            case "building":
-                BuildingGenerator.instance.CreateBuilding(obj);
-                break;
-            case "room":
-                BuildingGenerator.instance.CreateRoom(obj);
-                break;
-            case "rack":
-                if (obj.attributes["template"] == "")
-                    ObjectGenerator.instance.CreateRack(obj);
-                else
-                    ObjectGenerator.instance.CreateRack(obj, null, false);
-                break;
-            case "device":
-                if (obj.attributes["template"] == "")
-                    ObjectGenerator.instance.CreateDevice(obj);
-                else
-                    ObjectGenerator.instance.CreateDevice(obj, null, false);
-                break;
-            case "corridor":
-                ObjectGenerator.instance.CreateCorridor(obj);
-                break;
-            case "group":
-                ObjectGenerator.instance.CreateGroup(obj);
-                break;
-            default:
-                GameManager.gm.AppendLogLine($"Unknown object type ({obj.category})", "yellow");
-                break;
-        }
+        SApiObject src = JsonConvert.DeserializeObject<SApiObject>(_input);
+        List<SApiObject> physicalObjects = new List<SApiObject>();
+        List<SApiObject> logicalObjects = new List<SApiObject>();
+        Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
+
+        foreach (SApiObject obj in physicalObjects)
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        
+        foreach (SApiObject obj in logicalObjects)
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
     }
 
     ///<summary>

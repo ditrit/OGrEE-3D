@@ -1,6 +1,8 @@
 {
     "verbose": "true",
     "fullscreen": "false",
+    "cachePath": "C:/",
+    "cacheLimitMo": "100",
     "textures": {
         "perf22": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png",
         "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"

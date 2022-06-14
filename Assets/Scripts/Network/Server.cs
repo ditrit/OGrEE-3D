@@ -18,8 +18,7 @@ public class Server : MonoBehaviour
     private AConnection connection;
 
     [SerializeField] private int receivePort;
-    // private string sendIP; // 192.168.1.28
-    // private int sendPort; // 5600 ?
+    [SerializeField] private int sendPort;
     public int timer = 0;
 
     [Header("Debug")]
@@ -33,7 +32,7 @@ public class Server : MonoBehaviour
         else if (protocol == eConnectionType.tcp)
             connection = new TcpConnection();
 
-        connection.StartConnection(receivePort);
+        connection.StartConnection(receivePort, sendPort);
     }
 
     private async void Update()

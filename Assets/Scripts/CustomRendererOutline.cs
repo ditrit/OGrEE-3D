@@ -189,8 +189,10 @@ public class CustomRendererOutline : MonoBehaviour
 
         if (e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
+            Color temp = transform.GetChild(0).GetComponent<Renderer>().material.color;
             SetMaterial(mouseHoverMaterial);
             isHovered = true;
+            transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.InvertColor(temp);
         }
     }
 

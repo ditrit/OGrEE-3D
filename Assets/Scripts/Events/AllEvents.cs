@@ -52,6 +52,12 @@ public class UpdateTenantEvent : CustomEvent
     public string name;
 }
 
+
+public class ToggleLabelEvent : CustomEvent
+{
+    public bool value;
+}
+
 public class ChangeOrientationEvent : CustomEvent
 {
     public bool front;

@@ -4,19 +4,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 
-[RequireComponent(typeof(MoveObject))]
 public class GameManager : MonoBehaviour
 {
     static public GameManager gm;
     public ConsoleController consoleController;
     public Server server;
-    private ConfigLoader configLoader = new ConfigLoader();
+    public ConfigLoader configLoader = new ConfigLoader();
 
 
     [Header("Materials")]
     public Material defaultMat;
     public Material alphaMat;
-    // public Material wireframeMat;
     public Material perfMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
@@ -44,7 +42,6 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    public bool isWireframe;
 
     public List<GameObject> focus = new List<GameObject>();
 
@@ -105,11 +102,8 @@ public class GameManager : MonoBehaviour
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
 
-        if (!EventSystem.current.IsPointerOverGameObject() && !GetComponent<MoveObject>().hasDrag
-            && Input.GetMouseButtonUp(0))
-        {
+        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
             clickCount++;
-        }
 
         if (clickCount == 1 && coroutineAllowed)
             StartCoroutine(DoubleClickDetection(Time.time));
@@ -312,6 +306,7 @@ public class GameManager : MonoBehaviour
 
         if (canFocus == true)
         {
+            _obj.SetActive(true);
             focus.Add(_obj);
             UiManager.instance.UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -410,16 +405,6 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Save API url and token in config.
-    ///</summary>
-    ///<param name="_url">URL of the API to connect</param>
-    ///<param name="_token">Corresponding authorisation token</param>
-    public void RegisterApi(string _url, string _token)
-    {
-        configLoader.RegisterApi(_url, _token);
-    }
-
-    ///<summary>
     /// Connect the client to registered API in configLoader.
     ///</summary>
     public async Task ConnectToApi()
@@ -431,16 +416,6 @@ public class GameManager : MonoBehaviour
             UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
         UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
         //StartCoroutine(TestAPI());
-    }
-
-    ///<summary>
-    /// Get a color value from ConfigLoader and parse it into a Color.
-    ///</summary>
-    ///<param name="_askedColor">The color to get</param>
-    ///<returns>The corresponding Color of Color.White if not found</returns>
-    public Color GetColorFromCongif(string _askedColor)
-    {
-        return Utils.ParseColor(configLoader.GetColor(_askedColor));
     }
 
     ///<summary>
@@ -497,21 +472,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
-
-    ///<summary>
-    /// Set material of a rack according to isWireframe value.
-    ///</summary>
-    ///<param name="_rack">The rack to set the material</param>
-    // public void SetRackMaterial(Transform _rack)
-    // {
-    //     Renderer r = _rack.GetChild(0).GetComponent<Renderer>();
-    //     Color color = r.material.color;
-    //     if (isWireframe)
-    //         r.material = GameManager.gm.wireframeMat;
-    //     else
-    //         r.material = GameManager.gm.defaultMat;
-    //     r.material.color = color;
-    // }
 
     ///<summary>
     /// Quit the application.

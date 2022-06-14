@@ -8,24 +8,13 @@ using Microsoft.MixedReality.Toolkit.UI;
 
 public class ObjectGenerator : MonoBehaviour
 {
-    public static ObjectGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
     ///<param name="_parent">The parent of the created rack. Leave null if _rk contains the parendId</param>
-    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null, bool _copyAttr = true)
+    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
     {
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
@@ -76,14 +65,7 @@ public class ObjectGenerator : MonoBehaviour
         PlaceInRoom(newRack.transform, _rk, out orient);
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.UpdateFromSApiObject(_rk, _copyAttr);
-        if (!_copyAttr)
-        {
-            rack.attributes["template"] = _rk.attributes["template"];
-            rack.attributes["posXY"] = _rk.attributes["posXY"];
-            rack.attributes["posXYUnit"] = _rk.attributes["posXYUnit"];
-            rack.attributes["orientation"] = _rk.attributes["orientation"];
-        }
+        rack.UpdateFromSApiObject(_rk);
 
         // Correct position according to rack size & rack orientation
         Vector3 boxOrigin;
@@ -131,7 +113,6 @@ public class ObjectGenerator : MonoBehaviour
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
 
         rack.UpdateColorByTenant();
-        // GameManager.gm.SetRackMaterial(newRack.transform);
 
         string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newRack);
@@ -157,9 +138,8 @@ public class ObjectGenerator : MonoBehaviour
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device. Leave null if _dv contains the parendId</param>
-    ///<param name="_copyAttr">If false, do not copy all attributes</param>
     ///<returns>The created Device</returns>
-    public OObject CreateDevice(SApiObject _dv, Transform _parent = null, bool _copyAttr = true)
+    public OObject CreateDevice(SApiObject _dv, Transform _parent = null)
     {
         // Check parent & parent category
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
@@ -302,16 +282,7 @@ public class ObjectGenerator : MonoBehaviour
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
-        dv.UpdateFromSApiObject(_dv, _copyAttr);
-        if (!_copyAttr)
-        {
-            dv.attributes["template"] = _dv.attributes["template"];
-            dv.attributes["orientation"] = _dv.attributes["orientation"];
-            if (_dv.attributes.ContainsKey("posU"))
-                dv.attributes["posU"] = _dv.attributes["posU"];
-            if (_dv.attributes.ContainsKey("slot"))
-                dv.attributes["slot"] = _dv.attributes["slot"];
-        }
+        dv.UpdateFromSApiObject(_dv);
 
         // Set labels
         if (string.IsNullOrEmpty(dv.attributes["slot"]))

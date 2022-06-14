@@ -195,8 +195,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Update the OgreeObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
-    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
-    public virtual void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    public virtual void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
         id = _src.id;
@@ -204,8 +203,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         category = _src.category;
         domain = _src.domain;
         description = _src.description;
-        if (_copyAttr)
-            attributes = _src.attributes;
+        attributes = _src.attributes;
     }
 
     ///<summary>
@@ -298,6 +296,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
                 Debug.Log($"[Delete] {obj.hierarchyName}");
                 GameManager.gm.DeleteItem(obj.gameObject, false);
             }
+            GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
+            GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
         }
         else
         {

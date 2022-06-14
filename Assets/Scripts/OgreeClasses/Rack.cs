@@ -95,47 +95,6 @@ public class Rack : OObject
     }
 
     ///<summary>
-    /// Called by MoveObject: Move the rack in its room's orientation.
-    ///</summary>
-    ///<param name="_v">The translation vector</param>
-    public void DragRack(Vector2 _v)
-    {
-        Utils.SwitchAllCollidersInRacks(true);
-
-        originalLocalPos = transform.localPosition;
-        Vector2 posXY = JsonUtility.FromJson<Vector2>(attributes["posXY"]);
-        originalPosXY = posXY;
-        foreach (Transform child in transform)
-        {
-            if (child.GetComponent<Collider>())
-                child.GetComponent<Collider>().enabled = false;
-        }
-
-        Room room = transform.parent.GetComponent<Room>();
-        switch (room.attributes["orientation"])
-        {
-            case "+E+N":
-                transform.localPosition += new Vector3(_v.x, 0, _v.y) * GameManager.gm.tileSize;
-                posXY += new Vector2(_v.x, _v.y);
-                break;
-            case "+N+W":
-                transform.localPosition += new Vector3(_v.y, 0, -_v.x) * GameManager.gm.tileSize;
-                posXY += new Vector2(_v.y, -_v.x);
-                break;
-            case "+W+S":
-                transform.localPosition += new Vector3(-_v.x, 0, -_v.y) * GameManager.gm.tileSize;
-                posXY += new Vector2(-_v.x, -_v.y);
-                break;
-            case "+S+E":
-                transform.localPosition += new Vector3(-_v.y, 0, _v.x) * GameManager.gm.tileSize;
-                posXY += new Vector2(-_v.y, _v.x);
-                break;
-        }
-        attributes["posXY"] = JsonUtility.ToJson(posXY);
-        StartCoroutine(ReactiveCollider());
-    }
-
-    ///<summary>
     /// Move the rack in its room's orientation.
     ///</summary>
     ///<param name="_v">The translation vector</param>
