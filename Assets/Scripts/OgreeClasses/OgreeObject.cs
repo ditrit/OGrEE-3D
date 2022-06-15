@@ -246,7 +246,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                await ApiManager.instance.GetObject(apiCall);
+                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObjects);
             }
 
             SetCurrentLod(lvl);

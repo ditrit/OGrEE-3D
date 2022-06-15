@@ -7,10 +7,12 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using Microsoft.MixedReality.Toolkit.Input;
+using System;
 
 public class SettingsMenuManager : MonoBehaviour
 {
     public static SettingsMenuManager instance;
+    public ConfigLoader configLoader = new ConfigLoader();
     public GameObject GameManagerTest;
     public GameObject parentList;
     public GameObject SettingsMenu;
@@ -25,7 +27,7 @@ public class SettingsMenuManager : MonoBehaviour
     private GameObject resulstInfos;
     public int numberOfResultsPerPage;
     public GameObject menu;
-    private string tenant;
+    public string tenant;
     [SerializeField][Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabLarge;
     [SerializeField] private List<string> parentNames = new List<string>();
     private bool bool1 = false;
@@ -37,8 +39,10 @@ public class SettingsMenuManager : MonoBehaviour
     // Start is called before the first frame update
     private async Task Start()
     {
-        await Task.Delay(10);
-        tenant = SearchMenuManager.instance.tenant;
+        configLoader.LoadConfig();
+        tenant = configLoader.GetTenant();
+
+        //tenant = SearchMenuManager.instance.tenant;
         parentNames.Add(tenant);
         siteIcon.SetActive(true);
         rackIcon.SetActive(true);

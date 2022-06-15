@@ -33,8 +33,8 @@ public class ConfigLoader
     {
         config = LoadConfigFile();
         OverrideConfig();
-        SearchMenuManager.instance.InitializeTenant(config.tenant);
-        ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
+        //SearchMenuManager.instance.InitializeTenant(config.tenant);
+        //ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
         ApplyConfig();
 
         string startFile = GetArg("--file");
@@ -230,6 +230,22 @@ public class ConfigLoader
     public string GetApiUrl()
     {
         return config.api_url;
+    }
+
+    ///<summary>
+    /// Get registered python API url.
+    ///</summary>
+    public string GetPythonApiUrl()
+    {
+        return config.python_api_url;
+    }
+
+    ///<summary>
+    /// Get registered tenant.
+    ///</summary>
+    public string GetTenant()
+    {
+        return config.tenant;
     }
 
     ///<summary>

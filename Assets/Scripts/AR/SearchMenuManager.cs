@@ -5,10 +5,12 @@ using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
+using System;
 
 public class SearchMenuManager : MonoBehaviour
 {
     public static SearchMenuManager instance;
+    public ConfigLoader configLoader = new ConfigLoader();
     public GameObject parentList;
     public GameObject SearchMenu;
     public GameObject buttonPrefab;
@@ -41,11 +43,15 @@ public class SearchMenuManager : MonoBehaviour
     // Start is called before the first frame update
     private async Task Start()
     {
+        configLoader.LoadConfig();
+        tenant = configLoader.GetTenant();
+
         previousCalls.Add($"tenants/{tenant}/sites");
-        await Task.Delay(1000);
         parentNames.Add(tenant);
+
         InitializeIcons();
         InitializeButtons();
+        
         SearchMenu.SetActive(false);
     }
 

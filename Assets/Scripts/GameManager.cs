@@ -99,6 +99,7 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
     ///<summary>
     /// Check if simple or double click and call corresponding method.
     ///</summary>

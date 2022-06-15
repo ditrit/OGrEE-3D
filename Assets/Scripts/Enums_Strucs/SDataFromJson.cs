@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [System.Serializable]
@@ -26,5 +27,15 @@ public struct SApiObject
         domain = _src.domain;
         attributes = _src.attributes;
         children = null;
+    }
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_response">The response for API GET request</param>
+    ///<returns>A string containing the name of the first object created by the _response</returns>
+    public string GetName(SApiObject _obj)
+    {
+        return _obj.name;
     }
 }

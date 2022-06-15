@@ -154,8 +154,8 @@ public class NewAPIListener : MonoBehaviour
     ///<param name="_room">string refering to a room name</param>
     public async Task SetBuilding(string _room)
     {
-        string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
-        building = await ApiManager.instance.GetObjectName($"buildings/" + data);
+        //string data = await ApiManager.instance.GetObjectParentId($"rooms?name=" + _room);
+        //building = await ApiManager.instance.GetObjectName($"buildings/" + data);
     }
 
     ///<summary>
@@ -186,10 +186,10 @@ public class NewAPIListener : MonoBehaviour
     {
         GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
         GameManager.gm.DeleteItem(room, false);
-        await ApiManager.instance.GetObject($"sites/"+ _site);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack);
+        await ApiManager.instance.GetObject($"sites/"+ _site, ApiManager.instance.DrawObjects);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building, ApiManager.instance.DrawObjects);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObjects);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObjects);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
         if (rack != null)
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");

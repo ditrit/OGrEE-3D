@@ -481,7 +481,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0] == "get")
             {
                 // bool isObjArray = Regex.IsMatch(data[1], "(?:^[a-z]+$)|(?:[a-z]+\\?[a-z0-9]+=.+$)");
-                await ApiManager.instance.GetObject(data[1]);
+                await ApiManager.instance.GetObject(data[1], ApiManager.instance.DrawObjects);
             }
             else
             {
@@ -692,7 +692,7 @@ public class ConsoleController : MonoBehaviour
                     template = GameManager.gm.roomTemplates[ro.attributes["template"]];
                 else if (ApiManager.instance.isInit)
                 {
-                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}");
+                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}", ApiManager.instance.DrawObjects);
                     template = GameManager.gm.roomTemplates[ro.attributes["template"]];
                 }
 
@@ -766,7 +766,7 @@ public class ConsoleController : MonoBehaviour
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 else if (ApiManager.instance.isInit)
                 {
-                    await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}");
+                    await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}", ApiManager.instance.DrawObjects);
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 }
 
@@ -851,7 +851,7 @@ public class ConsoleController : MonoBehaviour
                         template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
                     else if (ApiManager.instance.isInit)
                     {
-                        await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}");
+                        await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}", ApiManager.instance.DrawObjects);
                         template = GameManager.gm.objectTemplates[dv.attributes["template"]]?.GetComponent<OgreeObject>();
                     }
 
