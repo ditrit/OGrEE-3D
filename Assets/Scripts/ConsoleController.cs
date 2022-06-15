@@ -143,6 +143,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_saveCmd">If ".cmds", save it in GameManager ?</param>
     private IEnumerator WaitAndRunCmdStr(string _input, bool _saveCmd)
     {
+        Task task;
         yield return new WaitUntil(() => isReady == true);
         LockController();
 
@@ -151,11 +152,17 @@ public class ConsoleController : MonoBehaviour
         _input = ApplyVariables(_input);
         AppendLogLine("$ " + _input);
         if (_input == "..")
-            SelectParent();
+        {
+            task = SelectParent();
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         else if (_input[0] == '=')
             StartCoroutine(SelectItem(_input.Substring(1)));
         else if (_input[0] == '>')
-            FocusItem(_input.Substring(1));
+        {
+            task = FocusItem(_input.Substring(1));
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         else if (_input[0] == '.')
             StartCoroutine(ParseLoad(_input.Substring(1), _saveCmd));
         else if (_input[0] == '+')
@@ -171,7 +178,10 @@ public class ConsoleController : MonoBehaviour
         else if (_input.StartsWith("api."))
             CallApi(_input.Substring(4));
         else if (_input.Contains(":") && _input.Contains("="))
-            SetAttribute(_input);
+        {
+            task = SetAttribute(_input);
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         else
         {
             AppendLogLine("Unknown command", "red");
@@ -190,7 +200,7 @@ public class ConsoleController : MonoBehaviour
     ///<summary>
     /// Set GameManager.currentItem as the parent of it in Ogree objects hierarchy.
     ///</summary>
-    private void SelectParent()
+    private async Task SelectParent()
     {
         if (!GameManager.gm.currentItems[0])
         {
@@ -198,12 +208,12 @@ public class ConsoleController : MonoBehaviour
             return;
         }
         else if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
-            GameManager.gm.SetCurrentItem(null);
+            await GameManager.gm.SetCurrentItem(null);
         else
         {
             GameObject parent = GameManager.gm.currentItems[0].transform.parent.gameObject;
             if (parent)
-                GameManager.gm.SetCurrentItem(parent);
+                await GameManager.gm.SetCurrentItem(parent);
         }
 
         UnlockController();
@@ -215,9 +225,11 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">HierarchyName of the object to select</param>
     private IEnumerator SelectItem(string _input)
     {
+        Task task;
         if (string.IsNullOrEmpty(_input))
         {
-            GameManager.gm.SetCurrentItem(null);
+            task = GameManager.gm.SetCurrentItem(null);
+            yield return new WaitUntil(() => task.IsCompleted);
             UnlockController();
             yield break;
         }
@@ -229,7 +241,8 @@ public class ConsoleController : MonoBehaviour
                 yield break;
             }
             Transform root = GameManager.gm.currentItems[0].transform;
-            GameManager.gm.SetCurrentItem(null);
+            task = GameManager.gm.SetCurrentItem(null);
+            yield return new WaitUntil(() => task.IsCompleted); ;
             _input = _input.Trim('{', '}');
             string[] items = _input.Split(',');
             for (int i = 0; i < items.Length; i++)
@@ -242,7 +255,10 @@ public class ConsoleController : MonoBehaviour
                     if (child.hierarchyName == items[i])
                     {
                         if (GameManager.gm.currentItems.Count == 0)
-                            GameManager.gm.SetCurrentItem(child.gameObject);
+                        {
+                            task = GameManager.gm.SetCurrentItem(child.gameObject);
+                            yield return new WaitUntil(() => task.IsCompleted);
+                        }
                         else
                             GameManager.gm.UpdateCurrentItems(child.gameObject);
                         found = true;
@@ -253,7 +269,10 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else if (GameManager.gm.allItems.Contains(_input))
-            GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
+        {
+            task = GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         else
             AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
 
@@ -267,6 +286,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_input">HierarchyName of the object to delete</param>
     private IEnumerator DeleteItem(string _input)
     {
+        Task task;
         string pattern = "^[^@\\s]+(@server){0,1}$";
         if (Regex.IsMatch(_input, pattern))
         {
@@ -279,18 +299,30 @@ public class ConsoleController : MonoBehaviour
                 foreach (string item in itemsToDel)
                 {
                     if (data.Length > 1)
-                        GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], true);
+                    {
+                        task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], true);
+                        yield return new WaitUntil(() => task.IsCompleted);
+                    }
                     else
-                        GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], false);
+                    {
+                        task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], false);
+                        yield return new WaitUntil(() => task.IsCompleted);
+                    }
                 }
             }
             // Try to delete an Ogree object
             else if (GameManager.gm.allItems.Contains(data[0]))
             {
                 if (data.Length > 1)
-                    GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], true);
+                {
+                    task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], true);
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
                 else
-                    GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
+                {
+                    task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
+                    yield return new WaitUntil(() => task.IsCompleted);
+                }
             }
             // Try to delete a tenant
             // else if (GameManager.gm.tenants.ContainsKey(data[0]))
@@ -307,22 +339,22 @@ public class ConsoleController : MonoBehaviour
     /// Set focus to given object
     ///</summary>
     ///<param name="_input">The item to focus</param>
-    private void FocusItem(string _input)
+    private async Task FocusItem(string _input)
     {
         if (string.IsNullOrEmpty(_input))
         {
             // unfocus all items
             int count = GameManager.gm.focus.Count;
             for (int i = 0; i < count; i++)
-                GameManager.gm.UnfocusItem();
+                await GameManager.gm.UnfocusItem();
         }
         else if (GameManager.gm.allItems.Contains(_input))
         {
             GameObject obj = (GameObject)GameManager.gm.allItems[_input];
             if (obj.GetComponent<OObject>())
             {
-                GameManager.gm.SetCurrentItem(obj);
-                GameManager.gm.FocusItem(obj);
+                await GameManager.gm.SetCurrentItem(obj);
+                await GameManager.gm.FocusItem(obj);
             }
             else
                 AppendLogLine($"Can't focus \"{_input}\"", "yellow");
@@ -1022,7 +1054,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "set attribute" command and call corresponding SetAttribute() method according to target class
     ///</summary>
     ///<param name="input">String with attribute to modify data</param>
-    private void SetAttribute(string _input)
+    private async Task SetAttribute(string _input)
     {
         string pattern = "^[a-zA-Z0-9._]+\\:[a-zA-Z0-9.]+=.+$";
         if (Regex.IsMatch(_input, pattern))
@@ -1032,7 +1064,7 @@ public class ConsoleController : MonoBehaviour
             // Can be a selection...
             if (data[0] == "selection" || data[0] == "_")
             {
-                SetMultiAttribute(data[1], data[2]);
+                await SetMultiAttribute(data[1], data[2]);
                 UiManager.instance.UpdateGuiInfos();
                 UnlockController();
                 return;
@@ -1045,7 +1077,7 @@ public class ConsoleController : MonoBehaviour
                 if (obj.GetComponent<OgreeObject>() != null)
                 {
                     if (data[1] == "details")
-                        obj.GetComponent<OgreeObject>().LoadChildren(data[2]);
+                        await obj.GetComponent<OgreeObject>().LoadChildren(data[2]);
                     else
                     {
                         obj.GetComponent<OgreeObject>().SetAttribute(data[1], data[2]);
@@ -1071,14 +1103,14 @@ public class ConsoleController : MonoBehaviour
     ///</summary>
     ///<param name="_attr">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    private void SetMultiAttribute(string _attr, string _value)
+    private async Task SetMultiAttribute(string _attr, string _value)
     {
         foreach (GameObject obj in GameManager.gm.currentItems)
         {
             if (obj.GetComponent<OgreeObject>() != null)
             {
                 if (_attr == "details")
-                    obj.GetComponent<OgreeObject>().LoadChildren(_value);
+                    await obj.GetComponent<OgreeObject>().LoadChildren(_value);
                 else
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }

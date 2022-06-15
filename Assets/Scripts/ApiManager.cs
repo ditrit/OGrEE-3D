@@ -285,7 +285,9 @@ public class ApiManager : MonoBehaviour
             string response = await httpClient.GetStringAsync(fullPath);
             print(response);
             if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
+            {
                 await CreateItemFromJson(response);
+            }
             else if (response.Contains("successfully got obj_template"))
                 await CreateTemplateFromJson(response, "obj");
             else if (response.Contains("successfully got room_template"))
@@ -330,7 +332,7 @@ public class ApiManager : MonoBehaviour
             else
             {
                 SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+                Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
             }
 
             foreach (SApiObject obj in physicalObjects)
@@ -377,7 +379,7 @@ public class ApiManager : MonoBehaviour
             else
             {
                 SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(response);
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+                Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
             }
 
             foreach (SApiObject obj in physicalObjects)

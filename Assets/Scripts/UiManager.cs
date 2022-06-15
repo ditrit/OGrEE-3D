@@ -4,13 +4,14 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
     [SerializeField] private GameObject menuPanel = null;
-    
+
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
@@ -63,7 +64,7 @@ public class UiManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
-        
+
         if (mouseName.gameObject.activeSelf)
         {
             mouseName.transform.position = Input.mousePosition;
@@ -308,21 +309,21 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Focus selected object.
     ///</summary>
-    public void FocusSelected()
+    public async Task FocusSelected()
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
-            GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+            await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
     }
 
     ///<summary>
     /// Called by GUI button: Select the parent of the selected object.
     ///</summary>
-    public void SelectParentItem()
+    public async Task SelectParentItem()
     {
         if (GameManager.gm.currentItems.Count == 0)
             return;
 
-        GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
+        await GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
     ///

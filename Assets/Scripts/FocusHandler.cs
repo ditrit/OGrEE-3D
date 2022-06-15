@@ -85,7 +85,7 @@ public class FocusHandler : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private async void OnSelectItem(OnSelectItemEvent e)
+    private void OnSelectItem(OnSelectItemEvent e)
     {
         if (e.obj.Equals(gameObject))
         {
@@ -96,7 +96,6 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
@@ -260,7 +259,12 @@ public class FocusHandler : MonoBehaviour
     private void OnImportFinished(ImportFinishedEvent e)
     {
         if (GetComponent<OObject>().category != "device")
+        {
             UpdateChildMeshRenderersRec(false);
+
+        }
+        if (isSelected)
+            EventManager.Instance.Raise(new OnSelectItemEvent() { obj = gameObject });
     }
 
     ///<summary>

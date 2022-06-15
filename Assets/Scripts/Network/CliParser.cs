@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class CliParser// : MonoBehaviour
 {
@@ -49,7 +50,7 @@ public class CliParser// : MonoBehaviour
     /// Deserialize CLI input and parse it. 
     ///</summary>
     ///<param name="_input">The json to deserialize</param>
-    public void DeserializeInput(string _input)
+    public async Task DeserializeInput(string _input)
     {
         GameObject obj = null;
         Hashtable command = new Hashtable();
@@ -72,14 +73,14 @@ public class CliParser// : MonoBehaviour
             case "select":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
-                    GameManager.gm.SetCurrentItem(obj);
+                    await GameManager.gm.SetCurrentItem(obj);
                 else
                     GameManager.gm.AppendLogLine("Error on select", "red");
                 break;
             case "delete":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
-                    GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
+                    await GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
                 else
                     GameManager.gm.AppendLogLine("Error on delete", "red");
                 break;
@@ -87,8 +88,8 @@ public class CliParser// : MonoBehaviour
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                 {
-                    GameManager.gm.SetCurrentItem(obj);
-                    GameManager.gm.FocusItem(obj);
+                    await GameManager.gm.SetCurrentItem(obj);
+                    await GameManager.gm.FocusItem(obj);
                 }
                 else
                     GameManager.gm.AppendLogLine("Error on focus", "red");

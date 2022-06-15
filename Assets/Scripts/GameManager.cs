@@ -75,22 +75,6 @@ public class GameManager : MonoBehaviour
 #endif
 
 #if !PROD
-        //consoleController.RunCommandString(".cmds:C:/Users/trios/Nextcloud/Ogree/4_customers/__DEMO__/_TIM/fbxModels.ocli");
-        //consoleController.RunCommandString("+tn:DEMO@123456");
-        //consoleController.RunCommandString("+si:DEMO.BETA @NW");
-        //consoleController.RunCommandString("+bd:DEMO.BETA.A@[0,0]@[25,29.4,0]");
-        //consoleController.RunCommandString("+ro:DEMO.BETA.A.R1@[0,0]@[22.8,19.8,0]@+N + W");
-
-
-        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A00@[0,0]@[60,120,42]@front");
-        //consoleController.RunCommandString("+dv:DEMO.BETA.A.R1.A00.chassis30@30@1");
-
-        //consoleController.RunCommandString("+rk:DEMO.BETA.A.R1.A03@[3,0]@[60,120,42]@front");
-        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
-
-        //consoleController.RunCommandString("DEMO.BETA.A.R1.A00:temperature=65");
-        //consoleController.RunCommandString(">");
-        //consoleController.RunCommandString("=DEMO.BETA.A.R1.A03");
 
 #endif
     }
@@ -101,12 +85,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
+        //if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
+        //    clickCount++;
 
-        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-            clickCount++;
-
-        if (clickCount == 1 && coroutineAllowed)
-            StartCoroutine(DoubleClickDetection(Time.time));
+        //if (clickCount == 1 && coroutineAllowed)
+        //    StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
@@ -117,18 +100,23 @@ public class GameManager : MonoBehaviour
     ///<param name="_firstClickTime">The time of the first click</param>
     private IEnumerator DoubleClickDetection(float _firstClickTime)
     {
+        Task task;
         coroutineAllowed = false;
         while (Time.time < _firstClickTime + doubleClickTimeLimit)
         {
             if (clickCount == 2)
             {
-                DoubleClick();
+                task = DoubleClick();
+                yield return new WaitUntil(() => task.IsCompleted);
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
         if (clickCount == 1)
-            SingleClick();
+        {
+            task = SingleClick();
+            yield return new WaitUntil(() => task.IsCompleted);
+        }
         clickCount = 0;
         coroutineAllowed = true;
 
@@ -137,12 +125,12 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Method called when single click on a gameObject.
     ///</summary>
-    private void SingleClick()
+    private async Task SingleClick()
     {
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
         if (objectHit && objectHit.tag == "Selectable")
         {
-            bool canSelect = false;
+            bool canSelect;
             if (focus.Count > 0)
                 canSelect = IsInFocus(objectHit);
             else
@@ -153,19 +141,22 @@ public class GameManager : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftControl) && currentItems.Count > 0)
                     UpdateCurrentItems(objectHit);
                 else
-                    SetCurrentItem(objectHit);
+                {
+                    await SetCurrentItem(objectHit);
+                }
+
             }
         }
         else if (focus.Count > 0)
-            SetCurrentItem(focus[focus.Count - 1]);
+            await SetCurrentItem(focus[focus.Count - 1]);
         else
-            SetCurrentItem(null);
+            await SetCurrentItem(null);
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double click on a gameObject.
     ///</summary>
-    private void DoubleClick()
+    private async Task DoubleClick()
     {
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
         if (objectHit && objectHit.tag == "Selectable" && objectHit.GetComponent<OObject>())
@@ -174,12 +165,12 @@ public class GameManager : MonoBehaviour
                 objectHit.GetComponent<Group>().ToggleContent("true");
             else
             {
-                SetCurrentItem(objectHit);
-                FocusItem(objectHit);
+                await SetCurrentItem(objectHit);
+                await FocusItem(objectHit);
             }
         }
         else if (focus.Count > 0)
-            UnfocusItem();
+            await UnfocusItem();
     }
 
 
@@ -200,16 +191,69 @@ public class GameManager : MonoBehaviour
     /// Save current object and change the CLI idle text.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    public void SetCurrentItem(GameObject _obj)
+    public async Task SetCurrentItem(GameObject _obj)
     {
+        bool unloadChildren = true;
+        OObject previousSelected = null;
+
+        //Should the previous selection's children be unloaded ?
+
+        if (currentItems.Count == 0) //Is there a previous selection ?
+            unloadChildren = false;
+        else
+        {
+
+            previousSelected = currentItems[currentItems.Count - 1].GetComponent<OObject>();
+            if (_obj != null)
+            {
+
+                OObject currentSelected = _obj.GetComponent<OObject>();
+                if (previousSelected != null && currentSelected != null)//Are the previous and current selection both a rack or smaller ?
+                {
+                    string[] name1 = previousSelected.GetComponent<OObject>().hierarchyName.Split('.');
+                    string[] name2 = _obj.GetComponent<OObject>().hierarchyName.Split('.');
+                    int i = 0;
+                    while (i < name1.Length && i < name2.Length && name1[i] == name2[i])
+                        i++;
+
+                    if (i > 4)//Are they part of the same rack ?
+                        unloadChildren = false;
+                }
+            }
+        }
+        if (unloadChildren && previousSelected != null)//If no to any of the two precedent questions and previous selection is a rack or smaller, unload
+        {
+            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+            await currentItems[currentItems.Count - 1].GetComponent<OgreeObject>().LoadChildren("0");
+        }
         //Clear current selection
         for (int i = currentItems.Count - 1; i >= 0; i--)
+        {
+            if (currentItems[i].GetComponent<OObject>()! != null)
+            {
+                Transform t = currentItems[i].transform;
+                while (t != null)
+                {
+                    if (t.GetComponent<OgreeObject>().category == "rack")
+                    {
+                        GameObject uRoot = t.Find("uRoot").gameObject;
+                        uRoot.SetActive(false);
+                        break;
+                    }
+                    t = t.parent.transform;
+                }
+            }
             DeselectItem(currentItems[i]);
+        }
 
         if (_obj)
         {
+            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
+            if (_obj.GetComponent<OObject>() != null)
+                UManager.um.HighlightULocation();
             UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
         else
@@ -286,7 +330,7 @@ public class GameManager : MonoBehaviour
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    public void FocusItem(GameObject _obj)
+    public async Task FocusItem(GameObject _obj)
     {
         if (_obj.GetComponent<OgreeObject>().category == "corridor")
             return;
@@ -312,13 +356,13 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
-            UnfocusItem();
+            await UnfocusItem();
     }
 
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    public void UnfocusItem()
+    public async Task UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
@@ -328,10 +372,10 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(focus[focus.Count - 1]);
+            await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
-            SetCurrentItem(null);
+            await SetCurrentItem(obj);
     }
 
     ///<summary>
@@ -366,9 +410,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
-    public void DeleteItem(GameObject _toDel, bool _serverDelete)
+    public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool deselect = true)
     {
-        SetCurrentItem(null);
+        if (deselect)
+            await SetCurrentItem(null);
 
         // Should count type of deleted objects
         if (_serverDelete)
@@ -436,9 +481,9 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Delete all Tenants and reload last loaded file.
     ///</summary>
-    public void ReloadFile()
+    public async Task ReloadFile()
     {
-        SetCurrentItem(null);
+        await SetCurrentItem(null);
         focus.Clear();
         UiManager.instance.UpdateFocusText();
 

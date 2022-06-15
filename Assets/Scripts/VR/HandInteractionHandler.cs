@@ -74,15 +74,8 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
         if (canSelect)
         {
             canSelect = false;
-            if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] != transform.parent.parent.gameObject)
-            {
-                GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-                Task task = previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
-                yield return new WaitUntil(() => task.IsCompleted);
-                previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-                previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-            }
-            GameManager.gm.SetCurrentItem(transform.parent.gameObject);
+            Task task = GameManager.gm.SetCurrentItem(transform.parent.gameObject);
+            yield return new WaitUntil(() => task.IsCompleted);
             yield return new WaitForEndOfFrame();
             yield return new WaitForSeconds(1.5f);
             canSelect = true;

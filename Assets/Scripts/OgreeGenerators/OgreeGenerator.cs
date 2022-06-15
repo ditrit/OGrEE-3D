@@ -91,6 +91,12 @@ public class OgreeGenerator : MonoBehaviour
                 break;
         }
         ResetCoroutine();
+        if (newItem != null)
+        {
+            newItem.originalLocalPosition = newItem.gameObject.transform.localPosition;
+            newItem.originalLocalRotation = newItem.gameObject.transform.localRotation;
+            newItem.originalLocalScale = newItem.gameObject.transform.localScale;
+        }
         return newItem;
     }
 
@@ -110,8 +116,8 @@ public class OgreeGenerator : MonoBehaviour
     private IEnumerator WaitAndRaiseEvent()
     {
         yield return new WaitForSeconds(1f);
+        Debug.Log("[] event raised !");
         EventManager.Instance.Raise(new ImportFinishedEvent());
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        Debug.Log("[] event raised !");
     }
 }
