@@ -69,7 +69,7 @@ public class ButtonManager : MonoBehaviour
                 delta.yPositionDelta = 0;
                 delta.isFirstMove = true;
                 UManager.um.wasEdited = false;
-                UManager.um.ToggleU("true");
+                UManager.um.ToggleU(true);
             }
         }
     }

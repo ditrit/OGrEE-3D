@@ -116,29 +116,24 @@ public class UManager : MonoBehaviour
     public void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;
-        ToggleU("false");
+        ToggleU(false);
     }
 
     ///<summary>
     /// Toggle U location cubes.
     ///</summary>
-    ///<param name="_value">True or false value</param>
-    public void ToggleU(string _value)
+    ///<param name="_bool">True or false value</param>
+    public void ToggleU(bool _bool)
     {
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.gm.AppendLogLine("U value has to be true or false", "yellow");
-            return;
-        }
         Transform t = GameManager.gm.currentItems[0].transform;
         while(t != null)
         {
             if (t.GetComponent<OgreeObject>().category == "rack")
             {
                 GameObject uRoot = t.Find("uRoot").gameObject;
-                if (_value == "true")
+                if (_bool)
                     uRoot.SetActive(true);
-                else if (_value == "false")
+                else if (!_bool)
                     uRoot.SetActive(false);
                 return;
             }
