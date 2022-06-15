@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -184,10 +185,11 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Avoid requestsToSend 
-    /// Get an Object from the api. Create an ogreeObject with response.
+    /// Get an Object from the api. Call a Task callback with the response.
     ///</summary>
     ///<param name="_input">The path to add a base server for API GET request</param>
-    public async Task GetObject(string _input)
+    ///<param name="_callback">Function to call to use GET response</param>
+    public async Task GetObject(string _input, Func<string, Task> _callback)
     {
         if (!isInit)
         {
@@ -201,19 +203,36 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
-            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                await CreateItemFromJson(response);
-            else if (response.Contains("successfully got obj_template"))
-                await CreateTemplateFromJson(response, "obj");
-            else if (response.Contains("successfully got room_template"))
-                await CreateTemplateFromJson(response, "room");
-            else
-                GameManager.gm.AppendLogLine("Unknown object received", "red");
+            await _callback(response);
         }
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
             EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        }
+    }
+    
+    public async Task<T> GetObject<T>(string _input, Func<string, Task<T>> _callback)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            return default;
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+
+        string fullPath = $"{server}/{_input}";
+        try
+        {
+            string response = await httpClient.GetStringAsync(fullPath);
+            GameManager.gm.AppendLogLine(response);
+            return await _callback(response);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, "red");
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            return default;
         }
     }
 
@@ -283,6 +302,22 @@ public class ApiManager : MonoBehaviour
         {
             GameManager.gm.AppendLogLine(e.Message, "red");
         }
+    }
+
+    ///<summary>
+    /// Call the CreateXFromJson() method corresponding to the given API response.
+    ///</summary>
+    ///<param name="_input">The API response to use</param>
+    public async Task DrawObject(string _input)
+    {
+        if (_input.Contains("successfully got query for object") || _input.Contains("successfully got object"))
+            await CreateItemFromJson(_input);
+        else if (_input.Contains("successfully got obj_template"))
+            await CreateTemplateFromJson(_input, "obj");
+        else if (_input.Contains("successfully got room_template"))
+            await CreateTemplateFromJson(_input, "room");
+        else
+            GameManager.gm.AppendLogLine("Unknown object received", "red");
     }
 
     ///<summary>
