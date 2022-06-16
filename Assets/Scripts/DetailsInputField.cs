@@ -31,11 +31,12 @@ public class DetailsInputField : MonoBehaviour
     ///<param name="_value">The value to set the input field</param>
     public void UpdateInputField(string _value)
     {
+#if !VR  
         if (ApiManager.instance.isInit)
             inputField.text = _value;
         else
             inputField.text = "-";
-
+#endif
     }
 
     ///<summary>

@@ -266,9 +266,10 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     private void SelectItem(GameObject _obj)
     {
+#if !VR
         if (currentItems.Count == 0)
             UiManager.instance.detailsInputField.ActiveInputField(true);
-
+#endif
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
@@ -283,12 +284,13 @@ public class GameManager : MonoBehaviour
     private void DeselectItem(GameObject _obj)
     {
         currentItems.Remove(_obj);
+#if !VR
         if (currentItems.Count == 0)
         {
             UiManager.instance.detailsInputField.UpdateInputField("0");
             UiManager.instance.detailsInputField.ActiveInputField(false);
         }
-
+#endif
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
         EventManager.Instance.Raise(new ImportFinishedEvent());
     }

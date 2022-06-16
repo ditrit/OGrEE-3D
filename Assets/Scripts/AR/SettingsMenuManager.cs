@@ -40,10 +40,11 @@ public class SettingsMenuManager : MonoBehaviour
     // Start is called before the first frame update
     private async Task Start()
     {
-        configLoader.LoadConfig();
-        tenant = configLoader.GetTenant();
-
-        //tenant = SearchMenuManager.instance.tenant;
+        while (String.IsNullOrEmpty(tenant))
+        {
+            await Task.Delay(50);
+            tenant = GameManager.gm.configLoader.GetTenant();
+        }
         parentNames.Add(tenant);
         siteIcon.SetActive(true);
         rackIcon.SetActive(true);
@@ -101,7 +102,7 @@ public class SettingsMenuManager : MonoBehaviour
         });
         gridCollection.UpdateCollection();
 
-        await Task.Delay(3000);
+        //await Task.Delay(3000);
         List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
         InstantiateMenuForSite(physicalObjects, 0);
     }

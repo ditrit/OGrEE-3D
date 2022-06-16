@@ -1931,7 +1931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &140923882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9240,7 +9240,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 560516237}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d6848231a40fbc149b3363200ad4a67a, type: 3}
   m_Name: 
@@ -14467,7 +14467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &837778658
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16931,7 +16931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &984052493
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28643,6 +28643,22 @@ MonoBehaviour:
   isFirstHelpMenuCreated: 0
   isFirstHelpMenuOpen: 0
   isHelpDialogActive: 0
+--- !u!114 &1731789632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731789625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68cbbecac62d53a49940f48833694a38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomsList: []
+  dropdownRooms: {fileID: 2139128282}
+  tenantsList: []
+  dropdownTenants: {fileID: 398372453}
 --- !u!1 &1732798305
 GameObject:
   m_ObjectHideFlags: 0

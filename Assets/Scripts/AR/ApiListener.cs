@@ -8,6 +8,7 @@ using TMPro;
 using System.Threading.Tasks;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using System;
 
 public class Label
 {
@@ -45,8 +46,14 @@ public class ApiListener : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    private void Start()
+    private async void Start()
     {
+        while (String.IsNullOrEmpty(customer))
+        {
+            await Task.Delay(50);
+            customer = GameManager.gm.configLoader.GetTenant();
+            currentHost = GameManager.gm.configLoader.GetPythonApiUrl();
+        }
         customerAndSite = customer + '.' + site;
     }
 
@@ -57,17 +64,6 @@ public class ApiListener : MonoBehaviour
     {
         get => dialogPrefabLarge;
         set => dialogPrefabLarge = value;
-    }
-
-    /// <summary>
-    /// Retrieve python appi url and tenant from config file.
-    /// </summary>
-    ///<param name="_python_api_url">The url from the python api that reads the label</param>
-    ///<param name="_tenant">The tenant from the conf file</param>
-    public void InitializeApiUrlAndTenant(string _pythonApiUrl, string _tenant)
-    {
-        currentHost = _pythonApiUrl;
-        customer = _tenant;
     }
 
     ///<summary>
@@ -165,7 +161,7 @@ public class ApiListener : MonoBehaviour
         {
             www.SendWebRequest();
             while (!www.isDone)
-                await Task.Delay(100);
+                await Task.Delay(50);
             PictureCoolDown = true;
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {

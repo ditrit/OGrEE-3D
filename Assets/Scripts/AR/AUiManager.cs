@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
+[RequireComponent(typeof(Filters))]
 public abstract class AUiManager
 {
     public abstract void UpdateGuiInfos();    
