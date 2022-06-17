@@ -713,7 +713,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
     7: OCULUSINTEGRATION_PRESENT
-    14: VR;API_DEBUG;RACK
+    14: VR;API_DEBUG
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
