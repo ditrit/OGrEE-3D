@@ -208,7 +208,7 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// Focus the selected object or defocus according to the current state (selection, focus)
     ///</summary>
-    public void ButonToggleFocus()
+    public async void ButtonToggleFocus()
     {
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1])
         {
@@ -224,7 +224,7 @@ public class ButtonManager : MonoBehaviour
             }
 
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
-            GameManager.gm.UnfocusItem();
+            await GameManager.gm.UnfocusItem();
             if (GameManager.gm.currentItems.Count > 0)
             {
                 GameObject objectSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
@@ -241,9 +241,11 @@ public class ButtonManager : MonoBehaviour
         }
         else
         {
-            GameManager.gm.FocusItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
+            await GameManager.gm.FocusItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
         }
+        StartCoroutine(SelectionDelay());
     }
+
     ///<summary>
     /// Select the selected object's parent if the selected object is not a rack, deselect if it is
     /// if we deselect a rack, unload its children
@@ -259,7 +261,7 @@ public class ButtonManager : MonoBehaviour
 
         if (previousSelected.transform.parent.GetComponent<OObject>() != null)
         {
-            GameManager.gm.SetCurrentItem(previousSelected.transform.parent.gameObject);
+            await GameManager.gm.SetCurrentItem(previousSelected.transform.parent.gameObject);
             if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             {
                 buttonEdit.SetActive(true);
@@ -267,10 +269,7 @@ public class ButtonManager : MonoBehaviour
         }
         else
         {
-            await previousSelected.GetComponent<OgreeObject>().LoadChildren("0");
-            previousSelected.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            previousSelected.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-            GameManager.gm.SetCurrentItem(null);
+            await GameManager.gm.SetCurrentItem(null);
         }
 
         StartCoroutine(SelectionDelay());
@@ -282,11 +281,9 @@ public class ButtonManager : MonoBehaviour
     private IEnumerator SelectionDelay()
     {
         HandInteractionHandler.canSelect = false;
-        print("CanSelect : " + HandInteractionHandler.canSelect);
         yield return new WaitForEndOfFrame();
         yield return new WaitForSeconds(1.5f);
         HandInteractionHandler.canSelect = true;
-        print("CanSelect : " + HandInteractionHandler.canSelect);
     }
 
     ///<summary>
@@ -369,6 +366,6 @@ public class ButtonManager : MonoBehaviour
     {
         front = !front;
         PlaceButton();
-        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ChangeOrientation(front);
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ChangeOrientationFromRack(front);
     }
 }

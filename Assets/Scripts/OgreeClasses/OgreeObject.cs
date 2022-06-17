@@ -231,14 +231,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(string _level)
     {
-        int lvl = 0;
+        int lvl;
         int.TryParse(_level, out lvl);
         if (lvl < 0)
             lvl = 0;
 
         if (currentLod != lvl)
         {
-            DeleteChildren(lvl);
+            await DeleteChildren(lvl);
 
             string apiCall = "";
             if (lvl != 0)
@@ -246,7 +246,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObjects);
+                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
             }
 
             SetCurrentLod(lvl);
@@ -279,7 +279,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Delete OgreeObject children according to _askedLevel.
     ///</summary>
     ///<param name="_askedLevel">The LOD to switch on</param>
-    protected void DeleteChildren(int _askedLevel)
+    protected async Task DeleteChildren(int _askedLevel)
     {
         List<OgreeObject> objsToDel = new List<OgreeObject>();
         foreach (Transform child in transform)
@@ -294,7 +294,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                GameManager.gm.DeleteItem(obj.gameObject, false);
+                await GameManager.gm.DeleteItem(obj.gameObject, false,false);
             }
             GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
             GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
@@ -302,7 +302,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         else
         {
             foreach (OgreeObject go in objsToDel)
-                go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
+                await go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
     }
 

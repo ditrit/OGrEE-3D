@@ -51,8 +51,12 @@ public class ApiListener : MonoBehaviour
         while (String.IsNullOrEmpty(customer))
         {
             await Task.Delay(50);
-            customer = GameManager.gm.configLoader.GetTenant();
-            currentHost = GameManager.gm.configLoader.GetPythonApiUrl();
+            try
+            {
+                customer = GameManager.gm.configLoader.GetTenant();
+                currentHost = GameManager.gm.configLoader.GetPythonApiUrl();
+            }
+            catch{}
         }
         customerAndSite = customer + '.' + site;
     }
@@ -251,8 +255,10 @@ public class ApiListener : MonoBehaviour
     ///<param name="_room">string refering to a room name</param>
     public async Task SetBuilding(string _room)
     {
-        string data = await ApiManager.instance.GetObject($"rooms?name=" + _room, ApiManager.instance.GetParentId);
-        building = await ApiManager.instance.GetObject($"buildings/" + data, ApiManager.instance.GetName);
+        SApiObject obj = await ApiManager.instance.GetObject($"rooms?name=" + _room, ApiManager.instance.GetFirstSApiObject);
+        string parentId = obj.parentId;
+        obj = await ApiManager.instance.GetObject($"buildings/" + parentId, ApiManager.instance.GetFirstSApiObject);
+        building = obj.name;
     }
 
     ///<summary>
@@ -299,12 +305,12 @@ public class ApiListener : MonoBehaviour
     public async Task LoadSingleRack(string _customer, string _site, string _building, string _room, string _rack)
     {
         GameObject customer = GameManager.gm.FindByAbsPath(_customer);
-        GameManager.gm.DeleteItem(customer, false);
+        await GameManager.gm.DeleteItem(customer, false);
 
-        await ApiManager.instance.GetObject($"sites/" + _site, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObjects);
+        await ApiManager.instance.GetObject($"sites/" + _site, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObject);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
         if (rack == null)
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");

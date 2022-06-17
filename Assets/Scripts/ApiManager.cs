@@ -360,7 +360,7 @@ public class ApiManager : MonoBehaviour
     /// Create an ogreeObject with response.
     ///</summary>
     ///<param name="_response">The response for API GET request</param>
-    public async Task DrawObjects(string _response)
+    public async Task DrawObject(string _response)
     {
         GameManager.gm.AppendLogLine(_response);
         if (_response.Contains("successfully got query for object") || _response.Contains("successfully got object"))
@@ -379,59 +379,25 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_response">The response for API GET request</param>
     ///<returns>A string containing the parent id of the first object created by the _response</returns>
-    public async Task<string> GetParentId(string _response)
+    public async Task<SApiObject> GetFirstSApiObject(string _response)
     {
-        List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
+        List<SApiObject> Objects = new List<SApiObject>();
 
         if (Regex.IsMatch(_response, "\"data\":{\"objects\":\\["))
         {
             SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_response);
             foreach (SApiObject obj in resp.data.objects)
-                physicalObjects.Add(obj);
+                Objects.Add(obj);
         }
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_response);
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(Objects, resp.data);
         }
 
-        foreach (SApiObject obj in physicalObjects)
-        {
-            return obj.parentId;
-        }
-        return "error";
-    }
-    
-    ///<summary>
-    /// Avoid requestsToSend 
-    /// Get an Object from the api. Create an ogreeObject with response.
-    ///</summary>
-    ///<param name="_response">The response for API GET request</param>
-    ///<returns>A string containing the name of the first object created by the _response</returns>
-    public async Task<string> GetName(string _response)
-    {
-
-        List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
-
-        if (Regex.IsMatch(_response, "\"data\":{\"objects\":\\["))
-        {
-            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_response);
-            foreach (SApiObject obj in resp.data.objects)
-                physicalObjects.Add(obj);
-        }
-        else
-        {
-            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_response);
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
-        }
-
-        foreach (SApiObject obj in physicalObjects)
-        {
-            return obj.name;
-        }
-        return "error";
+        if(Objects.Count > 0)
+            return Objects[0];
+        return default;
     }
 
     ///<summary>

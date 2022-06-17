@@ -186,10 +186,10 @@ public class NewAPIListener : MonoBehaviour
     {
         GameObject room = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room);
         GameManager.gm.DeleteItem(room, false);
-        await ApiManager.instance.GetObject($"sites/"+ _site, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObjects);
-        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObjects);
+        await ApiManager.instance.GetObject($"sites/"+ _site, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" +_building, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObject);
+        await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObject);
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
         if (rack != null)
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");

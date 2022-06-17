@@ -147,7 +147,7 @@ public static class Utils
         ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
         return newColor;
     }
-  
+
     ///<summary>
     /// Move object in front of the camera
     ///</summary>
@@ -207,6 +207,21 @@ public static class Utils
         {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_physicalList, _logicalList, obj);
+        }
+    }
+
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_list">The list of objects to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
+    public static void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    {
+        _list.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_list, obj);
         }
     }
 }

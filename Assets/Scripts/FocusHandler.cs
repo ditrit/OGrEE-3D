@@ -59,6 +59,7 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
+
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -76,6 +77,7 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
+
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -83,7 +85,7 @@ public class FocusHandler : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    private async void OnSelectItem(OnSelectItemEvent e)
+    private void OnSelectItem(OnSelectItemEvent e)
     {
         if (e.obj.Equals(gameObject))
         {
@@ -94,7 +96,6 @@ public class FocusHandler : MonoBehaviour
             {
                 UpdateOwnMeshRenderers(false);
             }
-            await GetComponent<OgreeObject>().LoadChildren("1");
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
@@ -258,7 +259,12 @@ public class FocusHandler : MonoBehaviour
     private void OnImportFinished(ImportFinishedEvent e)
     {
         if (GetComponent<OObject>().category != "device")
+        {
             UpdateChildMeshRenderersRec(false);
+
+        }
+        if (isSelected)
+            EventManager.Instance.Raise(new OnSelectItemEvent() { obj = gameObject });
     }
 
     ///<summary>
@@ -361,6 +367,7 @@ public class FocusHandler : MonoBehaviour
             child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
 
         FillMeshRendererLists();
+
         UpdateChildMeshRenderers(_value);
     }
 
@@ -476,7 +483,7 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// Change the selectable face of the object (if <paramref name="_self"/> is true) to be the front or the back face
+    /// Change the selectable face of the object (if <paramref name="_self"/> is true) and of all of its children to be the front or the back face
     ///</summary>
     ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
     ///<param name="_self">should the object change its orientation or just its children ? <i>only useful for the rack</i></param>
@@ -527,5 +534,19 @@ public class FocusHandler : MonoBehaviour
         {
             _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
         }
+    }
+
+
+    ///<summary>
+    /// Go back to the rack this object is a child of and change its selectable face (if <paramref name="_self"/> is true) and of all of its children to be the front or the back face
+    ///</summary>
+    ///<param name="_front">if true, the front face will be selectable, if not it will be the back face</param>
+    ///<param name="_self">should the rack change its orientation or just its children ?</param>
+    public void ChangeOrientationFromRack(bool _front, bool _self = true)
+    {
+        if (GetComponent<OgreeObject>().category == "rack")
+            ChangeOrientation(_front, _self);
+        else
+            transform.parent.GetComponent<FocusHandler>().ChangeOrientationFromRack(_front);
     }
 }

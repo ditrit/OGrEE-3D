@@ -43,7 +43,15 @@ public class SettingsMenuManager : MonoBehaviour
         while (String.IsNullOrEmpty(tenant))
         {
             await Task.Delay(50);
-            tenant = GameManager.gm.configLoader.GetTenant();
+            try
+            {
+                tenant = GameManager.gm.configLoader.GetTenant();
+            }
+            catch{}
+        }
+        while (!ApiManager.instance.isInit)
+        {
+            await Task.Delay(50);
         }
         parentNames.Add(tenant);
         siteIcon.SetActive(true);
@@ -102,7 +110,6 @@ public class SettingsMenuManager : MonoBehaviour
         });
         gridCollection.UpdateCollection();
 
-        //await Task.Delay(3000);
         List<SApiObject> physicalObjects = await ApiManager.instance.GetObjectVincent($"tenants/{tenant}/sites");
         InstantiateMenuForSite(physicalObjects, 0);
     }

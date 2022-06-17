@@ -9177,12 +9177,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 560516237}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5447b5235de7964f812eef949d8a5e6, type: 3}
+  m_Script: {fileID: 11500000, guid: e2db5cffec77e054dbf7a73c1668b57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   consoleController: {fileID: 1467698000}
   server: {fileID: 1683134301}
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 90352357}
   defaultMat: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
   alphaMat: {fileID: 2100000, guid: fd47b8c3b6ff4fe4c917c6163fee83e1, type: 2}
   perfMat: {fileID: 2100000, guid: a8ed24829e715404caae7c6cc24fab79, type: 2}
@@ -37726,7 +37726,7 @@ PrefabInstance:
     - target: {fileID: 5048224718389198755, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6097928543899635208, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}

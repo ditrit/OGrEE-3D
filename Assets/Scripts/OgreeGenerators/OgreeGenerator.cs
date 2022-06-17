@@ -39,20 +39,20 @@ public class OgreeGenerator : MonoBehaviour
         // Get dependencies from API
         if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.gm.allItems.Contains(_obj.domain))
-            await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObjects);
+            await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
 
         if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.gm.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObjects);
+            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         if ((_obj.category == "rack" || _obj.category == "device") && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.gm.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObjects);
+            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         // Call Create function
@@ -91,6 +91,12 @@ public class OgreeGenerator : MonoBehaviour
                 break;
         }
         ResetCoroutine();
+        if (newItem != null)
+        {
+            newItem.originalLocalPosition = newItem.gameObject.transform.localPosition;
+            newItem.originalLocalRotation = newItem.gameObject.transform.localRotation;
+            newItem.originalLocalScale = newItem.gameObject.transform.localScale;
+        }
         return newItem;
     }
 
@@ -109,9 +115,9 @@ public class OgreeGenerator : MonoBehaviour
     ///</summary>
     private IEnumerator WaitAndRaiseEvent()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.35f);
+        Debug.Log("[] event raised !");
         EventManager.Instance.Raise(new ImportFinishedEvent());
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        Debug.Log("[] event raised !");
     }
 }

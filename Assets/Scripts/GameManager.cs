@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
-using TMPro;
-
-
 
 public class GameManager : MonoBehaviour
 {
@@ -67,10 +64,11 @@ public class GameManager : MonoBehaviour
             Destroy(this);
     }
 
-    private async Task Start()
+private async Task Start()
     {
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
+        Debug.Log(configLoader.GetTenant());
         StartCoroutine(configLoader.LoadTextures());
         UiManager.instance.UpdateFocusText();
         mainCamera = Camera.main;
@@ -95,6 +93,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
+        //if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
+        //    clickCount++;
+
+        //if (clickCount == 1 && coroutineAllowed)
+        //    StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
@@ -192,39 +195,75 @@ public class GameManager : MonoBehaviour
     /// Save current object and change the CLI idle text.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    public void SetCurrentItem(GameObject _obj)
+    public async Task SetCurrentItem(GameObject _obj)
     {
+        bool unloadChildren = true;
+        OObject previousSelected = null;
+
+        //Should the previous selection's children be unloaded ?
+
+        if (currentItems.Count == 0) //Is there a previous selection ?
+            unloadChildren = false;
+        else
+        {
+
+            previousSelected = currentItems[currentItems.Count - 1].GetComponent<OObject>();
+            if (_obj != null)
+            {
+
+                OObject currentSelected = _obj.GetComponent<OObject>();
+                if (previousSelected != null && currentSelected != null)//Are the previous and current selection both a rack or smaller ?
+                {
+                    string[] name1 = previousSelected.GetComponent<OObject>().hierarchyName.Split('.');
+                    string[] name2 = _obj.GetComponent<OObject>().hierarchyName.Split('.');
+                    int i = 0;
+                    while (i < name1.Length && i < name2.Length && name1[i] == name2[i])
+                        i++;
+
+                    if (i > 4)//Are they part of the same rack ?
+                        unloadChildren = false;
+                }
+            }
+        }
+        if (unloadChildren && previousSelected != null)//If no to any of the two precedent questions and previous selection is a rack or smaller, unload
+        {
+            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+            await currentItems[currentItems.Count - 1].GetComponent<OgreeObject>().LoadChildren("0");
+        }
         //Clear current selection
-        //await GetComponent<OgreeObject>().LoadChildren("1");
         for (int i = currentItems.Count - 1; i >= 0; i--)
         {
-            Transform t = currentItems[i].transform;
-            while(t != null)
+            if (currentItems[i].GetComponent<OObject>()! != null)
             {
-                if (t.GetComponent<OgreeObject>().category == "rack")
+                Transform t = currentItems[i].transform;
+                while (t != null)
                 {
-                    GameObject uRoot = t.Find("uRoot").gameObject;
-                    uRoot.SetActive(false);
-                    break;
+                    if (t.GetComponent<OgreeObject>().category == "rack")
+                    {
+                        GameObject uRoot = t.Find("uRoot").gameObject;
+                        uRoot.SetActive(false);
+                        break;
+                    }
+                    t = t.parent.transform;
                 }
-                t = t.parent.transform;
             }
             DeselectItem(currentItems[i]);
         }
 
         if (_obj)
         {
+            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            UManager.um.HighlightULocation();
+            if (_obj.GetComponent<OObject>() != null)
+                UManager.um.HighlightULocation();
             UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
-        
         else
         {
             AppendLogLine("Empty selection.", "green");
             UiManager.instance.SetCurrentItemText("Ogree3D");
-            
         }
         UiManager.instance.UpdateGuiInfos();
     }
@@ -270,12 +309,12 @@ public class GameManager : MonoBehaviour
         if (currentItems.Count == 0)
             UiManager.instance.detailsInputField.ActiveInputField(true);
 #endif
+
         currentItems.Add(_obj);
 
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
         UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
-    
 
     ///<summary>
     /// Remove _obj from currentItems, disable outline if possible.
@@ -291,15 +330,15 @@ public class GameManager : MonoBehaviour
             UiManager.instance.detailsInputField.ActiveInputField(false);
         }
 #endif
+
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
-        EventManager.Instance.Raise(new ImportFinishedEvent());
     }
 
     ///<summary>
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    public void FocusItem(GameObject _obj)
+    public async Task FocusItem(GameObject _obj)
     {
         if (_obj.GetComponent<OgreeObject>().category == "corridor")
             return;
@@ -325,41 +364,27 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
-            //UnfocusItem();
-            return;
+            await UnfocusItem();
     }
 
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    public void UnfocusItem()
+    public async Task UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
         UiManager.instance.UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
-        EventManager.Instance.Raise(new ImportFinishedEvent());
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(focus[focus.Count - 1]);
+            await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
-            SetCurrentItem(null);
+            await SetCurrentItem(obj);
     }
-
-    public void ReturnButton()
-    {
-        UnfocusItem();
-    }
-
-    private IEnumerator FocusItemCoRoutine(GameObject _obj)
-    {
-        yield return new WaitForEndOfFrame();
-        FocusItem(_obj);
-    }
-
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
@@ -393,9 +418,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
-    public void DeleteItem(GameObject _toDel, bool _serverDelete)
+    public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool deselect = true)
     {
-        SetCurrentItem(null); //Fix de Vincent car impossible de réselectionner un objet après avoir cliquer sur Button Select Parent.
+        if (deselect)
+            await SetCurrentItem(null);
 
         // Should count type of deleted objects
         if (_serverDelete)
@@ -442,6 +468,7 @@ public class GameManager : MonoBehaviour
         else
             UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
         UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
+        //StartCoroutine(TestAPI());
     }
 
     ///<summary>
@@ -462,9 +489,9 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Delete all Tenants and reload last loaded file.
     ///</summary>
-    public void ReloadFile()
+    public async Task ReloadFile()
     {
-        SetCurrentItem(null);
+        await SetCurrentItem(null);
         focus.Clear();
         UiManager.instance.UpdateFocusText();
 
@@ -498,8 +525,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
     }
-    
-    ///<summary>
+        ///<summary>
     /// Clean AR scene from all existing tenants.
     ///</summary>
     public IEnumerator CleanScene()
@@ -560,6 +586,7 @@ public class GameManager : MonoBehaviour
     {
         Utils.MoveObjectToCamera(_g, mainCamera, 0.6f, -0.35f, 0, 25);
     }
+
 
     ///<summary>
     /// Quit the application.
