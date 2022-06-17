@@ -52,6 +52,9 @@ public class UiManager : MonoBehaviour
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
     }
 
     private void Update()
@@ -70,6 +73,9 @@ public class UiManager : MonoBehaviour
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
         EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+        
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
     }
 
     ///
@@ -77,6 +83,8 @@ public class UiManager : MonoBehaviour
     {
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
+        SetCurrentItemText();
+        UpdateGuiInfos();
     }
 
     ///
@@ -87,6 +95,18 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
         }
+        SetCurrentItemText();
+        UpdateGuiInfos();
+    }
+
+    private void OnFocusItem(OnFocusEvent _e)
+    {
+        UpdateFocusText();
+    }
+
+    private void OnUnFocusItem(OnUnFocusEvent _e)
+    {
+        UpdateFocusText();
     }
 
     ///<summary>
@@ -164,10 +184,14 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Set the current item text
     ///</summary>
-    ///<param name="_str">The text to display</param>
-    public void SetCurrentItemText(string _str)
+    public void SetCurrentItemText()
     {
-        currentItemText.text = _str;
+         if (GameManager.gm.currentItems.Count == 1)
+            currentItemText.text = (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
+        else if (GameManager.gm.currentItems.Count > 1)
+            currentItemText.text = ("Selection");
+        else
+            currentItemText.text = ("OGrEE-3D");
     }
 
     ///<summary>

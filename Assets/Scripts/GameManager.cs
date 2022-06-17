@@ -41,14 +41,7 @@ public class GameManager : MonoBehaviour
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-
     public List<GameObject> focus = new List<GameObject>();
-
-    // Double click
-    private float doubleClickTimeLimit = 0.25f;
-    private bool coroutineAllowed = true;
-    private int clickCount = 0;
-
     public bool writeCLI = true;
 
     #region UnityMethods
@@ -75,100 +68,10 @@ public class GameManager : MonoBehaviour
 
 #if !PROD
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/perfTest.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/fbxModels.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/demoApi.ocli");
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__EDF__/EDF_EXAION.ocli");
 #endif
-    }
-
-    private void Update()
-    {
-#if !PROD
-        if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
-            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
-#endif
-
-        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-            clickCount++;
-
-        if (clickCount == 1 && coroutineAllowed)
-            StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
-
-    ///<summary>
-    /// Check if simple or double click and call corresponding method.
-    ///</summary>
-    ///<param name="_firstClickTime">The time of the first click</param>
-    private IEnumerator DoubleClickDetection(float _firstClickTime)
-    {
-        coroutineAllowed = false;
-        while (Time.time < _firstClickTime + doubleClickTimeLimit)
-        {
-            if (clickCount == 2)
-            {
-                DoubleClick();
-                break;
-            }
-            yield return new WaitForEndOfFrame();
-        }
-        if (clickCount == 1)
-            SingleClick();
-        clickCount = 0;
-        coroutineAllowed = true;
-
-    }
-
-    ///<summary>
-    /// Method called when single click on a gameObject.
-    ///</summary>
-    private void SingleClick()
-    {
-        GameObject objectHit = Utils.RaycastFromCameraToMouse();
-        if (objectHit && objectHit.tag == "Selectable")
-        {
-            bool canSelect = false;
-            if (focus.Count > 0)
-                canSelect = IsInFocus(objectHit);
-            else
-                canSelect = true;
-
-            if (canSelect)
-            {
-                if (Input.GetKey(KeyCode.LeftControl) && currentItems.Count > 0)
-                    UpdateCurrentItems(objectHit);
-                else
-                    SetCurrentItem(objectHit);
-            }
-        }
-        else if (focus.Count > 0)
-            SetCurrentItem(focus[focus.Count - 1]);
-        else
-            SetCurrentItem(null);
-    }
-
-    ///<summary>
-    /// Method called when single click on a gameObject.
-    ///</summary>
-    private void DoubleClick()
-    {
-        GameObject objectHit = Utils.RaycastFromCameraToMouse();
-        if (objectHit && objectHit.tag == "Selectable" && objectHit.GetComponent<OObject>())
-        {
-            if (objectHit.GetComponent<Group>())
-                objectHit.GetComponent<Group>().ToggleContent("true");
-            else
-            {
-                SetCurrentItem(objectHit);
-                FocusItem(objectHit);
-            }
-        }
-        else if (focus.Count > 0)
-            UnfocusItem();
-    }
-
 
     ///<summary>
     /// Find a GameObject by its HierarchyName.
@@ -197,14 +100,11 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Select {_obj.name}.", "green");
             SelectItem(_obj);
-            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
         else
         {
             AppendLogLine("Empty selection.", "green");
-            UiManager.instance.SetCurrentItemText("Ogree3D");
         }
-        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
@@ -212,9 +112,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void UpdateCurrentItems(GameObject _obj)
     {
-        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category)
+        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
+            || currentItems[0].transform.parent != _obj.transform.parent)
         {
-            AppendLogLine("Multiple selection should be same type of objects.", "yellow");
+            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", "yellow");
             return;
         }
         if (currentItems.Contains(_obj))
@@ -227,15 +128,6 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Add {_obj.name} to selection.", "green");
             SelectItem(_obj);
         }
-
-        if (currentItems.Count > 1)
-            UiManager.instance.SetCurrentItemText("Selection");
-        else if (currentItems.Count == 1)
-            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
-        else
-            UiManager.instance.SetCurrentItemText("Ogree3D");
-
-        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
@@ -244,13 +136,8 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     private void SelectItem(GameObject _obj)
     {
-        if (currentItems.Count == 0)
-            UiManager.instance.detailsInputField.ActiveInputField(true);
-
         currentItems.Add(_obj);
-
         EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
-        UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
     }
 
     ///<summary>
@@ -260,12 +147,6 @@ public class GameManager : MonoBehaviour
     private void DeselectItem(GameObject _obj)
     {
         currentItems.Remove(_obj);
-        if (currentItems.Count == 0)
-        {
-            UiManager.instance.detailsInputField.UpdateInputField("0");
-            UiManager.instance.detailsInputField.ActiveInputField(false);
-        }
-
         EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
     }
 
@@ -295,7 +176,6 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
-            UiManager.instance.UpdateFocusText();
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
@@ -309,7 +189,6 @@ public class GameManager : MonoBehaviour
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
-        UiManager.instance.UpdateFocusText();
 
         EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
@@ -326,7 +205,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_obj">The object to check</param>
     ///<returns>True if _obj is a child of focused object</returns>
-    private bool IsInFocus(GameObject _obj)
+    public bool IsInFocus(GameObject _obj)
     {
         Transform root = focus[focus.Count - 1].transform;
         if (root.GetComponent<Group>())
