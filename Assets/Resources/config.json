@@ -16,6 +16,6 @@
     "api_url": "https://v.api.ogree.ditrit.io",
     "api_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20",
     "tenant" : "EDF",
-    "python_api_url" : "192.168.4.231:5000"
+    "python_api_url" : "192.168.4.231:5000",
     
 }
