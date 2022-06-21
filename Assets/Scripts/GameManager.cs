@@ -299,46 +299,6 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Delete all Tenants and reload last loaded file.
-    ///</summary>
-    public void ReloadFile()
-    {
-        SetCurrentItem(null);
-        focus.Clear();
-        UiManager.instance.UpdateFocusText();
-
-        List<GameObject> tenants = new List<GameObject>();
-        foreach (DictionaryEntry de in allItems)
-        {
-            GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>()?.category == "tenant")
-                tenants.Add(go);
-        }
-        for (int i = 0; i < tenants.Count; i++)
-            Destroy(tenants[i]);
-        allItems.Clear();
-
-        foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
-            Destroy(kvp.Value);
-        objectTemplates.Clear();
-        roomTemplates.Clear();
-        consoleController.variables.Clear();
-        consoleController.ResetCounts();
-        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        StartCoroutine(LoadFile());
-    }
-
-    ///<summary>
-    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
-    ///</summary>
-    private IEnumerator LoadFile()
-    {
-        yield return new WaitForEndOfFrame();
-        consoleController.RunCommandString($".cmds:{lastCmdFilePath}");
-    }
-
-    ///<summary>
     /// Quit the application.
     ///</summary>
     public void QuitApp()

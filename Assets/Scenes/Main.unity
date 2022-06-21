@@ -6313,7 +6313,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2022-06-13 #1533351'
+  m_text: 'B: 2022-06-21 #fb31ec2'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9333,7 +9333,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.1005}
+  m_AnchoredPosition: {x: 0, y: 217.1008}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -11750,7 +11750,7 @@ GameObject:
   - component: {fileID: 1595579781}
   - component: {fileID: 1595579791}
   - component: {fileID: 1595579788}
-  - component: {fileID: 1595579786}
+  - component: {fileID: 1595579783}
   - component: {fileID: 1595579787}
   m_Layer: 0
   m_Name: GameManager
@@ -11819,7 +11819,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1595579786
+--- !u!114 &1595579783
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -11828,7 +11828,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1595579780}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f35b0566274456e4293d466ba6106bf2, type: 3}
+  m_Script: {fileID: 11500000, guid: 79c1755e73e32d14ba7c2a990a4e34b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   savedObjectThatWeHover: {fileID: 0}
@@ -14039,8 +14039,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ReloadFile
         m_Mode: 1
         m_Arguments:
@@ -16272,8 +16272,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000022491074
-  m_Size: 0.5658
+  m_Value: -0.0000036547992
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

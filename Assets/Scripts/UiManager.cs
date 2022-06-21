@@ -376,5 +376,45 @@ public class UiManager : MonoBehaviour
             file.Delete();
         GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", "green");
     }
+
+    ///<summary>
+    /// Called by GUI button: Delete all Tenants and reload last loaded file.
+    ///</summary>
+    public void ReloadFile()
+    {
+        GameManager.gm.SetCurrentItem(null);
+        GameManager.gm.focus.Clear();
+        UiManager.instance.UpdateFocusText();
+
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        GameManager.gm.allItems.Clear();
+
+        foreach (KeyValuePair<string, GameObject> kvp in GameManager.gm.objectTemplates)
+            Destroy(kvp.Value);
+        GameManager.gm.objectTemplates.Clear();
+        GameManager.gm.roomTemplates.Clear();
+        GameManager.gm.consoleController.variables.Clear();
+        GameManager.gm.consoleController.ResetCounts();
+        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
+        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+        StartCoroutine(LoadFile());
+    }
+
+    ///<summary>
+    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
+    ///</summary>
+    private IEnumerator LoadFile()
+    {
+        yield return new WaitForEndOfFrame();
+        GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
+    }
     #endregion
 }
