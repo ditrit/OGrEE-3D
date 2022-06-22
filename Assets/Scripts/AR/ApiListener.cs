@@ -58,6 +58,10 @@ public class ApiListener : MonoBehaviour
             }
             catch{}
         }
+        while (!ApiManager.instance.isInit)
+        {
+            await Task.Delay(50);
+        }
         customerAndSite = customer + '.' + site;
     }
 

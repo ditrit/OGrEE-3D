@@ -33,8 +33,6 @@ public class ConfigLoader
     {
         config = LoadConfigFile();
         OverrideConfig();
-        //SearchMenuManager.instance.InitializeTenant(config.tenant);
-        //ApiListener.instance.InitializeApiUrlAndTenant(config.python_api_url, config.tenant);
         ApplyConfig();
 
         string startFile = GetArg("--file");
@@ -137,9 +135,10 @@ public class ConfigLoader
     ///</summary>
     private void CreateCacheDir()
     {
-        if (!config.cachePath.EndsWith("/"))
-            config.cachePath += "/";
-        string fullPath = config.cachePath + cacheDirName;
+        string path = Application.persistentDataPath;
+        if (!path.EndsWith("/"))
+            path += "/";
+        string fullPath = path + cacheDirName;
         try
         {
             if (!Directory.Exists(fullPath))

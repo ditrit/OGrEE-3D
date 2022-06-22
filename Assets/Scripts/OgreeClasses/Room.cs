@@ -20,8 +20,8 @@ public class Room : Building
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        Filters.instance.roomsList.Remove(name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
+        //Filters.instance.roomsList.Remove(name);
+        //Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
     }
 
     ///<summary>

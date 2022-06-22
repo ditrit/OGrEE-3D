@@ -64,8 +64,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     {
         if (category == "tenant")
         {
-            Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
-            Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+            //Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
+            //Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         }
         GameManager.gm.allItems.Remove(hierarchyName);
     }

@@ -130,8 +130,8 @@ public class BuildingGenerator : MonoBehaviour
         room.nameText.rectTransform.sizeDelta = size;
 
         // Add room to GUI room filter
-        Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
+        //Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
+        //Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
 
         room.UpdateZonesColor();
 

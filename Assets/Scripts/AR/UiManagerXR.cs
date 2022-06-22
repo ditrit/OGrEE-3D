@@ -57,14 +57,6 @@ public class UiManagerXR : MonoBehaviour
 
     private void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.Escape))
-            menuPanel.SetActive(!menuPanel.activeSelf);
-        
-        if (mouseName.gameObject.activeSelf)
-        {
-            mouseName.transform.position = Input.mousePosition;
-            NameUnderMouse();
-        }*/
     }
 
     private void OnDestroy()
@@ -129,24 +121,6 @@ public class UiManagerXR : MonoBehaviour
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
         apiButtonVRBackPlate.material.SetColor("_Color", _color);
-    }
-
-    ///<summary>
-    /// Set animator triger of _panel according to its current state and _value
-    ///</summary>
-    ///<param name="_panel">The panel to modify</param>
-    ///<param name="_value">Should the panel be "on"?</param>
-    public void MovePanel(string _panel, bool _value)
-    {
-        Animator anim = null;
-        if (_panel == "infos")
-            anim = infosPanel.GetComponent<Animator>();
-        else if (_panel == "debug")
-            anim = debugPanel.GetComponent<Animator>();
-
-        if ((_value == true && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOff"))
-            || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
-            anim.SetTrigger("Transition");
     }
 
     #region SetValues

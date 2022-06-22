@@ -68,7 +68,6 @@ private async Task Start()
     {
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
-        Debug.Log(configLoader.GetTenant());
         StartCoroutine(configLoader.LoadTextures());
         UiManager.instance.UpdateFocusText();
         mainCamera = Camera.main;
@@ -512,8 +511,8 @@ private async Task Start()
         roomTemplates.Clear();
         consoleController.variables.Clear();
         consoleController.ResetCounts();
-        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
+        //Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
+        //Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         StartCoroutine(LoadFile());
     }
 
