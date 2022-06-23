@@ -296,8 +296,10 @@ public class Room : Building
                     Renderer rend = tile.GetComponent<Renderer>();
                     if (GameManager.gm.textures.ContainsKey(tileData.texture))
                     {
-                        rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = GameManager.gm.textures[tileData.texture];
+                        rend.material = new Material(GameManager.gm.perfMat)
+                        {
+                            mainTexture = GameManager.gm.textures[tileData.texture]
+                        };
                     }
                     else
                         GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", "yellow");
@@ -456,9 +458,11 @@ public class Room : Building
         Vector2 startPos = Utils.ParseVector2(data[0]);
         Vector2 endPos = Utils.ParseVector2(data[1]);
 
-        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator();
-        separator.startPosXYm = new float[] { startPos.x, startPos.y };
-        separator.endPosXYm = new float[] { endPos.x, endPos.y };
+        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator
+        {
+            startPosXYm = new float[] { startPos.x, startPos.y },
+            endPosXYm = new float[] { endPos.x, endPos.y }
+        };
         AddSeparator(separator);
     }
 

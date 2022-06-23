@@ -52,7 +52,6 @@ public class CliParser// : MonoBehaviour
     ///<param name="_input">The json to deserialize</param>
     public async Task DeserializeInput(string _input)
     {
-        GameObject obj = null;
         Hashtable command = new Hashtable();
         try
         {
@@ -62,6 +61,7 @@ public class CliParser// : MonoBehaviour
         {
             GameManager.gm.AppendLogLine("Received data with unknow format.", "red");
         }
+        GameObject obj;
         switch (command["type"])
         {
             case "login":
@@ -252,7 +252,7 @@ public class CliParser// : MonoBehaviour
                     Debug.LogWarning("Incorrect device interaction");
                 break;
             default:
-                usableParams = new List<string>() { "" };
+                _ = new List<string>() { "" };
                 break;
         }
     }

@@ -107,10 +107,9 @@ public static class Utils
     ///<returns>Hit GameObject or null</returns>
     public static GameObject RaycastFromCameraToMouse()
     {
-        RaycastHit hit;
         //Vector3 pointerPosition = new Vector3();
         //pointerPosition = Microsoft.MixedReality.Toolkit.Input.IMixedRealityPointer.Position;
-        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         //IMixedRealityRaycastProvider.Raycast(out MixedRealityRaycastHit);
         if (hit.collider)
         {
@@ -143,8 +142,7 @@ public static class Utils
     ///<returns>The wanted color</returns>
     public static Color ParseColor(string _hex)
     {
-        Color newColor;
-        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
+        ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
         return newColor;
     }
 
@@ -159,25 +157,7 @@ public static class Utils
         return new Color(max - _color.r / 3, max - _color.g / 3, max - _color.b / 3, _color.a);
     }
 
-    ///<summary>
-    /// Parse a nested SApiObject and add each item to a given list.
-    ///</summary>
-    ///<param name="_physicalList">The list of physical objects to complete</param>
-    ///<param name="_logicalList">The list of logical objects to complete</param>
-    ///<param name="_src">The head of nested SApiObjects</param>
-    public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
-    {
-        if (_src.category == "group")
-            _logicalList.Add(_src);
-        else
-            _physicalList.Add(_src);
-        if (_src.children != null)
-        {
-            foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_physicalList, _logicalList, obj);
-        }
-    }
-  
+
     ///<summary>
     /// Move object in front of the camera
     ///</summary>
@@ -204,5 +184,39 @@ public static class Utils
         char[] charSeparators = new char[] { '.' };
         string[] array = _hierarchyName.Split(charSeparators, System.StringSplitOptions.RemoveEmptyEntries);
         return array;
+    }
+
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_physicalList">The list of physical objects to complete</param>
+    ///<param name="_logicalList">The list of logical objects to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
+    public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
+    {
+        if (_src.category == "group")
+            _logicalList.Add(_src);
+        else
+            _physicalList.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_physicalList, _logicalList, obj);
+        }
+    }
+
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_list">The list of objects to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
+    public static void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    {
+        _list.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_list, obj);
+        }
     }
 }

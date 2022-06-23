@@ -224,8 +224,12 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(string _level)
     {
-        int lvl;
-        int.TryParse(_level, out lvl);
+        if (id == "")
+        {
+            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", "yellow");
+            return;
+        }
+        int.TryParse(_level, out int lvl);
         if (lvl < 0)
             lvl = 0;
 
@@ -239,7 +243,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                await ApiManager.instance.GetObject(apiCall);
+                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
             }
 
             SetCurrentLod(lvl);

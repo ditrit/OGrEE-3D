@@ -57,7 +57,6 @@ public class UiManager : MonoBehaviour
         mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     private void Update()
@@ -75,7 +74,6 @@ public class UiManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     ///
@@ -83,17 +81,13 @@ public class UiManager : MonoBehaviour
     {
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
-    {
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
         }
     }
+    
 
     ///<summary>
     /// Get the object under the mouse and displays its hierarchyName in mouseName text.

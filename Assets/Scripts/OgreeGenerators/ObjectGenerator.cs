@@ -61,8 +61,7 @@ public class ObjectGenerator : MonoBehaviour
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
         }
 
-        Vector2 orient;
-        PlaceInRoom(newRack.transform, _rk, out orient);
+        PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk);
@@ -299,7 +298,7 @@ public class ObjectGenerator : MonoBehaviour
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
             {
-                if (comp.gameObject != newDevice.gameObject)
+                if (comp.gameObject != newDevice)
                 {
                     comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
@@ -674,8 +673,7 @@ public class ObjectGenerator : MonoBehaviour
             newSensor.name = _se.name;
             if (parentCategory == "room")
             {
-                Vector2 orient;
-                PlaceInRoom(newSensor.transform, _se, out orient);
+                PlaceInRoom(newSensor.transform, _se, out Vector2 orient);
 
                 // Adjust position
                 float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
@@ -689,7 +687,7 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 else
                 {
-                    newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
+                    newSensor.transform.localScale = 5 * GameManager.gm.uSize * Vector3.one;
                     newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
                 }
             }
@@ -779,14 +777,11 @@ public class ObjectGenerator : MonoBehaviour
     {
         if (!_r.attributes.ContainsKey("floorUnit"))
             return GameManager.gm.tileSize;
-        switch (_r.attributes["floorUnit"])
+        return _r.attributes["floorUnit"] switch
         {
-            case "m":
-                return 1.0f;
-            case "f":
-                return 3.28084f;
-            default:
-                return GameManager.gm.tileSize;
-        }
+            "m" => 1.0f,
+            "f" => 3.28084f,
+            _ => GameManager.gm.tileSize,
+        };
     }
 }

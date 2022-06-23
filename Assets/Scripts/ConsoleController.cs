@@ -260,7 +260,10 @@ public class ConsoleController : MonoBehaviour
                             yield return new WaitUntil(() => task.IsCompleted);
                         }
                         else
-                            GameManager.gm.UpdateCurrentItems(child.gameObject);
+                        {
+                            task = GameManager.gm.UpdateCurrentItems(child.gameObject);
+                            yield return new WaitUntil(() => task.IsCompleted);
+                        }
                         found = true;
                     }
                 }
@@ -515,7 +518,7 @@ public class ConsoleController : MonoBehaviour
             if (data[0] == "get")
             {
                 // bool isObjArray = Regex.IsMatch(data[1], "(?:^[a-z]+$)|(?:[a-z]+\\?[a-z0-9]+=.+$)");
-                await ApiManager.instance.GetObject(data[1]);
+                await ApiManager.instance.GetObject(data[1],ApiManager.instance.DrawObject);
             }
             else
             {
@@ -591,13 +594,15 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            SApiObject tn = new SApiObject();
-            tn.description = new List<string>();
-            tn.attributes = new Dictionary<string, string>();
+            SApiObject tn = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            tn.name = data[0];
-            tn.category = "tenant";
-            tn.domain = data[0];
+                name = data[0],
+                category = "tenant",
+                domain = data[0]
+            };
             tn.attributes["color"] = data[1];
             if (ApiManager.instance.isInit)
                 await ApiManager.instance.PostObject(tn);
@@ -619,13 +624,14 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            Transform parent = null;
-            SApiObject si = new SApiObject();
-            si.description = new List<string>();
-            si.attributes = new Dictionary<string, string>();
+            SApiObject si = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            si.category = "site";
-            IsolateParent(data[0], out parent, out si.name);
+                category = "site"
+            };
+            IsolateParent(data[0], out Transform parent, out si.name);
             si.attributes["orientation"] = data[1];
             // si.attributes["usableColor"] = "DBEDF2";
             // si.attributes["reservedColor"] = "F2F2F2";
@@ -659,14 +665,15 @@ public class ConsoleController : MonoBehaviour
 
             Vector3 pos = Utils.ParseVector2(data[1]);
             Vector3 size = Utils.ParseVector3(data[2]);
+            SApiObject bd = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            Transform parent = null;
-            SApiObject bd = new SApiObject();
-            bd.description = new List<string>();
-            bd.attributes = new Dictionary<string, string>();
+                category = "building"
+            };
 
-            bd.category = "building";
-            IsolateParent(data[0], out parent, out bd.name);
+            IsolateParent(data[0], out Transform parent, out bd.name);
             bd.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             bd.attributes["posXYUnit"] = "m";
             bd.attributes["size"] = JsonUtility.ToJson(new Vector2(size.x, size.z));
@@ -700,12 +707,13 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            Transform parent = null;
-            SApiObject ro = new SApiObject();
-            ro.description = new List<string>();
-            ro.attributes = new Dictionary<string, string>();
+            SApiObject ro = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            ro.category = "room";
+                category = "room"
+            };
             Vector3 pos = Utils.ParseVector2(data[1]);
             ro.attributes["posXY"] = JsonUtility.ToJson(new Vector2(pos.x, pos.y));
             ro.attributes["posXYUnit"] = "m";
@@ -726,7 +734,7 @@ public class ConsoleController : MonoBehaviour
                     template = GameManager.gm.roomTemplates[ro.attributes["template"]];
                 else if (ApiManager.instance.isInit)
                 {
-                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}");
+                    await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}", ApiManager.instance.DrawObject);
                     template = GameManager.gm.roomTemplates[ro.attributes["template"]];
                 }
 
@@ -749,7 +757,7 @@ public class ConsoleController : MonoBehaviour
             if (data.Length == 5)
                 ro.attributes["floorUnit"] = data[4];
 
-            IsolateParent(data[0], out parent, out ro.name);
+            IsolateParent(data[0], out Transform parent, out ro.name);
             if (parent)
             {
                 ro.parentId = parent.GetComponent<OgreeObject>().id;
@@ -777,12 +785,13 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            Transform parent;
-            SApiObject rk = new SApiObject();
-            rk.description = new List<string>();
-            rk.attributes = new Dictionary<string, string>();
+            SApiObject rk = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            rk.category = "rack";
+                category = "rack"
+            };
             if (data[2].StartsWith("[")) // if vector to parse...
             {
                 Vector3 tmp = Utils.ParseVector3(data[2], false);
@@ -800,7 +809,7 @@ public class ConsoleController : MonoBehaviour
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 else if (ApiManager.instance.isInit)
                 {
-                    await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}");
+                    await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}", ApiManager.instance.DrawObject);
                     template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 }
 
@@ -823,7 +832,7 @@ public class ConsoleController : MonoBehaviour
             rk.attributes["posXY"] = JsonUtility.ToJson(pos);
             rk.attributes["posXYUnit"] = "tile";
             rk.attributes["orientation"] = data[3];
-            IsolateParent(data[0], out parent, out rk.name);
+            IsolateParent(data[0], out Transform parent, out rk.name);
             if (parent)
             {
                 rk.parentId = parent.GetComponent<OgreeObject>().id;
@@ -851,14 +860,14 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            Transform parent;
-            SApiObject dv = new SApiObject();
-            dv.description = new List<string>();
-            dv.attributes = new Dictionary<string, string>();
+            SApiObject dv = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            dv.category = "device";
-            float sizeU;
-            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out sizeU))
+                category = "device"
+            };
+            if (float.TryParse(data[2], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float sizeU))
             {
                 dv.attributes["sizeU"] = sizeU.ToString();
                 dv.attributes["template"] = "";
@@ -866,7 +875,7 @@ public class ConsoleController : MonoBehaviour
             else
                 dv.attributes["template"] = data[2];
 
-            IsolateParent(data[0], out parent, out dv.name);
+            IsolateParent(data[0], out Transform parent, out dv.name);
             if (parent)
             {
                 if (dv.attributes["template"] == "")
@@ -885,7 +894,7 @@ public class ConsoleController : MonoBehaviour
                         template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
                     else if (ApiManager.instance.isInit)
                     {
-                        await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}");
+                        await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}", ApiManager.instance.DrawObject);
                         template = GameManager.gm.objectTemplates[dv.attributes["template"]]?.GetComponent<OgreeObject>();
                     }
 
@@ -904,8 +913,7 @@ public class ConsoleController : MonoBehaviour
                         return;
                     }
                 }
-                float posU;
-                if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out posU))
+                if (float.TryParse(data[1], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float posU))
                 {
                     dv.attributes["posU"] = posU.ToString();
                     dv.attributes["slot"] = "";
@@ -942,13 +950,14 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            Transform parent = null;
-            SApiObject gr = new SApiObject();
-            gr.description = new List<string>();
-            gr.attributes = new Dictionary<string, string>();
+            SApiObject gr = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            gr.category = "group";
-            IsolateParent(data[0], out parent, out gr.name);
+                category = "group"
+            };
+            IsolateParent(data[0], out Transform parent, out gr.name);
             gr.attributes["content"] = data[1].Trim('{', '}');
             if (parent)
             {
@@ -977,13 +986,14 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split('@');
 
-            Transform parent = null;
-            SApiObject co = new SApiObject();
-            co.description = new List<string>();
-            co.attributes = new Dictionary<string, string>();
+            SApiObject co = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            co.category = "corridor";
-            IsolateParent(data[0], out parent, out co.name);
+                category = "corridor"
+            };
+            IsolateParent(data[0], out Transform parent, out co.name);
             co.attributes["content"] = data[1].Trim('{', '}');
             co.attributes["temperature"] = data[2];
             if (parent)
@@ -1012,13 +1022,15 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-            Transform parent = null;
-            SApiObject se = new SApiObject();
-            se.description = new List<string>();
-            se.attributes = new Dictionary<string, string>();
+            SApiObject se = new SApiObject
+            {
+                description = new List<string>(),
+                attributes = new Dictionary<string, string>(),
 
-            se.category = "sensor";
+                category = "sensor"
+            };
             se.attributes["formFactor"] = data[1];
+            Transform parent;
             if (data[1] == "ext")
             {
                 se.name = "sensor"; // ?

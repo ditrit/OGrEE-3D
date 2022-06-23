@@ -75,7 +75,6 @@ public class GridMenuHandler : MonoBehaviour
         Debug.Log($"Number of Results: {_objectNumber}, Page Number: {pageNumber}, MaxNumberOfPage: {maxNumberOfPage}, NumberOfResultsPerPage: {numberOfResultsPerPage}, iteratorUpperBound: {iteratorUpperBound}");
         for (int i = pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)
         {
-            print(i);
             _elementDelegate(i);
         }
 

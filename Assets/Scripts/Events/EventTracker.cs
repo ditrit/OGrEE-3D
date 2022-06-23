@@ -26,7 +26,6 @@ public class EventTracker : MonoBehaviour
     {
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -42,12 +41,10 @@ public class EventTracker : MonoBehaviour
 
     public void OnSelectItem(OnSelectItemEvent e)
     {
-        onSelectItemEvents.Add(e.obj.ToString());
-    }
-
-    public void OnDeselectItem(OnDeselectItemEvent e)
-    {
-        onDeselectItemEvents.Add(e.obj.ToString());
+        if (GameManager.gm.currentItems.Count > 0)
+            onSelectItemEvents.Add(GameManager.gm.currentItems[0].ToString());
+        if (GameManager.gm.previousItems.Count > 0)
+            onDeselectItemEvents.Add(GameManager.gm.previousItems[0].ToString());
     }
 
     public void OnFocusItem(OnFocusEvent e)

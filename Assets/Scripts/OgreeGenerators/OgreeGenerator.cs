@@ -39,20 +39,20 @@ public class OgreeGenerator : MonoBehaviour
         // Get dependencies from API
         if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.gm.allItems.Contains(_obj.domain))
-            await ApiManager.instance.GetObject($"tenants?name={_obj.domain}");
+            await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
 
         if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.gm.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}");
+            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         if ((_obj.category == "rack" || _obj.category == "device") && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.gm.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}");
+            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         // Call Create function

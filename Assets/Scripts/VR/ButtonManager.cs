@@ -28,13 +28,12 @@ public class ButtonManager : MonoBehaviour
     {
         EventManager.Instance.AddListener<ChangeOrientationEvent>(OnChangeOrientation);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         buttonWrapper.SetActive(false);
-        buttonChangeOrientation.SetActive(false);   
+        buttonChangeOrientation.SetActive(false);
         defaultBackplateColor = buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.color;
     }
 
@@ -63,14 +62,6 @@ public class ButtonManager : MonoBehaviour
                 continue;
             }
             ogree.ResetPosition();
-            DeltaPositionManager delta = _obj.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-            if (delta)
-            {
-                delta.yPositionDelta = 0;
-                delta.isFirstMove = true;
-                UManager.um.wasEdited = false;
-                UManager.um.ToggleU(true);
-            }
         }
     }
 
@@ -91,12 +82,6 @@ public class ButtonManager : MonoBehaviour
             if (ithChild.localPosition.z < ogree.originalLocalPosition.z)
             {
                 ogree.ResetPosition();
-                DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                }
             }
         }
     }
@@ -108,34 +93,33 @@ public class ButtonManager : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        PlaceButton();
-
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+        if (GameManager.gm.currentItems.Count > 0)
         {
-            buttonResetPosition.SetActive(true);
-            buttonSelectParent.SetActive(false);
-            buttonEdit.SetActive(true);
+            PlaceButton();
+
+            if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            {
+                buttonResetPosition.SetActive(true);
+                buttonSelectParent.SetActive(false);
+                buttonEdit.SetActive(true);
+            }
+            else
+            {
+                buttonResetPosition.SetActive(false);
+                buttonSelectParent.SetActive(true);
+                buttonEdit.SetActive(false);
+            }
         }
         else
         {
-            buttonResetPosition.SetActive(false);
-            buttonSelectParent.SetActive(true);
-            buttonEdit.SetActive(false);
+            buttonEdit.SetActive(true);
+            buttonWrapper.SetActive(false);
+            buttonChangeOrientation.SetActive(false);
         }
 
     }
 
-    ///<summary>
-    /// When called set the buttonWrapper inactive
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e)
-    {
-        buttonEdit.SetActive(true);
-        buttonWrapper.SetActive(false);
-        buttonChangeOrientation.SetActive(false);
-    }
-
+   
 
     ///<summary>
     /// When called set the edit button active
@@ -213,31 +197,12 @@ public class ButtonManager : MonoBehaviour
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1])
         {
             GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            for (int i = 0; i < previousSelected.transform.childCount; i++)
-            {
-                DeltaPositionManager delta = previousSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                }
-            }
+
 
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
             await GameManager.gm.UnfocusItem();
-            if (GameManager.gm.currentItems.Count > 0)
-            {
-                GameObject objectSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-                for (int i = 0; i < objectSelected.transform.childCount; i++)
-                {
-                    DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                    if (delta)
-                    {
-                        delta.yPositionDelta = 0;
-                        delta.isFirstMove = true;
-                    }
-                }
-            }
+
+
         }
         else
         {

@@ -31,7 +31,7 @@ public class APIMenuHandler : GridMenuHandler
 
     private async void OnEnable()
     {
-        List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu("tenants");
+        List<SApiObject> tmp = await ApiManager.instance.GetObject("tenants",ApiManager.instance.GetAllSApiObject);
         if (tmp != null)
         {
             previousCalls.Add("tenants");
@@ -54,14 +54,11 @@ public class APIMenuHandler : GridMenuHandler
     {
         isTenant = false;
         bool isRack = false;
-        print(_index);
-        print(physicalObjects[_index]);
         SApiObject obj = physicalObjects[_index];
         string category = obj.category;
         string subCat = null;
 
         string fullname = parentNames[parentNames.Count - 1] + "." + obj.name;
-        print(_index);
         switch (category)
         {
             case "tenant":
@@ -93,7 +90,7 @@ public class APIMenuHandler : GridMenuHandler
         {
             button.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
             {
-                List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(nextCall);
+                List<SApiObject> tmp = await ApiManager.instance.GetObject(nextCall, ApiManager.instance.GetAllSApiObject);
                 if (tmp != null)
                 {
                     previousCalls.Add(nextCall);
@@ -135,34 +132,34 @@ public class APIMenuHandler : GridMenuHandler
             case 0:
                 throw new System.Exception("fullname is empty or not formatted : " + _fullname);
             case 1:
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0], ApiManager.instance.DrawObject);
                 oObject = GameManager.gm.FindByAbsPath(splittedName[0]);
                 break;
             case 2:
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1], ApiManager.instance.DrawObject);
                 oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1]);
                 break;
             case 3:
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2], ApiManager.instance.DrawObject);
                 oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2]);
                 break;
 
             case 4:
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3], ApiManager.instance.DrawObject);
                 oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2] + "." + splittedName[3]);
                 break;
             case 5:
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3]);
-                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3] + "/racks/" + splittedName[4]);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3], ApiManager.instance.DrawObject);
+                await ApiManager.instance.GetObject($"tenants/" + splittedName[0] + "/sites/" + splittedName[1] + "/buildings/" + splittedName[2] + "/rooms/" + splittedName[3] + "/racks/" + splittedName[4], ApiManager.instance.DrawObject);
                 oObject = GameManager.gm.FindByAbsPath(splittedName[0] + "." + splittedName[1] + "." + splittedName[2] + "." + splittedName[3] + "." + splittedName[4]);
                 break;
             default:
@@ -209,7 +206,7 @@ public class APIMenuHandler : GridMenuHandler
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
         buttonReturn.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
         {
-            List<SApiObject> tmp = await ApiManager.instance.GetObjectAPIMenu(previousCalls[previousCalls.Count - 2]);
+            List<SApiObject> tmp = await ApiManager.instance.GetObject(previousCalls[previousCalls.Count - 2], ApiManager.instance.GetAllSApiObject);
             if (tmp != null)
             {
                 string prevCall = previousCalls[previousCalls.Count - 2];
