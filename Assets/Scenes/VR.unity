@@ -3771,7 +3771,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 459241514}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.013972057
+  m_Size: 0.013972056
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4508,9 +4508,9 @@ MonoBehaviour:
     type: 3}
   roomModel: {fileID: 405515581002141253, guid: c2fa1f5a7c94a3c4796029fd4f14465e,
     type: 3}
-  rackModel: {fileID: 382823270839367371, guid: 5bbdeb9c7eb084b4cb29883fc1de510c,
+  rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
     type: 3}
-  labeledBoxModel: {fileID: 6010235731161253863, guid: 565d096a2186a4b4993a28aa60e26b58,
+  labeledBoxModel: {fileID: 6010235731161253863, guid: 0786d4bf0612c9d49afd9c32608c9589,
     type: 3}
   tileNameModel: {fileID: 6720931301833660590, guid: a0ef6933771b78046b706dda050693ba,
     type: 3}
@@ -4577,6 +4577,7 @@ MonoBehaviour:
   isInit: 0
   isReady: 0
   server: 
+  isRequestGood: 0
 --- !u!4 &560516247
 Transform:
   m_ObjectHideFlags: 0
@@ -4604,6 +4605,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f43d7cf70bfe9eb45b1acf52b4d5121a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  yPositionDelta: 0
+  initialYPosition: 0
+  cornerRearLeft: rearLeft
+  cornerRearRight: rearRight
+  cornerFrontLeft: frontLeft
+  cornerFrontRight: frontRight
+  isFocused: 0
+  wasEdited: 0
 --- !u!114 &560516249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8444,8 +8453,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: 0.00000089681595
-  m_Size: 0.8925826
+  m_Value: 0.00000089681515
+  m_Size: 0.89261746
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10505,8 +10514,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1008847288}
   m_HandleRect: {fileID: 1008847287}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11230,7 +11239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.028763}
+  m_AnchoredPosition: {x: 0, y: 34.02879}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped

@@ -8,6 +8,19 @@ public class Rack : OObject
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
     private Transform uRoot;
+    private void Start()
+    {
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectObject);
+        //EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectObject);
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectObject);
+        //EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectObject);
+    }
+
 
     private void OnEnable()
     {
@@ -143,6 +156,7 @@ public class Rack : OObject
         else if (_value == "false" && uRoot)
             Destroy(uRoot.gameObject);
     }
+
     public void ToggleU()
     {
         if (uRoot)
@@ -156,6 +170,7 @@ public class Rack : OObject
     ///</summary>
     private void GenerateUHelpers()
     {
+        //Bouger dans U manager en rajoutant en paramètre le transform et le uroot
         Vector3 rootPos;
         Transform box = transform.GetChild(0);
         if (box.childCount == 0)
@@ -179,31 +194,40 @@ public class Rack : OObject
     ///<param name="_corner">Corner of the column</param>
     private void GenerateUColumn(string _corner)
     {
-        Vector3 boxSize = transform.GetChild(0).localScale;
+        Vector3 boxSize = transform.GetChild(0).localScale * transform.localScale.x;
 
-        // By defalut, attributes["heightUnit"] == "U"
-        float scale = GameManager.gm.uSize;
+        // By defalut, attributes["heightUnit"] == "OU"
+        float scale = GameManager.gm.uSize * transform.localScale.x;
         int max = (int)Utils.ParseDecFrac(attributes["height"]);
-        if (attributes["heightUnit"] == "OU")
+
+        if (attributes["heightUnit"] == "cm")
         {
-            scale = GameManager.gm.ouSize;
-            max = (int)Utils.ParseDecFrac(attributes["height"]);
-        }
-        else if (attributes["heightUnit"] == "cm")
-        {
-            scale = GameManager.gm.uSize;
+            scale = GameManager.gm.uSize * transform.localScale.x;
             max = Mathf.FloorToInt(Utils.ParseDecFrac(attributes["height"]) / (GameManager.gm.uSize * 100));
         }
 
         if (!string.IsNullOrEmpty(attributes["template"]))
         {
             Transform firstSlot = null;
+            int minHeight = 0;
             foreach (Transform child in transform)
             {
-                if (child.GetComponent<Slot>())
+                if (child.GetComponent<Slot>() && child.GetComponent<Slot>().orient == "horizontal")
                 {
-                    firstSlot = child;
-                    break;
+                    if (firstSlot)
+                    {
+                        int height = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        if (height < minHeight)
+                            firstSlot = child;
+                        else if (height > max)
+                            max = height;
+                    }
+                    else
+                    {
+                        firstSlot = child;
+                        minHeight = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        max = minHeight;
+                    }
                 }
             }
             if (firstSlot)
@@ -259,5 +283,14 @@ public class Rack : OObject
                 child.GetComponent<Collider>().enabled = true;
         }
         Utils.SwitchAllCollidersInRacks(false);
+    }
+
+    public void OnSelectObject(OnSelectItemEvent _e)
+    {
+        if (GameManager.gm.currentItems.Contains(gameObject))
+        {
+            ToggleU("true");
+            GameManager.gm.AppendLogLine($"U helpers ON for {name}.", "yellow");
+        }
     }
 }

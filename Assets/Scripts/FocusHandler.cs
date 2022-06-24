@@ -97,6 +97,8 @@ public class FocusHandler : MonoBehaviour
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+
+            UManager.um.HighlightULocation();
             return;
         }
 
@@ -120,6 +122,7 @@ public class FocusHandler : MonoBehaviour
             {
                 ToggleCollider(gameObject, false);
                 ResetToRack();
+                parentRack?.GetComponent<Grid>().CreateGrid(0, parentRack.GetComponent<Grid>().currentGridName);
             }
             else
             {
@@ -131,6 +134,7 @@ public class FocusHandler : MonoBehaviour
                 else
                     UpdateChildMeshRenderers(false);
             }
+
         }
     }
 
@@ -331,7 +335,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "rigRoot")
+            else if (child.name != "rigRoot" && child.name != "uRoot" && child.name != "GridForULocation")
                 OwnObjectsList.Add(child.gameObject);
         }
     }
@@ -514,6 +518,8 @@ public class FocusHandler : MonoBehaviour
         {
             UpdateOwnMeshRenderers(true);
             ToggleCollider(gameObject, true);
+            GameObject uRoot = transform.Find("uRoot").gameObject;
+            uRoot?.SetActive(false);
             return;
         }
         transform.parent.GetComponent<FocusHandler>().ResetToRack();
