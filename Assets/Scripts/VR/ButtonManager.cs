@@ -61,7 +61,7 @@ public class ButtonManager : MonoBehaviour
             {
                 continue;
             }
-            ogree.ResetPosition();
+            ogree.ResetTransform();
             DeltaPositionManager delta = _obj.transform.GetChild(i).GetComponent<DeltaPositionManager>();
             if (delta)
             {
@@ -89,7 +89,7 @@ public class ButtonManager : MonoBehaviour
             }
             if (ithChild.localPosition.z < ogree.originalLocalPosition.z)
             {
-                ogree.ResetPosition();
+                ogree.ResetTransform();
                 DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
                 if (delta)
                 {
@@ -289,7 +289,7 @@ public class ButtonManager : MonoBehaviour
     public void ButtonResetPosition()
     {
         ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
-        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetPosition();
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetTransform();
     }
 
 

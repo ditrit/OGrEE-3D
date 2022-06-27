@@ -304,12 +304,25 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
-    /// Reset object's posistion to its original position
+    /// Reset object's transform to its starting point
     ///</summary>
-    public void ResetPosition()
+    public void ResetTransform()
     {
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
         transform.localScale = originalLocalScale;
+    }
+
+    ///<summary>
+    /// Set the object's base transform
+    ///<param name="_pos">Starting position</param>
+    ///<param name="_rot">Starting rotation</param>
+    ///<param name="_scale">Starting scale</param>
+    ///</summary>
+    public void SetBaseTransform(Vector3 _pos, Quaternion _rot, Vector3 _scale)
+    {
+        originalLocalPosition = _pos;
+        originalLocalRotation = _rot;
+        originalLocalScale = _scale;
     }
 }

@@ -173,8 +173,7 @@ public class APIMenuHandler : GridMenuHandler
             GameManager.gm.AppendLogLine("OObject NOT Found in the scene after loading from API", "red");
 
         OgreeObject ogree = oObject.GetComponent<OgreeObject>();
-        ogree.originalLocalRotation = oObject.transform.localRotation;
-        ogree.originalLocalPosition = oObject.transform.localPosition;
+        ogree.SetBaseTransform(oObject.transform.localPosition, oObject.transform.localRotation, oObject.transform.localScale);
 
         await ogree.LoadChildren((5 - splittedName.Length).ToString());
         EventManager.Instance.Raise(new ImportFinishedEvent());

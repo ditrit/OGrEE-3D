@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
-using Microsoft.MixedReality.Toolkit.Input;
 
 public class UManager : MonoBehaviour
 {

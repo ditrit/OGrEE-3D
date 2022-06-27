@@ -87,11 +87,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-            clickCount++;
+        //if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
+        //    clickCount++;
 
-        if (clickCount == 1 && coroutineAllowed)
-            StartCoroutine(DoubleClickDetection(Time.time));
+        //if (clickCount == 1 && coroutineAllowed)
+        //    StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion

@@ -90,13 +90,9 @@ public class OgreeGenerator : MonoBehaviour
                 GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", "yellow");
                 break;
         }
+        newItem?.SetBaseTransform(newItem.transform.localPosition, newItem.transform.localRotation, newItem.transform.localScale);
+
         ResetCoroutine();
-        if (newItem != null)
-        {
-            newItem.originalLocalPosition = newItem.gameObject.transform.localPosition;
-            newItem.originalLocalRotation = newItem.gameObject.transform.localRotation;
-            newItem.originalLocalScale = newItem.gameObject.transform.localScale;
-        }
         return newItem;
     }
 

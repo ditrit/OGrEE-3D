@@ -136,6 +136,11 @@ public class FocusHandler : MonoBehaviour
             }
 
         }
+        if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+        {
+            GetComponent<OgreeObject>().SetBaseTransform(transform.localPosition, transform.localRotation, transform.localScale);
+        }
+
     }
 
     ///<summary>
@@ -173,12 +178,12 @@ public class FocusHandler : MonoBehaviour
             isFocused = false;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
-            GetComponent<OgreeObject>().ResetPosition();
+            GetComponent<OgreeObject>().ResetTransform();
         }
         else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
         {
             transform.GetChild(0).GetComponent<MoveAxisConstraint>().enabled = true;
-            GetComponent<OgreeObject>().ResetPosition();
+            GetComponent<OgreeObject>().ResetTransform();
         }
     }
 
