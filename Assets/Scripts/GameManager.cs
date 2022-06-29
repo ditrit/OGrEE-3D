@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     public ConsoleController consoleController;
     public Server server;
     public ConfigLoader configLoader = new ConfigLoader();
-
     [Header("AR")]
     public Camera mainCamera;
 
@@ -41,6 +40,7 @@ public class GameManager : MonoBehaviour
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public List<GameObject> currentItems = new List<GameObject>();
+    public List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
@@ -196,82 +196,93 @@ private async Task Start()
     ///<param name="_obj">The object to save. If null, set default text</param>
     public async Task SetCurrentItem(GameObject _obj)
     {
-        bool unloadChildren = true;
-        OObject previousSelected = null;
-
-        //Should the previous selection's children be unloaded ?
-
-        if (currentItems.Count == 0) //Is there a previous selection ?
-            unloadChildren = false;
-        else
+        try
         {
+            print("call to set current item, current items :"+currentItems.Count);
+            foreach (GameObject obj in currentItems)
+                print(obj.name);
+            previousItems = currentItems.GetRange(0,currentItems.Count);
 
-            previousSelected = currentItems[currentItems.Count - 1].GetComponent<OObject>();
+            //////////////////////////////////////////////////////////
+            //Should the previous selection's children be unloaded ?//
+            //////////////////////////////////////////////////////////
+
+            //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
-
                 OObject currentSelected = _obj.GetComponent<OObject>();
-                if (previousSelected != null && currentSelected != null)//Are the previous and current selection both a rack or smaller ?
+                //Checking all of the previously selected objects
+                foreach (GameObject previousObj in currentItems)
                 {
-                    string[] name1 = previousSelected.GetComponent<OObject>().hierarchyName.Split('.');
-                    string[] name2 = _obj.GetComponent<OObject>().hierarchyName.Split('.');
-                    int i = 0;
-                    while (i < name1.Length && i < name2.Length && name1[i] == name2[i])
-                        i++;
+                    bool unloadChildren = true;
+                    OObject previousSelected = previousObj.GetComponent<OObject>();
 
-                    if (i > 4)//Are they part of the same rack ?
+                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                    if (previousSelected != null && currentSelected != null && previousSelected.parentRack != null && previousSelected.parentRack == currentSelected.parentRack)
                         unloadChildren = false;
-                }
-            }
-        }
-        if (unloadChildren && previousSelected != null)//If no to any of the two precedent questions and previous selection is a rack or smaller, unload
-        {
-            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-            currentItems[currentItems.Count - 1].GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-            await currentItems[currentItems.Count - 1].GetComponent<OgreeObject>().LoadChildren("0");
-        }
-        //Clear current selection
-        for (int i = currentItems.Count - 1; i >= 0; i--)
-        {
-            if (currentItems[i].GetComponent<OObject>()! != null)
-            {
-                Transform t = currentItems[i].transform;
-                while (t != null)
-                {
-                    if (t.GetComponent<OgreeObject>().category == "rack")
-                    {
-                        GameObject uRoot = t.Find("uRoot").gameObject;
-                        uRoot.SetActive(false);
-                        break;
-                    }
-                    t = t.parent.transform;
-                }
-            }
-            DeselectItem(currentItems[i]);
-        }
 
-        if (_obj)
+                    //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                    if (unloadChildren && previousSelected != null)
+                    {
+                        previousObj.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
+                        previousObj.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
+                        await previousSelected?.LoadChildren("0");
+                    }
+                }
+
+            }
+            else
+            {
+                foreach (GameObject previousObj in currentItems)
+                {
+                    previousObj?.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
+                    previousObj?.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
+                    await previousObj?.GetComponent<OObject>()?.LoadChildren("0");
+                }
+            }
+
+            //Clear current selection
+            currentItems.Clear();
+#if !VR
+            UiManager.instance.detailsInputField.UpdateInputField("0");
+            UiManager.instance.detailsInputField.ActiveInputField(false);
+#endif
+
+            if (_obj)
+            {
+                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+                AppendLogLine($"Select {_obj.name}.", "green");
+#if !VR
+                if (currentItems.Count == 0)
+                    UiManager.instance.detailsInputField.ActiveInputField(true);
+#endif
+                currentItems.Add(_obj);
+#if !VR
+                UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+#endif
+                UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
+            }
+            else
+            {
+                AppendLogLine("Empty selection.", "green");
+                UiManager.instance.SetCurrentItemText("Ogree3D");
+            }
+            UiManager.instance.UpdateGuiInfos();
+            EventManager.Instance.Raise(new OnSelectItemEvent());
+            if (_obj)
+                await UManager.um.HighlightULocation();
+        } catch(System.Exception e)
         {
-            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-            AppendLogLine($"Select {_obj.name}.", "green");
-            SelectItem(_obj);
-            if (_obj.GetComponent<OObject>() != null)
-                UManager.um.HighlightULocation();
-            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
+            Debug.LogError(e);
         }
-        else
-        {
-            AppendLogLine("Empty selection.", "green");
-            UiManager.instance.SetCurrentItemText("Ogree3D");
-        }
-        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
-    public void UpdateCurrentItems(GameObject _obj)
+    public async Task UpdateCurrentItems(GameObject _obj)
     {
+        previousItems = currentItems;
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category)
         {
             AppendLogLine("Multiple selection should be same type of objects.", "yellow");
@@ -280,12 +291,52 @@ private async Task Start()
         if (currentItems.Contains(_obj))
         {
             AppendLogLine($"Remove {_obj.name} from selection.", "green");
-            DeselectItem(_obj);
+            currentItems.Remove(_obj);
+            if (currentItems.Count == 0)
+            {
+#if VR
+                UiManager.instance.detailsInputField.UpdateInputField("0");
+                UiManager.instance.detailsInputField.ActiveInputField(false);
+#endif
+                _obj.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
+                _obj.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
+                await _obj.GetComponent<OObject>()?.LoadChildren("0");
+            }
+            else
+            {
+                bool unloadChildren = true;
+                OObject currentDeselected = _obj.GetComponent<OObject>();
+
+                //Checking all of the previously selected objects
+                foreach (GameObject previousObj in currentItems)
+                {
+                    OObject previousSelected = previousObj.GetComponent<OObject>();
+
+                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                    if (previousSelected != null && currentDeselected != null && previousSelected.parentRack != null && previousSelected.parentRack == currentDeselected.parentRack)
+                        unloadChildren = false;
+
+                }
+                //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                if (unloadChildren)
+                {
+                    currentDeselected.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
+                    currentDeselected.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
+                    await currentDeselected.LoadChildren("0");
+                }
+            }
         }
         else
         {
-            AppendLogLine($"Add {_obj.name} to selection.", "green");
-            SelectItem(_obj);
+            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+            AppendLogLine($"Select {_obj.name}.", "green");
+            if (currentItems.Count == 0)
+                UiManager.instance.detailsInputField.ActiveInputField(true);
+            currentItems.Add(_obj);
+#if VR
+            UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+#endif        
+            UiManager.instance.SetCurrentItemText(currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         }
 
         if (currentItems.Count > 1)
@@ -296,41 +347,7 @@ private async Task Start()
             UiManager.instance.SetCurrentItemText("Ogree3D");
 
         UiManager.instance.UpdateGuiInfos();
-    }
-
-    ///<summary>
-    /// Add _obj to currentItems, enable outline if possible.
-    ///</summary>
-    ///<param name="_obj">The GameObject to add</param>
-    private void SelectItem(GameObject _obj)
-    {
-#if !VR
-        if (currentItems.Count == 0)
-            UiManager.instance.detailsInputField.ActiveInputField(true);
-#endif
-
-        currentItems.Add(_obj);
-
-        EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
-        UiManager.instance.detailsInputField.UpdateInputField(currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
-    }
-
-    ///<summary>
-    /// Remove _obj from currentItems, disable outline if possible.
-    ///</summary>
-    ///<param name="_obj">The GameObject to remove</param>
-    private void DeselectItem(GameObject _obj)
-    {
-        currentItems.Remove(_obj);
-#if !VR
-        if (currentItems.Count == 0)
-        {
-            UiManager.instance.detailsInputField.UpdateInputField("0");
-            UiManager.instance.detailsInputField.ActiveInputField(false);
-        }
-#endif
-
-        EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
@@ -349,7 +366,7 @@ private async Task Start()
             return;
         }
 
-        bool canFocus = false;
+        bool canFocus;
         if (focus.Count == 0)
             canFocus = true;
         else

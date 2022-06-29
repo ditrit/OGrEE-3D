@@ -6,8 +6,9 @@ using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
+using UnityEngine.UI;
 
-public class SearchMenuManager : GridMenuHandler
+public class TabletteMenu : GridMenuHandler
 {
     public GameObject buttonReturnPrefab;
     private GameObject buttonReturn;
@@ -20,20 +21,21 @@ public class SearchMenuManager : GridMenuHandler
     public string tenant;
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
         InitializeUIElements();
         menu.name = "Search Menu";
         numberOfResultsPerPage = UiManagerVincent.instance.ReturnGridNumberOfRows(gridCollection);
         buttonReturn = Instantiate(buttonReturnPrefab, menu.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.025f, 0), Quaternion.identity, menu.transform);
         buttonReturn.SetActive(false);
+        await OnEnable();
     }
 
     ///<summary>
     /// Wait for key parameters and launch inital search.
     ///</summary>
     ///<param name="_index">the element index in physicalObjects</param>
-    private async void OnEnable()
+    private async Task OnEnable()
     {
         while (String.IsNullOrEmpty(tenant))
         {
@@ -89,32 +91,32 @@ public class SearchMenuManager : GridMenuHandler
 
         GameObject button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
         button.name = fullname;
-        UiManagerVincent.instance.ChangeButtonText(button, fullname);
-        var onClickEvent = UiManagerVincent.instance.ButtonOnClick(button);
+        button.transform.GetChild(0).GetComponent<TMP_Text>().text = fullname;
+        var onClickEvent1 = UiManagerVincent.instance.ButtonOnClick(button);
         if (!isRack)
         {
-            onClickEvent.AddListener(async () =>
-            {
-                List<SApiObject> tmp = await ApiManager.instance.GetObject(nextCall, ApiManager.instance.GetAllSApiObject);
-                if (tmp != null)
+            onClickEvent1.AddListener(async () =>
                 {
-                    previousCalls.Add(nextCall);
-                    parentNames.Add(fullname);
-                    physicalObjects = tmp;
-                    pageNumber = 0;
-                    UpdateGrid(physicalObjects.Count, AssignButtonFunction);
-                }
-            });
+                    List<SApiObject> tmp = await ApiManager.instance.GetObject(nextCall, ApiManager.instance.GetAllSApiObject);
+                    if (tmp != null)
+                    {
+                        previousCalls.Add(nextCall);
+                        parentNames.Add(fullname);
+                        physicalObjects = tmp;
+                        pageNumber = 0;
+                        UpdateGrid(physicalObjects.Count, AssignButtonFunction);
+                    }
+                });
         }
         else
         {
-            onClickEvent.AddListener(async () =>
+            onClickEvent1.AddListener(async () =>
             {
                 string[] array = Utils.SplitRackHierarchyName(fullname);
                 await ApiListener.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
             });
-            onClickEvent.AddListener(() =>
-            menu.SetActive(false));
+            onClickEvent1.AddListener(() => menu.SetActive(false));
+
         }
     }
 
@@ -126,7 +128,7 @@ public class SearchMenuManager : GridMenuHandler
     protected new void UpdateGrid(int _elementNumber, ElementDelegate _elementDelegate)
     {
         UpdateGridDefault(_elementNumber, _elementDelegate);
-        UiManagerVincent.instance.UpdateGrid(gridCollection);
+        //gridCollection.UpdateCollection();
         buttonReturn.SetActive(!isTenant);
         var onClickEvent = UiManagerVincent.instance.ButtonOnClick(buttonReturn);
         onClickEvent.RemoveAllListeners();

@@ -1,14 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows.WebCam;
 using System.Linq;
 using UnityEngine.Networking;
-using TMPro;
 using System.Threading.Tasks;
-using Microsoft.MixedReality.Toolkit.UI;
-using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class Label
 {
@@ -20,22 +17,17 @@ public class Label
 public class ApiListener : MonoBehaviour
 {
     public static ApiListener instance;
-    [SerializeField]
-    [Tooltip("Assign DialogLarge_192x192.prefab")]
-    private GameObject dialogPrefabLarge;
     private string currentHost;
     public string customer;
     public string site = "NOE";
     public string deviceType = "rack";
-    private string building;
-    private string room;
-    private string rack;
+    public string building;
+    public string room;
+    public string rack;
     private string customerAndSite;
-    public GameObject ButtonPicture;
-    public GameObject quadButtonPhoto;
     private PhotoCapture photoCaptureObject = null;
-    public TextMeshPro apiResponseTMP = null;
     public bool PictureCoolDown = true;
+    public GameObject buttonPicture;
 
     private void Awake()
     {
@@ -56,22 +48,13 @@ public class ApiListener : MonoBehaviour
                 customer = GameManager.gm.configLoader.GetTenant();
                 currentHost = GameManager.gm.configLoader.GetPythonApiUrl();
             }
-            catch{}
+            catch { }
         }
         while (!ApiManager.instance.isInit)
         {
             await Task.Delay(50);
         }
         customerAndSite = customer + '.' + site;
-    }
-
-    /// <summary>
-    /// Large Dialog example prefab to display
-    /// </summary>
-    public GameObject DialogPrefabLarge
-    {
-        get => dialogPrefabLarge;
-        set => dialogPrefabLarge = value;
     }
 
     ///<summary>
@@ -162,9 +145,8 @@ public class ApiListener : MonoBehaviour
         form.AddBinaryData("Label_Rack", _byteArray);
         form.AddField("Tenant_Name", customerAndSite);
         //form.AddField("deviceType", deviceType);
-        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.yellow;
-        apiResponseTMP.gameObject.SetActive(true);
-        apiResponseTMP.text = $"Start POST request with url = {currentHost} and site = {customerAndSite}";
+        UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.yellow);
+        UiManagerVincent.instance.UpdateText($"Start POST request with url = {currentHost} and site = {customerAndSite}");
         using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}", form))
         {
             www.SendWebRequest();
@@ -173,13 +155,12 @@ public class ApiListener : MonoBehaviour
             PictureCoolDown = true;
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
-                apiResponseTMP.text = www.error;
-                quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
+                UiManagerVincent.instance.UpdateText(www.error);
+                UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
             }
             else
             {
                 string text = www.downloadHandler.text;
-                Debug.Log(text);
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
                 site = labelReceived.site;
 
@@ -191,22 +172,24 @@ public class ApiListener : MonoBehaviour
                 if (room.Length > 3)
                     room = room.Substring(3);
                 rack = labelReceived.rack;
-
-                apiResponseTMP.text = $"The label read is {site}{room}-{rack}";
+                UiManagerVincent.instance.UpdateText($"The label read is {site}{room}-{rack}");
                 if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
                 {
-                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
-                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room and the rack label";
+                    UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
+                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room and the rack label");
+
                 }
                 else if (string.IsNullOrEmpty(room))
                 {
-                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
-                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the room label";
+                    UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
+                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room label");
                 }
+
                 else if (string.IsNullOrEmpty(rack))
                 {
-                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
-                    apiResponseTMP.text = apiResponseTMP.text + "\nCould not read the rack label";
+                    UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
+                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the rack label");
+
                 }
 
                 else if (!string.IsNullOrEmpty(rack))
@@ -214,40 +197,32 @@ public class ApiListener : MonoBehaviour
                     await SetBuilding(room);
                     if (building == "error" || building == null)
                     {
-                        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
-                        GameManager.gm.AppendLogLine(building);
-                        apiResponseTMP.text = apiResponseTMP.text + "\nError while getting the parent building of the room";
+                        UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
+                        UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nError while getting the parent building of the room");
+
                     }
                     else
                     {
-                        quadButtonPhoto.GetComponent<Renderer>().material.color = Color.green;
-                        apiResponseTMP.text = apiResponseTMP.text + "\nLoading Rack please wait...";
-
-                        ButtonPicture.SetActive(false);
-                        apiResponseTMP.gameObject.SetActive(false);
-                        Dialog myDialog = Dialog.Open(DialogPrefabLarge, DialogButtonType.Confirm | DialogButtonType.Cancel, "Found Rack !", $"Please click on 'Confirm' to place the rack {site}{room}-{rack}.\nClick on 'Cancel' if the label was misread or if you want to take another picture.", true);
-                        ConfigureDialog(myDialog);
-                        while (myDialog.State != DialogState.Closed)
+                        UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.green);
+                        UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nLoading Rack please wait...");
+                        UiManagerVincent.instance.DeactivateButtonAndText();
+                        await UiManagerVincent.instance.EnableDialogApiListener();
+                        if (UiManagerVincent.instance.dialogPhoto.Result.Result == DialogButtonType.Confirm)
                         {
-                            await Task.Delay(100);
+                            await ApiListener.instance.LoadSingleRack(ApiListener.instance.customer, ApiListener.instance.site, ApiListener.instance.building, ApiListener.instance.room, ApiListener.instance.rack);
                         }
 
-                        if (myDialog.Result.Result == DialogButtonType.Confirm)
+                        if (UiManagerVincent.instance.dialogPhoto.Result.Result == DialogButtonType.Cancel)
                         {
-                            await LoadSingleRack(customer, site, building, room, rack);
-                        }
-
-                        if (myDialog.Result.Result == DialogButtonType.Cancel)
-                        {
-                            ButtonPicture.SetActive(true);
-                            apiResponseTMP.gameObject.SetActive(true);
+                            buttonPicture.SetActive(true);
+                            UiManagerVincent.instance.apiResponseTMP.gameObject.SetActive(true);
                         }
                     }
                 }
 
                 else
                 {
-                    quadButtonPhoto.GetComponent<Renderer>().material.color = Color.red;
+                    UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
                 }
             }
         }
@@ -315,6 +290,7 @@ public class ApiListener : MonoBehaviour
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building, ApiManager.instance.DrawObject);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObject);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room + "/racks/" + _rack, ApiManager.instance.DrawObject);
+
         GameObject rack = GameManager.gm.FindByAbsPath(_customer + "." + _site + "." + _building + "." + _room + "." + _rack);
         if (rack == null)
             GameManager.gm.AppendLogLine("Rack NOT Found in the scene after loading from API", "red");
@@ -326,7 +302,6 @@ public class ApiListener : MonoBehaviour
             OgreeObject ogree = rack.GetComponent<OgreeObject>();
             ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
             ogree.originalLocalPosition = rack.transform.localPosition;
-            await Task.Delay(100); // await for Uroot object to be created
             var goArray = FindObjectsOfType<GameObject>();
             for (var i = 0; i < goArray.Length; i++)
             {
@@ -342,17 +317,4 @@ public class ApiListener : MonoBehaviour
         }
     }
 
-    ///<summary>
-    /// Configure A Dialog with fixed parameters
-    ///</summary>
-    ///<param name="_myDialog"> The Dialog box to update</param>
-    public void ConfigureDialog(Dialog _myDialog)
-    {
-        _myDialog.GetComponent<Follow>().MinDistance = 0.5f;
-        _myDialog.GetComponent<Follow>().MaxDistance = 0.7f;
-        _myDialog.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        _myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.5f;
-        _myDialog.GetComponent<ConstantViewSize>().MinDistance = 0.7f;
-        _myDialog.GetComponent<ConstantViewSize>().MinScale = 0.05f;
-    }
 }

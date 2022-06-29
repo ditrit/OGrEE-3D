@@ -713,7 +713,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
     7: OCULUSINTEGRATION_PRESENT
-    14: VR;API_DEBUG
+    14: API_DEBUG;RACK
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -760,7 +760,7 @@ PlayerSettings:
   metroSplashScreenUseBackgroundColor: 0
   platformCapabilities:
     WindowsStoreApps:
-      EnterpriseAuthentication: False
+      CodeGeneration: False
       OfflineMapsManagement: False
       HumanInterfaceDevice: True
       Location: False
@@ -796,8 +796,8 @@ PlayerSettings:
       Contacts: False
       Proximity: False
       InternetClient: True
-      CodeGeneration: False
       BackgroundMediaPlayback: False
+      EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: False
     Holographic: False

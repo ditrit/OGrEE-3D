@@ -65,6 +65,7 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
     private ReadFromJson rfJson = new ReadFromJson();
+    public bool isRequestGood = false;
 
     private void Awake()
     {
@@ -228,41 +229,6 @@ public class ApiManager : MonoBehaviour
         isReady = true;
     }
 
-    /*///<summary>
-    /// Avoid requestsToSend 
-    /// Get an Object from the api. Create an ogreeObject with response.
-    ///</summary>
-    ///<param name="_input">The path to add a base server for API GET request</param>
-    public async Task GetObject(string _input)
-    {
-        if (!isInit)
-        {
-            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
-            return;
-        }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-
-        string fullPath = $"{server}/{_input}";
-        try
-        {
-            string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.gm.AppendLogLine(response);
-            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                await CreateItemFromJson(response);
-            else if (response.Contains("successfully got obj_template"))
-                await CreateTemplateFromJson(response, "obj");
-            else if (response.Contains("successfully got room_template"))
-                await CreateTemplateFromJson(response, "room");
-            else
-                GameManager.gm.AppendLogLine("Unknown object received", "red");
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        }
-    }*/
-
     ///<summary>
     /// Avoid requestsToSend 
     /// Get an Object from the api. Create an ogreeObject with response.
@@ -283,10 +249,12 @@ public class ApiManager : MonoBehaviour
         {
             string response = await httpClient.GetStringAsync(fullPath);
             GameManager.gm.AppendLogLine(response);
+            isRequestGood = true;
             return await _callback(response);
         }
         catch (HttpRequestException e)
         {
+            isRequestGood = false;
             GameManager.gm.AppendLogLine(e.Message, "red");
             EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
             return default;

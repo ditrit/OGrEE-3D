@@ -5,6 +5,7 @@ using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 //Parent class to build a list menu with an unknow/variable number of items
 //Make a new class inheriting from this one and customise your menu here
@@ -18,7 +19,12 @@ public class GridMenuHandler : MonoBehaviour
     protected GameObject buttonLeft;
     protected GameObject buttonRight;
     protected GameObject resulstInfos;
+    #if VR
     protected GridObjectCollection gridCollection;
+    #endif
+    #if !VR
+    protected GridLayoutGroup gridCollection;
+    #endif
     protected int numberOfResultsPerPage;
     protected int pageNumber;
     protected int iteratorUpperBound = 0;
@@ -32,7 +38,7 @@ public class GridMenuHandler : MonoBehaviour
     ///<param name="_elementDelegate">the function to apply to each displayed element index</param>
     protected void InitializeUIElements()
     {
-        menu = Instantiate(menuPrefab, Vector3.zero , Quaternion.identity);
+        menu = Instantiate(menuPrefab, new Vector3(0,0,0.4f) , Quaternion.identity);
         menu.SetActive(false);
         buttonLeft = menu.transform.Find("ButtonLeft").gameObject;
         if (buttonLeft)
@@ -54,7 +60,7 @@ public class GridMenuHandler : MonoBehaviour
             print("parent list ok");
         else
             print("parent list missing");
-        gridCollection = parentList.GetComponent<GridObjectCollection>();
+        gridCollection = UiManagerVincent.instance.GetGrid(parentList);
         if (gridCollection)
             print("grid collection ok");
         else
@@ -81,8 +87,9 @@ public class GridMenuHandler : MonoBehaviour
         if (pageNumber > 0)
         {
             buttonLeft.SetActive(true);
-            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonLeft.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
+            var onClickEvent = UiManagerVincent.instance.ButtonOnClick(buttonLeft);
+            onClickEvent.RemoveAllListeners();
+            onClickEvent.AddListener(() =>
             {
                 pageNumber -= 1;
                 UpdateGrid(_objectNumber, _elementDelegate);
@@ -94,8 +101,9 @@ public class GridMenuHandler : MonoBehaviour
         if (pageNumber + 1 < maxNumberOfPage)
         {
             buttonRight.SetActive(true);
-            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            buttonRight.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>
+            var onClickEvent1 = UiManagerVincent.instance.ButtonOnClick(buttonRight);
+            onClickEvent1.RemoveAllListeners();
+            onClickEvent1.AddListener(() =>
             {
                 pageNumber += 1;
                 UpdateGrid(_objectNumber, _elementDelegate);
@@ -115,7 +123,7 @@ public class GridMenuHandler : MonoBehaviour
             _elementDelegate(i);
         }
 
-        gridCollection.UpdateCollection();
+        UiManagerVincent.instance.UpdateGrid(gridCollection);
     }
 
 
@@ -129,7 +137,7 @@ public class GridMenuHandler : MonoBehaviour
             Destroy(parentList.transform.GetChild(i).gameObject);
         }
         await Task.Delay(1);
-        gridCollection.UpdateCollection();
+        UiManagerVincent.instance.UpdateGrid(gridCollection);
     }
 
 

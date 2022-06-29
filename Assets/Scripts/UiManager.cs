@@ -35,8 +35,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos = null;
     public DetailsInputField detailsInputField = null;
 
+#if VR
     [Header("VR")]
     [SerializeField] private MeshRenderer apiButtonVRBackPlate = null;
+#endif
 
 
 
@@ -56,7 +58,6 @@ public class UiManager : MonoBehaviour
         //mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     private void Update()
@@ -74,7 +75,6 @@ public class UiManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     ///
@@ -82,16 +82,6 @@ public class UiManager : MonoBehaviour
     {
         focusBtn.interactable = true;
         //selectParentBtn.interactable = true;
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
-    {
-        if (GameManager.gm.currentItems.Count == 0)
-        {
-            focusBtn.interactable = false;
-            //selectParentBtn.interactable = false;
-        }
     }
 
     ///<summary>
@@ -144,7 +134,9 @@ public class UiManager : MonoBehaviour
     {
         apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
         apiBtn.GetComponent<Image>().color = _color;
-        apiButtonVRBackPlate.material.SetColor("_Color", _color);
+#if VR
+        //apiButtonVRBackPlate.material.SetColor("_Color", _color);
+#endif
     }
 
     ///<summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using Microsoft.MixedReality.Toolkit.Input;
+using System.Threading.Tasks;
 
 public class UManager : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class UManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    public void HighlightULocation()
+    public async Task HighlightULocation()
     {
         if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "rack")
         {
@@ -61,6 +62,10 @@ public class UManager : MonoBehaviour
             {
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
+                    while (!t.GetComponent<Rack>().uRoot)
+                    {
+                        await Task.Delay(50);
+                    }
                     GameObject uRoot = t.Find("uRoot").gameObject;
                     uRoot.SetActive(true);
                     for (int i = 0; i < uRoot.transform.childCount; i++)

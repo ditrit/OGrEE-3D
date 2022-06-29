@@ -9,7 +9,7 @@ public class Rack : OObject
 {
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
-    private Transform uRoot;
+    public Transform uRoot;
 
     private void Start()
     {
@@ -290,7 +290,7 @@ public class Rack : OObject
 
     public void OnSelectObject(OnSelectItemEvent _e)
     {
-        if (_e.obj == gameObject)
+        if (GameManager.gm.currentItems.Contains(gameObject))
         {
             ToggleU("true");
             GameManager.gm.AppendLogLine($"U helpers ON for {name}.", "yellow");

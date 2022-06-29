@@ -52,7 +52,6 @@ public class UiManagerXR : MonoBehaviour
         menuPanel.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     private void Update()
@@ -62,7 +61,6 @@ public class UiManagerXR : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     ///
@@ -70,16 +68,6 @@ public class UiManagerXR : MonoBehaviour
     {
         focusBtn.interactable = true;
         //selectParentBtn.interactable = true;
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
-    {
-        if (GameManager.gm.currentItems.Count == 0)
-        {
-            focusBtn.interactable = false;
-            //selectParentBtn.interactable = false;
-        }
     }
 
     ///<summary>

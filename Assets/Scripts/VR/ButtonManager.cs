@@ -28,7 +28,6 @@ public class ButtonManager : MonoBehaviour
     {
         EventManager.Instance.AddListener<ChangeOrientationEvent>(OnChangeOrientation);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
@@ -108,34 +107,31 @@ public class ButtonManager : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        PlaceButton();
-
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+        if (GameManager.gm.currentItems.Count > 0)
         {
-            buttonResetPosition.SetActive(true);
-            buttonSelectParent.SetActive(false);
-            buttonEdit.SetActive(true);
+            PlaceButton();
+
+            if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
+            {
+                buttonResetPosition.SetActive(true);
+                buttonSelectParent.SetActive(false);
+                buttonEdit.SetActive(true);
+            }
+            else
+            {
+                buttonResetPosition.SetActive(false);
+                buttonSelectParent.SetActive(true);
+                buttonEdit.SetActive(false);
+            }
         }
         else
         {
-            buttonResetPosition.SetActive(false);
-            buttonSelectParent.SetActive(true);
-            buttonEdit.SetActive(false);
+            buttonEdit.SetActive(true);
+            buttonWrapper.SetActive(false);
+            buttonChangeOrientation.SetActive(false);
         }
 
     }
-
-    ///<summary>
-    /// When called set the buttonWrapper inactive
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e)
-    {
-        buttonEdit.SetActive(true);
-        buttonWrapper.SetActive(false);
-        buttonChangeOrientation.SetActive(false);
-    }
-
 
     ///<summary>
     /// When called set the edit button active
