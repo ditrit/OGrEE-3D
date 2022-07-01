@@ -87,11 +87,11 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
 #endif
-        //if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-        //    clickCount++;
+        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
+            clickCount++;
 
-        //if (clickCount == 1 && coroutineAllowed)
-        //    StartCoroutine(DoubleClickDetection(Time.time));
+        if (clickCount == 1 && coroutineAllowed)
+            StartCoroutine(DoubleClickDetection(Time.time));
     }
 
     #endregion
@@ -197,10 +197,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            print("call to set current item, current items :"+currentItems.Count);
-            foreach (GameObject obj in currentItems)
-                print(obj.name);
-            previousItems = currentItems.GetRange(0,currentItems.Count);
+            previousItems = currentItems.GetRange(0, currentItems.Count);
 
             //////////////////////////////////////////////////////////
             //Should the previous selection's children be unloaded ?//
@@ -217,15 +214,22 @@ public class GameManager : MonoBehaviour
                     OObject previousSelected = previousObj.GetComponent<OObject>();
 
                     //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentSelected != null && previousSelected.parentRack != null && previousSelected.parentRack == currentSelected.parentRack)
+                    if (previousSelected != null && currentSelected != null && previousSelected.referent != null && previousSelected.referent == currentSelected.referent)
                         unloadChildren = false;
 
                     //if no to the previous question and previousSelected is a rack or smaller, unload its children
                     if (unloadChildren && previousSelected != null)
                     {
-                        previousObj.GetComponent<FocusHandler>().ogreeChildMeshRendererList.Clear();
-                        previousObj.GetComponent<FocusHandler>().ogreeChildObjects.Clear();
-                        await previousSelected?.LoadChildren("0");
+                        if (previousSelected.referent)
+                        {
+                            await previousSelected.referent.LoadChildren("0");
+                        }
+                        if (previousSelected.category != "rack")
+                        {
+                            previousItems.Remove(previousObj);
+                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                                previousItems.Add(previousSelected.referent.gameObject);
+                        }
                     }
                 }
 
@@ -234,9 +238,9 @@ public class GameManager : MonoBehaviour
             {
                 foreach (GameObject previousObj in currentItems)
                 {
-                    previousObj?.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
-                    previousObj?.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
-                    await previousObj?.GetComponent<OObject>()?.LoadChildren("0");
+                    OObject oObject = previousObj.GetComponent<OObject>();
+                    if (oObject != null)
+                        await oObject.LoadChildren("0");
                 }
             }
 
@@ -262,7 +266,8 @@ public class GameManager : MonoBehaviour
             }
             UiManager.instance.UpdateGuiInfos();
             EventManager.Instance.Raise(new OnSelectItemEvent());
-        } catch(System.Exception e)
+        }
+        catch (System.Exception e)
         {
             Debug.LogError(e);
         }
@@ -273,8 +278,8 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UpdateCurrentItems(GameObject _obj)
     {
-        previousItems = currentItems;
-        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category)
+        previousItems = currentItems.GetRange(0, currentItems.Count);
+        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category || currentItems[0].transform.parent != _obj.transform.parent)
         {
             AppendLogLine("Multiple selection should be same type of objects.", "yellow");
             return;
@@ -287,9 +292,9 @@ public class GameManager : MonoBehaviour
             {
                 UiManager.instance.detailsInputField.UpdateInputField("0");
                 UiManager.instance.detailsInputField.ActiveInputField(false);
-                _obj.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
-                _obj.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
-                await _obj.GetComponent<OObject>()?.LoadChildren("0");
+                OObject oObject = _obj.GetComponent<OObject>();
+                if (oObject != null)
+                    await oObject.LoadChildren("0");
             }
             else
             {
@@ -302,15 +307,13 @@ public class GameManager : MonoBehaviour
                     OObject previousSelected = previousObj.GetComponent<OObject>();
 
                     //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentDeselected != null && previousSelected.parentRack != null && previousSelected.parentRack == currentDeselected.parentRack)
+                    if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
                         unloadChildren = false;
 
                 }
                 //if no to the previous question and previousSelected is a rack or smaller, unload its children
                 if (unloadChildren)
                 {
-                    currentDeselected.GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
-                    currentDeselected.GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
                     await currentDeselected.LoadChildren("0");
                 }
             }
@@ -422,9 +425,10 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
-    public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool deselect = true)
+    ///<param name="_deselect">Should we remove current selection ?</param>
+    public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool _deselect = true)
     {
-        if (deselect)
+        if (_deselect)
             await SetCurrentItem(null);
 
         // Should count type of deleted objects

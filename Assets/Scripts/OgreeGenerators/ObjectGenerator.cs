@@ -110,7 +110,8 @@ public class ObjectGenerator : MonoBehaviour
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
-
+        if (Tutorial.instance.step == 4)
+            Tutorial.instance.rack = newRack.transform.GetChild(0).gameObject;
         rack.UpdateColorByTenant();
 
         string hn = rack.UpdateHierarchyName();
@@ -126,6 +127,7 @@ public class ObjectGenerator : MonoBehaviour
                     comp.domain = rack.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
+                    comp.referent = rack;
                 }
             }
         }
@@ -303,10 +305,10 @@ public class ObjectGenerator : MonoBehaviour
                     comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
+                    comp.referent = dv.referent;
                 }
             }
         }
-        dv.GetComponent<FocusHandler>().InitHandler();
         return dv;
     }
 
@@ -716,7 +718,6 @@ public class ObjectGenerator : MonoBehaviour
 
         string hn = sensor.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hn, newSensor);
-        newSensor.GetComponent<FocusHandler>().InitHandler();
         return sensor;
     }
 

@@ -78,6 +78,13 @@ public class HandInteractionHandler : MonoBehaviour, IMixedRealityTouchHandler
             yield return new WaitUntil(() => task.IsCompleted);
             yield return new WaitForEndOfFrame();
             yield return new WaitForSeconds(1.5f);
+            if (Tutorial.instance.step == 5 && Tutorial.instance.rack == transform.parent.GetChild(0).gameObject)
+            {
+                Tutorial.instance.chassis = transform.parent.GetComponent<FocusHandler>().ogreeChildObjects[transform.parent.GetComponent<FocusHandler>().ogreeChildObjects.Count - 1].transform.GetChild(0).gameObject;
+                Tutorial.instance.NextStep();
+            }
+            if (Tutorial.instance.step == 6 && Tutorial.instance.chassis == gameObject)
+                Tutorial.instance.NextStep();
             canSelect = true;
         }
 

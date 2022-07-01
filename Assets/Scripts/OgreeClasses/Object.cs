@@ -10,10 +10,11 @@ public class OObject : OgreeObject
     public bool isHidden = false;
 
     /// <summary>
-    /// The rack which has this object as a direct or indirect child, if it exists
+    /// Te direct child of a room which is a parent of this object or which is this object
     /// </summary>
-    public Rack parentRack;
-    private void Awake()
+    public OObject referent;
+
+    protected virtual void Awake()
     {
         EventManager.Instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
     }
@@ -117,12 +118,12 @@ public class OObject : OgreeObject
             Destroy(transform.Find("sensor").gameObject);
 
         attributes = _src.attributes;
-        if (category == "rack")
-            parentRack = (Rack)this;
-        else if (transform.parent.GetComponent<OObject>() != null)
-            parentRack = transform.parent.GetComponent<OObject>().parentRack;
+        if (transform.parent?.GetComponent<OgreeObject>().category == "room")
+            referent = this;
+        else if (transform.parent.GetComponent<OObject>().referent != null)
+            referent = transform.parent.GetComponent<OObject>().referent;
         else
-            parentRack = null;
+            referent = null;
     }
 
     ///<summary>
@@ -318,12 +319,12 @@ public class OObject : OgreeObject
                         attributes = new Dictionary<string, string>(),
 
                         name = "sensor", // ?
-                        category = "sensor"
+                        category = "sensor",
+                        parentId = id,
+                        domain = domain
                     };
                     se.attributes["formFactor"] = "ext";
                     se.attributes["temperature"] = _value;
-                    se.parentId = id;
-                    se.domain = domain;
 
                     await OgreeGenerator.instance.CreateItemFromSApiObject(se, transform);
                 }

@@ -81,7 +81,7 @@ public class UManager : MonoBehaviour
                     }
                     return;
                 }
-                t = t.parent.transform;
+                t = t.parent?.transform;
             }
         }
         else

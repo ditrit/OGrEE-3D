@@ -326,7 +326,6 @@ public class ReadFromJson
                     obj.attributes[kvp.Key] = kvp.Value;
             }
             obj.UpdateHierarchyName();
-            obj.GetComponent<FocusHandler>().InitHandler();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

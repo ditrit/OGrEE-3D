@@ -13,7 +13,7 @@ public class GestureHandler : MonoBehaviour, IMixedRealityGestureHandler
 
     public void OnGestureCompleted(InputEventData eventData)
     {
-        print(eventData.ToString());
+        Debug.Log(eventData.ToString());
     }
 
     public void OnGestureStarted(InputEventData eventData)

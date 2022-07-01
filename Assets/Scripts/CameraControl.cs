@@ -238,12 +238,13 @@ public class CameraControl : MonoBehaviour
             rotY -= 360;
 
         infosTMP.text = $"Camera pos: [{transform.localPosition.x:0.##};{transform.localPosition.z:0.##};{transform.localPosition.y:0.##}]";
-        if (!isReady)
-            infosTMP.text += " (Waiting)";
-        infosTMP.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
         infosTMPVR.text = $"Camera pos: [{transform.position.x:0.##};{transform.position.z:0.##};{transform.position.y:0.##}]";
         if (!isReady)
+        {
+            infosTMP.text += " (Waiting)";
             infosTMPVR.text += " (Waiting)";
+        }
+        infosTMP.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
         infosTMPVR.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
     }
 

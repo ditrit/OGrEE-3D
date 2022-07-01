@@ -8,17 +8,16 @@ public class Rack : OObject
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
     private Transform uRoot;
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectObject);
-        //EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectObject);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectObject);
-        //EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectObject);
     }
 
 

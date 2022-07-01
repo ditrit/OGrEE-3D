@@ -31,7 +31,7 @@ public class APIMenuHandler : GridMenuHandler
 
     private async void OnEnable()
     {
-        List<SApiObject> tmp = await ApiManager.instance.GetObject("tenants",ApiManager.instance.GetAllSApiObject);
+        List<SApiObject> tmp = await ApiManager.instance.GetObject("tenants", ApiManager.instance.GetAllSApiObject);
         if (tmp != null)
         {
             previousCalls.Add("tenants");
@@ -42,7 +42,12 @@ public class APIMenuHandler : GridMenuHandler
         }
         Utils.MoveObjectToCamera(gameObject, mainCamera);
         gameObject.transform.Rotate(0, -90, 0);
-        gameObject.transform.Translate(0,0.5f,0);
+        gameObject.transform.Translate(0, 0.5f, 0);
+        if (Tutorial.instance.step == 2)
+        {
+            await Task.Delay(1);
+            Tutorial.instance.NextStep();
+        }
     }
 
 
@@ -99,6 +104,12 @@ public class APIMenuHandler : GridMenuHandler
                     pageNumber = 0;
                     UpdateGrid(physicalObjects.Count, AssignButtonFunction);
                 }
+                if (Tutorial.instance.step == 3)
+                {
+                    await Task.Delay(1);
+                    Tutorial.instance.NextStep();
+                }
+
             });
         }
 
@@ -107,6 +118,9 @@ public class APIMenuHandler : GridMenuHandler
         buttonLoadItem.GetComponent<ButtonConfigHelper>().OnClick.AddListener(async () =>
         {
             await LoadOObject(fullname);
+            if (Tutorial.instance.step == 4)
+                Tutorial.instance.NextStep();
+
         });
 
         GameObject buttonUnLoadItem = Instantiate(buttonUnLoadPrefab, Vector3.zero, Quaternion.identity, empty.transform);

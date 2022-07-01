@@ -241,6 +241,8 @@ public class ButtonManager : MonoBehaviour
             await GameManager.gm.FocusItem(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
         }
         StartCoroutine(SelectionDelay());
+        if (Tutorial.instance.step == 7 && Tutorial.instance.chassis == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).gameObject)
+            Tutorial.instance.NextStep();
     }
 
     ///<summary>
@@ -313,6 +315,8 @@ public class ButtonManager : MonoBehaviour
             editMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
+        if (Tutorial.instance.step == 8 && Tutorial.instance.chassis == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).gameObject)
+            Tutorial.instance.NextStep();
     }
 
     private void PlaceButton()

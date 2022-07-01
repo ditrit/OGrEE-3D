@@ -14,9 +14,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
-    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
-    public Quaternion originalLocalRotation = Quaternion.identity;
-    public Vector3 originalLocalScale = Vector3.one;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();
@@ -28,6 +25,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
+    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
 
     public void OnBeforeSerialize()
@@ -224,6 +224,11 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(string _level)
     {
+        if (!ApiManager.instance.isInit)
+        {
+            Debug.Log("API offline");
+            return;
+        }
         if (id == "")
         {
             GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", "yellow");
@@ -290,11 +295,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             foreach (OgreeObject obj in objsToDel)
             {
+
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                await GameManager.gm.DeleteItem(obj.gameObject, false,false);
+                obj.transform.parent = null;
+                await GameManager.gm.DeleteItem(obj.gameObject, false, false);
+                if (obj.GetComponent<FocusHandler>())
+                    obj.GetComponent<FocusHandler>().isDeleted = true;
             }
-            GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
-            GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
+            GetComponent<FocusHandler>()?.InitHandler();
         }
         else
         {
