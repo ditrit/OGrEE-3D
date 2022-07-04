@@ -3,30 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using TMPro;
-public class Tutorial : MonoBehaviour
+public partial class Tutorial : MonoBehaviour
 {
     public int step = 0;
     public GameObject arrow;
-    public GameObject buttonTuto;
     public GameObject tutorialWindow;
-    public GameObject buttonAPI;
-    public GameObject buttonList;
-    public GameObject APIMenu;
-    public GameObject rack;
-    public GameObject chassis;
-    public GameObject ButtonWrapper;
-    public GameObject menuContent;
-    public static Tutorial instance;
     private Vector3 targetSize;
     private Vector3 offset;
     private ParentConstraint parentConstraint;
+
+    public TutorialStep[] tutorialSteps;
+
+    [System.Serializable]
+    public class TutorialStep
+    {
+        [TextArea(maxLines: 4, minLines: 2)]
+        [Tooltip("Text show in the tutorial window")]
+        public string text;
+
+        [Tooltip("Object pointed at by the arrow")]
+        public GameObject arrowTarget;
+
+        [Tooltip("Objects hidden during the step")]
+        public GameObject[] stepObjectsHidden;
+
+        [Tooltip("Objects shown during the step")]
+        public GameObject[] stepObjectsShown;
+
+    }
     // Start is called before the first frame update
     void Start()
     {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
         parentConstraint = arrow.GetComponent<ParentConstraint>();
     }
 
@@ -38,6 +45,9 @@ public class Tutorial : MonoBehaviour
 
     private void PlaceArrow(GameObject _target)
     {
+        arrow.SetActive(false);
+        if (!_target)
+            return;
         if (parentConstraint.sourceCount > 0)
             parentConstraint.RemoveSource(0);
         parentConstraint.locked = false;
@@ -60,63 +70,27 @@ public class Tutorial : MonoBehaviour
 
     public void NextStep()
     {
+        if (step == 0)
+            tutorialWindow.transform.GetChild(3).GetComponent<Microsoft.MixedReality.Toolkit.UI.ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
+
+        PlaceArrow(tutorialSteps[step].arrowTarget);
+        ChangeText(tutorialSteps[step].text);
+        if (step < tutorialSteps.Length)
+        {
+            foreach (GameObject obj in tutorialSteps[step].stepObjectsShown)
+                obj?.SetActive(true);
+            foreach (GameObject obj in tutorialSteps[step].stepObjectsHidden)
+                obj?.SetActive(false);
+        }
         step++;
-        switch (step)
-        {
-            case 1:
-                buttonTuto.SetActive(false);
-                tutorialWindow.SetActive(true);
-                menuContent.SetActive(false);
-                ChangeText("1");
-                break;
-            case 2:
-                menuContent.SetActive(true);
-                if (!ApiManager.instance.isInit)
-                    PlaceArrow(buttonAPI);
-                else
-                    PlaceArrow(buttonList);
-                ChangeText("2");
-                tutorialWindow.transform.GetChild(3).gameObject.SetActive(false);
-                break;
-            case 3:
-                PlaceArrow(APIMenu.transform.GetChild(0).GetChild(0).GetChild(0).gameObject);
-                ChangeText("3");
-                break;
-            case 4:
-                PlaceArrow(APIMenu.transform.GetChild(0).GetChild(0).GetChild(1).gameObject);
-                ChangeText("4");
-                break;
-            case 5:
-                PlaceArrow(rack);
-                ChangeText("5");
-                break;
-            case 6:
-                PlaceArrow(chassis);
-                ChangeText("6");
-                break;
-            case 7:
-                PlaceArrow(ButtonWrapper.transform.GetChild(0).gameObject);
-                ChangeText("7");
-                break;
-            case 8:
-                PlaceArrow(ButtonWrapper.transform.GetChild(3).gameObject);
-                ChangeText("8");
-                buttonTuto.SetActive(true);
-                break;
-            case 9:
-                arrow.SetActive(false);
-                break;
-            default: break;
-        }
-        if (step >= 9)
-        {
+        if (step == tutorialSteps.Length)
             step = 0;
-        }
+
     }
 
     private void MoveArrow()
     {
-        parentConstraint.SetTranslationOffset(0, offset + ((Mathf.PingPong(Time.time, 1)) * (targetSize - targetSize.z * Vector3.forward)));
+        parentConstraint.SetTranslationOffset(0, offset + ((Mathf.PingPong(Time.time, 1)) * (0.05f * new Vector3(1, 1, 0))));
     }
 
     private void ChangeText(string _text)

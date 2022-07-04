@@ -110,8 +110,6 @@ public class ObjectGenerator : MonoBehaviour
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
-        if (Tutorial.instance.step == 4)
-            Tutorial.instance.rack = newRack.transform.GetChild(0).gameObject;
         rack.UpdateColorByTenant();
 
         string hn = rack.UpdateHierarchyName();
