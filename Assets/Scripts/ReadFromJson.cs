@@ -150,12 +150,14 @@ public class ReadFromJson
         }
 
         // Build SApiObject
-        SApiObject obj = new SApiObject();
-        obj.description = new List<string>();
-        obj.attributes = new Dictionary<string, string>();
+        SApiObject obj = new SApiObject
+        {
+            description = new List<string>(),
+            attributes = new Dictionary<string, string>(),
 
-        obj.name = _data.slug;
-        obj.category = _data.category;
+            name = _data.slug,
+            category = _data.category
+        };
         obj.description.Add(_data.description);
         if (obj.category == "rack")
         {
@@ -314,8 +316,10 @@ public class ReadFromJson
             obj.category = "device";
             obj.domain = _parent.domain;
             obj.description = new List<string>();
-            obj.attributes = new Dictionary<string, string>();
-            obj.attributes["deviceType"] = _data.type;
+            obj.attributes = new Dictionary<string, string>
+            {
+                ["deviceType"] = _data.type
+            };
             if (_data.attributes != null)
             {
                 foreach (KeyValuePair<string, string> kvp in _data.attributes)
@@ -330,7 +334,7 @@ public class ReadFromJson
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
-        Color myColor = new Color();
+        Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else

@@ -10,7 +10,7 @@ public class UiManager : MonoBehaviour
     static public UiManager instance;
 
     [SerializeField] private GameObject menuPanel = null;
-    
+
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
@@ -51,7 +51,6 @@ public class UiManager : MonoBehaviour
         mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -61,7 +60,7 @@ public class UiManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
-        
+
         if (mouseName.gameObject.activeSelf)
         {
             mouseName.transform.position = Input.mousePosition;
@@ -72,8 +71,7 @@ public class UiManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
-        
+
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
     }
@@ -81,29 +79,27 @@ public class UiManager : MonoBehaviour
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        focusBtn.interactable = true;
-        selectParentBtn.interactable = true;
-        SetCurrentItemText();
-        UpdateGuiInfos();
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
-    {
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
         }
+        else
+        {
+            focusBtn.interactable = true;
+            selectParentBtn.interactable = true;
+        }
         SetCurrentItemText();
         UpdateGuiInfos();
     }
 
+    ///
     private void OnFocusItem(OnFocusEvent _e)
     {
         UpdateFocusText();
     }
 
+    ///
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
@@ -186,7 +182,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void SetCurrentItemText()
     {
-         if (GameManager.gm.currentItems.Count == 1)
+        if (GameManager.gm.currentItems.Count == 1)
             currentItemText.text = (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
         else if (GameManager.gm.currentItems.Count > 1)
             currentItemText.text = ("Selection");
@@ -321,21 +317,21 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Focus selected object.
     ///</summary>
-    public void FocusSelected()
+    public async void FocusSelected()
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
-            GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+            await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
     }
 
     ///<summary>
     /// Called by GUI button: Select the parent of the selected object.
     ///</summary>
-    public void SelectParentItem()
+    public async void SelectParentItem()
     {
         if (GameManager.gm.currentItems.Count == 0)
             return;
 
-        GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
+        await GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
     ///
@@ -380,9 +376,9 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Delete all Tenants and reload last loaded file.
     ///</summary>
-    public void ReloadFile()
+    public async void ReloadFile()
     {
-        GameManager.gm.SetCurrentItem(null);
+        await GameManager.gm.SetCurrentItem(null);
         GameManager.gm.focus.Clear();
         UiManager.instance.UpdateFocusText();
 

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
@@ -38,6 +37,7 @@ public class GameManager : MonoBehaviour
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public List<GameObject> currentItems = new List<GameObject>();
+    public List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
@@ -59,8 +59,6 @@ public class GameManager : MonoBehaviour
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
-
-        UiManager.instance.UpdateFocusText();
 
 #if API_DEBUG
         UiManager.instance.ToggleApi();
@@ -90,28 +88,81 @@ public class GameManager : MonoBehaviour
     /// Save current object and change the CLI idle text.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    public void SetCurrentItem(GameObject _obj)
+    public async Task SetCurrentItem(GameObject _obj)
     {
-        //Clear current selection
-        for (int i = currentItems.Count - 1; i >= 0; i--)
-            DeselectItem(currentItems[i]);
+        try
+        {
+            previousItems = currentItems.GetRange(0, currentItems.Count);
 
-        if (_obj)
-        {
-            AppendLogLine($"Select {_obj.name}.", "green");
-            SelectItem(_obj);
+            //////////////////////////////////////////////////////////
+            //Should the previous selection's children be unloaded ?//
+            //////////////////////////////////////////////////////////
+
+            //if we are selecting, we don't want to unload children in the same rack as the selected object
+            if (_obj != null)
+            {
+                OObject currentSelected = _obj.GetComponent<OObject>();
+                //Checking all of the previously selected objects
+                foreach (GameObject previousObj in currentItems)
+                {
+                    bool unloadChildren = true;
+                    OObject previousSelected = previousObj.GetComponent<OObject>();
+
+                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                    if (previousSelected != null && currentSelected != null && previousSelected.referent != null && previousSelected.referent == currentSelected.referent)
+                        unloadChildren = false;
+
+                    //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                    if (unloadChildren && previousSelected != null)
+                    {
+                        if (previousSelected.referent)
+                        {
+                            await previousSelected.referent.LoadChildren("0");
+                        }
+                        if (previousSelected.category != "rack")
+                        {
+                            previousItems.Remove(previousObj);
+                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                                previousItems.Add(previousSelected.referent.gameObject);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                foreach (GameObject previousObj in currentItems)
+                {
+                    OObject oObject = previousObj.GetComponent<OObject>();
+                    if (oObject != null)
+                        await oObject.LoadChildren("0");
+                }
+            }
+            //Clear current selection
+            currentItems.Clear();
+
+            if (_obj)
+            {
+                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+                AppendLogLine($"Select {_obj.name}.", "green");
+                currentItems.Add(_obj);
+            }
+            else
+                AppendLogLine("Empty selection.", "green");
+            EventManager.Instance.Raise(new OnSelectItemEvent());
         }
-        else
+        catch (System.Exception _e)
         {
-            AppendLogLine("Empty selection.", "green");
+            Debug.LogError(_e);
         }
     }
 
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
-    public void UpdateCurrentItems(GameObject _obj)
+    public async Task UpdateCurrentItems(GameObject _obj)
     {
+        previousItems = currentItems.GetRange(0, currentItems.Count);
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
             || currentItems[0].transform.parent != _obj.transform.parent)
         {
@@ -121,40 +172,49 @@ public class GameManager : MonoBehaviour
         if (currentItems.Contains(_obj))
         {
             AppendLogLine($"Remove {_obj.name} from selection.", "green");
-            DeselectItem(_obj);
+            currentItems.Remove(_obj);
+            if (currentItems.Count == 0)
+            {
+                OObject oObject = _obj.GetComponent<OObject>();
+                if (oObject != null)
+                    await oObject.LoadChildren("0");
+            }
+            else
+            {
+                bool unloadChildren = true;
+                OObject currentDeselected = _obj.GetComponent<OObject>();
+
+                //Checking all of the previously selected objects
+                foreach (GameObject previousObj in currentItems)
+                {
+                    OObject previousSelected = previousObj.GetComponent<OObject>();
+
+                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                    if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
+                        unloadChildren = false;
+
+                }
+                //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                if (unloadChildren)
+                {
+                    await currentDeselected.LoadChildren("0");
+                }
+            }
         }
         else
         {
-            AppendLogLine($"Add {_obj.name} to selection.", "green");
-            SelectItem(_obj);
+            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+            AppendLogLine($"Select {_obj.name}.", "green");
+            currentItems.Add(_obj);
         }
-    }
-
-    ///<summary>
-    /// Add _obj to currentItems, enable outline if possible.
-    ///</summary>
-    ///<param name="_obj">The GameObject to add</param>
-    private void SelectItem(GameObject _obj)
-    {
-        currentItems.Add(_obj);
-        EventManager.Instance.Raise(new OnSelectItemEvent() { obj = _obj });
-    }
-
-    ///<summary>
-    /// Remove _obj from currentItems, disable outline if possible.
-    ///</summary>
-    ///<param name="_obj">The GameObject to remove</param>
-    private void DeselectItem(GameObject _obj)
-    {
-        currentItems.Remove(_obj);
-        EventManager.Instance.Raise(new OnDeselectItemEvent() { obj = _obj });
+        EventManager.Instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
     /// Add a GameObject to focus list and disable its child's collider.
     ///</summary>
     ///<param name="_obj">The GameObject to add</param>
-    public void FocusItem(GameObject _obj)
+    public async Task FocusItem(GameObject _obj)
     {
         if (_obj.GetComponent<OgreeObject>().category == "corridor")
             return;
@@ -166,7 +226,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        bool canFocus = false;
+        bool canFocus;
         if (focus.Count == 0)
             canFocus = true;
         else
@@ -179,13 +239,13 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
-            UnfocusItem();
+            await UnfocusItem();
     }
 
     ///<summary>
     /// Remove last item from focus list, enable its child's collider.
     ///</summary>
-    public void UnfocusItem()
+    public async Task UnfocusItem()
     {
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
@@ -194,10 +254,10 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            SetCurrentItem(focus[focus.Count - 1]);
+            await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
-            SetCurrentItem(null);
+            await SetCurrentItem(obj);
     }
 
     ///<summary>
@@ -232,9 +292,11 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_toDel">The object to delete</param>
     ///<param name="_serverDelete">True if _toDel have to be deleted from server</param>
-    public void DeleteItem(GameObject _toDel, bool _serverDelete)
+    ///<param name="_deselect">Should we remove current selection ?</param>
+    public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool _deselect = true)
     {
-        SetCurrentItem(null);
+        if (_deselect)
+            await SetCurrentItem(null);
 
         // Should count type of deleted objects
         if (_serverDelete)

@@ -14,12 +14,6 @@ public class OnUnFocusEvent : CustomEvent
 
 public class OnSelectItemEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
-}
-
-public class OnDeselectItemEvent : CustomEvent
-{
-    public GameObject obj { get; set; }
 }
 
 public class OnMouseHoverEvent : CustomEvent

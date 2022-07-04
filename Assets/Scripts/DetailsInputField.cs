@@ -16,13 +16,11 @@ public class DetailsInputField : MonoBehaviour
     private void Start()
     {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
     }
 
     public void OnValueChanged(string _value)
@@ -40,17 +38,15 @@ public class DetailsInputField : MonoBehaviour
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        ActiveInputField(true);
-        UpdateInputField(GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
-    {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            UpdateInputField("0");
             ActiveInputField(false);
+            UpdateInputField("0");
+        }
+        else
+        {
+            ActiveInputField(true);
+            UpdateInputField(GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
         }
     }
 

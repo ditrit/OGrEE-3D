@@ -49,7 +49,7 @@ public class Server : MonoBehaviour
             string msg = connection.incomingQueue.Dequeue();
             await Task.Delay(timer);
             GameManager.gm.AppendLogLine(msg);
-            parser.DeserializeInput(msg);
+            await parser.DeserializeInput(msg);
         }
     }
 

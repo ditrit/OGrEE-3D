@@ -53,7 +53,7 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when single click on a gameObject.
     ///</summary>
-    private void SingleClick()
+    private async void SingleClick()
     {
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
         if (objectHit && objectHit.tag == "Selectable")
@@ -67,21 +67,21 @@ public class Inputs : MonoBehaviour
             if (canSelect)
             {
                 if (Input.GetKey(KeyCode.LeftControl) && GameManager.gm.currentItems.Count > 0)
-                    GameManager.gm.UpdateCurrentItems(objectHit);
+                    await GameManager.gm.UpdateCurrentItems(objectHit);
                 else
-                    GameManager.gm.SetCurrentItem(objectHit);
+                    await GameManager.gm.SetCurrentItem(objectHit);
             }
         }
         else if (GameManager.gm.focus.Count > 0)
-            GameManager.gm.SetCurrentItem(GameManager.gm.focus[GameManager.gm.focus.Count - 1]);
+            await GameManager.gm.SetCurrentItem(GameManager.gm.focus[GameManager.gm.focus.Count - 1]);
         else
-            GameManager.gm.SetCurrentItem(null);
+            await GameManager.gm.SetCurrentItem(null);
     }
 
     ///<summary>
     /// Method called when single click on a gameObject.
     ///</summary>
-    private void DoubleClick()
+    private async void DoubleClick()
     {
         GameObject objectHit = Utils.RaycastFromCameraToMouse();
         if (objectHit && objectHit.tag == "Selectable" && objectHit.GetComponent<OObject>())
@@ -90,12 +90,12 @@ public class Inputs : MonoBehaviour
                 objectHit.GetComponent<Group>().ToggleContent("true");
             else
             {
-                GameManager.gm.SetCurrentItem(objectHit);
-                GameManager.gm.FocusItem(objectHit);
+                await GameManager.gm.SetCurrentItem(objectHit);
+                await GameManager.gm.FocusItem(objectHit);
             }
         }
         else if (GameManager.gm.focus.Count > 0)
-            GameManager.gm.UnfocusItem();
+            await GameManager.gm.UnfocusItem();
     }
 
     ///

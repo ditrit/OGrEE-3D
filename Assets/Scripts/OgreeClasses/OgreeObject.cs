@@ -1,7 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
@@ -217,16 +218,26 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void LoadChildren(string _level)
+    public async Task LoadChildren(string _level)
     {
-        int lvl = 0;
-        int.TryParse(_level, out lvl);
+        if (!ApiManager.instance.isInit)
+        {
+            Debug.Log("API offline");
+            return;
+        }
+
+        if (id == "")
+        {
+            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", "yellow");
+            return;
+        }
+        int.TryParse(_level, out int lvl);
         if (lvl < 0)
             lvl = 0;
 
         if (currentLod != lvl)
         {
-            DeleteChildren(lvl);
+            await DeleteChildren(lvl);
 
             string apiCall = "";
             if (lvl != 0)
@@ -268,7 +279,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Delete OgreeObject children according to _askedLevel.
     ///</summary>
     ///<param name="_askedLevel">The LOD to switch on</param>
-    protected void DeleteChildren(int _askedLevel)
+    protected async Task DeleteChildren(int _askedLevel)
     {
         List<OgreeObject> objsToDel = new List<OgreeObject>();
         foreach (Transform child in transform)
@@ -283,15 +294,17 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                GameManager.gm.DeleteItem(obj.gameObject, false);
+                obj.transform.parent = null;
+                await GameManager.gm.DeleteItem(obj.gameObject, false, false);
+                if (obj.GetComponent<FocusHandler>())
+                    obj.GetComponent<FocusHandler>().isDeleted = true;
             }
-            GetComponent<FocusHandler>()?.ogreeChildMeshRendererList.Clear();
-            GetComponent<FocusHandler>()?.ogreeChildObjects.Clear();
+            GetComponent<FocusHandler>()?.InitHandler();
         }
         else
         {
             foreach (OgreeObject go in objsToDel)
-                go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
+                await go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
     }
 }
