@@ -13,7 +13,7 @@ public class CustomerGenerator : MonoBehaviour
     {
         if (GameManager.gm.allItems.Contains(_tn.name))
         {
-            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", true, eLogtype.error);
             return null;
         }
 
@@ -41,14 +41,14 @@ public class CustomerGenerator : MonoBehaviour
         Transform tn = Utils.FindParent(_parent, _si.parentId);
         if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
         {
-            GameManager.gm.AppendLogLine($"Parent tenant not found", "red");
+            GameManager.gm.AppendLogLine($"Parent tenant not found", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{tn.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 

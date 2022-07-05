@@ -136,7 +136,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("alpha value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("alpha value has to be true or false", true, eLogtype.warning);
             return;
         }
 
@@ -176,7 +176,7 @@ public class OObject : OgreeObject
         {
             UpdateColorByTenant();
             attributes.Remove("color");
-            GameManager.gm.AppendLogLine("Unknown color", "yellow");
+            GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
         }
     }
 
@@ -215,7 +215,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("slots value has to be true or false", true, eLogtype.warning);
             return;
         }
 
@@ -245,7 +245,7 @@ public class OObject : OgreeObject
         if (localCS)
         {
             Destroy(localCS);
-            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
+            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", false, eLogtype.success);
         }
         else
             PopLocalCS(csName);
@@ -260,7 +260,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("slots value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("slots value has to be true or false", true, eLogtype.warning);
             return;
         }
 
@@ -269,7 +269,7 @@ public class OObject : OgreeObject
         if (localCS && _value == "false")
         {
             Destroy(localCS);
-            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", "yellow");
+            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", false, eLogtype.success);
         }
         else if (!localCS && _value == "true")
             PopLocalCS(csName);
@@ -287,7 +287,7 @@ public class OObject : OgreeObject
         localCS.transform.localScale = Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
-        GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", "yellow");
+        GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", false, eLogtype.success);
     }
 
     ///<summary>
@@ -301,7 +301,7 @@ public class OObject : OgreeObject
             if (Regex.IsMatch(_value, "^(cold|warm)$"))
                 attributes["temperature"] = _value;
             else
-                GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", "yellow");
+                GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, eLogtype.warning);
         }
         else
         {
@@ -330,7 +330,7 @@ public class OObject : OgreeObject
                 }
             }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numeral value", "yellow");
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value", true, eLogtype.warning);
         }
     }
 

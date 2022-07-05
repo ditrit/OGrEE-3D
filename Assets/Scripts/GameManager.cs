@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.IO;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
-    public bool writeCLI = true;
+    public bool writeLogs = true;
 
     #region UnityMethods
 
@@ -52,14 +53,13 @@ public class GameManager : MonoBehaviour
             gm = this;
         else
             Destroy(this);
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        configLoader.LoadConfig();
+        StartCoroutine(configLoader.LoadTextures());
     }
 
     private void Start()
     {
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        configLoader.LoadConfig();
-        StartCoroutine(configLoader.LoadTextures());
-
 #if API_DEBUG
         UiManager.instance.ToggleApi();
 #endif
@@ -67,6 +67,11 @@ public class GameManager : MonoBehaviour
 #if !PROD
         // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
 #endif
+    }
+
+    private void OnDestroy()
+    {
+        AppendLogLine("--- Client closed ---\n\n", true, eLogtype.info);
     }
 
     #endregion
@@ -144,11 +149,11 @@ public class GameManager : MonoBehaviour
             if (_obj)
             {
                 await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-                AppendLogLine($"Select {_obj.name}.", "green");
+                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
                 currentItems.Add(_obj);
             }
             else
-                AppendLogLine("Empty selection.", "green");
+                AppendLogLine("Empty selection.", true, eLogtype.success);
             EventManager.Instance.Raise(new OnSelectItemEvent());
         }
         catch (System.Exception _e)
@@ -166,12 +171,12 @@ public class GameManager : MonoBehaviour
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
             || currentItems[0].transform.parent != _obj.transform.parent)
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", "yellow");
+            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, eLogtype.warning);
             return;
         }
         if (currentItems.Contains(_obj))
         {
-            AppendLogLine($"Remove {_obj.name} from selection.", "green");
+            AppendLogLine($"Remove {_obj.name} from selection.", true, eLogtype.success);
             currentItems.Remove(_obj);
             if (currentItems.Count == 0)
             {
@@ -204,7 +209,7 @@ public class GameManager : MonoBehaviour
         else
         {
             await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-            AppendLogLine($"Select {_obj.name}.", "green");
+            AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
             currentItems.Add(_obj);
         }
         EventManager.Instance.Raise(new OnSelectItemEvent());
@@ -222,7 +227,7 @@ public class GameManager : MonoBehaviour
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", "yellow");
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, eLogtype.warning);
             return;
         }
 
@@ -316,20 +321,94 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_line">The text to display</param>
     ///<param name="_color">The color of the text. Default is white</param>
-    public void AppendLogLine(string _line, string _color = "white")
+    public void AppendLogLine(string _line, bool _writeInCli, eLogtype _type = eLogtype.info)
     {
-        if (!writeCLI)
+        if (!writeLogs)
             return;
 
-        consoleController.AppendLogLine(_line, _color);
+        // Legacy build-in CLI
+        string color = "";
+        if (_type == eLogtype.info)
+            color = "white";
+        else if (_type == eLogtype.success)
+            color = "green";
+        else if (_type == eLogtype.warning)
+            color = "yellow";
+        else if (_type == eLogtype.error)
+            color = "red";
+        consoleController.AppendLogLine(_line, color);
+        
+        // Remote CLI
+        if (_writeInCli)
+        {
+            try
+            {
+                server.Send(_line);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
+        }
+
+        WriteLogFile(_line, _type);
+        switch (_type)
+        {
+            case eLogtype.warning:
+                Debug.LogWarning(_line);
+                break;
+            case eLogtype.error:
+                Debug.LogError(_line);
+                break;
+            default:
+                Debug.Log(_line);
+                break;
+        }
+    }
+
+    ///
+    private void WriteLogFile(string _str, eLogtype _type)
+    {
+        string dateTime = System.DateTime.Now.ToString();
+        string type = "";
+        switch (_type)
+        {
+            case eLogtype.info:
+                type = "INFO";
+                break;
+            case eLogtype.success:
+                type = "SUCCESS";
+                break;
+            case eLogtype.warning:
+                type = "WARNING";
+                break;
+            case eLogtype.error:
+                type = "ERROR";
+                break;
+        }
+        if (_str[_str.Length - 1] != '\n')
+            _str += "\n";
+
+        string fileName = $"{configLoader.GetCacheDir()}/log.txt";
+        FileStream fs = null;
         try
         {
-            server.Send(_line);
+            fs = new FileStream(fileName, FileMode.Append);
+            using (StreamWriter writer = new StreamWriter(fs))
+            {
+                writer.Write($"{dateTime} | {type}: {_str}");
+            }
         }
-        catch (System.Exception e)
+        catch (System.Exception _e)
         {
-            Debug.LogError(e.Message);
+            Debug.LogError(_e.Message);
         }
+        finally
+        {
+            if (fs != null)
+                fs.Dispose();
+        }
+
     }
 
     ///<summary>

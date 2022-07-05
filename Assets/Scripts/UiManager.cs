@@ -143,7 +143,7 @@ public class UiManager : MonoBehaviour
         else
             focusText.text = "No focus";
 
-        GameManager.gm.AppendLogLine(focusText.text, "green");
+        GameManager.gm.AppendLogLine(focusText.text, true, eLogtype.success);
     }
 
     ///<summary>
@@ -219,7 +219,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -227,10 +227,10 @@ public class UiManager : MonoBehaviour
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
-            GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -240,7 +240,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -249,14 +249,14 @@ public class UiManager : MonoBehaviour
         {
             if (!GameManager.gm.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
-                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
+                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", false, eLogtype.warning);
                 return;
             }
             currentRoom.ToggleTilesColor();
-            GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -266,7 +266,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -274,10 +274,10 @@ public class UiManager : MonoBehaviour
         if (rack)
         {
             rack.ToggleU();
-            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a rack.", false, eLogtype.error);
     }
 
     ///<summary>
@@ -287,7 +287,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -308,7 +308,7 @@ public class UiManager : MonoBehaviour
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
             apiUrl.text = "";
-            GameManager.gm.AppendLogLine("Disconnected from API", "green");
+            GameManager.gm.AppendLogLine("Disconnected from API", true, eLogtype.success);
         }
         else
             await GameManager.gm.ConnectToApi();
@@ -339,13 +339,13 @@ public class UiManager : MonoBehaviour
     {
         if (_value)
         {
-            GameManager.gm.writeCLI = true;
-            GameManager.gm.AppendLogLine("Enable CLI", "yellow");
+            GameManager.gm.writeLogs = true;
+            GameManager.gm.AppendLogLine("Enable CLI", false, eLogtype.success);
         }
         else
         {
-            GameManager.gm.AppendLogLine("Disable CLI", "yellow");
-            GameManager.gm.writeCLI = false;
+            GameManager.gm.AppendLogLine("Disable CLI", false, eLogtype.success);
+            GameManager.gm.writeLogs = false;
         }
     }
 
@@ -369,8 +369,11 @@ public class UiManager : MonoBehaviour
     {
         DirectoryInfo dir = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
-            file.Delete();
-        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", "green");
+        {
+            if (file.Name != "log.txt")
+                file.Delete();
+        }
+        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", true, eLogtype.success);
     }
 
     ///<summary>

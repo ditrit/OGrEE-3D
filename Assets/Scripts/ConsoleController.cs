@@ -42,15 +42,8 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_color">The color of the line, white by default</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
-        if (!GameManager.gm.writeCLI)
+        if (!GameManager.gm.writeLogs)
             return;
-
-        if (_color == "yellow")
-            Debug.LogWarning(_line);
-        else if (_color == "red")
-            Debug.LogError(_line);
-        else
-            Debug.Log(_line);
 
         // Troncate too long strings
         int limit = 103;
@@ -150,7 +143,7 @@ public class ConsoleController : MonoBehaviour
         lastCmd = _input;
 
         _input = ApplyVariables(_input);
-        AppendLogLine("$ " + _input);
+        GameManager.gm.AppendLogLine("$ " + _input, false);
         if (_input == "..")
         {
             task = SelectParent();
@@ -184,7 +177,7 @@ public class ConsoleController : MonoBehaviour
         }
         else
         {
-            AppendLogLine("Unknown command", "red");
+            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
             UnlockController();
         }
         if (timerValue > 0)
@@ -268,7 +261,7 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 if (!found)
-                    AppendLogLine($"Error: \"{items[i]}\" is not a child of {root.name} or does not exist", "yellow");
+                    GameManager.gm.AppendLogLine($"\"{items[i]}\" is not a child of {root.name} or does not exist", false, eLogtype.warning);
             }
         }
         else if (GameManager.gm.allItems.Contains(_input))
@@ -277,7 +270,7 @@ public class ConsoleController : MonoBehaviour
             yield return new WaitUntil(() => task.IsCompleted);
         }
         else
-            AppendLogLine($"Error: \"{_input}\" does not exist", "yellow");
+            GameManager.gm.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.warning);
 
         yield return new WaitForEndOfFrame();
         UnlockController();
@@ -331,7 +324,7 @@ public class ConsoleController : MonoBehaviour
             // else if (GameManager.gm.tenants.ContainsKey(data[0]))
             //     GameManager.gm.tenants.Remove(data[0]);
             else
-                AppendLogLine($"Error: \"{data[0]}\" does not exist", "yellow");
+                GameManager.gm.AppendLogLine($"\"{data[0]}\" does not exist", false, eLogtype.warning);
         }
 
         yield return new WaitForEndOfFrame();
@@ -360,11 +353,11 @@ public class ConsoleController : MonoBehaviour
                 await GameManager.gm.FocusItem(obj);
             }
             else
-                AppendLogLine($"Can't focus \"{_input}\"", "yellow");
+                GameManager.gm.AppendLogLine($"Can't focus \"{_input}\"", false, eLogtype.warning);
 
         }
         else
-            AppendLogLine($"Error: \"{_input}\" does not exist", "red");
+            GameManager.gm.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.error);
 
         UnlockController();
     }
@@ -391,7 +384,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
-            AppendLogLine("Unknown command", "red");
+            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
 
         UnlockController();
     }
@@ -413,7 +406,7 @@ public class ConsoleController : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.error);
             if (_saveCmd)
                 GameManager.gm.SetReloadBtn(false, "");
         }
@@ -435,16 +428,16 @@ public class ConsoleController : MonoBehaviour
         yield return new WaitUntil(() => isReady == true);
         LockController();
 
-        string color;
+        eLogtype color;
         if (errorsCount > 0)
-            color = "red";
+            color = eLogtype.error;
         else if (warningsCount > 0)
-            color = "yellow";
+            color = eLogtype.warning;
         else
-            color = "green";
+            color = eLogtype.success;
 
         lastCmd = "LogCount";
-        AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", color);
+        GameManager.gm.AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", false, color);
         warningsCount = 0;
         errorsCount = 0;
 
@@ -465,7 +458,7 @@ public class ConsoleController : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.error);
         }
         if (!string.IsNullOrEmpty(json))
         {
@@ -497,12 +490,12 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
-                AppendLogLine($"{data[0]} already exists", "yellow");
+                GameManager.gm.AppendLogLine($"{data[0]} already exists", false, eLogtype.warning);
             else
                 variables.Add(data[0], data[1]);
         }
         else
-            AppendLogLine("Syntax Error on variable creation", "red");
+            GameManager.gm.AppendLogLine("Syntax Error on variable creation", false, eLogtype.error);
     }
 
     ///<summary>
@@ -539,11 +532,11 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 else
-                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", "red");
+                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", false, eLogtype.error);
             }
         }
         else
-            AppendLogLine("Syntax Error on API call", "red");
+            GameManager.gm.AppendLogLine("Syntax Error on API call", false, eLogtype.error);
 
         UnlockController();
     }
@@ -579,7 +572,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "sensor" || str[0] == "se")
             CreateSensor(str[1]);
         else
-            AppendLogLine("Unknown command", "red");
+            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
 
         UnlockController();
     }
@@ -613,7 +606,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -651,7 +644,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -699,7 +692,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -752,7 +745,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", "yellow");
+                    GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", false, eLogtype.warning);
                     return;
                 }
             }
@@ -779,7 +772,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -833,7 +826,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.gm.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", "yellow");
+                    GameManager.gm.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", false, eLogtype.warning);
                     return;
                 }
             }
@@ -857,7 +850,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -921,7 +914,7 @@ public class ConsoleController : MonoBehaviour
                     }
                     else
                     {
-                        GameManager.gm.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", "yellow");
+                        GameManager.gm.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", false, eLogtype.warning);
                         return;
                     }
                 }
@@ -950,7 +943,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -989,7 +982,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -1029,7 +1022,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -1043,7 +1036,7 @@ public class ConsoleController : MonoBehaviour
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split('@');
-           SApiObject se = new SApiObject
+            SApiObject se = new SApiObject
             {
                 description = new List<string>(),
                 attributes = new Dictionary<string, string>(),
@@ -1077,7 +1070,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     #endregion
@@ -1121,13 +1114,13 @@ public class ConsoleController : MonoBehaviour
                     UiManager.instance.UpdateGuiInfos();
                 }
                 else
-                    AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+                    GameManager.gm.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
             }
             else
-                AppendLogLine($"Object doesn't exist.", "yellow");
+                GameManager.gm.AppendLogLine($"Object doesn't exist.", false, eLogtype.warning);
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1149,7 +1142,7 @@ public class ConsoleController : MonoBehaviour
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }
             else
-                AppendLogLine($"Can't modify {obj.name} attributes.", "yellow");
+                GameManager.gm.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
         }
     }
 
@@ -1174,16 +1167,16 @@ public class ConsoleController : MonoBehaviour
                     else
                         rk.MoveRack(Utils.ParseVector2(data[1]), true);
                     UiManager.instance.UpdateGuiInfos();
-                    GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", "green");
+                    GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", false, eLogtype.success);
                 }
                 else
-                    GameManager.gm.AppendLogLine($"{data[0]} is not a rack.", "yellow");
+                    GameManager.gm.AppendLogLine($"{data[0]} is not a rack.", false, eLogtype.warning);
             }
             else
-                GameManager.gm.AppendLogLine($"{data[0]} doesn't exist.", "yellow");
+                GameManager.gm.AppendLogLine($"{data[0]} doesn't exist.", false, eLogtype.warning);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error.", "red");
+            GameManager.gm.AppendLogLine("Syntax error.", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1211,12 +1204,12 @@ public class ConsoleController : MonoBehaviour
                     cc.WaitCamera(Utils.ParseDecFrac(data[1]));
                     break;
                 default:
-                    AppendLogLine("Unknown Camera control", "yellow");
+                    GameManager.gm.AppendLogLine("Unknown Camera control", false, eLogtype.warning);
                     break;
             }
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1257,7 +1250,7 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(HighlightItem(data[1]));
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1289,13 +1282,13 @@ public class ConsoleController : MonoBehaviour
             if (time < 0 || time > 2)
             {
                 time = Mathf.Clamp(time, 0, 2);
-                AppendLogLine("Delay is a value between 0 and 2s", "yellow");
+                GameManager.gm.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
             GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
         }
         else
-            AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1326,7 +1319,7 @@ public class ConsoleController : MonoBehaviour
         {
             parent = null;
             name = "";
-            AppendLogLine($"Error: path doesn't exist ({parentPath})", "red");
+            GameManager.gm.AppendLogLine($"Error: path doesn't exist ({parentPath})", false, eLogtype.error);
         }
     }
 

@@ -120,14 +120,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             if (index > description.Count)
             {
                 if (index != description.Count + 1)
-                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", "yellow");
+                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", true, eLogtype.info);
                 description.Add(_value);
             }
             else
                 description[index - 1] = _value;
         }
         else
-            GameManager.gm.AppendLogLine("Wrong description index.", "red");
+            GameManager.gm.AppendLogLine("Wrong description index.", true, eLogtype.error);
     }
 
     ///<summary>
@@ -150,7 +150,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         if (GameManager.gm.allItems.ContainsKey(_newDomain))
             domain = _newDomain;
         else
-            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", "yellow");
+            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, eLogtype.warning);
     }
 
     ///<summary>
@@ -228,7 +228,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
         if (id == "")
         {
-            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", "yellow");
+            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, eLogtype.warning);
             return;
         }
         int.TryParse(_level, out int lvl);
@@ -262,7 +262,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", false, eLogtype.success);
 
         if (_level != 0)
         {

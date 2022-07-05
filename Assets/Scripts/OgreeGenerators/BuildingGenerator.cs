@@ -17,13 +17,13 @@ public class BuildingGenerator : MonoBehaviour
         Transform si = Utils.FindParent(_parent, _bd.parentId);
         if (!si || si.GetComponent<OgreeObject>().category != "site")
         {
-            GameManager.gm.AppendLogLine($"Parent site not found", "red");
+            GameManager.gm.AppendLogLine($"Parent site not found", true, eLogtype.error);
             return null;
         }
         string hierarchyName = $"{si.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -67,13 +67,13 @@ public class BuildingGenerator : MonoBehaviour
         Transform bd = Utils.FindParent(_parent, _ro.parentId);
         if (!bd || bd.GetComponent<OgreeObject>().category != "building")
         {
-            GameManager.gm.AppendLogLine($"Parent building not found", "red");
+            GameManager.gm.AppendLogLine($"Parent building not found", true, eLogtype.error);
             return null;
         }
         string hierarchyName = $"{bd.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 

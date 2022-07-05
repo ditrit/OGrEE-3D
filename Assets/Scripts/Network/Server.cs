@@ -25,7 +25,7 @@ public class Server : MonoBehaviour
     [SerializeField] private bool triggerSend = false;
     [SerializeField] private string debugMsg;
 
-    private void Awake()
+    private void OnEnable()
     {
         if (protocol == eConnectionType.udp)
             connection = new UdpConnection();
@@ -48,7 +48,7 @@ public class Server : MonoBehaviour
         {
             string msg = connection.incomingQueue.Dequeue();
             await Task.Delay(timer);
-            GameManager.gm.AppendLogLine(msg);
+            GameManager.gm.AppendLogLine($"From CLI: {msg}", false);
             await parser.DeserializeInput(msg);
         }
     }
