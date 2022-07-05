@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using TMPro;
+using System.Text.RegularExpressions;
 public partial class Tutorial : MonoBehaviour
 {
     public int step = 0;
@@ -12,7 +13,13 @@ public partial class Tutorial : MonoBehaviour
     private Vector3 offset;
     private ParentConstraint parentConstraint;
 
+    public string[] templates;
+
+    [NonReorderable]
     public TutorialStep[] tutorialSteps;
+
+
+    private readonly ReadFromJson rfJson = new ReadFromJson();
 
     [System.Serializable]
     public class TutorialStep
@@ -30,11 +37,52 @@ public partial class Tutorial : MonoBehaviour
         [Tooltip("Objects shown during the step")]
         public GameObject[] stepObjectsShown;
 
+
+        [Tooltip("SApiObject instantiated during the step")]
+        public SApiObjectHelper[] stepSApiObjectsInstantiated;
+
+
+        [System.Serializable]
+        public class SApiObjectHelper
+        {
+            [System.Serializable]
+            public class Attribute
+            {
+                public string key;
+                public string value;
+            }
+
+            public SApiObject sApiObject;
+
+            public List<Attribute> attributes = new List<Attribute>();
+        }
     }
     // Start is called before the first frame update
     void Start()
     {
         parentConstraint = arrow.GetComponent<ParentConstraint>();
+
+        foreach (TutorialStep step in tutorialSteps)
+            foreach (TutorialStep.SApiObjectHelper helper in step.stepSApiObjectsInstantiated)
+            {
+                helper.sApiObject.attributes = new Dictionary<string, string>();
+                foreach (TutorialStep.SApiObjectHelper.Attribute attribute in helper.attributes)
+                {
+                    if (helper == null)
+                        print("helper");
+                    else if (helper.sApiObject.attributes == null)
+                        print("helper.sapiobject.attributes");
+                    else if (attribute == null)
+                        print("attribute");
+                    helper.sApiObject.attributes[attribute.key] = attribute.value;
+                }
+            }
+
+        foreach (string template in templates)
+            if (Regex.IsMatch(template, "\"category\"[ ]*:[ ]*\"room\""))
+                rfJson.CreateRoomTemplateJson(template);
+            else
+                rfJson.CreateObjTemplateJson(template);
     }
 
     private void Update()
@@ -68,7 +116,7 @@ public partial class Tutorial : MonoBehaviour
         arrow.SetActive(true);
     }
 
-    public void NextStep()
+    public async void NextStep()
     {
         if (step == 0)
             tutorialWindow.transform.GetChild(3).GetComponent<Microsoft.MixedReality.Toolkit.UI.ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
@@ -81,6 +129,8 @@ public partial class Tutorial : MonoBehaviour
                 obj?.SetActive(true);
             foreach (GameObject obj in tutorialSteps[step].stepObjectsHidden)
                 obj?.SetActive(false);
+            foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[step].stepSApiObjectsInstantiated)
+               await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
         }
         step++;
         if (step == tutorialSteps.Length)
