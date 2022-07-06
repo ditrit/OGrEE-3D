@@ -13,6 +13,16 @@ public class DetailsInputField : MonoBehaviour
         inputField = GetComponent<TMP_InputField>();
     }
 
+    private void Start()
+    {
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+    }
+
     public void OnValueChanged(string _value)
     {
         if (_value.Contains("-"))
@@ -23,6 +33,21 @@ public class DetailsInputField : MonoBehaviour
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
             obj?.LoadChildren(_value);
+    }
+
+    ///
+    private void OnSelectItem(OnSelectItemEvent _e)
+    {
+        if (GameManager.gm.currentItems.Count == 0)
+        {
+            ActiveInputField(false);
+            UpdateInputField("0");
+        }
+        else
+        {
+            ActiveInputField(true);
+            UpdateInputField(GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+        }
     }
 
     ///<summary>
@@ -42,7 +67,7 @@ public class DetailsInputField : MonoBehaviour
     /// Set the inputField interactable or not
     ///</summary>
     ///<param name="_value">Is the inputField interactible ?</param>
-    public void ActiveInputField(bool _value)
+    private void ActiveInputField(bool _value)
     {
         if (ApiManager.instance.isInit)
             inputField.interactable = _value;

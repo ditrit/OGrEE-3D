@@ -107,10 +107,7 @@ public static class Utils
     ///<returns>Hit GameObject or null</returns>
     public static GameObject RaycastFromCameraToMouse()
     {
-        //Vector3 pointerPosition = new Vector3();
-        //pointerPosition = Microsoft.MixedReality.Toolkit.Input.IMixedRealityPointer.Position;
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
-        //IMixedRealityRaycastProvider.Raycast(out MixedRealityRaycastHit);
         if (hit.collider)
         {
             // Debug.Log(hit.collider.transform.parent.name);

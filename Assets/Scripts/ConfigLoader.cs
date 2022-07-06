@@ -29,10 +29,11 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        config = LoadConfigFile();
+        
+        config = LoadConfigFile(out string fileType);
         OverrideConfig();
-
         ApplyConfig();
+        GameManager.gm.AppendLogLine($"Load {fileType} config file", true, eLogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
@@ -91,18 +92,18 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private SConfig LoadConfigFile()
+    private SConfig LoadConfigFile(out string _fileType)
     {
         try
         {
             StreamReader jsonCongif = File.OpenText("OGrEE-3D_Data/config.json");
-            GameManager.gm.AppendLogLine("Load custom config file", "green");
+            _fileType = "custom";
             return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
         catch
         {
             TextAsset ResourcesCongif = Resources.Load<TextAsset>("config");
-            GameManager.gm.AppendLogLine("Load default config file", "green");
+            _fileType = "default";
             return JsonConvert.DeserializeObject<SConfig>(ResourcesCongif.ToString());
         }
     }
@@ -125,7 +126,7 @@ public class ConfigLoader
     private void FullScreenMode(bool _value)
     {
         if (verbose)
-            GameManager.gm.AppendLogLine($"Fullscreen: {_value}");
+            GameManager.gm.AppendLogLine($"Fullscreen: {_value}", false);
         Screen.fullScreen = _value;
     }
 
@@ -134,7 +135,7 @@ public class ConfigLoader
     ///</summary>
     private void CreateCacheDir()
     {
-        if (!config.cachePath.EndsWith("/"))
+        if (!string.IsNullOrEmpty(config.cachePath) && !config.cachePath.EndsWith("/"))
             config.cachePath += "/";
         string fullPath = config.cachePath + cacheDirName;
         try
@@ -142,7 +143,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", "green");
+                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", true, eLogtype.success);
             }
         }
         catch (IOException ex)
@@ -205,18 +206,18 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
+                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
             else
                 GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
         if (!GameManager.gm.textures.ContainsKey("perf22"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf22", "yellow");
+            GameManager.gm.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
             GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.gm.textures.ContainsKey("perf29"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf29", "yellow");
+            GameManager.gm.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
             GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }

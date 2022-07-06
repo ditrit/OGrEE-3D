@@ -30,7 +30,7 @@ public class Rack : OObject
     {
         if (other.GetComponent<Rack>() && transform.localPosition != originalLocalPos)
         {
-            GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", "yellow");
+            GameManager.gm.AppendLogLine($"Cannot move {name}, it will overlap {other.name}", false, eLogtype.warning);
             transform.localPosition = originalLocalPos;
             attributes["posXY"] = JsonUtility.ToJson(new Vector2(originalPosXY.x, originalPosXY.y));
         }
@@ -147,7 +147,7 @@ public class Rack : OObject
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("U value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("U value has to be true or false", true, eLogtype.warning);
             return;
         }
         else if (_value == "true" && !uRoot)

@@ -95,7 +95,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         CreateRoomTemplate(roomData);
@@ -126,7 +126,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         await CreateObjectTemplate(data);
@@ -140,12 +140,12 @@ public class ReadFromJson
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", "red");
+            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
             return;
         }
         if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
             return;
         }
 

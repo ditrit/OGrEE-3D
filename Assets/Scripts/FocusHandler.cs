@@ -17,6 +17,7 @@ public class FocusHandler : MonoBehaviour
     public List<MeshRenderer> slotChildMeshRendererList;
 
     public bool isActive = false;
+    public bool isDeleted = false;
 
     public bool isSelected = false;
     public bool isFocused = false;
