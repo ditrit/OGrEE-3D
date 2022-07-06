@@ -42,7 +42,6 @@ public class CustomRendererOutline : MonoBehaviour
     public void SubscribeEvents()
     {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -59,7 +58,6 @@ public class CustomRendererOutline : MonoBehaviour
     public void UnsubscribeEvents()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -77,22 +75,14 @@ public class CustomRendererOutline : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        if (e.obj.Equals(gameObject))
+        if (GameManager.gm.currentItems.Contains(gameObject))
         {
             if (!isFocused)
                 SetMaterial(selectedMaterial);
             isSelected = true;
+            return;
         }
-
-    }
-
-    ///<summary>
-    /// When called checks if he is the GameObject selected and revert its material to the previously used.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e)
-    {
-        if (e.obj.Equals(gameObject))
+        if (GameManager.gm.previousItems.Contains(gameObject))
         {
             if (isHighlighted)
                 SetMaterial(highlightMaterial);
@@ -100,12 +90,12 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(focusMaterial);
             else
             {
-                if (e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(transparentMaterial);
                 else
                     SetMaterial(defaultMaterial);
 
-                transform.GetChild(0).GetComponent<Renderer>().material.color = e.obj.GetComponent<OObject>().color;
+                transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
             isSelected = false;
         }

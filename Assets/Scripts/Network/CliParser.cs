@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class CliParser// : MonoBehaviour
 {
@@ -49,9 +50,8 @@ public class CliParser// : MonoBehaviour
     /// Deserialize CLI input and parse it. 
     ///</summary>
     ///<param name="_input">The json to deserialize</param>
-    public void DeserializeInput(string _input)
+    public async Task DeserializeInput(string _input)
     {
-        GameObject obj = null;
         Hashtable command = new Hashtable();
         try
         {
@@ -59,8 +59,9 @@ public class CliParser// : MonoBehaviour
         }
         catch (System.Exception)
         {
-            GameManager.gm.AppendLogLine("Received data with unknow format.", "red");
+            GameManager.gm.AppendLogLine("Received data with unknow format.", true, eLogtype.error);
         }
+        GameObject obj;
         switch (command["type"])
         {
             case "login":
@@ -72,26 +73,26 @@ public class CliParser// : MonoBehaviour
             case "select":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
-                    GameManager.gm.SetCurrentItem(obj);
+                    await GameManager.gm.SetCurrentItem(obj);
                 else
-                    GameManager.gm.AppendLogLine("Error on select", "red");
+                    GameManager.gm.AppendLogLine("Error on select", true, eLogtype.error);
                 break;
             case "delete":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
-                    GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
+                    await GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
                 else
-                    GameManager.gm.AppendLogLine("Error on delete", "red");
+                    GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.error);
                 break;
             case "focus":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                 {
-                    GameManager.gm.SetCurrentItem(obj);
-                    GameManager.gm.FocusItem(obj);
+                    await GameManager.gm.SetCurrentItem(obj);
+                    await GameManager.gm.FocusItem(obj);
                 }
                 else
-                    GameManager.gm.AppendLogLine("Error on focus", "red");
+                    GameManager.gm.AppendLogLine("Error on focus", true, eLogtype.error);
                 break;
             case "create":
                 CreateObjectFromData(command["data"].ToString());
@@ -109,7 +110,7 @@ public class CliParser// : MonoBehaviour
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown type", "red");
+                GameManager.gm.AppendLogLine("Unknown type", true, eLogtype.error);
                 break;
         }
     }
@@ -251,7 +252,7 @@ public class CliParser// : MonoBehaviour
                     Debug.LogWarning("Incorrect device interaction");
                 break;
             default:
-                usableParams = new List<string>() { "" };
+                GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warning);
                 break;
         }
     }
@@ -287,10 +288,10 @@ public class CliParser// : MonoBehaviour
                 if (obj)
                     EventManager.Instance.Raise(new HighlightEvent { obj = obj });
                 else
-                    GameManager.gm.AppendLogLine("Error on highlight", "red");
+                    GameManager.gm.AppendLogLine("Error on highlight", true, eLogtype.error);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", "red");
+                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.error);
                 break;
         }
     }
@@ -316,7 +317,7 @@ public class CliParser// : MonoBehaviour
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", "red");
+                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.error);
                 break;
         }
 

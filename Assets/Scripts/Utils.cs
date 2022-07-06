@@ -106,8 +106,7 @@ public static class Utils
     ///<returns>Hit GameObject or null</returns>
     public static GameObject RaycastFromCameraToMouse()
     {
-        RaycastHit hit;
-        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
+        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider)
         {
             // Debug.Log(hit.collider.transform.parent.name);
@@ -139,8 +138,7 @@ public static class Utils
     ///<returns>The wanted color</returns>
     public static Color ParseColor(string _hex)
     {
-        Color newColor;
-        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
+        ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
         return newColor;
     }
 
@@ -171,6 +169,21 @@ public static class Utils
         {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_physicalList, _logicalList, obj);
+        }
+    }
+
+    ///<summary>
+    /// Parse a nested SApiObject and add each item to a given list.
+    ///</summary>
+    ///<param name="_list">The list of objects to complete</param>
+    ///<param name="_src">The head of nested SApiObjects</param>
+    public static void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    {
+        _list.Add(_src);
+        if (_src.children != null)
+        {
+            foreach (SApiObject obj in _src.children)
+                ParseNestedObjects(_list, obj);
         }
     }
 }

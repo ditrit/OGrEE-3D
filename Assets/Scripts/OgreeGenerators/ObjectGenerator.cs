@@ -16,14 +16,14 @@ public class ObjectGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _rk.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
-            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            GameManager.gm.AppendLogLine($"Parent room not found", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -36,7 +36,7 @@ public class ObjectGenerator : MonoBehaviour
                 newRack = Instantiate(GameManager.gm.objectTemplates[_rk.attributes["template"]]);
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", "yellow");
+                GameManager.gm.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", true, eLogtype.error);
                 return null;
             }
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
@@ -59,8 +59,7 @@ public class ObjectGenerator : MonoBehaviour
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
         }
 
-        Vector2 orient;
-        PlaceInRoom(newRack.transform, _rk, out orient);
+        PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk);
@@ -125,10 +124,10 @@ public class ObjectGenerator : MonoBehaviour
                     comp.domain = rack.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
+                    comp.referent = rack;
                 }
             }
         }
-
         return rack;
     }
 
@@ -144,7 +143,7 @@ public class ObjectGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _dv.parentId);
         if (!parent || parent.GetComponent<OObject>() == null)
         {
-            GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", "red");
+            GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", true, eLogtype.error);
             return null;
         }
 
@@ -152,14 +151,14 @@ public class ObjectGenerator : MonoBehaviour
         if (parent.GetComponent<Rack>() == null
             && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
-            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", "red");
+            GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", true, eLogtype.error);
             return null;
         }
 
         // Check if parent not hidden in a group
         if (parent.gameObject.activeSelf == false)
         {
-            GameManager.gm.AppendLogLine("The parent object must be active (not hidden in a group)", "red");
+            GameManager.gm.AppendLogLine("The parent object must be active (not hidden in a group)", true, eLogtype.error);
             return null;
         }
 
@@ -167,14 +166,14 @@ public class ObjectGenerator : MonoBehaviour
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
         // Check template
         if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.gm.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
-            GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", "red");
+            GameManager.gm.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", true, eLogtype.error);
             return null;
         }
 
@@ -206,7 +205,7 @@ public class ObjectGenerator : MonoBehaviour
             }
             else
             {
-                GameManager.gm.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {parent.name}", "red");
+                GameManager.gm.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {parent.name}", true, eLogtype.error);
                 return null;
             }
         }
@@ -298,15 +297,15 @@ public class ObjectGenerator : MonoBehaviour
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
             {
-                if (comp.gameObject != newDevice.gameObject)
+                if (comp.gameObject != newDevice)
                 {
                     comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
                     GameManager.gm.allItems.Add(compHn, comp.gameObject);
+                    comp.referent = dv.referent;
                 }
             }
         }
-
         return dv;
     }
 
@@ -327,6 +326,7 @@ public class ObjectGenerator : MonoBehaviour
         else
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
+        go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
         return go;
     }
 
@@ -350,7 +350,7 @@ public class ObjectGenerator : MonoBehaviour
         }
         else
         {
-            GameManager.gm.AppendLogLine($"Unknown template \"{_template}\"", "yellow");
+            GameManager.gm.AppendLogLine($"Unknown template \"{_template}\"", true, eLogtype.error);
             return null;
         }
     }
@@ -366,20 +366,20 @@ public class ObjectGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _gr.parentId);
         if (!parent)
         {
-            GameManager.gm.AppendLogLine("Parent not found", "red");
+            GameManager.gm.AppendLogLine("Parent not found", true, eLogtype.error);
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
         if (parentCategory != "room" && parentCategory != "rack")
         {
-            GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", "red");
+            GameManager.gm.AppendLogLine("A group must be a child of a room or a rack", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -395,7 +395,7 @@ public class ObjectGenerator : MonoBehaviour
                     content.Add(go.transform);
             }
             else
-                GameManager.gm.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", "yellow");
+                GameManager.gm.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", true, eLogtype.warning);
         }
         if (content.Count == 0)
             return null;
@@ -548,14 +548,14 @@ public class ObjectGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _co.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
-            GameManager.gm.AppendLogLine($"Parent room not found", "red");
+            GameManager.gm.AppendLogLine($"Parent room not found", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -566,7 +566,7 @@ public class ObjectGenerator : MonoBehaviour
 
         if (lowerLeft == null || upperRight == null)
         {
-            GameManager.gm.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", "red");
+            GameManager.gm.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", true, eLogtype.error);
             return null;
         }
 
@@ -630,27 +630,27 @@ public class ObjectGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {
-            GameManager.gm.AppendLogLine($"Parent not found", "red");
+            GameManager.gm.AppendLogLine($"Parent not found", true, eLogtype.error);
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
         if (_se.attributes["formFactor"] == "ext"
             && (parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.gm.AppendLogLine("An external sensor must be child of a rack or a device", "red");
+            GameManager.gm.AppendLogLine("An external sensor must be child of a rack or a device", true, eLogtype.error);
             return null;
         }
         if (_se.attributes["formFactor"] == "int"
             && (parentCategory != "room" && parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.gm.AppendLogLine("An internal sensor must be child of a room, a rack or a device", "red");
+            GameManager.gm.AppendLogLine("An internal sensor must be child of a room, a rack or a device", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_se.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -671,8 +671,7 @@ public class ObjectGenerator : MonoBehaviour
             newSensor.name = _se.name;
             if (parentCategory == "room")
             {
-                Vector2 orient;
-                PlaceInRoom(newSensor.transform, _se, out orient);
+                PlaceInRoom(newSensor.transform, _se, out Vector2 orient);
 
                 // Adjust position
                 float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
@@ -686,7 +685,7 @@ public class ObjectGenerator : MonoBehaviour
                 }
                 else
                 {
-                    newSensor.transform.localScale = Vector3.one * GameManager.gm.uSize * 5;
+                    newSensor.transform.localScale = 5 * GameManager.gm.uSize * Vector3.one;
                     newSensor.transform.localPosition += Vector3.up * (posU * GameManager.gm.uSize);
                 }
             }
@@ -776,14 +775,11 @@ public class ObjectGenerator : MonoBehaviour
     {
         if (!_r.attributes.ContainsKey("floorUnit"))
             return GameManager.gm.tileSize;
-        switch (_r.attributes["floorUnit"])
+        return _r.attributes["floorUnit"] switch
         {
-            case "m":
-                return 1.0f;
-            case "f":
-                return 3.28084f;
-            default:
-                return GameManager.gm.tileSize;
-        }
+            "m" => 1.0f,
+            "f" => 3.28084f,
+            _ => GameManager.gm.tileSize,
+        };
     }
 }

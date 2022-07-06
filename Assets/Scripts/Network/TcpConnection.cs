@@ -106,7 +106,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException socketException)
         {
-            Debug.Log("SocketException " + socketException.ToString());
+            Debug.LogError("SocketException " + socketException.ToString());
         }
     }
 
@@ -209,7 +209,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException socketException)
         {
-            Debug.Log("Socket exception: " + socketException);
+            Debug.LogError("Socket exception: " + socketException);
         }
     }
 

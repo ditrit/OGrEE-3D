@@ -15,6 +15,7 @@ public class FocusHandler : MonoBehaviour
     public List<MeshRenderer> slotChildMeshRendererList;
 
     public bool isActive = false;
+    public bool isDeleted = false;
 
     public bool isSelected = false;
     public bool isFocused = false;
@@ -40,7 +41,6 @@ public class FocusHandler : MonoBehaviour
     public void SubscribeEvents()
     {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -54,7 +54,6 @@ public class FocusHandler : MonoBehaviour
     public void UnsubscribeEvents()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
@@ -68,30 +67,51 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent e)
     {
-        if (e.obj.Equals(gameObject))
+        if (isDeleted)
+            return;
+        if (GameManager.gm.currentItems.Contains(gameObject))
         {
-            UpdateChildMeshRenderers(true, true);
+            // We manage all collider and renderer changes due to the selection
             isSelected = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
             if (GetComponent<OObject>().category == "rack")
                 UpdateOwnMeshRenderers(false);
-            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-        }
-    }
 
-    ///<summary>
-    /// When called checks if he is the GameObject focused on and if true deactivates all of his child's mesh renderers.
-    ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnDeselectItem(OnDeselectItemEvent e)
-    {
-        if (e.obj.Equals(gameObject))
+            UpdateChildMeshRenderers(true, true);
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            return;
+        }
+
+        // If this one is part of it and is in a rack which is not the parent of a selected object we display it again
+        if (GameManager.gm.previousItems.Contains(gameObject))
         {
             isSelected = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
-            ResetToRack();
+
+            // Parent racks of previously selected objects
+            OObject selectionParentRack = GameManager.gm.currentItems.Count > 0 ? GameManager.gm.currentItems[0].GetComponent<OObject>()?.referent : null;
+            OObject parentRack = GetComponent<OObject>().referent;
+
+            if (selectionParentRack != parentRack)
+            {
+                ToggleCollider(gameObject, false);
+                ResetToRack();
+            }
+            else
+            {
+                if (!GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+                {
+                    UpdateOwnMeshRenderers(false);
+                    UpdateChildMeshRenderers(false);
+                }
+                else
+                    UpdateChildMeshRenderers(false);
+            }
+
         }
+        // if (GameManager.gm.currentItems.Contains(transform.parent.gameObject) && transform.parent.GetComponent<OObject>())
+        //     GetComponent<OgreeObject>().SetBaseTransform(transform.localPosition, transform.localRotation, transform.localScale);
+
     }
 
     ///<summary>
@@ -101,14 +121,17 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent e)
     {
+        if (isDeleted)
+            return;
         if (e.obj == gameObject)
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
             UpdateOtherObjectsMeshRenderers(false);
             isFocused = true;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+
         }
     }
 
@@ -118,12 +141,13 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
+        if (isDeleted)
+            return;
         if (e.obj == gameObject)
         {
-            // UpdateChildMeshRenderers(false);
             UpdateOtherObjectsMeshRenderers(true);
             isFocused = false;
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+            ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(true);
         }
     }
@@ -134,8 +158,34 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent e)
     {
-        if (GetComponent<OObject>().category != "device")
+        if (isDeleted)
+            return;
+        InitHandler();
+        if (GameManager.gm.currentItems.Contains(gameObject))
+        {
+            UpdateChildMeshRenderers(true, true);
+            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
+            return;
+        }
+
+        OObject selectionReferent = GameManager.gm.currentItems.Count > 0 ? GameManager.gm.currentItems[0].GetComponent<OObject>()?.referent : null;
+
+        if (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent)
             UpdateChildMeshRenderersRec(false);
+        else if (selectionReferent == GetComponent<OObject>().referent)
+        {
+            if (!GameManager.gm.currentItems.Contains(gameObject) && !GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+            {
+                ToggleCollider(gameObject, false);
+                UpdateOwnMeshRenderers(false);
+                UpdateChildMeshRenderers(false);
+            }
+            if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+            {
+                print("##" + name);
+                UpdateChildMeshRenderers(false);
+            }
+        }
     }
 
     ///<summary>
@@ -153,7 +203,7 @@ public class FocusHandler : MonoBehaviour
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else
+            else if (child.name != "uRoot" && child.name != "GridForULocation")
                 OwnObjectsList.Add(child.gameObject);
         }
     }
@@ -193,7 +243,7 @@ public class FocusHandler : MonoBehaviour
                 mr.enabled = _value;
         }
         GetComponent<OObject>().ToggleSlots(_value.ToString());
-        transform.GetChild(0).GetComponent<Collider>().enabled = _value;
+        ToggleCollider(gameObject, _value);
 
         if (GetComponent<OObject>().isHidden)
         {
@@ -224,16 +274,13 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// When called fills lists and enables/disables children's MeshRenderers recursively.
+    /// When called enables/disables children's MeshRenderers recursively.
     ///</summary>
     ///<param name="_value">Boolean value used when calling UpdateChildMeshRenderers</param>
     private void UpdateChildMeshRenderersRec(bool _value)
     {
-        FillListsWithChildren();
         foreach (GameObject child in ogreeChildObjects)
             child.GetComponent<FocusHandler>().UpdateChildMeshRenderersRec(_value);
-
-        FillMeshRendererLists();
         UpdateChildMeshRenderers(_value);
     }
 
@@ -330,8 +377,33 @@ public class FocusHandler : MonoBehaviour
         if (GetComponent<OgreeObject>().category != "device")
         {
             UpdateOwnMeshRenderers(true);
+            ToggleCollider(gameObject, true);
+            UpdateChildMeshRenderers(false); // ??!
+            GameObject uRoot = transform.Find("uRoot")?.gameObject;
+            uRoot?.SetActive(false);
             return;
         }
         transform.parent.GetComponent<FocusHandler>().ResetToRack();
+    }
+
+    ///<summary>
+    /// Initialise the renderer and gameobject lists of this and all children recursively
+    ///</summary>
+    public void InitHandler()
+    {
+        FillListsWithChildren();
+        foreach (GameObject child in ogreeChildObjects)
+            child.GetComponent<FocusHandler>().InitHandler();
+        FillMeshRendererLists();
+    }
+
+    ///<summary>
+    /// Toggle the collider(s) of an object <br></br><i>Due to the change in the rack prefab, all OgreeObject don't have the same numbers and hierarchy of colliders anymore</i>
+    ///</summary>
+    ///<param name="_obj">The object whose collider(s) will be updated</param>
+    ///<param name="_enabled">state of the collider(s)</param>
+    public void ToggleCollider(GameObject _obj, bool _enabled)
+    {
+        _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
     }
 }

@@ -10,7 +10,7 @@ public class UiManager : MonoBehaviour
     static public UiManager instance;
 
     [SerializeField] private GameObject menuPanel = null;
-    
+
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
@@ -51,14 +51,16 @@ public class UiManager : MonoBehaviour
         mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.AddListener<OnDeselectItemEvent>(OnDeselectItem);
+
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             menuPanel.SetActive(!menuPanel.activeSelf);
-        
+
         if (mouseName.gameObject.activeSelf)
         {
             mouseName.transform.position = Input.mousePosition;
@@ -69,24 +71,38 @@ public class UiManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-        EventManager.Instance.RemoveListener<OnDeselectItemEvent>(OnDeselectItem);
+
+        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
     }
 
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
-    {
-        focusBtn.interactable = true;
-        selectParentBtn.interactable = true;
-    }
-
-    ///
-    private void OnDeselectItem(OnDeselectItemEvent _e)
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
         }
+        else
+        {
+            focusBtn.interactable = true;
+            selectParentBtn.interactable = true;
+        }
+        SetCurrentItemText();
+        UpdateGuiInfos();
+    }
+
+    ///
+    private void OnFocusItem(OnFocusEvent _e)
+    {
+        UpdateFocusText();
+    }
+
+    ///
+    private void OnUnFocusItem(OnUnFocusEvent _e)
+    {
+        UpdateFocusText();
     }
 
     ///<summary>
@@ -127,7 +143,7 @@ public class UiManager : MonoBehaviour
         else
             focusText.text = "No focus";
 
-        GameManager.gm.AppendLogLine(focusText.text, "green");
+        GameManager.gm.AppendLogLine(focusText.text, true, eLogtype.success);
     }
 
     ///<summary>
@@ -164,10 +180,14 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Set the current item text
     ///</summary>
-    ///<param name="_str">The text to display</param>
-    public void SetCurrentItemText(string _str)
+    public void SetCurrentItemText()
     {
-        currentItemText.text = _str;
+        if (GameManager.gm.currentItems.Count == 1)
+            currentItemText.text = (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
+        else if (GameManager.gm.currentItems.Count > 1)
+            currentItemText.text = ("Selection");
+        else
+            currentItemText.text = ("OGrEE-3D");
     }
 
     ///<summary>
@@ -199,7 +219,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -207,10 +227,10 @@ public class UiManager : MonoBehaviour
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
-            GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -220,7 +240,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -229,14 +249,14 @@ public class UiManager : MonoBehaviour
         {
             if (!GameManager.gm.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
-                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", "yellow");
+                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", false, eLogtype.warning);
                 return;
             }
             currentRoom.ToggleTilesColor();
-            GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -246,7 +266,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -254,10 +274,10 @@ public class UiManager : MonoBehaviour
         if (rack)
         {
             rack.ToggleU();
-            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", "yellow");
+            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", "red");
+            GameManager.gm.AppendLogLine("Selected item must be a rack.", false, eLogtype.error);
     }
 
     ///<summary>
@@ -267,7 +287,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", "yellow");
+            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -288,7 +308,7 @@ public class UiManager : MonoBehaviour
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
             apiUrl.text = "";
-            GameManager.gm.AppendLogLine("Disconnected from API", "green");
+            GameManager.gm.AppendLogLine("Disconnected from API", true, eLogtype.success);
         }
         else
             await GameManager.gm.ConnectToApi();
@@ -297,21 +317,21 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: Focus selected object.
     ///</summary>
-    public void FocusSelected()
+    public async void FocusSelected()
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
-            GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+            await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
     }
 
     ///<summary>
     /// Called by GUI button: Select the parent of the selected object.
     ///</summary>
-    public void SelectParentItem()
+    public async void SelectParentItem()
     {
         if (GameManager.gm.currentItems.Count == 0)
             return;
 
-        GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
+        await GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
     ///
@@ -319,13 +339,13 @@ public class UiManager : MonoBehaviour
     {
         if (_value)
         {
-            GameManager.gm.writeCLI = true;
-            GameManager.gm.AppendLogLine("Enable CLI", "yellow");
+            GameManager.gm.writeLogs = true;
+            GameManager.gm.AppendLogLine("Enable CLI", false, eLogtype.success);
         }
         else
         {
-            GameManager.gm.AppendLogLine("Disable CLI", "yellow");
-            GameManager.gm.writeCLI = false;
+            GameManager.gm.AppendLogLine("Disable CLI", false, eLogtype.success);
+            GameManager.gm.writeLogs = false;
         }
     }
 
@@ -349,8 +369,49 @@ public class UiManager : MonoBehaviour
     {
         DirectoryInfo dir = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
-            file.Delete();
-        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", "green");
+        {
+            if (file.Name != "log.txt")
+                file.Delete();
+        }
+        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", true, eLogtype.success);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Delete all Tenants and reload last loaded file.
+    ///</summary>
+    public async void ReloadFile()
+    {
+        await GameManager.gm.SetCurrentItem(null);
+        GameManager.gm.focus.Clear();
+        UiManager.instance.UpdateFocusText();
+
+        List<GameObject> tenants = new List<GameObject>();
+        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>()?.category == "tenant")
+                tenants.Add(go);
+        }
+        for (int i = 0; i < tenants.Count; i++)
+            Destroy(tenants[i]);
+        GameManager.gm.allItems.Clear();
+
+        foreach (KeyValuePair<string, GameObject> kvp in GameManager.gm.objectTemplates)
+            Destroy(kvp.Value);
+        GameManager.gm.objectTemplates.Clear();
+        GameManager.gm.roomTemplates.Clear();
+        GameManager.gm.consoleController.variables.Clear();
+        GameManager.gm.consoleController.ResetCounts();
+        StartCoroutine(LoadFile());
+    }
+
+    ///<summary>
+    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
+    ///</summary>
+    private IEnumerator LoadFile()
+    {
+        yield return new WaitForEndOfFrame();
+        GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
     #endregion
 }
