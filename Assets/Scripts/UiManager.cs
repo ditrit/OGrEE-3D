@@ -402,8 +402,6 @@ public class UiManager : MonoBehaviour
         GameManager.gm.roomTemplates.Clear();
         GameManager.gm.consoleController.variables.Clear();
         GameManager.gm.consoleController.ResetCounts();
-        Filters.instance.DefaultList(Filters.instance.tenantsList, "All");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
         StartCoroutine(LoadFile());
     }
 

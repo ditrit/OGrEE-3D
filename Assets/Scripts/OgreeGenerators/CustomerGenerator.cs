@@ -20,10 +20,6 @@ public class CustomerGenerator : MonoBehaviour
         GameObject newTenant = new GameObject(_tn.name);
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.UpdateFromSApiObject(_tn);
-
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-
         tenant.UpdateHierarchyName();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 

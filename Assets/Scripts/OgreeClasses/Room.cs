@@ -17,13 +17,6 @@ public class Room : Building
     public Transform tilesEdges;
     public TextMeshPro nameText;
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        Filters.instance.roomsList.Remove(name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
-    }
-
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
