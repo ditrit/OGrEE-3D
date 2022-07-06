@@ -289,7 +289,7 @@ public class Rack : OObject
         if (GameManager.gm.currentItems.Contains(gameObject))
         {
             ToggleU("true");
-            GameManager.gm.AppendLogLine($"U helpers ON for {name}.", "yellow");
+            GameManager.gm.AppendLogLine($"U helpers ON for {name}.", true, eLogtype.warning);
         }
     }
 }

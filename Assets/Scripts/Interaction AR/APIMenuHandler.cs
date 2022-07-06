@@ -170,9 +170,9 @@ public class APIMenuHandler : GridMenuHandler
         }
 
         if (oObject != null)
-            GameManager.gm.AppendLogLine("OObject Found in the scene after loading from API", "green");
+            GameManager.gm.AppendLogLine("OObject Found in the scene after loading from API", false,eLogtype.success);
         else
-            GameManager.gm.AppendLogLine("OObject NOT Found in the scene after loading from API", "red");
+            GameManager.gm.AppendLogLine("OObject NOT Found in the scene after loading from API", false,eLogtype.error);
 
         OgreeObject ogree = oObject.GetComponent<OgreeObject>();
         ogree.SetBaseTransform(oObject.transform.localPosition, oObject.transform.localRotation, oObject.transform.localScale);

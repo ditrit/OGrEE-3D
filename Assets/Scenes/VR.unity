@@ -620,7 +620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   infosTMP: {fileID: 1420669837}
-  infosTMPVR: {fileID: 449452017031136765}
+  infosTMPVR: {fileID: 0}
   moveSpeed: 15
   rotationSpeed: 50
   humanHeight: 1.75
@@ -4201,12 +4201,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3f8a05efb669e3499ac225bc7b9e3d4, type: 3}
---- !u!1 &440103004 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 575543034647280355, guid: 8ab53a967fee07d428d5e57d48675f27,
-    type: 3}
-  m_PrefabInstance: {fileID: 2099870335}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &440103007 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 575543034647280354, guid: 8ab53a967fee07d428d5e57d48675f27,
@@ -4725,12 +4719,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &541379387 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 575543034647280355, guid: a7918d3f8ac919643a3c600e28915551,
-    type: 3}
-  m_PrefabInstance: {fileID: 726959048}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &560516237
 GameObject:
   m_ObjectHideFlags: 0
@@ -4799,7 +4787,7 @@ MonoBehaviour:
   currentItems: []
   previousItems: []
   focus: []
-  writeCLI: 1
+  writeLogs: 1
 --- !u!114 &560516239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4909,8 +4897,8 @@ MonoBehaviour:
   infosPanel: {fileID: 169366879}
   objInfos: {fileID: 169366882}
   detailsInputField: {fileID: 1907922015}
-  apiButtonVRBackPlate: {fileID: 2245298683547687608}
-  apiButtonVRText: {fileID: 1374298684}
+  apiButtonVRBackPlate: {fileID: 0}
+  apiButtonVRText: {fileID: 0}
 --- !u!114 &560516250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5690,6 +5678,9 @@ MonoBehaviour:
     arrowTargetGameObject: {fileID: 0}
     arrowTargetHierarchyName: 
     teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+    nextStepEvent: 1
+    buttonNextStep: {fileID: 0}
+    nextStepObjectId: nc
     stepObjectsHidden:
     - {fileID: 1090879224}
     stepObjectsShown:
@@ -5699,6 +5690,9 @@ MonoBehaviour:
     arrowTargetGameObject: {fileID: 2127918529}
     arrowTargetHierarchyName: 
     teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+    nextStepEvent: 1
+    buttonNextStep: {fileID: 0}
+    nextStepObjectId: cn
     stepObjectsHidden:
     - {fileID: 673678086}
     stepObjectsShown:
@@ -5708,315 +5702,13 @@ MonoBehaviour:
     arrowTargetGameObject: {fileID: 804854599}
     arrowTargetHierarchyName: 
     teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+    nextStepEvent: 0
+    buttonNextStep: {fileID: 0}
+    nextStepObjectId: 
     stepObjectsHidden:
     - {fileID: 1090879224}
     stepObjectsShown:
     - {fileID: 1625279259}
-    stepSApiObjectsInstantiated: []
-  - text: "S\xE9lection du site"
-    arrowTargetGameObject: {fileID: 797301328}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden:
-    - {fileID: 1625279259}
-    stepObjectsShown:
-    - {fileID: 440103004}
-    stepSApiObjectsInstantiated: []
-  - text: "S\xE9lection du building"
-    arrowTargetGameObject: {fileID: 1467596710}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden:
-    - {fileID: 440103004}
-    stepObjectsShown:
-    - {fileID: 2066020843}
-    stepSApiObjectsInstantiated: []
-  - text: Chargement de la salle
-    arrowTargetGameObject: {fileID: 921916518}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden:
-    - {fileID: 2066020843}
-    stepObjectsShown:
-    - {fileID: 541379387}
-    stepSApiObjectsInstantiated: []
-  - text: "S\xE9lection du rack"
-    arrowTargetGameObject: {fileID: 0}
-    arrowTargetHierarchyName: CED.BETA.A.R1.A02
-    teleportPosition: {x: 1.44, y: 0, z: 3.34}
-    stepObjectsHidden:
-    - {fileID: 541379387}
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated:
-    - sApiObject:
-        name: CED
-        id: 621de2006d0f0cc221fcf18e
-        parentId: null
-        category: tenant
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: color
-        value: ced666
-      - key: mainContact
-        value: Himself
-      - key: mainPhone
-        value: 06
-    - sApiObject:
-        name: BETA
-        id: 621de2006d0f0cc221fcf190
-        parentId: 621de2006d0f0cc221fcf18e
-        category: site
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: orientation
-        value: NW
-      - key: reservedColor
-        value: AAAAAA
-      - key: technicalColor
-        value: D0FF78
-      - key: usableColor
-        value: 5BDCFF
-    - sApiObject:
-        name: A
-        id: 621de2006d0f0cc221fcf191
-        parentId: 621de2006d0f0cc221fcf190
-        category: building
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 3
-      - key: heightUnit
-        value: m
-      - key: posXY
-        value: '{"x":0.0,"y":0.0}'
-      - key: posXYUnit
-        value: m
-      - key: size
-        value: '{"x":25.0,"y":29.399999618530275}'
-      - key: sizeUnit
-        value: m
-    - sApiObject:
-        name: R1
-        id: 621de2006d0f0cc221fcf192
-        parentId: 621de2006d0f0cc221fcf191
-        category: room
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: floorUnit
-        value: t
-      - key: height
-        value: 2
-      - key: orientation
-        value: +N+W
-      - key: heightUnit
-        value: m
-      - key: posXY
-        value: '{"x":0.0,"y":0.0}'
-      - key: posXYUnit
-        value: m
-      - key: reserved
-        value: '{"left":2.0,"right":2.0,"top":2.0,"bottom":2.0}'
-      - key: size
-        value: '{"x":22.799999237060548,"y":19.799999237060548}'
-      - key: sizeUnit
-        value: m
-      - key: technical
-        value: '{"left":1.0,"right":1.0,"top":3.0,"bottom":1.0}'
-      - key: template
-        value: 
-    - sApiObject:
-        name: A02
-        id: 621de2016d0f0cc221fcf195
-        parentId: 621de2006d0f0cc221fcf192
-        category: rack
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 42
-      - key: heightUnit
-        value: U
-      - key: posXY
-        value: '{"x":2.0,"y":1.0}'
-      - key: posXYUnit
-        value: tile
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":60,"y":120}'
-      - key: sizeUnit
-        value: cm
-      - key: temperature
-        value: 25
-      - key: template
-        value: 
-    - sApiObject:
-        name: chassis05
-        id: 621de20b6d0f0cc221fcf1d5
-        parentId: 621de2016d0f0cc221fcf195
-        category: device
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 263,3
-      - key: heightUnit
-        value: mm
-      - key: posU
-        value: 29
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":447,"y":914.5}'
-      - key: sizeUnit
-        value: mm
-      - key: slot
-        value: 
-      - key: template
-        value: ibm-ns1200
-    - sApiObject:
-        name: bladeK
-        id: 621de20f6d0f0cc221fcf1e0
-        parentId: 621de20b6d0f0cc221fcf1d5
-        category: device
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 41
-      - key: heightUnit
-        value: mm
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":216.0,"y":659.0}'
-      - key: sizeUnit
-        value: mm
-      - key: slot
-        value: blade11
-      - key: template
-        value: ibm-nx360m5
-    - sApiObject:
-        name: bladeL
-        id: 621de20f6d0f0cc221fcf1e1
-        parentId: 621de20b6d0f0cc221fcf1d5
-        category: device
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 41
-      - key: heightUnit
-        value: mm
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":216.0,"y":659.0}'
-      - key: sizeUnit
-        value: mm
-      - key: slot
-        value: blade12
-      - key: template
-        value: ibm-nx360m5
-    - sApiObject:
-        name: bladeI
-        id: 621de20e6d0f0cc221fcf1de
-        parentId: 621de20b6d0f0cc221fcf1d5
-        category: device
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 41
-      - key: heightUnit
-        value: mm
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":216.0,"y":659.0}'
-      - key: sizeUnit
-        value: mm
-      - key: slot
-        value: blade09
-      - key: template
-        value: ibm-nx360m5
-    - sApiObject:
-        name: bladeJ
-        id: 621de20e6d0f0cc221fcf1df
-        parentId: 621de20b6d0f0cc221fcf1d5
-        category: device
-        description: []
-        domain: CED
-        children: []
-      attributes:
-      - key: height
-        value: 41
-      - key: heightUnit
-        value: mm
-      - key: orientation
-        value: front
-      - key: size
-        value: '{"x":216.0,"y":659.0}'
-      - key: sizeUnit
-        value: mm
-      - key: slot
-        value: blade10
-      - key: template
-        value: ibm-nx360m5
-  - text: "S\xE9lection du chassis"
-    arrowTargetGameObject: {fileID: 0}
-    arrowTargetHierarchyName: CED.BETA.A.R1.A02.chassis05
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
-  - text: Mode focus
-    arrowTargetGameObject: {fileID: 1265356637}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
-  - text: Mode edit
-    arrowTargetGameObject: {fileID: 1662559111}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
-  - text: Sortie du mode edit
-    arrowTargetGameObject: {fileID: 1662559111}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
-  - text: Sortie du mode focus
-    arrowTargetGameObject: {fileID: 1265356637}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
-  - text: Finnito
-    arrowTargetGameObject: {fileID: 0}
-    arrowTargetHierarchyName: 
-    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-    stepObjectsHidden: []
-    stepObjectsShown: []
     stepSApiObjectsInstantiated: []
 --- !u!1 &631782320 stripped
 GameObject:
@@ -7257,12 +6949,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 796795643}
   m_CullTransparentMesh: 0
---- !u!1 &797301328 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5014715832932671038, guid: 8ab53a967fee07d428d5e57d48675f27,
-    type: 3}
-  m_PrefabInstance: {fileID: 2099870335}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &801669695
 GameObject:
   m_ObjectHideFlags: 0
@@ -8366,12 +8052,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 913290483}
   m_CullTransparentMesh: 0
---- !u!1 &921916518 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6872385047539790936, guid: a7918d3f8ac919643a3c600e28915551,
-    type: 3}
-  m_PrefabInstance: {fileID: 726959048}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &925686306 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2245298683164737685, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
@@ -9397,8 +9077,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1410114693}
   m_HandleRect: {fileID: 1410114692}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.8926295
+  m_Value: -0.000010761782
+  m_Size: 0.8926294
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10865,12 +10545,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1264345811}
   m_CullTransparentMesh: 0
---- !u!1 &1265356637 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 960063623271418330, guid: 46de769a2d9f4c94ba997d22c0313228,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338946236029651621}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1270724535
 GameObject:
   m_ObjectHideFlags: 0
@@ -12041,18 +11715,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374125311}
   m_CullTransparentMesh: 0
---- !u!114 &1374298684 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 960990185031062218, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
-    type: 3}
-  m_PrefabInstance: {fileID: 2245298683547687607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1386803468
 GameObject:
   m_ObjectHideFlags: 0
@@ -12220,7 +11882,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 34.02882}
+  m_AnchoredPosition: {x: 0, y: 34.029232}
   m_SizeDelta: {x: 0, y: 316.9288}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1403990910 stripped
@@ -12864,12 +12526,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!1 &1467596710 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5014715832932671038, guid: 62de5baad6951214490e83605c308466,
-    type: 3}
-  m_PrefabInstance: {fileID: 391477949}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1467697997
 GameObject:
   m_ObjectHideFlags: 0
@@ -14128,7 +13784,7 @@ PrefabInstance:
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
@@ -14594,12 +14250,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
---- !u!1 &1662559111 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8800078080613064985, guid: 46de769a2d9f4c94ba997d22c0313228,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338946236029651621}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1670260730
 GameObject:
   m_ObjectHideFlags: 0
@@ -16593,7 +16243,7 @@ PrefabInstance:
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
@@ -17622,12 +17272,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
---- !u!1 &2066020843 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 575543034647280355, guid: 62de5baad6951214490e83605c308466,
-    type: 3}
-  m_PrefabInstance: {fileID: 391477949}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2066020846 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 575543034647280354, guid: 62de5baad6951214490e83605c308466,
@@ -18672,18 +18316,6 @@ RectTransform:
   m_AnchoredPosition: {x: 95, y: -44}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &449452017031136765 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 449452015828566504, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
-    type: 3}
-  m_PrefabInstance: {fileID: 2245298683547687607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2245298683547687607
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18814,7 +18446,7 @@ PrefabInstance:
     - target: {fileID: 4731836969958077193, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4731836969958077193, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
         type: 3}
@@ -19153,12 +18785,6 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: ec72a3a105768f746b556a8dfdae61a8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14a91ad9828706b4f8617ef5f3a20bfc, type: 3}
---- !u!23 &2245298683547687608 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 8472707923106476684, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
-    type: 3}
-  m_PrefabInstance: {fileID: 2245298683547687607}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4731836969009264412 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4731836969958077193, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
@@ -19190,7 +18816,7 @@ PrefabInstance:
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}

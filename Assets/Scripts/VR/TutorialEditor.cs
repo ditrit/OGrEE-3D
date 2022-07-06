@@ -17,22 +17,37 @@ public class TutorialEditor : Editor
         SerializedProperty buttonNextStepProp;
         SerializedProperty nextStepObjectIdProp;
         SerializedProperty arrowTargetGameObjectProp;
+        SerializedProperty textProp;
+        SerializedProperty arrowTargetHierarchyNameProp;
+        SerializedProperty teleportPositionProp;
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
-            // Draw label
-            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
             nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
             buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
             nextStepObjectIdProp = property.FindPropertyRelative("nextStepObjectId");
-            Tutorial.TutorialStep.NextStepEvent nextStepEvent = (Tutorial.TutorialStep.NextStepEvent)GetTargetObjectOfProperty(nextStepEventProp);
-            EditorGUI.PropertyField(position, nextStepEventProp);
-            if (nextStepEvent == Tutorial.TutorialStep.NextStepEvent.ButtonPress)
-                EditorGUI.PropertyField(new Rect(position.x,position.y+200f,position.width,position.height),buttonNextStepProp);
-            else
-                EditorGUI.PropertyField(new Rect(position.x, position.y + 200f, position.width, position.height),nextStepObjectIdProp);
+            arrowTargetGameObjectProp = property.FindPropertyRelative("arrowTargetGameObject");
+            textProp = property.FindPropertyRelative("text");
+            arrowTargetHierarchyNameProp = property.FindPropertyRelative("arrowTargetHierarchyName");
+            teleportPositionProp = property.FindPropertyRelative("teleportPosition");
 
+            EditorGUI.PropertyField(new Rect(position.x, position.y , position.width, 60), textProp);
+            EditorGUI.PropertyField(new Rect(position.x, position.y + 60f, position.width, 20), arrowTargetGameObjectProp);
+            EditorGUI.PropertyField(new Rect(position.x, position.y + 80, position.width, 20), arrowTargetHierarchyNameProp);
+            EditorGUI.PropertyField(new Rect(position.x, position.y + 100, position.width, 20), teleportPositionProp);
+
+            Tutorial.TutorialStep.NextStepEvent nextStepEvent = (Tutorial.TutorialStep.NextStepEvent)GetTargetObjectOfProperty(nextStepEventProp);
+            EditorGUI.PropertyField(new Rect(position.x, position.y+120, position.width, 20), nextStepEventProp);
+            if (nextStepEvent == Tutorial.TutorialStep.NextStepEvent.ButtonPress)
+                EditorGUI.PropertyField(new Rect(position.x,position.y+140,position.width,20),buttonNextStepProp);
+            else
+                EditorGUI.PropertyField(new Rect(position.x, position.y + 140, position.width, 20),nextStepObjectIdProp);
+            
             EditorGUI.EndProperty();
+        }
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return 160;
         }
     }
 

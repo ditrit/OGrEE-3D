@@ -30,7 +30,7 @@ public class FocusHandler : MonoBehaviour
     public LinksConfiguration linksConfiguration;
     public ProximityEffectConfiguration proximityEffectConfiguration;
     public TranslationHandlesConfiguration translationConfiguration;
-    public bool isDeleted = false;
+
     private void Start()
     {
         if (GameManager.gm.allItems.ContainsValue(gameObject))
@@ -133,8 +133,8 @@ public class FocusHandler : MonoBehaviour
             }
 
         }
-            if (GameManager.gm.currentItems.Contains(transform.parent.gameObject) && transform.parent.GetComponent<OObject>())
-                GetComponent<OgreeObject>().SetBaseTransform(transform.localPosition, transform.localRotation, transform.localScale);
+        if (GameManager.gm.currentItems.Contains(transform.parent.gameObject) && transform.parent.GetComponent<OObject>())
+            GetComponent<OgreeObject>().SetBaseTransform(transform.localPosition, transform.localRotation, transform.localScale);
 
     }
 
@@ -303,19 +303,16 @@ public class FocusHandler : MonoBehaviour
 
         if (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent)
             UpdateChildMeshRenderersRec(false);
-        else
+        else if (selectionReferent == GetComponent<OObject>().referent)
         {
-            if (selectionReferent == GetComponent<OObject>().referent)
+            if (!GameManager.gm.currentItems.Contains(gameObject) && !GameManager.gm.currentItems.Contains(transform.parent.gameObject))
             {
-                if (!GameManager.gm.currentItems.Contains(gameObject) && !GameManager.gm.currentItems.Contains(transform.parent.gameObject))
-                {
-                    ToggleCollider(gameObject, false);
-                    UpdateOwnMeshRenderers(false);
-                    UpdateChildMeshRenderers(false);
-                }
-                if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
-                    UpdateChildMeshRenderers(false);
+                ToggleCollider(gameObject, false);
+                UpdateOwnMeshRenderers(false);
+                UpdateChildMeshRenderers(false);
             }
+            if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+                UpdateChildMeshRenderers(false);
         }
     }
 

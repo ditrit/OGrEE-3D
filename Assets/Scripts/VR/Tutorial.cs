@@ -17,7 +17,6 @@ public class Tutorial : MonoBehaviour
     private Vector3 offset;
     private ParentConstraint parentConstraint;
 
-    [NonReorderable]
     public TutorialStep[] tutorialSteps;
 
 
