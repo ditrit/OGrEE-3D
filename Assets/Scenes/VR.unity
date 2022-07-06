@@ -3614,6 +3614,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: 62de5baad6951214490e83605c308466,
+        type: 3}
+      propertyPath: maxViewHorizontalDegrees
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 62de5baad6951214490e83605c308466, type: 3}
 --- !u!1 &398372451
@@ -4720,6 +4725,12 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &541379387 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 575543034647280355, guid: a7918d3f8ac919643a3c600e28915551,
+    type: 3}
+  m_PrefabInstance: {fileID: 726959048}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &560516237
 GameObject:
   m_ObjectHideFlags: 0
@@ -5513,45 +5524,228 @@ MonoBehaviour:
   step: 0
   arrow: {fileID: 1717543949}
   tutorialWindow: {fileID: 273234222}
-  templates: []
+  mixedRealtyPlaySpace: {fileID: 53137975}
+  mainCamera: {fileID: 90352355}
+  templates:
+  - '{   "slug"        : "ibm-ns1200",  "description" : "NeXtScale ns1200",  "category"   
+    : "device",  "sizeWDHmm"   : [447, 914.5, 263.3],  "fbxModel"    : "",  "attributes" 
+    : {    "type"        : "chassis",    "vendor"      : "IBM",    "model"      
+    : "5456-HC1"  },  "colors"      : [],  "components"  : [   { "location": "midplane",
+    "type": "chassis", "elemOrient" : "", "elemPos" : [  0,230, 0], "elemSize" :
+    [450, 30,270], "labelPos"  : "top",  "color" : "FFFFFF",  "attributes":{} },  
+    { "location": "fpc",      "type": "mgmt",    "elemOrient" : "", "elemPos" : [180, 
+    0,90], "elemSize" : [40, 230, 90], "labelPos"  : "rear", "color" : "FF1493" },  
+    { "location": "psu01",    "type": "power",   "elemOrient" : "", "elemPos" : [225, 
+    0, 0], "elemSize" : [45, 230, 90], "labelPos"  : "rear", "color" : "EE82EE" },  
+    { "location": "fan01",    "type": "fan",     "elemOrient" : "", "elemPos" : [360, 
+    0, 0], "elemSize" : [90, 115, 90], "labelPos"  : "rear", "color" : "66CDAA" },  
+    { "location": "psu06",    "type": "power",   "elemOrient" : "", "elemPos" : [ 
+    0,0,180],  "elemSize" : [44, 230, 90], "labelPos" : "rear",  "color" : "EE82EE"
+    },   { "location": "fan10",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [ 46,0,180],  "elemSize" : [88, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "fan09",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [135,0,180],  "elemSize" : [88, 115, 90], "labelPos" : "rear",  "color" : "00ffAA"
+    },   { "location": "psu05",    "type": "power",   "elemOrient" : "", "elemPos"
+    : [225,0,180],  "elemSize" : [44, 230, 90], "labelPos" : "rear",  "color" : "EE82EE"
+    },   { "location": "fan08",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [270,0,180],  "elemSize" : [88, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "fan07",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [360,0,180],  "elemSize" : [88, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "psu04",    "type": "power",   "elemOrient" : "", "elemPos"
+    : [  0,0,90],   "elemSize" : [45, 230, 90], "labelPos" : "rear",  "color" : "EE82EE"
+    },   { "location": "fan06",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [ 45,0,90],   "elemSize" : [90, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "psu03",    "type": "power",   "elemOrient" : "", "elemPos"
+    : [225,0,90],   "elemSize" : [45, 230, 90], "labelPos" : "rear",  "color" : "EE82EE"
+    },   { "location": "fan05",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [270,0,90],   "elemSize" : [90, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "psu02",    "type": "power",   "elemOrient" : "", "elemPos"
+    : [  0,0,0],    "elemSize" : [45, 230, 90], "labelPos" : "rear",  "color" : "EE82EE"
+    },   { "location": "fan04",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [ 45,0,0],    "elemSize" : [90, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "fan03",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [135,0,0],    "elemSize" : [90, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    },   { "location": "fan02",    "type": "fan",     "elemOrient" : "", "elemPos"
+    : [270,0,0],    "elemSize" : [90, 115, 90], "labelPos" : "rear",  "color" : "66CDAA"
+    }       ],   "slots"  : [   { "location": "blade01",  "type": "blade",   "elemOrient"
+    : "", "elemPos" : [225,260, 0],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade02",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260, 0],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade03",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [225,260,45],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade04",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260,45],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade05",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [225,260,90],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade06",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260,90],  "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade07",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [225,260,135], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade08",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260,135], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade09",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [225,260,180], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade10",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260,180], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade11",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [225,260,225], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" },   { "location": "blade12",  "type": "blade",   "elemOrient" :
+    "", "elemPos" : [  0,260,225], "elemSize" : [225,660, 45], "labelPos" : "front",
+    "color" : "" }   ] } '
+  - '{      "slug"        : "ibm-nx360m5",     "description" : "NX360M5",     "category"   
+    : "device",     "sizeWDHmm"   : [216 ,659 ,41],     "fbxModel"    : "",     "attributes" 
+    : {       "type"        : "blade",       "vendor"      : "IBM",       "model"      
+    : "5456-HC1",       "ram order"   : "8,1,6,3,7,2,5,4 / 8,9,1,16,6,11,3,14,7,10,2,15,5,12,4,13"    
+    },     "colors" : [],     "components"  : [       { "location": "eth1imm",    
+    "type": "port",     "elemOrient" : "",  "elemPos" : [ 86,649, 0], "elemSize"
+    : [ 14, 11,11], "mandatory":"yes", "labelPos":"front", "color": "ffc0cb", "attributes":{"factor":
+    "rj45"} },       { "location": "eth2",        "type": "port",     "elemOrient"
+    : "",  "elemPos" : [104,649, 0], "elemSize" : [ 14, 11,11], "mandatory":"yes",
+    "labelPos":"front", "color": "ffc0cb", "attributes":{"factor": "rj45"} },      
+    { "location": "raidadapter", "type": "disk",     "elemOrient" : "",  "elemPos"
+    : [152, 72,10], "elemSize" : [ 54, 78, 5], "mandatory":"yes", "labelPos":"top",  
+    "color": "ffff00", "attributes":{"factor": "onboard"} }       ],     "slots"
+    : [      { "location": "cpu1",        "type": "processor", "elemOrient" : "", 
+    "elemPos" : [ 68,343, 0], "elemSize" : [ 97, 97,30], "mandatory":"yes", "labelPos":"top" 
+    , "color": "ffff00", "attributes": {"factor": "LGA2011-R"} },      { "location":
+    "cpu2",        "type": "processor", "elemOrient" : "",  "elemPos" : [ 53,223,
+    0], "elemSize" : [ 97, 97,30], "mandatory":"no",  "labelPos":"top"  , "color":
+    "ffff00", "attributes": {"factor": "LGA2011-R"} },      { "location": "dimm1",      
+    "type": "memory",    "elemOrient" : "",  "elemPos" : [200,336, 0], "elemSize"
+    : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color": "007700", "attributes":
+    {"factor": "LRDIMM"} },      { "location": "dimm2",       "type": "memory",   
+    "elemOrient" : "",  "elemPos" : [190,336, 0], "elemSize" : [  1,133,31], "mandatory":"no", 
+    "labelPos":"left" , "color": "007700", "attributes": {"factor": "LRDIMM"} },     
+    { "location": "dimm4",       "type": "memory",    "elemOrient" : "",  "elemPos"
+    : [180,336, 0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left"
+    , "color": "007700", "attributes": {"factor": "LRDIMM"} },      { "location":
+    "dimm3",       "type": "memory",    "elemOrient" : "",  "elemPos" : [170,336,
+    0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color":
+    "007700", "attributes": {"factor": "LRDIMM"} },      { "location": "dimm5",      
+    "type": "memory",    "elemOrient" : "",  "elemPos" : [ 64,336, 0], "elemSize"
+    : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color": "007700", "attributes":
+    {"factor": "LRDIMM"} },      { "location": "dimm6",       "type": "memory",   
+    "elemOrient" : "",  "elemPos" : [ 54,336, 0], "elemSize" : [  1,133,31], "mandatory":"no", 
+    "labelPos":"left" , "color": "007700", "attributes": {"factor": "LRDIMM"} },     
+    { "location": "dimm7",       "type": "memory",    "elemOrient" : "",  "elemPos"
+    : [ 44,336, 0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left"
+    , "color": "007700", "attributes": {"factor": "LRDIMM"} },      { "location":
+    "dimm8",       "type": "memory",    "elemOrient" : "",  "elemPos" : [ 34,336,
+    0], "elemSize" : [  1,133,31], "mandatory":"yes", "labelPos":"left" , "color":
+    "007700", "attributes": {"factor": "LRDIMM"} },      { "location": "dimm9",      
+    "type": "memory",    "elemOrient" : "",  "elemPos" : [190,194, 0], "elemSize"
+    : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color": "007700", "attributes":
+    {"factor": "LRDIMM"} },      { "location": "dimm10",      "type": "memory",   
+    "elemOrient" : "",  "elemPos" : [180,194, 0], "elemSize" : [  1,133,31], "mandatory":"no", 
+    "labelPos":"left" , "color": "007700", "attributes": {"factor": "LRDIMM"} },     
+    { "location": "dimm11",      "type": "memory",    "elemOrient" : "",  "elemPos"
+    : [170,194, 0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left"
+    , "color": "007700", "attributes": {"factor": "LRDIMM"} },      { "location":
+    "dimm12",      "type": "memory",    "elemOrient" : "",  "elemPos" : [160,194,
+    0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color":
+    "007700", "attributes": {"factor": "LRDIMM"} },      { "location": "dimm13",     
+    "type": "memory",    "elemOrient" : "",  "elemPos" : [ 45,194, 0], "elemSize"
+    : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color": "007700", "attributes":
+    {"factor": "LRDIMM"} },      { "location": "dimm14",      "type": "memory",   
+    "elemOrient" : "",  "elemPos" : [ 35,194, 0], "elemSize" : [  1,133,31], "mandatory":"no", 
+    "labelPos":"left" , "color": "007700", "attributes": {"factor": "LRDIMM"} },     
+    { "location": "dimm15",      "type": "memory",    "elemOrient" : "",  "elemPos"
+    : [ 25,194, 0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left"
+    , "color": "007700", "attributes": {"factor": "LRDIMM"} },      { "location":
+    "dimm16",      "type": "memory",    "elemOrient" : "",  "elemPos" : [ 15,194,
+    0], "elemSize" : [  1,133,31], "mandatory":"no",  "labelPos":"left" , "color":
+    "007700", "attributes": {"factor": "LRDIMM"} },      { "location": "slot2",      
+    "type": "adapter",   "elemOrient" : "",  "elemPos" : [153,493,18], "elemSize"
+    : [ 51,167,18], "mandatory":"no",  "labelPos":"front", "color": "C71585", "attributes":
+    {"factor": "ml2"} },      { "location": "slot1",       "type": "adapter",   "elemOrient"
+    : "",  "elemPos" : [ 29,485,18], "elemSize" : [101,175,18], "mandatory":"no", 
+    "labelPos":"front", "color": "C71585", "attributes": {"factor": "pci3x16fhhl"}
+    },      { "location": "eth1imm",     "type": "port",      "elemOrient" : "", 
+    "elemPos" : [ 86,649, 0], "elemSize" : [ 14, 11,11], "mandatory":"yes", "labelPos":"front",
+    "color": "ffc0cb", "attributes": {"factor": "rj45"} },      { "location": "imm2",       
+    "type": "port",      "elemOrient" : "",  "elemPos" : [162,649, 0], "elemSize"
+    : [ 14, 11,11], "mandatory":"no",  "labelPos":"front", "color": "000000", "attributes":
+    {"factor": "rj45"} },      { "location": "eth2",        "type": "port",     
+    "elemOrient" : "",  "elemPos" : [104,649, 0], "elemSize" : [ 14, 11,11], "mandatory":"yes",
+    "labelPos":"front", "color": "ffc0cb", "attributes": {"factor": "rj45"} },     
+    { "location": "hdd182",      "type": "disk",      "elemOrient" : "",  "elemPos"
+    : [152, 72,15], "elemSize" : [ 54, 78, 5], "mandatory":"no",  "labelPos":"front",
+    "color": "777777", "attributes": {"factor": "1.8hd"} },      { "location": "hdd183",     
+    "type": "disk",      "elemOrient" : "",  "elemPos" : [152, 72,20], "elemSize"
+    : [ 54, 78, 5], "mandatory":"no",  "labelPos":"front", "color": "777777", "attributes":
+    {"factor": "1.8hd"} },      { "location": "hdd184",      "type": "disk",     
+    "elemOrient" : "",  "elemPos" : [152, 72,25], "elemSize" : [ 54, 78, 5], "mandatory":"no", 
+    "labelPos":"front", "color": "777777", "attributes": {"factor": "1.8hd"} },     
+    { "location": "hdd251",      "type": "disk",      "elemOrient" : "",  "elemPos"
+    : [136, 50, 8], "elemSize" : [ 70,100, 7], "mandatory":"no",  "labelPos":"front",
+    "color": "777777", "attributes": {"factor": "2.5hd"} },      { "location": "hdd252",     
+    "type": "disk",      "elemOrient" : "",  "elemPos" : [136, 50,15], "elemSize"
+    : [ 70,100, 7], "mandatory":"no",  "labelPos":"front", "color": "777777", "attributes":
+    {"factor": "2.5hd"} },      { "location": "hdd351",      "type": "disk",     
+    "elemOrient" : "",  "elemPos" : [104,  3, 4], "elemSize" : [102,147,26], "mandatory":"no", 
+    "labelPos":"front", "color": "777777", "attributes": {"factor": "3.5hd"} }     
+    ]    }    '
   tutorialSteps:
   - text: "Texte intro pr\xE9sentation"
-    arrowTarget: {fileID: 0}
-    stepObjectsHidden: []
+    arrowTargetGameObject: {fileID: 0}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+    stepObjectsHidden:
+    - {fileID: 1090879224}
     stepObjectsShown:
     - {fileID: 273234222}
     stepSApiObjectsInstantiated: []
   - text: "Connexion \xE0 l'API"
-    arrowTarget: {fileID: 2127918529}
-    stepObjectsHidden: []
+    arrowTargetGameObject: {fileID: 2127918529}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+    stepObjectsHidden:
+    - {fileID: 673678086}
     stepObjectsShown:
     - {fileID: 65108080}
     stepSApiObjectsInstantiated: []
   - text: "S\xE9lection du tenant"
-    arrowTarget: {fileID: 804854599}
+    arrowTargetGameObject: {fileID: 804854599}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden:
     - {fileID: 1090879224}
     stepObjectsShown:
     - {fileID: 1625279259}
     stepSApiObjectsInstantiated: []
   - text: "S\xE9lection du site"
-    arrowTarget: {fileID: 797301328}
+    arrowTargetGameObject: {fileID: 797301328}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden:
     - {fileID: 1625279259}
     stepObjectsShown:
     - {fileID: 440103004}
     stepSApiObjectsInstantiated: []
   - text: "S\xE9lection du building"
-    arrowTarget: {fileID: 1467596710}
+    arrowTargetGameObject: {fileID: 1467596710}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden:
     - {fileID: 440103004}
     stepObjectsShown:
     - {fileID: 2066020843}
     stepSApiObjectsInstantiated: []
   - text: Chargement de la salle
-    arrowTarget: {fileID: 921916518}
+    arrowTargetGameObject: {fileID: 921916518}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden:
     - {fileID: 2066020843}
+    stepObjectsShown:
+    - {fileID: 541379387}
+    stepSApiObjectsInstantiated: []
+  - text: "S\xE9lection du rack"
+    arrowTargetGameObject: {fileID: 0}
+    arrowTargetHierarchyName: CED.BETA.A.R1.A02
+    teleportPosition: {x: 1.44, y: 0, z: 3.34}
+    stepObjectsHidden:
+    - {fileID: 541379387}
     stepObjectsShown: []
     stepSApiObjectsInstantiated:
     - sApiObject:
@@ -5782,38 +5976,45 @@ MonoBehaviour:
         value: blade10
       - key: template
         value: ibm-nx360m5
-  - text: "S\xE9lection du rack"
-    arrowTarget: {fileID: 0}
-    stepObjectsHidden: []
-    stepObjectsShown: []
-    stepSApiObjectsInstantiated: []
   - text: "S\xE9lection du chassis"
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 0}
+    arrowTargetHierarchyName: CED.BETA.A.R1.A02.chassis05
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
   - text: Mode focus
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 1265356637}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
   - text: Mode edit
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 1662559111}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
   - text: Sortie du mode edit
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 1662559111}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
   - text: Sortie du mode focus
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 1265356637}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
   - text: Finnito
-    arrowTarget: {fileID: 0}
+    arrowTargetGameObject: {fileID: 0}
+    arrowTargetHierarchyName: 
+    teleportPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
@@ -5822,6 +6023,12 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7125982788630174461, guid: 6ab5112525b9e34478c526e55e2980c1,
     type: 3}
   m_PrefabInstance: {fileID: 1630748684}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &673678086 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7241409829688271504, guid: b812035630d868d40adcc2aece53fc83,
+    type: 3}
+  m_PrefabInstance: {fileID: 273234220}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &726737057
 GameObject:
@@ -6052,6 +6259,11 @@ PrefabInstance:
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: Tutorial, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: a7918d3f8ac919643a3c600e28915551,
+        type: 3}
+      propertyPath: maxViewHorizontalDegrees
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a7918d3f8ac919643a3c600e28915551, type: 3}
@@ -10653,6 +10865,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1264345811}
   m_CullTransparentMesh: 0
+--- !u!1 &1265356637 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 960063623271418330, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1270724535
 GameObject:
   m_ObjectHideFlags: 0
@@ -12439,13 +12657,13 @@ PrefabInstance:
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 273234222}
+      objectReference: {fileID: 601404101}
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -12454,12 +12672,12 @@ PrefabInstance:
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SetActive
+      value: NextStep
       objectReference: {fileID: 0}
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: Tutorial, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 933788212595173577, guid: c3f8a05efb669e3499ac225bc7b9e3d4,
         type: 3}
@@ -14376,6 +14594,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!1 &1662559111 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8800078080613064985, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1670260730
 GameObject:
   m_ObjectHideFlags: 0
@@ -15538,6 +15762,21 @@ PrefabInstance:
     - target: {fileID: 575543034647280355, guid: 58248dd1c520a104bbe7f63665fffe3b,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: 58248dd1c520a104bbe7f63665fffe3b,
+        type: 3}
+      propertyPath: moveLerpTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: 58248dd1c520a104bbe7f63665fffe3b,
+        type: 3}
+      propertyPath: rotateLerpTime
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: 58248dd1c520a104bbe7f63665fffe3b,
+        type: 3}
+      propertyPath: maxViewHorizontalDegrees
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
@@ -17791,6 +18030,11 @@ PrefabInstance:
     - target: {fileID: 575543034647280355, guid: 8ab53a967fee07d428d5e57d48675f27,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2468340832717955388, guid: 8ab53a967fee07d428d5e57d48675f27,
+        type: 3}
+      propertyPath: maxViewHorizontalDegrees
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -4,16 +4,18 @@ using UnityEngine;
 using UnityEngine.Animations;
 using TMPro;
 using System.Text.RegularExpressions;
-public partial class Tutorial : MonoBehaviour
+public class Tutorial : MonoBehaviour
 {
     public int step = 0;
     public GameObject arrow;
     public GameObject tutorialWindow;
+    public GameObject mixedRealtyPlaySpace;
+    public GameObject mainCamera;
+
+    public string[] templates;
     private Vector3 targetSize;
     private Vector3 offset;
     private ParentConstraint parentConstraint;
-
-    public string[] templates;
 
     [NonReorderable]
     public TutorialStep[] tutorialSteps;
@@ -28,8 +30,20 @@ public partial class Tutorial : MonoBehaviour
         [Tooltip("Text show in the tutorial window")]
         public string text;
 
-        [Tooltip("Object pointed at by the arrow")]
-        public GameObject arrowTarget;
+        [Tooltip("GameObject pointed at by the arrow")]
+        public GameObject arrowTargetGameObject;
+
+        [Tooltip("GameObject pointed at by the arrow")]
+        public string arrowTargetHierarchyName;
+
+        [Tooltip("Where to place the player at the start of the step")]
+        public Vector3 teleportPosition = Vector3.negativeInfinity;
+
+        public NextStepEvent nextStepEvent;
+
+        public GameObject buttonNextStep;
+
+        public string nextStepObjectId;
 
         [Tooltip("Objects hidden during the step")]
         public GameObject[] stepObjectsHidden;
@@ -37,9 +51,9 @@ public partial class Tutorial : MonoBehaviour
         [Tooltip("Objects shown during the step")]
         public GameObject[] stepObjectsShown;
 
-
         [Tooltip("SApiObject instantiated during the step")]
         public SApiObjectHelper[] stepSApiObjectsInstantiated;
+
 
 
         [System.Serializable]
@@ -56,6 +70,16 @@ public partial class Tutorial : MonoBehaviour
 
             public List<Attribute> attributes = new List<Attribute>();
         }
+        public enum NextStepEvent
+        {
+            Select,
+            Focus,
+            Edit,
+            ButtonPress
+        }
+
+        public object test;
+
     }
     // Start is called before the first frame update
     void Start()
@@ -67,15 +91,7 @@ public partial class Tutorial : MonoBehaviour
             {
                 helper.sApiObject.attributes = new Dictionary<string, string>();
                 foreach (TutorialStep.SApiObjectHelper.Attribute attribute in helper.attributes)
-                {
-                    if (helper == null)
-                        print("helper");
-                    else if (helper.sApiObject.attributes == null)
-                        print("helper.sapiobject.attributes");
-                    else if (attribute == null)
-                        print("attribute");
                     helper.sApiObject.attributes[attribute.key] = attribute.value;
-                }
             }
 
         foreach (string template in templates)
@@ -90,6 +106,7 @@ public partial class Tutorial : MonoBehaviour
         if (arrow.activeInHierarchy)
             MoveArrow();
     }
+
 
     private void PlaceArrow(GameObject _target)
     {
@@ -116,13 +133,13 @@ public partial class Tutorial : MonoBehaviour
         arrow.SetActive(true);
     }
 
+    private void PlaceArrow(string id)
+    {
+        PlaceArrow(GameManager.gm.FindByAbsPath(id));
+    }
+
     public async void NextStep()
     {
-        if (step == 0)
-            tutorialWindow.transform.GetChild(3).GetComponent<Microsoft.MixedReality.Toolkit.UI.ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
-
-        PlaceArrow(tutorialSteps[step].arrowTarget);
-        ChangeText(tutorialSteps[step].text);
         if (step < tutorialSteps.Length)
         {
             foreach (GameObject obj in tutorialSteps[step].stepObjectsShown)
@@ -130,8 +147,24 @@ public partial class Tutorial : MonoBehaviour
             foreach (GameObject obj in tutorialSteps[step].stepObjectsHidden)
                 obj?.SetActive(false);
             foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[step].stepSApiObjectsInstantiated)
-               await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
+                await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
         }
+        PlaceArrow(tutorialSteps[step].arrowTargetGameObject);
+        if (!tutorialSteps[step].arrowTargetGameObject)
+            PlaceArrow(tutorialSteps[step].arrowTargetHierarchyName);
+
+        ChangeText(tutorialSteps[step].text);
+
+        if (tutorialSteps[step].teleportPosition != Vector3.negativeInfinity)
+        {
+            Vector3 targetPos = tutorialSteps[step].teleportPosition;
+            float height = targetPos.y;
+            targetPos -= mainCamera.transform.position - mixedRealtyPlaySpace.transform.position;
+            targetPos.y = height;
+
+            mixedRealtyPlaySpace.transform.position = targetPos;
+        }
+
         step++;
         if (step == tutorialSteps.Length)
             step = 0;

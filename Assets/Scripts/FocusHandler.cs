@@ -313,10 +313,7 @@ public class FocusHandler : MonoBehaviour
                     UpdateChildMeshRenderers(false);
                 }
                 if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
-                {
-                    print("##" + name);
                     UpdateChildMeshRenderers(false);
-                }
             }
         }
     }
@@ -513,7 +510,6 @@ public class FocusHandler : MonoBehaviour
         UpdateChildMeshRenderers(false);
         if (GetComponent<OgreeObject>().category != "device")
         {
-            print("#" + name);
             UpdateOwnMeshRenderers(true);
             ToggleCollider(gameObject, true);
             UpdateChildMeshRenderers(false);
