@@ -78,12 +78,12 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        GameManager.gm.AppendLogLine($"Tenants: {tenantsCount}");
-        GameManager.gm.AppendLogLine($"Sites: {sitesCount}");
-        GameManager.gm.AppendLogLine($"Buildings: {buildingsCount}");
-        GameManager.gm.AppendLogLine($"Rooms: {roomsCount}");
-        GameManager.gm.AppendLogLine($"Racks: {racksCount}");
-        GameManager.gm.AppendLogLine($"Devices: {devicesCount}");
+        GameManager.gm.AppendLogLine($"Tenants: {tenantsCount}", true);
+        GameManager.gm.AppendLogLine($"Sites: {sitesCount}", true);
+        GameManager.gm.AppendLogLine($"Buildings: {buildingsCount}", true);
+        GameManager.gm.AppendLogLine($"Rooms: {roomsCount}", true);
+        GameManager.gm.AppendLogLine($"Racks: {racksCount}", true);
+        GameManager.gm.AppendLogLine($"Devices: {devicesCount}", true);
     }
 
     ///<summary>
@@ -96,7 +96,7 @@ public class DebugText : MonoBehaviour
         int sum = 0;
         for (int i = 0; i < _array.Length; i++)
             sum += _array[i];
-        
+
         return sum / _array.Length;
     }
 }

@@ -95,7 +95,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         CreateRoomTemplate(roomData);
@@ -126,7 +126,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         await CreateObjectTemplate(data);
@@ -140,22 +140,24 @@ public class ReadFromJson
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", "red");
+            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
             return;
         }
         if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
             return;
         }
 
         // Build SApiObject
-        SApiObject obj = new SApiObject();
-        obj.description = new List<string>();
-        obj.attributes = new Dictionary<string, string>();
+        SApiObject obj = new SApiObject
+        {
+            description = new List<string>(),
+            attributes = new Dictionary<string, string>(),
 
-        obj.name = _data.slug;
-        obj.category = _data.category;
+            name = _data.slug,
+            category = _data.category
+        };
         obj.description.Add(_data.description);
         if (obj.category == "rack")
         {
@@ -314,8 +316,10 @@ public class ReadFromJson
             obj.category = "device";
             obj.domain = _parent.domain;
             obj.description = new List<string>();
-            obj.attributes = new Dictionary<string, string>();
-            obj.attributes["deviceType"] = _data.type;
+            obj.attributes = new Dictionary<string, string>
+            {
+                ["deviceType"] = _data.type
+            };
             if (_data.attributes != null)
             {
                 foreach (KeyValuePair<string, string> kvp in _data.attributes)
@@ -331,7 +335,7 @@ public class ReadFromJson
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
-        Color myColor = new Color();
+        Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else

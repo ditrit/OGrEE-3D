@@ -107,11 +107,7 @@ public static class Utils
     ///<returns>Hit GameObject or null</returns>
     public static GameObject RaycastFromCameraToMouse()
     {
-        RaycastHit hit;
-        //Vector3 pointerPosition = new Vector3();
-        //pointerPosition = Microsoft.MixedReality.Toolkit.Input.IMixedRealityPointer.Position;
-        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out hit);
-        //IMixedRealityRaycastProvider.Raycast(out MixedRealityRaycastHit);
+        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider)
         {
             // Debug.Log(hit.collider.transform.parent.name);
@@ -143,8 +139,7 @@ public static class Utils
     ///<returns>The wanted color</returns>
     public static Color ParseColor(string _hex)
     {
-        Color newColor;
-        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
+        ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
         return newColor;
     }
 

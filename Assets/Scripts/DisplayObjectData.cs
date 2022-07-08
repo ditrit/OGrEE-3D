@@ -161,13 +161,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+                        GameManager.gm.AppendLogLine("Wrong description index", true, eLogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", "yellow");
+                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, eLogtype.warning);
                     return;
                 }
             }
@@ -250,7 +250,7 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Unknown labelFont attribute", "yellow");
+            GameManager.gm.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
     }
 
 }

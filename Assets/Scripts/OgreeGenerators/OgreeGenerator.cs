@@ -87,7 +87,7 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             default:
                 newItem = null;
-                GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", "yellow");
+                GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
                 break;
         }
         ResetCoroutine();
@@ -116,8 +116,8 @@ public class OgreeGenerator : MonoBehaviour
     private IEnumerator WaitAndRaiseEvent()
     {
         yield return new WaitForSeconds(0.35f);
-        Debug.Log("[] event raised !");
         EventManager.Instance.Raise(new ImportFinishedEvent());
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        // Debug.Log("[] event raised !");
     }
 }

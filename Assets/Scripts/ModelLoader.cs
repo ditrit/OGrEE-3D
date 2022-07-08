@@ -72,7 +72,7 @@ public class ModelLoader : MonoBehaviour
 
         if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
         {
-            GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", "yellow");
+            GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, eLogtype.warning);
             return;
         }
 
@@ -85,7 +85,7 @@ public class ModelLoader : MonoBehaviour
             }
             catch (System.Exception _e)
             {
-                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", "red");
+                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", true, eLogtype.error);
                 File.Delete(_filePath);
             }
         }
