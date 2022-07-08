@@ -4,61 +4,123 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using UnityEngine.UIElements;
+using System.Linq;
 
-[CustomEditor(typeof(Tutorial))]
-public class TutorialEditor : Editor
+[CustomPropertyDrawer(typeof(Tutorial.TutorialStep))]
+public class TutorialStepPropertyDrawer : PropertyDrawer
 {
-    SerializedProperty tutorialStepsProp;
+    private float lastPropertyPosition = 0;
+    private float padding = 5;
+    SerializedProperty nextStepEventProp;
+    SerializedProperty buttonNextStepProp;
+    SerializedProperty nextStepObjectHierarchyNameProp;
+    SerializedProperty arrowTargetGameObjectProp;
+    SerializedProperty textProp;
+    SerializedProperty arrowTargetHierarchyNameProp;
+    SerializedProperty teleportBoolProp;
+    SerializedProperty teleportPositionProp;
+    SerializedProperty arrowTargetTypeProp;
+    SerializedProperty stepObjectsHiddenProp;
+    SerializedProperty stepObjectsShownProp;
+    SerializedProperty stepSApiObjectsInstantiatedProp;
 
-    [CustomPropertyDrawer(typeof(Tutorial.TutorialStep))]
-    public class TutorialStepPropertyDrawer : PropertyDrawer
+
+
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        SerializedProperty nextStepEventProp;
-        SerializedProperty buttonNextStepProp;
-        SerializedProperty nextStepObjectIdProp;
-        SerializedProperty arrowTargetGameObjectProp;
-        SerializedProperty textProp;
-        SerializedProperty arrowTargetHierarchyNameProp;
-        SerializedProperty teleportPositionProp;
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-            nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
-            buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
-            nextStepObjectIdProp = property.FindPropertyRelative("nextStepObjectId");
-            arrowTargetGameObjectProp = property.FindPropertyRelative("arrowTargetGameObject");
-            textProp = property.FindPropertyRelative("text");
-            arrowTargetHierarchyNameProp = property.FindPropertyRelative("arrowTargetHierarchyName");
-            teleportPositionProp = property.FindPropertyRelative("teleportPosition");
+        // if ((string)GetTargetObjectOfProperty(textProp) != "")
+        //   label.text = (string)GetTargetObjectOfProperty(textProp);
+        EditorGUI.BeginProperty(position, label, property);
 
-            EditorGUI.PropertyField(new Rect(position.x, position.y , position.width, 60), textProp);
-            EditorGUI.PropertyField(new Rect(position.x, position.y + 60f, position.width, 20), arrowTargetGameObjectProp);
-            EditorGUI.PropertyField(new Rect(position.x, position.y + 80, position.width, 20), arrowTargetHierarchyNameProp);
-            EditorGUI.PropertyField(new Rect(position.x, position.y + 100, position.width, 20), teleportPositionProp);
+        EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+        EditorGUI.indentLevel = 0;
+        lastPropertyPosition = 20;
+        nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
+        buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
+        nextStepObjectHierarchyNameProp = property.FindPropertyRelative("nextStepObjectHierarchyName");
+        arrowTargetGameObjectProp = property.FindPropertyRelative("arrowTargetGameObject");
+        textProp = property.FindPropertyRelative("text");
+        arrowTargetHierarchyNameProp = property.FindPropertyRelative("arrowTargetHierarchyName");
+        teleportBoolProp = property.FindPropertyRelative("teleportPlayer");
+        teleportPositionProp = property.FindPropertyRelative("teleportPosition");
+        arrowTargetTypeProp = property.FindPropertyRelative("arrowTargetType");
 
-            Tutorial.TutorialStep.NextStepEvent nextStepEvent = (Tutorial.TutorialStep.NextStepEvent)GetTargetObjectOfProperty(nextStepEventProp);
-            EditorGUI.PropertyField(new Rect(position.x, position.y+120, position.width, 20), nextStepEventProp);
-            if (nextStepEvent == Tutorial.TutorialStep.NextStepEvent.ButtonPress)
-                EditorGUI.PropertyField(new Rect(position.x,position.y+140,position.width,20),buttonNextStepProp);
-            else
-                EditorGUI.PropertyField(new Rect(position.x, position.y + 140, position.width, 20),nextStepObjectIdProp);
-            
-            EditorGUI.EndProperty();
-        }
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        stepObjectsHiddenProp = property.FindPropertyRelative("stepObjectsHidden");
+        stepObjectsShownProp = property.FindPropertyRelative("stepObjectsShown");
+        stepSApiObjectsInstantiatedProp = property.FindPropertyRelative("stepSApiObjectsInstantiated");
+
+        PlaceProperty(textProp, position);
+
+        PlaceProperty(arrowTargetTypeProp, position);
+
+        if ((Tutorial.TutorialStep.ArrowTargetType)GetTargetObjectOfProperty(arrowTargetTypeProp) == Tutorial.TutorialStep.ArrowTargetType.GameObject)
         {
-            return 160;
+            SetTargetObjectOfProperty(arrowTargetHierarchyNameProp, null);
+            PlaceProperty(arrowTargetGameObjectProp, position);
         }
+        else
+        {
+            SetTargetObjectOfProperty(arrowTargetGameObjectProp, null);
+            PlaceProperty(arrowTargetHierarchyNameProp, position);
+        }
+
+        PlaceProperty(teleportBoolProp, position);
+
+        if ((bool)GetTargetObjectOfProperty(teleportBoolProp))
+            PlaceProperty(teleportPositionProp, position);
+        else
+            DrawBlank(teleportBoolProp, position);
+
+
+        PlaceProperty(nextStepEventProp, position);
+
+        if ((Tutorial.TutorialStep.NextStepEvent)GetTargetObjectOfProperty(nextStepEventProp) == Tutorial.TutorialStep.NextStepEvent.ButtonPress)
+        {
+            SetTargetObjectOfProperty(nextStepObjectHierarchyNameProp, null);
+            PlaceProperty(buttonNextStepProp, position);
+        }
+        else
+        {
+            SetTargetObjectOfProperty(buttonNextStepProp, null);
+            PlaceProperty(nextStepObjectHierarchyNameProp, position);
+        }
+
+        PlaceProperty(stepObjectsShownProp, position);
+        PlaceProperty(stepObjectsHiddenProp, position);
+        PlaceProperty(stepSApiObjectsInstantiatedProp, position);
+        EditorGUI.EndProperty();
+    }
+    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    {
+
+        nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
+        buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
+        nextStepObjectHierarchyNameProp = property.FindPropertyRelative("nextStepObjectHierarchyName");
+        arrowTargetGameObjectProp = property.FindPropertyRelative("arrowTargetGameObject");
+        textProp = property.FindPropertyRelative("text");
+        arrowTargetHierarchyNameProp = property.FindPropertyRelative("arrowTargetHierarchyName");
+        teleportBoolProp = property.FindPropertyRelative("teleportPlayer");
+        teleportPositionProp = property.FindPropertyRelative("teleportPosition");
+        arrowTargetTypeProp = property.FindPropertyRelative("arrowTargetType");
+
+        stepObjectsHiddenProp = property.FindPropertyRelative("stepObjectsHidden");
+        stepObjectsShownProp = property.FindPropertyRelative("stepObjectsShown");
+        stepSApiObjectsInstantiatedProp = property.FindPropertyRelative("stepSApiObjectsInstantiated");
+        //Debug.Log(20 + padding * 10 + EditorGUI.GetPropertyHeight(textProp) + EditorGUI.GetPropertyHeight(arrowTargetTypeProp) + EditorGUI.GetPropertyHeight(arrowTargetGameObjectProp) + EditorGUI.GetPropertyHeight(teleportBoolProp) + EditorGUI.GetPropertyHeight(teleportPositionProp) + EditorGUI.GetPropertyHeight(nextStepEventProp) + EditorGUI.GetPropertyHeight(nextStepObjectHierarchyNameProp) + EditorGUI.GetPropertyHeight(stepObjectsShownProp, true) + EditorGUI.GetPropertyHeight(stepObjectsHiddenProp, true) + EditorGUI.GetPropertyHeight(stepSApiObjectsInstantiatedProp, true));
+        return 20 + padding * 10 + EditorGUI.GetPropertyHeight(textProp) + EditorGUI.GetPropertyHeight(arrowTargetTypeProp) + EditorGUI.GetPropertyHeight(arrowTargetGameObjectProp) + EditorGUI.GetPropertyHeight(teleportBoolProp) + EditorGUI.GetPropertyHeight(teleportPositionProp) + EditorGUI.GetPropertyHeight(nextStepEventProp) + EditorGUI.GetPropertyHeight(nextStepObjectHierarchyNameProp) + EditorGUI.GetPropertyHeight(stepObjectsShownProp, true) + EditorGUI.GetPropertyHeight(stepObjectsHiddenProp, true) + EditorGUI.GetPropertyHeight(stepSApiObjectsInstantiatedProp, true);
     }
 
-    public override void OnInspectorGUI()
+    private void PlaceProperty(SerializedProperty property, Rect position)
     {
-        serializedObject.Update();
-        tutorialStepsProp = serializedObject.FindProperty("tutorialSteps");
-        EditorGUILayout.PropertyField(tutorialStepsProp);
-        serializedObject.ApplyModifiedProperties();
+        EditorGUI.PropertyField(new Rect(position.x, position.y + lastPropertyPosition, position.width, padding + EditorGUI.GetPropertyHeight(property)), property, true);
+        lastPropertyPosition += EditorGUI.GetPropertyHeight(property, true) + padding;
     }
 
+    private void DrawBlank(SerializedProperty property, Rect position)
+    {
+        EditorGUI.DrawRect(new Rect(position.x, position.y + lastPropertyPosition, position.width, padding + EditorGUI.GetPropertyHeight(property)), Color.gray);
+        lastPropertyPosition += EditorGUI.GetPropertyHeight(property, true) + padding;
+    }
 
     /// <summary>
     /// Gets the object the property represents.
@@ -122,5 +184,65 @@ public class TutorialEditor : Editor
         }
         return enm.Current;
     }
+
+    public static void SetTargetObjectOfProperty(SerializedProperty prop, object value)
+    {
+        var path = prop.propertyPath.Replace(".Array.data[", "[");
+        object obj = prop.serializedObject.targetObject;
+        var elements = path.Split('.');
+        foreach (var element in elements.Take(elements.Length - 1))
+        {
+            if (element.Contains("["))
+            {
+                var elementName = element.Substring(0, element.IndexOf("["));
+                var index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                obj = GetValue_Imp(obj, elementName, index);
+            }
+            else
+            {
+                obj = GetValue_Imp(obj, element);
+            }
+        }
+
+        if (Object.ReferenceEquals(obj, null)) return;
+
+        try
+        {
+            var element = elements.Last();
+
+            if (element.Contains("["))
+            {
+                var tp = obj.GetType();
+                var elementName = element.Substring(0, element.IndexOf("["));
+                var index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                var field = tp.GetField(elementName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var arr = field.GetValue(obj) as System.Collections.IList;
+                arr[index] = value;
+
+                //var elementName = element.Substring(0, element.IndexOf("["));
+                //var index = System.Convert.ToInt32(element.Substring(element.IndexOf("[")).Replace("[", "").Replace("]", ""));
+                //var arr = DynamicUtil.GetValue(element, elementName) as System.Collections.IList;
+                //if (arr != null) arr[index] = value;
+            }
+            else
+            {
+                var tp = obj.GetType();
+                var field = tp.GetField(element, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(obj, value);
+                }
+                //DynamicUtil.SetValue(obj, element, value);
+            }
+
+        }
+        catch
+        {
+            return;
+        }
+    }
 }
+
+
+
 

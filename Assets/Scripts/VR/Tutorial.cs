@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.Animations;
 using TMPro;
 using System.Text.RegularExpressions;
+using Microsoft.MixedReality.Toolkit.UI;
+using System.Threading.Tasks;
+
 public class Tutorial : MonoBehaviour
 {
     public int step = 0;
@@ -35,14 +38,18 @@ public class Tutorial : MonoBehaviour
         [Tooltip("GameObject pointed at by the arrow")]
         public string arrowTargetHierarchyName;
 
+        public bool teleportPlayer;
+
         [Tooltip("Where to place the player at the start of the step")]
         public Vector3 teleportPosition = Vector3.negativeInfinity;
 
         public NextStepEvent nextStepEvent;
 
+        public ArrowTargetType arrowTargetType;
+
         public GameObject buttonNextStep;
 
-        public string nextStepObjectId;
+        public string nextStepObjectHierarchyName;
 
         [Tooltip("Objects hidden during the step")]
         public GameObject[] stepObjectsHidden;
@@ -72,9 +79,18 @@ public class Tutorial : MonoBehaviour
         public enum NextStepEvent
         {
             Select,
+            Deselect,
             Focus,
-            Edit,
+            Unfocus,
+            EditIn,
+            EditOut,
             ButtonPress
+        }
+
+        public enum ArrowTargetType
+        {
+            GameObject,
+            HierarchyName
         }
 
         public object test;
@@ -98,6 +114,65 @@ public class Tutorial : MonoBehaviour
                 rfJson.CreateRoomTemplateJson(template);
             else
                 rfJson.CreateObjTemplateJson(template);
+
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+
+        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+    }
+
+    private void OnSelectItem(OnSelectItemEvent _e)
+    {
+        if (step > 0 && tutorialSteps[step-1].nextStepEvent == TutorialStep.NextStepEvent.Select)
+        {
+            foreach (GameObject obj in GameManager.gm.currentItems)
+                if (tutorialSteps[step - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
+                {
+                    NextStep();
+                    break;
+                }
+        }
+        if (step > 0 && tutorialSteps[step - 1].nextStepEvent == TutorialStep.NextStepEvent.Deselect)
+        {
+            foreach (GameObject obj in GameManager.gm.previousItems)
+                if (tutorialSteps[step - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
+                {
+                    NextStep();
+                    break;
+                }
+        }
+    }
+
+    private void OnFocusItem(OnFocusEvent _e)
+    {
+        if (step == 0 || tutorialSteps[step-1].nextStepEvent != TutorialStep.NextStepEvent.Focus)
+            return;
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+            NextStep();
+    }
+    private void OnUnFocusItem(OnUnFocusEvent _e)
+    {
+        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.Unfocus)
+            return;
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+            NextStep();
+    }
+    private void OnEditModeIn(EditModeInEvent _e)
+    {
+        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.EditIn)
+            return;
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+            NextStep();
+    }
+    private void OnEditModeOut(EditModeOutEvent _e)
+    {
+        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.EditOut)
+            return;
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+            NextStep();
     }
 
     private void Update()
@@ -154,7 +229,7 @@ public class Tutorial : MonoBehaviour
 
         ChangeText(tutorialSteps[step].text);
 
-        if (tutorialSteps[step].teleportPosition != Vector3.negativeInfinity)
+        if (tutorialSteps[step].teleportPlayer)
         {
             Vector3 targetPos = tutorialSteps[step].teleportPosition;
             float height = targetPos.y;
@@ -162,6 +237,12 @@ public class Tutorial : MonoBehaviour
             targetPos.y = height;
 
             mixedRealtyPlaySpace.transform.position = targetPos;
+        }
+
+        if (tutorialSteps[step].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
+        {
+            tutorialSteps[step].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+            tutorialSteps[step].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>  NextStep());
         }
 
         step++;
