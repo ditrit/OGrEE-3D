@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -84,7 +84,7 @@ public class QRScanner : MonoBehaviour
             {
                 TryHarder = true,
             }
-        };*/
+        };
 
         webcamTexture.Play();
         var snap = new Texture2D(webcamTexture.width, webcamTexture.height, TextureFormat.ARGB32, false);
@@ -129,4 +129,4 @@ public class QRScanner : MonoBehaviour
         }
         //webcamTexture.Stop();
     }
-}
+}*/

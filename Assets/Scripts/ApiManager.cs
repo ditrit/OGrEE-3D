@@ -245,6 +245,7 @@ public class ApiManager : MonoBehaviour
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
 
         string fullPath = $"{server}/{_input}";
+        GameManager.gm.AppendLogLine(fullPath);
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);

@@ -14,7 +14,7 @@ public class SearchMenuManager : GridMenuHandler
     public List<SApiObject> physicalObjects;
     public GameObject buttonPrefab;
 
-    private bool isTenant;
+    private bool isSite;
     [SerializeField] private List<string> previousCalls = new List<string>();
     [SerializeField] private List<string> parentNames = new List<string>();
     public string tenant;
@@ -58,7 +58,7 @@ public class SearchMenuManager : GridMenuHandler
     ///<param name="_index">the element index in physicalObjects</param>
     private void AssignButtonFunction(int _index)
     {
-        isTenant = false;
+        isSite = false;
         bool isRack = false;
 
         SApiObject obj = physicalObjects[_index];
@@ -70,10 +70,10 @@ public class SearchMenuManager : GridMenuHandler
         {
             case "tenant":
                 subCat = "sites";
-                isTenant = true;
                 break;
             case "site":
                 subCat = "buildings";
+                isSite = true;
                 break;
             case "building":
                 subCat = "rooms";
@@ -127,7 +127,7 @@ public class SearchMenuManager : GridMenuHandler
     {
         UpdateGridDefault(_elementNumber, _elementDelegate);
         UiManagerVincent.instance.UpdateGrid(gridCollection);
-        buttonReturn.SetActive(!isTenant);
+        buttonReturn.SetActive(!isSite);
         var onClickEvent = UiManagerVincent.instance.ButtonOnClick(buttonReturn);
         onClickEvent.RemoveAllListeners();
         onClickEvent.AddListener(async () =>
@@ -173,6 +173,7 @@ public class SearchMenuManager : GridMenuHandler
         {
             menu.SetActive(true);
             Utils.MoveObjectToCamera(menu, GameManager.gm.mainCamera, 0.6f, -0.25f, 0, 25);
+            OnEnable();
         }
     }
 

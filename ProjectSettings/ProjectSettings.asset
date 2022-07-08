@@ -8,7 +8,7 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 3
+  defaultScreenOrientation: 0
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
@@ -149,8 +149,14 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: -7172676021702587011, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
-  - {fileID: 5604438126760133931, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 9029318565453216758, guid: 1cbcf211406dbc84cb0904e00c68c399, type: 2}
+  - {fileID: 0}
+  - {fileID: 7943852015859112686, guid: fbe7e4eb2a81f7646b021fef555eb322, type: 2}
   metroInputSource: 2
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -175,7 +181,7 @@ PlayerSettings:
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 24
+  AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0
   aotOptions: 
@@ -712,8 +718,8 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
-    7: OCULUSINTEGRATION_PRESENT
-    14: API_DEBUG;RACK
+    7: PROD;API_DEBUG
+    14: API_DEBUG;PROD;VR
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

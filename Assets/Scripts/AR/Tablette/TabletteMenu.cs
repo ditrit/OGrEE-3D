@@ -7,6 +7,7 @@ using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class TabletteMenu : GridMenuHandler
 {
@@ -15,20 +16,24 @@ public class TabletteMenu : GridMenuHandler
     public List<SApiObject> physicalObjects;
     public GameObject buttonPrefab;
 
-    private bool isTenant;
+    [SerializeField] private bool isSite;
     [SerializeField] private List<string> previousCalls = new List<string>();
     [SerializeField] private List<string> parentNames = new List<string>();
     public string tenant;
+    public GameObject buttonTest;
 
     // Start is called before the first frame update
     async void Start()
     {
         InitializeUIElements();
         menu.name = "Search Menu";
+        menu.transform.localPosition = new Vector3(-150, 250, 0);
+        menu.transform.localScale = new Vector3(2,2,2);
+
         numberOfResultsPerPage = UiManagerVincent.instance.ReturnGridNumberOfRows(gridCollection);
-        buttonReturn = Instantiate(buttonReturnPrefab, menu.transform.position + new Vector3(-0.15f, (numberOfResultsPerPage - 1) * 0.025f, 0), Quaternion.identity, menu.transform);
+        buttonReturn = Instantiate(buttonReturnPrefab, Vector3.zero, Quaternion.identity, menu.transform);
+        buttonReturn.transform.localPosition = new Vector3(-35, 20, 0);
         buttonReturn.SetActive(false);
-        await OnEnable();
     }
 
     ///<summary>
@@ -60,7 +65,7 @@ public class TabletteMenu : GridMenuHandler
     ///<param name="_index">the element index in physicalObjects</param>
     private void AssignButtonFunction(int _index)
     {
-        isTenant = false;
+        isSite = false;
         bool isRack = false;
 
         SApiObject obj = physicalObjects[_index];
@@ -72,10 +77,10 @@ public class TabletteMenu : GridMenuHandler
         {
             case "tenant":
                 subCat = "sites";
-                isTenant = true;
                 break;
             case "site":
                 subCat = "buildings";
+                isSite = true;
                 break;
             case "building":
                 subCat = "rooms";
@@ -89,36 +94,38 @@ public class TabletteMenu : GridMenuHandler
         }
         string nextCall = $"{category}s/{obj.id}/{subCat}";
 
-        GameObject button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
-        button.name = fullname;
-        button.transform.GetChild(0).GetComponent<TMP_Text>().text = fullname;
-        var onClickEvent1 = UiManagerVincent.instance.ButtonOnClick(button);
+        GameObject button1 = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, parentList.transform);
+        button1.name = fullname;
+        UiManagerVincent.instance.ChangeButtonText(button1, fullname);
+        UnityEvent onClickEvent = UiManagerVincent.instance.ButtonOnClick(button1);
         if (!isRack)
         {
-            onClickEvent1.AddListener(async () =>
+            Debug.Log("before click");
+            onClickEvent.AddListener(async () =>
+            {
+                Debug.Log("Clicked on button");
+                List<SApiObject> tmp = await ApiManager.instance.GetObject(nextCall, ApiManager.instance.GetAllSApiObject);
+                if (tmp != null)
                 {
-                    List<SApiObject> tmp = await ApiManager.instance.GetObject(nextCall, ApiManager.instance.GetAllSApiObject);
-                    if (tmp != null)
-                    {
-                        previousCalls.Add(nextCall);
-                        parentNames.Add(fullname);
-                        physicalObjects = tmp;
-                        pageNumber = 0;
-                        UpdateGrid(physicalObjects.Count, AssignButtonFunction);
-                    }
-                });
+                    previousCalls.Add(nextCall);
+                    parentNames.Add(fullname);
+                    physicalObjects = tmp;
+                    pageNumber = 0;
+                    UpdateGrid(physicalObjects.Count, AssignButtonFunction);
+                }
+            });
         }
         else
-        {
-            onClickEvent1.AddListener(async () =>
             {
-                string[] array = Utils.SplitRackHierarchyName(fullname);
-                await ApiListener.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
-            });
-            onClickEvent1.AddListener(() => menu.SetActive(false));
+                onClickEvent.AddListener(async () =>
+                {
+                    string[] array = Utils.SplitRackHierarchyName(fullname);
+                    await ApiListener.instance.LoadSingleRack(array[0], array[1], array[2], array[3], array[4]);
+                });
+                onClickEvent.AddListener(() => menu.SetActive(false));
 
+            }
         }
-    }
 
     ///<summary>
     /// Calls UpdateGridDefault then set the return button according to the previous call
@@ -129,10 +136,10 @@ public class TabletteMenu : GridMenuHandler
     {
         UpdateGridDefault(_elementNumber, _elementDelegate);
         //gridCollection.UpdateCollection();
-        buttonReturn.SetActive(!isTenant);
-        var onClickEvent = UiManagerVincent.instance.ButtonOnClick(buttonReturn);
-        onClickEvent.RemoveAllListeners();
-        onClickEvent.AddListener(async () =>
+        buttonReturn.SetActive(!isSite);
+        var onClickEvent1 = UiManagerVincent.instance.ButtonOnClick(buttonReturn);
+        onClickEvent1.RemoveAllListeners();
+        onClickEvent1.AddListener(async () =>
         {
             List<SApiObject> tmp = await ApiManager.instance.GetObject(previousCalls[previousCalls.Count - 2], ApiManager.instance.GetAllSApiObject);
             if (tmp != null)

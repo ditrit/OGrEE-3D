@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
+#if VR
 using UnityEngine.Windows.WebCam;
+#endif
 using System.Linq;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System;
 using Microsoft.MixedReality.Toolkit.UI;
+using System.IO;
+using UnityEngine.UI;
+using System.Drawing;
 
 public class Label
 {
@@ -19,15 +24,18 @@ public class ApiListener : MonoBehaviour
     public static ApiListener instance;
     private string currentHost;
     public string customer;
-    public string site = "NOE";
+    public string site = null;
     public string deviceType = "rack";
     public string building;
     public string room;
     public string rack;
-    private string customerAndSite;
+    public string customerAndSite;
+#if VR
     private PhotoCapture photoCaptureObject = null;
+#endif
     public bool PictureCoolDown = true;
     public GameObject buttonPicture;
+    private bool isDemo = true;
 
     private void Awake()
     {
@@ -54,18 +62,30 @@ public class ApiListener : MonoBehaviour
         {
             await Task.Delay(50);
         }
-        customerAndSite = customer + '.' + site;
     }
 
+#if VR
     ///<summary>
     /// Call the function that takes a picture
     ///</summary>
-    public void CapturePhoto()
+    public async void CapturePhoto()
     {
-        if (PictureCoolDown)
+        if (isDemo)
         {
-            PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
-            PictureCoolDown = false;
+            //byte[] data = Resources.Load<Texture2D>("LabelDemo").GetRawTextureData();
+            string path = Application.persistentDataPath;
+            if (!path.EndsWith("/"))
+                path += "/";
+            byte [] data = System.IO.File.ReadAllBytes(path + "LabelDemo.jpg");
+            await UploadByteAsync(data);
+        }
+        else
+        {
+            if (PictureCoolDown)
+            {
+                PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+                PictureCoolDown = false;
+            }
         }
     }
 
@@ -161,6 +181,16 @@ public class ApiListener : MonoBehaviour
             else
             {
                 string text = www.downloadHandler.text;
+                try
+                {
+                    JsonUtility.FromJson<Label>(text);
+                }
+                catch (System.Exception e)
+                {
+                    UiManagerVincent.instance.UpdateText(e.ToString());
+                    UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
+                }
+
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
                 site = labelReceived.site;
 
@@ -227,7 +257,7 @@ public class ApiListener : MonoBehaviour
             }
         }
     }
-
+#endif
     ///<summary>
     /// Retrieve parent building of a room
     ///</summary>
@@ -285,7 +315,6 @@ public class ApiListener : MonoBehaviour
     {
         GameObject customer = GameManager.gm.FindByAbsPath(_customer);
         await GameManager.gm.DeleteItem(customer, false);
-
         await ApiManager.instance.GetObject($"sites/" + _site, ApiManager.instance.DrawObject);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building, ApiManager.instance.DrawObject);
         await ApiManager.instance.GetObject($"tenants/" + _customer + "/sites/" + _site + "/buildings/" + _building + "/rooms/" + _room, ApiManager.instance.DrawObject);
@@ -297,8 +326,14 @@ public class ApiListener : MonoBehaviour
         else
         {
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", "green");
-            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90, 0);
-
+#if !VR
+            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 2.2f, 0.02f, 90 + 180, (int)Camera.main.transform.localRotation.x);
+            customer = GameManager.gm.FindByAbsPath(_customer);
+            customer.transform.SetParent(Camera.main.transform);
+#endif
+#if VR
+            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90 + 180, 0);
+#endif
             OgreeObject ogree = rack.GetComponent<OgreeObject>();
             ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
             ogree.originalLocalPosition = rack.transform.localPosition;

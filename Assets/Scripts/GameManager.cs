@@ -570,7 +570,7 @@ private async Task Start()
             {
                 if (goArray[i].layer == LayerMask.NameToLayer("Rack")) 
                 {
-                    Utils.MoveObjectToCamera(goArray[i], mainCamera, 1.5f, -0.7f, 90, 0);
+                    Utils.MoveObjectToCamera(goArray[i], mainCamera, 1.5f, -0.7f, 90 + 180, 0);
                 }
             }
             GameManager.gm.AppendLogLine($"No Rack to move in the scene", "yellow");

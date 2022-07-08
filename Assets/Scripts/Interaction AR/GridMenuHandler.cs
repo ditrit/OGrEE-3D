@@ -39,6 +39,7 @@ public class GridMenuHandler : MonoBehaviour
     protected void InitializeUIElements()
     {
         menu = Instantiate(menuPrefab, new Vector3(0,0,0.4f) , Quaternion.identity);
+        UiManagerVincent.instance.SetCanvasAsParent(menu);
         menu.SetActive(false);
         buttonLeft = menu.transform.Find("ButtonLeft").gameObject;
         if (buttonLeft)
@@ -82,8 +83,7 @@ public class GridMenuHandler : MonoBehaviour
             maxNumberOfPage = _objectNumber / numberOfResultsPerPage + 1;
 
         ClearParentList();
-        TextMeshPro tmp = resulstInfos.GetComponent<TextMeshPro>();
-        tmp.text = $"{_objectNumber} Results. Page {pageNumber + 1} / {maxNumberOfPage}";
+        UiManagerVincent.instance.UpdateText(resulstInfos, $"{_objectNumber} Results. Page {pageNumber + 1} / {maxNumberOfPage}");
         if (pageNumber > 0)
         {
             buttonLeft.SetActive(true);

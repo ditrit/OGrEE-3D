@@ -14,10 +14,14 @@ public class UiManagerVincent : MonoBehaviour
     public GameObject buttonPicture;
     public TextMeshPro apiResponseTMP;
     public static UiManagerVincent instance;
-    [SerializeField] [Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabLarge;
-    [SerializeField] [Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabMedium;
+    [SerializeField][Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabLarge;
+    [SerializeField][Tooltip("Assign DialogLarge_192x192.prefab")] private GameObject dialogPrefabMedium;
     public Dialog dialogHelp;
     public Dialog dialogPhoto;
+
+#if !VR
+    public Canvas canvas;
+#endif
 
     private void Awake()
     {
@@ -42,10 +46,20 @@ public class UiManagerVincent : MonoBehaviour
 
 
 #if VR
-    /*public void ChangeButtonColor(GameObject _button, Color _color)
+    public void UpdateText(GameObject _g, string _text)
+    {
+        TextMeshPro tmp = _g.GetComponent<TextMeshPro>();
+        tmp.text = _text;
+    }
+
+    public void SetCanvasAsParent(GameObject _obj)
+    {
+    }
+
+    public void ChangeButtonColor(GameObject _button, Color _color)
     {
         _button.transform.Find("BackPlate").GetChild(0).GetComponent<Renderer>().material.color = _color;
-    }*/
+    }
 
     public void DeactivateButtonAndText()
     {
@@ -62,8 +76,8 @@ public class UiManagerVincent : MonoBehaviour
     public async Task EnableDialogApiListener()
     {
         dialogPhoto = Dialog.Open(dialogPrefabMedium, DialogButtonType.Confirm | DialogButtonType.Cancel, "Found Rack !", $"Please click on 'Confirm' to place the rack {ApiListener.instance.site}{ApiListener.instance.room}-{ApiListener.instance.rack}.\nClick on 'Cancel' if the label was misread or if you want to take another picture.", true);
-        ConfigureDialog(dialogHelp);
-        while (dialogHelp.State != DialogState.Closed)
+        ConfigureDialog(dialogPhoto);
+        while (dialogPhoto.State != DialogState.Closed)
         {
             await Task.Delay(100);
         }
@@ -128,6 +142,16 @@ public class UiManagerVincent : MonoBehaviour
 
 
 #if !VR
+    public void UpdateText(GameObject _g, string _text)
+    {
+        TextMeshProUGUI tmp = _g.GetComponent<TextMeshProUGUI>();
+        tmp.text = _text;
+    }
+
+    public void SetCanvasAsParent(GameObject _obj)
+    {
+        _obj.transform.SetParent(canvas.transform);
+    }
 
     public void ChangeButtonColor(GameObject _button, Color _color)
     {
@@ -188,7 +212,7 @@ public class UiManagerVincent : MonoBehaviour
 
     public void ChangeButtonText(GameObject _button, string _text)
     {
-        _button.GetComponentInChildren<TextMeshProUGUI>().text = _text;
+        _button.GetComponentInChildren<TMP_Text>().text = _text;
     }
 
     public UnityEngine.Events.UnityEvent ButtonOnClick(GameObject _g)

@@ -167,6 +167,7 @@ public class Rack : OObject
         else
             GenerateUHelpers();
     }
+    
 
     ///<summary>
     /// Create uRoot, place it and call GenerateUColumn() for each corner

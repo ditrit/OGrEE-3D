@@ -78,7 +78,7 @@ public class SettingsMenuManager : GridMenuHandler
 
         mdiButton = menu.transform.Find("mdi").gameObject;
         UiManagerVincent.instance.ChangeButtonColor(mdiButton, Color.blue);
-        var onClickEvent2 = UiManagerVincent.instance.ButtonOnClick(rackButton);
+        var onClickEvent2 = UiManagerVincent.instance.ButtonOnClick(mdiButton);
 
         onClickEvent2.AddListener(() =>
         {
@@ -184,6 +184,7 @@ public class SettingsMenuManager : GridMenuHandler
         onClickEvent.AddListener(() =>
         {
             ApiListener.instance.site = obj.name;
+            ApiListener.instance.customerAndSite = ApiListener.instance.customer + '.' + ApiListener.instance.site;
             if (isSiteSelected)
             {
                 for (int i = pageNumber * numberOfResultsPerPage; i <= iteratorUpperBound; i++)

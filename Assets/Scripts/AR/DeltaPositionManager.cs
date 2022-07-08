@@ -1,13 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Windows.WebCam;
-using System.Linq;
-using UnityEngine.Networking;
-using TMPro;
-using System.Threading.Tasks;
-using Microsoft.MixedReality.Toolkit.UI;
-using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 
 public class DeltaPositionManager : MonoBehaviour
 {
