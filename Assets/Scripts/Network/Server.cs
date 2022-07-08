@@ -25,7 +25,7 @@ public class Server : MonoBehaviour
     [SerializeField] private bool triggerSend = false;
     [SerializeField] private string debugMsg;
 
-    private void OnEnable()
+    public void StartServer()
     {
         if (protocol == eConnectionType.udp)
             connection = new UdpConnection();

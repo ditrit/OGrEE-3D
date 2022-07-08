@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 public class Tutorial : MonoBehaviour
 {
-    public int step = 0;
+    public int currentStep = 0;
     public GameObject arrow;
     public GameObject tutorialWindow;
     public GameObject mixedRealtyPlaySpace;
@@ -126,19 +126,19 @@ public class Tutorial : MonoBehaviour
 
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (step > 0 && tutorialSteps[step-1].nextStepEvent == TutorialStep.NextStepEvent.Select)
+        if (currentStep > 0 && tutorialSteps[currentStep-1].nextStepEvent == TutorialStep.NextStepEvent.Select)
         {
             foreach (GameObject obj in GameManager.gm.currentItems)
-                if (tutorialSteps[step - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
+                if (tutorialSteps[currentStep - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
                 {
                     NextStep();
                     break;
                 }
         }
-        if (step > 0 && tutorialSteps[step - 1].nextStepEvent == TutorialStep.NextStepEvent.Deselect)
+        if (currentStep > 0 && tutorialSteps[currentStep - 1].nextStepEvent == TutorialStep.NextStepEvent.Deselect)
         {
             foreach (GameObject obj in GameManager.gm.previousItems)
-                if (tutorialSteps[step - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
+                if (tutorialSteps[currentStep - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
                 {
                     NextStep();
                     break;
@@ -148,30 +148,30 @@ public class Tutorial : MonoBehaviour
 
     private void OnFocusItem(OnFocusEvent _e)
     {
-        if (step == 0 || tutorialSteps[step-1].nextStepEvent != TutorialStep.NextStepEvent.Focus)
+        if (currentStep == 0 || tutorialSteps[currentStep-1].nextStepEvent != TutorialStep.NextStepEvent.Focus)
             return;
-        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[currentStep - 1].nextStepObjectHierarchyName)
             NextStep();
     }
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
-        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.Unfocus)
+        if (currentStep == 0 || tutorialSteps[currentStep - 1].nextStepEvent != TutorialStep.NextStepEvent.Unfocus)
             return;
-        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[currentStep - 1].nextStepObjectHierarchyName)
             NextStep();
     }
     private void OnEditModeIn(EditModeInEvent _e)
     {
-        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.EditIn)
+        if (currentStep == 0 || tutorialSteps[currentStep - 1].nextStepEvent != TutorialStep.NextStepEvent.EditIn)
             return;
-        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[currentStep - 1].nextStepObjectHierarchyName)
             NextStep();
     }
     private void OnEditModeOut(EditModeOutEvent _e)
     {
-        if (step == 0 || tutorialSteps[step - 1].nextStepEvent != TutorialStep.NextStepEvent.EditOut)
+        if (currentStep == 0 || tutorialSteps[currentStep - 1].nextStepEvent != TutorialStep.NextStepEvent.EditOut)
             return;
-        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[step - 1].nextStepObjectHierarchyName)
+        if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[currentStep - 1].nextStepObjectHierarchyName)
             NextStep();
     }
 
@@ -209,29 +209,29 @@ public class Tutorial : MonoBehaviour
 
     private void PlaceArrow(string id)
     {
-        PlaceArrow(GameManager.gm.FindByAbsPath(id));
+        PlaceArrow(GameManager.gm.FindByAbsPath(id)?.transform.GetChild(0).gameObject);
     }
 
     public async void NextStep()
     {
-        if (step < tutorialSteps.Length)
+        if (currentStep < tutorialSteps.Length)
         {
-            foreach (GameObject obj in tutorialSteps[step].stepObjectsShown)
+            foreach (GameObject obj in tutorialSteps[currentStep].stepObjectsShown)
                 obj?.SetActive(true);
-            foreach (GameObject obj in tutorialSteps[step].stepObjectsHidden)
+            foreach (GameObject obj in tutorialSteps[currentStep].stepObjectsHidden)
                 obj?.SetActive(false);
-            foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[step].stepSApiObjectsInstantiated)
+            foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[currentStep].stepSApiObjectsInstantiated)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
         }
-        PlaceArrow(tutorialSteps[step].arrowTargetGameObject);
-        if (!tutorialSteps[step].arrowTargetGameObject)
-            PlaceArrow(tutorialSteps[step].arrowTargetHierarchyName);
+        PlaceArrow(tutorialSteps[currentStep].arrowTargetGameObject);
+        if (!tutorialSteps[currentStep].arrowTargetGameObject)
+            PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
 
-        ChangeText(tutorialSteps[step].text);
+        ChangeText(tutorialSteps[currentStep].text);
 
-        if (tutorialSteps[step].teleportPlayer)
+        if (tutorialSteps[currentStep].teleportPlayer)
         {
-            Vector3 targetPos = tutorialSteps[step].teleportPosition;
+            Vector3 targetPos = tutorialSteps[currentStep].teleportPosition;
             float height = targetPos.y;
             targetPos -= mainCamera.transform.position - mixedRealtyPlaySpace.transform.position;
             targetPos.y = height;
@@ -239,15 +239,15 @@ public class Tutorial : MonoBehaviour
             mixedRealtyPlaySpace.transform.position = targetPos;
         }
 
-        if (tutorialSteps[step].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
+        if (tutorialSteps[currentStep].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
         {
-            tutorialSteps[step].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            tutorialSteps[step].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>  NextStep());
+            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>  NextStep());
         }
 
-        step++;
-        if (step == tutorialSteps.Length)
-            step = 0;
+        currentStep++;
+        if (currentStep == tutorialSteps.Length)
+            currentStep = 0;
 
     }
 

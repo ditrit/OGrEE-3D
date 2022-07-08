@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
         else
             Destroy(this);
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        server.StartServer();
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
     }

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,11 +31,19 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
     {
         // if ((string)GetTargetObjectOfProperty(textProp) != "")
         //   label.text = (string)GetTargetObjectOfProperty(textProp);
-        EditorGUI.BeginProperty(position, label, property);
+        GUIStyle boldStyle = new GUIStyle
+        {
+            fontStyle = FontStyle.Bold,
+            fontSize = 13
+        };
 
-        EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+        boldStyle.normal.textColor = Color.white;
+        EditorGUI.BeginProperty(position, label, property);
+       // EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label, boldStyle); ;
         EditorGUI.indentLevel = 0;
         lastPropertyPosition = 20;
+        bool foldout = true;
+        foldout = EditorGUI.Foldout(new Rect(position.x, position.y, position.width, padding + EditorGUIUtility.singleLineHeight), foldout, "test");
         nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
         buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
         nextStepObjectHierarchyNameProp = property.FindPropertyRelative("nextStepObjectHierarchyName");
@@ -121,6 +130,10 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
         EditorGUI.DrawRect(new Rect(position.x, position.y + lastPropertyPosition, position.width, padding + EditorGUI.GetPropertyHeight(property)), Color.gray);
         lastPropertyPosition += EditorGUI.GetPropertyHeight(property, true) + padding;
     }
+
+    ///
+    ///https://github.com/lordofduct/spacepuppy-unity-framework/blob/master/SpacepuppyBaseEditor/EditorHelper.cs
+    ///
 
     /// <summary>
     /// Gets the object the property represents.
@@ -246,3 +259,4 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
 
 
 
+#endif
