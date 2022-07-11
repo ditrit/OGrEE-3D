@@ -56,14 +56,16 @@ public class GameManager : MonoBehaviour
         else
             Destroy(this);
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        server.StartServer();
         configLoader.LoadConfig();
         StartCoroutine(configLoader.LoadTextures());
+
     }
 
     private async Task Start()
     {
 #if API_DEBUG
-
+        await ConnectToApi();
 #endif
 
 #if RACK
@@ -448,7 +450,7 @@ public class GameManager : MonoBehaviour
             EventManager.Instance.Raise(new ImportFinishedEvent());
         }
     }
-    
+
     ///<summary>
     /// Clean AR scene from all existing tenants.
     ///</summary>
@@ -481,7 +483,7 @@ public class GameManager : MonoBehaviour
                     Utils.MoveObjectToCamera(goArray[i], mainCamera, 1.5f, -0.7f, 90 + 180, 0);
                 }
             }
-            GameManager.gm.AppendLogLine($"No Rack to move in the scene", "yellow");
+            GameManager.gm.AppendLogLine($"No Rack to move in the scene", false, eLogtype.warning);
         }
 
         else
@@ -499,7 +501,7 @@ public class GameManager : MonoBehaviour
                 }
                 t = t.parent.transform;
             }
-            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", "red");
+            GameManager.gm.AppendLogLine($"Cannot rotate other object than rack", false, eLogtype.error);
         }
     }
 

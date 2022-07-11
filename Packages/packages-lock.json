@@ -163,7 +163,7 @@
     },
     "com.unity.textmeshpro": {
       "version": "3.0.1",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0"

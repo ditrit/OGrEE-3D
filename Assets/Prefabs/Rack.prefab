@@ -106,7 +106,7 @@ MonoBehaviour:
   currentLod: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
-  parentRack: {fileID: 0}
+  referent: {fileID: 0}
   uRoot: {fileID: 0}
 --- !u!114 &5666233796082005944
 MonoBehaviour:
@@ -145,6 +145,7 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
+  isDeleted: 0
   isSelected: 0
   isFocused: 0
   isFrontOriented: 1
@@ -388,7 +389,7 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -557,7 +558,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Label Rear
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -947,7 +948,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Label Front
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1217,7 +1218,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Label Left
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1388,7 +1389,7 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1557,7 +1558,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Label Right
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d9f84454d93b42747a50109e0a75782d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}

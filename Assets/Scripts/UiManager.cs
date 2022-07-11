@@ -86,6 +86,7 @@ public class UiManager : MonoBehaviour
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
     {
+#if !VR
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
@@ -96,6 +97,7 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
         }
+#endif
         SetCurrentItemText();
         UpdateGuiInfos();
     }

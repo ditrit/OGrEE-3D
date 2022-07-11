@@ -81,8 +81,8 @@ public class ApiManager : MonoBehaviour
     {
         if (isReady && requestsToSend.Count > 0)
         {
-            if (requestsToSend.Peek().type == "get")
-                GetHttpData();
+            if (requestsToSend.Peek().type == "put")
+                PutHttpData();
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
@@ -133,21 +133,6 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a GET request.
-    ///</summary>
-    ///<param name="_obj">The OgreeObject to put</param>
-    public void CreateGetRequest(string _tenants)
-    {
-        SRequest request = new SRequest();
-        request.type = "get";
-
-        request.path = $"/tenants/{_tenants}/sites";
-        request.json = "";
-        requestsToSend.Enqueue(request);
-    }
-
-
-    ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to delete</param>
@@ -178,29 +163,6 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, false, eLogtype.error);
-        }
-
-        isReady = true;
-    }
-
-    ///<summary>
-    /// Send a put request to the api.
-    ///</summary>
-    public async void GetHttpData()
-    {
-        isReady = false;
-
-        SRequest req = requestsToSend.Dequeue();
-        string fullPath = server + req.path;
-        try
-        {
-            HttpResponseMessage response = await httpClient.GetAsync(fullPath);
-            string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
-        }
-        catch (HttpRequestException e)
-        {
-            GameManager.gm.AppendLogLine(e.Message, "red");
         }
 
         isReady = true;
@@ -280,24 +242,6 @@ public class ApiManager : MonoBehaviour
             EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
             return default;
         }
-    }
-
-    ///<summary>
-    /// Avoid requestsToSend 
-    /// Create an ogreeObject with response.
-    ///</summary>
-    ///<param name="_response">The response for API GET request</param>
-    public async Task DrawObject(string _response)
-    {
-        GameManager.gm.AppendLogLine(_response);
-        if (_response.Contains("successfully got query for object") || _response.Contains("successfully got object"))
-            await CreateItemFromJson(_response);
-        else if (_response.Contains("successfully got obj_template"))
-            await CreateTemplateFromJson(_response, "obj");
-        else if (_response.Contains("successfully got room_template"))
-            await CreateTemplateFromJson(_response, "room");
-        else
-            GameManager.gm.AppendLogLine("Unknown object received", "red");
     }
 
     ///<summary>

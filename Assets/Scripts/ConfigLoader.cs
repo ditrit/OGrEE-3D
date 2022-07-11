@@ -31,7 +31,6 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        
         config = LoadConfigFile(out string fileType);
         OverrideConfig();
         ApplyConfig();

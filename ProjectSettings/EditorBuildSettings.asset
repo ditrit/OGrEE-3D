@@ -17,10 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestVincent.unity
     guid: ad394a88b23945b4ca1bb76d1efe112e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Appli_vide.unity
     guid: 787700af40e4fb1419b4c2f9bf7f3ca0
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Tablette2.unity
     guid: 331468976e811f044b4238a6e6e057dd
   m_configObjects:
