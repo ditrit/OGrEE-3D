@@ -165,6 +165,24 @@ public static class Utils
     }
 
     ///<summary>
+    /// Move object in front of the camera
+    ///</summary>
+    ///<param name="_obj">object to move</param>
+    ///<param name="m_camera"main camera of the scene</param>
+    ///<param name="_distanceZ"distance on the z axis in meters to the camera to place the object</param>
+    ///<param name="_distanceY">distance on the y axis in meters from head level </param>
+    ///<param name="_angleY">Rotation to add on the y axis in degrees </param>
+    ///<param name="_angleX">Rotation to add on the x axis in degrees </param>
+    public static void MoveObjectInFrontOfCamera(GameObject _obj, Camera m_camera, float _distanceZ, int _angleY)
+    {
+
+        Vector3 newPostion = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_camera.transform.position.z);
+
+        _obj.transform.position = newPostion + m_camera.transform.forward * _distanceZ;
+        _obj.transform.rotation = Quaternion.Euler(m_camera.transform.eulerAngles + new Vector3(0,_angleY,0));
+    }
+
+    ///<summary>
     /// Split a string into substring using '.' as a separator. Intended for a rack name.
     ///</summary>
     ///<param name="_hierarchyName">Hierarchy name of the rack</param>

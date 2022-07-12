@@ -327,9 +327,10 @@ public class ApiListener : MonoBehaviour
         {
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", false, eLogtype.success);
 #if !VR
-            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 2.2f, 0.02f, 90 + 180, (int)Camera.main.transform.localRotation.x);
-            //customer = GameManager.gm.FindByAbsPath(_customer);
-            //customer.transform.SetParent(Camera.main.transform);
+            //Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 2.2f, 0.02f, 90 + 180, (int)Camera.main.transform.localRotation.x);
+            customer = GameManager.gm.FindByAbsPath(_customer);
+            customer.transform.SetParent(Camera.main.transform);
+            Utils.MoveObjectInFrontOfCamera(rack, GameManager.gm.mainCamera, 2.2f, 180);
 #endif
 #if VR
             Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90 + 180, 0);

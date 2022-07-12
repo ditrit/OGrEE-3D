@@ -47,7 +47,6 @@ public class SettingsMenuManager : GridMenuHandler
 
     private async void OnEnable()
     {
-        GameManager.gm.AppendLogLine("On enable", false, eLogtype.error);
         while (String.IsNullOrEmpty(tenant))
         {
             await Task.Delay(50);
@@ -61,7 +60,6 @@ public class SettingsMenuManager : GridMenuHandler
         {
             await Task.Delay(50);
         }
-        GameManager.gm.AppendLogLine("All good", false, eLogtype.error);
         InitializeDeviceButtons();
         await FirstSearch();
     }

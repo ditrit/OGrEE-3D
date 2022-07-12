@@ -480,7 +480,12 @@ public class GameManager : MonoBehaviour
             {
                 if (goArray[i].layer == LayerMask.NameToLayer("Rack"))
                 {
+#if VR
                     Utils.MoveObjectToCamera(goArray[i], mainCamera, 1.5f, -0.7f, 90 + 180, 0);
+#endif
+#if !VR
+                    Utils.MoveObjectInFrontOfCamera(goArray[i], mainCamera, 1.5f, 90);
+#endif
                 }
             }
             GameManager.gm.AppendLogLine($"No Rack to move in the scene", false, eLogtype.warning);
@@ -493,7 +498,12 @@ public class GameManager : MonoBehaviour
             {
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
+#if VR
                     Utils.MoveObjectToCamera(t.gameObject, mainCamera, 1.5f, -0.7f, 90, 0);
+#endif
+#if !VR
+                    Utils.MoveObjectInFrontOfCamera(t.gameObject, mainCamera, 1.5f, 90);
+#endif
                     OgreeObject ogree = t.gameObject.GetComponent<OgreeObject>();
                     ogree.originalLocalRotation = t.gameObject.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
                     ogree.originalLocalPosition = t.gameObject.transform.localPosition;
