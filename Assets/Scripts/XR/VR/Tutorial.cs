@@ -126,7 +126,7 @@ public class Tutorial : MonoBehaviour
 
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (currentStep > 0 && tutorialSteps[currentStep-1].nextStepEvent == TutorialStep.NextStepEvent.Select)
+        if (currentStep > 0 && tutorialSteps[currentStep - 1].nextStepEvent == TutorialStep.NextStepEvent.Select)
         {
             foreach (GameObject obj in GameManager.gm.currentItems)
                 if (tutorialSteps[currentStep - 1].nextStepObjectHierarchyName == obj.GetComponent<OgreeObject>().hierarchyName)
@@ -148,7 +148,7 @@ public class Tutorial : MonoBehaviour
 
     private void OnFocusItem(OnFocusEvent _e)
     {
-        if (currentStep == 0 || tutorialSteps[currentStep-1].nextStepEvent != TutorialStep.NextStepEvent.Focus)
+        if (currentStep == 0 || tutorialSteps[currentStep - 1].nextStepEvent != TutorialStep.NextStepEvent.Focus)
             return;
         if (_e.obj.GetComponent<OgreeObject>().hierarchyName == tutorialSteps[currentStep - 1].nextStepObjectHierarchyName)
             NextStep();
@@ -224,8 +224,8 @@ public class Tutorial : MonoBehaviour
                 await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
         }
         PlaceArrow(tutorialSteps[currentStep].arrowTargetGameObject);
-        if (!tutorialSteps[currentStep].arrowTargetGameObject)
-            PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
+        if (!tutorialSteps[currentStep].arrowTargetGameObject && tutorialSteps[currentStep].arrowTargetHierarchyName != null)
+                PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
 
         ChangeText(tutorialSteps[currentStep].text);
 
@@ -242,7 +242,7 @@ public class Tutorial : MonoBehaviour
         if (tutorialSteps[currentStep].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
         {
             tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() =>  NextStep());
+            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
         }
 
         currentStep++;

@@ -29,8 +29,6 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        // if ((string)GetTargetObjectOfProperty(textProp) != "")
-        //   label.text = (string)GetTargetObjectOfProperty(textProp);
         GUIStyle boldStyle = new GUIStyle
         {
             fontStyle = FontStyle.Bold,
@@ -39,11 +37,12 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
 
         boldStyle.normal.textColor = Color.white;
         EditorGUI.BeginProperty(position, label, property);
-       // EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label, boldStyle); ;
+
+
         EditorGUI.indentLevel = 0;
         lastPropertyPosition = 20;
-        bool foldout = true;
-        foldout = EditorGUI.Foldout(new Rect(position.x, position.y, position.width, padding + EditorGUIUtility.singleLineHeight), foldout, "test");
+        //bool foldout = true;
+        //foldout = EditorGUI.Foldout(new Rect(position.x, position.y, position.width, padding + EditorGUIUtility.singleLineHeight), foldout, "test");
         nextStepEventProp = property.FindPropertyRelative("nextStepEvent");
         buttonNextStepProp = property.FindPropertyRelative("buttonNextStep");
         nextStepObjectHierarchyNameProp = property.FindPropertyRelative("nextStepObjectHierarchyName");
@@ -60,6 +59,22 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
 
         PlaceProperty(textProp, position);
 
+        string text = (string)GetTargetObjectOfProperty(textProp);
+        if (text.Length > 60)
+        {
+            label.text = text.Substring(0, 60);
+            int i = 60;
+            while (text[i] != ' ' && i < text.Length)
+            {
+                label.text += text[i];
+                i++;
+            }
+            label.text += "...";
+        }
+        else
+            label.text = text;
+
+        EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label, boldStyle);
         PlaceProperty(arrowTargetTypeProp, position);
 
         if ((Tutorial.TutorialStep.ArrowTargetType)GetTargetObjectOfProperty(arrowTargetTypeProp) == Tutorial.TutorialStep.ArrowTargetType.GameObject)
@@ -115,6 +130,7 @@ public class TutorialStepPropertyDrawer : PropertyDrawer
         stepObjectsHiddenProp = property.FindPropertyRelative("stepObjectsHidden");
         stepObjectsShownProp = property.FindPropertyRelative("stepObjectsShown");
         stepSApiObjectsInstantiatedProp = property.FindPropertyRelative("stepSApiObjectsInstantiated");
+
         //Debug.Log(20 + padding * 10 + EditorGUI.GetPropertyHeight(textProp) + EditorGUI.GetPropertyHeight(arrowTargetTypeProp) + EditorGUI.GetPropertyHeight(arrowTargetGameObjectProp) + EditorGUI.GetPropertyHeight(teleportBoolProp) + EditorGUI.GetPropertyHeight(teleportPositionProp) + EditorGUI.GetPropertyHeight(nextStepEventProp) + EditorGUI.GetPropertyHeight(nextStepObjectHierarchyNameProp) + EditorGUI.GetPropertyHeight(stepObjectsShownProp, true) + EditorGUI.GetPropertyHeight(stepObjectsHiddenProp, true) + EditorGUI.GetPropertyHeight(stepSApiObjectsInstantiatedProp, true));
         return 20 + padding * 10 + EditorGUI.GetPropertyHeight(textProp) + EditorGUI.GetPropertyHeight(arrowTargetTypeProp) + EditorGUI.GetPropertyHeight(arrowTargetGameObjectProp) + EditorGUI.GetPropertyHeight(teleportBoolProp) + EditorGUI.GetPropertyHeight(teleportPositionProp) + EditorGUI.GetPropertyHeight(nextStepEventProp) + EditorGUI.GetPropertyHeight(nextStepObjectHierarchyNameProp) + EditorGUI.GetPropertyHeight(stepObjectsShownProp, true) + EditorGUI.GetPropertyHeight(stepObjectsHiddenProp, true) + EditorGUI.GetPropertyHeight(stepSApiObjectsInstantiatedProp, true);
     }
