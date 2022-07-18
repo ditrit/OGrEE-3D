@@ -19,9 +19,7 @@ public class UiManagerVincent : MonoBehaviour
     public Dialog dialogHelp;
     public Dialog dialogPhoto;
 
-#if !VR
     public Canvas canvas;
-#endif
 
     private void Awake()
     {
