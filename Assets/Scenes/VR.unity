@@ -2411,6 +2411,7 @@ MonoBehaviour:
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
+  uRoot: {fileID: 0}
 --- !u!1 &256594446
 GameObject:
   m_ObjectHideFlags: 0
@@ -3163,6 +3164,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 280187427}
   m_CullTransparentMesh: 0
+--- !u!1 &293347317 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2574679693225809895, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &294621220 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2245298683791575699, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
@@ -3884,8 +3891,8 @@ Transform:
   - {fileID: 1534353272777648014}
   - {fileID: 4731836969009264412}
   - {fileID: 1839137002}
-  - {fileID: 765154582}
   - {fileID: 1775004085}
+  - {fileID: 765154582}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19475,7 +19482,7 @@ PrefabInstance:
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4075572298172673573, guid: 6ab5112525b9e34478c526e55e2980c1,
         type: 3}
@@ -22473,15 +22480,40 @@ PrefabInstance:
       propertyPath: m_text
       value: Toggle edit
       objectReference: {fileID: 0}
+    - target: {fileID: 2574679693225809895, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: m_Name
+      value: ButtonWrapper Front
+      objectReference: {fileID: 0}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: parentConstraint
       value: 
       objectReference: {fileID: 2046788154}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: buttonWrapperBack
+      value: 
+      objectReference: {fileID: 5338946236029651624}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: buttonWrapperFront
+      value: 
+      objectReference: {fileID: 293347317}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: parentConstraintButtonWrapperBack
+      value: 
+      objectReference: {fileID: 5338946236029651625}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: parentConstraintButtonWrapperFront
+      value: 
+      objectReference: {fileID: 2046788154}
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5338946237367757265, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
@@ -22543,7 +22575,8 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -0.0498
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4312792178929180523, guid: 46de769a2d9f4c94ba997d22c0313228, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 46de769a2d9f4c94ba997d22c0313228, type: 3}
 --- !u!1 &5338946236029651622 stripped
 GameObject:
@@ -22557,6 +22590,38 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5338946236029651621}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5338946236029651624 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5903002099995907824, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1773428102 &5338946236029651625
+ParentConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5338946236029651624}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: 0}
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_RotationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 0}
+    weight: 1
 --- !u!1 &7241409829424487356 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7241409829688271504, guid: b812035630d868d40adcc2aece53fc83,

@@ -7,7 +7,7 @@ public class Rack : OObject
 {
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
-    private Transform uRoot;
+    public Transform uRoot;
     protected override void Awake()
     {
         base.Awake();

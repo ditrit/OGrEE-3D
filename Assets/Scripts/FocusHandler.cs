@@ -221,7 +221,8 @@ public class FocusHandler : MonoBehaviour
             if (GetComponent<OgreeObject>().category != "rack")
             {
                 box.GetComponent<HandInteractionHandler>().enabled = false;
-                box.GetComponent<MinMaxScaleConstraint>().enabled = false;
+                box.GetComponent<MinMaxScaleConstraint>().ScaleMinimum = 0.8f;
+                box.GetComponent<MinMaxScaleConstraint>().ScaleMaximum = 2;
                 box.GetComponent<RotationAxisConstraint>().enabled = false;
                 scaleHandlesConfiguration.ShowScaleHandles = true;
                 rotationHandlesConfiguration.ShowHandleForX = true;

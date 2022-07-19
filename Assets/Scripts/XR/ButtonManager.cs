@@ -10,16 +10,18 @@ public class ButtonManager : MonoBehaviour
     private bool front = true;
 
     [Header("Buttons")]
-    [SerializeField] private GameObject buttonWrapper;
+    [SerializeField] private GameObject buttonWrapperFront;
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonResetPosition;
     [SerializeField] private GameObject buttonToggleFocus;
-    [SerializeField] private GameObject buttonChangeOrientation;
-    [SerializeField] private ParentConstraint parentConstraintButtonWrapper;
-    [SerializeField] private ParentConstraint parentConstraintButtonChangeOrientation;
+    [SerializeField] private GameObject buttonWrapperBack;
+    [SerializeField] private ParentConstraint parentConstraintButtonWrapperFront;
+    [SerializeField] private ParentConstraint parentConstraintButtonWrapperBack;
     [SerializeField] private float verticalOffset = 0.06f;
     [SerializeField] private float horizontalOffset = 0f;
+    [SerializeField] private float rackScale = 2f;
+    [SerializeField] private float deviceScale = 1f;
 
     private Color defaultBackplateColor;
     private Vector3 editScale;
@@ -32,8 +34,8 @@ public class ButtonManager : MonoBehaviour
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
-        buttonWrapper.SetActive(false);
-        buttonChangeOrientation.SetActive(false);
+        buttonWrapperFront.SetActive(false);
+        buttonWrapperBack.SetActive(false);
         defaultBackplateColor = buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.color;
     }
 
@@ -42,8 +44,8 @@ public class ButtonManager : MonoBehaviour
         if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
         {
             float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
-            parentConstraintButtonWrapper.SetTranslationOffset(0, parentConstraintButtonWrapper.GetTranslationOffset(0) * scaleDiff);
-            parentConstraintButtonChangeOrientation.SetTranslationOffset(0, parentConstraintButtonChangeOrientation.GetTranslationOffset(0) * scaleDiff);
+            parentConstraintButtonWrapperFront.SetTranslationOffset(0, parentConstraintButtonWrapperFront.GetTranslationOffset(0) * scaleDiff);
+            parentConstraintButtonWrapperBack.SetTranslationOffset(0, parentConstraintButtonWrapperBack.GetTranslationOffset(0) * scaleDiff);
             editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
         }
     }
@@ -95,6 +97,8 @@ public class ButtonManager : MonoBehaviour
                 {
                     delta.yPositionDelta = 0;
                     delta.isFirstMove = true;
+                    UManager.um.wasEdited = false;
+                    UManager.um.ToggleU(true);
                 }
             }
         }
@@ -127,13 +131,13 @@ public class ButtonManager : MonoBehaviour
         else
         {
             buttonEdit.SetActive(true);
-            buttonWrapper.SetActive(false);
-            buttonChangeOrientation.SetActive(false);
+            buttonWrapperFront.SetActive(false);
+            buttonWrapperBack.SetActive(false);
         }
 
     }
 
-   
+
     ///<summary>
     /// When called set the edit button active
     ///</summary>
@@ -317,42 +321,52 @@ public class ButtonManager : MonoBehaviour
 
     private void PlaceButton()
     {
+        if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().category == "rack")
+        {
+            buttonWrapperFront.transform.localScale = rackScale * Vector3.one;
+            buttonWrapperBack.transform.localScale = rackScale * Vector3.one;
+        }
+        else
+        {
+            buttonWrapperFront.transform.localScale = deviceScale * Vector3.one;
+            buttonWrapperBack.transform.localScale = deviceScale * Vector3.one;
+        }
 
-        buttonWrapper.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+        buttonWrapperFront.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
         Vector3 parentSize = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(0).lossyScale;
 
         //Placing buttons
-        buttonWrapper.transform.localPosition = Vector3.zero;
-        buttonWrapper.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonWrapper.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
+        buttonWrapperFront.transform.localPosition = Vector3.zero;
+        buttonWrapperFront.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonWrapperFront.transform.localPosition += new Vector3(front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, front ? parentSize.z : -parentSize.z) / 2;
         ConstraintSource source = new ConstraintSource
         {
             weight = 1,
             sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
         };
-        parentConstraintButtonWrapper.SetSource(0, source);
-        parentConstraintButtonWrapper.SetTranslationOffset(0, buttonWrapper.transform.localPosition);
-        parentConstraintButtonWrapper.SetRotationOffset(0, buttonWrapper.transform.localEulerAngles);
-        buttonWrapper.transform.SetParent(null);
+        parentConstraintButtonWrapperFront.SetSource(0, source);
+        parentConstraintButtonWrapperFront.SetTranslationOffset(0, buttonWrapperFront.transform.localPosition);
+        parentConstraintButtonWrapperFront.SetRotationOffset(0, buttonWrapperFront.transform.localEulerAngles);
+        buttonWrapperFront.transform.SetParent(null);
 
-        parentConstraintButtonWrapper.constraintActive = true;
-        buttonWrapper.SetActive(true);
+        parentConstraintButtonWrapperFront.constraintActive = true;
+        buttonWrapperFront.SetActive(true);
 
 
-        buttonChangeOrientation.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
+        buttonWrapperBack.transform.SetParent(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform);
 
         //Placing buttons
-        buttonChangeOrientation.transform.localPosition = Vector3.zero;
-        buttonChangeOrientation.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
-        buttonChangeOrientation.transform.localPosition += new Vector3(!front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, !front ? parentSize.z : -parentSize.z) / 2;
+        buttonWrapperBack.transform.localPosition = Vector3.zero;
+        buttonWrapperBack.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
+        buttonWrapperBack.transform.localPosition += new Vector3(!front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, !front ? parentSize.z : -parentSize.z) / 2;
 
-        parentConstraintButtonChangeOrientation.SetSource(0, source);
-        parentConstraintButtonChangeOrientation.SetTranslationOffset(0, buttonChangeOrientation.transform.localPosition);
-        parentConstraintButtonChangeOrientation.SetRotationOffset(0, buttonChangeOrientation.transform.localEulerAngles);
-        buttonChangeOrientation.transform.SetParent(null);
+        parentConstraintButtonWrapperBack.SetSource(0, source);
+        parentConstraintButtonWrapperBack.SetTranslationOffset(0, buttonWrapperBack.transform.localPosition);
+        parentConstraintButtonWrapperBack.SetRotationOffset(0, buttonWrapperBack.transform.localEulerAngles);
+        buttonWrapperBack.transform.SetParent(null);
 
-        parentConstraintButtonChangeOrientation.constraintActive = true;
-        buttonChangeOrientation.SetActive(true);
+        parentConstraintButtonWrapperBack.constraintActive = true;
+        buttonWrapperBack.SetActive(true);
     }
 
     public void ButtonChangeOrientation()
