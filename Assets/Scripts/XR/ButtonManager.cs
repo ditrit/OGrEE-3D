@@ -345,11 +345,7 @@ public class ButtonManager : MonoBehaviour
         buttonChangeOrientation.transform.localPosition = Vector3.zero;
         buttonChangeOrientation.transform.localRotation = Quaternion.Euler(0, front ? 0 : 180, 0);
         buttonChangeOrientation.transform.localPosition += new Vector3(!front ? -parentSize.x - horizontalOffset : parentSize.x + horizontalOffset, parentSize.y + verticalOffset, !front ? parentSize.z : -parentSize.z) / 2;
-        ConstraintSource sourceBis = new ConstraintSource
-        {
-            weight = 1,
-            sourceTransform = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform
-        };
+
         parentConstraintButtonChangeOrientation.SetSource(0, source);
         parentConstraintButtonChangeOrientation.SetTranslationOffset(0, buttonChangeOrientation.transform.localPosition);
         parentConstraintButtonChangeOrientation.SetRotationOffset(0, buttonChangeOrientation.transform.localEulerAngles);

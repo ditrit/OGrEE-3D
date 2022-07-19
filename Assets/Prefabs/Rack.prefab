@@ -98,14 +98,15 @@ MonoBehaviour:
   category: 
   description: []
   domain: 
-  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  originalLocalScale: {x: 1, y: 1, z: 1}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
+  referent: {fileID: 0}
 --- !u!114 &5666233796082005944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,8 +144,8 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
+  isDeleted: 0
   isSelected: 0
-  isHovered: 0
   isFocused: 0
   isFrontOriented: 1
   boxDisplayConfiguration: {fileID: 11400000, guid: 29d72152ec84a4f439ade1cab15da9b2,
@@ -196,6 +197,7 @@ MonoBehaviour:
     type: 3}
   gridSize: 10
   boxscale: 1.5
+  currentGridName: 
 --- !u!1 &581781385037581641
 GameObject:
   m_ObjectHideFlags: 0

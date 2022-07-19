@@ -11,6 +11,7 @@ public class Tutorial : MonoBehaviour
 {
     public int currentStep = 0;
     public GameObject arrow;
+    public GameObject directionnalIndicator;
     public GameObject tutorialWindow;
     public GameObject mixedRealtyPlaySpace;
     public GameObject mainCamera;
@@ -185,6 +186,7 @@ public class Tutorial : MonoBehaviour
     private void PlaceArrow(GameObject _target)
     {
         arrow.SetActive(false);
+        directionnalIndicator.SetActive(false);
         if (!_target)
             return;
         if (parentConstraint.sourceCount > 0)
@@ -204,7 +206,10 @@ public class Tutorial : MonoBehaviour
         Quaternion rot = Quaternion.LookRotation(_target.transform.position - parentConstraint.GetTranslationOffset(0) - arrow.transform.position, Vector3.up);
         parentConstraint.SetRotationOffset(0, rot.eulerAngles);
 
+        directionnalIndicator.GetComponent<Microsoft.MixedReality.Toolkit.Utilities.Solvers.DirectionalIndicator>().DirectionalTarget = _target.transform;
+
         arrow.SetActive(true);
+        directionnalIndicator.SetActive(true);
     }
 
     private void PlaceArrow(string id)
@@ -217,15 +222,18 @@ public class Tutorial : MonoBehaviour
         if (currentStep < tutorialSteps.Length)
         {
             foreach (GameObject obj in tutorialSteps[currentStep].stepObjectsShown)
-                obj?.SetActive(true);
+                if (obj != null)
+                    obj.SetActive(true);
             foreach (GameObject obj in tutorialSteps[currentStep].stepObjectsHidden)
-                obj?.SetActive(false);
+                if (obj != null)
+                    obj.SetActive(false);
+
             foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[currentStep].stepSApiObjectsInstantiated)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
         }
         PlaceArrow(tutorialSteps[currentStep].arrowTargetGameObject);
         if (!tutorialSteps[currentStep].arrowTargetGameObject && tutorialSteps[currentStep].arrowTargetHierarchyName != null)
-                PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
+            PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
 
         ChangeText(tutorialSteps[currentStep].text);
 
