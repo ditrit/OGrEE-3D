@@ -186,4 +186,54 @@ public static class Utils
                 ParseNestedObjects(_list, obj);
         }
     }
+
+    ///<summary>
+    /// Move object in front of the camera
+    ///</summary>
+    ///<param name="_obj">object to move</param>
+    ///<param name="m_camera"main camera of the scene</param>
+    ///<param name="_distanceZ"distance on the z axis in meters to the camera to place the object</param>
+    ///<param name="_distanceY">distance on the y axis in meters from head level </param>
+    ///<param name="_angleY">Rotation to add on the y axis in degrees </param>
+    ///<param name="_angleX">Rotation to add on the x axis in degrees </param>
+    public static void MoveObjectToCamera(GameObject _obj, Camera m_camera, float _distanceZ, float _distanceY, int _angleY, int _angleX)
+    {
+        float localAngleCameraRadian = Mathf.Deg2Rad * m_camera.transform.eulerAngles.y;
+        Vector3 offset = new Vector3(Mathf.Sin(localAngleCameraRadian) * _distanceZ, _distanceY, Mathf.Cos(localAngleCameraRadian) * _distanceZ);
+
+        Vector3 newPostion = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_camera.transform.position.z);
+        Vector3 newRotation = new Vector3(_angleX, m_camera.transform.eulerAngles.y + _angleY, 0.0f);
+
+        _obj.transform.position = newPostion + offset;
+        _obj.transform.localRotation = Quaternion.Euler(newRotation);
+    }
+
+    ///<summary>
+    /// Move object in front of the camera
+    ///</summary>
+    ///<param name="_obj">object to move</param>
+    ///<param name="m_camera"main camera of the scene</param>
+    ///<param name="_distanceZ"distance on the z axis in meters to the camera to place the object</param>
+    ///<param name="_distanceY">distance on the y axis in meters from head level </param>
+    ///<param name="_angleY">Rotation to add on the y axis in degrees </param>
+    ///<param name="_angleX">Rotation to add on the x axis in degrees </param>
+    public static void MoveObjectInFrontOfCamera(GameObject _obj, Camera m_camera, float _distanceZ, int _angleY)
+    {
+
+        Vector3 newPostion = new Vector3(m_camera.transform.position.x, m_camera.transform.position.y, m_camera.transform.position.z);
+
+        _obj.transform.position = newPostion + m_camera.transform.forward * _distanceZ;
+        _obj.transform.rotation = Quaternion.Euler(m_camera.transform.eulerAngles + new Vector3(0,_angleY,0));
+    }
+
+    ///<summary>
+    /// Split a string into substring using '.' as a separator. Intended for a rack name.
+    ///</summary>
+    ///<param name="_hierarchyName">Hierarchy name of the rack</param>
+    ///<returns>The array containing each part of the name</returns>
+    public static string[] SplitRackHierarchyName(string _hierarchyName)
+    {
+        string[] array = _hierarchyName.Split('.');
+        return array;
+    }
 }

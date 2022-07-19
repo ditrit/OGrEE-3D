@@ -18,6 +18,8 @@ public class ConfigLoader
         public Dictionary<string, string> colors;
         public string api_url;
         public string api_token;
+        public string tenant;
+        public string python_api_url;
     }
 
     private SConfig config;
@@ -232,6 +234,22 @@ public class ConfigLoader
     public string GetApiUrl()
     {
         return config.api_url;
+    }
+
+    ///<summary>
+    /// Get registered python API url.
+    ///</summary>
+    public string GetPythonApiUrl()
+    {
+        return config.python_api_url;
+    }
+
+    ///<summary>
+    /// Get registered tenant.
+    ///</summary>
+    public string GetTenant()
+    {
+        return config.tenant;
     }
 
     ///<summary>

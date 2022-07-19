@@ -1,0 +1,16 @@
+19/07/2022 16:09:55 | SUCCESS: Cache folder created at .ogreeCache
+19/07/2022 16:09:55 | SUCCESS: Load default config file
+19/07/2022 16:10:07 | INFO: --- Client closed ---
+
+19/07/2022 16:12:58 | INFO: Fullscreen: False
+19/07/2022 16:12:58 | SUCCESS: Load default config file
+19/07/2022 16:13:13 | SUCCESS: Connected to API
+19/07/2022 16:13:13 | INFO: From API: {"data":{"objects":[{"attributes":{"orientation":"NW","reservedColor":"AAAAAA","technicalColor":"D0FF78","usableColor":"5BDCFF"},"category":"site","children":null,"description":[],"domain":"EDF","id":"62542eef2a9bfb0a6aab5cd8","name":"NOE","parentId":"62542eef2a9bfb0a6aab5cd7"},{"attributes":{"orientation":"NW"},"category":"site","children":null,"createdDate":"2022-04-27T15:38:25.07Z","description":[],"domain":"EDF","id":"62696371acf8c213e0e0114d","lastUpdated":"2022-04-27T15:38:25.07Z","name":"PCY","parentId":"62542eef2a9bfb0a6aab5cd7"}]},"message":"successfully got object","status":true}
+19/07/2022 16:13:18 | INFO: --- Client closed ---
+
+19/07/2022 16:13:29 | INFO: Fullscreen: False
+19/07/2022 16:13:29 | SUCCESS: Load default config file
+19/07/2022 16:13:33 | SUCCESS: Connected to API
+19/07/2022 16:13:33 | INFO: From API: {"data":{"objects":[{"attributes":{"orientation":"NW","reservedColor":"AAAAAA","technicalColor":"D0FF78","usableColor":"5BDCFF"},"category":"site","children":null,"description":[],"domain":"EDF","id":"62542eef2a9bfb0a6aab5cd8","name":"NOE","parentId":"62542eef2a9bfb0a6aab5cd7"},{"attributes":{"orientation":"NW"},"category":"site","children":null,"createdDate":"2022-04-27T15:38:25.07Z","description":[],"domain":"EDF","id":"62696371acf8c213e0e0114d","lastUpdated":"2022-04-27T15:38:25.07Z","name":"PCY","parentId":"62542eef2a9bfb0a6aab5cd7"}]},"message":"successfully got object","status":true}
+19/07/2022 16:13:38 | INFO: --- Client closed ---
+

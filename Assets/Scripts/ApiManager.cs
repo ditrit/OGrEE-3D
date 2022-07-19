@@ -238,6 +238,60 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_response">The response for API GET request</param>
+    ///<returns>A string containing the parent id of the first object created by the _response</returns>
+    public async Task<SApiObject> GetFirstSApiObject(string _response)
+    {
+        List<SApiObject> Objects = new List<SApiObject>();
+
+        if (Regex.IsMatch(_response, "\"data\":{\"objects\":\\["))
+        {
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_response);
+            foreach (SApiObject obj in resp.data.objects)
+                Objects.Add(obj);
+        }
+        else
+        {
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_response);
+            Utils.ParseNestedObjects(Objects, resp.data);
+        }
+
+        if(Objects.Count > 0)
+            return Objects[0];
+        return default;
+    }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_response">The response for API GET request</param>
+    ///<returns>A string containing the parent id of the first object created by the _response</returns>
+    public async Task<List<SApiObject>> GetAllSApiObject(string _response)
+    {
+        List<SApiObject> Objects = new List<SApiObject>();
+
+        if (Regex.IsMatch(_response, "\"data\":{\"objects\":\\["))
+        {
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_response);
+            foreach (SApiObject obj in resp.data.objects)
+                Objects.Add(obj);
+        }
+        else
+        {
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_response);
+            Utils.ParseNestedObjects(Objects, resp.data);
+        }
+
+        if(Objects.Count > 0)
+            return Objects;
+        return default;
+    }
+    
+    ///<summary>
+    /// Avoid requestsToSend 
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
     ///<param name="_obj">The SApiObject to post</param>

@@ -13,11 +13,6 @@ public class Inputs : MonoBehaviour
 
     private void Update()
     {
-#if !PROD
-        if (Input.GetKeyDown(KeyCode.Insert) && currentItems.Count > 0)
-            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(currentItems[0].GetComponent<OgreeObject>())));
-#endif
-
         if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
             clickCount++;
 

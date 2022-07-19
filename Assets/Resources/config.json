@@ -1,7 +1,6 @@
 {
     "verbose": "true",
     "fullscreen": "false",
-    "cachePath": "C:/",
     "cacheLimitMo": "100",
     "textures": {
         "perf22": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png",
@@ -12,7 +11,8 @@
         "reservedZone": "F2F2F2",
         "technicalZone": "EBF2DE"
     },
-
-    "api_url": "",
-    "api_token": ""
+    "api_url": "https://v.api.ogree.ditrit.io",
+    "api_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA",
+    "tenant" : "EDF",
+    "python_api_url" : "192.168.1.38:5000"
 }
