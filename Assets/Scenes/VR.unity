@@ -5276,6 +5276,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 459892104}
   m_CullTransparentMesh: 0
+--- !u!1 &484519996 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5903002099995907824, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1773428102 &484519997
+ParentConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 484519996}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: 0}
+  m_RotationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_RotationOffsets:
+  - {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_AffectRotationX: 1
+  m_AffectRotationY: 1
+  m_AffectRotationZ: 1
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 0}
+    weight: 1
 --- !u!1 &508865221
 GameObject:
   m_ObjectHideFlags: 0
@@ -22487,6 +22519,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
+      propertyPath: rackScale
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: deviceScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
       propertyPath: parentConstraint
       value: 
       objectReference: {fileID: 2046788154}
@@ -22494,7 +22536,7 @@ PrefabInstance:
         type: 3}
       propertyPath: buttonWrapperBack
       value: 
-      objectReference: {fileID: 5338946236029651624}
+      objectReference: {fileID: 484519996}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: buttonWrapperFront
@@ -22504,7 +22546,7 @@ PrefabInstance:
         type: 3}
       propertyPath: parentConstraintButtonWrapperBack
       value: 
-      objectReference: {fileID: 5338946236029651625}
+      objectReference: {fileID: 484519997}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: parentConstraintButtonWrapperFront
@@ -22572,8 +22614,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6168494507637929393, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6168494507637929393, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.0498
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4312792178929180523, guid: 46de769a2d9f4c94ba997d22c0313228, type: 3}
@@ -22590,38 +22637,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5338946236029651621}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &5338946236029651624 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5903002099995907824, guid: 46de769a2d9f4c94ba997d22c0313228,
-    type: 3}
-  m_PrefabInstance: {fileID: 5338946236029651621}
-  m_PrefabAsset: {fileID: 0}
---- !u!1773428102 &5338946236029651625
-ParentConstraint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5338946236029651624}
-  m_Enabled: 1
-  m_Weight: 1
-  m_TranslationAtRest: {x: 0, y: 0, z: 0}
-  m_RotationAtRest: {x: 0, y: 0, z: 0}
-  m_TranslationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_RotationOffsets:
-  - {x: 0, y: 0, z: 0}
-  m_AffectTranslationX: 1
-  m_AffectTranslationY: 1
-  m_AffectTranslationZ: 1
-  m_AffectRotationX: 1
-  m_AffectRotationY: 1
-  m_AffectRotationZ: 1
-  m_IsContraintActive: 0
-  m_IsLocked: 0
-  m_Sources:
-  - sourceTransform: {fileID: 0}
-    weight: 1
 --- !u!1 &7241409829424487356 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7241409829688271504, guid: b812035630d868d40adcc2aece53fc83,
