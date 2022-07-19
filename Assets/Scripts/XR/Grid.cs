@@ -14,6 +14,11 @@ public class Grid : MonoBehaviour
     private bool isFirstGrid = true;
     string currentGridName;
 
+    private void Start()
+    {
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+    }
+
     ///<summary>
     /// Handle removing of current grid and creation of new grid.
     ///</summary>
@@ -27,9 +32,7 @@ public class Grid : MonoBehaviour
 
             if (_name == currentGridName)
             {
-                if (previousGrid)
-                    Destroy(previousGrid);  
-                    isFirstGrid = true;
+                DestroyGrid();
             }
             else
             {
@@ -67,4 +70,30 @@ public class Grid : MonoBehaviour
         grid.transform.position = newPosition;
         grid.name = "GridForULocation";
     }
+
+    ///<summary>
+    /// Disable Uhelpers when entering in edit mode.
+    ///</summary>
+    ///<param name="_e">Event raised when entering edit mode</param>
+    public void OnEditModeIn(EditModeInEvent _e)
+    {
+        DestroyGrid();
+    }
+
+    ///<summary>
+    /// Destroy current grid
+    ///</summary>
+    public void DestroyGrid()
+    {
+        if (!isFirstGrid)
+        {
+            GameObject previousGrid = transform.Find("GridForULocation").gameObject;
+            if (previousGrid)
+            {
+                Destroy(previousGrid);  
+                isFirstGrid = true;
+            }
+        }
+    }
+    
 }

@@ -42,9 +42,11 @@ public class UManager : MonoBehaviour
             {
                 return;
             }
+
             float difference;
             Transform t = GameManager.gm.currentItems[0].transform.GetChild(0);
             float center = t.position.y;
+
             if (t.GetComponent<BoxCollider>().enabled)
                 difference = t.GetComponent<BoxCollider>().bounds.extents.y;
             else
@@ -53,8 +55,8 @@ public class UManager : MonoBehaviour
                 difference = t.GetComponent<BoxCollider>().bounds.extents.y;  
                 t.GetComponent<BoxCollider>().enabled = false;
             }
+
             DeltaPositionManager delta = GameManager.gm.currentItems[0].GetComponent<DeltaPositionManager>();
-            float rotation = delta.yRotation;
             float lowerBound = center - difference - delta.yPositionDelta;
             float upperBound = center + difference - delta.yPositionDelta;
             t = GameManager.gm.currentItems[0].transform;
@@ -72,16 +74,7 @@ public class UManager : MonoBehaviour
                     {
                         if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
                         {
-                            GameObject obj = uRoot.transform.GetChild(i).gameObject;
-                            string name = obj.name;
-                            if( Regex.IsMatch(name, cornerRearLeft, RegexOptions.IgnoreCase) )
-                                obj.GetComponent<Renderer>().material.color = Color.red;
-                            if( Regex.IsMatch(name, cornerRearRight, RegexOptions.IgnoreCase) )
-                                obj.GetComponent<Renderer>().material.color = Color.yellow;
-                            if( Regex.IsMatch(name, cornerFrontLeft, RegexOptions.IgnoreCase) )
-                                obj.GetComponent<Renderer>().material.color = Color.blue;   
-                            if( Regex.IsMatch(name, cornerFrontRight, RegexOptions.IgnoreCase) )
-                                obj.GetComponent<Renderer>().material.color = Color.green;                                                             
+                            ChangeUColor(uRoot, i);        
                         }
                         else
                         {
@@ -95,23 +88,37 @@ public class UManager : MonoBehaviour
         }
         else
         {
+            Transform t = GameManager.gm.currentItems[0].transform;
+            while (!t.GetComponent<Rack>().uRoot)
+            {
+                await Task.Delay(50);
+            }
             GameObject uRoot = GameManager.gm.currentItems[0].transform.Find("uRoot").gameObject;
+            uRoot.SetActive(true);
             for (int i = 0; i < uRoot.transform.childCount; i++)
             {
-                GameObject obj = uRoot.transform.GetChild(i).gameObject;
-                uRoot.SetActive(true);
-                string name = obj.name;
-                if( Regex.IsMatch(name, cornerRearLeft, RegexOptions.IgnoreCase) )
-                    obj.GetComponent<Renderer>().material.color = Color.red;
-                if( Regex.IsMatch(name, cornerRearRight, RegexOptions.IgnoreCase) )
-                    obj.GetComponent<Renderer>().material.color = Color.yellow;
-                if( Regex.IsMatch(name, cornerFrontLeft, RegexOptions.IgnoreCase) )
-                    obj.GetComponent<Renderer>().material.color = Color.blue;   
-                if( Regex.IsMatch(name, cornerFrontRight, RegexOptions.IgnoreCase) )
-                    obj.GetComponent<Renderer>().material.color = Color.green;  
+                ChangeUColor(uRoot, i);   
             }
             wasEdited = false;
         }
+    }
+
+    ///<summary>
+    /// Disable Uhelpers when entering in edit mode.
+    ///</summary>
+    ///<param name="_e">Event raised when entering edit mode</param>
+    public void ChangeUColor(GameObject _uRoot, int _i)
+    {
+        GameObject obj = _uRoot.transform.GetChild(_i).gameObject;
+        string name = obj.name;
+        if( Regex.IsMatch(name, cornerRearLeft, RegexOptions.IgnoreCase) )
+            obj.GetComponent<Renderer>().material.color = Color.red;
+        if( Regex.IsMatch(name, cornerRearRight, RegexOptions.IgnoreCase) )
+            obj.GetComponent<Renderer>().material.color = Color.yellow;
+        if( Regex.IsMatch(name, cornerFrontLeft, RegexOptions.IgnoreCase) )
+            obj.GetComponent<Renderer>().material.color = Color.blue;   
+        if( Regex.IsMatch(name, cornerFrontRight, RegexOptions.IgnoreCase) )
+            obj.GetComponent<Renderer>().material.color = Color.green;  
     }
 
     ///<summary>
@@ -145,4 +152,5 @@ public class UManager : MonoBehaviour
             t = t.parent.transform;
         }
     }
+
 }

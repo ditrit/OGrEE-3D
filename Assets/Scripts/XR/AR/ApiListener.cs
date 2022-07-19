@@ -66,84 +66,7 @@ public class ApiListener : MonoBehaviour
         {
             await Task.Delay(50);
         }
-#if !VR
-        customerAndSite = customer + "." + site;
-        webCamTexture = new WebCamTexture();
-        GetComponent<Renderer>().material.mainTexture = webCamTexture; //Add Mesh Renderer to the GameObject to which this script is attached to
-        webCamTexture.Play();
-#endif
     }
-
-    public async void TakePhotoButton()
-    {
-        StartCoroutine(TakePhoto());
-        if (bytes != null)
-        {
-            await UploadByteAsync(bytes);
-        }
-    }
-
-    public IEnumerator TakePhoto()
-    {
-
-        yield return new WaitForEndOfFrame();
-
-        Texture2D photo = new Texture2D(webCamTexture.width, webCamTexture.height);
-        photo.SetPixels(webCamTexture.GetPixels());
-        photo.Apply();
-
-        bytes = photo.EncodeToPNG();
-        Destroy(photo);
-    }
-
-    /*private unsafe void GetImage()
-    {
-        XRCameraImage image;
-        if (m_CameraManager.TryGetLatestImage(out image))
-        {
-            var conversionParams = new XRCameraImageConversionParams
-            {
-                // Get the entire image
-                inputRect = new RectInt(0, 0, image.width, image.height),
- 
-                // Downsample by 2
-                outputDimensions = new Vector2Int(image.width / 2, image.height / 2),
- 
-                // Choose RGBA format
-                outputFormat = TextureFormat.RGBA32,
- 
-                // Flip across the vertical axis (mirror image)
-                transformation = CameraImageTransformation.MirrorY
-            };
- 
-            // See how many bytes we need to store the final image.
-            int size = image.GetConvertedDataSize(conversionParams);
- 
-            // Allocate a buffer to store the image
-            var buffer = new NativeArray<byte>(size, Allocator.Temp);
- 
-            // Extract the image data
-            image.Convert(conversionParams, new IntPtr(buffer.GetUnsafePtr()), buffer.Length);
- 
-            // The image was converted to RGBA32 format and written into the provided buffer
-            // so we can dispose of the CameraImage. We must do this or it will leak resources.
-            image.Dispose();
- 
-            // At this point, we could process the image, pass it to a computer vision algorithm, etc.
-            // In this example, we'll just apply it to a texture to visualize it.
- 
-            // We've got the data; let's put it into a texture so we can visualize it.
-            m_Texture = new Texture2D(
-                conversionParams.outputDimensions.x,
-                conversionParams.outputDimensions.y,
-                conversionParams.outputFormat,
-                false);
- 
-            m_Texture.LoadRawTextureData(buffer);
-            m_Texture.Apply();
- 
-        }
-    }*/
 
 
 #if VR
@@ -410,14 +333,8 @@ public class ApiListener : MonoBehaviour
         else
         {
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", false, eLogtype.success);
-#if !VR
-            //Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 2.2f, 0.02f, 90 + 180, (int)Camera.main.transform.localRotation.x);
-            //customer = GameManager.gm.FindByAbsPath(_customer);
-            //customer.transform.SetParent(Camera.main.transform);
-            Utils.MoveObjectInFrontOfCamera(rack, GameManager.gm.mainCamera, 2.2f, 180);
-#endif
 #if VR
-            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90 + 180, 0);
+            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90, 0);
 #endif
             OgreeObject ogree = rack.GetComponent<OgreeObject>();
             ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM

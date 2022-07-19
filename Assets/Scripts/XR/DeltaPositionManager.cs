@@ -5,7 +5,6 @@ public class DeltaPositionManager : MonoBehaviour
     public float yPositionDelta = 0.0f;
     public float initialYPosition = 0.0f;
     public bool isFirstMove = true;
-    public float yRotation;
 
     ///<summary>
     /// When an object is moved, keep track of the original position on the y axis
