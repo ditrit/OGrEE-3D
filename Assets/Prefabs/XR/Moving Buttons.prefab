@@ -109,6 +109,7 @@ MonoBehaviour:
   buttonWrapper: {fileID: 2574679693225809895}
   buttonEdit: {fileID: 8800078080613064985}
   buttonSelectParent: {fileID: 7897151900132686294}
+  buttonResetPosition: {fileID: 0}
   buttonToggleFocus: {fileID: 960063623271418330}
   buttonChangeOrientation: {fileID: 5964503629750013083}
   parentConstraintButtonWrapper: {fileID: 7227986775921416591}
