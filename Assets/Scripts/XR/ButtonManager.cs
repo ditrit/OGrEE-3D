@@ -23,6 +23,8 @@ public class ButtonManager : MonoBehaviour
 
     private Color defaultBackplateColor;
     private Vector3 editScale;
+
+    private bool isInEditMode = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -63,7 +65,7 @@ public class ButtonManager : MonoBehaviour
             }
             ogree.ResetPosition();
             DeltaPositionManager delta = _obj.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-            if (delta)
+            if (delta && !isInEditMode)
             {
                 delta.yPositionDelta = 0;
                 delta.isFirstMove = true;
@@ -91,7 +93,7 @@ public class ButtonManager : MonoBehaviour
             {
                 ogree.ResetPosition();
                 DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta)
+                if (delta && !isInEditMode)
                 {
                     delta.yPositionDelta = 0;
                     delta.isFirstMove = true;
@@ -187,6 +189,7 @@ public class ButtonManager : MonoBehaviour
         buttonToggleFocus.SetActive(false);
         buttonSelectParent.SetActive(false);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+        isInEditMode = true;
     }
 
     ///<summary>
@@ -201,6 +204,7 @@ public class ButtonManager : MonoBehaviour
         else
             buttonSelectParent.SetActive(true);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", defaultBackplateColor);
+        isInEditMode = false;
     }
 
     ///<summary>
@@ -218,6 +222,8 @@ public class ButtonManager : MonoBehaviour
                 {
                     delta.yPositionDelta = 0;
                     delta.isFirstMove = true;
+                    UManager.um.wasEdited = false;
+                    UManager.um.ToggleU(true);
                 }
             }
 
@@ -233,6 +239,8 @@ public class ButtonManager : MonoBehaviour
                     {
                         delta.yPositionDelta = 0;
                         delta.isFirstMove = true;
+                        UManager.um.wasEdited = false;
+                        UManager.um.ToggleU(true);
                     }
                 }
             }
