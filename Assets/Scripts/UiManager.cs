@@ -87,7 +87,10 @@ public class UiManager : MonoBehaviour
         else
         {
             focusBtn.interactable = true;
-            selectParentBtn.interactable = true;
+            if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "rack")
+                selectParentBtn.interactable = true;
+            else
+                selectParentBtn.interactable = false;
         }
         SetCurrentItemText();
         UpdateGuiInfos();

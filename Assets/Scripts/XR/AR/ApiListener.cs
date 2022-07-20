@@ -37,6 +37,10 @@ public class ApiListener : MonoBehaviour
     private bool isDemo = true;
     private WebCamTexture webCamTexture;
     private byte[] bytes;
+    public RawImage background;
+    private bool isCamAvailable = false;
+    private Texture defaultBackground;
+    public AspectRatioFitter fit;
 
     private void Awake()
     {
@@ -63,8 +67,95 @@ public class ApiListener : MonoBehaviour
         {
             await Task.Delay(50);
         }
+#if !VR
+        WebCamDevice[] devices = WebCamTexture.devices;
+        customerAndSite = customer + "." + site;
+        for (int i = 0; i < devices.Length; i++)
+        {
+            GameManager.gm.AppendLogLine(devices[i].name + devices[i].isFrontFacing, false, eLogtype.warning);
+            if (!devices[i].isFrontFacing)
+            {
+                webCamTexture = new WebCamTexture(devices[i].name, Screen.width, Screen.height);
+            }
+        }
+        // GetComponent<Renderer>().material.mainTexture = webCamTexture; //Add Mesh Renderer to the GameObject to which this script is attached to
+        if (webCamTexture)
+        {
+            webCamTexture.Play();
+            background.texture = webCamTexture;
+            isCamAvailable = true;
+        }
+#endif
+    }
+    private void Update()
+    {
+        if (!isCamAvailable)
+            return;
+        float ratio = (float)webCamTexture.width / webCamTexture.height;
+        fit.aspectRatio = ratio;
+
+        // float scaleY = webCamTexture.videoVerticallyMirrored ? -1f: -1f;
+        // background.rectTransform.localScale = new Vector3(1f, scaleY, 1f);
+
+        int orient = -webCamTexture.videoRotationAngle;
+        background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
     }
 
+    public async void TakePhotoButton()
+    {
+        StartCoroutine(TakePhoto());
+        if (bytes != null)
+        {
+            await UploadByteAsync(bytes);
+        }
+    }
+
+    public IEnumerator TakePhoto()
+    {
+        yield return new WaitForEndOfFrame();
+        if (webCamTexture)
+        {
+            Texture2D photo = new Texture2D(webCamTexture.width, webCamTexture.height);
+
+            photo.SetPixels(webCamTexture.GetPixels());
+            photo.Apply();
+            photo = rotateTexture(photo);
+            bytes = photo.EncodeToPNG();
+            Destroy(photo);
+        }
+    }
+
+     public Texture2D rotateTexture(Texture2D image )
+     {
+ 
+         Texture2D target = new Texture2D(image.height, image.width, image.format, false);    //flip image width<>height, as we rotated the image, it might be a rect. not a square image
+         
+         Color32[] pixels = image.GetPixels32(0);
+         pixels = rotateTextureGrid(pixels, image.width, image.height);
+         target.SetPixels32(pixels);
+         target.Apply();
+ 
+         //flip image width<>height, as we rotated the image, it might be a rect. not a square image
+ 
+         return target;
+      }
+ 
+ 
+     public Color32[] rotateTextureGrid(Color32[] tex, int wid, int hi)
+     {
+         Color32[] ret = new Color32[wid * hi];      //reminder we are flipping these in the target
+ 
+         for (int y = 0; y < hi; y++)
+         {
+             for (int x = 0; x < wid; x++)
+             {
+                 ret[(hi-1)-y + x * hi] = tex[x + y * wid];         //juggle the pixels around
+                 
+             }
+         }
+ 
+         return ret;
+     }
 
 #if VR
 
@@ -169,7 +260,7 @@ public class ApiListener : MonoBehaviour
         form.AddBinaryData("Label_Rack", _byteArray);
         form.AddField("Tenant_Name", customerAndSite);
         //form.AddField("deviceType", deviceType);
-        UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.yellow);
+        // UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.yellow);
         UiManagerVincent.instance.UpdateText($"Start POST request with url = {currentHost} and site = {customerAndSite}");
         using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}", form))
         {
@@ -179,7 +270,7 @@ public class ApiListener : MonoBehaviour
             PictureCoolDown = true;
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
-                UiManagerVincent.instance.UpdateText(www.error);
+                // UiManagerVincent.instance.UpdateText(www.error);
                 UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
             }
             else
@@ -191,7 +282,7 @@ public class ApiListener : MonoBehaviour
                 }
                 catch (System.Exception e)
                 {
-                    UiManagerVincent.instance.UpdateText(e.ToString());
+                    // UiManagerVincent.instance.UpdateText(e.ToString());
                     UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
                 }
 
@@ -206,23 +297,23 @@ public class ApiListener : MonoBehaviour
                 if (room.Length > 3)
                     room = room.Substring(3);
                 rack = labelReceived.rack;
-                UiManagerVincent.instance.UpdateText($"The label read is {site}{room}-{rack}");
+                // UiManagerVincent.instance.UpdateText($"The label read is {site}{room}-{rack}");
                 if (string.IsNullOrEmpty(room) && string.IsNullOrEmpty(rack))
                 {
                     UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
-                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room and the rack label");
+                    // UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room and the rack label");
 
                 }
                 else if (string.IsNullOrEmpty(room))
                 {
                     UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
-                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room label");
+                    // UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the room label");
                 }
 
                 else if (string.IsNullOrEmpty(rack))
                 {
                     UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
-                    UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the rack label");
+                    // UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nCould not read the rack label");
 
                 }
 
@@ -232,13 +323,13 @@ public class ApiListener : MonoBehaviour
                     if (building == "error" || building == null)
                     {
                         UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.red);
-                        UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nError while getting the parent building of the room");
+                        // UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nError while getting the parent building of the room");
 
                     }
                     else
                     {
                         UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.green);
-                        UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nLoading Rack please wait...");
+                        // UiManagerVincent.instance.UpdateText(UiManagerVincent.instance.apiResponseTMP.text + "\nLoading Rack please wait...");
                         UiManagerVincent.instance.DeactivateButtonAndText();
                     }
                 }
@@ -319,8 +410,14 @@ public class ApiListener : MonoBehaviour
         else
         {
             GameManager.gm.AppendLogLine("Rack Found in the scene after loading from API", false, eLogtype.success);
+#if !VR
+            Utils.MoveObjectInFrontOfCamera(rack, Camera.main, 2.2f, 0);
+            customer = GameManager.gm.FindByAbsPath(_customer);
+            customer.transform.SetParent(Camera.main.transform);
+
+#endif
 #if VR
-            Utils.MoveObjectToCamera(rack, GameManager.gm.mainCamera, 1.5f, -0.7f, 90, 0);
+            Utils.MoveObjectToCamera(rack, Camera.main, 1.5f, -0.7f, 90, 0);
 #endif
             OgreeObject ogree = rack.GetComponent<OgreeObject>();
             ogree.originalLocalRotation = rack.transform.localRotation;  //update the originalLocalRotation to not mess up when using reset button from TIM
@@ -332,7 +429,7 @@ public class ApiListener : MonoBehaviour
                 {
                     if (goArray[i].transform.GetChild(2))
                     {
-                        //goArray[i].transform.GetChild(2).GetComponent<HandInteractionHandler>().SelectThis();  //Select this
+                        await GameManager.gm.SetCurrentItem(goArray[i].transform.GetChild(2).gameObject);  //Select this
                         return;
                     }
                 }
