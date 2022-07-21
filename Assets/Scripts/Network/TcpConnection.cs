@@ -26,6 +26,7 @@ public class TcpConnection : AConnection
     private TcpClient connectedTcpClient;
 
     private string remoteIp;
+    private int receivePort;
     private int sendPort;
     #endregion
 
@@ -34,14 +35,15 @@ public class TcpConnection : AConnection
     ///
     public override void StartConnection(int _receivePort, int _sendPort)
     {
+        receivePort = _receivePort;
+        sendPort = _sendPort;
         try
         {
             tcpListener = new TcpListener(IPAddress.Any, _receivePort);
-            sendPort = _sendPort;
         }
         catch (Exception e)
         {
-            Debug.Log($"Failed to listen for TCP at port {_receivePort}: {e.Message}");
+            GameManager.gm.AppendLogLine($"Failed to listen for TCP at port {receivePort}: {e.Message}", false, eLogtype.error);
             return;
         }
         StartReceiveThread();
@@ -65,7 +67,7 @@ public class TcpConnection : AConnection
         try
         {
             tcpListener.Start();
-            Debug.Log("Tcp Server is listening");
+            GameManager.gm.AppendLogLine($"Tcp Server is listening at port {receivePort}", false, eLogtype.info);
             while (threadRunning)
             {
                 Byte[] bytes = new Byte[1024];
@@ -106,7 +108,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException socketException)
         {
-            Debug.LogError("SocketException " + socketException.ToString());
+            GameManager.gm.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.error);
         }
     }
 
@@ -158,7 +160,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException socketException)
         {
-            Debug.Log("SocketException " + socketException.ToString());
+            GameManager.gm.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.errorCli);
         }
     }
 
@@ -209,7 +211,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException socketException)
         {
-            Debug.LogError("Socket exception: " + socketException);
+            GameManager.gm.AppendLogLine("Socket exception: " + socketException, false, eLogtype.error);
         }
     }
 

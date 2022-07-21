@@ -59,7 +59,7 @@ public class CliParser// : MonoBehaviour
         }
         catch (System.Exception)
         {
-            GameManager.gm.AppendLogLine("Received data with unknow format.", true, eLogtype.error);
+            GameManager.gm.AppendLogLine("Received data with unknow format.", true, eLogtype.errorCli);
         }
         GameObject obj;
         switch (command["type"])
@@ -75,14 +75,14 @@ public class CliParser// : MonoBehaviour
                 if (obj)
                     await GameManager.gm.SetCurrentItem(obj);
                 else
-                    GameManager.gm.AppendLogLine("Error on select", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine("Error on select", true, eLogtype.errorCli);
                 break;
             case "delete":
                 obj = Utils.GetObjectById(command["data"].ToString());
                 if (obj)
                     await GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
                 else
-                    GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.errorCli);
                 break;
             case "focus":
                 obj = Utils.GetObjectById(command["data"].ToString());
@@ -92,7 +92,7 @@ public class CliParser// : MonoBehaviour
                     await GameManager.gm.FocusItem(obj);
                 }
                 else
-                    GameManager.gm.AppendLogLine("Error on focus", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine("Error on focus", true, eLogtype.errorCli);
                 break;
             case "create":
                 CreateObjectFromData(command["data"].ToString());
@@ -110,7 +110,7 @@ public class CliParser// : MonoBehaviour
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown type", true, eLogtype.error);
+                GameManager.gm.AppendLogLine("Unknown type", true, eLogtype.errorCli);
                 break;
         }
     }
@@ -139,7 +139,7 @@ public class CliParser// : MonoBehaviour
 
         foreach (SApiObject obj in physicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
-        
+
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
     }
@@ -233,7 +233,7 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     room.SetAttribute(command.param, command.value);
                 else
-                    Debug.LogWarning("Incorrect room interaction");
+                    GameManager.gm.AppendLogLine("Incorrect room interaction", true, eLogtype.warningCli);
                 break;
             case "rack":
                 Rack rack = (Rack)obj;
@@ -241,7 +241,7 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     rack.SetAttribute(command.param, command.value);
                 else
-                    Debug.LogWarning("Incorrect rack interaction");
+                    GameManager.gm.AppendLogLine("Incorrect rack interaction", true, eLogtype.warningCli);
                 break;
             case "device":
                 OObject device = (OObject)obj;
@@ -249,10 +249,10 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     device.SetAttribute(command.param, command.value);
                 else
-                    Debug.LogWarning("Incorrect device interaction");
+                    GameManager.gm.AppendLogLine("Incorrect device interaction", true, eLogtype.warningCli);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warningCli);
                 break;
         }
     }
@@ -288,10 +288,10 @@ public class CliParser// : MonoBehaviour
                 if (obj)
                     EventManager.Instance.Raise(new HighlightEvent { obj = obj });
                 else
-                    GameManager.gm.AppendLogLine("Error on highlight", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine("Error on highlight", true, eLogtype.errorCli);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.error);
+                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.errorCli);
                 break;
         }
     }
@@ -317,7 +317,7 @@ public class CliParser// : MonoBehaviour
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.error);
+                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.errorCli);
                 break;
         }
 

@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +33,7 @@ public class ConfigLoader
         config = LoadConfigFile(out string fileType);
         OverrideConfig();
         ApplyConfig();
-        GameManager.gm.AppendLogLine($"Load {fileType} config file", true, eLogtype.success);
+        GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
@@ -187,10 +187,6 @@ public class ConfigLoader
     ///<returns>The value of ApiManager.isInit</returns>
     public async Task<bool> ConnectToApi()
     {
-#if API_DEBUG
-        config.api_url = "https://api.ogree.ditrit.io";
-        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
-#endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
         return ApiManager.instance.isInit;
     }
