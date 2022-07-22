@@ -42,12 +42,18 @@ public class ButtonManager : MonoBehaviour
 
     private void Update()
     {
-        if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
+        if (editMode)
         {
-            float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
-            parentConstraintButtonWrapperFront.SetTranslationOffset(0, parentConstraintButtonWrapperFront.GetTranslationOffset(0) * scaleDiff);
-            parentConstraintButtonWrapperBack.SetTranslationOffset(0, parentConstraintButtonWrapperBack.GetTranslationOffset(0) * scaleDiff);
-            editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
+            if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().category != "rack")
+            {
+                GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().ResetTransform(OgreeObject.TransformComponent.Position);
+            }
+            if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale) {
+                float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
+                parentConstraintButtonWrapperFront.SetTranslationOffset(0, parentConstraintButtonWrapperFront.GetTranslationOffset(0) * scaleDiff);
+                parentConstraintButtonWrapperBack.SetTranslationOffset(0, parentConstraintButtonWrapperBack.GetTranslationOffset(0) * scaleDiff);
+                editScale = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale;
+            }
         }
     }
 

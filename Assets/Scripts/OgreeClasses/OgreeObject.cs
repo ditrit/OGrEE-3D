@@ -317,6 +317,31 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         transform.localScale = originalLocalScale;
     }
 
+
+    ///<summary>
+    /// Used to pick which component of transform you want to reset
+    ///</summary>
+    public enum TransformComponent
+    {
+        Position,
+        Rotation,
+        Scale,
+    }
+
+    ///<summary>
+    /// Reset an object's transform component to its starting value
+    ///</summary>
+    ///<param name="transformComponent">The transform component to be reset</param>
+    public void ResetTransform(TransformComponent transformComponent)
+    {
+        if (transformComponent == TransformComponent.Position)
+            transform.localPosition = originalLocalPosition;
+        if (transformComponent == TransformComponent.Rotation)
+            transform.localRotation = originalLocalRotation;
+        if (transformComponent == TransformComponent.Scale)
+            transform.localScale = originalLocalScale;
+    }
+
     ///<summary>
     /// Set the object's base transform
     ///<param name="_pos">Starting position</param>
