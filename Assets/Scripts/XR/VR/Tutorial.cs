@@ -15,14 +15,15 @@ public class Tutorial : MonoBehaviour
     public GameObject tutorialWindow;
     public GameObject mixedRealtyPlaySpace;
     public GameObject mainCamera;
-
+    public GameObject buttonStartTutorial;
+    public GameObject buttonEndTutorial;
     public string[] templates;
     private Vector3 targetSize;
     private Vector3 offset;
     private ParentConstraint parentConstraint;
 
     public TutorialStep[] tutorialSteps;
-
+    private List<string> hierarchyNamesLoaded = new List<string>();
 
     private readonly ReadFromJson rfJson = new ReadFromJson();
 
@@ -229,34 +230,63 @@ public class Tutorial : MonoBehaviour
                     obj.SetActive(false);
 
             foreach (TutorialStep.SApiObjectHelper helper in tutorialSteps[currentStep].stepSApiObjectsInstantiated)
-                await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
+            {
+                OgreeObject tmp = await OgreeGenerator.instance.CreateItemFromSApiObject(helper.sApiObject);
+                hierarchyNamesLoaded.Add(tmp.hierarchyName);
+            }
+            PlaceArrow(tutorialSteps[currentStep].arrowTargetGameObject);
+            if (!tutorialSteps[currentStep].arrowTargetGameObject && tutorialSteps[currentStep].arrowTargetHierarchyName != null)
+                PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
+
+            ChangeText(tutorialSteps[currentStep].text);
+
+            if (tutorialSteps[currentStep].teleportPlayer)
+            {
+                Vector3 targetPos = tutorialSteps[currentStep].teleportPosition;
+                float height = targetPos.y;
+                targetPos -= mainCamera.transform.position - mixedRealtyPlaySpace.transform.position;
+                targetPos.y = height;
+
+                mixedRealtyPlaySpace.transform.position = targetPos;
+            }
+
+            if (tutorialSteps[currentStep].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
+            {
+                tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
+                tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
+            }
+
         }
-        PlaceArrow(tutorialSteps[currentStep].arrowTargetGameObject);
-        if (!tutorialSteps[currentStep].arrowTargetGameObject && tutorialSteps[currentStep].arrowTargetHierarchyName != null)
-            PlaceArrow(tutorialSteps[currentStep].arrowTargetHierarchyName);
-
-        ChangeText(tutorialSteps[currentStep].text);
-
-        if (tutorialSteps[currentStep].teleportPlayer)
-        {
-            Vector3 targetPos = tutorialSteps[currentStep].teleportPosition;
-            float height = targetPos.y;
-            targetPos -= mainCamera.transform.position - mixedRealtyPlaySpace.transform.position;
-            targetPos.y = height;
-
-            mixedRealtyPlaySpace.transform.position = targetPos;
-        }
-
-        if (tutorialSteps[currentStep].nextStepEvent == TutorialStep.NextStepEvent.ButtonPress)
-        {
-            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.RemoveAllListeners();
-            tutorialSteps[currentStep].buttonNextStep.GetComponent<ButtonConfigHelper>().OnClick.AddListener(() => NextStep());
-        }
-
         currentStep++;
-        if (currentStep == tutorialSteps.Length)
-            currentStep = 0;
+        if (currentStep > tutorialSteps.Length)
+        {
+            currentStep--;
+            ResetTutorial();
+        }
 
+    }
+
+    public void ResetTutorial()
+    {
+        for (int i = currentStep; i < tutorialSteps.Length; i++)
+        {
+            foreach (GameObject gameObject in tutorialSteps[i].stepObjectsShown)
+                if (gameObject)
+                    gameObject.SetActive(true);
+            foreach (GameObject gameObject in tutorialSteps[i].stepObjectsHidden)
+                if (gameObject)
+                    gameObject.SetActive(false);
+        }
+
+        foreach (string name in hierarchyNamesLoaded)
+            Destroy(GameManager.gm.FindByAbsPath(name));
+
+        directionnalIndicator.SetActive(false);
+        arrow.SetActive(false);
+        buttonStartTutorial.SetActive(true);
+        buttonEndTutorial.SetActive(false);
+        tutorialWindow.SetActive(false);
+        currentStep = 0;
     }
 
     private void MoveArrow()
