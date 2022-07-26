@@ -180,8 +180,7 @@ public class Tutorial : MonoBehaviour
     private void Update()
     {
         if (arrow.activeInHierarchy)
-            MoveArrow();
-    }
+            MoveArrow();    }
 
 
     private void PlaceArrow(GameObject _target)
@@ -220,6 +219,7 @@ public class Tutorial : MonoBehaviour
 
     public async void NextStep()
     {
+        await Task.Delay(100);
         if (currentStep < tutorialSteps.Length)
         {
             foreach (GameObject obj in tutorialSteps[currentStep].stepObjectsShown)
@@ -296,6 +296,6 @@ public class Tutorial : MonoBehaviour
 
     private void ChangeText(string _text)
     {
-        tutorialWindow.transform.GetChild(2).GetComponent<TextMeshPro>().text = _text;
+        tutorialWindow.transform.GetChild(1).GetComponent<TextMeshPro>().text = _text;
     }
 }

@@ -7007,7 +7007,9 @@ MonoBehaviour:
     stepObjectsHidden: []
     stepObjectsShown: []
     stepSApiObjectsInstantiated: []
-  - text: Fin
+  - text: This is the end of this tutorial, if you want to know more in detail the
+      different features of OGrEE 3D, you can do the other tutorials available in
+      the tutorial menu.
     arrowTargetGameObject: {fileID: 0}
     arrowTargetHierarchyName: 
     teleportPlayer: 0
@@ -7114,7 +7116,7 @@ Transform:
   - {fileID: 613497583}
   - {fileID: 196419234}
   m_Father: {fileID: 1534353272777648014}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &686420608
 MonoBehaviour:
@@ -12830,7 +12832,7 @@ GameObject:
   - component: {fileID: 1156614203}
   - component: {fileID: 1156614202}
   m_Layer: 0
-  m_Name: API URL
+  m_Name: Output text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18296,7 +18298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1720860806}
   m_Layer: 0
-  m_Name: Backplate (2)
+  m_Name: Debug in Headset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22200,7 +22202,7 @@ PrefabInstance:
     - target: {fileID: 4731836969807217284, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4731836969807217285, guid: 14a91ad9828706b4f8617ef5f3a20bfc,
         type: 3}
