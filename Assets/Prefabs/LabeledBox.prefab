@@ -1026,6 +1026,7 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
+  editMaterial: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
@@ -1049,8 +1050,8 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
+  isDeleted: 0
   isSelected: 0
-  isHovered: 0
   isFocused: 0
 --- !u!205 &530606338633814678
 LODGroup:

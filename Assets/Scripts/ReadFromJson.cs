@@ -326,6 +326,7 @@ public class ReadFromJson
                     obj.attributes[kvp.Key] = kvp.Value;
             }
             obj.UpdateHierarchyName();
+            obj.SetBaseTransform();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();

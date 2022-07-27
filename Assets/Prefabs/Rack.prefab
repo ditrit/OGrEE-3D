@@ -115,7 +115,12 @@ MonoBehaviour:
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   color: {r: 0, g: 0, b: 0, a: 0}
+  isHidden: 0
+  referent: {fileID: 0}
 --- !u!114 &5666233796082005944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +158,8 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
+  isDeleted: 0
   isSelected: 0
-  isHovered: 0
   isFocused: 0
 --- !u!114 &4507776248461121190
 MonoBehaviour:
@@ -172,6 +177,7 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
+  editMaterial: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
