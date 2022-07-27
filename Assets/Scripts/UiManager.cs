@@ -18,6 +18,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Top")]
     [SerializeField] private Button focusBtn = null;
+    [SerializeField] private Button unfocusBtn = null;
     [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
     [SerializeField] private Button editBtn = null;
@@ -52,6 +53,7 @@ public class UiManager : MonoBehaviour
     {
         menuPanel.SetActive(false);
         focusBtn.interactable = false;
+        unfocusBtn.interactable = false;
         editBtn.interactable = false;
         selectParentBtn.interactable = false;
         resetTransBtn.interactable = false;
@@ -107,6 +109,8 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
         }
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == GameManager.gm.currentItems[0])
+            selectParentBtn.interactable = false;
         SetCurrentItemText();
         UpdateGuiInfos();
     }
@@ -118,8 +122,11 @@ public class UiManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent _e)
     {
         UpdateFocusText();
+        unfocusBtn.interactable = true;
         editBtn.interactable = true;
         resetChildrenBtn.interactable = true;
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == GameManager.gm.currentItems[0])
+            selectParentBtn.interactable = false;
     }
 
     ///<summary>
@@ -131,6 +138,8 @@ public class UiManager : MonoBehaviour
         UpdateFocusText();
         editBtn.interactable = false;
         resetChildrenBtn.interactable = false;
+        if (GameManager.gm.focus.Count == 0)
+            unfocusBtn.interactable = false;
     }
 
     ///<summary>
@@ -371,6 +380,15 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
             await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Focus selected object.
+    ///</summary>
+    public async void UnfocusSelected()
+    {
+        if (GameManager.gm.focus.Count > 0)
+            await GameManager.gm.UnfocusItem();
     }
 
     ///<summary>
