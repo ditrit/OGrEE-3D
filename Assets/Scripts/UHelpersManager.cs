@@ -242,10 +242,7 @@ public class UHelpersManager : MonoBehaviour
         if (_rack.attributes["heightUnit"] == "OU")
             scale = GameManager.gm.ouSize;
         else if (_rack.attributes["heightUnit"] == "cm")
-        {
-            scale = GameManager.gm.uSize;
             max = Mathf.FloorToInt(Utils.ParseDecFrac(_rack.attributes["height"]) / (GameManager.gm.uSize * 100));
-        }
 
         if (!string.IsNullOrEmpty(_rack.attributes["template"]))
         {

@@ -83,6 +83,12 @@ public class Inputs : MonoBehaviour
                 }
             }
 
+            if (clickCount == 1 && target && target.tag == "UHelper")
+            {
+                ClickOnU();
+                clickCount = 0;
+            }
+
             if (!isDragging && clickCount == 1 && coroutineAllowed)
                 StartCoroutine(DoubleClickDetection(Time.time));
         }
@@ -163,6 +169,13 @@ public class Inputs : MonoBehaviour
         }
         else if (GameManager.gm.focus.Count > 0)
             await GameManager.gm.UnfocusItem();
+    }
+
+    ///
+    private void ClickOnU()
+    {
+        Transform rack = target.parent.parent;
+        rack.GetComponent<GridCell>().ToggleGrid(target.position.y, target.name);
     }
 
     ///<summary>

@@ -8,6 +8,7 @@ public class Rack : OObject
     private Vector3 originalLocalPos;
     private Vector2 originalPosXY;
     public Transform uRoot;
+    public GameObject gridForULocation;
 
     private void OnEnable()
     {
