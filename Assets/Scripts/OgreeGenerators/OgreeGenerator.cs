@@ -90,7 +90,7 @@ public class OgreeGenerator : MonoBehaviour
                 GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
                 break;
         }
-        newItem.SetBaseTransform();
+        newItem?.SetBaseTransform();
         ResetCoroutine();
         return newItem;
     }

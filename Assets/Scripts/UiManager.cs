@@ -109,8 +109,13 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
         }
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == GameManager.gm.currentItems[0])
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[0])
+        {
             selectParentBtn.interactable = false;
+            editBtn.interactable = true;
+        }
+        else
+            editBtn.interactable = false;
         SetCurrentItemText();
         UpdateGuiInfos();
     }
@@ -123,10 +128,12 @@ public class UiManager : MonoBehaviour
     {
         UpdateFocusText();
         unfocusBtn.interactable = true;
-        editBtn.interactable = true;
         resetChildrenBtn.interactable = true;
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == GameManager.gm.currentItems[0])
+        if (_e.obj == GameManager.gm.currentItems[0])
+        {
             selectParentBtn.interactable = false;
+            editBtn.interactable = true;
+        }
     }
 
     ///<summary>
@@ -136,7 +143,6 @@ public class UiManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
-        editBtn.interactable = false;
         resetChildrenBtn.interactable = false;
         if (GameManager.gm.focus.Count == 0)
             unfocusBtn.interactable = false;
@@ -323,20 +329,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.gm.currentItems.Count == 0)
-        {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
-            return;
-        }
-
-        Rack rack = GameManager.gm.currentItems[0].GetComponent<Rack>();
-        if (rack)
-        {
-            rack.ToggleU();
-            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
-        }
-        else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", false, eLogtype.error);
+        UHelpersManager.um.ToggleU(GameManager.gm.currentItems[0].transform);
     }
 
     ///<summary>
@@ -392,23 +385,21 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Focus selected object.
+    /// Called by GUI button: Toggle Edit on focused object.
     ///</summary>
-    public void EditSelected()
+    public void EditFocused()
     {
         if (isEditing)
         {
             isEditing = false;
             EventManager.Instance.Raise(new EditModeOutEvent() { obj = GameManager.gm.currentItems[0] });
             Debug.Log($"Edit out: {GameManager.gm.currentItems[0]}");
-
         }
         else
         {
             isEditing = true;
             EventManager.Instance.Raise(new EditModeInEvent() { obj = GameManager.gm.currentItems[0] });
             Debug.Log($"Edit in: {GameManager.gm.currentItems[0]}");
-
         }
     }
 
