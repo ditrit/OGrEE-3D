@@ -28,6 +28,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
+    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
 
     public void OnBeforeSerialize()
@@ -315,12 +318,22 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
-    /// Reset object's posistion to its original position
+    /// Reset object's transform to its starting point
     ///</summary>
-    public void ResetPosition()
+    public void ResetTransform()
     {
         transform.localPosition = originalLocalPosition;
         transform.localRotation = originalLocalRotation;
         transform.localScale = originalLocalScale;
+    }
+
+    ///<summary>
+    /// Set the object's base transform
+    ///</summary>
+    public void SetBaseTransform()
+    {
+        originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 }

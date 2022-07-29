@@ -191,6 +191,6 @@ public class GUIObjectInfos : MonoBehaviour
         if (_dictionary.ContainsKey(_key))
             return _dictionary[_key];
         else
-            return default(T);
+            return default;
     }
 }
