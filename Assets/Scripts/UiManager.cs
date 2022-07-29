@@ -9,8 +9,6 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
-    public bool isEditing = false;
-
     [SerializeField] private GameObject menuPanel = null;
 
     [Header("Updated Canvas")]
@@ -389,15 +387,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void EditFocused()
     {
-        if (isEditing)
+        if (GameManager.gm.editMode)
         {
-            isEditing = false;
+            GameManager.gm.editMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent() { obj = GameManager.gm.currentItems[0] });
             Debug.Log($"Edit out: {GameManager.gm.currentItems[0]}");
         }
         else
         {
-            isEditing = true;
+            GameManager.gm.editMode = true;
             EventManager.Instance.Raise(new EditModeInEvent() { obj = GameManager.gm.currentItems[0] });
             Debug.Log($"Edit in: {GameManager.gm.currentItems[0]}");
         }
