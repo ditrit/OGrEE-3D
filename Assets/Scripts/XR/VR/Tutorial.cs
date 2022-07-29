@@ -180,7 +180,8 @@ public class Tutorial : MonoBehaviour
     private void Update()
     {
         if (arrow.activeInHierarchy)
-            MoveArrow();    }
+            MoveArrow();    
+    }
 
 
     private void PlaceArrow(GameObject _target)

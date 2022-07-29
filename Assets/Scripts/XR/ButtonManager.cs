@@ -6,7 +6,6 @@ using UnityEngine.Animations;
 
 public class ButtonManager : MonoBehaviour
 {
-    private bool editMode = false;
     private bool front = true;
 
     [Header("Buttons")]
@@ -25,7 +24,7 @@ public class ButtonManager : MonoBehaviour
 
     private Color defaultBackplateColor;
     private Vector3 editScale;
-    private bool isInEditMode = false;
+    public bool isInEditMode = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,7 +41,7 @@ public class ButtonManager : MonoBehaviour
 
     private void Update()
     {
-        if (editMode)
+        if (isInEditMode)
         {
             if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().category != "rack")
             {
@@ -318,16 +317,13 @@ public class ButtonManager : MonoBehaviour
         if (GameManager.gm.focus.Count == 0)
             return;
         GameObject focusedObject = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-        if (!editMode)
+        if (!isInEditMode)
         {
-            editMode = true;
-
             editScale = focusedObject.transform.localScale;
             EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
         {
-            editMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
     }
