@@ -5,7 +5,15 @@ using UnityEngine;
 public enum eLogtype
 {
     info,
+    infoCli,
+    infoApi,
     success,
+    successCli,
+    successApi,
     warning,
-    error
+    warningCli,
+    warningApi,
+    error,
+    errorCli,
+    errorApi
 }

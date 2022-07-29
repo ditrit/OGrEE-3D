@@ -55,13 +55,14 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
+        server.StartServer();
         StartCoroutine(configLoader.LoadTextures());
     }
 
     private void Start()
     {
 #if API_DEBUG
-        UiManager.instance.ToggleApi();
+        ConnectToApi();
 #endif
 
 #if !PROD
@@ -320,7 +321,8 @@ public class GameManager : MonoBehaviour
     /// Display a message in the CLI.
     ///</summary>
     ///<param name="_line">The text to display</param>
-    ///<param name="_color">The color of the text. Default is white</param>
+    ///<param name="_writeInCli">Should the message be send to the CLI ?</param>
+    ///<param name="_type">The type of message. Default is info</param>
     public void AppendLogLine(string _line, bool _writeInCli, eLogtype _type = eLogtype.info)
     {
         if (!writeLogs)
@@ -328,16 +330,16 @@ public class GameManager : MonoBehaviour
 
         // Legacy build-in CLI
         string color = "";
-        if (_type == eLogtype.info)
+        if (_type == eLogtype.info || _type == eLogtype.infoCli || _type == eLogtype.infoApi)
             color = "white";
-        else if (_type == eLogtype.success)
+        else if (_type == eLogtype.success || _type == eLogtype.successCli || _type == eLogtype.successApi)
             color = "green";
-        else if (_type == eLogtype.warning)
+        else if (_type == eLogtype.warning || _type == eLogtype.warningCli || _type == eLogtype.warningApi)
             color = "yellow";
-        else if (_type == eLogtype.error)
+        else if (_type == eLogtype.error || _type == eLogtype.errorCli || _type == eLogtype.errorApi)
             color = "red";
         consoleController.AppendLogLine(_line, color);
-        
+
         // Remote CLI
         if (_writeInCli)
         {
@@ -376,14 +378,38 @@ public class GameManager : MonoBehaviour
             case eLogtype.info:
                 type = "INFO";
                 break;
+            case eLogtype.infoCli:
+                type = "INFO [CLI]";
+                break;
+            case eLogtype.infoApi:
+                type = "INFO [API]";
+                break;
             case eLogtype.success:
                 type = "SUCCESS";
+                break;
+            case eLogtype.successCli:
+                type = "SUCCESS [CLI]";
+                break;
+            case eLogtype.successApi:
+                type = "SUCCESS [API]";
                 break;
             case eLogtype.warning:
                 type = "WARNING";
                 break;
+            case eLogtype.warningCli:
+                type = "WARNING [CLI]";
+                break;
+            case eLogtype.warningApi:
+                type = "WARNING [API]";
+                break;
             case eLogtype.error:
                 type = "ERROR";
+                break;
+            case eLogtype.errorCli:
+                type = "ERROR [CLI]";
+                break;
+            case eLogtype.errorApi:
+                type = "ERROR [API]";
                 break;
         }
         if (_str[_str.Length - 1] != '\n')
@@ -396,7 +422,7 @@ public class GameManager : MonoBehaviour
             fs = new FileStream(fileName, FileMode.Append);
             using (StreamWriter writer = new StreamWriter(fs))
             {
-                writer.Write($"{dateTime} | {type}: {_str}");
+                writer.Write($"{dateTime} | {type} : {_str}");
             }
         }
         catch (System.Exception _e)

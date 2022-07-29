@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5666233796082005944}
   - component: {fileID: -4847266291842506605}
   - component: {fileID: 4507776248461121190}
+  - component: {fileID: 4919390282517756407}
   m_Layer: 0
   m_Name: Rack
   m_TagString: Selectable
@@ -115,7 +116,14 @@ MonoBehaviour:
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   color: {r: 0, g: 0, b: 0, a: 0}
+  isHidden: 0
+  referent: {fileID: 0}
+  uRoot: {fileID: 0}
+  gridForULocation: {fileID: 0}
 --- !u!114 &5666233796082005944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +161,8 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
+  isDeleted: 0
   isSelected: 0
-  isHovered: 0
   isFocused: 0
 --- !u!114 &4507776248461121190
 MonoBehaviour:
@@ -172,11 +180,28 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
+  editMaterial: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
   isHighlighted: 0
   isFocused: 0
+--- !u!114 &4919390282517756407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382823270839367371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ec57c9074d403b49ba6bd03e294d43d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridCellPrefab: {fileID: 7640967316177154051, guid: ef8799f7bff39104ea399ba5c7a08fb8,
+    type: 3}
+  gridSize: 10
+  boxscale: 1.5
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0
