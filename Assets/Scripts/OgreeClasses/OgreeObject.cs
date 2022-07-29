@@ -317,7 +317,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         transform.localScale = originalLocalScale;
     }
 
-
     ///<summary>
     /// Used to pick which component of transform you want to reset
     ///</summary>
@@ -353,5 +352,13 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         originalLocalPosition = _pos;
         originalLocalRotation = _rot;
         originalLocalScale = _scale;
+    ///<summary>
+    /// Set the object's base transform
+    ///</summary>
+    public void SetBaseTransform()
+    {
+        originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 }

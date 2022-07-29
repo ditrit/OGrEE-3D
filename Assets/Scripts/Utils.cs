@@ -216,4 +216,20 @@ public static class Utils
                 ParseNestedObjects(_list, obj);
         }
     }
+
+    ///<summary>
+    /// Check is the given OgreeObject has been moved, rotated or rescaled.
+    ///</summary>
+    ///<param name="_obj">The object to check</param>
+    ///<returns>True or false</returns>
+    public static bool IsObjectMoved(OgreeObject _obj)
+    {
+        if (_obj.originalLocalPosition != _obj.transform.localPosition)
+            return true;
+        if (_obj.originalLocalRotation != _obj.transform.localRotation)
+            return true;
+        if (_obj.originalLocalScale != _obj.transform.localScale)
+            return true;
+        return false;
+    }
 }

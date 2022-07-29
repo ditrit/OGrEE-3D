@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +33,7 @@ public class ConfigLoader
         config = LoadConfigFile(out string fileType);
         OverrideConfig();
         ApplyConfig();
-        GameManager.gm.AppendLogLine($"Load {fileType} config file", true, eLogtype.success);
+        GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))

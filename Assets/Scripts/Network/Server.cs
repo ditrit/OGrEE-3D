@@ -48,7 +48,7 @@ public class Server : MonoBehaviour
         {
             string msg = connection.incomingQueue.Dequeue();
             await Task.Delay(timer);
-            GameManager.gm.AppendLogLine($"From CLI: {msg}", false);
+            GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
             await parser.DeserializeInput(msg);
         }
     }

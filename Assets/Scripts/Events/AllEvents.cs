@@ -64,4 +64,3 @@ public class EditModeOutEvent : CustomEvent
 {
     public GameObject obj { get; set; }
 }
-

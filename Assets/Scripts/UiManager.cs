@@ -10,6 +10,8 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
+    public bool isEditing = false;
+
     [SerializeField] private GameObject menuPanel = null;
 
     [Header("Updated Canvas")]
@@ -17,9 +19,13 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Top")]
     [SerializeField] private Button focusBtn = null;
+    [SerializeField] private Button unfocusBtn = null;
     [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
+    [SerializeField] private Button editBtn = null;
     [SerializeField] private TMP_Text toggleLabelsText = null;
+    [SerializeField] private Button resetTransBtn = null;
+    [SerializeField] private Button resetChildrenBtn = null;
 
     [Header("Panel Bottom")]
     [SerializeField] private Button reloadBtn = null;
@@ -53,13 +59,20 @@ public class UiManager : MonoBehaviour
     {
         menuPanel.SetActive(false);
         focusBtn.interactable = false;
+        unfocusBtn.interactable = false;
+        editBtn.interactable = false;
         selectParentBtn.interactable = false;
+        resetTransBtn.interactable = false;
+        resetChildrenBtn.interactable = false;
         mouseName.gameObject.SetActive(false);
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+
+        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
     }
 
     private void Update()
@@ -80,35 +93,87 @@ public class UiManager : MonoBehaviour
 
         EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+
+        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
     }
 
-    ///
+    ///<summary>
+    /// When called, change buttons behavior and update GUI.
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         if (GameManager.gm.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
+            resetTransBtn.interactable = false;
         }
         else
         {
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
         }
+        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[0])
+        {
+            selectParentBtn.interactable = false;
+            editBtn.interactable = true;
+        }
+        else
+            editBtn.interactable = false;
         SetCurrentItemText();
         UpdateGuiInfos();
     }
 
-    ///
+    ///<summary>
+    /// When called, change buttons behavior and update GUI.
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent _e)
     {
         UpdateFocusText();
+        unfocusBtn.interactable = true;
+        resetChildrenBtn.interactable = true;
+        if (_e.obj == GameManager.gm.currentItems[0])
+        {
+            selectParentBtn.interactable = false;
+            editBtn.interactable = true;
+        }
     }
 
-    ///
+    ///<summary>
+    /// When called, change buttons behavior and update GUI.
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
+        resetChildrenBtn.interactable = false;
+        if (GameManager.gm.focus.Count == 0)
+            unfocusBtn.interactable = false;
+    }
+
+    ///<summary>
+    /// When called, change buttons behavior.
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnEditModeIn(EditModeInEvent _e)
+    {
+        focusBtn.interactable = false;
+        selectParentBtn.interactable = false;
+        resetTransBtn.interactable = true;
+    }
+
+    ///<summary>
+    /// When called, change buttons behavior.
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnEditModeOut(EditModeOutEvent _e)
+    {
+        focusBtn.interactable = true;
+        selectParentBtn.interactable = true;
+        resetTransBtn.interactable = false;
     }
 
     ///<summary>
@@ -272,20 +337,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.gm.currentItems.Count == 0)
-        {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
-            return;
-        }
-
-        Rack rack = GameManager.gm.currentItems[0].GetComponent<Rack>();
-        if (rack)
-        {
-            rack.ToggleU();
-            GameManager.gm.AppendLogLine($"U helpers toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
-        }
-        else
-            GameManager.gm.AppendLogLine("Selected item must be a rack.", false, eLogtype.error);
+        UHelpersManager.um.ToggleU(GameManager.gm.currentItems[0].transform);
     }
 
     ///<summary>
@@ -333,6 +385,60 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
             await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Focus selected object.
+    ///</summary>
+    public async void UnfocusSelected()
+    {
+        if (GameManager.gm.focus.Count > 0)
+            await GameManager.gm.UnfocusItem();
+    }
+
+    ///<summary>
+    /// Called by GUI button: Toggle Edit on focused object.
+    ///</summary>
+    public void EditFocused()
+    {
+        if (isEditing)
+        {
+            isEditing = false;
+            EventManager.Instance.Raise(new EditModeOutEvent() { obj = GameManager.gm.currentItems[0] });
+            Debug.Log($"Edit out: {GameManager.gm.currentItems[0]}");
+        }
+        else
+        {
+            isEditing = true;
+            EventManager.Instance.Raise(new EditModeInEvent() { obj = GameManager.gm.currentItems[0] });
+            Debug.Log($"Edit in: {GameManager.gm.currentItems[0]}");
+        }
+    }
+
+    ///<summary>
+    /// Called by GUI button: Reset transforms of the selected item.
+    ///</summary>
+    public void ResetTransform()
+    {
+        GameObject obj = GameManager.gm.currentItems[0];
+        if (obj)
+            obj.GetComponent<OgreeObject>().ResetTransform();
+    }
+
+    ///<summary>
+    /// Called by GUI button: Reset tranforms of the children of the selected item.
+    ///</summary>
+    public void ResetChildrenTransforms()
+    {
+        GameObject obj = GameManager.gm.currentItems[0];
+        if (obj)
+        {
+            foreach (Transform child in obj.transform)
+            {
+                if (child.GetComponent<OgreeObject>())
+                    child.GetComponent<OgreeObject>().ResetTransform();
+            }
+        }
     }
 
     ///<summary>

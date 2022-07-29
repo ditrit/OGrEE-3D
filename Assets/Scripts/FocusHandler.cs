@@ -59,7 +59,6 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -75,7 +74,6 @@ public class FocusHandler : MonoBehaviour
 
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
-
 
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -133,9 +131,6 @@ public class FocusHandler : MonoBehaviour
             }
 
         }
-        if (GameManager.gm.currentItems.Contains(transform.parent.gameObject) && transform.parent.GetComponent<OObject>())
-            GetComponent<OgreeObject>().SetBaseTransform(transform.localPosition, transform.localRotation, transform.localScale);
-
     }
 
     ///<summary>
@@ -187,7 +182,7 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// When called checks if he is the GameObject focused on and.
+    /// When called checks if he is the GameObject focused on and enters in Edit mode.
     /// If it is, enable the colliders used for the edit mode, instantiate the BoundControls components and disable the children collliders.
     ///</summary>
     ///<param name="e">The event's instance</param>
@@ -249,7 +244,7 @@ public class FocusHandler : MonoBehaviour
     }
 
     ///<summary>
-    /// When called checks if he is the GameObject focused on and.
+    /// When called checks if he is the GameObject focused on and exits Edit mode.
     /// If it is, disable the colliders used for the edit mode and enable the children collliders.
     ///</summary>
     ///<param name="e">The event's instance</param>
