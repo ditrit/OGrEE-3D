@@ -814,34 +814,10 @@ MonoBehaviour:
   elasticsManager: {fileID: 0}
   onManipulationStarted:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7355064272856159692}
-        m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
-        m_MethodName: OnMovingObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onManipulationEnded:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7355064272856159692}
-        m_TargetAssemblyTypeName: DeltaPositionManager, Assembly-CSharp
-        m_MethodName: OnStoppingObject
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onHoverEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -1153,7 +1129,6 @@ GameObject:
   - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
   - component: {fileID: 4055006019252844647}
-  - component: {fileID: 7355064272856159692}
   m_Layer: 0
   m_Name: LabeledBox
   m_TagString: Selectable
@@ -1217,7 +1192,7 @@ MonoBehaviour:
   mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
-  editMaterial: {fileID: 2100000, guid: 8795381f36ef913469ade927d7690adc, type: 2}
+  editMaterial: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0
@@ -1294,22 +1269,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConstraintSelection: 1
   selectedConstraints: []
---- !u!114 &7355064272856159692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 389a720e6b9188e4f8f94d79772fc0b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  yPositionDelta: 0
-  initialYPosition: 0
-  isFirstMove: 1
-  yRotation: 0
 --- !u!1 &6770727136353204934
 GameObject:
   m_ObjectHideFlags: 0

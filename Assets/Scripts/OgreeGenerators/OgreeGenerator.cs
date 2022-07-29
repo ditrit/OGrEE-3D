@@ -92,12 +92,6 @@ public class OgreeGenerator : MonoBehaviour
         }
         newItem?.SetBaseTransform();
         ResetCoroutine();
-        if (newItem != null)
-        {
-            newItem.originalLocalPosition = newItem.gameObject.transform.localPosition;
-            newItem.originalLocalRotation = newItem.gameObject.transform.localRotation;
-            newItem.originalLocalScale = newItem.gameObject.transform.localScale;
-        }
         return newItem;
     }
 

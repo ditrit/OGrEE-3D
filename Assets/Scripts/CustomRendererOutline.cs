@@ -144,23 +144,7 @@ public class CustomRendererOutline : MonoBehaviour
             }
         }
     }
-
-    private void OnEditModeIn(EditModeInEvent e)
-    {
-        if (e.obj.Equals(gameObject))
-        {
-            SetMaterial(editMaterial);
-        }
-    }
-
-    private void OnEditModeOut(EditModeOutEvent e)
-    {
-        if (e.obj.Equals(gameObject))
-        {
-            SetMaterial(focusMaterial);
-        }
-    }
-
+    
     ///<summary>
     /// When called checks if he is the GameObject focused on and change its material.
     ///</summary>

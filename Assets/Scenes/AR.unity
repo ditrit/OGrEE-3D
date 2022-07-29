@@ -2122,16 +2122,17 @@ MonoBehaviour:
   category: rack
   description: []
   domain: 
-  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  originalLocalScale: {x: 1, y: 1, z: 1}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
   uRoot: {fileID: 0}
+  gridForULocation: {fileID: 0}
 --- !u!1 &256594446
 GameObject:
   m_ObjectHideFlags: 0
@@ -2642,12 +2643,12 @@ MonoBehaviour:
   category: room
   description: []
   domain: 
-  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  originalLocalScale: {x: 1, y: 1, z: 1}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
   walls: {fileID: 0}
   reserved:
     left: 0
@@ -3995,12 +3996,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6848231a40fbc149b3363200ad4a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEditing: 0
   menuPanel: {fileID: 1677330960}
   mouseName: {fileID: 0}
   focusBtn: {fileID: 1293428410}
+  unfocusBtn: {fileID: 0}
   selectParentBtn: {fileID: 0}
   focusText: {fileID: 1795482294}
+  editBtn: {fileID: 0}
   toggleLabelsText: {fileID: 0}
+  resetTransBtn: {fileID: 0}
+  resetChildrenBtn: {fileID: 0}
   reloadBtn: {fileID: 1709553240}
   apiBtn: {fileID: 1632826530}
   apiUrl: {fileID: 8432822631940629388}
@@ -14019,7 +14025,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1731789625}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f43d7cf70bfe9eb45b1acf52b4d5121a, type: 3}
   m_Name: 
@@ -14074,6 +14080,19 @@ MonoBehaviour:
   isFirstHelpMenuCreated: 0
   isFirstHelpMenuOpen: 0
   isHelpDialogActive: 0
+--- !u!114 &1731789632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731789625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be465ddcfda8bd34c81824b5ede9b285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wasEdited: 0
 --- !u!1 &1780799916
 GameObject:
   m_ObjectHideFlags: 0

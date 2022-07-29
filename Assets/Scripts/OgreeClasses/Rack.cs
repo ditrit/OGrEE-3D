@@ -154,23 +154,5 @@ public class Rack : OObject
         Utils.SwitchAllCollidersInRacks(false);
     }
 
-    public void OnSelectObject(OnSelectItemEvent _e)
-    {
-        if (GameManager.gm.currentItems.Contains(gameObject))
-        {
-            ToggleU("true");
-            GameManager.gm.AppendLogLine($"U helpers ON for {name}.", false, eLogtype.warning);
-        }
-    }
-
-    /*private void OnDeselectObject(OnDeselectItemEvent _e)
-    {
-        if (_e.obj == gameObject)
-        {
-            ToggleU("false");
-            GameManager.gm.AppendLogLine($"U helpers OFF {name}.", "yellow");
-        }
-    }*/
-
 }
 

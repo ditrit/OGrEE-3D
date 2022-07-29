@@ -58,6 +58,7 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
+#if !VR
         menuPanel.SetActive(false);
         focusBtn.interactable = false;
         unfocusBtn.interactable = false;
@@ -66,6 +67,7 @@ public class UiManager : MonoBehaviour
         resetTransBtn.interactable = false;
         resetChildrenBtn.interactable = false;
         mouseName.gameObject.SetActive(false);
+#endif
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
@@ -124,6 +126,7 @@ public class UiManager : MonoBehaviour
         }
         else
             editBtn.interactable = false;
+#endif
         SetCurrentItemText();
         UpdateGuiInfos();
     }
@@ -135,6 +138,7 @@ public class UiManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent _e)
     {
         UpdateFocusText();
+#if !VR
         unfocusBtn.interactable = true;
         resetChildrenBtn.interactable = true;
         if (_e.obj == GameManager.gm.currentItems[0])
@@ -142,6 +146,7 @@ public class UiManager : MonoBehaviour
             selectParentBtn.interactable = false;
             editBtn.interactable = true;
         }
+#endif
     }
 
     ///<summary>
@@ -151,9 +156,11 @@ public class UiManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
+#if !VR
         resetChildrenBtn.interactable = false;
         if (GameManager.gm.focus.Count == 0)
             unfocusBtn.interactable = false;
+#endif
     }
 
     ///<summary>
@@ -162,9 +169,11 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent _e)
     {
+#if !VR
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
         resetTransBtn.interactable = true;
+#endif
     }
 
     ///<summary>
@@ -173,9 +182,11 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent _e)
     {
+#if !VR
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
+#endif
     }
 
     ///<summary>

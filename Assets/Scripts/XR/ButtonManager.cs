@@ -6,7 +6,7 @@ using UnityEngine.Animations;
 
 public class ButtonManager : MonoBehaviour
 {
-    private bool editMode = false;
+    private bool isInEditMode = false;
     private bool front = true;
 
     [Header("Buttons")]
@@ -24,7 +24,6 @@ public class ButtonManager : MonoBehaviour
     private Color defaultBackplateColor;
     private Vector3 editScale;
 
-    private bool isInEditMode = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +40,7 @@ public class ButtonManager : MonoBehaviour
 
     private void Update()
     {
-        if (editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
+        if (isInEditMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
         {
             float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
             parentConstraintButtonWrapper.SetTranslationOffset(0, parentConstraintButtonWrapper.GetTranslationOffset(0) * scaleDiff);
@@ -63,15 +62,7 @@ public class ButtonManager : MonoBehaviour
             {
                 continue;
             }
-            ogree.ResetPosition();
-            DeltaPositionManager delta = _obj.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-            if (delta && !isInEditMode)
-            {
-                delta.yPositionDelta = 0;
-                delta.isFirstMove = true;
-                UManager.um.wasEdited = false;
-                UManager.um.ToggleU(true);
-            }
+            ogree.ResetTransform();
         }
     }
 
@@ -185,36 +176,9 @@ public class ButtonManager : MonoBehaviour
     {
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1])
         {
-            GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            for (int i = 0; i < previousSelected.transform.childCount; i++)
-            {
-                DeltaPositionManager delta = previousSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                    UManager.um.wasEdited = false;
-                    UManager.um.ToggleU(true);
-                }
-            }
-
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
             await GameManager.gm.UnfocusItem();
-            if (GameManager.gm.currentItems.Count > 0)
-            {
-                GameObject objectSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-                for (int i = 0; i < objectSelected.transform.childCount; i++)
-                {
-                    DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                    if (delta)
-                    {
-                        delta.yPositionDelta = 0;
-                        delta.isFirstMove = true;
-                        UManager.um.wasEdited = false;
-                        UManager.um.ToggleU(true);
-                    }
-                }
-            }
+            UHelpersManager.um.ResetUHelpers();
         }
         else
         {
@@ -269,7 +233,9 @@ public class ButtonManager : MonoBehaviour
     public void ButtonResetPosition()
     {
         ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
-        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetPosition();
+        GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetTransform();
+        if (!isInEditMode)
+            UHelpersManager.um.ResetUHelpers();
     }
 
 
@@ -281,16 +247,16 @@ public class ButtonManager : MonoBehaviour
         if (GameManager.gm.focus.Count == 0)
             return;
         GameObject focusedObject = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-        if (!editMode)
+        if (!isInEditMode)
         {
-            editMode = true;
+            isInEditMode = true;
 
             editScale = focusedObject.transform.localScale;
             EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });
         }
         else
         {
-            editMode = false;
+            isInEditMode = false;
             EventManager.Instance.Raise(new EditModeOutEvent { obj = focusedObject });
         }
     }

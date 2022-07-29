@@ -38,7 +38,7 @@ public class ActivateGridOnTouch : MonoBehaviour, IMixedRealityTouchHandler
             {
                 int lenght = gameObject.name.Length;
                 string name = gameObject.name.Substring(lenght - 4);
-                t.GetComponent<Grid>().CreateGrid(gameObject.transform.position.y, gameObject.name);
+                t.GetComponent<GridCell>().ToggleGrid(gameObject.transform.position.y, gameObject.name);
                 return;
             }
             t = t.parent.transform;

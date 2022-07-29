@@ -167,8 +167,6 @@ public class GameManager : MonoBehaviour
             else
                 AppendLogLine("Empty selection.", true, eLogtype.success);
             EventManager.Instance.Raise(new OnSelectItemEvent());
-            if (_obj)
-                UManager.um.HighlightULocation();
         }
         catch (System.Exception _e)
         {
