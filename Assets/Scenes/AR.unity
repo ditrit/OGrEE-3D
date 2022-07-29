@@ -14024,12 +14024,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f43d7cf70bfe9eb45b1acf52b4d5121a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yPositionDelta: 0
-  initialYPosition: 0
-  cornerRearLeft: rearLeft
-  cornerRearRight: rearRight
-  cornerFrontLeft: frontLeft
-  cornerFrontRight: frontRight
   isFocused: 0
   wasEdited: 0
 --- !u!114 &1731789630
@@ -16941,7 +16935,7 @@ PrefabInstance:
     - target: {fileID: 5048224718389198755, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6097928543899635208, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}

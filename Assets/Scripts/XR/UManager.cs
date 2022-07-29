@@ -8,12 +8,10 @@ using System.Threading.Tasks;
 public class UManager : MonoBehaviour
 {
     static public UManager um;
-    public float yPositionDelta = 0.0f;
-    public float initialYPosition = 0.0f;
-    public string cornerRearLeft = "rearLeft";
-    public string cornerRearRight = "rearRight";
-    public string cornerFrontLeft = "frontLeft";
-    public string cornerFrontRight = "frontRight";
+    private string cornerRearLeft = "rearLeft";
+    private string cornerRearRight = "rearRight";
+    private string cornerFrontLeft = "frontLeft";
+    private string cornerFrontRight = "frontRight";
     public bool isFocused = false;
     public bool wasEdited = false;
 
@@ -34,7 +32,7 @@ public class UManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    public async Task HighlightULocation()
+    public async void HighlightULocation()
     {
         if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "rack")
         {
@@ -78,7 +76,7 @@ public class UManager : MonoBehaviour
                         }
                         else
                         {
-                            uRoot.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = new Color (0, 0, 0, 1);
+                            uRoot.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = Color.black;
                         }
                     }
                     return;
@@ -93,7 +91,7 @@ public class UManager : MonoBehaviour
             {
                 await Task.Delay(50);
             }
-            GameObject uRoot = GameManager.gm.currentItems[0].transform.Find("uRoot").gameObject;
+            GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
             uRoot.SetActive(true);
             for (int i = 0; i < uRoot.transform.childCount; i++)
             {

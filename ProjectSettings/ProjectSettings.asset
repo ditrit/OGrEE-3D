@@ -724,7 +724,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: PROD;OCULUSINTEGRATION_PRESENT
     7: PROD;API_DEBUG
-    14: API_DEBUG;PROD;VR
+    14: API_DEBUG;PROD;VR;RACK
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

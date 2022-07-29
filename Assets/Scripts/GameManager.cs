@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
 #if RACK
         await Task.Delay(2500);
         var api_listener = new ApiListener();
-        await api_listener.LoadSingleRack("EDF","NOE","BI2","C8","C05");
+        await api_listener.LoadSingleRack("EDF","NOE","BI2","C8","B05");
 #endif
 
 #if !PROD
@@ -167,7 +167,7 @@ public class GameManager : MonoBehaviour
                 AppendLogLine("Empty selection.", true, eLogtype.success);
             EventManager.Instance.Raise(new OnSelectItemEvent());
             if (_obj)
-                await UManager.um.HighlightULocation();
+                UManager.um.HighlightULocation();
         }
         catch (System.Exception _e)
         {

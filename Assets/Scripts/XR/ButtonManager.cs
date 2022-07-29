@@ -75,35 +75,6 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    ///<summary>
-    /// Ensure that devices can not be moved in the wrong direction
-    ///</summary>
-    private void CheckChildrenPositions()
-    {
-        for (int i = 0; i < GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.childCount; i++)
-        {
-            Transform ithChild = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].transform.GetChild(i);
-            GameObject objectSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            OgreeObject ogree = ithChild.GetComponent<OgreeObject>();
-            if (ogree == null)
-            {
-                continue;
-            }
-            if (ithChild.localPosition.z < ogree.originalLocalPosition.z)
-            {
-                ogree.ResetPosition();
-                DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta && !isInEditMode)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                    UManager.um.wasEdited = false;
-                    UManager.um.ToggleU(true);
-                }
-            }
-        }
-    }
-
 
     ///<summary>
     /// When called set the buttonWrapper active, set the selected object as its parent (via a parent constraint) and initialise it
