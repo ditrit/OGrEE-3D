@@ -115,8 +115,8 @@ public class ConfigLoader
     {
         verbose = (config.verbose == "true");
 
-        FullScreenMode((config.fullscreen == "true"));
         CreateCacheDir();
+        FullScreenMode((config.fullscreen == "true"));
     }
 
     ///<summary> 
@@ -143,7 +143,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", true, eLogtype.success);
+                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
             }
         }
         catch (IOException ex)
@@ -187,6 +187,11 @@ public class ConfigLoader
     ///<returns>The value of ApiManager.isInit</returns>
     public async Task<bool> ConnectToApi()
     {
+#if API_DEBUG
+        config.api_url = "https://c.api.ogree.ditrit.io";
+        // config.api_url = "http://172.24.22.55:3001";
+        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA"; // master key
+#endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
         return ApiManager.instance.isInit;
     }
