@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
+    public bool editMode = false;
 
     #region UnityMethods
 

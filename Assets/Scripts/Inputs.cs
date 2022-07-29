@@ -32,7 +32,7 @@ public class Inputs : MonoBehaviour
         if (!isDragging && !isRotating && !isScaling)
             target = Utils.RaycastFromCameraToMouse()?.transform;
 
-        if (UiManager.instance.isEditing)
+        if (GameManager.gm.editMode)
         {
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
             {
@@ -75,7 +75,7 @@ public class Inputs : MonoBehaviour
 
             if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
             {
-                if (GameManager.gm.focus.Count > 0)
+                if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == target.parent)
                 {
                     isDragging = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
@@ -111,14 +111,14 @@ public class Inputs : MonoBehaviour
         coroutineAllowed = false;
         while (Time.time < _firstClickTime + doubleClickTimeLimit)
         {
-            if (clickCount == 2 && !UiManager.instance.isEditing)
+            if (clickCount == 2 && !GameManager.gm.editMode)
             {
                 ClickFocus();
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !UiManager.instance.isEditing)
+        if (clickCount == 1 && !GameManager.gm.editMode)
             ClickSelect();
         clickCount = 0;
         coroutineAllowed = true;

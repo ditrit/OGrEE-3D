@@ -55,6 +55,7 @@ public class EditModeInEvent : CustomEvent
 {
     public GameObject obj { get; set; }
 }
+
 public class EditModeOutEvent : CustomEvent
 {
     public GameObject obj { get; set; }
