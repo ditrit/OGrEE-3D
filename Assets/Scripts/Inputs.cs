@@ -75,7 +75,7 @@ public class Inputs : MonoBehaviour
 
             if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
             {
-                if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == target.parent)
+                if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == target.parent.gameObject)
                 {
                     isDragging = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
