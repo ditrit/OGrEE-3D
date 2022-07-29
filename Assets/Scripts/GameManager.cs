@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
+    public bool editMode = false;
 
     #region UnityMethods
 
@@ -55,7 +56,6 @@ public class GameManager : MonoBehaviour
         else
             Destroy(this);
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        server.StartServer();
         configLoader.LoadConfig();
         server.StartServer();
         StartCoroutine(configLoader.LoadTextures());

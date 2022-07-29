@@ -54,7 +54,7 @@ public class UiManager : MonoBehaviour
         else
             Destroy(this);
     }
-
+#if !VR
     private void Start()
     {
         menuPanel.SetActive(false);
@@ -65,7 +65,6 @@ public class UiManager : MonoBehaviour
         resetTransBtn.interactable = false;
         resetChildrenBtn.interactable = false;
         mouseName.gameObject.SetActive(false);
-
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
         EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
@@ -175,7 +174,8 @@ public class UiManager : MonoBehaviour
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
     }
-
+    
+#endif
     ///<summary>
     /// Get the object under the mouse and displays its hierarchyName in mouseName text.
     ///</summary>
@@ -216,7 +216,6 @@ public class UiManager : MonoBehaviour
 
         GameManager.gm.AppendLogLine(focusText.text, true, eLogtype.success);
     }
-
     ///<summary>
     /// Change text and color of apiBtn.
     ///</summary>
@@ -247,13 +246,14 @@ public class UiManager : MonoBehaviour
             || (_value == false && anim.GetCurrentAnimatorStateInfo(0).IsName("PanelOn")))
             anim.SetTrigger("Transition");
     }
+    
 
-    #region SetValues
+        #region SetValues
 
-    ///<summary>
-    /// Set the current item text
-    ///</summary>
-    public void SetCurrentItemText()
+        ///<summary>
+        /// Set the current item text
+        ///</summary>
+        public void SetCurrentItemText()
     {
         if (GameManager.gm.currentItems.Count == 1)
             currentItemText.text = (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
@@ -281,9 +281,9 @@ public class UiManager : MonoBehaviour
         reloadBtn.interactable = _value;
     }
 
-    #endregion
+#endregion
 
-    #region CalledByGUI
+#region CalledByGUI
 
     ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
@@ -531,5 +531,5 @@ public class UiManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
-    #endregion
+#endregion
 }

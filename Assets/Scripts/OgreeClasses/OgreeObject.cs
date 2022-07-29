@@ -352,6 +352,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         originalLocalPosition = _pos;
         originalLocalRotation = _rot;
         originalLocalScale = _scale;
+    }
+
     ///<summary>
     /// Set the object's base transform
     ///</summary>

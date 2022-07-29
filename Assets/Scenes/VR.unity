@@ -2412,6 +2412,7 @@ MonoBehaviour:
   isHidden: 0
   referent: {fileID: 0}
   uRoot: {fileID: 0}
+  gridForULocation: {fileID: 0}
 --- !u!1 &256594446
 GameObject:
   m_ObjectHideFlags: 0
@@ -5712,6 +5713,7 @@ GameObject:
   - component: {fileID: 560516246}
   - component: {fileID: 560516239}
   - component: {fileID: 560516249}
+  - component: {fileID: 560516240}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5765,6 +5767,7 @@ MonoBehaviour:
   previousItems: []
   focus: []
   writeLogs: 1
+  editMode: 0
 --- !u!114 &560516239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5784,6 +5787,19 @@ MonoBehaviour:
   - cursorType: 1
     texture: {fileID: 2800000, guid: 8ba17cb453cc5da4b8959e3038fc57c8, type: 3}
     offset: {x: 21, y: 12}
+--- !u!114 &560516240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560516237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be465ddcfda8bd34c81824b5ede9b285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wasEdited: 0
 --- !u!114 &560516246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5828,12 +5844,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6848231a40fbc149b3363200ad4a67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEditing: 0
   menuPanel: {fileID: 1677330960}
   mouseName: {fileID: 1101396193}
   focusBtn: {fileID: 965720595}
+  unfocusBtn: {fileID: 0}
   selectParentBtn: {fileID: 508865225}
   focusText: {fileID: 1916849226}
+  editBtn: {fileID: 0}
   toggleLabelsText: {fileID: 0}
+  resetTransBtn: {fileID: 0}
+  resetChildrenBtn: {fileID: 0}
   reloadBtn: {fileID: 1709553240}
   apiBtn: {fileID: 1632826530}
   apiUrl: {fileID: 765030711}

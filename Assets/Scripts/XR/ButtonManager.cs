@@ -24,7 +24,6 @@ public class ButtonManager : MonoBehaviour
 
     private Color defaultBackplateColor;
     private Vector3 editScale;
-    public bool isInEditMode = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,13 +40,14 @@ public class ButtonManager : MonoBehaviour
 
     private void Update()
     {
-        if (isInEditMode)
+        if (GameManager.gm.editMode)
         {
             if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().category != "rack")
             {
                 GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().ResetTransform(OgreeObject.TransformComponent.Position);
             }
-            if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale) {
+            if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
+            {
                 float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
                 parentConstraintButtonWrapperFront.SetTranslationOffset(0, parentConstraintButtonWrapperFront.GetTranslationOffset(0) * scaleDiff);
                 parentConstraintButtonWrapperBack.SetTranslationOffset(0, parentConstraintButtonWrapperBack.GetTranslationOffset(0) * scaleDiff);
@@ -70,14 +70,6 @@ public class ButtonManager : MonoBehaviour
                 continue;
             }
             ogree.ResetTransform();
-            DeltaPositionManager delta = _obj.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-            if (delta && !isInEditMode)
-            {
-                delta.yPositionDelta = 0;
-                delta.isFirstMove = true;
-                UManager.um.wasEdited = false;
-                UManager.um.ToggleU(true);
-            }
         }
     }
 
@@ -98,14 +90,6 @@ public class ButtonManager : MonoBehaviour
             if (ithChild.localPosition.z < ogree.originalLocalPosition.z)
             {
                 ogree.ResetTransform();
-                DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta && !isInEditMode)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                    UManager.um.wasEdited = false;
-                    UManager.um.ToggleU(true);
-                }
             }
         }
     }
@@ -196,7 +180,7 @@ public class ButtonManager : MonoBehaviour
         buttonToggleFocus.SetActive(false);
         buttonSelectParent.SetActive(false);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", Color.green);
-        isInEditMode = true;
+        GameManager.gm.editMode = true;
     }
 
     ///<summary>
@@ -211,7 +195,7 @@ public class ButtonManager : MonoBehaviour
         else
             buttonSelectParent.SetActive(true);
         buttonEdit.transform.GetChild(3).GetChild(0).GetComponent<Renderer>().material.SetColor("_Color", defaultBackplateColor);
-        isInEditMode = false;
+        GameManager.gm.editMode = false;
     }
 
     ///<summary>
@@ -221,36 +205,8 @@ public class ButtonManager : MonoBehaviour
     {
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1])
         {
-            GameObject previousSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-            for (int i = 0; i < previousSelected.transform.childCount; i++)
-            {
-                DeltaPositionManager delta = previousSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                if (delta)
-                {
-                    delta.yPositionDelta = 0;
-                    delta.isFirstMove = true;
-                    UManager.um.wasEdited = false;
-                    UManager.um.ToggleU(true);
-                }
-            }
-
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
             await GameManager.gm.UnfocusItem();
-            if (GameManager.gm.currentItems.Count > 0)
-            {
-                GameObject objectSelected = GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1];
-                for (int i = 0; i < objectSelected.transform.childCount; i++)
-                {
-                    DeltaPositionManager delta = objectSelected.transform.GetChild(i).GetComponent<DeltaPositionManager>();
-                    if (delta)
-                    {
-                        delta.yPositionDelta = 0;
-                        delta.isFirstMove = true;
-                        UManager.um.wasEdited = false;
-                        UManager.um.ToggleU(true);
-                    }
-                }
-            }
         }
         else
         {
@@ -306,6 +262,8 @@ public class ButtonManager : MonoBehaviour
     {
         ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
         GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetTransform();
+        if (!GameManager.gm.editMode)
+            UHelpersManager.um.ResetUHelpers();
     }
 
 
@@ -317,7 +275,7 @@ public class ButtonManager : MonoBehaviour
         if (GameManager.gm.focus.Count == 0)
             return;
         GameObject focusedObject = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-        if (!isInEditMode)
+        if (!GameManager.gm.editMode)
         {
             editScale = focusedObject.transform.localScale;
             EventManager.Instance.Raise(new EditModeInEvent { obj = focusedObject });

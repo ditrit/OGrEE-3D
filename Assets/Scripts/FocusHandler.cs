@@ -98,8 +98,6 @@ public class FocusHandler : MonoBehaviour
             ChangeOrientation(isFrontOriented, false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-
-            UManager.um.HighlightULocation();
             return;
         }
 
@@ -117,7 +115,6 @@ public class FocusHandler : MonoBehaviour
             {
                 ToggleCollider(gameObject, false);
                 ResetToRack();
-                parentRack?.GetComponent<Grid>().CreateGrid(0, parentRack.GetComponent<Grid>().currentGridName);
             }
             else
             {
