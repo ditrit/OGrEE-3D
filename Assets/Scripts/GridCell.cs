@@ -15,18 +15,29 @@ public class GridCell : MonoBehaviour
     private void Start()
     {
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     ///<summary>
-    /// Disable Uhelpers when entering in edit mode.
+    /// Destroy grid when changing selection.
+    ///</summary>
+    ///<param name="_e">Event raised when selecting something</param>
+    private void OnSelectItem(OnSelectItemEvent _e)
+    {
+        Destroy(GetComponent<Rack>().gridForULocation);
+    }
+
+    ///<summary>
+    /// Destroy grid when entering in edit mode.
     ///</summary>
     ///<param name="_e">Event raised when entering edit mode</param>
-    public void OnEditModeIn(EditModeInEvent _e)
+    private void OnEditModeIn(EditModeInEvent _e)
     {
         Destroy(GetComponent<Rack>().gridForULocation);
     }
@@ -55,6 +66,7 @@ public class GridCell : MonoBehaviour
     /// Instantiate a new grid and adjust its scale, texture and height.
     ///</summary>
     ///<param name="_height">World position y to place the grid</param>
+    ///<returns>The created grid</returns>
     private GameObject InstantiateGrid(float _height)
     {
         GameObject grid = Instantiate(gridCellPrefab, transform);
