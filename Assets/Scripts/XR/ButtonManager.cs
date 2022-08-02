@@ -13,6 +13,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private GameObject buttonEdit;
     [SerializeField] private GameObject buttonSelectParent;
     [SerializeField] private GameObject buttonResetPosition;
+    [SerializeField] private GameObject buttonResetPositionChildren;
     [SerializeField] private GameObject buttonToggleFocus;
     [SerializeField] private GameObject buttonWrapperBack;
     [SerializeField] private ParentConstraint parentConstraintButtonWrapperFront;
@@ -60,7 +61,7 @@ public class ButtonManager : MonoBehaviour
     /// Reset all children's positions to their original value
     ///</summary>
     ///<param name="_obj">The parent</param>
-    public void ResetAllPositions(GameObject _obj)
+    public void ResetAllChildrenPositions(GameObject _obj)
     {
         for (int i = 0; i < _obj.transform.childCount; i++)
         {
@@ -108,12 +109,14 @@ public class ButtonManager : MonoBehaviour
             if (GameManager.gm.focus.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             {
                 buttonResetPosition.SetActive(true);
+                buttonResetPositionChildren.SetActive(true);
                 buttonSelectParent.SetActive(false);
                 buttonEdit.SetActive(true);
             }
             else
             {
                 buttonResetPosition.SetActive(false);
+                buttonResetPositionChildren.SetActive(false);
                 buttonSelectParent.SetActive(true);
                 buttonEdit.SetActive(false);
             }
@@ -135,6 +138,7 @@ public class ButtonManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent e)
     {
         buttonResetPosition.SetActive(true);
+        buttonResetPositionChildren.SetActive(true);
         buttonEdit.SetActive(true);
         if (GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == GameManager.gm.focus[GameManager.gm.focus.Count - 1])
             buttonSelectParent.SetActive(false);
@@ -152,11 +156,13 @@ public class ButtonManager : MonoBehaviour
         {
             buttonSelectParent.SetActive(false);
             buttonResetPosition.SetActive(true);
+            buttonResetPositionChildren.SetActive(true);
         }
         else
         {
             buttonSelectParent.SetActive(true);
             buttonResetPosition.SetActive(false);
+            buttonResetPositionChildren.SetActive(false);
         }
 
     }
@@ -258,9 +264,18 @@ public class ButtonManager : MonoBehaviour
     ///<summary>
     /// See ResetAllPositions
     ///</summary>
+    public void ButtonResetPositionChildren()
+    {
+        ResetAllChildrenPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
+        if (!GameManager.gm.editMode)
+            UHelpersManager.um.ResetUHelpers();
+    }
+
+    ///<summary>
+    /// Reset seleted object position
+    ///</summary>
     public void ButtonResetPosition()
     {
-        ResetAllPositions(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]);
         GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<OgreeObject>().ResetTransform();
         if (!GameManager.gm.editMode)
             UHelpersManager.um.ResetUHelpers();

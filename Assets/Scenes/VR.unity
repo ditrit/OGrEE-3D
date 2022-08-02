@@ -7096,6 +7096,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1630748684}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &658056419 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5323303802439324543, guid: 46de769a2d9f4c94ba997d22c0313228,
+    type: 3}
+  m_PrefabInstance: {fileID: 5338946236029651621}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &686420606
 GameObject:
   m_ObjectHideFlags: 0
@@ -10391,14 +10397,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f43d7cf70bfe9eb45b1acf52b4d5121a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yPositionDelta: 0
-  initialYPosition: 0
-  cornerRearLeft: rearLeft
-  cornerRearRight: rearRight
-  cornerFrontLeft: frontLeft
-  cornerFrontRight: frontRight
-  isFocused: 0
-  wasEdited: 0
 --- !u!114 &948828420
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22603,6 +22601,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 358257066}
     m_Modifications:
+    - target: {fileID: 55855971278256284, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: iconQuadTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: b7e3a628151cdf940b09a88369a9e8e9, type: 3}
     - target: {fileID: 960063623271418343, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -22617,6 +22620,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ButtonWrapper Front
+      objectReference: {fileID: 0}
+    - target: {fileID: 5323303802439324543, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: m_Name
+      value: ButtonResetPositionChildren
       objectReference: {fileID: 0}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
@@ -22643,6 +22651,11 @@ PrefabInstance:
       propertyPath: buttonWrapperFront
       value: 
       objectReference: {fileID: 293347317}
+    - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
+        type: 3}
+      propertyPath: buttonResetPositionChildren
+      value: 
+      objectReference: {fileID: 658056419}
     - target: {fileID: 5338946237367757264, guid: 46de769a2d9f4c94ba997d22c0313228,
         type: 3}
       propertyPath: parentConstraintButtonWrapperBack
@@ -22712,16 +22725,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Moving Buttons
-      objectReference: {fileID: 0}
-    - target: {fileID: 6168494507637929393, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.015
-      objectReference: {fileID: 0}
-    - target: {fileID: 6168494507637929393, guid: 46de769a2d9f4c94ba997d22c0313228,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4312792178929180523, guid: 46de769a2d9f4c94ba997d22c0313228, type: 3}
