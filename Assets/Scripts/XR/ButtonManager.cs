@@ -24,7 +24,7 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] private float deviceScale = 1f;
 
     private Color defaultBackplateColor;
-    private Vector3 editScale;
+    private Vector3 editScale = Vector3.one;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,12 +41,10 @@ public class ButtonManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.gm.editMode)
+        if (GameManager.gm.editMode || GameManager.gm.focus.Count > 0)
         {
-            if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().category != "rack")
-            {
+            if (GameManager.gm.editMode && GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().category != "rack")
                 GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().ResetTransform(OgreeObject.TransformComponent.Position);
-            }
             if (GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale != editScale)
             {
                 float scaleDiff = GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.localScale.x / editScale.x;
