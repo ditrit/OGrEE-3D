@@ -178,7 +178,6 @@ public class ButtonManager : MonoBehaviour
         {
             GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1].GetComponent<FocusHandler>().ToggleCollider(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1], true);
             await GameManager.gm.UnfocusItem();
-            UHelpersManager.um.ResetUHelpers();
         }
         else
         {

@@ -107,7 +107,6 @@ public class UiManagerVincent : MonoBehaviour
         _obj.transform.SetParent(_mainMenu.transform);
         _obj.transform.localPosition = new Vector3(0.02f, -0.08f, 0);
         _obj.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        Destroy(_obj.transform.Find("ButtonClose").gameObject);
         Destroy(_obj.transform.Find("Backplate").gameObject);
     }
 

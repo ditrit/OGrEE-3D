@@ -14,6 +14,14 @@ using System.Collections;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
+public class WebRequestCert : UnityEngine.Networking.CertificateHandler
+{
+    protected override bool ValidateCertificate(byte[] certificateData)
+    {
+       //return base.ValidateCertificate(certificateData);
+        return true;
+    }
+}
 public class Label
 {
     public string site;
@@ -26,7 +34,7 @@ public class ApiListener : MonoBehaviour
     public static ApiListener instance;
     private string currentHost;
     public string customer;
-    public string site = "NOE";
+    public string site = "";
     public string deviceType = "rack";
     public string building;
     public string room;
@@ -37,7 +45,7 @@ public class ApiListener : MonoBehaviour
 #endif
     public bool PictureCoolDown = true;
     public GameObject buttonPicture;
-    private bool isDemo = true;
+    private bool isDemo = false;
     private WebCamTexture webCamTexture;
     private byte[] bytes;
 
@@ -171,11 +179,12 @@ public class ApiListener : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddBinaryData("Label_Rack", _byteArray);
         form.AddField("Tenant_Name", customerAndSite);
-        //form.AddField("deviceType", deviceType);
+        form.AddField("deviceType", deviceType);
         UiManagerVincent.instance.ChangeButtonColor(buttonPicture, Color.yellow);
         UiManagerVincent.instance.UpdateText($"Start POST request with url = {currentHost} and site = {customerAndSite}");
-        using (UnityWebRequest www = UnityWebRequest.Post($"http://{currentHost}", form))
+        using (UnityWebRequest www = UnityWebRequest.Post($"{currentHost}", form))
         {
+            www.certificateHandler = new WebRequestCert();
             www.SendWebRequest();
             while (!www.isDone)
                 await Task.Delay(50);
@@ -201,7 +210,7 @@ public class ApiListener : MonoBehaviour
                 Label labelReceived = JsonUtility.FromJson<Label>(text);
                 site = labelReceived.site;
 
-                if (site == "PCY")
+                if (site.Substring(0,1) == "P")
                 {
                     room = "UC" + labelReceived.room;
                 }

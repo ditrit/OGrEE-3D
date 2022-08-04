@@ -116,8 +116,8 @@ public class ConfigLoader
     {
         verbose = (config.verbose == "true");
 
-        FullScreenMode((config.fullscreen == "true"));
         CreateCacheDir();
+        FullScreenMode((config.fullscreen == "true"));
     }
 
     ///<summary> 
@@ -144,7 +144,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", true, eLogtype.success);
+                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
             }
         }
         catch (IOException ex)

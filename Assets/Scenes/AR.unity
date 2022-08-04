@@ -14018,20 +14018,6 @@ MonoBehaviour:
   customerAndSite: 
   PictureCoolDown: 1
   buttonPicture: {fileID: 7938006477502197877}
---- !u!114 &1731789629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1731789625}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f43d7cf70bfe9eb45b1acf52b4d5121a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isFocused: 0
-  wasEdited: 0
 --- !u!114 &1731789630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16954,7 +16940,7 @@ PrefabInstance:
     - target: {fileID: 5048224718389198755, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6097928543899635208, guid: 9c3b4ad4cc6969d46acb6da7f5f18a56,
         type: 3}
