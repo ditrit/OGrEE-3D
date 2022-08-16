@@ -1,6 +1,6 @@
 # OGREE-3D
 OGREE 3D is a data-center viewer, using Unity 3D  
-- Build windows / macOS / Linux: v2.5
+- Build windows / macOS / Linux: v2.7
 - Build to come: Android
 - Gamer gpu needed
 - VR version to come  
@@ -45,8 +45,8 @@ You can override the config file parameters with command line arguments
 ```
 --verbose [true|false]
 --fullscreen [true|false]
---serverUrl [url]
---serverToken [token]
+--apiUrl [url]
+--apiToken [token]
 --file [path to ocli file to load]
 ```  
 
@@ -60,8 +60,7 @@ JSON template definitions are available [on the wiki](https://github.com/ditrit/
 
 # Controls  
 - Left click: select an object (Room or Rack)
-- Left control + Left click: Add/Remove object from selection  
-- Alt + drag: Move selected rack(s)  
+- Left control + Left click: Add/Remove object from selection   
 
 ## Free mode movement 
 - Right click + drag: rotate camera
