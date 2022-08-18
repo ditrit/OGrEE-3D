@@ -19,7 +19,7 @@ public class CameraControl : MonoBehaviour
 
     [Header("Parameters")]
     [Range(5, 20)]
-    public float moveSpeed = 15;
+    public float defaultMoveSpeed = 15;
     [Range(20, 100)]
     public float rotationSpeed = 50;
     [Range(1.60f, 1.90f)]
@@ -45,6 +45,7 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
+        // This check may be deleted when the build-in CLI will be removed
         if (EventSystem.current.currentSelectedGameObject)
             return;
 
@@ -151,6 +152,15 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void FreeModeControls()
     {
+        float moveSpeed;
+        if (GameManager.gm.focus.Count > 0)
+        {
+            moveSpeed = Vector3.Distance(Camera.main.transform.position,
+                                                GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.position);
+        }
+        else
+            moveSpeed = defaultMoveSpeed;
+
         if (Input.GetAxis("Vertical") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
@@ -196,14 +206,14 @@ public class CameraControl : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.GetChild(0).Rotate(-Input.GetAxis("Vertical") * Time.deltaTime * rotationSpeed, 0, 0);
             else
-                transform.Translate((moveSpeed / 2) * Input.GetAxis("Vertical") * Time.deltaTime * Vector3.forward);
+                transform.Translate((defaultMoveSpeed / 2) * Input.GetAxis("Vertical") * Time.deltaTime * Vector3.forward);
         }
         if (Input.GetAxis("Horizontal") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * rotationSpeed, 0);
             else
-                transform.Translate((moveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
+                transform.Translate((defaultMoveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
         }
 
         if (Input.GetMouseButton(1))
@@ -254,6 +264,7 @@ public class CameraControl : MonoBehaviour
             transform.eulerAngles = target.rot;
             labeledTransforms.RemoveAt(labeledTransforms.Count - 1);
         }
+        UpdateGUIInfos();
     }
 
     ///<summary>
@@ -268,6 +279,7 @@ public class CameraControl : MonoBehaviour
             transform.eulerAngles = labeledTransforms[0].rot;
             labeledTransforms.Clear();
         }
+        UpdateGUIInfos();
     }
 
     ///<summary>
