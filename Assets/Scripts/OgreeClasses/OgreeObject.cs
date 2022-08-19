@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -248,8 +248,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             }
 
             SetCurrentLod(lvl);
-            if (GameManager.gm.currentItems.Contains(gameObject))
-                UiManager.instance.detailsInputField.UpdateInputField(currentLod.ToString());
         }
     }
 

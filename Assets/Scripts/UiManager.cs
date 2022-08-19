@@ -65,6 +65,8 @@ public class UiManager : MonoBehaviour
 
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+
+        EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     private void Update()
@@ -88,6 +90,8 @@ public class UiManager : MonoBehaviour
 
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
+
+        EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     ///<summary>
@@ -166,6 +170,21 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
+    }
+
+    ///<summary>
+    /// When called, update the detailsInputField according to the first selected item
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnImportFinished(ImportFinishedEvent _e)
+    {
+        if (GameManager.gm.currentItems.Count > 0)
+        {
+            string value = GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString();
+            detailsInputField.UpdateInputField(value);
+        }
+        else
+            detailsInputField.UpdateInputField("0");
     }
 
     ///<summary>
