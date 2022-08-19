@@ -64,20 +64,6 @@ public static class Utils
     }
 
     ///<summary>
-    /// Gets every Racks in GameManager.allItems and set their Collider.enabled.
-    ///</summary>
-    ///<param name="_value">The value to set</param>
-    public static void SwitchAllCollidersInRacks(bool _value)
-    {
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
-        {
-            GameObject obj = (GameObject)de.Value;
-            if (obj.GetComponent<Rack>())
-                obj.GetComponent<Collider>().enabled = _value;
-        }
-    }
-
-    ///<summary>
     /// Tries to return given Transform, otherwise look for given parent Id
     ///</summary>
     ///<param name="_parent">The Transform to check</param>
