@@ -212,6 +212,12 @@ public class ApiManager : MonoBehaviour
         }
     }
     
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Call a Task<T> callback with the response.
+    ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
+    ///<param name="_callback">Function to call to use GET response</param>
     public async Task<T> GetObject<T>(string _input, Func<string, Task<T>> _callback)
     {
         if (!isInit)

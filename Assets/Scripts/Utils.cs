@@ -94,10 +94,7 @@ public static class Utils
     {
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider)
-        {
-            // Debug.Log(hit.collider.transform.parent.name);
             return hit.collider.transform.parent.gameObject;
-        }
         else
             return null;
     }

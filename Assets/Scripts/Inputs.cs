@@ -171,7 +171,9 @@ public class Inputs : MonoBehaviour
             await GameManager.gm.UnfocusItem();
     }
 
-    ///
+    ///<summary>
+    /// Method called when click on a U helper.
+    ///</summary>
     private void ClickOnU()
     {
         Transform rack = target.parent.parent;

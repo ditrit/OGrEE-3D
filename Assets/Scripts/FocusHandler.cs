@@ -173,16 +173,10 @@ public class FocusHandler : MonoBehaviour
             return;
         if (e.obj == gameObject)
         {
-            Transform box = transform.GetChild(0);
-
             //enable collider used for manipulation
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
             //disable children colliders
             UpdateChildMeshRenderers(true);
-        }
-        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
-        {
-            Transform box = transform.GetChild(0);
         }
     }
 
@@ -197,14 +191,8 @@ public class FocusHandler : MonoBehaviour
             return;
         if (e.obj == gameObject)
         {
-            Transform box = transform.GetChild(0);
-
-            box.GetComponent<Collider>().enabled = false;
+            transform.GetChild(0).GetComponent<Collider>().enabled = false;
             UpdateChildMeshRenderers(true, true);
-        }
-        else if (e.obj == transform.parent.gameObject && GetComponent<OgreeObject>().category != "sensor")
-        {
-            Transform box = transform.GetChild(0);
         }
     }
 

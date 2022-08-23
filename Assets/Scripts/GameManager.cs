@@ -369,7 +369,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Write a message in the log file. Use _type to add prefix.
+    ///</summary>
+    ///<param name="_str">The message to write</param>
+    ///<param name="_type">The type of message</param>
     private void WriteLogFile(string _str, eLogtype _type)
     {
         string dateTime = System.DateTime.Now.ToString();
