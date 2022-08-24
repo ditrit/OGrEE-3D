@@ -66,6 +66,7 @@ public class UiManager : MonoBehaviour
         EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
+        EventManager.Instance.AddListener<ConnectApiEvent>(OnApiConnected);
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -91,6 +92,7 @@ public class UiManager : MonoBehaviour
         EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
+        EventManager.Instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
@@ -170,6 +172,19 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
+    }
+
+    ///<summary>
+    /// When called, update apiBtn and apiUrl. 
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnApiConnected(ConnectApiEvent _e)
+    {
+        if (ApiManager.instance.isInit)
+            ChangeApiButton("Connected to Api", Color.green);
+        else
+            ChangeApiButton("Fail to connected to Api", Color.red);
+        apiUrl.text = GameManager.gm.configLoader.GetApiUrl();
     }
 
     ///<summary>
@@ -273,15 +288,6 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Set the api text
-    ///</summary>
-    ///<param name="_str">The text to display</param>
-    public void SetApiUrlText(string _str)
-    {
-        apiUrl.text = _str;
-    }
-
-    ///<summary>
     /// Make the reload button interatable or not.
     ///</summary>
     ///<param name="_value">Boolean if the button should be interatable</param>
@@ -380,7 +386,7 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Disconnected from API", true, eLogtype.success);
         }
         else
-            await GameManager.gm.ConnectToApi();
+            await GameManager.gm.configLoader.ConnectToApi();
     }
 
     ///<summary>
@@ -457,7 +463,10 @@ public class UiManager : MonoBehaviour
         await GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
     }
 
-    ///
+    ///<summary>
+    /// Toggle build-in CLI writing.
+    ///</summary>
+    ///<param name="_value">The toggle value</param>
     public void ToggleCLI(bool _value)
     {
         if (_value)
@@ -475,6 +484,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Send a ToggleLabelEvent and change the toggle text.
     ///</summary>
+    ///<param name="_value">The toggle value</param>
     public void ToggleLabels(bool _value)
     {
         EventManager.Instance.Raise(new ToggleLabelEvent() { value = _value });
@@ -486,7 +496,7 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Delete all files stored in cache directory.
+    /// Called by GUI button: Delete all files stored in cache directory.
     ///</summary>
     public void ClearCache()
     {
@@ -506,7 +516,7 @@ public class UiManager : MonoBehaviour
     {
         await GameManager.gm.SetCurrentItem(null);
         GameManager.gm.focus.Clear();
-        UiManager.instance.UpdateFocusText();
+        UpdateFocusText();
 
         List<GameObject> tenants = new List<GameObject>();
         foreach (DictionaryEntry de in GameManager.gm.allItems)

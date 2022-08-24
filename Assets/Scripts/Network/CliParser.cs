@@ -123,7 +123,7 @@ public class CliParser// : MonoBehaviour
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
-        await GameManager.gm.ConnectToApi();
+        await GameManager.gm.configLoader.ConnectToApi();
     }
 
     ///<summary>

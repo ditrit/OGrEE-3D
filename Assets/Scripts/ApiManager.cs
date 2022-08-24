@@ -107,6 +107,7 @@ public class ApiManager : MonoBehaviour
                 GameManager.gm.AppendLogLine($"Error while connecting to API: {e.Message}", true, eLogtype.errorApi);
             }
         }
+        EventManager.Instance.Raise(new ConnectApiEvent());
     }
 
     ///<summary>
@@ -211,7 +212,7 @@ public class ApiManager : MonoBehaviour
             EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         }
     }
-    
+
     ///<summary>
     /// Avoid requestsToSend 
     /// Get an Object from the api. Call a Task<T> callback with the response.

@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
 #if API_DEBUG
-        ConnectToApi();
+        configLoader.ConnectToApi();
 #endif
 
 #if !PROD
@@ -440,19 +440,6 @@ public class GameManager : MonoBehaviour
                 fs.Dispose();
         }
 
-    }
-
-    ///<summary>
-    /// Connect the client to registered API in configLoader.
-    ///</summary>
-    public async Task ConnectToApi()
-    {
-        await configLoader.ConnectToApi();
-        if (ApiManager.instance.isInit)
-            UiManager.instance.ChangeApiButton("Connected to Api", Color.green);
-        else
-            UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
-        UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
     }
 
     ///<summary>
