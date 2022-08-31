@@ -79,7 +79,7 @@ public static class Utils
             foreach (DictionaryEntry de in GameManager.gm.allItems)
             {
                 GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _parentId)
+                if (go && go.GetComponent<OgreeObject>().id == _parentId)
                     parent = go.transform;
             }
         }

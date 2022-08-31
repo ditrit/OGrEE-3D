@@ -62,6 +62,7 @@ public class ObjectGenerator : MonoBehaviour
         PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
         Rack rack = newRack.GetComponent<Rack>();
+        rack.hierarchyName = hierarchyName;
         rack.UpdateFromSApiObject(_rk);
 
         // Correct position according to rack size & rack orientation
@@ -111,8 +112,8 @@ public class ObjectGenerator : MonoBehaviour
 
         rack.UpdateColorByTenant();
 
-        string hn = rack.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newRack);
+        // string hn = rack.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
@@ -280,6 +281,7 @@ public class ObjectGenerator : MonoBehaviour
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
+        dv.hierarchyName = hierarchyName;
         dv.UpdateFromSApiObject(_dv);
 
         // Set labels
@@ -289,15 +291,15 @@ public class ObjectGenerator : MonoBehaviour
             newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = dv.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newDevice);
+        // string hn = dv.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
             {
-                if (comp.gameObject != newDevice)
+                if (!(comp is Sensor) && comp.gameObject != newDevice)
                 {
                     comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
@@ -422,6 +424,7 @@ public class ObjectGenerator : MonoBehaviour
 
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
+        gr.hierarchyName = hierarchyName;
         gr.UpdateFromSApiObject(_gr);
         gr.UpdateColorByTenant();
         gr.DisplayContent(false);
@@ -432,8 +435,8 @@ public class ObjectGenerator : MonoBehaviour
             newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = gr.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newGr);
+        // string hn = gr.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newGr);
 
         return gr;
     }
@@ -600,6 +603,7 @@ public class ObjectGenerator : MonoBehaviour
         newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
 
         OObject co = newCo.AddComponent<OObject>();
+        co.hierarchyName = hierarchyName;
         co.UpdateFromSApiObject(_co);
 
         newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.alphaMat;
@@ -613,8 +617,8 @@ public class ObjectGenerator : MonoBehaviour
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
         newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        string hn = co.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newCo);
+        // string hn = co.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newCo);
 
         return co;
     }
@@ -627,6 +631,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created sensor</returns>
     public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
     {
+        Debug.Log($"Trying to create sensor");
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {
@@ -648,6 +653,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_se.name}";
+        Debug.Log($"=>{hierarchyName}");
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -704,6 +710,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
+        sensor.hierarchyName = hierarchyName;
         sensor.UpdateFromSApiObject(_se);
 
         sensor.UpdateSensorColor();
@@ -712,8 +719,8 @@ public class ObjectGenerator : MonoBehaviour
 
 
 
-        string hn = sensor.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newSensor);
+        // string hn = sensor.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newSensor);
 
         return sensor;
     }

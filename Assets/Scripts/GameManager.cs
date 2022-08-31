@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
+                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
                 OObject currentSelected = _obj.GetComponent<OObject>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in currentItems)
@@ -123,9 +124,7 @@ public class GameManager : MonoBehaviour
                     if (unloadChildren && previousSelected != null)
                     {
                         if (previousSelected.referent)
-                        {
                             await previousSelected.referent.LoadChildren("0");
-                        }
                         if (previousSelected.category != "rack")
                         {
                             previousItems.Remove(previousObj);
@@ -136,8 +135,9 @@ public class GameManager : MonoBehaviour
                 }
 
             }
-            else
+            else // deselection => unload children
             {
+                AppendLogLine("Empty selection.", true, eLogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
@@ -145,17 +145,11 @@ public class GameManager : MonoBehaviour
                         await oObject.LoadChildren("0");
                 }
             }
-            //Clear current selection
+            //Clear current selection and add new item
             currentItems.Clear();
-
             if (_obj)
-            {
-                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
                 currentItems.Add(_obj);
-            }
-            else
-                AppendLogLine("Empty selection.", true, eLogtype.success);
+
             EventManager.Instance.Raise(new OnSelectItemEvent());
         }
         catch (System.Exception _e)
@@ -210,7 +204,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
             currentItems.Add(_obj);
         }
