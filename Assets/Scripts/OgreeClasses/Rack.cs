@@ -5,15 +5,8 @@ using UnityEngine;
 
 public class Rack : OObject
 {
-    private Vector3 originalLocalPos;
-    private Vector2 originalPosXY;
     public Transform uRoot;
     public GameObject gridForULocation;
-
-    private void OnEnable()
-    {
-        originalLocalPos = transform.localPosition;
-    }
 
     ///<summary>
     /// Check for a _param attribute and assign _value to it.

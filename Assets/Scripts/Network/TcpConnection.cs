@@ -73,9 +73,21 @@ public class TcpConnection : AConnection
                 Byte[] bytes = new Byte[1024];
                 using (connectedTcpClient = tcpListener.AcceptTcpClient())
                 {
+                    string receiveIP = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
                     // Catch CLI IP to be able to send messages in Send()
-                    remoteIp = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
-                    Debug.Log(remoteIp);
+                    if (string.IsNullOrEmpty(remoteIp))
+                    {
+                        remoteIp = receiveIP;
+                        Debug.Log($"Successfully registered CLI: {receiveIP}");
+                        // GameManager.gm.AppendLogLine($"Successfully registered CLI: {receiveIP}", false, eLogtype.infoCli);
+                    }
+                    else if (receiveIP != remoteIp)
+                    {
+                        Debug.LogError($"Receive message from unregistered CLI: {receiveIP}");
+                        // GameManager.gm.AppendLogLine($"Receive message from unregistered CLI: {receiveIP}", true, eLogtype.errorCli);
+                        connectedTcpClient.Close();
+                        return;
+                    }
 
                     string completeMessage = "";
                     // Get a stream object for reading 					
@@ -192,8 +204,7 @@ public class TcpConnection : AConnection
         try
         {
             // remoteIp = "192.168.254.23";
-            // remoteIp = "192.168.1.28"; // Hack for sending msg to JS TCP listener
-            Debug.Log($"Send msg to {remoteIp}:{sendPort}");
+            // Debug.Log($"Send msg to {remoteIp}:{sendPort}");
             TcpClient client = new TcpClient(remoteIp, sendPort);
 
             // Get a stream object for writing. 			
