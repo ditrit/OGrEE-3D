@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     public Material defaultMat;
     public Material alphaMat;
     public Material perfMat;
+    public Material selectMat;
+    public Material focusMat;
+    public Material editMat;
+    public Material highlightMat;
+    public Material mouseHoverMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
     [Header("Custom units")]

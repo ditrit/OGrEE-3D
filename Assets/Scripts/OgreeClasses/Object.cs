@@ -207,8 +207,7 @@ public class OObject : OgreeObject
         OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        color = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
+        color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
 
         CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
         if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)

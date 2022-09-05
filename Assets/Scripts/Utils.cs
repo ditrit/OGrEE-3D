@@ -117,11 +117,11 @@ public static class Utils
     ///<summary>
     /// Set a Color with an hexadecimal value
     ///</summary>
-    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    ///<param name="_str">The hexadecimal value, without '#'</param>
     ///<returns>The wanted color</returns>
-    public static Color ParseColor(string _hex)
+    public static Color ParseHtmlColor(string _str)
     {
-        ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
+        ColorUtility.TryParseHtmlString(_str, out Color newColor);
         return newColor;
     }
 

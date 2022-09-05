@@ -399,19 +399,19 @@ public class Room : Building
         OgreeObject site = transform.parent.parent.GetComponentInParent<OgreeObject>();
 
         if (site.attributes.ContainsKey("usableColor"))
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["usableColor"]);
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
         else
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("usableZone"));
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("usableZone"));
 
         if (site.attributes.ContainsKey("reservedColor"))
-            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["reservedColor"]}");
         else
-            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("reservedZone"));
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("reservedZone"));
 
         if (site.attributes.ContainsKey("technicalColor"))
-            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["technicalColor"]}");
         else
-            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("technicalZone"));
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("technicalZone"));
     }
 
     ///<summary>

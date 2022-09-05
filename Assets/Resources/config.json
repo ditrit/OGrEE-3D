@@ -3,14 +3,21 @@
     "fullscreen": "false",
     "cachePath": "C:/",
     "cacheLimitMo": "100",
+    "cliListenPort": "5500",
+    "cliSendPort": "5501",
     "textures": {
         "perf22": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png",
         "perf29": "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
     },
     "colors": {
-        "usableZone": "DBEDF2",
-        "reservedZone": "F2F2F2",
-        "technicalZone": "EBF2DE"
+        "selection": "#21FF00",
+        "edit": "#C900FF",
+        "focus": "#FF9F00",
+        "highlight": "#00D5FF",
+
+        "usableZone": "#DBEDF2",
+        "reservedZone": "#F2F2F2",
+        "technicalZone": "#EBF2DE"
     },
 
     "api_url": "",

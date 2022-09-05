@@ -17,23 +17,13 @@ public class Server : MonoBehaviour
     [SerializeField] private eConnectionType protocol;
     private AConnection connection;
 
-    [SerializeField] private int receivePort;
+    [SerializeField] private int listenPort;
     [SerializeField] private int sendPort;
     public int timer = 0;
 
     [Header("Debug")]
     [SerializeField] private bool triggerSend = false;
     [SerializeField] private string debugMsg;
-
-    public void StartServer()
-    {
-        if (protocol == eConnectionType.udp)
-            connection = new UdpConnection();
-        else if (protocol == eConnectionType.tcp)
-            connection = new TcpConnection();
-
-        connection.StartConnection(receivePort, sendPort);
-    }
 
     private async void Update()
     {
@@ -56,6 +46,30 @@ public class Server : MonoBehaviour
     private void OnDestroy()
     {
         connection.Stop();
+    }
+
+    ///<summary>
+    /// Set values for listenPort and sendPort.
+    ///</summary>
+    ///<param name="_listenPort">The value to set for listenPort</param>
+    ///<param name="_sendPort">The value to set for sendPort</param>
+    public void SetupPorts(string _listenPort, string _sendPort)
+    {
+        int.TryParse(_listenPort, out listenPort);
+        int.TryParse(_sendPort, out sendPort);
+    }
+
+    ///<summary>
+    /// Initialize a connection and start it.
+    ///</summary>
+    public void StartServer()
+    {
+        if (protocol == eConnectionType.udp)
+            connection = new UdpConnection();
+        else if (protocol == eConnectionType.tcp)
+            connection = new TcpConnection();
+
+        connection.StartConnection(listenPort, sendPort);
     }
 
     ///<summary>

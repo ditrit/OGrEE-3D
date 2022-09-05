@@ -14,6 +14,8 @@ public class ConfigLoader
         public string fullscreen;
         public string cachePath;
         public float cacheLimitMo;
+        public string cliListenPort;
+        public string cliSendPort;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
         public string api_url;
@@ -114,8 +116,13 @@ public class ConfigLoader
     {
         verbose = (config.verbose == "true");
 
+        GameManager.gm.server.SetupPorts(config.cliListenPort, config.cliSendPort);
         CreateCacheDir();
         FullScreenMode((config.fullscreen == "true"));
+        SetMaterialColor("selection", GameManager.gm.selectMat);
+        SetMaterialColor("focus", GameManager.gm.focusMat);
+        SetMaterialColor("edit", GameManager.gm.editMat);
+        SetMaterialColor("highlight", GameManager.gm.highlightMat);
     }
 
     ///<summary> 
@@ -148,6 +155,22 @@ public class ConfigLoader
         catch (IOException ex)
         {
             Debug.LogError(ex.Message);
+        }
+    }
+
+    ///<summary>
+    /// Use a key on config.color to set a material (with alpha = 0.5).
+    ///</summary>
+    ///<param name="_key">The value to get</param>
+    ///<param name="_mat">The material to edit</param>
+    private void SetMaterialColor(string _key, Material _mat)
+    {
+        Color tmp;
+        if (config.colors.ContainsKey(_key))
+        {
+            tmp = Utils.ParseHtmlColor(config.colors[_key]);
+            tmp.a = 0.5f;
+            _mat.color = tmp;
         }
     }
 

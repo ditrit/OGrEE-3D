@@ -4,14 +4,6 @@ using UnityEngine;
 
 public class CustomRendererOutline : MonoBehaviour
 {
-    public Material selectedMaterial;
-    public Material mouseHoverMaterial;
-    public Material highlightMaterial;
-    public Material focusMaterial;
-    public Material editMaterial;
-    private Material defaultMaterial;
-    private Material transparentMaterial;
-
     public bool isActive = false;
 
     public bool isSelected = false;
@@ -21,9 +13,6 @@ public class CustomRendererOutline : MonoBehaviour
 
     private void Start()
     {
-        defaultMaterial = GameManager.gm.defaultMat;
-        transparentMaterial = GameManager.gm.alphaMat;
-
         if (GameManager.gm.allItems.ContainsValue(gameObject))
             isActive = true;
 
@@ -85,22 +74,22 @@ public class CustomRendererOutline : MonoBehaviour
         if (GameManager.gm.currentItems.Contains(gameObject))
         {
             if (!isFocused)
-                SetMaterial(selectedMaterial);
+                SetMaterial(GameManager.gm.selectMat);
             isSelected = true;
             return;
         }
         if (GameManager.gm.previousItems.Contains(gameObject))
         {
             if (isHighlighted)
-                SetMaterial(highlightMaterial);
+                SetMaterial(GameManager.gm.highlightMat);
             else if (isFocused)
-                SetMaterial(focusMaterial);
+                SetMaterial(GameManager.gm.focusMat);
             else
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(transparentMaterial);
+                    SetMaterial(GameManager.gm.alphaMat);
                 else
-                    SetMaterial(defaultMaterial);
+                    SetMaterial(GameManager.gm.defaultMat);
 
                 transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
@@ -116,7 +105,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (_e.obj.Equals(gameObject))
         {
-            SetMaterial(focusMaterial);
+            SetMaterial(GameManager.gm.focusMat);
             isFocused = true;
         }
     }
@@ -130,15 +119,15 @@ public class CustomRendererOutline : MonoBehaviour
         if (_e.obj.Equals(gameObject))
         {
             if (isHighlighted)
-                SetMaterial(highlightMaterial);
+                SetMaterial(GameManager.gm.highlightMat);
             else if (isSelected)
-                SetMaterial(selectedMaterial);
+                SetMaterial(GameManager.gm.selectMat);
             else
             {
                 if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(transparentMaterial);
+                    SetMaterial(GameManager.gm.alphaMat);
                 else
-                    SetMaterial(defaultMaterial);
+                    SetMaterial(GameManager.gm.defaultMat);
                 transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
             }
             isFocused = false;
@@ -146,7 +135,7 @@ public class CustomRendererOutline : MonoBehaviour
             if (GameManager.gm.focus.Count > 0)
             {
                 GameObject newFocus = GameManager.gm.focus[GameManager.gm.focus.Count - 1];
-                newFocus.GetComponent<CustomRendererOutline>().SetMaterial(focusMaterial);
+                newFocus.GetComponent<CustomRendererOutline>().SetMaterial(GameManager.gm.focusMat);
             }
         }
     }
@@ -158,7 +147,7 @@ public class CustomRendererOutline : MonoBehaviour
     private void OnEditModeIn(EditModeInEvent _e)
     {
         if (_e.obj.Equals(gameObject))
-            SetMaterial(editMaterial);
+            SetMaterial(GameManager.gm.editMat);
     }
 
     ///<summary>
@@ -168,7 +157,7 @@ public class CustomRendererOutline : MonoBehaviour
     private void OnEditModeOut(EditModeOutEvent _e)
     {
         if (_e.obj.Equals(gameObject))
-            SetMaterial(focusMaterial);
+            SetMaterial(GameManager.gm.focusMat);
     }
 
     ///<summary>
@@ -184,7 +173,7 @@ public class CustomRendererOutline : MonoBehaviour
         if (_e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
             Color temp = transform.GetChild(0).GetComponent<Renderer>().material.color;
-            SetMaterial(mouseHoverMaterial);
+            SetMaterial(GameManager.gm.mouseHoverMat);
             isHovered = true;
             transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.InvertColor(temp);
         }
@@ -199,13 +188,13 @@ public class CustomRendererOutline : MonoBehaviour
         if (_e.obj.Equals(gameObject) && !isSelected && !isFocused)
         {
             if (isHighlighted)
-                SetMaterial(highlightMaterial);
+                SetMaterial(GameManager.gm.highlightMat);
             else
             {
                 if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(transparentMaterial);
+                    SetMaterial(GameManager.gm.alphaMat);
                 else
-                    SetMaterial(defaultMaterial);
+                    SetMaterial(GameManager.gm.defaultMat);
                 transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
             }
 
@@ -224,13 +213,13 @@ public class CustomRendererOutline : MonoBehaviour
             isHighlighted = !isHighlighted;
             EventManager.Instance.Raise(new HighlightEvent { obj = transform.parent.gameObject });
             if (isHighlighted)
-                SetMaterial(highlightMaterial);
+                SetMaterial(GameManager.gm.highlightMat);
             else
             {
                 if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
-                    SetMaterial(transparentMaterial);
+                    SetMaterial(GameManager.gm.alphaMat);
                 else
-                    SetMaterial(defaultMaterial);
+                    SetMaterial(GameManager.gm.defaultMat);
                 transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
             }
         }
