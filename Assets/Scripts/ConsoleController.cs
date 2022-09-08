@@ -1248,7 +1248,6 @@ public class ConsoleController : MonoBehaviour
                 GameManager.gm.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
-            GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
         }
         else
             GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
