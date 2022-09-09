@@ -78,7 +78,9 @@ public class Server : MonoBehaviour
     ///<param name="_msg">The message to send</param>
     public void Send(string _msg)
     {
-        connection.Send(_msg + "\n");
+        if (protocol != eConnectionType.tcp)
+            _msg += "\n";
+        connection.Send(_msg);
     }
 
 }

@@ -142,6 +142,8 @@ public class CliParser// : MonoBehaviour
 
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, eLogtype.infoCli);
     }
 
     ///<summary>
