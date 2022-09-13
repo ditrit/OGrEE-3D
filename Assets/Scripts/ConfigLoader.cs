@@ -14,8 +14,7 @@ public class ConfigLoader
         public string fullscreen;
         public string cachePath;
         public float cacheLimitMo;
-        public string cliListenPort;
-        public string cliSendPort;
+        public string cliPort;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
         public string api_url;
@@ -116,7 +115,7 @@ public class ConfigLoader
     {
         verbose = (config.verbose == "true");
 
-        GameManager.gm.server.SetupPorts(config.cliListenPort, config.cliSendPort);
+        GameManager.gm.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode((config.fullscreen == "true"));
         SetMaterialColor("selection", GameManager.gm.selectMat);

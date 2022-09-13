@@ -17,8 +17,7 @@ public class Server : MonoBehaviour
     [SerializeField] private eConnectionType protocol;
     private AConnection connection;
 
-    [SerializeField] private int listenPort;
-    [SerializeField] private int sendPort;
+    [SerializeField] private int cliPort;
     public int timer = 0;
 
     [Header("Debug")]
@@ -51,12 +50,11 @@ public class Server : MonoBehaviour
     ///<summary>
     /// Set values for listenPort and sendPort.
     ///</summary>
-    ///<param name="_listenPort">The value to set for listenPort</param>
+    ///<param name="_cliPort">The value to set for listenPort</param>
     ///<param name="_sendPort">The value to set for sendPort</param>
-    public void SetupPorts(string _listenPort, string _sendPort)
+    public void SetupPorts(string _cliPort)
     {
-        int.TryParse(_listenPort, out listenPort);
-        int.TryParse(_sendPort, out sendPort);
+        int.TryParse(_cliPort, out cliPort);
     }
 
     ///<summary>
@@ -69,7 +67,7 @@ public class Server : MonoBehaviour
         else if (protocol == eConnectionType.tcp)
             connection = new TcpConnection();
 
-        connection.StartConnection(listenPort, sendPort);
+        connection.StartConnection(cliPort);
     }
 
     ///<summary>
@@ -78,8 +76,6 @@ public class Server : MonoBehaviour
     ///<param name="_msg">The message to send</param>
     public void Send(string _msg)
     {
-        if (protocol != eConnectionType.tcp)
-            _msg += "\n";
         connection.Send(_msg);
     }
 

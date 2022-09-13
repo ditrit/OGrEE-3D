@@ -127,7 +127,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 2.7
+  bundleVersion: 2.8
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -148,7 +148,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.Orness.OGrEE3D
   buildNumber:
-    Standalone: 2.7
+    Standalone: 2.8
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
@@ -635,7 +635,7 @@ PlayerSettings:
   metroSplashScreenUseBackgroundColor: 0
   platformCapabilities:
     WindowsStoreApps:
-      CodeGeneration: False
+      EnterpriseAuthentication: False
       OfflineMapsManagement: False
       HumanInterfaceDevice: False
       Location: False
@@ -670,8 +670,8 @@ PlayerSettings:
       Contacts: False
       Proximity: False
       InternetClient: False
+      CodeGeneration: False
       BackgroundMediaPlayback: False
-      EnterpriseAuthentication: False
   metroTargetDeviceFamilies:
     Desktop: False
     Holographic: False

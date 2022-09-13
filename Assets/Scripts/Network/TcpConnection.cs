@@ -13,12 +13,12 @@ public class TcpConnection : AConnection
     private TcpListener server;
     private TcpClient client;
     private NetworkStream netStream;
-    private int comPort;
+    private int cliPort;
     private bool threadRunning;
 
-    public override void StartConnection(int _receivePort, int _sendPort)
+    public override void StartConnection(int _receivePort)
     {
-        comPort = _receivePort;
+        cliPort = _receivePort;
         comThread = new Thread(ConnexionLoop);
         comThread.IsBackground = true;
         threadRunning = true;
@@ -29,9 +29,9 @@ public class TcpConnection : AConnection
     {
         try
         {
-            server = new TcpListener(IPAddress.Any, comPort);
+            server = new TcpListener(IPAddress.Any, cliPort);
             server.Start();
-            GameManager.gm.AppendLogLine($"Tcp Server is listening at port {comPort}", false, eLogtype.info);
+            GameManager.gm.AppendLogLine($"Tcp Server is listening at port {cliPort}", false, eLogtype.info);
             while (threadRunning)
             {
                 client = server.AcceptTcpClient();
@@ -73,6 +73,7 @@ public class TcpConnection : AConnection
         byte[] msgBuffer = new byte[size];
         netStream.Read(msgBuffer, 0, size);
         string msg = Encoding.UTF8.GetString(msgBuffer);
+        GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
         return msg;
     }
 

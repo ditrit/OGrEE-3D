@@ -337,7 +337,8 @@ public class GameManager : MonoBehaviour
             color = "yellow";
         else if (_type == eLogtype.error || _type == eLogtype.errorCli || _type == eLogtype.errorApi)
             color = "red";
-        consoleController.AppendLogLine(_line, color);
+        if (_writeInCli)
+            consoleController.AppendLogLine(_line, color);
 
         // Remote CLI
         if (_writeInCli)
