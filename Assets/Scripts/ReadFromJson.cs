@@ -331,6 +331,8 @@ public class ReadFromJson
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(_data.labelPos);
+        if (_isSlot)
+            dod.SetLabelFont("color@888888");
         dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;

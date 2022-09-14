@@ -64,20 +64,6 @@ public static class Utils
     }
 
     ///<summary>
-    /// Gets every Racks in GameManager.allItems and set their Collider.enabled.
-    ///</summary>
-    ///<param name="_value">The value to set</param>
-    public static void SwitchAllCollidersInRacks(bool _value)
-    {
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
-        {
-            GameObject obj = (GameObject)de.Value;
-            if (obj.GetComponent<Rack>())
-                obj.GetComponent<Collider>().enabled = _value;
-        }
-    }
-
-    ///<summary>
     /// Tries to return given Transform, otherwise look for given parent Id
     ///</summary>
     ///<param name="_parent">The Transform to check</param>
@@ -93,7 +79,7 @@ public static class Utils
             foreach (DictionaryEntry de in GameManager.gm.allItems)
             {
                 GameObject go = (GameObject)de.Value;
-                if (go.GetComponent<OgreeObject>().id == _parentId)
+                if (go && go.GetComponent<OgreeObject>().id == _parentId)
                     parent = go.transform;
             }
         }
@@ -108,10 +94,7 @@ public static class Utils
     {
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider)
-        {
-            // Debug.Log(hit.collider.transform.parent.name);
             return hit.collider.transform.parent.gameObject;
-        }
         else
             return null;
     }
@@ -134,11 +117,11 @@ public static class Utils
     ///<summary>
     /// Set a Color with an hexadecimal value
     ///</summary>
-    ///<param name="_hex">The hexadecimal value, without '#'</param>
+    ///<param name="_str">The hexadecimal value, without '#'</param>
     ///<returns>The wanted color</returns>
-    public static Color ParseColor(string _hex)
+    public static Color ParseHtmlColor(string _str)
     {
-        ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
+        ColorUtility.TryParseHtmlString(_str, out Color newColor);
         return newColor;
     }
 

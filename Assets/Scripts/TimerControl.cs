@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class TimerControl : MonoBehaviour
 {
     [SerializeField] private ConsoleController consoleController = null;
-    [SerializeField] private Server server = null;
     [SerializeField] private Slider slider = null;
     [SerializeField] private TextMeshProUGUI value = null;
 
@@ -24,7 +23,7 @@ public class TimerControl : MonoBehaviour
     {
         slider.value = _value;
         consoleController.timerValue = _value;
-        server.timer = (int)(_value * 1000);
+        GameManager.gm.server.timer = (int)(_value * 1000);
         value.text = _value.ToString("0.##") + "s";
     }
 }

@@ -162,8 +162,6 @@ public class ConsoleController : MonoBehaviour
             ParseCreate(_input.Substring(1));
         else if (_input[0] == '-')
             StartCoroutine(DeleteItem(_input.Substring(1)));
-        else if (_input[0] == '~')
-            MoveRack(_input.Substring(1));
         else if (_input.StartsWith("ui."))
             ParseUiCommand(_input.Substring(3));
         else if (_input.StartsWith("camera."))
@@ -1147,41 +1145,6 @@ public class ConsoleController : MonoBehaviour
     }
 
     ///<summary>
-    /// Move a rack to given coordinates.
-    ///</summary>
-    ///<param name="_input">The input to parse for a move command</param>
-    private void MoveRack(string _input)
-    {
-        string pattern = "^[^@\\s]+@\\[[0-9.-]+,[0-9.-]+\\](@relative)*$";
-        if (Regex.IsMatch(_input, pattern))
-        {
-            string[] data = _input.Split('@');
-            if (GameManager.gm.allItems.Contains(data[0]))
-            {
-                GameObject obj = (GameObject)GameManager.gm.allItems[data[0]];
-                Rack rk = obj.GetComponent<Rack>();
-                if (rk)
-                {
-                    if (data.Length == 2)
-                        rk.MoveRack(Utils.ParseVector2(data[1]), false);
-                    else
-                        rk.MoveRack(Utils.ParseVector2(data[1]), true);
-                    UiManager.instance.UpdateGuiInfos();
-                    GameManager.gm.AppendLogLine($"{data[0]} moved to {data[1]}", false, eLogtype.success);
-                }
-                else
-                    GameManager.gm.AppendLogLine($"{data[0]} is not a rack.", false, eLogtype.warning);
-            }
-            else
-                GameManager.gm.AppendLogLine($"{data[0]} doesn't exist.", false, eLogtype.warning);
-        }
-        else
-            GameManager.gm.AppendLogLine("Syntax error.", false, eLogtype.error);
-
-        UnlockController();
-    }
-
-    ///<summary>
     /// Parse a camera command and call the corresonding CameraControl method.
     ///</summary>
     ///<param name="_input">The input to parse</param>
@@ -1285,7 +1248,6 @@ public class ConsoleController : MonoBehaviour
                 GameManager.gm.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
-            GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
         }
         else
             GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);

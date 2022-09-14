@@ -46,12 +46,13 @@ public class BuildingGenerator : MonoBehaviour
         newBD.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
         Building building = newBD.GetComponent<Building>();
+        building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        string hn = building.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newBD);
+        // string hn = building.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newBD);
 
         return building;
     }
@@ -87,6 +88,7 @@ public class BuildingGenerator : MonoBehaviour
         newRoom.transform.parent = bd;
 
         Room room = newRoom.GetComponent<Room>();
+        room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
         Vector3 originalSize = room.usableZone.localScale;
@@ -130,8 +132,8 @@ public class BuildingGenerator : MonoBehaviour
         room.nameText.rectTransform.sizeDelta = size;
         room.UpdateZonesColor();
 
-        string hn = room.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hn, newRoom);
+        // string hn = room.UpdateHierarchyName();
+        GameManager.gm.allItems.Add(hierarchyName, newRoom);
 
         if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
             && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))

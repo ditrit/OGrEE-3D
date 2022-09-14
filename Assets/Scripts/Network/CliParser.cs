@@ -123,7 +123,7 @@ public class CliParser// : MonoBehaviour
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
-        await GameManager.gm.ConnectToApi();
+        await GameManager.gm.configLoader.ConnectToApi();
     }
 
     ///<summary>
@@ -142,6 +142,8 @@ public class CliParser// : MonoBehaviour
 
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, eLogtype.infoCli);
     }
 
     ///<summary>
@@ -269,7 +271,6 @@ public class CliParser// : MonoBehaviour
             case "delay": // ?? Still needed ??
                 float time = Utils.ParseDecFrac(manip.data);
                 GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
-                GameObject.FindObjectOfType<Server>().timer = (int)(time * 1000);
                 break;
             case "infos":
                 if (manip.data == "true")

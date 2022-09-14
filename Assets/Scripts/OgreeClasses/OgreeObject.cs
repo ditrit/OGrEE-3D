@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -168,6 +168,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<summary>
     /// Update the OgreeObject's hierarchyName with it's parent's one.
     ///</summary>
+    ///<returns>The updated hierarchyName of the object</returns>
     public string UpdateHierarchyName()
     {
         Transform parent = transform.parent;
@@ -237,19 +238,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         {
             await DeleteChildren(lvl);
 
-            string apiCall = "";
             if (lvl != 0)
-                apiCall = $"{category}s/{id}/all?limit={lvl}";
-
-            if (!string.IsNullOrEmpty(apiCall))
             {
+                string apiCall = $"{category}s/{id}/all?limit={lvl}";
                 Debug.Log(apiCall);
                 await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
             }
 
             SetCurrentLod(lvl);
-            if (GameManager.gm.currentItems.Contains(gameObject))
-                UiManager.instance.detailsInputField.UpdateInputField(currentLod.ToString());
         }
     }
 

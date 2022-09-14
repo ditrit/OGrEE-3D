@@ -13,14 +13,14 @@ public class UdpConnection : AConnection
     private Thread receiveThread;
     private bool threadRunning = false;
     private string senderIp;
-    private int senderPort;
+    private int cliPort;
 
-    public override void StartConnection(int _receivePort, int _sendPort)
+    public override void StartConnection(int _receivePort)
     {
         try
         {
             udpClient = new UdpClient(_receivePort);
-            senderPort = _sendPort;
+            cliPort = _receivePort;
         }
         catch (Exception e)
         {
@@ -55,7 +55,7 @@ public class UdpConnection : AConnection
                     incomingQueue.Enqueue(returnData);
                     // Set sender data according to received client.
                     senderIp = remoteIpEndPoint.Address.ToString();
-                    senderPort = remoteIpEndPoint.Port;
+                    cliPort = remoteIpEndPoint.Port;
                     Debug.Log($"=> Received msg from {remoteIpEndPoint.Address.ToString()}:{remoteIpEndPoint.Port}: {returnData}");
 
                     // Then, send automatic message (debug).
@@ -93,8 +93,8 @@ public class UdpConnection : AConnection
 
     public override void Send(string _message)
     {
-        Debug.Log(String.Format($"Send msg to ip:{senderIp}:{senderPort} msg: {_message}"));
-        IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(senderIp), senderPort);
+        Debug.Log(String.Format($"Send msg to ip:{senderIp}:{cliPort} msg: {_message}"));
+        IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(senderIp), cliPort);
         Byte[] sendBytes = Encoding.UTF8.GetBytes(_message);
         udpClient.Send(sendBytes, sendBytes.Length, serverEndpoint);
     }

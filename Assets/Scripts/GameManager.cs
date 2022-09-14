@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     public Material defaultMat;
     public Material alphaMat;
     public Material perfMat;
+    public Material selectMat;
+    public Material focusMat;
+    public Material editMat;
+    public Material highlightMat;
+    public Material mouseHoverMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
     [Header("Custom units")]
@@ -63,7 +68,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
 #if API_DEBUG
-        ConnectToApi();
+        configLoader.ConnectToApi();
 #endif
 
 #if !PROD
@@ -108,6 +113,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
+                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
                 OObject currentSelected = _obj.GetComponent<OObject>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in currentItems)
@@ -123,9 +129,7 @@ public class GameManager : MonoBehaviour
                     if (unloadChildren && previousSelected != null)
                     {
                         if (previousSelected.referent)
-                        {
                             await previousSelected.referent.LoadChildren("0");
-                        }
                         if (previousSelected.category != "rack")
                         {
                             previousItems.Remove(previousObj);
@@ -136,8 +140,9 @@ public class GameManager : MonoBehaviour
                 }
 
             }
-            else
+            else // deselection => unload children
             {
+                AppendLogLine("Empty selection.", true, eLogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
@@ -145,17 +150,11 @@ public class GameManager : MonoBehaviour
                         await oObject.LoadChildren("0");
                 }
             }
-            //Clear current selection
+            //Clear current selection and add new item
             currentItems.Clear();
-
             if (_obj)
-            {
-                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
                 currentItems.Add(_obj);
-            }
-            else
-                AppendLogLine("Empty selection.", true, eLogtype.success);
+
             EventManager.Instance.Raise(new OnSelectItemEvent());
         }
         catch (System.Exception _e)
@@ -210,7 +209,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
             currentItems.Add(_obj);
         }
@@ -339,7 +337,8 @@ public class GameManager : MonoBehaviour
             color = "yellow";
         else if (_type == eLogtype.error || _type == eLogtype.errorCli || _type == eLogtype.errorApi)
             color = "red";
-        consoleController.AppendLogLine(_line, color);
+        if (_writeInCli)
+            consoleController.AppendLogLine(_line, color);
 
         // Remote CLI
         if (_writeInCli)
@@ -369,7 +368,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    ///
+    ///<summary>
+    /// Write a message in the log file. Use _type to add prefix.
+    ///</summary>
+    ///<param name="_str">The message to write</param>
+    ///<param name="_type">The type of message</param>
     private void WriteLogFile(string _str, eLogtype _type)
     {
         string dateTime = System.DateTime.Now.ToString();
@@ -436,19 +439,6 @@ public class GameManager : MonoBehaviour
                 fs.Dispose();
         }
 
-    }
-
-    ///<summary>
-    /// Connect the client to registered API in configLoader.
-    ///</summary>
-    public async Task ConnectToApi()
-    {
-        await configLoader.ConnectToApi();
-        if (ApiManager.instance.isInit)
-            UiManager.instance.ChangeApiButton("Connected to Api", Color.green);
-        else
-            UiManager.instance.ChangeApiButton("Fail to connected to Api", Color.red);
-        UiManager.instance.SetApiUrlText(configLoader.GetApiUrl());
     }
 
     ///<summary>

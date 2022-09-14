@@ -17,12 +17,14 @@ public class OObject : OgreeObject
     private void Awake()
     {
         EventManager.Instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelection);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         EventManager.Instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelection);
     }
 
     ///<summary>
@@ -187,6 +189,13 @@ public class OObject : OgreeObject
             UpdateColorByTenant();
     }
 
+    ///
+    private async void OnSelection(OnSelectItemEvent _e)
+    {
+        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == gameObject)
+            await LoadChildren("1");
+    }
+
     ///<summary>
     /// Update object's color according to its Tenant.
     ///</summary>
@@ -198,8 +207,7 @@ public class OObject : OgreeObject
         OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        color = new Color();
-        ColorUtility.TryParseHtmlString($"#{tenant.attributes["color"]}", out color);
+        color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
 
         CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
         if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
