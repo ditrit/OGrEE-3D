@@ -5,9 +5,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
-public class TcpConnection
+public class TcpConnection : AConnection
 {
     #region private members 	
     /// <summary> 	
@@ -23,28 +24,36 @@ public class TcpConnection
     /// Create handle to connected tcp client. 	
     /// </summary> 	
     private TcpClient connectedTcpClient;
+
+    private string remoteIp;
+    private int receivePort;
+    private int sendPort;
     #endregion
 
-    public readonly Queue<string> incomingQueue = new Queue<string>();
     private bool threadRunning = false;
 
-    public void StartConnection(int _receivePort)
+    ///
+    public override void StartConnection(int _receivePort, int _sendPort)
     {
+        receivePort = _receivePort;
+        sendPort = _sendPort;
         try
         {
             tcpListener = new TcpListener(IPAddress.Any, _receivePort);
         }
         catch (Exception e)
         {
-            Debug.Log($"Failed to listen for TCP at port {_receivePort}: {e.Message}");
+            GameManager.gm.AppendLogLine($"Failed to listen for TCP at port {receivePort}: {e.Message}", false, eLogtype.error);
             return;
         }
         StartReceiveThread();
     }
 
+    ///
     private void StartReceiveThread()
     {
         receiveThread = new Thread(new ThreadStart(ListenForMessages));
+        // receiveThread = new Thread(new ThreadStart(ListenForMessagesLegacy));
         receiveThread.IsBackground = true;
         threadRunning = true;
         receiveThread.Start();
@@ -58,12 +67,65 @@ public class TcpConnection
         try
         {
             tcpListener.Start();
+            GameManager.gm.AppendLogLine($"Tcp Server is listening at port {receivePort}", false, eLogtype.info);
+            while (threadRunning)
+            {
+                Byte[] bytes = new Byte[1024];
+                using (connectedTcpClient = tcpListener.AcceptTcpClient())
+                {
+                    // Catch CLI IP to be able to send messages in Send()
+                    remoteIp = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
+                    Debug.Log(remoteIp);
+
+                    string completeMessage = "";
+                    // Get a stream object for reading 					
+                    using (NetworkStream stream = connectedTcpClient.GetStream())
+                    {
+                        int length;
+                        // Read incomming stream into byte arrary. 						
+                        while (stream.DataAvailable)
+                        {
+                            length = stream.Read(bytes, 0, bytes.Length);
+                            string clientMessage = Encoding.ASCII.GetString(bytes, 0, length);
+                            Debug.Log("=>" + clientMessage);
+                            completeMessage += clientMessage;
+
+                            byte[] msg = Encoding.ASCII.GetBytes("Roger\n");
+                            stream.Write(msg, 0, msg.Length);
+                        }
+                        if (!string.IsNullOrEmpty(completeMessage))
+                        {
+                            lock (incomingQueue)
+                            {
+                                incomingQueue.Enqueue(completeMessage);
+                                completeMessage = "";
+                            }
+                        }
+                    }
+                    connectedTcpClient.Close();
+                }
+            }
+        }
+        catch (SocketException socketException)
+        {
+            GameManager.gm.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.error);
+        }
+    }
+
+    private void ListenForMessagesLegacy()
+    {
+        try
+        {
+            tcpListener.Start();
             Debug.Log("Tcp Server is listening");
             while (threadRunning)
             {
                 Byte[] bytes = new Byte[1024];
                 using (connectedTcpClient = tcpListener.AcceptTcpClient())
                 {
+                    remoteIp = ((IPEndPoint)connectedTcpClient.Client.RemoteEndPoint).Address.ToString();
+                    Debug.Log(remoteIp);
+                    string completeMessage = "";
                     // Get a stream object for reading 					
                     using (NetworkStream stream = connectedTcpClient.GetStream())
                     {
@@ -75,12 +137,21 @@ public class TcpConnection
                             Array.Copy(bytes, 0, incommingData, 0, length);
                             // Convert byte array to string message. 							
                             string clientMessage = Encoding.ASCII.GetString(incommingData);
-                            lock (incomingQueue)
-                            {
-                                incomingQueue.Enqueue(clientMessage);
+                            Debug.Log("=>" + clientMessage);
+                            completeMessage += clientMessage;
 
-                                Debug.Log("=> Client message received: " + clientMessage);
-                                Send("Roger Roger");
+                            byte[] msg = Encoding.ASCII.GetBytes("Roger\n");
+                            stream.Write(msg, 0, msg.Length);
+                            Debug.Log("After sending");
+                            // stream.Close();
+                            if (completeMessage[completeMessage.Length - 1] == '}')
+                            {
+                                Debug.Log("Entering if()");
+                                lock (incomingQueue)
+                                {
+                                    incomingQueue.Enqueue(completeMessage);
+                                    completeMessage = "";
+                                }
                             }
                         }
                     }
@@ -89,11 +160,12 @@ public class TcpConnection
         }
         catch (SocketException socketException)
         {
-            Debug.Log("SocketException " + socketException.ToString());
+            GameManager.gm.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.errorCli);
         }
     }
 
-    public string[] GetMessages()
+    ///
+    public override string[] GetMessages()
     {
         string[] pendingMessages = new string[0];
         lock (incomingQueue)
@@ -112,31 +184,39 @@ public class TcpConnection
     /// <summary> 	
     /// Send message to client using socket connection. 	
     /// </summary> 	
-    public void Send(string _message)
+    public override async void Send(string _message)
     {
         if (connectedTcpClient == null)
             return;
 
         try
         {
+            // remoteIp = "192.168.254.23";
+            // remoteIp = "192.168.1.28"; // Hack for sending msg to JS TCP listener
+            Debug.Log($"Send msg to {remoteIp}:{sendPort}");
+            TcpClient client = new TcpClient(remoteIp, sendPort);
+
             // Get a stream object for writing. 			
-            NetworkStream stream = connectedTcpClient.GetStream();
+            NetworkStream stream = client.GetStream();
             if (stream.CanWrite)
             {
                 // Convert string message to byte array.                 
                 byte[] serverMessageAsByteArray = Encoding.ASCII.GetBytes(_message);
                 // Write byte array to socketConnection stream.               
                 stream.Write(serverMessageAsByteArray, 0, serverMessageAsByteArray.Length);
-                Debug.Log("Server sent his message - should be received by client");
+                await Task.Delay(1000);
+                stream.Close();
             }
+            client.Close();
         }
         catch (SocketException socketException)
         {
-            Debug.Log("Socket exception: " + socketException);
+            GameManager.gm.AppendLogLine("Socket exception: " + socketException, false, eLogtype.error);
         }
     }
 
-    public void Stop()
+    ///
+    public override void Stop()
     {
         threadRunning = false;
         if (receiveThread.IsAlive)

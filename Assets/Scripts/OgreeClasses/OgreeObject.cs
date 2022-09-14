@@ -1,7 +1,8 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
 {
@@ -24,6 +25,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     [Header("Internal behavior")]
     private Coroutine updatingCoroutine = null;
+    public Vector3 originalLocalPosition = Vector3.negativeInfinity;
+    public Quaternion originalLocalRotation = Quaternion.identity;
+    public Vector3 originalLocalScale = Vector3.one;
 
     public void OnBeforeSerialize()
     {
@@ -50,11 +54,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     protected virtual void OnDestroy()
     {
-        if (category == "tenant")
-        {
-            Filters.instance.tenantsList.Remove($"<color=#{attributes["color"]}>{name}</color>");
-            Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-        }
         GameManager.gm.allItems.Remove(hierarchyName);
     }
 
@@ -119,14 +118,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             if (index > description.Count)
             {
                 if (index != description.Count + 1)
-                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", "yellow");
+                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", true, eLogtype.info);
                 description.Add(_value);
             }
             else
                 description[index - 1] = _value;
         }
         else
-            GameManager.gm.AppendLogLine("Wrong description index.", "red");
+            GameManager.gm.AppendLogLine("Wrong description index.", true, eLogtype.error);
     }
 
     ///<summary>
@@ -149,7 +148,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         if (GameManager.gm.allItems.ContainsKey(_newDomain))
             domain = _newDomain;
         else
-            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", "yellow");
+            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, eLogtype.warning);
     }
 
     ///<summary>
@@ -183,8 +182,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Update the OgreeObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
-    ///<param name="_copyAttr">True by default: allows to update attributes dictionary</param>
-    public void UpdateFromSApiObject(SApiObject _src, bool _copyAttr = true)
+    public virtual void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
         id = _src.id;
@@ -192,8 +190,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         category = _src.category;
         domain = _src.domain;
         description = _src.description;
-        if (_copyAttr)
-            attributes = _src.attributes;
+        attributes = _src.attributes;
     }
 
     ///<summary>
@@ -219,16 +216,26 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async void LoadChildren(string _level)
+    public async Task LoadChildren(string _level)
     {
-        int lvl = 0;
-        int.TryParse(_level, out lvl);
+        if (!ApiManager.instance.isInit)
+        {
+            Debug.Log("API offline");
+            return;
+        }
+
+        if (id == "")
+        {
+            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, eLogtype.warning);
+            return;
+        }
+        int.TryParse(_level, out int lvl);
         if (lvl < 0)
             lvl = 0;
 
         if (currentLod != lvl)
         {
-            DeleteChildren(lvl);
+            await DeleteChildren(lvl);
 
             string apiCall = "";
             if (lvl != 0)
@@ -236,13 +243,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
             if (!string.IsNullOrEmpty(apiCall))
             {
-                Debug.Log(apiCall);
-                await ApiManager.instance.GetObject(apiCall);
+                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
             }
 
             SetCurrentLod(lvl);
+#if !VR
             if (GameManager.gm.currentItems.Contains(gameObject))
-                GameManager.gm.detailsInputField.UpdateInputField(currentLod.ToString());
+                UiManager.instance.detailsInputField.UpdateInputField(currentLod.ToString());
+#endif
         }
     }
 
@@ -253,7 +261,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", "green");
+        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", false, eLogtype.success);
 
         if (_level != 0)
         {
@@ -270,7 +278,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     /// Delete OgreeObject children according to _askedLevel.
     ///</summary>
     ///<param name="_askedLevel">The LOD to switch on</param>
-    protected void DeleteChildren(int _askedLevel)
+    protected async Task DeleteChildren(int _askedLevel)
     {
         List<OgreeObject> objsToDel = new List<OgreeObject>();
         foreach (Transform child in transform)
@@ -285,13 +293,74 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                GameManager.gm.DeleteItem(obj.gameObject, false);
+                obj.transform.parent = null;
+                await GameManager.gm.DeleteItem(obj.gameObject, false, false);
+                if (obj.GetComponent<FocusHandler>())
+                    obj.GetComponent<FocusHandler>().isDeleted = true;
             }
+            GetComponent<FocusHandler>()?.InitHandler();
         }
         else
         {
             foreach (OgreeObject go in objsToDel)
-                go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
+                await go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
         }
+    }
+
+    ///<summary>
+    /// Reset object's transform to its starting point
+    ///</summary>
+    public void ResetTransform()
+    {
+        transform.localPosition = originalLocalPosition;
+        transform.localRotation = originalLocalRotation;
+        transform.localScale = originalLocalScale;
+    }
+
+    ///<summary>
+    /// Used to pick which component of transform you want to reset
+    ///</summary>
+    public enum TransformComponent
+    {
+        Position,
+        Rotation,
+        Scale,
+    }
+
+    ///<summary>
+    /// Reset an object's transform component to its starting value
+    ///</summary>
+    ///<param name="transformComponent">The transform component to be reset</param>
+    public void ResetTransform(TransformComponent transformComponent)
+    {
+        if (transformComponent == TransformComponent.Position)
+            transform.localPosition = originalLocalPosition;
+        if (transformComponent == TransformComponent.Rotation)
+            transform.localRotation = originalLocalRotation;
+        if (transformComponent == TransformComponent.Scale)
+            transform.localScale = originalLocalScale;
+    }
+
+    ///<summary>
+    /// Set the object's base transform
+    ///<param name="_pos">Starting position</param>
+    ///<param name="_rot">Starting rotation</param>
+    ///<param name="_scale">Starting scale</param>
+    ///</summary>
+    public void SetBaseTransform(Vector3 _pos, Quaternion _rot, Vector3 _scale)
+    {
+        originalLocalPosition = _pos;
+        originalLocalRotation = _rot;
+        originalLocalScale = _scale;
+    }
+
+    ///<summary>
+    /// Set the object's base transform
+    ///</summary>
+    public void SetBaseTransform()
+    {
+        originalLocalPosition = transform.localPosition;
+        originalLocalRotation = transform.localRotation;
+        originalLocalScale = transform.localScale;
     }
 }

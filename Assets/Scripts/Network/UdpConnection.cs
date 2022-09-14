@@ -6,21 +6,21 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public class UdpConnection
+public class UdpConnection : AConnection
 {
     private UdpClient udpClient;
 
-    private readonly Queue<string> incomingQueue = new Queue<string>();
-    Thread receiveThread;
+    private Thread receiveThread;
     private bool threadRunning = false;
     private string senderIp;
     private int senderPort;
 
-    public void StartConnection(/*string _sendIp, int _sendPort, */int _receivePort)
+    public override void StartConnection(int _receivePort, int _sendPort)
     {
         try
         {
             udpClient = new UdpClient(_receivePort);
+            senderPort = _sendPort;
         }
         catch (Exception e)
         {
@@ -28,10 +28,6 @@ public class UdpConnection
             return;
         }
         Debug.Log($"Created receiving client at ip  and port {_receivePort}");
-        // this.senderIp = _sendIp;
-        // this.senderPort = _sendPort;
-        // Debug.Log($"Set sendee at ip {_sendIp} and port {_sendPort}");
-
         StartReceiveThread();
     }
 
@@ -61,7 +57,7 @@ public class UdpConnection
                     senderIp = remoteIpEndPoint.Address.ToString();
                     senderPort = remoteIpEndPoint.Port;
                     Debug.Log($"=> Received msg from {remoteIpEndPoint.Address.ToString()}:{remoteIpEndPoint.Port}: {returnData}");
-                    
+
                     // Then, send automatic message (debug).
                     Send("Roger Roger");
                 }
@@ -79,7 +75,7 @@ public class UdpConnection
         }
     }
 
-    public string[] GetMessages()
+    public override string[] GetMessages()
     {
         string[] pendingMessages = new string[0];
         lock (incomingQueue)
@@ -95,7 +91,7 @@ public class UdpConnection
         return pendingMessages;
     }
 
-    public void Send(string _message)
+    public override void Send(string _message)
     {
         Debug.Log(String.Format($"Send msg to ip:{senderIp}:{senderPort} msg: {_message}"));
         IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(senderIp), senderPort);
@@ -103,7 +99,7 @@ public class UdpConnection
         udpClient.Send(sendBytes, sendBytes.Length, serverEndpoint);
     }
 
-    public void Stop()
+    public override void Stop()
     {
         threadRunning = false;
         if (receiveThread.IsAlive)

@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class CustomerGenerator : MonoBehaviour
 {
-    public static CustomerGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Create OgreeObject of "tenant" category from given data.
     ///</summary>
@@ -23,17 +13,13 @@ public class CustomerGenerator : MonoBehaviour
     {
         if (GameManager.gm.allItems.Contains(_tn.name))
         {
-            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", true, eLogtype.error);
             return null;
         }
 
         GameObject newTenant = new GameObject(_tn.name);
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.UpdateFromSApiObject(_tn);
-
-        Filters.instance.AddIfUnknown(Filters.instance.tenantsList, $"<color=#{tenant.attributes["color"]}>{tenant.name}</color>");
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownTenants, Filters.instance.tenantsList);
-
         tenant.UpdateHierarchyName();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
@@ -51,14 +37,14 @@ public class CustomerGenerator : MonoBehaviour
         Transform tn = Utils.FindParent(_parent, _si.parentId);
         if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
         {
-            GameManager.gm.AppendLogLine($"Parent tenant not found", "red");
+            GameManager.gm.AppendLogLine($"Parent tenant not found", true, eLogtype.error);
             return null;
         }
 
         string hierarchyName = $"{tn.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 

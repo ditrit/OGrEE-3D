@@ -14,12 +14,6 @@ public class OnUnFocusEvent : CustomEvent
 
 public class OnSelectItemEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
-}
-
-public class OnDeselectItemEvent : CustomEvent
-{
-    public GameObject obj { get; set; }
 }
 
 public class OnMouseHoverEvent : CustomEvent
@@ -47,3 +41,26 @@ public class ChangeCursorEvent : CustomEvent
     public CursorChanger.CursorType type;
 }
 
+public class UpdateTenantEvent : CustomEvent
+{
+    public string name;
+}
+
+
+public class ToggleLabelEvent : CustomEvent
+{
+    public bool value;
+}
+
+public class ChangeOrientationEvent : CustomEvent
+{
+    public bool front;
+}
+public class EditModeInEvent : CustomEvent
+{
+    public GameObject obj { get; set; }
+}
+public class EditModeOutEvent : CustomEvent
+{
+    public GameObject obj { get; set; }
+}

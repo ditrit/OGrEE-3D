@@ -16,6 +16,7 @@ public class CameraControl : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI infosTMP = null;
+    [SerializeField] private TextMeshPro infosTMPVR = null;
 
     [Header("Parameters")]
     [Range(5, 20)]
@@ -51,8 +52,14 @@ public class CameraControl : MonoBehaviour
         if (humanMode)
             FPSControls();
         else
-            FreeModeControls();
-
+        {
+            try
+            {
+                FreeModeControls();
+            }
+            catch (System.Exception)
+            { }
+        }
         if (isReady && targetPos.Count > 0)
         {
             // Code for Waiting targetPos.y seconds
@@ -156,14 +163,14 @@ public class CameraControl : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.Rotate(-Input.GetAxis("Vertical") * Time.deltaTime * rotationSpeed, 0, 0);
             else
-                transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime * moveSpeed);
+                transform.Translate(Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime * Vector3.forward);
         }
         if (Input.GetAxis("Horizontal") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * rotationSpeed, 0, Space.World);
             else
-                transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * Time.deltaTime * moveSpeed);
+                transform.Translate(Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime * Vector3.right);
         }
 
         // Right click
@@ -174,16 +181,15 @@ public class CameraControl : MonoBehaviour
         }
         // Scrollwheel click
         else if (Input.GetMouseButton(2))
-            transform.Translate(new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0) * Time.deltaTime * -moveSpeed);
+            transform.Translate(-moveSpeed * Time.deltaTime * new Vector3(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0));
         // Scrollwheel
         else if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-            RaycastHit hit;
             if (Physics.Raycast(transform.position,
-                                transform.GetChild(0).GetComponent<Camera>().ScreenPointToRay(Input.mousePosition).direction, out hit))
-                transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * hit.distance);
+                                transform.GetChild(0).GetComponent<Camera>().ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit))
+                transform.Translate(hit.distance * Input.GetAxis("Mouse ScrollWheel") * Vector3.forward);
             else
-                transform.Translate(Vector3.forward * Input.GetAxis("Mouse ScrollWheel") * moveSpeed);
+                transform.Translate(Input.GetAxis("Mouse ScrollWheel") * moveSpeed * Vector3.forward);
         }
     }
 
@@ -197,14 +203,14 @@ public class CameraControl : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.GetChild(0).Rotate(-Input.GetAxis("Vertical") * Time.deltaTime * rotationSpeed, 0, 0);
             else
-                transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * Time.deltaTime * (moveSpeed / 2));
+                transform.Translate((moveSpeed / 2) * Input.GetAxis("Vertical") * Time.deltaTime * Vector3.forward);
         }
         if (Input.GetAxis("Horizontal") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * rotationSpeed, 0);
             else
-                transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * Time.deltaTime * (moveSpeed / 2));
+                transform.Translate((moveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
         }
 
         if (Input.GetMouseButton(1))
@@ -231,10 +237,15 @@ public class CameraControl : MonoBehaviour
         if (rotY < 0 || rotY > 180)
             rotY -= 360;
 
-        infosTMP.text = $"Camera pos: [{transform.localPosition.x.ToString("0.##")};{transform.localPosition.z.ToString("0.##")};{transform.localPosition.y.ToString("0.##")}]";
+        infosTMP.text = $"Camera pos: [{transform.localPosition.x:0.##};{transform.localPosition.z:0.##};{transform.localPosition.y:0.##}]";
+        infosTMPVR.text = $"Camera pos: [{transform.position.x:0.##};{transform.position.z:0.##};{transform.position.y:0.##}]";
         if (!isReady)
+        {
             infosTMP.text += " (Waiting)";
-        infosTMP.text += $"\nCamera angle: [{rotX.ToString("0")};{rotY.ToString("0")}]";
+            infosTMPVR.text += " (Waiting)";
+        }
+        infosTMP.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
+        infosTMPVR.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
     }
 
     ///<summary>

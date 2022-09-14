@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Server : MonoBehaviour
@@ -15,59 +11,61 @@ public class Server : MonoBehaviour
         tcp
     }
 
+    CliParser parser = new CliParser();
+
     [Header("Client config")]
     [SerializeField] private eConnectionType protocol;
-    private UdpConnection udpConnection;
-    private TcpConnection tcpConnection;
+    private AConnection connection;
 
     [SerializeField] private int receivePort;
-    // private string sendIP; // 192.168.1.28
-    // private int sendPort; // 5600 ?
+    [SerializeField] private int sendPort;
+    public int timer = 0;
 
     [Header("Debug")]
     [SerializeField] private bool triggerSend = false;
-    [SerializeField] private string msg;
+    [SerializeField] private string debugMsg;
 
-    private void Start()
+    public void StartServer()
     {
         if (protocol == eConnectionType.udp)
-        {
-            udpConnection = new UdpConnection();
-            udpConnection.StartConnection(/*sendIP, sendPort, */receivePort);
-        }
+            connection = new UdpConnection();
         else if (protocol == eConnectionType.tcp)
-        {
-            tcpConnection = new TcpConnection();
-            tcpConnection.StartConnection(receivePort);
-        }
+            connection = new TcpConnection();
+
+        connection.StartConnection(receivePort, sendPort);
     }
 
-    private void Update()
+    private async void Update()
     {
         // Debug from Editor
         if (triggerSend)
         {
             triggerSend = false;
-
-            if (protocol == eConnectionType.udp)
-                udpConnection.Send(msg);
-            else if (protocol == eConnectionType.tcp)
-                tcpConnection.Send(msg);
+            connection.Send(debugMsg);
         }
 
-        if (tcpConnection.incomingQueue.Count > 0)
+        if (connection.incomingQueue.Count > 0)
         {
-            string msg = tcpConnection.incomingQueue.Dequeue();
-            GameManager.gm.AppendLogLine(msg);
+            string msg = connection.incomingQueue.Dequeue();
+            await Task.Delay(timer);
+            GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
+            await parser.DeserializeInput(msg);
         }
     }
 
     private void OnDestroy()
     {
-        if (protocol == eConnectionType.udp)
-            udpConnection.Stop();
-        else if (protocol == eConnectionType.tcp)
-            tcpConnection.Stop();
+        connection.Stop();
     }
+
+    ///<summary>
+    /// Send a message to the client.
+    ///</summary>
+    ///<param name="_msg">The message to send</param>
+    public void Send(string _msg)
+    {
+        connection.Send(_msg + "\n");
+    }
+
 
 }

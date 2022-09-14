@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json.Utilities;
+
+
 
 public class ApiManager : MonoBehaviour
 {
@@ -41,6 +43,13 @@ public class ApiManager : MonoBehaviour
         public ReadFromJson.STemplate data;
     }
 
+    private struct SRoomResp
+    {
+        public string message;
+        public string status;
+        public ReadFromJson.SRoomFromJson data;
+    }
+
     public static ApiManager instance;
 
     private HttpClient httpClient = new HttpClient();
@@ -52,10 +61,13 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
-    ReadFromJson rfJson = new ReadFromJson();
+    private ReadFromJson rfJson = new ReadFromJson();
+    public bool isRequestGood = false;
 
     private void Awake()
     {
+        AotHelper.EnsureList<ReadFromJson.STemplateChild>();
+        AotHelper.EnsureList<int>();
         if (!instance)
             instance = this;
         else
@@ -81,9 +93,9 @@ public class ApiManager : MonoBehaviour
     public async Task Initialize(string _serverUrl, string _token)
     {
         if (string.IsNullOrEmpty(_serverUrl))
-            GameManager.gm.AppendLogLine("Failed to connect with API: no url", "red");
+            GameManager.gm.AppendLogLine("Failed to connect with API: no url", true, eLogtype.errorApi);
         else if (string.IsNullOrEmpty(_token))
-            GameManager.gm.AppendLogLine("Failed to connect with API: no token", "red");
+            GameManager.gm.AppendLogLine("Failed to connect with API: no token", true, eLogtype.errorApi);
         else
         {
             server = _serverUrl + "/api";
@@ -93,23 +105,25 @@ public class ApiManager : MonoBehaviour
                 string response = await httpClient.GetStringAsync($"{_serverUrl}/api/token/valid");
                 isReady = true;
                 isInit = true;
-                GameManager.gm.AppendLogLine("Connected to API", "green");
+                GameManager.gm.AppendLogLine("Connected to API", true, eLogtype.successApi);
             }
             catch (HttpRequestException e)
             {
-                GameManager.gm.AppendLogLine($"Error while connecting to API: {e.Message}", "red");
+                GameManager.gm.AppendLogLine($"Error while connecting to API: {e.Message}", true, eLogtype.errorApi);
             }
         }
     }
 
     ///<summary>
-    /// Create an PUT request from _input.
+    /// Create a PUT request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to put</param>
     public void CreatePutRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest();
-        request.type = "put";
+        SRequest request = new SRequest
+        {
+            type = "put"
+        };
 
         SApiObject apiObj = new SApiObject(_obj);
         request.path = $"/{apiObj.category}s/{apiObj.id}";
@@ -118,14 +132,33 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Create a GET request.
+    ///</summary>
+    ///<param name="_obj">The OgreeObject to put</param>
+    public void CreateGetRequest(string _tenants)
+    {
+        SRequest request = new SRequest
+        {
+            type = "get",
+
+            path = $"/tenants/{_tenants}/sites",
+            json = ""
+        };
+        requestsToSend.Enqueue(request);
+    }
+
+
+    ///<summary>
     /// Create an DELETE request from _input.
     ///</summary>
     ///<param name="_obj">The OgreeObject to delete</param>
     public void CreateDeleteRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest();
-        request.type = "delete";
-        request.path = $"/{_obj.category}s/{_obj.id}";
+        SRequest request = new SRequest
+        {
+            type = "delete",
+            path = $"/{_obj.category}s/{_obj.id}"
+        };
         requestsToSend.Enqueue(request);
     }
 
@@ -143,11 +176,11 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PutAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
+            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
         }
 
         isReady = true;
@@ -166,11 +199,11 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.DeleteAsync(fullPath);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
+            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
         }
 
         isReady = true;
@@ -178,32 +211,82 @@ public class ApiManager : MonoBehaviour
 
     ///<summary>
     /// Avoid requestsToSend 
-    /// Get an Object from the api. Create an ogreeObject with response.
+    /// Get an Object from the api. Call a Task callback with the response.
     ///</summary>
     ///<param name="_input">The path to add a base server for API GET request</param>
-    public async Task GetObject(string _input)
+    ///<param name="_callback">Function to call to use GET response</param>
+    public async Task GetObject(string _input, Func<string, Task> _callback)
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warning);
             return;
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+
         string fullPath = $"{server}/{_input}";
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.gm.AppendLogLine(response);
-            if (response.Contains("successfully got query for object") || response.Contains("successfully got object"))
-                CreateItemFromJson(response);
-            else if (response.Contains("successfully got obj_template"))
-                CreateTemplateFromJson(response);
-            else
-                GameManager.gm.AppendLogLine("Unknown object received", "red");
+            GameManager.gm.AppendLogLine($"{response}", false, eLogtype.infoApi);
+            await _callback(response);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         }
+    }
+    
+    public async Task<T> GetObject<T>(string _input, Func<string, Task<T>> _callback)
+    {
+        if (!isInit)
+        {
+            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
+            return default;
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+
+        string fullPath = $"{server}/{_input}";
+        try
+        {
+            string response = await httpClient.GetStringAsync(fullPath);
+            GameManager.gm.AppendLogLine($"From API: {response}", false, eLogtype.infoApi);
+            return await _callback(response);
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            return default;
+        }
+    }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Create an ogreeObject with response.
+    ///</summary>
+    ///<param name="_response">The response for API GET request</param>
+    ///<returns>A string containing the parent id of the first object created by the _response</returns>
+    public async Task<List<SApiObject>> GetAllSApiObject(string _response)
+    {
+        List<SApiObject> Objects = new List<SApiObject>();
+
+        if (Regex.IsMatch(_response, "\"data\":{\"objects\":\\["))
+        {
+            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_response);
+            foreach (SApiObject obj in resp.data.objects)
+                Objects.Add(obj);
+        }
+        else
+        {
+            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_response);
+            Utils.ParseNestedObjects(Objects, resp.data);
+        }
+
+        if (Objects.Count > 0)
+            return Objects;
+        return default;
     }
 
     ///<summary>
@@ -215,7 +298,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
             return;
         }
         string json = JsonConvert.SerializeObject(_obj);
@@ -227,16 +310,16 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
+            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                CreateItemFromJson(responseStr);
+                await CreateItemFromJson(responseStr);
             else
-                GameManager.gm.AppendLogLine($"Fail to post on server", "red");
+                GameManager.gm.AppendLogLine($"Fail to post on server", false, eLogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
         }
     }
 
@@ -244,33 +327,50 @@ public class ApiManager : MonoBehaviour
     /// Avoid requestsToSend 
     /// Post an object to the api. Then, create it from server's response.
     ///</summary>
-    ///<param name="_obj">The serialized STemplate to post</param>
-    public async Task PostTemplateObject(string _json)
+    ///<param name="_json">The serialized STemplate to post</param>
+    ///<param name="_type">obj or room</param>
+    public async Task PostTemplateObject(string _json, string _type)
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", "yellow");
+            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
             return;
         }
         Debug.Log(_json);
-        string fullPath = $"{server}/obj-templates";
+        string fullPath = $"{server}/{_type}-templates";
 
         StringContent content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json");
         try
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr);
+            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                CreateTemplateFromJson(responseStr);
+                await CreateTemplateFromJson(responseStr, _type);
             else
-                GameManager.gm.AppendLogLine($"Fail to post on server", "red");
+                GameManager.gm.AppendLogLine($"Fail to post on server", false, eLogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, "red");
+            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
         }
+    }
+
+    ///<summary>
+    /// Call the CreateXFromJson() method corresponding to the given API response.
+    ///</summary>
+    ///<param name="_input">The API response to use</param>
+    public async Task DrawObject(string _input)
+    {
+        if (_input.Contains("successfully got query for object") || _input.Contains("successfully got object"))
+            await CreateItemFromJson(_input);
+        else if (_input.Contains("successfully got obj_template"))
+            await CreateTemplateFromJson(_input, "obj");
+        else if (_input.Contains("successfully got room_template"))
+            await CreateTemplateFromJson(_input, "room");
+        else
+            GameManager.gm.AppendLogLine("Unknown object received", true, eLogtype.errorApi);
     }
 
     ///<summary>
@@ -278,7 +378,7 @@ public class ApiManager : MonoBehaviour
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private async void CreateItemFromJson(string _json)
+    private async Task CreateItemFromJson(string _json)
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
         List<SApiObject> logicalObjects = new List<SApiObject>();
@@ -291,100 +391,35 @@ public class ApiManager : MonoBehaviour
         }
         else
         {
-            // Debug.Log(_json);
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            // if (resp.data.children == null)
-            //     physicalObjects.Add(resp.data);
-            // else
-                ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
         }
 
         foreach (SApiObject obj in physicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            if ((obj.category == "rack" || obj.category == "device") && !string.IsNullOrEmpty(obj.attributes["template"])
-                && !GameManager.gm.objectTemplates.ContainsKey(obj.attributes["template"]))
-            {
-                Debug.Log("Get template from API");
-                await GetObject($"obj-templates/{obj.attributes["template"]}");
-            }
-
-            switch (obj.category)
-            {
-                case "tenant":
-                    CustomerGenerator.instance.CreateTenant(obj);
-                    break;
-                case "site":
-                    CustomerGenerator.instance.CreateSite(obj);
-                    break;
-                case "building":
-                    BuildingGenerator.instance.CreateBuilding(obj);
-                    break;
-                case "room":
-                    BuildingGenerator.instance.CreateRoom(obj);
-                    break;
-                case "rack":
-                    if (obj.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateRack(obj);
-                    else
-                        ObjectGenerator.instance.CreateRack(obj, null, false);
-                    break;
-                case "device":
-                    if (obj.attributes["template"] == "")
-                        ObjectGenerator.instance.CreateDevice(obj);
-                    else
-                        ObjectGenerator.instance.CreateDevice(obj, null, false);
-                    break;
-                case "corridor":
-                    ObjectGenerator.instance.CreateCorridor(obj);
-                    break;
-            }
-        }
         foreach (SApiObject obj in logicalObjects)
-        {
-            if (obj.category != "tenant" && !GameManager.gm.allItems.Contains(obj.domain))
-                await GetObject($"tenants?name={obj.domain}");
+            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-            switch (obj.category)
-            {
-                case "group":
-                    ObjectGenerator.instance.CreateGroup(obj);
-                    break;
-            }
-        }
-        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", "green");
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", false, eLogtype.successApi);
     }
 
     ///<summary>
-    /// Use the given template json to instantiate an object template.
+    /// Use the given template json to instantiate an object or a room template.
     ///</summary>
     ///<param name="_json">The json given by the API</param>
-    private void CreateTemplateFromJson(string _json)
+    private async Task CreateTemplateFromJson(string _json, string _type)
     {
-        STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-        rfJson.CreateObjectTemplate(resp.data);
-    }
-
-    ///<summary>
-    /// Parse a nested SApiObject and add each item to a given list.
-    ///</summary>
-    ///<param name="_physicalList">The list of physical objects to complete</param>
-    ///<param name="_logicalList">The list of logical objects to complete</param>
-    ///<param name="_src">The head of nested SApiObjects</param>
-    private void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
-    {
-        if (_src.category == "group")
-            _logicalList.Add(_src);
-        else
-            _physicalList.Add(_src);
-        if (_src.children != null)
+        if (_type == "obj")
         {
-            foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_physicalList, _logicalList, obj);
+            STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
+            await rfJson.CreateObjectTemplate(resp.data);
         }
+        else if (_type == "room")
+        {
+            SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
+            rfJson.CreateRoomTemplate(resp.data);
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
-
 }

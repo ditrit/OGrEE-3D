@@ -18,6 +18,16 @@ public class DisplayObjectData : MonoBehaviour
     private bool isItalic = false;
     private string color = "ffffff";
 
+    private void Start()
+    {
+        EventManager.Instance.AddListener<ToggleLabelEvent>(ToggleLabel);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
+    }
+
     ///<summary>
     /// Assign labels references with children of a Device prefab
     ///</summary>
@@ -49,7 +59,7 @@ public class DisplayObjectData : MonoBehaviour
             else if (oObj.attributes["sizeUnit"] == "cm")
                 size /= 100;
 
-            float height = float.Parse(oObj.attributes["height"]);
+            float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == "U")
                 height *= GameManager.gm.uSize;
             else if (oObj.attributes["heightUnit"] == "mm")
@@ -151,13 +161,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.gm.AppendLogLine("Wrong description index", "yellow");
+                        GameManager.gm.AppendLogLine("Wrong description index", true, eLogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", "yellow");
+                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, eLogtype.warning);
                     return;
                 }
             }
@@ -209,6 +219,16 @@ public class DisplayObjectData : MonoBehaviour
         foreach (TextMeshPro tmp in usedLabels)
             tmp.enabled = _value;
     }
+    private void ToggleLabel(ToggleLabelEvent _e)
+    {
+        // Ignore groups & slots
+        if (GetComponent<Slot>() || /*(*/GetComponent<Group>() /*&& !GetComponent<Group>().isDisplayed)*/)
+            return;
+
+        if (GameManager.gm.focus.Count == 0 || GameManager.gm.focus.Contains(gameObject)
+            || GameManager.gm.focus.Contains(transform.parent.gameObject))
+            ToggleLabel(_e.value);
+    }
 
     ///<summary>
     /// Set Font attributes (bold, italic, color).
@@ -230,6 +250,7 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Unknown labelFont attribute", "yellow");
+            GameManager.gm.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
     }
+
 }

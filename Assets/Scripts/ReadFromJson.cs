@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Threading.Tasks;
 
 public class ReadFromJson
 {
@@ -85,11 +86,7 @@ public class ReadFromJson
 
     #endregion
 
-    ///<summary>
-    /// Store room data in GameManager.roomTemplates.
-    ///</summary>
-    ///<param name="_json">Json to parse</param>
-    public void CreateRoomTemplate(string _json)
+    public void CreateRoomTemplateJson(string _json)
     {
         SRoomFromJson roomData;
         try
@@ -98,21 +95,29 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
+        CreateRoomTemplate(roomData);
+    }
 
-        if (GameManager.gm.roomTemplates.ContainsKey(roomData.slug))
+    ///<summary>
+    /// Store room data in GameManager.roomTemplates.
+    ///</summary>
+    ///<param name="_json">Json to parse</param>
+    public void CreateRoomTemplate(SRoomFromJson _data)
+    {
+        if (GameManager.gm.roomTemplates.ContainsKey(_data.slug))
             return;
 
-        GameManager.gm.roomTemplates.Add(roomData.slug, roomData);
+        GameManager.gm.roomTemplates.Add(_data.slug, _data);
     }
 
     ///<summary>
     /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public void CreateObjTemplateJson(string _json)
+    public async void CreateObjTemplateJson(string _json)
     {
         STemplate data;
         try
@@ -121,36 +126,38 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", "red");
+            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
-        CreateObjectTemplate(data);
+        await CreateObjectTemplate(data);
     }
 
     ///<summary>
     /// Create a rack or a device from received data and add it to correct GameManager list
     ///</summary>
     ///<param name="_data">The data template</param>
-    public void CreateObjectTemplate(STemplate _data)
+    public async Task CreateObjectTemplate(STemplate _data)
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", "red");
+            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
             return;
         }
         if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
             return;
         }
 
         // Build SApiObject
-        SApiObject obj = new SApiObject();
-        obj.description = new List<string>();
-        obj.attributes = new Dictionary<string, string>();
+        SApiObject obj = new SApiObject
+        {
+            description = new List<string>(),
+            attributes = new Dictionary<string, string>(),
 
-        obj.name = _data.slug;
-        obj.category = _data.category;
+            name = _data.slug,
+            category = _data.category
+        };
         obj.description.Add(_data.description);
         if (obj.category == "rack")
         {
@@ -189,17 +196,17 @@ public class ReadFromJson
         OgreeObject newObject;
         if (obj.category == "rack")
         {
-            newObject = ObjectGenerator.instance.CreateRack(obj, GameManager.gm.templatePlaceholder);
+            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder).Result;
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = ObjectGenerator.instance.CreateDevice(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0)).Result;
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
-                ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
 
@@ -309,24 +316,26 @@ public class ReadFromJson
             obj.category = "device";
             obj.domain = _parent.domain;
             obj.description = new List<string>();
-            obj.attributes = new Dictionary<string, string>();
-            obj.attributes["deviceType"] = _data.type;
+            obj.attributes = new Dictionary<string, string>
+            {
+                ["deviceType"] = _data.type
+            };
             if (_data.attributes != null)
             {
                 foreach (KeyValuePair<string, string> kvp in _data.attributes)
                     obj.attributes[kvp.Key] = kvp.Value;
             }
             obj.UpdateHierarchyName();
+            obj.SetBaseTransform();
         }
 
         DisplayObjectData dod = go.GetComponent<DisplayObjectData>();
-        // dod.Setup();
         dod.PlaceTexts(_data.labelPos);
         dod.SetLabel("#name");
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
-        Color myColor = new Color();
+        Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
             ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
         else

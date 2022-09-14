@@ -12,23 +12,28 @@ public class ConfigLoader
     {
         public string verbose;
         public string fullscreen;
+        public string cachePath;
+        public float cacheLimitMo;
         public Dictionary<string, string> textures;
+        public Dictionary<string, string> colors;
         public string api_url;
         public string api_token;
     }
 
     private SConfig config;
     private bool verbose = false;
+    private string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file, look for CLI overrides and starts with --file if given.
     ///</summary>
     public void LoadConfig()
     {
-        config = LoadConfigFile();
+        
+        config = LoadConfigFile(out string fileType);
         OverrideConfig();
-
-        ApplyConfig(config);
+        ApplyConfig();
+        GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
@@ -87,18 +92,18 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private SConfig LoadConfigFile()
+    private SConfig LoadConfigFile(out string _fileType)
     {
         try
         {
             StreamReader jsonCongif = File.OpenText("OGrEE-3D_Data/config.json");
-            GameManager.gm.AppendLogLine("Load custom config file", "green");
+            _fileType = "custom";
             return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
         }
         catch
         {
             TextAsset ResourcesCongif = Resources.Load<TextAsset>("config");
-            GameManager.gm.AppendLogLine("Load default config file", "green");
+            _fileType = "default";
             return JsonConvert.DeserializeObject<SConfig>(ResourcesCongif.ToString());
         }
     }
@@ -106,12 +111,12 @@ public class ConfigLoader
     ///<summary>
     /// For each SConfig value, call corresponding method.
     ///</summary>
-    ///<param name="_config">The SConfig to apply</param>
-    private void ApplyConfig(SConfig _config)
+    private void ApplyConfig()
     {
-        verbose = (_config.verbose == "true");
+        verbose = (config.verbose == "true");
 
-        FullScreenMode((_config.fullscreen == "true"));
+        CreateCacheDir();
+        FullScreenMode((config.fullscreen == "true"));
     }
 
     ///<summary> 
@@ -121,8 +126,59 @@ public class ConfigLoader
     private void FullScreenMode(bool _value)
     {
         if (verbose)
-            GameManager.gm.AppendLogLine($"Fullscreen: {_value}");
+            GameManager.gm.AppendLogLine($"Fullscreen: {_value}", false);
         Screen.fullScreen = _value;
+    }
+
+    ///<summary>
+    /// Create a cache folder in the given directory.
+    ///</summary>
+    private void CreateCacheDir()
+    {
+        if (!string.IsNullOrEmpty(config.cachePath) && !config.cachePath.EndsWith("/"))
+            config.cachePath += "/";
+        string fullPath = config.cachePath + cacheDirName;
+        try
+        {
+            if (!Directory.Exists(fullPath))
+            {
+                Directory.CreateDirectory(fullPath);
+                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
+            }
+        }
+        catch (IOException ex)
+        {
+            Debug.LogError(ex.Message);
+        }
+    }
+
+    ///<summary>
+    /// Get the path of the cache directory from config.
+    ///</summary>
+    ///<returns>The path of the cache directory</returns>
+    public string GetCacheDir()
+    {
+        return config.cachePath + cacheDirName;
+    }
+
+    ///<summary>
+    /// Get the limit size in Mo of the cache from config.
+    ///</summary>
+    ///<returns>The limit size (Mo) of the cache</returns>
+    public float GetCacheLimit()
+    {
+        return config.cacheLimitMo;
+    }
+
+    ///<summary>
+    /// Save API url and token in config.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        config.api_url = _url;
+        config.api_token = _token;
     }
 
     ///<summary>
@@ -131,10 +187,6 @@ public class ConfigLoader
     ///<returns>The value of ApiManager.isInit</returns>
     public async Task<bool> ConnectToApi()
     {
-#if API_DEBUG
-        config.api_url = "https://ogree.chibois.net";
-        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY0MTcxNzEyMzI2MzY2MDAzM30.TfF8sYnWvIS3nr5lncXShDnkRAVirALJxKtFI9P9Y20";
-#endif
         await ApiManager.instance.Initialize(config.api_url, config.api_token);
         return ApiManager.instance.isInit;
     }
@@ -154,19 +206,42 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", "red");
+                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
             else
                 GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
         if (!GameManager.gm.textures.ContainsKey("perf22"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf22", "yellow");
+            GameManager.gm.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
             GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.gm.textures.ContainsKey("perf29"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf29", "yellow");
+            GameManager.gm.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
             GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
+    }
+
+    ///<summary>
+    /// Get registered API url.
+    ///</summary>
+    public string GetApiUrl()
+    {
+        return config.api_url;
+    }
+
+    ///<summary>
+    /// Get a color in hexadecimal format from loaded colors.
+    ///</summary>
+    ///<param name="_askedColor">The color key to get</param>
+    ///<returns>The color value</returns>
+    public string GetColor(string _askedColor)
+    {
+        foreach (KeyValuePair<string, string> kvp in config.colors)
+        {
+            if (kvp.Key == _askedColor)
+                return kvp.Value;
+        }
+        return null;
     }
 }

@@ -6,16 +6,6 @@ using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    public static BuildingGenerator instance;
-
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
-
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
@@ -27,13 +17,13 @@ public class BuildingGenerator : MonoBehaviour
         Transform si = Utils.FindParent(_parent, _bd.parentId);
         if (!si || si.GetComponent<OgreeObject>().category != "site")
         {
-            GameManager.gm.AppendLogLine($"Parent site not found", "red");
+            GameManager.gm.AppendLogLine($"Parent site not found", true, eLogtype.error);
             return null;
         }
         string hierarchyName = $"{si.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -77,13 +67,13 @@ public class BuildingGenerator : MonoBehaviour
         Transform bd = Utils.FindParent(_parent, _ro.parentId);
         if (!bd || bd.GetComponent<OgreeObject>().category != "building")
         {
-            GameManager.gm.AppendLogLine($"Parent building not found", "red");
+            GameManager.gm.AppendLogLine($"Parent building not found", true, eLogtype.error);
             return null;
         }
         string hierarchyName = $"{bd.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", "yellow");
+            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -138,11 +128,6 @@ public class BuildingGenerator : MonoBehaviour
         // Set UI room's name
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
-
-        // Add room to GUI room filter
-        Filters.instance.AddIfUnknown(Filters.instance.roomsList, newRoom.name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
-
         room.UpdateZonesColor();
 
         string hn = room.UpdateHierarchyName();
@@ -192,7 +177,7 @@ public class BuildingGenerator : MonoBehaviour
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
         }
-
+        TeleportHandler.instance.lastRoomLoaded = room;
         return room;
     }
 

@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class Sensor : OObject
 {
+    ///<summary>
+    /// Check for a _param attribute "temperature" and assign _value to it.
+    ///</summary>
+    ///<param name="_param">The attribute to modify</param>
+    ///<param name="_value">The value to assign</param>
     public override void SetAttribute(string _param, string _value)
     {
         if (_param == "temperature")
@@ -14,7 +19,22 @@ public class Sensor : OObject
     }
 
     ///<summary>
-    ///
+    /// Update the Sensor attributes with given SApiObject.
+    ///</summary>
+    ///<param name="_src">The SApiObject used to update attributes</param>
+    public override void UpdateFromSApiObject(SApiObject _src)
+    {
+        name = _src.name;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        domain = _src.domain;
+        description = _src.description;
+        attributes = _src.attributes;
+    }
+
+    ///<summary>
+    /// Change the sensor color regarding the "temperature" attribute.
     ///</summary>
     public void UpdateSensorColor()
     {

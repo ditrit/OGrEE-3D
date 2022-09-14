@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Selectable
+  - UHelper
   layers:
   - Default
   - TransparentFX
@@ -37,7 +38,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Spatial Awareness
   m_SortingLayers:
   - name: Default
     uniqueID: 0

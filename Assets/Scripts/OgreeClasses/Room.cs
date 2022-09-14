@@ -17,13 +17,6 @@ public class Room : Building
     public Transform tilesEdges;
     public TextMeshPro nameText;
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        Filters.instance.roomsList.Remove(name);
-        Filters.instance.UpdateDropdownFromList(Filters.instance.dropdownRooms, Filters.instance.roomsList);
-    }
-
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
@@ -33,7 +26,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.gm.AppendLogLine("Can't modify areas if room has a rack in it.", "yellow");
+            GameManager.gm.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, eLogtype.error);
             return;
         }
         tilesEdges.gameObject.SetActive(true);
@@ -67,7 +60,7 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("tilesName value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("tilesName value has to be true or false", true, eLogtype.warning);
             return;
         }
         else
@@ -117,12 +110,12 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("tilesColor value has to be true or false", "yellow");
+            GameManager.gm.AppendLogLine("tilesColor value has to be true or false", true, eLogtype.warning);
             return;
         }
         if (!GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.gm.AppendLogLine($"There is no template for {name}", "yellow");
+            GameManager.gm.AppendLogLine($"There is no template for {name}", false, eLogtype.warning);
             return;
         }
 
@@ -218,9 +211,7 @@ public class Room : Building
 
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
-                {
                     GenerateTileName(_root, pos, tileID);
-                }
                 else if (_mode == "color")
                     GenerateTileColor(_root, pos, tileID);
             }
@@ -298,11 +289,13 @@ public class Room : Building
                     Renderer rend = tile.GetComponent<Renderer>();
                     if (GameManager.gm.textures.ContainsKey(tileData.texture))
                     {
-                        rend.material = new Material(GameManager.gm.perfMat);
-                        rend.material.mainTexture = GameManager.gm.textures[tileData.texture];
+                        rend.material = new Material(GameManager.gm.perfMat)
+                        {
+                            mainTexture = GameManager.gm.textures[tileData.texture]
+                        };
                     }
                     else
-                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", "yellow");
+                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", false, eLogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -404,9 +397,21 @@ public class Room : Building
     public void UpdateZonesColor()
     {
         OgreeObject site = transform.parent.parent.GetComponentInParent<OgreeObject>();
-        usableZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["usableColor"]);
-        reservedZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["reservedColor"]);
-        technicalZone.GetComponent<Renderer>().material.color = ParseColor(site.attributes["technicalColor"]);
+
+        if (site.attributes.ContainsKey("usableColor"))
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["usableColor"]);
+        else
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("usableZone"));
+
+        if (site.attributes.ContainsKey("reservedColor"))
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["reservedColor"]);
+        else
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("reservedZone"));
+
+        if (site.attributes.ContainsKey("technicalColor"))
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(site.attributes["technicalColor"]);
+        else
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseColor(GameManager.gm.configLoader.GetColor("technicalZone"));
     }
 
     ///<summary>
@@ -427,7 +432,7 @@ public class Room : Building
             SetAreas(resDim, techDim);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", "red");
+            GameManager.gm.AppendLogLine("Syntax error", true, eLogtype.error);
     }
 
     ///<summary>
@@ -438,7 +443,7 @@ public class Room : Building
     {
         if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
         {
-            GameManager.gm.AppendLogLine("Syntax error","red");
+            GameManager.gm.AppendLogLine("Syntax error", true, eLogtype.error);
             return;
         }
 
@@ -446,9 +451,11 @@ public class Room : Building
         Vector2 startPos = Utils.ParseVector2(data[0]);
         Vector2 endPos = Utils.ParseVector2(data[1]);
 
-        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator();
-        separator.startPosXYm = new float[] { startPos.x, startPos.y };
-        separator.endPosXYm = new float[] { endPos.x, endPos.y };
+        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator
+        {
+            startPosXYm = new float[] { startPos.x, startPos.y },
+            endPosXYm = new float[] { endPos.x, endPos.y }
+        };
         AddSeparator(separator);
     }
 
@@ -491,16 +498,4 @@ public class Room : Building
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
 
     }
-
-    ///<summary>
-    /// Set a Color with an hexadecimal value
-    ///</summary>
-    ///<param name="_hex">The hexadecimal value, without '#'</param>
-    private Color ParseColor(string _hex)
-    {
-        Color newColor;
-        ColorUtility.TryParseHtmlString($"#{_hex}", out newColor);
-        return newColor;
-    }
-
 }
