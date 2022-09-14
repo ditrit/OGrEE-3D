@@ -73,7 +73,7 @@ public class TcpConnection : AConnection
         byte[] msgBuffer = new byte[size];
         netStream.Read(msgBuffer, 0, size);
         string msg = Encoding.UTF8.GetString(msgBuffer);
-        GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
+        Debug.Log($"=>{msg}");
         return msg;
     }
 
