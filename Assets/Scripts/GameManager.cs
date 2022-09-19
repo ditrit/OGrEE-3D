@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -50,6 +51,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
     public bool editMode = false;
+    private string startDateTime;
 
     #region UnityMethods
 
@@ -375,7 +377,13 @@ public class GameManager : MonoBehaviour
     ///<param name="_type">The type of message</param>
     private void WriteLogFile(string _str, eLogtype _type)
     {
-        string dateTime = System.DateTime.Now.ToString();
+        if (string.IsNullOrEmpty(startDateTime))
+        {
+            startDateTime = DateTime.Now.ToString("yyMMdd_HH-mm");
+            Debug.Log($"=>{startDateTime}<=");
+        }
+
+        string dateTime = DateTime.Now.ToString();
         string type = "";
         switch (_type)
         {
@@ -419,7 +427,7 @@ public class GameManager : MonoBehaviour
         if (_str[_str.Length - 1] != '\n')
             _str += "\n";
 
-        string fileName = $"{configLoader.GetCacheDir()}/log.txt";
+        string fileName = $"{configLoader.GetCacheDir()}/{startDateTime}_log.txt";
         FileStream fs = null;
         try
         {
@@ -429,7 +437,7 @@ public class GameManager : MonoBehaviour
                 writer.Write($"{dateTime} | {type} : {_str}");
             }
         }
-        catch (System.Exception _e)
+        catch (Exception _e)
         {
             Debug.LogError(_e.Message);
         }
