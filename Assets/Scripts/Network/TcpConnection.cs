@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class TcpConnection : AConnection
 {
@@ -25,7 +26,7 @@ public class TcpConnection : AConnection
         comThread.Start();
     }
 
-    private void ConnexionLoop()
+    private async void ConnexionLoop()
     {
         try
         {
@@ -36,7 +37,7 @@ public class TcpConnection : AConnection
             {
                 client = server.AcceptTcpClient();
                 netStream = client.GetStream();
-                ReceiveLoop();
+                await ReceiveLoop();
                 client.Close();
                 GameManager.gm.AppendLogLine("Connection with client lost.", false, eLogtype.errorCli);
             }
@@ -47,13 +48,13 @@ public class TcpConnection : AConnection
         }
     }
 
-    private void ReceiveLoop()
+    private async Task ReceiveLoop()
     {
         try
         {
             while (client.Connected)
             {
-                string msg = ReceiveMessage();
+                string msg = await ReceiveMessage();
                 if (!string.IsNullOrEmpty(msg))
                     incomingQueue.Enqueue(msg);
             }
@@ -64,17 +65,27 @@ public class TcpConnection : AConnection
         }
     }
 
-    private string ReceiveMessage()
+    private async Task<string> ReceiveMessage()
     {
-        byte[] sizeBuffer = new byte[4];
-        netStream.Read(sizeBuffer, 0, 4);
+        byte[] sizeBuffer = await ReadBytes(4);
         int size = BitConverter.ToInt32(sizeBuffer, 0);
+        Debug.Log($"Size of incoming message: {size}");
 
-        byte[] msgBuffer = new byte[size];
-        netStream.Read(msgBuffer, 0, size);
+        byte[] msgBuffer = await ReadBytes(size);
         string msg = Encoding.UTF8.GetString(msgBuffer);
-        Debug.Log($"=>{msg}");
+        // Debug.Log($"Received message: {msg}");
         return msg;
+    }
+
+    private async Task<byte[]> ReadBytes(int n)
+    {
+        byte[] buffer = new byte[n];
+        int offset = 0;
+        while (offset < n)
+        {
+            offset += await netStream.ReadAsync(buffer, offset, n - offset);
+        }
+        return buffer;
     }
 
     public override string[] GetMessages()
