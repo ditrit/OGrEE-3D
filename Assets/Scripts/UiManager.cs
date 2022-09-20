@@ -161,6 +161,7 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
         resetTransBtn.interactable = true;
+        editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("edit"));
     }
 
     ///<summary>
@@ -172,6 +173,7 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
+        editBtn.GetComponent<Image>().color = Color.white;
     }
 
     ///<summary>

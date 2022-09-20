@@ -30,7 +30,7 @@ public class BuildingGenerator : MonoBehaviour
         // Position and size data from _bd.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
-        float height = float.Parse(_bd.attributes["height"]);
+        float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
         GameObject newBD = Instantiate(GameManager.gm.buildingModel);
         newBD.name = _bd.name;
@@ -81,7 +81,7 @@ public class BuildingGenerator : MonoBehaviour
         // Position and size data from _ro.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
-        float height = float.Parse(_ro.attributes["height"]);
+        float height = Utils.ParseDecFrac(_ro.attributes["height"]);
 
         GameObject newRoom = Instantiate(GameManager.gm.roomModel);
         newRoom.name = _ro.name;
