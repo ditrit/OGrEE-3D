@@ -192,7 +192,7 @@ public class OObject : OgreeObject
     ///
     private async void OnSelection(OnSelectItemEvent _e)
     {
-        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == gameObject)
+        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == gameObject && currentLod == 0)
             await LoadChildren("1");
     }
 

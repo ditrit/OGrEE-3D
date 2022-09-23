@@ -125,12 +125,12 @@ public class GameManager : MonoBehaviour
                     if (previousSelected != null && currentSelected != null && previousSelected.referent != null && previousSelected.referent == currentSelected.referent)
                         unloadChildren = false;
 
-                    //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
                     if (unloadChildren && previousSelected != null)
                     {
-                        if (previousSelected.referent)
+                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
                             await previousSelected.referent.LoadChildren("0");
-                        if (previousSelected.category != "rack")
+                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
                         {
                             previousItems.Remove(previousObj);
                             if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
@@ -140,13 +140,13 @@ public class GameManager : MonoBehaviour
                 }
 
             }
-            else // deselection => unload children
+            else // deselection => unload children if level of details is <=1
             {
                 AppendLogLine("Empty selection.", true, eLogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
-                    if (oObject != null)
+                    if (oObject != null && oObject.currentLod <= 1)
                         await oObject.LoadChildren("0");
                 }
             }
