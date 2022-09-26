@@ -108,6 +108,11 @@ public class UiManager : MonoBehaviour
             selectParentBtn.interactable = false;
             resetTransBtn.interactable = false;
         }
+        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count -1]))
+        {
+            focusBtn.interactable = false;
+            selectParentBtn.interactable = true;
+        }
         else
         {
             focusBtn.interactable = true;
@@ -138,6 +143,8 @@ public class UiManager : MonoBehaviour
             selectParentBtn.interactable = false;
             editBtn.interactable = true;
         }
+        if (GameManager.gm.currentItems.Contains(_e.obj))
+            focusBtn.interactable = false;
     }
 
     ///<summary>
@@ -150,6 +157,8 @@ public class UiManager : MonoBehaviour
         resetChildrenBtn.interactable = false;
         if (GameManager.gm.focus.Count == 0)
             unfocusBtn.interactable = false;
+        if (GameManager.gm.currentItems.Contains(_e.obj))
+            focusBtn.interactable = false;
     }
 
     ///<summary>
@@ -161,6 +170,7 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
         resetTransBtn.interactable = true;
+        editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("edit"));
     }
 
     ///<summary>
@@ -172,6 +182,7 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = true;
         selectParentBtn.interactable = true;
         resetTransBtn.interactable = false;
+        editBtn.GetComponent<Image>().color = Color.white;
     }
 
     ///<summary>

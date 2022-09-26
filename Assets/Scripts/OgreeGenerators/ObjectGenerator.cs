@@ -186,9 +186,9 @@ public class ObjectGenerator : MonoBehaviour
             int i = 0;
             float max;
             if (string.IsNullOrEmpty(_dv.attributes["template"]))
-                max = float.Parse(_dv.attributes["sizeU"]);
+                max = Utils.ParseDecFrac(_dv.attributes["sizeU"]);
             else
-                max = float.Parse(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
+                max = Utils.ParseDecFrac(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
             foreach (Transform child in parent)
             {
                 if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
@@ -228,7 +228,7 @@ public class ObjectGenerator : MonoBehaviour
             newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
             OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
             size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
-            height = float.Parse(tmp.attributes["height"]) / 1000;
+            height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
         // Place the device
@@ -684,7 +684,7 @@ public class ObjectGenerator : MonoBehaviour
                 newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
                 newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
 
-                float posU = float.Parse(_se.attributes["posU"]);
+                float posU = Utils.ParseDecFrac(_se.attributes["posU"]);
                 if (posU == 0)
                 {
                     newSensor.transform.localPosition += Vector3.up;
@@ -700,7 +700,7 @@ public class ObjectGenerator : MonoBehaviour
                 newSensor.transform.localPosition = parent.GetChild(0).localScale / -2;
                 // Assuming given pos is in mm
                 Vector2 posXY = JsonUtility.FromJson<Vector2>(_se.attributes["posXY"]);
-                Vector3 newPos = new Vector3(posXY.x, float.Parse(_se.attributes["posU"]), posXY.y) / 1000;
+                Vector3 newPos = new Vector3(posXY.x, Utils.ParseDecFrac(_se.attributes["posU"]), posXY.y) / 1000;
                 newSensor.transform.localPosition += newPos;
 
                 newSensor.transform.GetChild(0).localScale = Vector3.one * 0.05f;
