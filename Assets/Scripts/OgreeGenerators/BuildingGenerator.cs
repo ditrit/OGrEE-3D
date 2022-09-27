@@ -78,6 +78,18 @@ public class BuildingGenerator : MonoBehaviour
             return null;
         }
 
+        ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+        if (!string.IsNullOrEmpty(_ro.attributes["template"]))
+        {
+            if (GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
+                template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
+            else
+            {
+                GameManager.gm.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, eLogtype.error);
+                return null;
+            }
+        }
+
         // Position and size data from _ro.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
@@ -91,46 +103,53 @@ public class BuildingGenerator : MonoBehaviour
         room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
-        Vector3 originalSize = room.usableZone.localScale;
-        room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
-        room.reservedZone.localScale = room.usableZone.localScale;
-        room.technicalZone.localScale = room.usableZone.localScale;
-        room.tilesEdges.localScale = room.usableZone.localScale;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
-        room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
-        BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
+        if (string.IsNullOrEmpty(template.slug))
+        {
+            Vector3 originalSize = room.usableZone.localScale;
+            room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+            room.reservedZone.localScale = room.usableZone.localScale;
+            room.technicalZone.localScale = room.usableZone.localScale;
+            room.tilesEdges.localScale = room.usableZone.localScale;
+            room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
+            room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+            BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-        Vector3 bdOrigin = bd.GetChild(0).localScale / -0.2f;
-        Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-        newRoom.transform.position = bd.position;
-        newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
-        newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
+            Vector3 bdOrigin = bd.GetChild(0).localScale / -0.2f;
+            Vector3 roOrigin = room.usableZone.localScale / 0.2f;
+            newRoom.transform.position = bd.position;
+            newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
+            newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
-        if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
-        {
-            newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-            newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-        }
-        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
-        {
-            newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-            newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-        }
-        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
-        {
-            newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-            newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-        }
-        else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
-        {
-            newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-            newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-        }
+            if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+                newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+                newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+                newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+                newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
+            }
 
-        // Set UI room's name
-        room.nameText.text = newRoom.name;
-        room.nameText.rectTransform.sizeDelta = size;
-        room.UpdateZonesColor();
+            // Set UI room's name
+            room.nameText.text = newRoom.name;
+            room.nameText.rectTransform.sizeDelta = size;
+            room.UpdateZonesColor();
+        }
+        else
+        {
+            NonSquareRoomGenerator.instance.CreateShape(template);
+        }
 
         // string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
@@ -143,10 +162,8 @@ public class BuildingGenerator : MonoBehaviour
             room.SetAreas(reserved, technical);
         }
 
-        if (!string.IsNullOrEmpty(_ro.attributes["template"]) && GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
+        if (!string.IsNullOrEmpty(template.slug))
         {
-            ReadFromJson.SRoomFromJson template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
-
             room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
             if (template.separators != null)
