@@ -14,20 +14,24 @@ public class NonSquareRoomGenerator : MonoBehaviour
             Destroy(this);
     }
 
-    public void CreateShape(ReadFromJson.SRoomFromJson _room)
+    public void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
-        Debug.Log($"Create shape of {_room.slug}");
-        float height = _room.sizeWDHm[2];
+        Debug.Log($"Create shape of {_template.slug}");
+        // _room.GetComponent<MeshFilter>().mesh = new Mesh();
+        // _room.GetComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
 
-        Vector3 center = 0.6f * (new Vector3(_room.center[0], _room.center[1], _room.center[2]));
+        float height = _template.sizeWDHm[2];
 
-        List<List<int>> verticesWalls = _room.vertices;
+        Vector3 center = 0.6f * (new Vector3(_template.center[0], _template.center[1], _template.center[2]));
+        center += new Vector3(0, 0.001f, 0);
+
+        List<List<int>> verticesWalls = _template.vertices;
 
         int m = verticesWalls.Count;
 
-        int n = _room.tiles.Length;
+        int n = _template.tiles.Length;
 
-        if (_room.floorUnit == "t")
+        if (_template.floorUnit == "t")
         {
             Vector3[] verticesRoomFloor = new Vector3[4 * n];
             Vector3[] verticesRoomWalls = new Vector3[4 * (m + 1)];
@@ -39,7 +43,9 @@ public class NonSquareRoomGenerator : MonoBehaviour
             int[] zlist = new int[n];
 
             GameObject labels = new GameObject("Labels");
+            labels.transform.parent = _room.transform;
             GameObject allTiles = new GameObject("Tiles");
+            allTiles.transform.parent = _room.transform;
             labels.transform.position = center;
             allTiles.transform.position = center;
 
@@ -47,8 +53,8 @@ public class NonSquareRoomGenerator : MonoBehaviour
             Mesh meshFloor = new Mesh();
             floor.name = "Floor";
             floor.transform.position = center;
-            floor.transform.parent = this.transform;
-            floor.transform.localPosition = new Vector3(0, -0.01f, 0);
+            floor.transform.parent = _room.transform;
+            floor.transform.localPosition = Vector3.zero;
             floor.AddComponent<MeshFilter>().mesh = meshFloor;
             floor.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
 
@@ -56,14 +62,14 @@ public class NonSquareRoomGenerator : MonoBehaviour
             Mesh meshWalls = new Mesh();
             walls.name = "Walls";
             walls.transform.position = center;
-            walls.transform.parent = this.transform;
+            walls.transform.parent = _room.transform;
             walls.transform.localPosition = new Vector3(0, 0, 0);
             walls.AddComponent<MeshFilter>().mesh = meshWalls;
             walls.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
 
             for (int i = 0; i < n; i++)
             {
-                string element = _room.tiles[i].location;
+                string element = _template.tiles[i].location;
                 string[] separated = new string[2];
                 separated = element.Split('/');
 
@@ -75,26 +81,21 @@ public class NonSquareRoomGenerator : MonoBehaviour
 
                 // Tiles           
 
-                // GameObject tile = Instantiate(tilePrefab, allTiles.transform);
-                GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                tile.name = "Tile : " + _room.tiles[i].location;
-                tile.transform.parent = allTiles.transform;
-                tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
+                GameObject tile = Instantiate(GameManager.gm.tileModel, allTiles.transform);
+                tile.name = "Tile : " + _template.tiles[i].location;
                 tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z)) - center;
-                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
-
                 // Labels
 
                 GameObject label = new GameObject("Label");
                 label.transform.position = 0.6f * (new Vector3(x, 0, z));
                 TextMesh affichage = label.AddComponent<TextMesh>();
-                if (string.IsNullOrEmpty(_room.tiles[i].label))
+                if (string.IsNullOrEmpty(_template.tiles[i].label))
                 {
-                    affichage.text = _room.tiles[i].location;
+                    affichage.text = _template.tiles[i].location;
                 }
                 else
                 {
-                    affichage.text = _room.tiles[i].label;
+                    affichage.text = _template.tiles[i].label;
                 }
                 affichage.characterSize = 0.2f;
                 affichage.fontSize = 8;
@@ -175,7 +176,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
             Mesh meshFloor = new Mesh();
             floor.name = "Floor";
             floor.transform.position = center;
-            floor.transform.parent = this.transform;
+            floor.transform.parent = _room.transform;
             floor.transform.localPosition = new Vector3(0, -0.01f, 0);
             floor.AddComponent<MeshFilter>().mesh = meshFloor;
             floor.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
@@ -184,7 +185,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
             Mesh meshWalls = new Mesh();
             walls.name = "Walls";
             walls.transform.position = center;
-            walls.transform.parent = this.transform;
+            walls.transform.parent = _room.transform;
             walls.transform.localPosition = new Vector3(0, 0, 0);
             walls.AddComponent<MeshFilter>().mesh = meshWalls;
             walls.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
@@ -310,6 +311,16 @@ public class NonSquareRoomGenerator : MonoBehaviour
             meshFloor.vertices = verticesRoom2.ToArray();
             meshFloor.triangles = trianglesRoom2.ToArray();
         }
+    }
+
+    private void BuildWalls(Transform _root)
+    {
+
+    }
+
+    private void buildFloor()
+    {
+
     }
 
     private double AngleOffAroundAxis(Vector3 a, Vector3 b, Vector3 axis, bool clockwise = true)

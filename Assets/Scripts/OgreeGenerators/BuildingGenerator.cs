@@ -95,7 +95,11 @@ public class BuildingGenerator : MonoBehaviour
         Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
         float height = Utils.ParseDecFrac(_ro.attributes["height"]);
 
-        GameObject newRoom = Instantiate(GameManager.gm.roomModel);
+        GameObject newRoom;
+        if (template.vertices.Count == 0)
+            newRoom = Instantiate(GameManager.gm.roomModel);
+        else
+            newRoom = Instantiate(GameManager.gm.nonConvexRoomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = bd;
 
@@ -103,7 +107,7 @@ public class BuildingGenerator : MonoBehaviour
         room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
-        if (string.IsNullOrEmpty(template.slug))
+        if (template.vertices.Count == 0)
         {
             Vector3 originalSize = room.usableZone.localScale;
             room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
@@ -148,28 +152,34 @@ public class BuildingGenerator : MonoBehaviour
         }
         else
         {
-            NonSquareRoomGenerator.instance.CreateShape(template);
+            NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
         }
 
         // string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
 
-        if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
-            && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
+        if (template.vertices.Count == 0)
         {
-            SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
-            SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
-            room.SetAreas(reserved, technical);
+            if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
+                && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
+            {
+                SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
+                SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
+                room.SetAreas(reserved, technical);
+            }
         }
 
         if (!string.IsNullOrEmpty(template.slug))
         {
-            room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
-
-            if (template.separators != null)
+            if (template.vertices.Count == 0)
             {
-                foreach (ReadFromJson.SSeparator sep in template.separators)
-                    room.AddSeparator(sep);
+                room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
+
+                if (template.separators != null)
+                {
+                    foreach (ReadFromJson.SSeparator sep in template.separators)
+                        room.AddSeparator(sep); // Will be updated to works with non convex walls
+                }
             }
 
             if (template.tiles != null)

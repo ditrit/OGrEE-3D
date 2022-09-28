@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -31,8 +31,10 @@ public class GameManager : MonoBehaviour
     [Header("Models")]
     public GameObject buildingModel;
     public GameObject roomModel;
+    public GameObject nonConvexRoomModel;
     public GameObject rackModel;
     public GameObject labeledBoxModel;
+    public GameObject tileModel;
     public GameObject tileNameModel;
     public GameObject uLocationModel;
     public GameObject coordinateSystemModel;

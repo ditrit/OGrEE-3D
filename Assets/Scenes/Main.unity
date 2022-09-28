@@ -10903,9 +10903,13 @@ MonoBehaviour:
     type: 3}
   roomModel: {fileID: 405515581002141253, guid: 5c330afaa8095c64882bca4febdda99d,
     type: 3}
+  nonConvexRoomModel: {fileID: 405515581002141253, guid: af9a010197c01b342909d9cba4c0c464,
+    type: 3}
   rackModel: {fileID: 382823270839367371, guid: 911bf285703e04049921a4b5eb6fd6b8,
     type: 3}
   labeledBoxModel: {fileID: 6010235731161253863, guid: 0786d4bf0612c9d49afd9c32608c9589,
+    type: 3}
+  tileModel: {fileID: 1004828794974978732, guid: 4d999634de192bb428f03423f55b5245,
     type: 3}
   tileNameModel: {fileID: 6720931301833660590, guid: a0ef6933771b78046b706dda050693ba,
     type: 3}
@@ -14728,7 +14732,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.565067
+  m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
