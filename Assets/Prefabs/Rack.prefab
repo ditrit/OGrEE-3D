@@ -130,6 +130,7 @@ MonoBehaviour:
   labelLeft: {fileID: 8555691507017894783}
   labelRight: {fileID: 897203187081432467}
   floatingLabel: {fileID: 7117011691471533279}
+  isRack: 1
   usedLabels: []
   cc: {fileID: 0}
 --- !u!114 &-4847266291842506605

@@ -14,6 +14,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
     [SerializeField] private TextMeshPro floatingLabel = null;
+    [SerializeField] private bool isRack = false;
     [SerializeField] private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
     private string attrToDisplay = "";
     private bool isBold = false;
@@ -37,7 +38,7 @@ public class DisplayObjectData : MonoBehaviour
     private void Update()
     {
 
-        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack" && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
+        if (isRack && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(cc.transform);
@@ -104,7 +105,7 @@ public class DisplayObjectData : MonoBehaviour
         {
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
-            if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+            if (isRack)
                 floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.z);
         }
         else
@@ -113,7 +114,7 @@ public class DisplayObjectData : MonoBehaviour
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
             labelBottom.transform.localEulerAngles = new Vector3(90, 0, -90);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
-            if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+            if (isRack)
                 floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.x);
         }
 
@@ -150,7 +151,7 @@ public class DisplayObjectData : MonoBehaviour
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
         }
-        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+        if (isRack)
         {
             floatingLabel.gameObject.SetActive(true);
             floatingLabel.gameObject.SetActive(false);
@@ -257,12 +258,12 @@ public class DisplayObjectData : MonoBehaviour
             case ToggleLabelEvent.ELabelMode.FrontAndRear:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = true;
-                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                if (isRack)
                     floatingLabel.gameObject.SetActive(false);
                 previousLabelMode = _value;
                 break;
             case ToggleLabelEvent.ELabelMode.FloatingOnTop:
-                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                if (isRack)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
                         tmp.enabled = false;
@@ -273,7 +274,7 @@ public class DisplayObjectData : MonoBehaviour
             case ToggleLabelEvent.ELabelMode.Hidden:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = false;
-                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                if (isRack)
                     floatingLabel.gameObject.SetActive(false);
                 break;
             default: break;
