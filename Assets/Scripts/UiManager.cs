@@ -20,7 +20,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Button selectParentBtn = null;
     [SerializeField] private TMP_Text focusText = null;
     [SerializeField] private Button editBtn = null;
-    [SerializeField] private TMP_Text toggleLabelsText = null;
     [SerializeField] private Button resetTransBtn = null;
     [SerializeField] private Button resetChildrenBtn = null;
 
@@ -498,12 +497,8 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.Instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.LabelMode)_value });
+        EventManager.Instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.ELabelMode)_value });
         mouseName.gameObject.SetActive(_value == 2);
-        if (_value == 2)
-            toggleLabelsText.text = "Hide labels";
-        else
-            toggleLabelsText.text = "Display labels";
     }
 
     ///<summary>

@@ -20,7 +20,7 @@ public class DisplayObjectData : MonoBehaviour
     private bool isItalic = false;
     private string color = "ffffff";
     private string backgroundColor = "000000";
-    private ToggleLabelEvent.LabelMode previousLabelMode;
+    private ToggleLabelEvent.ELabelMode previousLabelMode;
     private Vector3 boxSize;
     [SerializeField] private CameraControl cc;
     private void Start()
@@ -37,7 +37,7 @@ public class DisplayObjectData : MonoBehaviour
     private void Update()
     {
 
-        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack" && previousLabelMode == ToggleLabelEvent.LabelMode.FloatingOnTop)
+        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack" && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(cc.transform);
@@ -243,7 +243,6 @@ public class DisplayObjectData : MonoBehaviour
             if (isItalic)
                 floatingLabel.text = $"<i>{floatingLabel.text}</i>";
             floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor("#"+backgroundColor);
-            print(Utils.ParseHtmlColor("#"+backgroundColor));
         }
     }
 
@@ -251,18 +250,18 @@ public class DisplayObjectData : MonoBehaviour
     /// Display or hide labels.
     ///</summary>
     ///<param name="_value">The value to assign</param>
-    public void ToggleLabel(ToggleLabelEvent.LabelMode _value)
+    public void ToggleLabel(ToggleLabelEvent.ELabelMode _value)
     {
         switch (_value)
         {
-            case ToggleLabelEvent.LabelMode.FrontAndRear:
+            case ToggleLabelEvent.ELabelMode.FrontAndRear:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = true;
                 if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
                     floatingLabel.gameObject.SetActive(false);
                 previousLabelMode = _value;
                 break;
-            case ToggleLabelEvent.LabelMode.FloatingOnTop:
+            case ToggleLabelEvent.ELabelMode.FloatingOnTop:
                 if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
                 {
                     foreach (TextMeshPro tmp in usedLabels)
@@ -271,7 +270,7 @@ public class DisplayObjectData : MonoBehaviour
                     previousLabelMode = _value;
                 }
                 break;
-            case ToggleLabelEvent.LabelMode.Hidden:
+            case ToggleLabelEvent.ELabelMode.Hidden:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = false;
                 if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
@@ -283,10 +282,10 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (previousLabelMode == ToggleLabelEvent.LabelMode.FrontAndRear)
+        if (previousLabelMode == ToggleLabelEvent.ELabelMode.FrontAndRear)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.enabled = _value;
-        else if (previousLabelMode == ToggleLabelEvent.LabelMode.FloatingOnTop)
+        else if (previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
             floatingLabel.gameObject.SetActive(_value);
     }
     private void ToggleLabel(ToggleLabelEvent _e)
@@ -325,12 +324,10 @@ public class DisplayObjectData : MonoBehaviour
 
     public void SetBackgroundColor(string _value)
     {
-        string pattern = "color@[0-9a-fA-F]{6}$";
+        string pattern = "[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_value, pattern))
         {
-            string[] data = _value.Split('@');
-            backgroundColor = data[1];
-
+            backgroundColor = _value;
         }
         else
             GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
