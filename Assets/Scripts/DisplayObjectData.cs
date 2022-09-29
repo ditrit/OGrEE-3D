@@ -151,11 +151,6 @@ public class DisplayObjectData : MonoBehaviour
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
         }
-        if (hasFloatingLabel)
-        {
-            floatingLabel.gameObject.SetActive(true);
-            floatingLabel.gameObject.SetActive(false);
-        }
     }
 
     ///<summary>
