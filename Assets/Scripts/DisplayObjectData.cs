@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DisplayObjectData : MonoBehaviour
 {
@@ -12,20 +13,36 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelBottom = null;
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
+    [SerializeField] private TextMeshPro floatingLabel = null;
     [SerializeField] private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
     private string attrToDisplay = "";
     private bool isBold = false;
     private bool isItalic = false;
     private string color = "ffffff";
-
+    private ToggleLabelEvent.LabelMode previousLabelMode;
+    private Vector3 boxSize;
+    [SerializeField] private CameraControl cc;
     private void Start()
     {
         EventManager.Instance.AddListener<ToggleLabelEvent>(ToggleLabel);
+        cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
+    }
+
+    private void Update()
+    {
+
+        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack" && previousLabelMode == ToggleLabelEvent.LabelMode.FloatingOnTop)
+        {
+            floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
+            floatingLabel.transform.LookAt(cc.transform);
+            floatingLabel.transform.rotation = Quaternion.LookRotation(cc.transform.forward);
+            floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
+        }
     }
 
     ///<summary>
@@ -39,6 +56,7 @@ public class DisplayObjectData : MonoBehaviour
         labelLeft = transform.GetChild(4).GetComponent<TextMeshPro>();
         labelTop = transform.GetChild(5).GetComponent<TextMeshPro>();
         labelBottom = transform.GetChild(6).GetComponent<TextMeshPro>();
+        floatingLabel = transform.GetChild(7).GetComponent<TextMeshPro>();
     }
 
     ///<summary>
@@ -48,7 +66,6 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_labelPos">Labels to display</param>
     public void PlaceTexts(string _labelPos)
     {
-        Vector3 boxSize;
         OgreeObject oObj = GetComponent<OgreeObject>();
         if (oObj && oObj.attributes.ContainsKey("template")
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
@@ -86,6 +103,8 @@ public class DisplayObjectData : MonoBehaviour
         {
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+            if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.z);
         }
         else
         {
@@ -93,6 +112,8 @@ public class DisplayObjectData : MonoBehaviour
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
             labelBottom.transform.localEulerAngles = new Vector3(90, 0, -90);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
+            if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.x);
         }
 
         foreach (TextMeshPro tmp in usedLabels)
@@ -127,6 +148,11 @@ public class DisplayObjectData : MonoBehaviour
         {
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
+        }
+        if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+        {
+            floatingLabel.gameObject.SetActive(true);
+            floatingLabel.gameObject.SetActive(false);
         }
     }
 
@@ -208,16 +234,57 @@ public class DisplayObjectData : MonoBehaviour
             if (isItalic)
                 tmp.text = $"<i>{tmp.text}</i>";
         }
+        if (GetComponent<OgreeObject>() && GetComponent<OgreeObject>().category == "rack")
+        {
+            floatingLabel.text = $"<color=#{color}>{_str}</color>";
+            if (isBold)
+                floatingLabel.text = $"<b>{floatingLabel.text}</b>";
+            if (isItalic)
+                floatingLabel.text = $"<i>{floatingLabel.text}</i>";
+        }
     }
 
     ///<summary>
     /// Display or hide labels.
     ///</summary>
     ///<param name="_value">The value to assign</param>
+    public void ToggleLabel(ToggleLabelEvent.LabelMode _value)
+    {
+        switch (_value)
+        {
+            case ToggleLabelEvent.LabelMode.FrontAndRear:
+                foreach (TextMeshPro tmp in usedLabels)
+                    tmp.enabled = true;
+                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                    floatingLabel.gameObject.SetActive(false);
+                previousLabelMode = _value;
+                break;
+            case ToggleLabelEvent.LabelMode.FloatingOnTop:
+                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                {
+                    foreach (TextMeshPro tmp in usedLabels)
+                        tmp.enabled = false;
+                    floatingLabel.gameObject.SetActive(true);
+                    previousLabelMode = _value;
+                }
+                break;
+            case ToggleLabelEvent.LabelMode.Hidden:
+                foreach (TextMeshPro tmp in usedLabels)
+                    tmp.enabled = false;
+                if (GetComponent<OObject>() && GetComponent<OObject>().category == "rack")
+                    floatingLabel.gameObject.SetActive(false);
+                break;
+            default: break;
+        }
+    }
+
     public void ToggleLabel(bool _value)
     {
-        foreach (TextMeshPro tmp in usedLabels)
-            tmp.enabled = _value;
+        if (previousLabelMode == ToggleLabelEvent.LabelMode.FrontAndRear)
+            foreach (TextMeshPro tmp in usedLabels)
+                tmp.enabled = _value;
+        else if (previousLabelMode == ToggleLabelEvent.LabelMode.FloatingOnTop)
+            floatingLabel.gameObject.SetActive(_value);
     }
     private void ToggleLabel(ToggleLabelEvent _e)
     {

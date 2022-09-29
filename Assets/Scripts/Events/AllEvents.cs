@@ -48,7 +48,13 @@ public class UpdateTenantEvent : CustomEvent
 
 public class ToggleLabelEvent : CustomEvent
 {
-    public bool value;
+    public enum LabelMode
+    {
+        FrontAndRear,
+        FloatingOnTop,
+        Hidden
+    }
+    public LabelMode value;
 }
 
 public class EditModeInEvent : CustomEvent

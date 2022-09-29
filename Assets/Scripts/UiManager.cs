@@ -496,11 +496,11 @@ public class UiManager : MonoBehaviour
     /// Send a ToggleLabelEvent and change the toggle text.
     ///</summary>
     ///<param name="_value">The toggle value</param>
-    public void ToggleLabels(bool _value)
+    public void ToggleLabels(int _value)
     {
-        EventManager.Instance.Raise(new ToggleLabelEvent() { value = _value });
-        mouseName.gameObject.SetActive(!_value);
-        if (_value)
+        EventManager.Instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.LabelMode)_value });
+        mouseName.gameObject.SetActive(_value == 2);
+        if (_value == 2)
             toggleLabelsText.text = "Hide labels";
         else
             toggleLabelsText.text = "Display labels";
