@@ -19,6 +19,7 @@ public class DisplayObjectData : MonoBehaviour
     private bool isBold = false;
     private bool isItalic = false;
     private string color = "ffffff";
+    private string backgroundColor = "000000";
     private ToggleLabelEvent.LabelMode previousLabelMode;
     private Vector3 boxSize;
     [SerializeField] private CameraControl cc;
@@ -241,6 +242,8 @@ public class DisplayObjectData : MonoBehaviour
                 floatingLabel.text = $"<b>{floatingLabel.text}</b>";
             if (isItalic)
                 floatingLabel.text = $"<i>{floatingLabel.text}</i>";
+            floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor("#"+backgroundColor);
+            print(Utils.ParseHtmlColor("#"+backgroundColor));
         }
     }
 
@@ -303,7 +306,7 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_value">The attribute to set, with its value if needed</param>
     public void SetLabelFont(string _value)
     {
-        string pattern = "^(bold|italic|color@[0-9a-fA-Z]{6})$";
+        string pattern = "^(bold|italic|color@[0-9a-fA-F]{6})$";
         if (Regex.IsMatch(_value, pattern))
         {
             if (_value == "bold")
@@ -320,4 +323,16 @@ public class DisplayObjectData : MonoBehaviour
             GameManager.gm.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
     }
 
+    public void SetBackgroundColor(string _value)
+    {
+        string pattern = "color@[0-9a-fA-F]{6}$";
+        if (Regex.IsMatch(_value, pattern))
+        {
+            string[] data = _value.Split('@');
+            backgroundColor = data[1];
+
+        }
+        else
+            GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
+    }
 }

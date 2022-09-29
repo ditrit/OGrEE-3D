@@ -31,6 +31,9 @@ public class Rack : OObject
                 case "labelFont":
                     GetComponent<DisplayObjectData>().SetLabelFont(_value);
                     break;
+                case "labelBackground":
+                    GetComponent<DisplayObjectData>().SetBackgroundColor(_value);
+                    break;
                 case "domain":
                     if (_value.EndsWith("@recursive"))
                     {
