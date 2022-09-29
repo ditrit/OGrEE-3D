@@ -14,7 +14,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
     [SerializeField] private TextMeshPro floatingLabel = null;
-    [SerializeField] private bool isRack = false;
+    public bool hasFloatingLabel = false;
     [SerializeField] private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
     private string attrToDisplay = "";
     private bool isBold = false;
@@ -38,7 +38,7 @@ public class DisplayObjectData : MonoBehaviour
     private void Update()
     {
 
-        if (isRack && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
+        if (hasFloatingLabel && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(cc.transform);
@@ -105,7 +105,7 @@ public class DisplayObjectData : MonoBehaviour
         {
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
-            if (isRack)
+            if (hasFloatingLabel)
                 floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.z);
         }
         else
@@ -114,7 +114,7 @@ public class DisplayObjectData : MonoBehaviour
             labelTop.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
             labelBottom.transform.localEulerAngles = new Vector3(90, 0, -90);
             labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
-            if (isRack)
+            if (hasFloatingLabel)
                 floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.x);
         }
 
@@ -151,7 +151,7 @@ public class DisplayObjectData : MonoBehaviour
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
         }
-        if (isRack)
+        if (hasFloatingLabel)
         {
             floatingLabel.gameObject.SetActive(true);
             floatingLabel.gameObject.SetActive(false);
@@ -236,7 +236,7 @@ public class DisplayObjectData : MonoBehaviour
             if (isItalic)
                 tmp.text = $"<i>{tmp.text}</i>";
         }
-        if (GetComponent<OgreeObject>() && GetComponent<OgreeObject>().category == "rack")
+        if (hasFloatingLabel)
         {
             floatingLabel.text = $"<color=#{color}>{_str}</color>";
             if (isBold)
@@ -258,12 +258,12 @@ public class DisplayObjectData : MonoBehaviour
             case ToggleLabelEvent.ELabelMode.FrontAndRear:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = true;
-                if (isRack)
+                if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 previousLabelMode = _value;
                 break;
             case ToggleLabelEvent.ELabelMode.FloatingOnTop:
-                if (isRack)
+                if (hasFloatingLabel)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
                         tmp.enabled = false;
@@ -274,7 +274,7 @@ public class DisplayObjectData : MonoBehaviour
             case ToggleLabelEvent.ELabelMode.Hidden:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = false;
-                if (isRack)
+                if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
             default: break;
@@ -291,8 +291,8 @@ public class DisplayObjectData : MonoBehaviour
     }
     private void ToggleLabel(ToggleLabelEvent _e)
     {
-        // Ignore groups & slots
-        if (GetComponent<Slot>() || /*(*/GetComponent<Group>() /*&& !GetComponent<Group>().isDisplayed)*/)
+        // Ignore slots
+        if (GetComponent<Slot>())
             return;
 
         if (GameManager.gm.focus.Count == 0 || GameManager.gm.focus.Contains(gameObject)

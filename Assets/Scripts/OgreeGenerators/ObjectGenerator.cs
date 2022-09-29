@@ -109,6 +109,7 @@ public class ObjectGenerator : MonoBehaviour
 
         newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
+        newRack.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
 
         rack.UpdateColorByTenant();
 
@@ -429,12 +430,12 @@ public class ObjectGenerator : MonoBehaviour
         gr.UpdateColorByTenant();
         gr.DisplayContent(false);
 
+        newGr.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
         if (parentCategory == "room")
             newGr.GetComponent<DisplayObjectData>().PlaceTexts("top");
         else if (parentCategory == "rack")
             newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
-
         // string hn = gr.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newGr);
 
@@ -614,6 +615,7 @@ public class ObjectGenerator : MonoBehaviour
         else
             co.SetAttribute("color", "990000");
 
+        newCo.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
         newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
