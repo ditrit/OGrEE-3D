@@ -96,10 +96,10 @@ public class BuildingGenerator : MonoBehaviour
         float height = Utils.ParseDecFrac(_ro.attributes["height"]);
 
         GameObject newRoom;
-        if (template.vertices.Count == 0)
-            newRoom = Instantiate(GameManager.gm.roomModel);
-        else
+        if (template.vertices != null)
             newRoom = Instantiate(GameManager.gm.nonConvexRoomModel);
+        else
+            newRoom = Instantiate(GameManager.gm.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = bd;
 
@@ -107,7 +107,11 @@ public class BuildingGenerator : MonoBehaviour
         room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
-        if (template.vertices.Count == 0)
+        if (template.vertices != null)
+        {
+            NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
+        }
+        else
         {
             Vector3 originalSize = room.usableZone.localScale;
             room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
@@ -150,15 +154,11 @@ public class BuildingGenerator : MonoBehaviour
             room.nameText.rectTransform.sizeDelta = size;
             room.UpdateZonesColor();
         }
-        else
-        {
-            NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
-        }
 
         // string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
 
-        if (template.vertices.Count == 0)
+        if (template.vertices == null)
         {
             if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
                 && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
@@ -171,7 +171,7 @@ public class BuildingGenerator : MonoBehaviour
 
         if (!string.IsNullOrEmpty(template.slug))
         {
-            if (template.vertices.Count == 0)
+            if (template.vertices == null)
             {
                 room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
