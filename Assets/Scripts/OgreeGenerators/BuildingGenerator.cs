@@ -110,6 +110,29 @@ public class BuildingGenerator : MonoBehaviour
         if (template.vertices != null)
         {
             NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
+
+            newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
+
+            if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
+                // newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
+                // newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
+                // newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
+            }
+            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
+            {
+                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
+                // newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
+            }
         }
         else
         {
@@ -149,11 +172,12 @@ public class BuildingGenerator : MonoBehaviour
                 newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
             }
 
-            // Set UI room's name
-            room.nameText.text = newRoom.name;
-            room.nameText.rectTransform.sizeDelta = size;
             room.UpdateZonesColor();
         }
+        // Set UI room's name
+        room.nameText.text = newRoom.name;
+        room.nameText.rectTransform.sizeDelta = size;
+
 
         // string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);

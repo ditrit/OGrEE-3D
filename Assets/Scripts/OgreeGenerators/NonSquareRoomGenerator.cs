@@ -17,13 +17,15 @@ public class NonSquareRoomGenerator : MonoBehaviour
     public void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
-        // Vector3 center = 0.6f * (new Vector3(_template.center[0], _template.center[1], _template.center[2]));
 
         if (_template.floorUnit == "t")
             BuildFloor(_room.transform, _template, true);
         else
             BuildFloor(_room.transform, _template, false);
         BuildWalls(_room.transform, _template);
+
+        Vector3 center = new Vector3(_template.center[0], _template.center[1], _template.center[2]);
+        _room.GetComponent<Room>().nameText.transform.localPosition = center + new Vector3(0, 0.003f, 0);
     }
 
     ///
