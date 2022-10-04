@@ -17,23 +17,17 @@ public class NonSquareRoomGenerator : MonoBehaviour
     public void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
-        // _room.GetComponent<MeshFilter>().mesh = new Mesh(); // needed ?
-        // _room.GetComponent<MeshRenderer>().material = GameManager.gm.defaultMat; // needed ?
-
         // Vector3 center = 0.6f * (new Vector3(_template.center[0], _template.center[1], _template.center[2]));
-        // center += new Vector3(0, 0.001f, 0);
-        // Vector3 center = new Vector3(GameManager.gm.uSize / 2, 0001f, GameManager.gm.uSize / 2);
-        Vector3 center = new Vector3(0, 0001f, 0);
 
         if (_template.floorUnit == "t")
-            BuildFloor(_room.transform, _template, center, true);
+            BuildFloor(_room.transform, _template, true);
         else
-            BuildFloor(_room.transform, _template, center, false);
-        BuildWalls(_room.transform, _template, center);
+            BuildFloor(_room.transform, _template, false);
+        BuildWalls(_room.transform, _template);
     }
 
     ///
-    private void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template, Vector3 _center)
+    private void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -42,12 +36,9 @@ public class NonSquareRoomGenerator : MonoBehaviour
         float[] xWalls = new float[vCount];
         float[] zWalls = new float[vCount];
 
-        GameObject walls = new GameObject("Walls");
+        Transform walls = _root.GetComponent<Room>().walls;
         Mesh meshWalls = new Mesh();
-        walls.transform.parent = _root.transform;
-        walls.transform.localPosition = new Vector3(0, height / 2, 0);
-        walls.AddComponent<MeshFilter>().mesh = meshWalls;
-        walls.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
+        walls.GetComponent<MeshFilter>().mesh = meshWalls;
 
         for (int i = 0; i < vCount; i++)
         {
@@ -57,16 +48,16 @@ public class NonSquareRoomGenerator : MonoBehaviour
 
         for (int i = 0; i < vCount - 1; i++)
         {
-            verticesRoomWalls[4 * i] = new Vector3(xWalls[i], 0, zWalls[i]) - _center;
-            verticesRoomWalls[4 * i + 1] = new Vector3(xWalls[i + 1], 0, zWalls[i + 1]) - _center;
-            verticesRoomWalls[4 * i + 2] = new Vector3(xWalls[i], height, zWalls[i]) - _center;
-            verticesRoomWalls[4 * i + 3] = new Vector3(xWalls[i + 1], height, zWalls[i + 1]) - _center;
+            verticesRoomWalls[4 * i] = new Vector3(xWalls[i], 0, zWalls[i]);
+            verticesRoomWalls[4 * i + 1] = new Vector3(xWalls[i + 1], 0, zWalls[i + 1]);
+            verticesRoomWalls[4 * i + 2] = new Vector3(xWalls[i], height, zWalls[i]);
+            verticesRoomWalls[4 * i + 3] = new Vector3(xWalls[i + 1], height, zWalls[i + 1]);
         }
 
-        verticesRoomWalls[4 * (vCount - 1)] = new Vector3(xWalls[vCount - 1], 0, zWalls[vCount - 1]) - _center;
-        verticesRoomWalls[4 * (vCount - 1) + 1] = new Vector3(xWalls[0], 0, zWalls[0]) - _center;
-        verticesRoomWalls[4 * (vCount - 1) + 2] = new Vector3(xWalls[vCount - 1], height, zWalls[vCount - 1]) - _center;
-        verticesRoomWalls[4 * (vCount - 1) + 3] = new Vector3(xWalls[0], height, zWalls[0]) - _center;
+        verticesRoomWalls[4 * (vCount - 1)] = new Vector3(xWalls[vCount - 1], 0, zWalls[vCount - 1]);
+        verticesRoomWalls[4 * (vCount - 1) + 1] = new Vector3(xWalls[0], 0, zWalls[0]);
+        verticesRoomWalls[4 * (vCount - 1) + 2] = new Vector3(xWalls[vCount - 1], height, zWalls[vCount - 1]);
+        verticesRoomWalls[4 * (vCount - 1) + 3] = new Vector3(xWalls[0], height, zWalls[0]);
 
         for (int i = 0; i < vCount + 1; i++)
         {
@@ -80,21 +71,19 @@ public class NonSquareRoomGenerator : MonoBehaviour
 
         meshWalls.vertices = verticesRoomWalls;
         meshWalls.triangles = trianglesRoomWalls;
+        meshWalls.RecalculateNormals();
     }
 
     ///
-    private void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, Vector3 _center, bool _tiles)
+    private void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
     {
         List<List<int>> verticesClone = new List<List<int>>(_template.vertices);
         List<Vector3> verticesRoom = new List<Vector3>();
         List<int> trianglesRoom = new List<int>();
 
-        GameObject floor = new GameObject("Floor");
+        Transform floor = _root.GetComponent<Room>().usableZone;
         Mesh meshFloor = new Mesh();
-        floor.transform.parent = _root;
-        floor.transform.localPosition = Vector3.zero;
-        floor.AddComponent<MeshFilter>().mesh = meshFloor;
-        floor.AddComponent<MeshRenderer>().material = GameManager.gm.defaultMat;
+        floor.GetComponent<MeshFilter>().mesh = meshFloor;
 
         while (verticesClone.Count > 3)
         {
@@ -147,9 +136,9 @@ public class NonSquareRoomGenerator : MonoBehaviour
                     if (convex)
                     {
                         int ind = verticesRoom.Count;
-                        verticesRoom.Add(new Vector3(verticesClone[a][0] / 100f, 0, verticesClone[a][1] / 100f) - _center);
-                        verticesRoom.Add(new Vector3(verticesClone[b][0] / 100f, 0, verticesClone[b][1] / 100f) - _center);
-                        verticesRoom.Add(new Vector3(verticesClone[c][0] / 100f, 0, verticesClone[c][1] / 100f) - _center);
+                        verticesRoom.Add(new Vector3(verticesClone[a][0] / 100f, 0, verticesClone[a][1] / 100f));
+                        verticesRoom.Add(new Vector3(verticesClone[b][0] / 100f, 0, verticesClone[b][1] / 100f));
+                        verticesRoom.Add(new Vector3(verticesClone[c][0] / 100f, 0, verticesClone[c][1] / 100f));
 
                         trianglesRoom.Add(ind);
                         trianglesRoom.Add(ind + 1);
@@ -165,9 +154,9 @@ public class NonSquareRoomGenerator : MonoBehaviour
             }
         }
         int length = verticesRoom.Count;
-        verticesRoom.Add(new Vector3(verticesClone[0][0] / 100f, 0, verticesClone[0][1] / 100f) - _center);
-        verticesRoom.Add(new Vector3(verticesClone[1][0] / 100f, 0, verticesClone[1][1] / 100f) - _center);
-        verticesRoom.Add(new Vector3(verticesClone[2][0] / 100f, 0, verticesClone[2][1] / 100f) - _center);
+        verticesRoom.Add(new Vector3(verticesClone[0][0] / 100f, 0, verticesClone[0][1] / 100f));
+        verticesRoom.Add(new Vector3(verticesClone[1][0] / 100f, 0, verticesClone[1][1] / 100f));
+        verticesRoom.Add(new Vector3(verticesClone[2][0] / 100f, 0, verticesClone[2][1] / 100f));
 
         trianglesRoom.Add(length);
         trianglesRoom.Add(length + 2);
@@ -176,15 +165,14 @@ public class NonSquareRoomGenerator : MonoBehaviour
         meshFloor.vertices = verticesRoom.ToArray();
         meshFloor.triangles = trianglesRoom.ToArray();
 
+        floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
+        floor.GetComponent<MeshCollider>().convex = false;
+
         if (_tiles)
         {
-            GameObject allTiles = new GameObject("Tiles");
-            allTiles.transform.parent = _root.transform;
-            allTiles.transform.localPosition = Vector3.zero;
-
-            GameObject labels = new GameObject("Labels");
-            labels.transform.parent = _root.transform;
-            labels.transform.localPosition = Vector3.zero;
+            // GameObject labels = new GameObject("Labels");
+            // labels.transform.parent = _root.transform;
+            // labels.transform.localPosition = Vector3.zero;
 
             int n = _template.tiles.Length;
             for (int i = 0; i < n; i++)
@@ -197,9 +185,10 @@ public class NonSquareRoomGenerator : MonoBehaviour
                 int z = int.Parse(separated[1]);
 
                 // Tiles           
-                GameObject tile = Instantiate(GameManager.gm.tileModel, allTiles.transform);
-                tile.name = "Tile : " + _template.tiles[i].location;
-                tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z)) - _center;
+                GameObject tile = Instantiate(GameManager.gm.tileModel, floor);
+                tile.name = $"Tile_{_template.tiles[i].location}";
+                tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
+                tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
 
                 // Labels <= TO REFACTOR WITH TMP
                 // GameObject label = new GameObject("Label");
