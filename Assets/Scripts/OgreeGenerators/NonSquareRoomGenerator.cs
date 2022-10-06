@@ -39,7 +39,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
         float[] zWalls = new float[vCount];
 
         Transform walls = _root.GetComponent<Room>().walls;
-        Mesh meshWalls = new Mesh();
+        Mesh meshWalls = new Mesh { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
 
         for (int i = 0; i < vCount; i++)
@@ -84,7 +84,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
         List<int> trianglesRoom = new List<int>();
 
         Transform floor = _root.GetComponent<Room>().usableZone;
-        Mesh meshFloor = new Mesh();
+        Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
 
         while (verticesClone.Count > 3)
@@ -143,8 +143,8 @@ public class NonSquareRoomGenerator : MonoBehaviour
                         verticesRoom.Add(new Vector3(verticesClone[c][0] / 100f, 0, verticesClone[c][1] / 100f));
 
                         trianglesRoom.Add(ind);
-                        trianglesRoom.Add(ind + 1);
                         trianglesRoom.Add(ind + 2);
+                        trianglesRoom.Add(ind + 1);
 
                         verticesClone.RemoveAt(b);
 
@@ -166,6 +166,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
 
         meshFloor.vertices = verticesRoom.ToArray();
         meshFloor.triangles = trianglesRoom.ToArray();
+        meshFloor.RecalculateNormals();
 
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
         floor.GetComponent<MeshCollider>().convex = false;
