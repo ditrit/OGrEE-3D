@@ -240,7 +240,7 @@ public class FocusHandler : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OgreeObject>())
+            if (child.GetComponent<OgreeObject>() ||child.GetComponent<Sensor>())
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);

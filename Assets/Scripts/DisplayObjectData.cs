@@ -145,7 +145,6 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_str">The attribute to set</param>
     public void SetLabel(string _str)
     {
-        int i = 0;
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
         {
@@ -158,7 +157,7 @@ public class DisplayObjectData : MonoBehaviour
                 {
                     if (attr == "description")
                         WriteLabels(string.Join("\n", obj.description));
-                    else if (int.TryParse(attr.Substring(11), out i) && i > 0 && obj.description.Count >= i)
+                    else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
                         GameManager.gm.AppendLogLine("Wrong description index", true, eLogtype.warning);
@@ -178,6 +177,14 @@ public class DisplayObjectData : MonoBehaviour
         if (s)
             WriteLabels(name);
         attrToDisplay = _str;
+        Sensor sensor = GetComponent<Sensor>();
+        if (sensor)
+        {
+            if (_str == "#temperature")
+                WriteLabels(sensor.attributes["temperature"]);
+            else
+                GameManager.gm.AppendLogLine($"Sensor can only show temperature (for now)", true, eLogtype.warning);
+        }
     }
 
     ///<summary>

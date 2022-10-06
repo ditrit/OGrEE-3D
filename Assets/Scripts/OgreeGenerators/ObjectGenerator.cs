@@ -299,7 +299,7 @@ public class ObjectGenerator : MonoBehaviour
             OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
             foreach (OObject comp in components)
             {
-                if (!(comp is Sensor) && comp.gameObject != newDevice)
+                if (comp.gameObject != newDevice)
                 {
                     comp.domain = dv.domain;
                     string compHn = comp.UpdateHierarchyName();
@@ -638,7 +638,8 @@ public class ObjectGenerator : MonoBehaviour
             GameManager.gm.AppendLogLine($"Parent not found", true, eLogtype.error);
             return null;
         }
-        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
+        string parentCategory = parentOgree.category;
         if (_se.attributes["formFactor"] == "ext"
             && (parentCategory != "rack" && parentCategory != "device"))
         {
@@ -652,14 +653,6 @@ public class ObjectGenerator : MonoBehaviour
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_se.name}";
-        Debug.Log($"=>{hierarchyName}");
-        if (GameManager.gm.allItems.Contains(hierarchyName))
-        {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
-            return null;
-        }
-
         GameObject newSensor;
         if (_se.attributes["formFactor"] == "ext") //Dimensions : 80 x 26 x 18 mm
         {
@@ -669,7 +662,10 @@ public class ObjectGenerator : MonoBehaviour
             Vector3 parentSize = _parent.GetChild(0).localScale;
             Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
             newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
-            newSensor.transform.localPosition += new Vector3(boxSize.x, -boxSize.y, 0) / 2;
+            float uXSize = GameManager.gm.ouSize;
+            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == "U")
+                uXSize = GameManager.gm.uSize;
+            newSensor.transform.localPosition += new Vector3(boxSize.x + uXSize, -boxSize.y, 0) / 2;
         }
         else
         {
@@ -710,17 +706,16 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.hierarchyName = hierarchyName;
         sensor.UpdateFromSApiObject(_se);
 
         sensor.UpdateSensorColor();
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
-
+        newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 
 
         // string hn = sensor.UpdateHierarchyName();
-        GameManager.gm.allItems.Add(hierarchyName, newSensor);
+        //GameManager.gm.allItems.Add(hierarchyName, newSensor);
 
         return sensor;
     }

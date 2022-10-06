@@ -1,14 +1,30 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Sensor : OObject
+public class Sensor : MonoBehaviour
 {
+    [Header("Standard attributes")]
+    public new string name;
+    public string id;
+    public string parentId;
+    public string category;
+    public List<string> description = new List<string>();
+    public string domain; // = tenant
+
+    [Header("Specific attributes")]
+    [SerializeField] private List<string> attributesKeys = new List<string>();
+    [SerializeField] private List<string> attributesValues = new List<string>();
+    public Dictionary<string, string> attributes = new Dictionary<string, string>();
+
+    public Color color;
+
     ///<summary>
     /// Check for a _param attribute "temperature" and assign _value to it.
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
+    public void SetAttribute(string _param, string _value)
     {
         if (_param == "temperature")
         {
@@ -22,7 +38,7 @@ public class Sensor : OObject
     /// Update the Sensor attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
-    public override void UpdateFromSApiObject(SApiObject _src)
+    public void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
         id = _src.id;

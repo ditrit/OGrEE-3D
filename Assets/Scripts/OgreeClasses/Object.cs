@@ -304,7 +304,7 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public async void SetTemperature(string _value)
+    public void SetTemperature(string _value)
     {
         if (category == "corridor")
         {
@@ -318,7 +318,7 @@ public class OObject : OgreeObject
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 attributes["temperature"] = _value;
-                GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
+                Transform sensor = transform.Find("sensor");
                 if (sensor)
                     sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
                 else
@@ -336,7 +336,7 @@ public class OObject : OgreeObject
                     se.attributes["formFactor"] = "ext";
                     se.attributes["temperature"] = _value;
 
-                    await OgreeGenerator.instance.CreateItemFromSApiObject(se, transform);
+                    OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
                 }
             }
             else
