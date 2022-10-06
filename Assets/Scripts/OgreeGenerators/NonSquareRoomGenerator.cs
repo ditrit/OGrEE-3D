@@ -173,10 +173,6 @@ public class NonSquareRoomGenerator : MonoBehaviour
 
         if (_tiles)
         {
-            // GameObject labels = new GameObject("Labels");
-            // labels.transform.parent = _root.transform;
-            // labels.transform.localPosition = Vector3.zero;
-
             int n = _template.tiles.Length;
             for (int i = 0; i < n; i++)
             {
@@ -192,23 +188,6 @@ public class NonSquareRoomGenerator : MonoBehaviour
                 tile.name = $"Tile_{_template.tiles[i].location}";
                 tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
                 tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
-
-                // Labels <= TO REFACTOR WITH TMP
-                // GameObject label = new GameObject("Label");
-                // label.transform.position = 0.6f * (new Vector3(x, 0, z));
-                // TextMesh affichage = label.AddComponent<TextMesh>();
-                // if (string.IsNullOrEmpty(_template.tiles[i].label))
-                //     affichage.text = _template.tiles[i].location;
-                // else
-                //     affichage.text = _template.tiles[i].label;
-                // affichage.characterSize = 0.2f;
-                // affichage.fontSize = 8;
-                // affichage.color = Color.black;
-                // affichage.alignment = TextAlignment.Center;
-                // affichage.anchor = TextAnchor.MiddleCenter;
-                // affichage.transform.localPosition = 0.6f * (new Vector3(x, 0.5f, z));
-                // affichage.transform.parent = label.transform;
-                // label.transform.parent = labels.transform;
             }
         }
     }
