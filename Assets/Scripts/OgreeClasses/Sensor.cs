@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sensor : MonoBehaviour
 {
     public float temperature = 0f;
-
+    public string temperatureUnit = "°C";
     public Color color;
 
     ///<summary>
@@ -16,6 +16,20 @@ public class Sensor : MonoBehaviour
     public void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);
+        OgreeObject site;
+        if (transform.parent.GetComponent<OObject>())
+        {
+            if (transform.parent.GetComponent<OObject>().referent)
+                site = transform.parent.GetComponent<OObject>().referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+            else if (transform.parent.parent && transform.parent.parent.GetComponent<OgreeObject>().category == "room")
+                site = transform.parent.parent.parent?.parent?.GetComponent<OgreeObject>();
+            else
+                site = transform.parent.parent?.GetComponent<OObject>().referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        }
+        else
+            site = transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        if (site && site.attributes.ContainsKey("temperatureUnit"))
+            temperatureUnit = site.attributes["temperatureUnit"];
         UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
