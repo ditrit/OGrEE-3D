@@ -371,6 +371,11 @@ public class ReadFromJson
         }
     }
 
+    ///<summary>
+    /// Generate a sensor from a rack or device template.
+    ///</summary>
+    ///<param name="_sensor">The sensor data to apply</param>
+    ///<param name="_parent">The parent of the created sensor</param>
     private void GenerateSensorTemplate(STemplateSensor _sensor, Transform _parent)
     {
         GameObject newSensor;

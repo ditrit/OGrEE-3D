@@ -68,7 +68,6 @@ public class ModelLoader : MonoBehaviour
         foreach (FileInfo file in info.EnumerateFiles())
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
-        // Debug.Log($"{sizeMo}Mo / {GameManager.gm.configLoader.GetCacheLimit()}");
 
         if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
         {

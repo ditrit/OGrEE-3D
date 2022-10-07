@@ -26,9 +26,12 @@ public class Sensor : MonoBehaviour
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-
-        float blue = map(temperature, 0, 100, 1, 0);
-        float red = map(temperature, 0, 100, 0, 1);
+        int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", "c");
+        int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", "c");
+        print(tempMin);
+        print(tempMax);
+        float blue = map(temperature, tempMin, tempMax, 1, 0);
+        float red = map(temperature, tempMin, tempMax, 0, 1);
 
         mat.color = new Color(red, 0, blue);
         color = mat.color;

@@ -303,7 +303,7 @@ public class FocusHandler : MonoBehaviour
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
             meshRenderer.enabled = _value;
-            if (meshRenderer.GetComponent<Collider>() && !meshRenderer.transform.parent.GetComponent<Slot>())
+            if (meshRenderer.GetComponent<Collider>() && !meshRenderer.transform.parent.GetComponent<Slot>() && !meshRenderer.transform.parent.GetComponent<Sensor>())
                 meshRenderer.GetComponent<Collider>().enabled = _collider;
         }
 
