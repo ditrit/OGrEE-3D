@@ -4,18 +4,7 @@ using UnityEngine;
 
 public class Sensor : MonoBehaviour
 {
-    [Header("Standard attributes")]
-    public new string name;
-    public string id;
-    public string parentId;
-    public string category;
-    public List<string> description = new List<string>();
-    public string domain; // = tenant
-
-    [Header("Specific attributes")]
-    [SerializeField] private List<string> attributesKeys = new List<string>();
-    [SerializeField] private List<string> attributesValues = new List<string>();
-    public Dictionary<string, string> attributes = new Dictionary<string, string>();
+    public float temperature = 0f;
 
     public Color color;
 
@@ -24,29 +13,11 @@ public class Sensor : MonoBehaviour
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public void SetAttribute(string _param, string _value)
+    public void SetTemperature(string _value)
     {
-        if (_param == "temperature")
-        {
-            attributes["temperature"] = _value;
-            UpdateSensorColor();
-        }
+        temperature = Utils.ParseDecFrac(_value);
+        UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
-    }
-
-    ///<summary>
-    /// Update the Sensor attributes with given SApiObject.
-    ///</summary>
-    ///<param name="_src">The SApiObject used to update attributes</param>
-    public void UpdateFromSApiObject(SApiObject _src)
-    {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
-        domain = _src.domain;
-        description = _src.description;
-        attributes = _src.attributes;
     }
 
     ///<summary>
@@ -55,10 +26,9 @@ public class Sensor : MonoBehaviour
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        float temp = float.Parse(attributes["temperature"]);
 
-        float blue = map(temp, 0, 100, 1, 0);
-        float red = map(temp, 0, 100, 0, 1);
+        float blue = map(temperature, 0, 100, 1, 0);
+        float red = map(temperature, 0, 100, 0, 1);
 
         mat.color = new Color(red, 0, blue);
         color = mat.color;

@@ -181,7 +181,7 @@ public class DisplayObjectData : MonoBehaviour
         if (sensor)
         {
             if (_str == "#temperature")
-                WriteLabels(sensor.attributes["temperature"]);
+                WriteLabels(sensor.temperature.ToString());
             else
                 GameManager.gm.AppendLogLine($"Sensor can only show temperature (for now)", true, eLogtype.warning);
         }

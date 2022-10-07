@@ -320,7 +320,7 @@ public class OObject : OgreeObject
                 attributes["temperature"] = _value;
                 Transform sensor = transform.Find("sensor");
                 if (sensor)
-                    sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+                    sensor.GetComponent<Sensor>().SetTemperature(_value);
                 else
                 {
                     SApiObject se = new SApiObject

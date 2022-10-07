@@ -706,7 +706,6 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.UpdateFromSApiObject(_se);
 
         sensor.UpdateSensorColor();
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
