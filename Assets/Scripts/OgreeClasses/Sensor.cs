@@ -28,8 +28,6 @@ public class Sensor : MonoBehaviour
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", "c");
         int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", "c");
-        print(tempMin);
-        print(tempMax);
         float blue = map(temperature, tempMin, tempMax, 1, 0);
         float red = map(temperature, tempMin, tempMax, 0, 1);
 

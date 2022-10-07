@@ -318,9 +318,9 @@ public class OObject : OgreeObject
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 attributes["temperature"] = _value;
-                Transform sensor = transform.Find("sensor");
-                if (sensor)
-                    sensor.GetComponent<Sensor>().SetTemperature(_value);
+                Transform sensorTransform = transform.Find("sensor");
+                if (sensorTransform)
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
                 else
                 {
                     SApiObject se = new SApiObject
@@ -336,7 +336,8 @@ public class OObject : OgreeObject
                     se.attributes["formFactor"] = "ext";
                     se.attributes["temperature"] = _value;
 
-                    OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                    Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                    sensor.SetTemperature(_value);
                 }
             }
             else

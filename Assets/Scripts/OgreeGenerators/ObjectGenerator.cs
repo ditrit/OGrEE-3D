@@ -631,7 +631,6 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The created sensor</returns>
     public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
     {
-        Debug.Log($"Trying to create sensor");
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {

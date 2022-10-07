@@ -294,12 +294,8 @@ public class ConfigLoader
                 return 0;
             }
         else if (_extremum == "max")
-            if (_unit == "c")
-            {
-                Debug.Log("here");
-                Debug.Log(config.temperatureMaxC);
-                return config.temperatureMaxC;
-            }
+            if (_unit == "c")            
+                return config.temperatureMaxC;            
             else if (_unit == "f")
                 return config.temperatureMaxF;
             else
