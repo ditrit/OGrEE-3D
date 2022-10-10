@@ -13,7 +13,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelLeft = null;
     [SerializeField] private TextMeshPro labelRight = null;
     [SerializeField] private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
-    private string attrToDisplay = "";
+    public string attrToDisplay = "";
     private bool isBold = false;
     private bool isItalic = false;
     private string color = "ffffff";

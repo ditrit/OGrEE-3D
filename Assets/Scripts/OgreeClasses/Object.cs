@@ -315,6 +315,7 @@ public class OObject : OgreeObject
         }
         else
         {
+            print(_value);
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 attributes["temperature"] = _value;
@@ -340,8 +341,18 @@ public class OObject : OgreeObject
                     sensor.SetTemperature(_value);
                 }
             }
+            else if (Regex.IsMatch(_value, "^[\\w.]+@[0-9.]+$"))
+            {
+                 string[] data = _value.Split('@');
+                Transform sensorTransform = transform.Find(data[0]);
+                print(sensorTransform);
+                if (sensorTransform)
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(data[1]);
+                else
+                    GameManager.gm.AppendLogLine($"Sensor {data[0]} does not exist", true, eLogtype.warning);
+            }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numeral value", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value optionnaly preceded by a sensor name", true, eLogtype.warning);
         }
     }
 
