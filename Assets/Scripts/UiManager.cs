@@ -557,5 +557,14 @@ public class UiManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
+
+    public void ShowPointCloud()
+    {
+        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
+            PointCloud.HandlePointCloud(GameManager.gm.currentItems[0].GetComponent<Room>());
+        else
+            GameManager.gm.AppendLogLine("You have to select a room", false, eLogtype.warning);
+    }
+
     #endregion
 }

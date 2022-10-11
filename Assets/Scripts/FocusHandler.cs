@@ -275,7 +275,7 @@ public class FocusHandler : MonoBehaviour
     /// When called enables/disables the MeshRenderers located in the OwnObjectsList depending on the boolean argument.
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
-    private void UpdateOwnMeshRenderers(bool _value)
+    public void UpdateOwnMeshRenderers(bool _value)
     {
         foreach (GameObject go in OwnObjectsList)
         {

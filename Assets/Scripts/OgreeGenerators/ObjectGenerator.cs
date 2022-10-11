@@ -707,6 +707,8 @@ public class ObjectGenerator : MonoBehaviour
         Sensor sensor = newSensor.GetComponent<Sensor>();
 
         sensor.UpdateSensorColor();
+        sensor.baseScale = newSensor.transform.GetChild(0).localScale;
+        sensor.basePosition = newSensor.transform.localPosition;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
         newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;

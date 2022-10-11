@@ -315,7 +315,6 @@ public class OObject : OgreeObject
         }
         else
         {
-            print(_value);
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 attributes["temperature"] = _value;

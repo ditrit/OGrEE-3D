@@ -8,6 +8,16 @@ public class Sensor : MonoBehaviour
     public string temperatureUnit = "°C";
     public Color color;
 
+    /// <summary>
+    /// initial localScale of the first child.
+    /// </summary>
+    public Vector3 baseScale;
+
+    /// <summary>
+    /// initial local position of the wrapper.
+    /// </summary>
+    public Vector3 basePosition;
+
     ///<summary>
     /// Check for a _param attribute "temperature" and assign _value to it.
     ///</summary>
@@ -40,8 +50,8 @@ public class Sensor : MonoBehaviour
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", "c");
-        int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", "c");
+        int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", temperatureUnit);
+        int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", temperatureUnit);
         float blue = map(temperature, tempMin, tempMax, 1, 0);
         float red = map(temperature, tempMin, tempMax, 0, 1);
 
@@ -58,7 +68,7 @@ public class Sensor : MonoBehaviour
     ///<param name="_outMin">The minimal value of the input range</param>
     ///<param name="_outMax">The maximal value of the input range</param>
     ///<returns>The maped value</returns>
-    float map(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    public float map(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
     {
         return (_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin;
     }

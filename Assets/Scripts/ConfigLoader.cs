@@ -283,10 +283,11 @@ public class ConfigLoader
     ///<returns>The extremum for the temperature unit</returns>
     public int GetTemperatureLimit(string _extremum, string _unit)
     {
+        _unit = _unit.ToLower();
         if (_extremum == "min")
-            if (_unit == "c")
+            if (_unit == "°c")
                 return config.temperatureMinC;
-            else if (_unit == "f")
+            else if (_unit == "°f")
                 return config.temperatureMinF;
             else
             {
@@ -294,9 +295,9 @@ public class ConfigLoader
                 return 0;
             }
         else if (_extremum == "max")
-            if (_unit == "c")            
+            if (_unit == "°c")            
                 return config.temperatureMaxC;            
-            else if (_unit == "f")
+            else if (_unit == "°f")
                 return config.temperatureMaxF;
             else
             {
