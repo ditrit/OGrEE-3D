@@ -769,7 +769,8 @@ public class ObjectGenerator : MonoBehaviour
             }
         }
         // Go to the right corner of the room & apply pos
-        _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+        if (_obj.parent.GetComponent<Room>().isConvex)
+            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
         _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
     }
 

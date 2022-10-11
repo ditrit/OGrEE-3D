@@ -64,30 +64,32 @@ public class Room : Building
             GameManager.gm.AppendLogLine("tilesName value has to be true or false", true, eLogtype.warning);
             return;
         }
-        else
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+        if (_value == "true")
         {
-            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-            if (_value == "true")
+            if (!root)
             {
-                if (!root)
-                {
-                    root = new GameObject("tilesNameRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("name", root.transform);
-                }
-            }
-            else
-            {
-                if (root)
-                    Destroy(root);
+                root = new GameObject("tilesNameRoot");
+                root.transform.parent = transform;
+                root.transform.localPosition = usableZone.localPosition;
+                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
+                root.transform.localEulerAngles = Vector3.zero;
+                LoopThroughTiles("name", root.transform);
             }
         }
+        else
+        {
+            if (root)
+                Destroy(root);
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
+
     public void ToggleTilesName()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (root)
             Destroy(root);
@@ -100,6 +102,7 @@ public class Room : Building
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("name", root.transform);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
 
@@ -120,6 +123,7 @@ public class Room : Building
             return;
         }
 
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (_value == "true")
         {
@@ -138,9 +142,11 @@ public class Room : Building
             if (root)
                 Destroy(root);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
     public void ToggleTilesColor()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (root)
             Destroy(root);
@@ -153,6 +159,7 @@ public class Room : Building
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("color", root.transform);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     ///<summary>
