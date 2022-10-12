@@ -7,16 +7,8 @@ public class Sensor : MonoBehaviour
     public float temperature = 0f;
     public string temperatureUnit = "°C";
     public Color color;
-
-    /// <summary>
-    /// initial localScale of the first child.
-    /// </summary>
-    public Vector3 baseScale;
-
-    /// <summary>
-    /// initial local position of the wrapper.
-    /// </summary>
-    public Vector3 basePosition;
+    public bool fromTemplate;
+    public GameObject sensorPointCloudModel = null;
 
     ///<summary>
     /// Check for a _param attribute "temperature" and assign _value to it.
@@ -52,24 +44,24 @@ public class Sensor : MonoBehaviour
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", temperatureUnit);
         int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", temperatureUnit);
-        float blue = map(temperature, tempMin, tempMax, 1, 0);
-        float red = map(temperature, tempMin, tempMax, 0, 1);
+        float blue = MapAndClamp(temperature, tempMin, tempMax, 1, 0);
+        float red = MapAndClamp(temperature, tempMin, tempMax, 0, 1);
 
         mat.color = new Color(red, 0, blue);
         color = mat.color;
     }
 
     ///<summary>
-    /// Map a Value from a given range to another range.
+    /// Map a Value from a given range to another range and clamp it.
     ///</summary>
     ///<param name="_input">The value to map</param>
     ///<param name="_inMin">The minimal value of the input range</param>
     ///<param name="_inMax">The maximal value of the input range</param>
-    ///<param name="_outMin">The minimal value of the input range</param>
-    ///<param name="_outMax">The maximal value of the input range</param>
-    ///<returns>The maped value</returns>
-    public float map(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    ///<param name="_outMin">The minimal value of the output range</param>
+    ///<param name="_outMax">The maximal value of the output range</param>
+    ///<returns>The maped and clamped value</returns>
+    public float MapAndClamp(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
     {
-        return (_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin;
+        return Mathf.Clamp((_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin, Mathf.Min(_outMin, _outMax), Mathf.Max(_outMin, _outMax));
     }
 }

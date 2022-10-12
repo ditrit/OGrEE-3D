@@ -283,10 +283,10 @@ public class FocusHandler : MonoBehaviour
             foreach (MeshRenderer mr in renderers)
                 mr.enabled = _value;
         }
-        GetComponent<OObject>().ToggleSlots(_value.ToString());
+        GetComponent<OObject>()?.ToggleSlots(_value.ToString());
         ToggleCollider(gameObject, _value);
 
-        if (GetComponent<OObject>().isHidden)
+        if (GetComponent<OObject>() && GetComponent<OObject>().isHidden)
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = false;
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
@@ -298,7 +298,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
     ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
+    public void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {

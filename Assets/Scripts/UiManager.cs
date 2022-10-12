@@ -560,10 +560,10 @@ public class UiManager : MonoBehaviour
 
     public void ShowPointCloud()
     {
-        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
-            PointCloud.HandlePointCloud(GameManager.gm.currentItems[0].GetComponent<Room>());
+        if (GameManager.gm.currentItems.Count == 1)
+            PointCloud.HandlePointCloud(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.gm.AppendLogLine("You have to select a room", false, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select only one object", false, eLogtype.warning);
     }
 
     #endregion

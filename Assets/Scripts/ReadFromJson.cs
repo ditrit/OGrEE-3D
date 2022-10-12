@@ -437,8 +437,7 @@ public class ReadFromJson
         Sensor sensor = newSensor.GetComponent<Sensor>();
 
         sensor.UpdateSensorColor();
-        sensor.baseScale = newSensor.transform.GetChild(0).localScale;
-        sensor.basePosition = newSensor.transform.localPosition;
+        sensor.fromTemplate = true;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts(_sensor.elemPos[1]);
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
         newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;

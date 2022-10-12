@@ -344,7 +344,6 @@ public class OObject : OgreeObject
             {
                  string[] data = _value.Split('@');
                 Transform sensorTransform = transform.Find(data[0]);
-                print(sensorTransform);
                 if (sensorTransform)
                     sensorTransform.GetComponent<Sensor>().SetTemperature(data[1]);
                 else
