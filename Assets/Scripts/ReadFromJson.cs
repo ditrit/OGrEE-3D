@@ -15,6 +15,8 @@ public class ReadFromJson
         public string orientation;
         public float[] sizeWDHm;
         public string floorUnit;
+        public List<int> center;
+        public List<List<int>> vertices;
         public int[] technicalArea;
         public int[] reservedArea;
         public SSeparator[] separators;
@@ -91,7 +93,7 @@ public class ReadFromJson
         SRoomFromJson roomData;
         try
         {
-            roomData = JsonUtility.FromJson<SRoomFromJson>(_json);
+            roomData = JsonConvert.DeserializeObject<SRoomFromJson>(_json);
         }
         catch (System.Exception e)
         {

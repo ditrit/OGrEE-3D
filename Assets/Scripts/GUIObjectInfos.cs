@@ -145,10 +145,10 @@ public class GUIObjectInfos : MonoBehaviour
         }
 
         // Display all other attributes
+        List<string> excludeAttr = new List<string> { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "customColors" };
         foreach (KeyValuePair<string, string> kvp in _obj.attributes)
         {
-            if (!string.IsNullOrEmpty(kvp.Value) && (kvp.Key != "posXY" && kvp.Key != "posXYUnit" && kvp.Key != "orientation"
-                && kvp.Key != "size" && kvp.Key != "sizeUnit" && kvp.Key != "template"))
+            if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
                 i++;
