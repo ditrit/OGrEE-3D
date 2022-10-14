@@ -49,6 +49,8 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+
+        EventManager.Instance.AddListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
     }
 
     ///<summary>
@@ -65,13 +67,15 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+
+        EventManager.Instance.RemoveListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
     }
 
     ///<summary>
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent e)
+    ///<param name="_e">The event's instance</param>
+    private void OnSelectItem(OnSelectItemEvent _e)
     {
         if (isDeleted)
             return;
@@ -121,12 +125,12 @@ public class FocusHandler : MonoBehaviour
     /// When called checks if he is the GameObject focused on and if true activates all of his child's mesh renderers.
     /// If he is the previously focused GameObject, use OObject methods to hide it.
     ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnFocusItem(OnFocusEvent e)
+    ///<param name="_e">The event's instance</param>
+    private void OnFocusItem(OnFocusEvent _e)
     {
         if (isDeleted)
             return;
-        if (e.obj == gameObject)
+        if (_e.obj == gameObject)
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             UpdateChildMeshRenderers(true, true);
@@ -199,8 +203,8 @@ public class FocusHandler : MonoBehaviour
     ///<summary>
     /// When called, fills all the lists and does a ManualUnFocus to deactivate all useless mesh renderers.
     ///</summary>
-    ///<param name="e">The event's instance</param>
-    private void OnImportFinished(ImportFinishedEvent e)
+    ///<param name="_e">The event's instance</param>
+    private void OnImportFinished(ImportFinishedEvent _e)
     {
         if (isDeleted)
             return;
@@ -229,6 +233,27 @@ public class FocusHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// When called, hide renderer to show temperature diagram
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
+    private void OnTemperatureDiagram(TemperatureDiagramEvent _e)
+    {
+        if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject && transform.parent.GetComponent<OgreeObject>().category == "room")
+        {
+            UpdateChildMeshRenderers(false);
+            UpdateOwnMeshRenderers(TempDiagram.isDiagramShown);
+        }
+        if (_e.obj == gameObject)
+        {
+            if (TempDiagram.isDiagramShown && _e.obj == gameObject && GameManager.gm.currentItems.Contains(gameObject))
+                UpdateChildMeshRenderers(true, true);
+            if (!TempDiagram.isDiagramShown)
+                UpdateChildMeshRenderers(false, false);
+        }
+    }
+
+
     ///<summary>
     /// Fills the 3 Child list with their corresponding content.
     ///</summary>
@@ -240,7 +265,7 @@ public class FocusHandler : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OgreeObject>() ||child.GetComponent<Sensor>())
+            if (child.GetComponent<OgreeObject>() || child.GetComponent<Sensor>())
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
@@ -275,7 +300,7 @@ public class FocusHandler : MonoBehaviour
     /// When called enables/disables the MeshRenderers located in the OwnObjectsList depending on the boolean argument.
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
-    public void UpdateOwnMeshRenderers(bool _value)
+    private void UpdateOwnMeshRenderers(bool _value)
     {
         foreach (GameObject go in OwnObjectsList)
         {
@@ -298,7 +323,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_value">Boolean value assigned to the meshRenderer.enabled </param>
     ///<param name="_collider">Boolean value assigned to the Collider.enabled, false by default </param>
-    public void UpdateChildMeshRenderers(bool _value, bool _collider = false)
+    private void UpdateChildMeshRenderers(bool _value, bool _collider = false)
     {
         foreach (MeshRenderer meshRenderer in ogreeChildMeshRendererList)
         {
@@ -443,7 +468,7 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     ///<param name="_obj">The object whose collider(s) will be updated</param>
     ///<param name="_enabled">state of the collider(s)</param>
-    public void ToggleCollider(GameObject _obj, bool _enabled)
+    private void ToggleCollider(GameObject _obj, bool _enabled)
     {
         _obj.transform.GetChild(0).GetComponent<Collider>().enabled = _enabled;
     }

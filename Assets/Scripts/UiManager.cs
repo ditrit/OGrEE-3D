@@ -563,7 +563,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.gm.currentItems.Count == 1)
             TempDiagram.HandleTempDiagram(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.gm.AppendLogLine("You have to select only one object", false, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select one and only one object", true, eLogtype.warning);
     }
 
     #endregion

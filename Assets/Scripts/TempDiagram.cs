@@ -55,29 +55,15 @@ public static class TempDiagram
     /// <param name="_ogreeObject">the object where we show/hide the temperature diagram</param>
     public static void HandleTempDiagram(OgreeObject _ogreeObject)
     {
+
+        EventManager.Instance.Raise(new TemperatureDiagramEvent() { obj = _ogreeObject.gameObject});
+
         List<Sensor> _sensors = GetObjectSensors(_ogreeObject);
 
         if (_sensors.Count == 0)
         {
-            GameManager.gm.AppendLogLine($"No sensor found in {_ogreeObject.name} or any of its children", false, eLogtype.warning);
+            GameManager.gm.AppendLogLine($"No sensor found in {_ogreeObject.name} or any of its children", true, eLogtype.warning);
         }
-
-        if (_ogreeObject.category == "room")
-        {
-            foreach (Transform childTransform in _ogreeObject.transform)
-            {
-                FocusHandler focusHandler = childTransform.GetComponent<FocusHandler>();
-                if (focusHandler && !childTransform.GetComponent<Slot>())
-                {
-                    focusHandler.UpdateChildMeshRenderers(false);
-                    focusHandler.UpdateOwnMeshRenderers(isDiagramShown && (!_ogreeObject.GetComponent<OObject>() || (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject)));
-                }
-            }
-        }
-        if (isDiagramShown && (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject))
-            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isDiagramShown, isDiagramShown);
-        if (!isDiagramShown)
-            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isDiagramShown, isDiagramShown);
 
         foreach (Sensor sensor in _sensors)
         {
