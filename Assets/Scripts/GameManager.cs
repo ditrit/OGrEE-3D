@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     public GameObject separatorModel;
     public GameObject sensorExtModel;
     public GameObject sensorIntModel;
-    public GameObject sensorPointCloudModel;
+    public GameObject sensorTempDiagramModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;

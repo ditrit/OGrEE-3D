@@ -1,26 +1,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PointCloud
+public static class TempDiagram
 {
     /// <summary>
-    /// true if the point cloud is displayed
+    /// true if thetemperature diagram is displayed
     /// </summary>
-    public static bool isCloudShown = false;
+    public static bool isDiagramShown = false;
 
-    static PointCloud()
+    static TempDiagram()
     {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     ///<summary>
-    /// When called checks if the point cloud is currently shown if true hide it.
+    /// When called checks if the temperature diagram is currently shown if true hide it.
     ///</summary>
     ///<param name="e">The event's instance</param>
     static void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isCloudShown)
-            HandlePointCloud(GameManager.gm.previousItems[0].GetComponent<OgreeObject>());
+        if (isDiagramShown)
+            HandleTempDiagram(GameManager.gm.previousItems[0].GetComponent<OgreeObject>());
     }
 
     /// <summary>
@@ -50,12 +50,18 @@ public static class PointCloud
     }
 
     /// <summary>
-    /// Show the point cloud if it is not already shown, hide it if it is.
+    /// Show the temperature diagram if it is not already shown, hide it if it is.
     /// </summary>
-    /// <param name="_ogreeObject">the object where we show/hide the pointcloud</param>
-    public static void HandlePointCloud(OgreeObject _ogreeObject)
+    /// <param name="_ogreeObject">the object where we show/hide the temperature diagram</param>
+    public static void HandleTempDiagram(OgreeObject _ogreeObject)
     {
         List<Sensor> _sensors = GetObjectSensors(_ogreeObject);
+
+        if (_sensors.Count == 0)
+        {
+            GameManager.gm.AppendLogLine($"No sensor found in {_ogreeObject.name} or any of its children", false, eLogtype.warning);
+        }
+
         if (_ogreeObject.category == "room")
         {
             foreach (Transform childTransform in _ogreeObject.transform)
@@ -64,33 +70,33 @@ public static class PointCloud
                 if (focusHandler && !childTransform.GetComponent<Slot>())
                 {
                     focusHandler.UpdateChildMeshRenderers(false);
-                    focusHandler.UpdateOwnMeshRenderers(isCloudShown && (!_ogreeObject.GetComponent<OObject>() || (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject)));
+                    focusHandler.UpdateOwnMeshRenderers(isDiagramShown && (!_ogreeObject.GetComponent<OObject>() || (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject)));
                 }
             }
         }
-        if (isCloudShown && (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject))
-            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isCloudShown, isCloudShown);
-        if (!isCloudShown)
-            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isCloudShown, isCloudShown);
+        if (isDiagramShown && (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0] == _ogreeObject.gameObject))
+            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isDiagramShown, isDiagramShown);
+        if (!isDiagramShown)
+            _ogreeObject.GetComponent<FocusHandler>()?.UpdateChildMeshRenderers(isDiagramShown, isDiagramShown);
 
         foreach (Sensor sensor in _sensors)
         {
             AdaptSensor(sensor, _ogreeObject);
         }
-        isCloudShown = !isCloudShown;
+        isDiagramShown = !isDiagramShown;
     }
 
     /// <summary>
-    /// Change a sensor scale and position according to their temperature and if the point cloud is to be shown or hidden.
+    /// Change a sensor scale and position according to their temperature and if the temperature diagram is to be shown or hidden.
     /// </summary>
     /// <param name="_sensor">the sensor to adapt</param>
     /// <param name="_ogreeObject">the object where the sensor is</param>
     private static void AdaptSensor(Sensor _sensor, OgreeObject _ogreeObject)
     {
-        if (!isCloudShown)
+        if (!isDiagramShown)
         {
-            GameObject sensorPointCloud = Object.Instantiate(GameManager.gm.sensorPointCloudModel, _sensor.transform.parent);
-            sensorPointCloud.name = _sensor.gameObject.name + "PointCLoudModel";
+            GameObject sensorTempDiagram = Object.Instantiate(GameManager.gm.sensorTempDiagramModel, _sensor.transform.parent);
+            sensorTempDiagram.name = _sensor.gameObject.name + "TempDiagramModel";
 
             float height = _sensor.MapAndClamp(_sensor.temperature, GameManager.gm.configLoader.GetTemperatureLimit("min", _sensor.temperatureUnit), GameManager.gm.configLoader.GetTemperatureLimit("max", _sensor.temperatureUnit), 0, Utils.ParseDecFrac(_ogreeObject.attributes["height"]));
 
@@ -107,19 +113,19 @@ public static class PointCloud
                 yBase -= _ogreeObject.transform.GetChild(0).localScale.y / 2;
 
             if (_sensor.fromTemplate)
-                sensorPointCloud.transform.position = new Vector3(_sensor.transform.position.x, yBase + 0.5f * height, _sensor.transform.position.z);
+                sensorTempDiagram.transform.position = new Vector3(_sensor.transform.position.x, yBase + 0.5f * height, _sensor.transform.position.z);
             else
-                sensorPointCloud.transform.position = new Vector3(_sensor.transform.parent.position.x, yBase + 0.5f * height, _sensor.transform.parent.position.z);
+                sensorTempDiagram.transform.position = new Vector3(_sensor.transform.parent.position.x, yBase + 0.5f * height, _sensor.transform.parent.position.z);
 
-            sensorPointCloud.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
-            sensorPointCloud.transform.GetChild(0).GetComponent<Renderer>().material.color = _sensor.transform.GetChild(0).GetComponent<Renderer>().material.color;
+            sensorTempDiagram.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
+            sensorTempDiagram.transform.GetChild(0).GetComponent<Renderer>().material.color = _sensor.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
-            _sensor.sensorPointCloudModel = sensorPointCloud;
+            _sensor.sensorTempDiagram = sensorTempDiagram;
         }
         else
         {
-            Object.Destroy(_sensor.sensorPointCloudModel);
-            _sensor.sensorPointCloudModel = null;
+            Object.Destroy(_sensor.sensorTempDiagram);
+            _sensor.sensorTempDiagram = null;
         }
     }
 }

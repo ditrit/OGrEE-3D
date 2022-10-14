@@ -8,7 +8,7 @@ public class Sensor : MonoBehaviour
     public string temperatureUnit = "°C";
     public Color color;
     public bool fromTemplate;
-    public GameObject sensorPointCloudModel = null;
+    public GameObject sensorTempDiagram = null;
 
     ///<summary>
     /// Check for a _param attribute "temperature" and assign _value to it.

@@ -558,10 +558,10 @@ public class UiManager : MonoBehaviour
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
 
-    public void ShowPointCloud()
+    public void ShowTempDiagram()
     {
         if (GameManager.gm.currentItems.Count == 1)
-            PointCloud.HandlePointCloud(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+            TempDiagram.HandleTempDiagram(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
         else
             GameManager.gm.AppendLogLine("You have to select only one object", false, eLogtype.warning);
     }
