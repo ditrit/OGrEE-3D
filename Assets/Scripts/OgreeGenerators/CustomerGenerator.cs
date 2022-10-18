@@ -21,7 +21,6 @@ public class CustomerGenerator : MonoBehaviour
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.hierarchyName = _tn.name;
         tenant.UpdateFromSApiObject(_tn);
-        // tenant.UpdateHierarchyName();
         GameManager.gm.allItems.Add(_tn.name, newTenant);
 
         return tenant;
@@ -31,18 +30,18 @@ public class CustomerGenerator : MonoBehaviour
     /// Create an OgreeObject of "site" category and assign given values to it
     ///</summary>
     ///<param name="_si">The site data to apply</param>
-    ///<param name="_parent">The parent of the created site. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created site</param>
     ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SApiObject _si, Transform _parent = null)
+    public OgreeObject CreateSite(SApiObject _si, Transform _parent)
     {
-        Transform tn = Utils.FindParent(_parent, _si.parentId);
-        if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
-        {
-            GameManager.gm.AppendLogLine($"Parent tenant not found", true, eLogtype.error);
-            return null;
-        }
+        // Transform tn = Utils.FindParent(_parent, _si.parentId);
+        // if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
+        // {
+        //     GameManager.gm.AppendLogLine($"Parent tenant not found", true, eLogtype.error);
+        //     return null;
+        // }
 
-        string hierarchyName = $"{tn.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
+        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -50,7 +49,7 @@ public class CustomerGenerator : MonoBehaviour
         }
 
         GameObject newSite = new GameObject(_si.name);
-        newSite.transform.parent = tn;
+        newSite.transform.parent = _parent;
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
         site.hierarchyName = hierarchyName;
@@ -72,7 +71,6 @@ public class CustomerGenerator : MonoBehaviour
                 break;
         }
 
-        // string hn = site.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newSite);
 
         return site;

@@ -55,6 +55,14 @@ public class OgreeGenerator : MonoBehaviour
             await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
+        // Find parent
+        Transform parent = Utils.FindParent(_parent, _obj.parentId);
+        if (_obj.category != "tenant" && !parent)
+        {
+            GameManager.gm.AppendLogLine($"Parent of {_obj.name} not found", true, eLogtype.error);
+            return null;
+        }
+
         // Call Create function
         switch (_obj.category)
         {

@@ -9,18 +9,18 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_rk">The rack data to apply</param>
-    ///<param name="_parent">The parent of the created rack. Leave null if _rk contains the parendId</param>
+    ///<param name="_parent">The parent of the created rack</param>
     ///<returns>The created Rack</returns>
-    public Rack CreateRack(SApiObject _rk, Transform _parent = null)
+    public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        Transform parent = Utils.FindParent(_parent, _rk.parentId);
-        if (!parent || parent.GetComponent<OgreeObject>().category != "room")
-        {
-            GameManager.gm.AppendLogLine($"Parent room not found", true, eLogtype.error);
-            return null;
-        }
+        // Transform parent = Utils.FindParent(_parent, _rk.parentId);
+        // if (!parent || parent.GetComponent<OgreeObject>().category != "room")
+        // {
+        //     GameManager.gm.AppendLogLine($"Parent room not found", true, eLogtype.error);
+        //     return null;
+        // }
 
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
+        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -46,7 +46,7 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         newRack.name = _rk.name;
-        newRack.transform.parent = parent;
+        newRack.transform.parent = _parent;
 
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
@@ -72,7 +72,7 @@ public class ObjectGenerator : MonoBehaviour
             boxOrigin = box.localScale / 2;
         else
             boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-        float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
+        float floorUnit = GetUnitFromRoom(_parent.GetComponent<Room>());
         Vector3 fixPos = Vector3.zero;
         switch (rack.attributes["orientation"])
         {
@@ -137,20 +137,25 @@ public class ObjectGenerator : MonoBehaviour
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply given data to it.
     ///</summary>
     ///<param name="_dv">The device data to apply</param>
-    ///<param name="_parent">The parent of the created device. Leave null if _dv contains the parendId</param>
+    ///<param name="_parent">The parent of the created device</param>
     ///<returns>The created Device</returns>
-    public OObject CreateDevice(SApiObject _dv, Transform _parent = null)
+    public OObject CreateDevice(SApiObject _dv, Transform _parent)
     {
         // Check parent & parent category
-        Transform parent = Utils.FindParent(_parent, _dv.parentId);
-        if (!parent || parent.GetComponent<OObject>() == null)
+        // Transform parent = Utils.FindParent(_parent, _dv.parentId);
+        // if (!parent || parent.GetComponent<OObject>() == null)
+        // {
+        //     GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", true, eLogtype.error);
+        //     return null;
+        // }
+        if (_parent.GetComponent<OObject>() == null)
         {
             GameManager.gm.AppendLogLine($"Device must be child of a Rack or another Device", true, eLogtype.error);
             return null;
         }
 
         // Check parent for subdevice
-        if (parent.GetComponent<Rack>() == null
+        if (_parent.GetComponent<Rack>() == null
             && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
         {
             GameManager.gm.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", true, eLogtype.error);
@@ -158,14 +163,14 @@ public class ObjectGenerator : MonoBehaviour
         }
 
         // Check if parent not hidden in a group
-        if (parent.gameObject.activeSelf == false)
+        if (_parent.gameObject.activeSelf == false)
         {
             GameManager.gm.AppendLogLine("The parent object must be active (not hidden in a group)", true, eLogtype.error);
             return null;
         }
 
         // Check if unique hierarchyName
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
+        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -190,7 +195,7 @@ public class ObjectGenerator : MonoBehaviour
                 max = Utils.ParseDecFrac(_dv.attributes["sizeU"]);
             else
                 max = Utils.ParseDecFrac(GameManager.gm.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.gm.uSize;
-            foreach (Transform child in parent)
+            foreach (Transform child in _parent)
             {
                 if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
                 {
@@ -207,7 +212,7 @@ public class ObjectGenerator : MonoBehaviour
             }
             else
             {
-                GameManager.gm.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {parent.name}", true, eLogtype.error);
+                GameManager.gm.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", true, eLogtype.error);
                 return null;
             }
         }
@@ -219,14 +224,14 @@ public class ObjectGenerator : MonoBehaviour
 
         if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            newDevice = GenerateBasicDevice(parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
+            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new Vector2(boxSize.x, boxSize.z);
             height = boxSize.y;
         }
         else
         {
-            newDevice = GenerateTemplatedDevice(parent, _dv.attributes["template"]);
+            newDevice = GenerateTemplatedDevice(_parent, _dv.attributes["template"]);
             OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
             size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
@@ -270,11 +275,11 @@ public class ObjectGenerator : MonoBehaviour
         else
         {
             newDevice.transform.localEulerAngles = Vector3.zero;
-            newDevice.transform.localPosition = new Vector3(0, (-parent.GetChild(0).localScale.y + height) / 2, 0);
+            newDevice.transform.localPosition = new Vector3(0, (-_parent.GetChild(0).localScale.y + height) / 2, 0);
             if (_dv.attributes.ContainsKey("posU"))
                 newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.gm.uSize, 0);
 
-            float deltaZ = parent.GetChild(0).localScale.z - size.y;
+            float deltaZ = _parent.GetChild(0).localScale.z - size.y;
             newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
             newDevice.GetComponent<OObject>().color = Color.white;
         }
