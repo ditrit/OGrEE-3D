@@ -69,5 +69,9 @@ public class EditModeOutEvent : CustomEvent
 
 public class ConnectApiEvent : CustomEvent
 {
+}
 
+public class TemperatureDiagramEvent : CustomEvent
+{
+    public GameObject obj { get; set; }
 }

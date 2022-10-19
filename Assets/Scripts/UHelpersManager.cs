@@ -236,7 +236,7 @@ public class UHelpersManager : MonoBehaviour
     {
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
 
-        // By defalut, attributes["heightUnit"] == "U"
+        // By default, attributes["heightUnit"] == "U"
         float scale = GameManager.gm.uSize;
         int max = (int)Utils.ParseDecFrac(_rack.attributes["height"]);
         if (_rack.attributes["heightUnit"] == "OU")

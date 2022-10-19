@@ -1,36 +1,39 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Sensor : OObject
+public class Sensor : MonoBehaviour
 {
+    public float temperature = 0f;
+    public string temperatureUnit = "°C";
+    public Color color;
+    public bool fromTemplate;
+    public GameObject sensorTempDiagram = null;
+
     ///<summary>
     /// Check for a _param attribute "temperature" and assign _value to it.
     ///</summary>
     ///<param name="_param">The attribute to modify</param>
     ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
+    public void SetTemperature(string _value)
     {
-        if (_param == "temperature")
+        temperature = Utils.ParseDecFrac(_value);
+        OgreeObject site;
+        if (transform.parent.GetComponent<OObject>())
         {
-            attributes["temperature"] = _value;
-            UpdateSensorColor();
+            if (transform.parent.GetComponent<OObject>().referent)
+                site = transform.parent.GetComponent<OObject>().referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+            else if (transform.parent.parent && transform.parent.parent.GetComponent<OgreeObject>().category == "room")
+                site = transform.parent.parent.parent?.parent?.GetComponent<OgreeObject>();
+            else
+                site = transform.parent.parent?.GetComponent<OObject>().referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
         }
+        else
+            site = transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        if (site && site.attributes.ContainsKey("temperatureUnit"))
+            temperatureUnit = site.attributes["temperatureUnit"];
+        UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
-    }
-
-    ///<summary>
-    /// Update the Sensor attributes with given SApiObject.
-    ///</summary>
-    ///<param name="_src">The SApiObject used to update attributes</param>
-    public override void UpdateFromSApiObject(SApiObject _src)
-    {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
-        domain = _src.domain;
-        description = _src.description;
-        attributes = _src.attributes;
     }
 
     ///<summary>
@@ -39,26 +42,26 @@ public class Sensor : OObject
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        float temp = float.Parse(attributes["temperature"]);
-
-        float blue = map(temp, 0, 100, 1, 0);
-        float red = map(temp, 0, 100, 0, 1);
+        int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", temperatureUnit);
+        int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", temperatureUnit);
+        float blue = MapAndClamp(temperature, tempMin, tempMax, 1, 0);
+        float red = MapAndClamp(temperature, tempMin, tempMax, 0, 1);
 
         mat.color = new Color(red, 0, blue);
         color = mat.color;
     }
 
     ///<summary>
-    /// Map a Value from a given range to another range.
+    /// Map a Value from a given range to another range and clamp it.
     ///</summary>
     ///<param name="_input">The value to map</param>
     ///<param name="_inMin">The minimal value of the input range</param>
     ///<param name="_inMax">The maximal value of the input range</param>
-    ///<param name="_outMin">The minimal value of the input range</param>
-    ///<param name="_outMax">The maximal value of the input range</param>
-    ///<returns>The maped value</returns>
-    float map(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    ///<param name="_outMin">The minimal value of the output range</param>
+    ///<param name="_outMax">The maximal value of the output range</param>
+    ///<returns>The maped and clamped value</returns>
+    public float MapAndClamp(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
     {
-        return (_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin;
+        return Mathf.Clamp((_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin, Mathf.Min(_outMin, _outMax), Mathf.Max(_outMin, _outMax));
     }
 }

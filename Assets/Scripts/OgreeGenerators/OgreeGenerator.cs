@@ -82,9 +82,6 @@ public class OgreeGenerator : MonoBehaviour
             case "group":
                 newItem = objectGenerator.CreateGroup(_obj, _parent);
                 break;
-            case "sensor":
-                newItem = objectGenerator.CreateSensor(_obj, _parent);
-                break;
             default:
                 newItem = null;
                 GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
@@ -93,6 +90,11 @@ public class OgreeGenerator : MonoBehaviour
         newItem?.SetBaseTransform();
         ResetCoroutine();
         return newItem;
+    }
+
+    public Sensor CreateSensorFromSApiObject(SApiObject _obj, Transform _parent = null)
+    {
+        return objectGenerator.CreateSensor(_obj, _parent);
     }
 
     ///<summary>

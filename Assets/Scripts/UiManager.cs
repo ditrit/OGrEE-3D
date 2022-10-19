@@ -552,5 +552,14 @@ public class UiManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
+
+    public void ShowTempDiagram()
+    {
+        if (GameManager.gm.currentItems.Count == 1)
+            TempDiagram.HandleTempDiagram(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        else
+            GameManager.gm.AppendLogLine("You have to select one and only one object", true, eLogtype.warning);
+    }
+
     #endregion
 }

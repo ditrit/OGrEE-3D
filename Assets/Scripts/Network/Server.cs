@@ -52,9 +52,9 @@ public class Server : MonoBehaviour
     ///</summary>
     ///<param name="_cliPort">The value to set for listenPort</param>
     ///<param name="_sendPort">The value to set for sendPort</param>
-    public void SetupPorts(string _cliPort)
+    public void SetupPorts(int _cliPort)
     {
-        int.TryParse(_cliPort, out cliPort);
+        cliPort = _cliPort;
     }
 
     ///<summary>

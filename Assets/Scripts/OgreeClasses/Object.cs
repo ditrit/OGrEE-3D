@@ -304,7 +304,7 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public async void SetTemperature(string _value)
+    public void SetTemperature(string _value)
     {
         if (category == "corridor")
         {
@@ -318,9 +318,9 @@ public class OObject : OgreeObject
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 attributes["temperature"] = _value;
-                GameObject sensor = GameManager.gm.FindByAbsPath($"{hierarchyName}.sensor");
-                if (sensor)
-                    sensor.GetComponent<Sensor>().SetAttribute("temperature", _value);
+                Transform sensorTransform = transform.Find("sensor");
+                if (sensorTransform)
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
                 else
                 {
                     SApiObject se = new SApiObject
@@ -336,11 +336,21 @@ public class OObject : OgreeObject
                     se.attributes["formFactor"] = "ext";
                     se.attributes["temperature"] = _value;
 
-                    await OgreeGenerator.instance.CreateItemFromSApiObject(se, transform);
+                    Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                    sensor.SetTemperature(_value);
                 }
             }
+            else if (Regex.IsMatch(_value, "^[\\w.]+@[0-9.]+$"))
+            {
+                 string[] data = _value.Split('@');
+                Transform sensorTransform = transform.Find(data[0]);
+                if (sensorTransform)
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(data[1]);
+                else
+                    GameManager.gm.AppendLogLine($"Sensor {data[0]} does not exist", true, eLogtype.warning);
+            }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numeral value", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value optionnaly preceded by a sensor name", true, eLogtype.warning);
         }
     }
 
