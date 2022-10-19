@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Room : Building
 {
+    public bool isConvex = true;
     public SMargin reserved;
     public SMargin technical;
 
@@ -63,30 +64,32 @@ public class Room : Building
             GameManager.gm.AppendLogLine("tilesName value has to be true or false", true, eLogtype.warning);
             return;
         }
-        else
+
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+        if (_value == "true")
         {
-            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-            if (_value == "true")
+            if (!root)
             {
-                if (!root)
-                {
-                    root = new GameObject("tilesNameRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("name", root.transform);
-                }
-            }
-            else
-            {
-                if (root)
-                    Destroy(root);
+                root = new GameObject("tilesNameRoot");
+                root.transform.parent = transform;
+                root.transform.localPosition = usableZone.localPosition;
+                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
+                root.transform.localEulerAngles = Vector3.zero;
+                LoopThroughTiles("name", root.transform);
             }
         }
+        else
+        {
+            if (root)
+                Destroy(root);
+        }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
+
     public void ToggleTilesName()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (root)
             Destroy(root);
@@ -95,10 +98,11 @@ public class Room : Building
             root = new GameObject("tilesNameRoot");
             root.transform.parent = transform;
             root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
+            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("name", root.transform);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
 
@@ -119,6 +123,7 @@ public class Room : Building
             return;
         }
 
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (_value == "true")
         {
@@ -127,7 +132,7 @@ public class Room : Building
                 root = new GameObject("tilesColorRoot");
                 root.transform.parent = transform;
                 root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
+                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
                 root.transform.localEulerAngles = Vector3.zero;
                 LoopThroughTiles("color", root.transform);
             }
@@ -137,9 +142,11 @@ public class Room : Building
             if (root)
                 Destroy(root);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
     public void ToggleTilesColor()
     {
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (root)
             Destroy(root);
@@ -148,10 +155,11 @@ public class Room : Building
             root = new GameObject("tilesColorRoot");
             root.transform.parent = transform;
             root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
+            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("color", root.transform);
         }
+        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     ///<summary>
@@ -196,24 +204,41 @@ public class Room : Building
             _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
         }
 
-        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
-        float x = size.x / GameManager.gm.tileSize - technical.right - technical.left + offsetX;
-        float y = size.y / GameManager.gm.tileSize - technical.top - technical.bottom + offsetY;
-
-        Vector3 origin = usableZone.localScale / 0.2f;
-        _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
-
-        for (int j = offsetY; j < y; j++)
+        if (isConvex)
         {
-            for (int i = offsetX; i < x; i++)
-            {
-                Vector2 pos = new Vector2(i, j) * orient * GameManager.gm.tileSize;
+            Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
+            float x = size.x / GameManager.gm.tileSize - technical.right - technical.left + offsetX;
+            float y = size.y / GameManager.gm.tileSize - technical.top - technical.bottom + offsetY;
+            Vector3 origin = usableZone.localScale / 0.2f;
+            _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
-                string tileID = $"{i}/{j}";
+            for (int j = offsetY; j < y; j++)
+            {
+                for (int i = offsetX; i < x; i++)
+                {
+                    Vector2 pos = new Vector2(i, j) * orient * GameManager.gm.tileSize;
+
+                    string tileID = $"{i}/{j}";
+                    if (_mode == "name")
+                        GenerateTileName(_root, pos, tileID);
+                    else if (_mode == "color")
+                        GenerateTileColor(_root, pos, tileID);
+                }
+            }
+        }
+        else
+        {
+            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
+            foreach (ReadFromJson.STile tile in tiles)
+            {
+                string[] splittedLoc = tile.location.Split('/');
+                int tileX = int.Parse(splittedLoc[0]);
+                int tileY = int.Parse(splittedLoc[1]);
+                Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.gm.tileSize;
                 if (_mode == "name")
-                    GenerateTileName(_root, pos, tileID);
+                    GenerateTileName(_root, pos, tile.location);
                 else if (_mode == "color")
-                    GenerateTileColor(_root, pos, tileID);
+                    GenerateTileColor(_root, pos, tile.location);
             }
         }
     }
@@ -226,12 +251,6 @@ public class Room : Building
     ///<param name="_id">The id of the current tile</param>
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
-        GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
-        tileText.name = $"Text_{_id}";
-        tileText.transform.SetParent(_root);
-        tileText.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
-        tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
-
         // Select the right tile from attributes["tiles"]
         ReadFromJson.STile tileData = new ReadFromJson.STile();
         if (attributes.ContainsKey("tiles"))
@@ -243,6 +262,12 @@ public class Room : Building
                     tileData = tile;
             }
         }
+
+        GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
+        tileText.name = $"Text_{_id}";
+        tileText.transform.SetParent(_root);
+        tileText.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
+        tileText.transform.localEulerAngles = new Vector3(90, 0, 0);
 
         if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
             tileText.GetComponent<TextMeshPro>().text = tileData.label;
@@ -278,10 +303,9 @@ public class Room : Building
         {
             if (!string.IsNullOrEmpty(tileData.texture) || !string.IsNullOrEmpty(tileData.color))
             {
-                GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                GameObject tile = Instantiate(GameManager.gm.tileModel);
                 tile.name = $"Color_{_id}";
                 tile.transform.parent = _root;
-                tile.transform.localScale = Vector3.one * GameManager.gm.tileSize / 10;
                 tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
                 tile.transform.localEulerAngles = new Vector3(0, 180, 0);
                 if (!string.IsNullOrEmpty(tileData.texture))
