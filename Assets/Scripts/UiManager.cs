@@ -555,10 +555,10 @@ public class UiManager : MonoBehaviour
 
     public void ShowTempDiagram()
     {
-        if (GameManager.gm.currentItems.Count == 1)
-            TempDiagram.HandleTempDiagram(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
+            TempDiagram.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one object", true, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
 
     #endregion

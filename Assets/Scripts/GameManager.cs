@@ -41,7 +41,8 @@ public class GameManager : MonoBehaviour
     public GameObject separatorModel;
     public GameObject sensorExtModel;
     public GameObject sensorIntModel;
-    public GameObject sensorTempDiagramModel;
+    public GameObject sensorBarModel;
+    public GameObject sensorBarStdModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
