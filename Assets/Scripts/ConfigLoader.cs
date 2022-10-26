@@ -281,31 +281,14 @@ public class ConfigLoader
     ///<param name="_extremum">The extremum to get, must be "min" or "max"</param>
     ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
     ///<returns>The extremum for the temperature unit</returns>
-    public int GetTemperatureLimit(string _extremum, string _unit)
+    public (int min, int max) GetTemperatureLimit(string _unit)
     {
         _unit = _unit.ToLower();
-        if (_extremum == "min")
-            if (_unit == "°c")
-                return config.temperatureMinC;
-            else if (_unit == "°f")
-                return config.temperatureMinF;
-            else
-            {
-                GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
-                return 0;
-            }
-        else if (_extremum == "max")
-            if (_unit == "°c")            
-                return config.temperatureMaxC;            
-            else if (_unit == "°f")
-                return config.temperatureMaxF;
-            else
-            {
-                GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
-                return 100;
-            }
-        GameManager.gm.AppendLogLine($"Unrecognised temperature extremum : {_extremum}", false, eLogtype.error);
-        return 50;
-
+        if (_unit == "°c")
+            return (config.temperatureMinC, config.temperatureMaxC);
+        if (_unit == "°f")
+            return (config.temperatureMinF, config.temperatureMaxF);
+        GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        return (0, 0);
     }
 }

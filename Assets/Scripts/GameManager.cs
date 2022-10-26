@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
     public bool editMode = false;
+    public bool tempMode = false;
     private string startDateTime;
 
     #region UnityMethods

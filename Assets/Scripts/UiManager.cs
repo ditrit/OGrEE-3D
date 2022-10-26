@@ -107,7 +107,7 @@ public class UiManager : MonoBehaviour
             selectParentBtn.interactable = false;
             resetTransBtn.interactable = false;
         }
-        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count -1]))
+        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]))
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = true;
@@ -556,10 +556,18 @@ public class UiManager : MonoBehaviour
     public void ShowTempDiagram()
     {
         if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
-            TempDiagram.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+            TempDiagram.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
+        else if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
+            TempDiagram.HandleTempBarChart(TempDiagram.lastRoom);
         else
             GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
 
+    public void TempColorMode(bool _value)
+    {
+        print(_value);
+        GameManager.gm.tempMode = _value;
+        EventManager.Instance.Raise(new TemperatureColorEvent());
+    }
     #endregion
 }

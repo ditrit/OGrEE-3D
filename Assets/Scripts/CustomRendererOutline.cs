@@ -43,6 +43,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
+
+        EventManager.Instance.AddListener<TemperatureColorEvent>(OnTemperatureColorEvent);
     }
 
     ///<summary>
@@ -62,6 +64,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
 
         EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
+
+        EventManager.Instance.RemoveListener<TemperatureColorEvent>(OnTemperatureColorEvent);
     }
 
 
@@ -88,10 +92,12 @@ public class CustomRendererOutline : MonoBehaviour
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.gm.alphaMat);
+                else if (GameManager.gm.tempMode)
+                    SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.gm.defaultMat);
-
-                transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
+                if (!GameManager.gm.tempMode)
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
             isSelected = false;
         }
@@ -124,11 +130,14 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.selectMat);
             else
             {
-                if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.gm.alphaMat);
+                else if (GameManager.gm.tempMode)
+                    SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.gm.defaultMat);
-                transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
+                if (!GameManager.gm.tempMode)
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
             isFocused = false;
 
@@ -191,11 +200,14 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.highlightMat);
             else
             {
-                if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.gm.alphaMat);
+                else if (GameManager.gm.tempMode)
+                    SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.gm.defaultMat);
-                transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
+                if (!GameManager.gm.tempMode)
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
 
             isHovered = false;
@@ -216,11 +228,14 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.highlightMat);
             else
             {
-                if (_e.obj.GetComponent<OObject>().category.Equals("corridor"))
+                if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.gm.alphaMat);
+                else if (GameManager.gm.tempMode)
+                    SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.gm.defaultMat);
-                transform.GetChild(0).GetComponent<Renderer>().material.color = _e.obj.GetComponent<OObject>().color;
+                if (!GameManager.gm.tempMode)
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
         }
     }
@@ -245,6 +260,49 @@ public class CustomRendererOutline : MonoBehaviour
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = false;
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+        }
+    }
+
+    private Material GetTemperatureMaterial()
+    {
+        STemp temp = GetComponent<OObject>().GetTemperatureInfos();
+        Material mat = Instantiate(GameManager.gm.defaultMat);
+        if (temp.mean is float.NaN)
+        {
+            mat.color = Color.gray;
+        }
+        else
+        {
+            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(temp.unit);
+            float blue = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 1, 0);
+            float red = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 0, 1);
+            mat.color = new Color(red, 0, blue);
+        }
+        return mat;
+    }
+
+    private void OnTemperatureColorEvent(TemperatureColorEvent _e)
+    {
+        if (GameManager.gm.tempMode)
+        {
+            if (!isSelected && !isFocused && !isHighlighted && !isHovered)
+                SetMaterial(GetTemperatureMaterial());
+        }
+        else
+        {
+            if (isSelected)
+                SetMaterial(GameManager.gm.selectMat);
+            else if (isFocused)
+                SetMaterial(GameManager.gm.focusMat);
+            else if (isHighlighted)
+                SetMaterial(GameManager.gm.highlightMat);
+            else if (isHovered)
+                SetMaterial(GameManager.gm.mouseHoverMat);
+            else
+            {
+                SetMaterial(GameManager.gm.defaultMat);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
+            }
         }
     }
 }
