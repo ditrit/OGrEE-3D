@@ -45,6 +45,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.AddListener<HighlightEvent>(ToggleHighlight);
 
         EventManager.Instance.AddListener<TemperatureColorEvent>(OnTemperatureColorEvent);
+
+        EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     ///<summary>
@@ -66,6 +68,8 @@ public class CustomRendererOutline : MonoBehaviour
         EventManager.Instance.RemoveListener<HighlightEvent>(ToggleHighlight);
 
         EventManager.Instance.RemoveListener<TemperatureColorEvent>(OnTemperatureColorEvent);
+
+        EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
 
@@ -285,7 +289,7 @@ public class CustomRendererOutline : MonoBehaviour
     {
         if (GameManager.gm.tempMode)
         {
-            if (!isSelected && !isFocused && !isHighlighted && !isHovered)
+            if (!isSelected && !isFocused && !isHighlighted)
                 SetMaterial(GetTemperatureMaterial());
         }
         else
@@ -296,8 +300,29 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.focusMat);
             else if (isHighlighted)
                 SetMaterial(GameManager.gm.highlightMat);
-            else if (isHovered)
-                SetMaterial(GameManager.gm.mouseHoverMat);
+            else
+            {
+                SetMaterial(GameManager.gm.defaultMat);
+                transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
+            }
+        }
+    }
+
+    private void OnImportFinished(ImportFinishedEvent _e)
+    {
+        if (GameManager.gm.tempMode)
+        {
+            if (!isSelected && !isFocused && !isHighlighted)
+                SetMaterial(GetTemperatureMaterial());
+        }
+        else
+        {
+            if (isSelected)
+                SetMaterial(GameManager.gm.selectMat);
+            else if (isFocused)
+                SetMaterial(GameManager.gm.focusMat);
+            else if (isHighlighted)
+                SetMaterial(GameManager.gm.highlightMat);
             else
             {
                 SetMaterial(GameManager.gm.defaultMat);

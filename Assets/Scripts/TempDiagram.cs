@@ -168,12 +168,11 @@ public static class TempDiagram
 
         }
         OgreeObject sensorBarOO = sensorBar.GetComponent<OgreeObject>();
-        sensorBarOO.attributes["mean"] = tempInfos.mean.ToString();
-        sensorBarOO.attributes["standard deviation"] = tempInfos.std.ToString();
-        sensorBarOO.attributes["min"] = tempInfos.min.ToString();
-        sensorBarOO.attributes["max"] = tempInfos.max.ToString();
+        sensorBarOO.attributes["mean"] = $"{tempInfos.mean} {tempInfos.unit}";
+        sensorBarOO.attributes["standard deviation"] = $"{tempInfos.std} {tempInfos.unit}";
+        sensorBarOO.attributes["min"] = $"{tempInfos.min} {tempInfos.unit}";
+        sensorBarOO.attributes["max"] = $"{tempInfos.max} {tempInfos.unit}";
         sensorBarOO.attributes["hottest child"] = tempInfos.hottestChild;
-        sensorBarOO.attributes["temperture unit"] = tempInfos.unit;
         _oobject.tempBar = sensorBar;
     }
 }
