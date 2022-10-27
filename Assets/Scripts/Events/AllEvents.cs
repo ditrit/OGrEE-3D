@@ -78,3 +78,8 @@ public class TemperatureDiagramEvent : CustomEvent
 public class TemperatureColorEvent : CustomEvent
 {
 }
+
+public class TemperatureScatterPlotEvent : CustomEvent
+{
+    public GameObject obj { get; set; }
+}

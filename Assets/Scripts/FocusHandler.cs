@@ -51,6 +51,8 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
 
         EventManager.Instance.AddListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
+
+        EventManager.Instance.AddListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
     }
 
     ///<summary>
@@ -69,6 +71,8 @@ public class FocusHandler : MonoBehaviour
         EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
 
         EventManager.Instance.RemoveListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
+
+        EventManager.Instance.RemoveListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
     }
 
     ///<summary>
@@ -239,20 +243,35 @@ public class FocusHandler : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnTemperatureDiagram(TemperatureDiagramEvent _e)
     {
-        if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject && transform.parent.GetComponent<OgreeObject>().category == "room")
+        if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject)
         {
             UpdateChildMeshRenderers(false);
             UpdateOwnMeshRenderers(TempDiagram.isDiagramShown);
         }
-        if (_e.obj == gameObject)
+        else if (_e.obj == gameObject)
         {
-            if (TempDiagram.isDiagramShown && _e.obj == gameObject && GameManager.gm.currentItems.Contains(gameObject))
+            if (TempDiagram.isDiagramShown && GameManager.gm.currentItems.Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
             if (!TempDiagram.isDiagramShown)
                 UpdateChildMeshRenderers(false, false);
         }
     }
 
+    public void OnTemperatureScatterPlot(TemperatureScatterPlotEvent _e)
+    {
+        if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
+        {
+            UpdateChildMeshRenderers(false);
+            UpdateOwnMeshRenderers(TempDiagram.isScatterPlotShown);
+        }
+        else if (_e.obj == gameObject)
+        {
+            if (TempDiagram.isScatterPlotShown && GameManager.gm.currentItems.Contains(gameObject))
+                UpdateChildMeshRenderers(true, true);
+            if (!TempDiagram.isScatterPlotShown)
+                UpdateChildMeshRenderers(false, false);
+        }
+    }
 
     ///<summary>
     /// Fills the 3 Child list with their corresponding content.

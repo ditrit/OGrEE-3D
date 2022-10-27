@@ -553,7 +553,7 @@ public class UiManager : MonoBehaviour
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
 
-    public void ShowTempDiagram()
+    public void ToggleTempBarChart()
     {
         if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
             TempDiagram.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
@@ -569,5 +569,14 @@ public class UiManager : MonoBehaviour
         EventManager.Instance.Raise(new TemperatureColorEvent());
         UpdateGuiInfos();
     }
+
+    public void ToggleTempScatterPlot()
+    {
+        if (GameManager.gm.currentItems.Count == 1 && (GameManager.gm.currentItems[0].GetComponent<OObject>() || GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "room"))
+            TempDiagram.HandleScatterPlot(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        else
+            GameManager.gm.AppendLogLine("You have to select one and only one room,, rack or device", true, eLogtype.warning);
+    }
+
     #endregion
 }

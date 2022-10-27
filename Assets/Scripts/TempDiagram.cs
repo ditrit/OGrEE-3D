@@ -8,7 +8,9 @@ public static class TempDiagram
     /// true if thetemperature diagram is displayed
     /// </summary>
     public static bool isDiagramShown = false;
+    public static bool isScatterPlotShown = false;
     public static Room lastRoom;
+    public static OgreeObject lastScatterPlot;
     static TempDiagram()
     {
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -22,17 +24,18 @@ public static class TempDiagram
     {
         if (isDiagramShown && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
             HandleTempBarChart(lastRoom);
+        if (isScatterPlotShown)
+            HandleScatterPlot(lastScatterPlot);
     }
 
     /// <summary>
-    /// Recursive fonction, get a list of the sensors in the object or in the children of it. If an object have children, its own sensors will be ignored.
+    /// Recursive fonction, get a list of the sensors in the object or in the children of it.
     /// </summary>
     /// <param name="_ogreeObject">The object where we get the sensors</param>
-    /// <returns>a list of sensors of the object belonging to a child object which has no child or no sensor in their children.</returns>
+    /// <returns>a list of sensors of the object.</returns>
     private static List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
     {
         List<Sensor> sensors = new List<Sensor>();
-        List<Sensor> basicSensors = new List<Sensor>();
         foreach (Transform childTransform in _ogreeObject.transform)
         {
             OgreeObject childOgreeObject = childTransform.GetComponent<OgreeObject>();
@@ -44,11 +47,9 @@ public static class TempDiagram
             if (childSensor)
                 if (childSensor.fromTemplate)
                     sensors.Add(childSensor);
-                else
-                    basicSensors.Add(childSensor);
 
         }
-        return sensors.Count > 0 ? sensors : basicSensors;
+        return sensors;
 
     }
 
@@ -71,7 +72,7 @@ public static class TempDiagram
             case "U":
                 roomHeight *= GameManager.gm.uSize; break;
             default:
-                GameManager.gm.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;   
+                GameManager.gm.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
         }
 
         if (_room.attributes["heightUnit"] == "mm")
@@ -96,7 +97,7 @@ public static class TempDiagram
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject && !childTransform.GetComponent<Group>())
-                    AdaptSensor(childOgreeObject,tempUnit, roomHeight);
+                    AdaptOObject(childOgreeObject, tempUnit, roomHeight);
             }
             lastRoom = _room;
         }
@@ -105,10 +106,8 @@ public static class TempDiagram
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
-                {
-                    Debug.Log(childOgreeObject.tempBar);
                     Object.Destroy(childOgreeObject.tempBar);
-                }
+
             }
         isDiagramShown = !isDiagramShown;
     }
@@ -116,9 +115,10 @@ public static class TempDiagram
     /// <summary>
     /// Change a sensor scale and position according to their temperature and if the temperature diagram is to be shown or hidden.
     /// </summary>
-    /// <param name="_sensor">the sensor to adapt</param>
     /// <param name="_oobject">the object where the sensor is</param>
-    private static void AdaptSensor(OObject _oobject,string _tempUnit,float _roomheight)
+    /// <param name="_tempUnit">the temperature unit of the object</param>
+    /// <param name="_roomheight">the height of the room containing the object</param>
+    private static void AdaptOObject(OObject _oobject, string _tempUnit, float _roomheight)
     {
         GameObject sensorBar;
         STemp tempInfos = _oobject.GetTemperatureInfos();
@@ -157,7 +157,7 @@ public static class TempDiagram
         else
         {
 
-            float height = _roomheight/ 2;
+            float height = _roomheight / 2;
 
             float yBase = _oobject.transform.parent.position.y + 0.01f;
             sensorBar = Object.Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
@@ -174,5 +174,16 @@ public static class TempDiagram
         sensorBarOO.attributes["max"] = $"{tempInfos.max} {tempInfos.unit}";
         sensorBarOO.attributes["hottest child"] = tempInfos.hottestChild;
         _oobject.tempBar = sensorBar;
+    }
+
+    public static void HandleScatterPlot(OgreeObject _ogreeObject)
+    {
+        lastScatterPlot = _ogreeObject;
+        EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject});
+
+        if (!isScatterPlotShown)
+            GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = true);
+
+        isScatterPlotShown = !isScatterPlotShown;
     }
 }
