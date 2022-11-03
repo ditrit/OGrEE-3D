@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CustomerGenerator))]
-[RequireComponent(typeof(BuildingGenerator))]
-[RequireComponent(typeof(ObjectGenerator))]
 public class OgreeGenerator : MonoBehaviour
 {
     public static OgreeGenerator instance;
-    [SerializeField] private CustomerGenerator customerGenerator;
-    [SerializeField] private BuildingGenerator buildingGenerator;
-    [SerializeField] private ObjectGenerator objectGenerator;
+    private CustomerGenerator customerGenerator = new CustomerGenerator();
+    private BuildingGenerator buildingGenerator = new BuildingGenerator();
+    private ObjectGenerator objectGenerator = new ObjectGenerator();
     private Coroutine waitCoroutine = null;
 
     private void Awake()
@@ -20,13 +17,6 @@ public class OgreeGenerator : MonoBehaviour
             instance = this;
         else
             Destroy(this);
-    }
-
-    private void Start()
-    {
-        customerGenerator = GetComponent<CustomerGenerator>();
-        buildingGenerator = GetComponent<BuildingGenerator>();
-        objectGenerator = GetComponent<ObjectGenerator>();
     }
 
     ///<summary>
@@ -70,28 +60,28 @@ public class OgreeGenerator : MonoBehaviour
                 newItem = customerGenerator.CreateTenant(_obj);
                 break;
             case "site":
-                newItem = customerGenerator.CreateSite(_obj, _parent);
+                newItem = customerGenerator.CreateSite(_obj, parent);
                 break;
             case "building":
-                newItem = buildingGenerator.CreateBuilding(_obj, _parent);
+                newItem = buildingGenerator.CreateBuilding(_obj, parent);
                 break;
             case "room":
-                newItem = buildingGenerator.CreateRoom(_obj, _parent);
+                newItem = buildingGenerator.CreateRoom(_obj, parent);
                 break;
             case "rack":
-                newItem = objectGenerator.CreateRack(_obj, _parent);
+                newItem = objectGenerator.CreateRack(_obj, parent);
                 break;
             case "device":
-                newItem = objectGenerator.CreateDevice(_obj, _parent);
+                newItem = objectGenerator.CreateDevice(_obj, parent);
                 break;
             case "corridor":
-                newItem = objectGenerator.CreateCorridor(_obj, _parent);
+                newItem = objectGenerator.CreateCorridor(_obj, parent);
                 break;
             case "group":
-                newItem = objectGenerator.CreateGroup(_obj, _parent);
+                newItem = objectGenerator.CreateGroup(_obj, parent);
                 break;
             case "sensor":
-                newItem = objectGenerator.CreateSensor(_obj, _parent);
+                newItem = objectGenerator.CreateSensor(_obj, parent);
                 break;
             default:
                 newItem = null;

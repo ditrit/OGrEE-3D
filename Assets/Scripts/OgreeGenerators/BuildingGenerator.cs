@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class BuildingGenerator : MonoBehaviour
+public class BuildingGenerator
 {
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
@@ -32,7 +32,7 @@ public class BuildingGenerator : MonoBehaviour
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
-        GameObject newBD = Instantiate(GameManager.gm.buildingModel);
+        GameObject newBD = Object.Instantiate(GameManager.gm.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
         newBD.transform.localEulerAngles = Vector3.zero;
@@ -96,9 +96,9 @@ public class BuildingGenerator : MonoBehaviour
 
         GameObject newRoom;
         if (template.vertices != null)
-            newRoom = Instantiate(GameManager.gm.nonConvexRoomModel);
+            newRoom = Object.Instantiate(GameManager.gm.nonConvexRoomModel);
         else
-            newRoom = Instantiate(GameManager.gm.roomModel);
+            newRoom = Object.Instantiate(GameManager.gm.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = _parent;
 
@@ -108,7 +108,7 @@ public class BuildingGenerator : MonoBehaviour
 
         if (template.vertices != null)
         {
-            NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
+            NonSquareRoomGenerator.CreateShape(newRoom, template);
 
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomerGenerator : MonoBehaviour
+public class CustomerGenerator
 {
     ///<summary>
     /// Create OgreeObject of "tenant" category from given data.

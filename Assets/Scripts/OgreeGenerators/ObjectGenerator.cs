@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class ObjectGenerator : MonoBehaviour
+public class ObjectGenerator
 {
     ///<summary>
     /// Instantiate a rackModel or a rackTemplate (from GameManager) and apply the given data to it.
@@ -20,7 +20,7 @@ public class ObjectGenerator : MonoBehaviour
         //     return null;
         // }
 
-        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
+        string hierarchyName = $"{_parent?.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -29,11 +29,11 @@ public class ObjectGenerator : MonoBehaviour
 
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
-            newRack = Instantiate(GameManager.gm.rackModel);
+            newRack = Object.Instantiate(GameManager.gm.rackModel);
         else
         {
             if (GameManager.gm.objectTemplates.ContainsKey(_rk.attributes["template"]))
-                newRack = Instantiate(GameManager.gm.objectTemplates[_rk.attributes["template"]]);
+                newRack = Object.Instantiate(GameManager.gm.objectTemplates[_rk.attributes["template"]]);
             else
             {
                 GameManager.gm.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", true, eLogtype.error);
@@ -325,7 +325,7 @@ public class ObjectGenerator : MonoBehaviour
     ///<returns>The generated device</returns>
     private GameObject GenerateBasicDevice(Transform _parent, float _height, Transform _slot = null)
     {
-        GameObject go = Instantiate(GameManager.gm.labeledBoxModel);
+        GameObject go = Object.Instantiate(GameManager.gm.labeledBoxModel);
         go.AddComponent<OObject>();
         go.transform.parent = _parent;
         Vector3 scale;
@@ -348,7 +348,7 @@ public class ObjectGenerator : MonoBehaviour
     {
         if (GameManager.gm.objectTemplates.ContainsKey(_template))
         {
-            GameObject go = Instantiate(GameManager.gm.objectTemplates[_template]);
+            GameObject go = Object.Instantiate(GameManager.gm.objectTemplates[_template]);
             go.transform.parent = _parent;
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
             foreach (Renderer r in renderers)
@@ -408,7 +408,7 @@ public class ObjectGenerator : MonoBehaviour
         if (content.Count == 0)
             return null;
 
-        GameObject newGr = Instantiate(GameManager.gm.labeledBoxModel);
+        GameObject newGr = Object.Instantiate(GameManager.gm.labeledBoxModel);
         newGr.name = _gr.name;
         newGr.transform.parent = parent;
 
@@ -583,7 +583,7 @@ public class ObjectGenerator : MonoBehaviour
         if (upperRight.GetChild(0).localScale.y > maxHeight)
             maxHeight = upperRight.GetChild(0).localScale.y;
 
-        GameObject newCo = Instantiate(GameManager.gm.labeledBoxModel);
+        GameObject newCo = Object.Instantiate(GameManager.gm.labeledBoxModel);
         newCo.name = _co.name;
         newCo.transform.parent = parent;
 
@@ -670,7 +670,7 @@ public class ObjectGenerator : MonoBehaviour
         GameObject newSensor;
         if (_se.attributes["formFactor"] == "ext") //Dimensions : 80 x 26 x 18 mm
         {
-            newSensor = Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor = Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
             newSensor.name = "sensor";
 
             Vector3 parentSize = _parent.GetChild(0).localScale;
@@ -680,7 +680,7 @@ public class ObjectGenerator : MonoBehaviour
         }
         else
         {
-            newSensor = Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor = Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
             newSensor.name = _se.name;
             if (parentCategory == "room")
             {

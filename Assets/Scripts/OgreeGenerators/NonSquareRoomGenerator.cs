@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NonSquareRoomGenerator : MonoBehaviour
+public static class NonSquareRoomGenerator// : MonoBehaviour
 {
-    public static NonSquareRoomGenerator instance;
+    // public static NonSquareRoomGenerator instance;
 
-    private void Awake()
-    {
-        if (!instance)
-            instance = this;
-        else
-            Destroy(this);
-    }
+    // private void Awake()
+    // {
+    //     if (!instance)
+    //         instance = this;
+    //     else
+    //         Destroy(this);
+    // }
 
-    public void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
+    public static void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
 
@@ -29,7 +29,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
     }
 
     ///
-    private void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
+    private static void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -77,7 +77,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
     }
 
     ///
-    private void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
+    private static void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
     {
         List<List<int>> verticesClone = new List<List<int>>(_template.vertices);
         List<Vector3> verticesRoom = new List<Vector3>();
@@ -184,7 +184,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
                 int z = int.Parse(separated[1]);
 
                 // Tiles           
-                GameObject tile = Instantiate(GameManager.gm.tileModel, floor);
+                GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
                 tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
                 tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
@@ -193,7 +193,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
     }
 
     ///
-    private double AngleOffAroundAxis(Vector3 a, Vector3 b, Vector3 axis, bool clockwise = true)
+    private static double AngleOffAroundAxis(Vector3 a, Vector3 b, Vector3 axis, bool clockwise = true)
     {
         Vector3 right;
         if (clockwise)
@@ -210,7 +210,7 @@ public class NonSquareRoomGenerator : MonoBehaviour
     }
 
     ///
-    private bool LineSegmentsIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
+    private static bool LineSegmentsIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
     {
         Vector2 intersection = Vector2.zero;
 
