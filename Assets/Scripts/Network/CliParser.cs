@@ -253,6 +253,14 @@ public class CliParser// : MonoBehaviour
                 else
                     GameManager.gm.AppendLogLine("Incorrect device interaction", true, eLogtype.warningCli);
                 break;
+            case "group":
+                Group group = (Group)obj;
+                usableParams = new List<string>() { "label", "labelFont", "content" };
+                if (usableParams.Contains(command.param))
+                    group.SetAttribute(command.param, command.value);
+                else
+                    GameManager.gm.AppendLogLine("Incorrect group interaction", true, eLogtype.warningCli);
+                break;
             default:
                 GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warningCli);
                 break;
