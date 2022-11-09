@@ -246,13 +246,13 @@ public class FocusHandler : MonoBehaviour
         if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject)
         {
             UpdateChildMeshRenderers(false);
-            UpdateOwnMeshRenderers(TempDiagram.isDiagramShown);
+            UpdateOwnMeshRenderers(TempDiagram.instance.isDiagramShown);
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.isDiagramShown && GameManager.gm.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isDiagramShown && GameManager.gm.currentItems.Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
-            if (!TempDiagram.isDiagramShown)
+            if (!TempDiagram.instance.isDiagramShown)
                 UpdateChildMeshRenderers(false, false);
         }
     }
@@ -262,13 +262,13 @@ public class FocusHandler : MonoBehaviour
         if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
         {
             UpdateChildMeshRenderers(false);
-            UpdateOwnMeshRenderers(TempDiagram.isScatterPlotShown);
+            UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.isScatterPlotShown && GameManager.gm.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isScatterPlotShown && GameManager.gm.currentItems.Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
-            if (!TempDiagram.isScatterPlotShown)
+            if (!TempDiagram.instance.isScatterPlotShown)
                 UpdateChildMeshRenderers(false, false);
         }
     }

@@ -2,17 +2,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public static class TempDiagram
+public class TempDiagram : MonoBehaviour
 {
     /// <summary>
     /// true if thetemperature diagram is displayed
     /// </summary>
-    public static bool isDiagramShown = false;
-    public static bool isScatterPlotShown = false;
-    public static Room lastRoom;
-    public static OgreeObject lastScatterPlot;
-    static TempDiagram()
+    public bool isDiagramShown = false;
+    public bool isScatterPlotShown = false;
+    public Room lastRoom;
+    private OgreeObject lastScatterPlot;
+    [SerializeField]
+    private GameObject heatMapModel;
+    [SerializeField]
+    public int heatMapSensorsMaxNumber;
+    public static TempDiagram instance;
+    private void Awake()
     {
+        if (!instance)
+            instance = this;
+        else
+            Destroy(this);
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
@@ -20,7 +29,7 @@ public static class TempDiagram
     /// When called checks if the temperature diagram is currently shown if true hide it.
     ///</summary>
     ///<param name="e">The event's instance</param>
-    static void OnSelectItem(OnSelectItemEvent _e)
+    void OnSelectItem(OnSelectItemEvent _e)
     {
         if (isDiagramShown && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
             HandleTempBarChart(lastRoom);
@@ -33,7 +42,7 @@ public static class TempDiagram
     /// </summary>
     /// <param name="_ogreeObject">The object where we get the sensors</param>
     /// <returns>a list of sensors of the object.</returns>
-    private static List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
+    private List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
     {
         List<Sensor> sensors = new List<Sensor>();
         foreach (Transform childTransform in _ogreeObject.transform)
@@ -44,10 +53,8 @@ public static class TempDiagram
                 sensors.AddRange(GetObjectSensors(childOgreeObject));
             }
             Sensor childSensor = childTransform.GetComponent<Sensor>();
-            if (childSensor)
-                if (childSensor.fromTemplate)
-                    sensors.Add(childSensor);
-
+            if (childSensor && childSensor.fromTemplate)
+                sensors.Add(childSensor);
         }
         return sensors;
 
@@ -57,7 +64,7 @@ public static class TempDiagram
     /// Show the temperature diagram if it is not already shown, hide it if it is.
     /// </summary>
     /// <param name="_room">the object where we show/hide the temperature diagram</param>
-    public static void HandleTempBarChart(Room _room)
+    public void HandleTempBarChart(Room _room)
     {
         float roomHeight = Utils.ParseDecFrac(_room.attributes["height"]);
 
@@ -118,7 +125,7 @@ public static class TempDiagram
     /// <param name="_oobject">the object where the sensor is</param>
     /// <param name="_tempUnit">the temperature unit of the object</param>
     /// <param name="_roomheight">the height of the room containing the object</param>
-    private static void AdaptOObject(OObject _oobject, string _tempUnit, float _roomheight)
+    private void AdaptOObject(OObject _oobject, string _tempUnit, float _roomheight)
     {
         GameObject sensorBar;
         STemp tempInfos = _oobject.GetTemperatureInfos();
@@ -176,14 +183,55 @@ public static class TempDiagram
         _oobject.tempBar = sensorBar;
     }
 
-    public static void HandleScatterPlot(OgreeObject _ogreeObject)
+    public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
         lastScatterPlot = _ogreeObject;
-        EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject});
+        EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
 
         if (!isScatterPlotShown)
             GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = true);
 
         isScatterPlotShown = !isScatterPlotShown;
     }
+
+    public void HandleHeatMap(OObject oObject)
+    {
+        Transform objTransform = oObject.transform.GetChild(0);
+        if (objTransform.childCount > 0)
+        {
+            Destroy(objTransform.GetChild(0).gameObject);
+            return;
+        }
+        float minDimension = Mathf.Min(objTransform.localScale.x, objTransform.localScale.y, objTransform.localScale.z);
+
+        GameObject heatmap = Instantiate(heatMapModel, objTransform);
+
+        if (minDimension == objTransform.localScale.y)
+            heatmap.transform.SetPositionAndRotation(objTransform.position + (objTransform.localScale.y / 2 + 0.01f) * (objTransform.rotation * Vector3.up), objTransform.rotation * Quaternion.Euler(90, 0, 0));
+        else if (minDimension == objTransform.localScale.z)
+            heatmap.transform.SetPositionAndRotation(objTransform.position + (objTransform.localScale.z / 2 + 0.01f) * (objTransform.rotation * Vector3.back), objTransform.rotation * Quaternion.Euler(0, 0, 0));
+        else
+            heatmap.transform.SetPositionAndRotation(objTransform.position + (objTransform.localScale.x / 2 + 0.01f) * (objTransform.rotation * Vector3.left), objTransform.rotation * Quaternion.Euler(0, 90, 0));
+
+        List<Sensor> sensors = GetObjectSensors(oObject);
+
+        Vector4[] sensorPositions = new Vector4[sensors.Count];
+        Vector4[] sensorProperties = new Vector4[sensors.Count];
+
+        for (int i = 0; i < sensors.Count; i++)
+        {
+            Sensor sensor = sensors.ElementAt(i);
+            Vector3 sensorPos = sensor.transform.position;
+            sensorPos -= objTransform.position;
+            sensorPos = Quaternion.Inverse(objTransform.rotation) * sensorPos;
+            sensorPos.Scale(new Vector3(1 / objTransform.lossyScale.x, 1 / objTransform.lossyScale.y, 1 / objTransform.lossyScale.z));
+            sensorPositions[i] = new Vector4(sensorPos.x, sensorPos.y, 0, 0);
+            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
+            float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, -0.5f, 2);
+            sensorProperties[i] = new Vector4(0.5f, intensity, 0, 0);
+        }
+        heatmap.GetComponent<Heatmap>().SetPositionsAndProperties(sensorPositions, sensorProperties);
+        objTransform.hasChanged = true;
+    }
+
 }

@@ -556,9 +556,9 @@ public class UiManager : MonoBehaviour
     public void ToggleTempBarChart()
     {
         if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
-            TempDiagram.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
+            TempDiagram.instance.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
         else if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
-            TempDiagram.HandleTempBarChart(TempDiagram.lastRoom);
+            TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
         else
             GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
@@ -573,9 +573,17 @@ public class UiManager : MonoBehaviour
     public void ToggleTempScatterPlot()
     {
         if (GameManager.gm.currentItems.Count == 1 && (GameManager.gm.currentItems[0].GetComponent<OObject>() || GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "room"))
-            TempDiagram.HandleScatterPlot(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+            TempDiagram.instance.HandleScatterPlot(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one room,, rack or device", true, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
+    }
+
+    public void ToggleHeatMap()
+    {
+        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<OObject>())
+            TempDiagram.instance.HandleHeatMap(GameManager.gm.currentItems[0].GetComponent<OObject>());
+        else
+            GameManager.gm.AppendLogLine("You have to select one and only one device", true, eLogtype.warning);
     }
 
     #endregion
