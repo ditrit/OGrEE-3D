@@ -77,12 +77,12 @@ public class OObject : OgreeObject
                 case "localCS":
                     ToggleCS(_value);
                     break;
-                case "temperature":
-                    SetTemperature(_value);
-                    updateAttr = true;
-                    break;
                 default:
-                    if (attributes.ContainsKey(_param))
+                    if (_param.StartsWith("temperature"))
+                    {
+                        SetTemperature(_value, _param.Substring(11));
+                    }
+                    else if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
@@ -112,13 +112,14 @@ public class OObject : OgreeObject
         }
         description = _src.description;
 
-        if (attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature")
-            && attributes["temperature"] != _src.attributes["temperature"])
-            SetTemperature(_src.attributes["temperature"]);
-        else if (!attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature"))
-            SetTemperature(_src.attributes["temperature"]);
-        else if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
+        if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
             Destroy(transform.Find("sensor").gameObject);
+
+        foreach (string attribute in _src.attributes.Keys)
+            if (attribute.StartsWith("temperature") 
+                && (!attributes.ContainsKey(attribute) 
+                    || attributes[attribute] != _src.attributes[attribute]))
+                SetTemperature(_src.attributes[attribute], attribute.Substring(11));
 
         attributes = _src.attributes;
 
@@ -305,11 +306,14 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
+    ///<param name="_sensorName">The sensor to modify</param>
+    public void SetTemperature(string _value, string _sensorName)
     {
         if (category == "corridor")
         {
-            if (Regex.IsMatch(_value, "^(cold|warm)$"))
+            if (_sensorName != "")
+                GameManager.gm.AppendLogLine("Corridors can not have sensors", true, eLogtype.warning);
+            else if (Regex.IsMatch(_value, "^(cold|warm)$"))
                 attributes["temperature"] = _value;
             else
                 GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, eLogtype.warning);
@@ -318,40 +322,42 @@ public class OObject : OgreeObject
         {
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
-                attributes["temperature"] = _value;
-                Transform sensorTransform = transform.Find("sensor");
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                if (_sensorName == "")
+                {
+                    attributes["temperature"] = _value;
+                    Transform sensorTransform = transform.Find("sensor");
+                    if (sensorTransform)
+                        sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                    else
+                    {
+                        SApiObject se = new SApiObject
+                        {
+                            description = new List<string>(),
+                            attributes = new Dictionary<string, string>(),
+
+                            name = "sensor", // ?
+                            category = "sensor",
+                            parentId = id,
+                            domain = domain
+                        };
+                        se.attributes["formFactor"] = "ext";
+                        se.attributes["temperature"] = _value;
+
+                        Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                        sensor.SetTemperature(_value);
+                    }
+                }
                 else
                 {
-                    SApiObject se = new SApiObject
-                    {
-                        description = new List<string>(),
-                        attributes = new Dictionary<string, string>(),
-
-                        name = "sensor", // ?
-                        category = "sensor",
-                        parentId = id,
-                        domain = domain
-                    };
-                    se.attributes["formFactor"] = "ext";
-                    se.attributes["temperature"] = _value;
-
-                    Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                    sensor.SetTemperature(_value);
+                    Transform sensorTransform = transform.Find(_sensorName.Substring(1));
+                    if (sensorTransform)
+                        sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                    else
+                        GameManager.gm.AppendLogLine($"Sensor {_sensorName} does not exist", true, eLogtype.warning);
                 }
             }
-            else if (Regex.IsMatch(_value, "^[\\w.]+@[0-9.]+$"))
-            {
-                string[] data = _value.Split('@');
-                Transform sensorTransform = transform.Find(data[0]);
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(data[1]);
-                else
-                    GameManager.gm.AppendLogLine($"Sensor {data[0]} does not exist", true, eLogtype.warning);
-            }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numeral value optionnaly preceded by a sensor name", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("Temperature must be a numeral value", true, eLogtype.warning);
         }
     }
 
@@ -396,7 +402,7 @@ public class OObject : OgreeObject
         OgreeObject site = referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
         if (site && site.attributes.ContainsKey("temperatureUnit"))
             temperatureUnit = site.attributes["temperatureUnit"];
-        return new STemp(mean, std, min, max, hottestChild,temperatureUnit);
+        return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
     }
 
 }

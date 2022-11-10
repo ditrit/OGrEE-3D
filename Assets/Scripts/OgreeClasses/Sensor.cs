@@ -11,10 +11,10 @@ public class Sensor : MonoBehaviour
     public GameObject sensorTempDiagram = null;
 
     ///<summary>
-    /// Check for a _param attribute "temperature" and assign _value to it.
+    /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
+    /// Set this sensor's temperature to _value (converted to float)
     ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
+    ///<param name="_value">The temperature value</param>
     public void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);

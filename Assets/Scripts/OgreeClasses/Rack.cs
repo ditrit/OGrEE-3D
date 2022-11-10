@@ -72,11 +72,12 @@ public class Rack : OObject
                         GameManager.gm.AppendLogLine($"U helpers OFF for {name}.", false, eLogtype.info);
                     }
                     break;
-                case "temperature":
-                    SetTemperature(_value);
-                    updateAttr = true;
-                    break;
                 default:
+                    if (_param.StartsWith("temperature"))
+                    {
+                        SetTemperature(_value, _param.Substring(11));
+                    }
+                    else
                     if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
                     else
