@@ -165,8 +165,8 @@ public class CliParser// : MonoBehaviour
         {
             OObject item = (OObject)obj;
             if (newData.attributes.ContainsKey("color") 
-                && (item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"])
-                    || !item.attributes.ContainsKey("color"))
+                && (!item.attributes.ContainsKey("color")
+                    || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
 
 
