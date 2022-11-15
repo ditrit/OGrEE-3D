@@ -9046,7 +9046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10054}
+  m_AnchoredPosition: {x: 0, y: 217.10002}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -11999,6 +11999,9 @@ MonoBehaviour:
   lastRoom: {fileID: 0}
   heatMapModel: {fileID: 2263015014546281476, guid: b4ee8339a01349045a723faec4f6d335,
     type: 3}
+  radiusRatio: 0.1
+  intensityMin: -0.1
+  intensityMax: 2
   heatMapSensorsMaxNumber: 100
 --- !u!114 &1595579787
 MonoBehaviour:
@@ -16579,8 +16582,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000025302459
-  m_Size: 0.5655529
+  m_Value: -0.00000014056921
+  m_Size: 0.555672
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -14,6 +14,12 @@ public class TempDiagram : MonoBehaviour
     [SerializeField]
     private GameObject heatMapModel;
     [SerializeField]
+    private float radiusRatio;
+    [SerializeField]
+    private float intensityMin;
+    [SerializeField]
+    private float intensityMax;
+    [SerializeField]
     public int heatMapSensorsMaxNumber;
     public static TempDiagram instance;
     private void Awake()
@@ -222,13 +228,13 @@ public class TempDiagram : MonoBehaviour
         {
             Sensor sensor = sensors.ElementAt(i);
             Vector3 sensorPos = sensor.transform.position;
-            sensorPos -= objTransform.position;
-            sensorPos = Quaternion.Inverse(objTransform.rotation) * sensorPos;
-            sensorPos.Scale(new Vector3(1 / objTransform.lossyScale.x, 1 / objTransform.lossyScale.y, 1 / objTransform.lossyScale.z));
+            sensorPos -= heatmap.transform.position;
+            sensorPos = Quaternion.Inverse(heatmap.transform.rotation) * sensorPos;
+            sensorPos.Scale(new Vector3(1 / heatmap.transform.lossyScale.x, 1 / heatmap.transform.lossyScale.y, 1 / heatmap.transform.lossyScale.z));
             sensorPositions[i] = new Vector4(sensorPos.x, sensorPos.y, 0, 0);
             (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
-            float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, -0.5f, 2);
-            sensorProperties[i] = new Vector4(0.5f, intensity, 0, 0);
+            float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, intensityMin, intensityMax);
+            sensorProperties[i] = new Vector4(objTransform.localScale.sqrMagnitude * radiusRatio, intensity, 0, 0);
         }
         heatmap.GetComponent<Heatmap>().SetPositionsAndProperties(sensorPositions, sensorProperties);
         objTransform.hasChanged = true;
