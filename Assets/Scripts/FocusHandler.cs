@@ -122,6 +122,11 @@ public class FocusHandler : MonoBehaviour
                     UpdateChildMeshRenderers(false);
             }
 
+
+            //destroy heatmap if there is one
+            if (transform.GetChild(0).childCount > 0)
+                Destroy(transform.GetChild(0).GetChild(0).gameObject);
+
         }
     }
 

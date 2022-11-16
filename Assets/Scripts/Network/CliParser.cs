@@ -171,10 +171,10 @@ public class CliParser// : MonoBehaviour
 
 
             foreach (string attribute in newData.attributes.Keys)
-                if (attribute.StartsWith("temperature") 
+                if (attribute.StartsWith("temperature_") 
                     && (!item.attributes.ContainsKey(attribute)
                         || item.attributes[attribute] != newData.attributes[attribute]))
-                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(11));
+                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
 
         // Case of a separator/areas modification in a room

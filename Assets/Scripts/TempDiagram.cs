@@ -19,9 +19,7 @@ public class TempDiagram : MonoBehaviour
     private float intensityMin;
     [SerializeField]
     private float intensityMax;
-    [SerializeField]
     public int heatMapSensorsMaxNumber;
-    [SerializeField]
     public Texture2D heatMapGradient;
     public static TempDiagram instance;
     private void Awake()
@@ -146,7 +144,7 @@ public class TempDiagram : MonoBehaviour
             float yBase = _oobject.transform.parent.position.y + 0.01f;
 
 
-            sensorBar = Object.Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
@@ -158,7 +156,7 @@ public class TempDiagram : MonoBehaviour
             if (tempInfos.std != 0)
             {
 
-                GameObject sensorBarStd = Object.Instantiate(GameManager.gm.sensorBarStdModel, _oobject.transform);
+                GameObject sensorBarStd = Instantiate(GameManager.gm.sensorBarStdModel, _oobject.transform);
                 sensorBarStd.transform.position = new Vector3(_oobject.transform.position.x, yBase + height, _oobject.transform.position.z);
                 sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
@@ -176,7 +174,7 @@ public class TempDiagram : MonoBehaviour
             float height = _roomheight / 2;
 
             float yBase = _oobject.transform.parent.position.y + 0.01f;
-            sensorBar = Object.Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);

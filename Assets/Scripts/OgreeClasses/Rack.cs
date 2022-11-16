@@ -73,9 +73,9 @@ public class Rack : OObject
                     }
                     break;
                 default:
-                    if (_param.StartsWith("temperature"))
+                    if (_param.StartsWith("temperature_"))
                     {
-                        SetTemperature(_value, _param.Substring(11));
+                        SetTemperature(_value, _param.Substring(12));
                     }
                     else
                     if (attributes.ContainsKey(_param))

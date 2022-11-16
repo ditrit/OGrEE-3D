@@ -10,6 +10,17 @@ public class Sensor : MonoBehaviour
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
 
+    private void Start()
+    {
+        if (!fromTemplate)
+            EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+    }
+
+    private void OnDestroy()
+    {
+        if (!fromTemplate)
+            EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+    }
     ///<summary>
     /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
     /// Set this sensor's temperature to _value (converted to float)
@@ -48,5 +59,12 @@ public class Sensor : MonoBehaviour
         mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);
 
         color = mat.color;
+    }
+
+    private void OnImportFinished(ImportFinishedEvent _e)
+    {
+        OObject parent = transform.parent.GetComponent<OObject>();
+        if (parent)
+            SetTemperature(parent.GetTemperatureInfos().mean.ToString());
     }
 }
