@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -580,10 +581,31 @@ public class UiManager : MonoBehaviour
 
     public void ToggleHeatMap()
     {
-        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<OObject>())
-            TempDiagram.instance.HandleHeatMap(GameManager.gm.currentItems[0].GetComponent<OObject>());
+        if (GameManager.gm.currentItems.Count == 1)
+        {
+            OObject oObject = GameManager.gm.currentItems[0].GetComponent<OObject>();
+            if (oObject && oObject.category == "device")
+                if (DepthCheck(GameManager.gm.currentItems[0].GetComponent<OgreeObject>()) <= 1)
+                    TempDiagram.instance.HandleHeatMap(GameManager.gm.currentItems[0].GetComponent<OObject>());
+                else
+                    GameManager.gm.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
+            else
+                GameManager.gm.AppendLogLine("You have to select only one device", true, eLogtype.warning);
+        }
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one device", true, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select a device", true, eLogtype.warning);
+    }
+
+    private int DepthCheck(OgreeObject _ogreeObject)
+    {
+        int depth = 0;
+        foreach (Transform child in _ogreeObject.gameObject.transform)
+        {
+            OgreeObject childOgree = child.GetComponent<OgreeObject>();
+            if (childOgree)
+                depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
+        }
+        return depth;
     }
 
     #endregion
