@@ -278,9 +278,9 @@ public class CustomRendererOutline : MonoBehaviour
         else
         {
             (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(temp.unit);
-            float blue = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 1, 0);
-            float red = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 0, 1);
-            mat.color = new Color(red, 0, blue);
+            Texture2D text = TempDiagram.instance.heatMapGradient;
+            float pixelX = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 0, text.width);
+            mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);
         }
         return mat;
     }

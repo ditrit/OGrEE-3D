@@ -51,8 +51,8 @@ Shader "Hidden/Heatmap"
 				half h = 0;
 				half maxValueDistance = -100;
 				half coefMax = 0;
+				half maxValue = -100;
 				half minValue = 100;
-				half totDistance = 0;
 				for (int i = 0; i < _Points_Length; i++)
 				{
 					// Calculates the contribution of each point
@@ -64,18 +64,16 @@ Shader "Hidden/Heatmap"
 					if (hi * _Properties[i].y > maxValueDistance) {
 						maxValueDistance = hi * _Properties[i].y;
 					}
-					if (hi > 0) {
-						totDistance += 1;
+					if (_Properties[i].y > maxValue) {
+						maxValue = _Properties[i].y;
+					}
+					if (_Properties[i].y < minValue) {
+						minValue = _Properties[i].y;
 					}
 					h += hi * _Properties[i].y;
 				}
 				// Converts (0-1) according to the heat texture
-				/*if (totDistance > 0) {
-					h = saturate(h / totDistance);
-				}
-				*/
 				h = saturate(maxValueDistance);
-				h = saturate(h);
 				half4 color = tex2D(_HeatTex, fixed2(h, 0.5));
 				return color;
 			}

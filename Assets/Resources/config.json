@@ -22,7 +22,7 @@
     "apiUrl": "",
     "apiToken": "",
 	"temperatureMinC": 0,
-	"temperatureMaxC": 100,
+	"temperatureMaxC": 60,
 	"temperatureMinF": 32,
 	"temperatureMaxF": 212,
 }

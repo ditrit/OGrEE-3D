@@ -21,6 +21,8 @@ public class TempDiagram : MonoBehaviour
     private float intensityMax;
     [SerializeField]
     public int heatMapSensorsMaxNumber;
+    [SerializeField]
+    public Texture2D heatMapGradient;
     public static TempDiagram instance;
     private void Awake()
     {
@@ -133,6 +135,7 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_roomheight">the height of the room containing the object</param>
     private void AdaptOObject(OObject _oobject, string _tempUnit, float _roomheight)
     {
+        float pixelX;
         GameObject sensorBar;
         STemp tempInfos = _oobject.GetTemperatureInfos();
         if (!(tempInfos.mean is float.NaN))
@@ -148,9 +151,9 @@ public class TempDiagram : MonoBehaviour
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
 
-            float blue = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 1, 0);
-            float red = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, 1);
-            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(red, 0, blue, 0.85f);
+            pixelX = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, heatMapGradient.width);
+            Color col = heatMapGradient.GetPixel(Mathf.FloorToInt(pixelX), heatMapGradient.height / 2);
+            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(col.r, col.g, col.b, 0.85f);
 
             if (tempInfos.std != 0)
             {
@@ -160,11 +163,11 @@ public class TempDiagram : MonoBehaviour
                 sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
 
-                blue = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 1, 0);
-                red = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, 1);
-                sensorBarStd.transform.GetChild(0).GetChild(0).GetComponent<Renderer>().material.color = new Color(red, 0, blue);
-                sensorBarStd.transform.GetChild(0).GetChild(1).GetComponent<Renderer>().material.color = new Color(red, 0, blue);
-                sensorBarStd.transform.GetChild(0).GetChild(2).GetComponent<Renderer>().material.color = new Color(red, 0, blue);
+                pixelX = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, heatMapGradient.width);
+
+                sensorBarStd.transform.GetChild(0).GetChild(0).GetComponent<Renderer>().material.color = heatMapGradient.GetPixel(Mathf.FloorToInt(pixelX), heatMapGradient.height / 2);
+                sensorBarStd.transform.GetChild(0).GetChild(1).GetComponent<Renderer>().material.color = heatMapGradient.GetPixel(Mathf.FloorToInt(pixelX), heatMapGradient.height / 2);
+                sensorBarStd.transform.GetChild(0).GetChild(2).GetComponent<Renderer>().material.color = heatMapGradient.GetPixel(Mathf.FloorToInt(pixelX), heatMapGradient.height / 2);
             }
         }
         else
