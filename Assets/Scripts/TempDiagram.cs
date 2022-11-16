@@ -121,7 +121,7 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
-                    Object.Destroy(childOgreeObject.tempBar);
+                    Destroy(childOgreeObject.tempBar);
 
             }
         isDiagramShown = !isDiagramShown;
@@ -197,8 +197,7 @@ public class TempDiagram : MonoBehaviour
         lastScatterPlot = _ogreeObject;
         EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
 
-        if (!isScatterPlotShown)
-            GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = true);
+        GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !isScatterPlotShown);
 
         isScatterPlotShown = !isScatterPlotShown;
     }

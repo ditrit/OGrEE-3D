@@ -245,8 +245,8 @@ public class FocusHandler : MonoBehaviour
     {
         if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject)
         {
-            UpdateChildMeshRenderers(false);
             UpdateOwnMeshRenderers(TempDiagram.instance.isDiagramShown);
+            UpdateChildMeshRenderers(false);
         }
         else if (_e.obj == gameObject)
         {
@@ -261,8 +261,8 @@ public class FocusHandler : MonoBehaviour
     {
         if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
         {
-            UpdateChildMeshRenderers(false);
             UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
+            UpdateChildMeshRenderers(false);
         }
         else if (_e.obj == gameObject)
         {
