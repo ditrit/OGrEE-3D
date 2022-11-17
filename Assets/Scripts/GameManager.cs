@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviour
     public bool editMode = false;
     private string startDateTime;
 
+    public GameObject objectRoot;
+
     #region UnityMethods
 
     private void Awake()

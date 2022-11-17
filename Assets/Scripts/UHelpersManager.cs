@@ -117,7 +117,7 @@ public class UHelpersManager : MonoBehaviour
                     }
                     return;
                 }
-                t = t.parent.transform;
+                t = t.parent;
             }
         }
     }

@@ -34,14 +34,11 @@ public class CustomerGenerator
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent)
     {
-        // Transform tn = Utils.FindParent(_parent, _si.parentId);
-        // if (!tn || tn.GetComponent<OgreeObject>().category != "tenant")
-        // {
-        //     GameManager.gm.AppendLogLine($"Parent tenant not found", true, eLogtype.error);
-        //     return null;
-        // }
-
-        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
+        string hierarchyName;
+        if (_parent)
+            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
+        else
+            hierarchyName = _si.name;
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);

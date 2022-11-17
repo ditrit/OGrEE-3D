@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -14,13 +14,11 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        // Transform si = Utils.FindParent(_parent, _bd.parentId);
-        // if (!si || si.GetComponent<OgreeObject>().category != "site")
-        // {
-        //     GameManager.gm.AppendLogLine($"Parent site not found", true, eLogtype.error);
-        //     return null;
-        // }
-        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
+        string hierarchyName;
+        if (_parent)
+            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
+        else
+            hierarchyName = _bd.name;
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -64,13 +62,11 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        // Transform bd = Utils.FindParent(_parent, _ro.parentId);
-        // if (!bd || bd.GetComponent<OgreeObject>().category != "building")
-        // {
-        //     GameManager.gm.AppendLogLine($"Parent building not found", true, eLogtype.error);
-        //     return null;
-        // }
-        string hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
+        string hierarchyName;
+        if (_parent)
+            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
+        else
+            hierarchyName = _ro.name;
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -144,9 +140,14 @@ public class BuildingGenerator
             room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-            Vector3 bdOrigin = _parent.GetChild(0).localScale / -0.2f;
+            Vector3 bdOrigin = Vector3.zero;
+            if (_parent)
+                bdOrigin = _parent.GetChild(0).localScale / -0.2f;
             Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-            newRoom.transform.position = _parent.position;
+            if (_parent)
+                newRoom.transform.position = _parent.position;
+            else
+                newRoom.transform.position = Vector3.zero;
             newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 

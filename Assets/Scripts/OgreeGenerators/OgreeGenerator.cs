@@ -47,12 +47,26 @@ public class OgreeGenerator : MonoBehaviour
 
         // Find parent
         Transform parent = Utils.FindParent(_parent, _obj.parentId);
-        if (_obj.category != "tenant" && !parent)
+        if (!parent)
         {
-            GameManager.gm.AppendLogLine($"Parent of {_obj.name} not found", true, eLogtype.error);
-            return null;
-        }
+            if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
+            {
+                GameManager.gm.AppendLogLine("Unable to draw a basic device without its parent.", true, eLogtype.errorCli);
+                return null;
+            }
+            if (_obj.category == "corridor" || _obj.category == "group")
+            {
+                GameManager.gm.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, eLogtype.errorCli);
+                return null;
+            }
 
+            if (_obj.category != "tenant" && !GameManager.gm.allItems.Contains(_obj.name))
+            {
+                Debug.Log($"Draw as standalone {_obj.name}");
+                Destroy(GameManager.gm.objectRoot);
+                GameManager.gm.objectRoot = null;
+            }
+        }
         // Call Create function
         switch (_obj.category)
         {
@@ -88,7 +102,16 @@ public class OgreeGenerator : MonoBehaviour
                 GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
                 break;
         }
-        newItem?.SetBaseTransform();
+        if (newItem)
+        {
+            newItem.SetBaseTransform();
+            if (newItem.category != "tenant")
+            {
+                if (!GameManager.gm.objectRoot)
+                    GameManager.gm.objectRoot = newItem.gameObject;
+            }
+
+        }
         ResetCoroutine();
         return newItem;
     }
