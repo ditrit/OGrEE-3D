@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
 #if API_DEBUG
         configLoader.ConnectToApi();
 #endif

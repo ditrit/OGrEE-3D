@@ -21,7 +21,12 @@ public class TempDiagram : MonoBehaviour
     private float intensityMax;
     public int heatMapSensorsMaxNumber;
     public Texture2D heatMapGradient;
+    public Texture2D heatMapGradientDefault;
+    public Texture2D heatMapGradientCustom;
     public static TempDiagram instance;
+    private Gradient gradient;
+    [SerializeField]
+    private Material heatMapMat;
     private void Awake()
     {
         if (!instance)
@@ -240,4 +245,37 @@ public class TempDiagram : MonoBehaviour
         objTransform.hasChanged = true;
     }
 
+    public void MakeCustomGradient(List<int[]> _colors)
+    {
+        GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count,8)]; //Unity gradients can only take 8 colors max
+        foreach (int[] color in _colors)
+            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3] };
+
+        gradient = new Gradient();
+        gradient.SetKeys(colorKeys, new GradientAlphaKey[0]);
+        // create texture
+        Texture2D outputTex = new Texture2D(1024, 128)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear
+        };
+        // draw texture
+        for (int x = 0; x < 1024; x++)
+            for (int y = 0; y < 128; y++)
+            {
+                Color color = gradient.Evaluate(x/(float)1024);
+                color = new Color(color.r / 255,color.g / 255, color.b / 255, 1);
+                outputTex.SetPixel(x, y, color);
+            }
+        outputTex.Apply();
+        heatMapGradientCustom = outputTex;
+    }
+
+    public void SetGradient(List<int[]> _colors, bool _useCustomGradient)
+    {
+        MakeCustomGradient(_colors);
+        heatMapGradient = _useCustomGradient ? heatMapGradientCustom : heatMapGradientDefault;
+        heatMapMat.SetTexture("_HeatTex", heatMapGradient);
+        heatMapMat.GetTexturePropertyNames().ToList().ForEach(v => print(v+"("+heatMapMat.GetTexture(v)+")"));
+    }
 }

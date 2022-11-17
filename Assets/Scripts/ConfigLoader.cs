@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -23,6 +24,8 @@ public class ConfigLoader
         public int temperatureMaxC;
         public int temperatureMinF;
         public int temperatureMaxF;
+        public int[][] customTemperatureGradient;
+        public bool useCustomGradient;
     }
 
     private SConfig config;
@@ -290,5 +293,15 @@ public class ConfigLoader
             return (config.temperatureMinF, config.temperatureMaxF);
         GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
         return (0, 0);
+    }
+
+    public List<int[]> GetCustomGradientColors()
+    {
+        return config.customTemperatureGradient.ToList();
+    }
+
+    public bool IsUsingCustomGradient()
+    {
+        return config.useCustomGradient;
     }
 }
