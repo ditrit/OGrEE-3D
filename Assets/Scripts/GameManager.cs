@@ -322,6 +322,22 @@ public class GameManager : MonoBehaviour
         Destroy(_toDel);
     }
 
+    ///
+    public async Task PurgeTenants(string _exception)
+    {
+        await SetCurrentItem(null);
+        List<GameObject> tnToDel = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>().category == "tenant" && go.name != _exception)
+                tnToDel.Add(go);
+        }
+        for (int i = 0; i < tnToDel.Count; i++)
+            Destroy(tnToDel[i]);
+
+    }
+
     ///<summary>
     /// Display a message in the CLI.
     ///</summary>

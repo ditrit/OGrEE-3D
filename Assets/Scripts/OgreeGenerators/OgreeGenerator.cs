@@ -64,6 +64,7 @@ public class OgreeGenerator : MonoBehaviour
             {
                 Debug.Log($"Draw as standalone {_obj.name}");
                 Destroy(GameManager.gm.objectRoot);
+                await GameManager.gm.PurgeTenants(_obj.domain);
                 GameManager.gm.objectRoot = null;
             }
         }
@@ -107,7 +108,7 @@ public class OgreeGenerator : MonoBehaviour
             newItem.SetBaseTransform();
             if (newItem.category != "tenant")
             {
-                if (!GameManager.gm.objectRoot)
+                if (!GameManager.gm.objectRoot && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
                     GameManager.gm.objectRoot = newItem.gameObject;
             }
 
