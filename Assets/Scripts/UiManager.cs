@@ -575,6 +575,9 @@ public class UiManager : MonoBehaviour
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
 
+    ///<summary>
+    /// Called by GUI button: if one and only one room if selected, toggle its bar chart.
+    ///</summary>
     public async void ToggleTempBarChart()
     {
         if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
@@ -588,6 +591,9 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
 
+    ///<summary>
+    /// Called by GUI button: toggle temperature color mode.
+    ///</summary>
     public void TempColorMode(bool _value)
     {
         GameManager.gm.tempMode = _value;
@@ -595,6 +601,10 @@ public class UiManager : MonoBehaviour
         UpdateGuiInfos();
     }
 
+
+    ///<summary>
+    /// Called by GUI button: if one and only one room or OObject is seleted, toggle its sensor scatter plot
+    ///</summary>
     public void ToggleTempScatterPlot()
     {
         if (GameManager.gm.currentItems.Count == 1 && (GameManager.gm.currentItems[0].GetComponent<OObject>() || GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "room"))
@@ -603,6 +613,10 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
     }
 
+
+    ///<summary>
+    /// Called by GUI button: if one and only one device is selected and it has no child or its children have no child, toggle its heatmap
+    ///</summary>
     public void ToggleHeatMap()
     {
         if (GameManager.gm.currentItems.Count == 1)
@@ -620,6 +634,11 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("You have to select one device", true, eLogtype.warning);
     }
 
+    /// <summary>
+    /// Recursively compute the depth of an object
+    /// </summary>
+    /// <param name="_ogreeObject">the object we're starting at</param>
+    /// <returns>the highest number of nested children it has : 0 if it has no child, 1 if it has at least one child without child, 2 if its child has at least one child...</returns>
     private int DepthCheck(OgreeObject _ogreeObject)
     {
         int depth = 0;

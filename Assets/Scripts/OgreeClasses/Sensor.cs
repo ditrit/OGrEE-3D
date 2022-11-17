@@ -61,6 +61,10 @@ public class Sensor : MonoBehaviour
         color = mat.color;
     }
 
+    /// <summary>
+    /// When called, update the sensor temperature
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
         OObject parent = transform.parent.GetComponent<OObject>();

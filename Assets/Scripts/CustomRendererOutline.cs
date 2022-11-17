@@ -267,6 +267,10 @@ public class CustomRendererOutline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Create a material with a color corresponding to the object's temperature
+    /// </summary>
+    /// <returns>the temperature material</returns>
     private Material GetTemperatureMaterial()
     {
         STemp temp = GetComponent<OObject>().GetTemperatureInfos();
@@ -285,6 +289,10 @@ public class CustomRendererOutline : MonoBehaviour
         return mat;
     }
 
+    /// <summary>
+    /// When called, update the object's material according to the temperature color mode being on or not
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void OnTemperatureColorEvent(TemperatureColorEvent _e)
     {
         if (GameManager.gm.tempMode)
@@ -308,6 +316,10 @@ public class CustomRendererOutline : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// When called, recompute the temperature material if the temperature color mode is on then set the object's material accordingly
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
         if (GameManager.gm.tempMode)

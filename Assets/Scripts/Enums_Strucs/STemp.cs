@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Structure containing all informations relative to an object's temperature : its average, standard deviation, minimum, maximum, unit and its hottest child.
+/// </summary>
 [System.Serializable]
 public struct STemp
 {

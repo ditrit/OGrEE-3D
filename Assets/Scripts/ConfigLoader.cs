@@ -295,11 +295,19 @@ public class ConfigLoader
         return (0, 0);
     }
 
+    /// <summary>
+    /// Get custom gradient colors to be used to represent temperatures
+    /// </summary>
+    /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
     public List<int[]> GetCustomGradientColors()
     {
         return config.customTemperatureGradient.ToList();
     }
 
+    /// <summary>
+    /// Should the user-defined temperature color gradient be used ?
+    /// </summary>
+    /// <returns>True if yes, false if not </returns>
     public bool IsUsingCustomGradient()
     {
         return config.useCustomGradient;

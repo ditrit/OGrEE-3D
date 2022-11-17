@@ -354,6 +354,10 @@ public class OObject : OgreeObject
         }
     }
 
+    /// <summary>
+    /// Compute recursively temperature average, standard deviation, min, max and hottes child of the object
+    /// </summary>
+    /// <returns>a STemp instance containg all temperature infos of the object</returns>
     public STemp GetTemperatureInfos()
     {
         List<(float temp, float volume, string childName)> temps = new List<(float, float, string)>();

@@ -15,15 +15,7 @@ public class Heatmap : MonoBehaviour
         count = TempDiagram.instance.heatMapSensorsMaxNumber;
         positions = new Vector4[count];
         adjustedPositions = new Vector4[count];
-        properties = new Vector4[count];// x = radius, y = intensity
-        //for (int i = 0; i < 10; i++)
-        //{
-        //    for (int j = 0; j < 10; j++)
-        //    {
-        //        properties[i * 10 + j] = new Vector4(0.05f, 1, 0, 0); ;//new Vector4(Random.Range(0f, 0.25f), Random.Range(-0.25f, 1f), 0, 0); //
-        //        positions[i * 10 + j] = new Vector4(((float)i / 10 - 0.45f), ((float)j / 10 - 0.45f), 0, 0);
-        //    }
-        //}
+        properties = new Vector4[count];
     }
 
     void Update()
@@ -47,6 +39,11 @@ public class Heatmap : MonoBehaviour
         transform.parent.hasChanged = false;
     }
 
+    /// <summary>
+    /// Apply the object's scale, position and rotation to a heatmap point
+    /// </summary>
+    /// <param name="_point">the heatmap point to modify</param>
+    /// <returns>the modified point</returns>
     private Vector4 HandleTransform(Vector4 _point)
     {
         Vector3 pointTemp = new Vector3(_point.x, _point.y, _point.z);
@@ -57,6 +54,11 @@ public class Heatmap : MonoBehaviour
         return new Vector4(pointTemp.x, pointTemp.y, pointTemp.z, 0);
     }
 
+    /// <summary>
+    /// Set the positions and properties(radius,intensity) of the heatmap points <br></br> Arguments needs to be Vector4 to be passed to a shader
+    /// </summary>
+    /// <param name="_positions">position of the point (last digits is not used)</param>
+    /// <param name="_properties">(x = radius, y = intensity, z = 0,, w =0)</param>
     public void SetPositionsAndProperties(Vector4[] _positions, Vector4[] _properties)
     {
         try

@@ -187,10 +187,10 @@ public class TempDiagram : MonoBehaviour
 
         }
         OgreeObject sensorBarOO = sensorBar.GetComponent<OgreeObject>();
-        sensorBarOO.attributes["mean"] = $"{tempInfos.mean} {tempInfos.unit}";
+        sensorBarOO.attributes["average"] = $"{tempInfos.mean} {tempInfos.unit}";
         sensorBarOO.attributes["standard deviation"] = $"{tempInfos.std} {tempInfos.unit}";
-        sensorBarOO.attributes["min"] = $"{tempInfos.min} {tempInfos.unit}";
-        sensorBarOO.attributes["max"] = $"{tempInfos.max} {tempInfos.unit}";
+        sensorBarOO.attributes["minimum"] = $"{tempInfos.min} {tempInfos.unit}";
+        sensorBarOO.attributes["maximum"] = $"{tempInfos.max} {tempInfos.unit}";
         sensorBarOO.attributes["hottest child"] = tempInfos.hottestChild;
         _oobject.tempBar = sensorBar;
     }
@@ -254,9 +254,9 @@ public class TempDiagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Create a custom gradient texture (Texture2D) using Unity's Gradient class.
+    /// Create a custom gradient texture (Texture2D) using Unity's Gradient class.<br></br> <b>8 colors max, colors after the 8th one will not be used</b>
     /// </summary>
-    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-1)</param>
+    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)<br></br> <b>8 colors max, colors after the 8th one will not be used</b></param>
     public void MakeCustomGradient(List<int[]> _colors)
     {
         GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count,8)]; //Unity gradients can only take 8 colors max
@@ -283,6 +283,11 @@ public class TempDiagram : MonoBehaviour
         heatMapGradientCustom = outputTex;
     }
 
+    /// <summary>
+    /// Create a custom gradient and set the gradient to use
+    /// </summary>
+    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)</param>
+    /// <param name="_useCustomGradient">if true, temperature colors will use the gradient created with <paramref name="_colors"/>, else they will use the default gradient </param>
     public void SetGradient(List<int[]> _colors, bool _useCustomGradient)
     {
         MakeCustomGradient(_colors);
