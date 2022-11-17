@@ -575,12 +575,15 @@ public class UiManager : MonoBehaviour
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
 
-    public void ToggleTempBarChart()
+    public async void ToggleTempBarChart()
     {
         if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
             TempDiagram.instance.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
         else if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
+        {
             TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
+            await GameManager.gm.SetCurrentItem(null);
+        }
         else
             GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
