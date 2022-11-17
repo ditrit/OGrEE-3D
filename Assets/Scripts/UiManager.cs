@@ -614,10 +614,10 @@ public class UiManager : MonoBehaviour
                 else
                     GameManager.gm.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
             else
-                GameManager.gm.AppendLogLine("You have to select only one device", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("You have to select a device", true, eLogtype.warning);
         }
         else
-            GameManager.gm.AppendLogLine("You have to select a device", true, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select one device", true, eLogtype.warning);
     }
 
     private int DepthCheck(OgreeObject _ogreeObject)

@@ -8969,8 +8969,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2071767878}
   m_HandleRect: {fileID: 2071767877}
   m_Direction: 2
-  m_Value: 0.00000009884236
-  m_Size: 0.013972056
+  m_Value: 0.00000014826355
+  m_Size: 0.013972057
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9046,7 +9046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10002}
+  m_AnchoredPosition: {x: 0, y: 217.89856}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -12063,6 +12063,9 @@ MonoBehaviour:
   editBtn: {fileID: 1731992678}
   resetTransBtn: {fileID: 1012792178}
   resetChildrenBtn: {fileID: 1205504873}
+  tempDiagramBBtn: {fileID: 75145215}
+  tempScatterPlotBtn: {fileID: 1407650635}
+  heatMapBtn: {fileID: 565046244}
   reloadBtn: {fileID: 1890827699}
   apiBtn: {fileID: 184299213}
   apiUrl: {fileID: 39982717}
@@ -14892,7 +14895,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -16587,8 +16590,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000001405692
-  m_Size: 0.5657588
+  m_Value: -0.0036782748
+  m_Size: 0.5531152
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

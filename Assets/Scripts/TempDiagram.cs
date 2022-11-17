@@ -52,7 +52,7 @@ public class TempDiagram : MonoBehaviour
     /// Recursive fonction, get a list of the sensors in the object or in the children of it.
     /// </summary>
     /// <param name="_ogreeObject">The object where we get the sensors</param>
-    /// <returns>a list of sensors of the object.</returns>
+    /// <returns>a list of sensors of the object</returns>
     private List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
     {
         List<Sensor> sensors = new List<Sensor>();
@@ -115,7 +115,7 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject && !childTransform.GetComponent<Group>())
-                    AdaptOObject(childOgreeObject, tempUnit, roomHeight);
+                    ComputeTempBar(childOgreeObject, tempUnit, roomHeight);
             }
             lastRoom = _room;
         }
@@ -131,12 +131,12 @@ public class TempDiagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Change a sensor scale and position according to their temperature and if the temperature diagram is to be shown or hidden.
+    /// Create a vertical bar representing the mean and standard deviation of the temperature of an object
     /// </summary>
-    /// <param name="_oobject">the object where the sensor is</param>
+    /// <param name="_oobject">the object whose temperature is represented by the bar</param>
     /// <param name="_tempUnit">the temperature unit of the object</param>
     /// <param name="_roomheight">the height of the room containing the object</param>
-    private void AdaptOObject(OObject _oobject, string _tempUnit, float _roomheight)
+    private void ComputeTempBar(OObject _oobject, string _tempUnit, float _roomheight)
     {
         float pixelX;
         GameObject sensorBar;
@@ -195,6 +195,10 @@ public class TempDiagram : MonoBehaviour
         _oobject.tempBar = sensorBar;
     }
 
+    /// <summary>
+    /// Show or hide all sensor in an object according to isScatterPlotShown and raise a TemperatureScatterPlot event
+    /// </summary>
+    /// <param name="_ogreeObject">the object where the scatter plot is shown or hidden</param>
     public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
         lastScatterPlot = _ogreeObject;
@@ -205,6 +209,10 @@ public class TempDiagram : MonoBehaviour
         isScatterPlotShown = !isScatterPlotShown;
     }
 
+    /// <summary>
+    /// Create a heatmap for an object which show its temperature values. The normal of the heatmap is the smallest dimension (x,y or z) of the object
+    /// </summary>
+    /// <param name="oObject">the object which will have the heatmap</param>
     public void HandleHeatMap(OObject oObject)
     {
         Transform objTransform = oObject.transform.GetChild(0);
@@ -245,11 +253,15 @@ public class TempDiagram : MonoBehaviour
         objTransform.hasChanged = true;
     }
 
+    /// <summary>
+    /// Create a custom gradient texture (Texture2D) using Unity's Gradient class.
+    /// </summary>
+    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-1)</param>
     public void MakeCustomGradient(List<int[]> _colors)
     {
         GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count,8)]; //Unity gradients can only take 8 colors max
         foreach (int[] color in _colors)
-            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3] };
+            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3]/100.0f };
 
         gradient = new Gradient();
         gradient.SetKeys(colorKeys, new GradientAlphaKey[0]);
