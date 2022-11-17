@@ -10,33 +10,36 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
-    [SerializeField] private GameObject menuPanel = null;
+    [SerializeField] private GameObject menuPanel;
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
     [Header("Panel Top")]
-    [SerializeField] private Button focusBtn = null;
-    [SerializeField] private Button unfocusBtn = null;
-    [SerializeField] private Button selectParentBtn = null;
-    [SerializeField] private TMP_Text focusText = null;
-    [SerializeField] private Button editBtn = null;
-    [SerializeField] private Button resetTransBtn = null;
-    [SerializeField] private Button resetChildrenBtn = null;
+    [SerializeField] private Button focusBtn;
+    [SerializeField] private Button unfocusBtn;
+    [SerializeField] private Button selectParentBtn;
+    [SerializeField] private TMP_Text focusText;
+    [SerializeField] private Button editBtn;
+    [SerializeField] private Button resetTransBtn;
+    [SerializeField] private Button resetChildrenBtn;
+    [SerializeField] private Button tempDiagramBBtn;
+    [SerializeField] private Button tempScatterPlotBtn;
+    [SerializeField] private Button heatMapBtn;
 
     [Header("Panel Bottom")]
-    [SerializeField] private Button reloadBtn = null;
-    [SerializeField] private Button apiBtn = null;
-    [SerializeField] private TMP_Text apiUrl = null;
-    [SerializeField] private TMP_Text currentItemText = null;
+    [SerializeField] private Button reloadBtn;
+    [SerializeField] private Button apiBtn;
+    [SerializeField] private TMP_Text apiUrl;
+    [SerializeField] private TMP_Text currentItemText;
 
     [Header("Panel Debug")]
-    [SerializeField] private GameObject debugPanel = null;
+    [SerializeField] private GameObject debugPanel;
 
     [Header("Panel Infos")]
-    [SerializeField] private GameObject infosPanel = null;
-    [SerializeField] private GUIObjectInfos objInfos = null;
-    public DetailsInputField detailsInputField = null;
+    [SerializeField] private GameObject infosPanel;
+    [SerializeField] private GUIObjectInfos objInfos;
+    public DetailsInputField detailsInputField;
 
 
     private void Awake()
@@ -57,6 +60,9 @@ public class UiManager : MonoBehaviour
         resetTransBtn.interactable = false;
         resetChildrenBtn.interactable = false;
         mouseName.gameObject.SetActive(false);
+        tempDiagramBBtn.interactable = false;
+        tempScatterPlotBtn.interactable = false;
+        heatMapBtn.interactable = false; 
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
@@ -107,16 +113,29 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
             resetTransBtn.interactable = false;
+
+            tempDiagramBBtn.interactable = false;
+            tempScatterPlotBtn.interactable = false;
+            heatMapBtn.interactable = false;
+
         }
         else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]))
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = true;
+
+            tempDiagramBBtn.interactable = true;
+            tempScatterPlotBtn.interactable = true;
+            heatMapBtn.interactable = true;
         }
         else
         {
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
+
+            tempDiagramBBtn.interactable = true;
+            tempScatterPlotBtn.interactable = true;
+            heatMapBtn.interactable = true;
         }
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[0])
         {
@@ -124,8 +143,10 @@ public class UiManager : MonoBehaviour
             editBtn.interactable = true;
         }
         else
+        {
             editBtn.interactable = false;
-        SetCurrentItemText();
+        }
+            SetCurrentItemText();
         UpdateGuiInfos();
     }
 
