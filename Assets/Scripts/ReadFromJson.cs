@@ -463,7 +463,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong heigth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }
