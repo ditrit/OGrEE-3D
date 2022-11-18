@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,33 +10,36 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
-    [SerializeField] private GameObject menuPanel = null;
+    [SerializeField] private GameObject menuPanel;
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
     [Header("Panel Top")]
-    [SerializeField] private Button focusBtn = null;
-    [SerializeField] private Button unfocusBtn = null;
-    [SerializeField] private Button selectParentBtn = null;
-    [SerializeField] private TMP_Text focusText = null;
-    [SerializeField] private Button editBtn = null;
-    [SerializeField] private Button resetTransBtn = null;
-    [SerializeField] private Button resetChildrenBtn = null;
+    [SerializeField] private Button focusBtn;
+    [SerializeField] private Button unfocusBtn;
+    [SerializeField] private Button selectParentBtn;
+    [SerializeField] private TMP_Text focusText;
+    [SerializeField] private Button editBtn;
+    [SerializeField] private Button resetTransBtn;
+    [SerializeField] private Button resetChildrenBtn;
+    [SerializeField] private Button tempDiagramBBtn;
+    [SerializeField] private Button tempScatterPlotBtn;
+    [SerializeField] private Button heatMapBtn;
 
     [Header("Panel Bottom")]
-    [SerializeField] private Button reloadBtn = null;
-    [SerializeField] private Button apiBtn = null;
-    [SerializeField] private TMP_Text apiUrl = null;
-    [SerializeField] private TMP_Text currentItemText = null;
+    [SerializeField] private Button reloadBtn;
+    [SerializeField] private Button apiBtn;
+    [SerializeField] private TMP_Text apiUrl;
+    [SerializeField] private TMP_Text currentItemText;
 
     [Header("Panel Debug")]
-    [SerializeField] private GameObject debugPanel = null;
+    [SerializeField] private GameObject debugPanel;
 
     [Header("Panel Infos")]
-    [SerializeField] private GameObject infosPanel = null;
-    [SerializeField] private GUIObjectInfos objInfos = null;
-    public DetailsInputField detailsInputField = null;
+    [SerializeField] private GameObject infosPanel;
+    [SerializeField] private GUIObjectInfos objInfos;
+    public DetailsInputField detailsInputField;
 
 
     private void Awake()
@@ -56,6 +60,9 @@ public class UiManager : MonoBehaviour
         resetTransBtn.interactable = false;
         resetChildrenBtn.interactable = false;
         mouseName.gameObject.SetActive(false);
+        tempDiagramBBtn.interactable = false;
+        tempScatterPlotBtn.interactable = false;
+        heatMapBtn.interactable = false;
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
@@ -106,16 +113,29 @@ public class UiManager : MonoBehaviour
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
             resetTransBtn.interactable = false;
+
+            tempDiagramBBtn.interactable = false;
+            tempScatterPlotBtn.interactable = false;
+            heatMapBtn.interactable = false;
+
         }
-        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count -1]))
+        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]))
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = true;
+
+            tempDiagramBBtn.interactable = true;
+            tempScatterPlotBtn.interactable = true;
+            heatMapBtn.interactable = true;
         }
         else
         {
             focusBtn.interactable = true;
             selectParentBtn.interactable = true;
+
+            tempDiagramBBtn.interactable = true;
+            tempScatterPlotBtn.interactable = true;
+            heatMapBtn.interactable = true;
         }
         if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[0])
         {
@@ -123,7 +143,9 @@ public class UiManager : MonoBehaviour
             editBtn.interactable = true;
         }
         else
+        {
             editBtn.interactable = false;
+        }
         SetCurrentItemText();
         UpdateGuiInfos();
     }
@@ -553,12 +575,80 @@ public class UiManager : MonoBehaviour
         GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
     }
 
-    public void ShowTempDiagram()
+    ///<summary>
+    /// Called by GUI button: if one and only one room if selected, toggle its bar chart.
+    ///</summary>
+    public async void ToggleTempBarChart()
+    {
+        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
+            TempDiagram.instance.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
+        else if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
+        {
+            TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
+            await GameManager.gm.SetCurrentItem(null);
+        }
+        else
+            GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
+    }
+
+    ///<summary>
+    /// Called by GUI button: toggle temperature color mode.
+    ///</summary>
+    public void TempColorMode(bool _value)
+    {
+        GameManager.gm.tempMode = _value;
+        EventManager.Instance.Raise(new TemperatureColorEvent());
+        UpdateGuiInfos();
+    }
+
+
+    ///<summary>
+    /// Called by GUI button: if one and only one room or OObject is seleted, toggle its sensor scatter plot
+    ///</summary>
+    public void ToggleTempScatterPlot()
+    {
+        if (GameManager.gm.currentItems.Count == 1 && (GameManager.gm.currentItems[0].GetComponent<OObject>() || GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "room"))
+            TempDiagram.instance.HandleScatterPlot(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        else
+            GameManager.gm.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
+    }
+
+
+    ///<summary>
+    /// Called by GUI button: if one and only one device is selected and it has no child or its children have no child, toggle its heatmap
+    ///</summary>
+    public void ToggleHeatMap()
     {
         if (GameManager.gm.currentItems.Count == 1)
-            TempDiagram.HandleTempDiagram(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        {
+            OObject oObject = GameManager.gm.currentItems[0].GetComponent<OObject>();
+            if (oObject && oObject.category == "device")
+                if (DepthCheck(GameManager.gm.currentItems[0].GetComponent<OgreeObject>()) <= 1)
+                    TempDiagram.instance.HandleHeatMap(GameManager.gm.currentItems[0].GetComponent<OObject>());
+                else
+                    GameManager.gm.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
+            else
+                GameManager.gm.AppendLogLine("You have to select a device", true, eLogtype.warning);
+        }
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one object", true, eLogtype.warning);
+            GameManager.gm.AppendLogLine("You have to select one device", true, eLogtype.warning);
+    }
+
+    /// <summary>
+    /// Recursively compute the depth of an object
+    /// </summary>
+    /// <param name="_ogreeObject">the object we're starting at</param>
+    /// <returns>the highest number of nested children it has : 0 if it has no child, 1 if it has at least one child without child, 2 if its child has at least one child...</returns>
+    private int DepthCheck(OgreeObject _ogreeObject)
+    {
+        int depth = 0;
+        foreach (Transform child in _ogreeObject.gameObject.transform)
+        {
+            OgreeObject childOgree = child.GetComponent<OgreeObject>();
+            if (childOgree)
+                depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
+        }
+        return depth;
     }
 
     #endregion

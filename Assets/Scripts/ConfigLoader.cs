@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -23,6 +24,8 @@ public class ConfigLoader
         public int temperatureMaxC;
         public int temperatureMinF;
         public int temperatureMaxF;
+        public int[][] customTemperatureGradient;
+        public bool useCustomGradient;
     }
 
     private SConfig config;
@@ -281,31 +284,32 @@ public class ConfigLoader
     ///<param name="_extremum">The extremum to get, must be "min" or "max"</param>
     ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
     ///<returns>The extremum for the temperature unit</returns>
-    public int GetTemperatureLimit(string _extremum, string _unit)
+    public (int min, int max) GetTemperatureLimit(string _unit)
     {
         _unit = _unit.ToLower();
-        if (_extremum == "min")
-            if (_unit == "°c")
-                return config.temperatureMinC;
-            else if (_unit == "°f")
-                return config.temperatureMinF;
-            else
-            {
-                GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
-                return 0;
-            }
-        else if (_extremum == "max")
-            if (_unit == "°c")            
-                return config.temperatureMaxC;            
-            else if (_unit == "°f")
-                return config.temperatureMaxF;
-            else
-            {
-                GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
-                return 100;
-            }
-        GameManager.gm.AppendLogLine($"Unrecognised temperature extremum : {_extremum}", false, eLogtype.error);
-        return 50;
+        if (_unit == "°c")
+            return (config.temperatureMinC, config.temperatureMaxC);
+        if (_unit == "°f")
+            return (config.temperatureMinF, config.temperatureMaxF);
+        GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        return (0, 0);
+    }
 
+    /// <summary>
+    /// Get custom gradient colors to be used to represent temperatures
+    /// </summary>
+    /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
+    public List<int[]> GetCustomGradientColors()
+    {
+        return config.customTemperatureGradient.ToList();
+    }
+
+    /// <summary>
+    /// Should the user-defined temperature color gradient be used ?
+    /// </summary>
+    /// <returns>True if yes, false if not </returns>
+    public bool IsUsingCustomGradient()
+    {
+        return config.useCustomGradient;
     }
 }

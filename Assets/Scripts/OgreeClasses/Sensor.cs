@@ -10,11 +10,22 @@ public class Sensor : MonoBehaviour
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
 
+    private void Start()
+    {
+        if (!fromTemplate)
+            EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+    }
+
+    private void OnDestroy()
+    {
+        if (!fromTemplate)
+            EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+    }
     ///<summary>
-    /// Check for a _param attribute "temperature" and assign _value to it.
+    /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
+    /// Set this sensor's temperature to _value (converted to float)
     ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
+    ///<param name="_value">The temperature value</param>
     public void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);
@@ -42,26 +53,22 @@ public class Sensor : MonoBehaviour
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        int tempMin = GameManager.gm.configLoader.GetTemperatureLimit("min", temperatureUnit);
-        int tempMax = GameManager.gm.configLoader.GetTemperatureLimit("max", temperatureUnit);
-        float blue = MapAndClamp(temperature, tempMin, tempMax, 1, 0);
-        float red = MapAndClamp(temperature, tempMin, tempMax, 0, 1);
+        (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(temperatureUnit);
+        Texture2D text = TempDiagram.instance.heatMapGradient;
+        float pixelX = Utils.MapAndClamp(temperature, tempMin, tempMax, 0, text.width);
+        mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);
 
-        mat.color = new Color(red, 0, blue);
         color = mat.color;
     }
 
-    ///<summary>
-    /// Map a Value from a given range to another range and clamp it.
-    ///</summary>
-    ///<param name="_input">The value to map</param>
-    ///<param name="_inMin">The minimal value of the input range</param>
-    ///<param name="_inMax">The maximal value of the input range</param>
-    ///<param name="_outMin">The minimal value of the output range</param>
-    ///<param name="_outMax">The maximal value of the output range</param>
-    ///<returns>The maped and clamped value</returns>
-    public float MapAndClamp(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    /// <summary>
+    /// When called, update the sensor temperature
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
+    private void OnImportFinished(ImportFinishedEvent _e)
     {
-        return Mathf.Clamp((_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin, Mathf.Min(_outMin, _outMax), Mathf.Max(_outMin, _outMax));
+        OObject parent = transform.parent.GetComponent<OObject>();
+        if (parent)
+            SetTemperature(parent.GetTemperatureInfos().mean.ToString());
     }
 }

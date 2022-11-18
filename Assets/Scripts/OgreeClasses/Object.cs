@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Linq;
 
 public class OObject : OgreeObject
 {
@@ -13,6 +14,7 @@ public class OObject : OgreeObject
     /// The direct child of a room which is a parent of this object or which is this object
     /// </summary>
     public OObject referent;
+    public GameObject tempBar;
 
     private void Awake()
     {
@@ -76,12 +78,12 @@ public class OObject : OgreeObject
                 case "localCS":
                     ToggleCS(_value);
                     break;
-                case "temperature":
-                    SetTemperature(_value);
-                    updateAttr = true;
-                    break;
                 default:
-                    if (attributes.ContainsKey(_param))
+                    if (_param.StartsWith("temperature_"))
+                    {
+                        SetTemperature(_value, _param.Substring(12));
+                    }
+                    else if (attributes.ContainsKey(_param))
                         attributes[_param] = _value;
                     else
                         attributes.Add(_param, _value);
@@ -111,13 +113,14 @@ public class OObject : OgreeObject
         }
         description = _src.description;
 
-        if (attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature")
-            && attributes["temperature"] != _src.attributes["temperature"])
-            SetTemperature(_src.attributes["temperature"]);
-        else if (!attributes.ContainsKey("temperature") && _src.attributes.ContainsKey("temperature"))
-            SetTemperature(_src.attributes["temperature"]);
-        else if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
+        if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
             Destroy(transform.Find("sensor").gameObject);
+
+        foreach (string attribute in _src.attributes.Keys)
+            if (attribute.StartsWith("temperature_")
+                && (!attributes.ContainsKey(attribute)
+                    || attributes[attribute] != _src.attributes[attribute]))
+                SetTemperature(_src.attributes[attribute], attribute.Substring(12));
 
         attributes = _src.attributes;
 
@@ -304,11 +307,14 @@ public class OObject : OgreeObject
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
+    ///<param name="_sensorName">The sensor to modify</param>
+    public void SetTemperature(string _value, string _sensorName)
     {
         if (category == "corridor")
         {
-            if (Regex.IsMatch(_value, "^(cold|warm)$"))
+            if (_sensorName != "")
+                GameManager.gm.AppendLogLine("Corridors can not have sensors", true, eLogtype.warning);
+            else if (Regex.IsMatch(_value, "^(cold|warm)$"))
                 attributes["temperature"] = _value;
             else
                 GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, eLogtype.warning);
@@ -317,10 +323,9 @@ public class OObject : OgreeObject
         {
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
-                attributes["temperature"] = _value;
                 Transform sensorTransform = transform.Find("sensor");
                 if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
                 else
                 {
                     SApiObject se = new SApiObject
@@ -337,21 +342,65 @@ public class OObject : OgreeObject
                     se.attributes["temperature"] = _value;
 
                     Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                    sensor.SetTemperature(_value);
+                    sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
                 }
-            }
-            else if (Regex.IsMatch(_value, "^[\\w.]+@[0-9.]+$"))
-            {
-                 string[] data = _value.Split('@');
-                Transform sensorTransform = transform.Find(data[0]);
+                sensorTransform = transform.Find(_sensorName);
                 if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(data[1]);
+                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
                 else
-                    GameManager.gm.AppendLogLine($"Sensor {data[0]} does not exist", true, eLogtype.warning);
+                    GameManager.gm.AppendLogLine($"Sensor {_sensorName} does not exist", true, eLogtype.warning);
             }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numeral value optionnaly preceded by a sensor name", true, eLogtype.warning);
+                GameManager.gm.AppendLogLine("Temperature must be a numerical value", true, eLogtype.warning);
         }
+    }
+
+    /// <summary>
+    /// Compute recursively temperature average, standard deviation, min, max and hottes child of the object
+    /// </summary>
+    /// <returns>a STemp instance containg all temperature infos of the object</returns>
+    public STemp GetTemperatureInfos()
+    {
+        List<(float temp, float volume, string childName)> temps = new List<(float, float, string)>();
+        List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
+        foreach (Transform child in transform)
+        {
+            if (child.GetComponent<OObject>())
+            {
+                temps.Add((child.GetComponent<OObject>().GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), child.GetComponent<OObject>().name));
+            }
+            else if (child.GetComponent<Sensor>() && child.GetComponent<Sensor>().fromTemplate)
+                sensorsTemps.Add((child.GetComponent<Sensor>().temperature, child.GetComponent<Sensor>().name));
+        }
+
+        float mean = float.NaN;
+        float std = float.NaN;
+        float min = float.NaN;
+        float max = float.NaN;
+        string hottestChild = "";
+        string temperatureUnit = "";
+
+        List<(float temp, float volume, string childName)> tempsNoNaN = temps.Where(v => !(v.temp is float.NaN)).ToList();
+        float totalEffectiveVolume = tempsNoNaN.Sum(v => v.volume);
+        if (sensorsTemps.Count() > 0)
+        {
+            totalEffectiveVolume = Utils.VolumeOfMesh(transform.GetChild(0).GetComponent<MeshFilter>()) - temps.Where(v => v.temp is float.NaN).Sum(v => v.volume);
+            float sensorVolume = (totalEffectiveVolume - tempsNoNaN.Sum(v => v.volume)) / sensorsTemps.Count();
+
+            sensorsTemps.ForEach(sensor => tempsNoNaN.Add((sensor.temp, sensorVolume, sensor.sensorName)));
+        }
+        if (tempsNoNaN.Count() > 0)
+        {
+            mean = tempsNoNaN.Sum(v => v.temp * v.volume) / totalEffectiveVolume;
+            std = Mathf.Sqrt(tempsNoNaN.Sum(v => Mathf.Pow(v.temp - mean, 2) * v.volume) / totalEffectiveVolume);
+            min = tempsNoNaN.Min(v => v.temp);
+            max = tempsNoNaN.Max(v => v.temp);
+            hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
+        }
+        OgreeObject site = referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        if (site && site.attributes.ContainsKey("temperatureUnit"))
+            temperatureUnit = site.attributes["temperatureUnit"];
+        return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
     }
 
 }

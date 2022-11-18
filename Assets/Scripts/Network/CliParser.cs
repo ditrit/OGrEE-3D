@@ -177,22 +177,17 @@ public class CliParser// : MonoBehaviour
         if (newData.category == "rack" || newData.category == "device")
         {
             OObject item = (OObject)obj;
-            if (newData.attributes.ContainsKey("color"))
-            {
-                if ((obj.attributes.ContainsKey("color") && obj.attributes["color"] != newData.attributes["color"])
-                    || !item.attributes.ContainsKey("color"))
-                {
+            if (newData.attributes.ContainsKey("color") 
+                && (!item.attributes.ContainsKey("color")
+                    || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
-                }
-            }
-            if (newData.attributes.ContainsKey("temperature"))
-            {
-                if ((obj.attributes.ContainsKey("temperature") && obj.attributes["temperature"] != newData.attributes["temperature"])
-                    || !item.attributes.ContainsKey("temperature"))
-                {
-                    item.SetTemperature(newData.attributes["temperature"]);
-                }
-            }
+
+
+            foreach (string attribute in newData.attributes.Keys)
+                if (attribute.StartsWith("temperature_") 
+                    && (!item.attributes.ContainsKey(attribute)
+                        || item.attributes[attribute] != newData.attributes[attribute]))
+                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
 
         // Case of a separator/areas modification in a room

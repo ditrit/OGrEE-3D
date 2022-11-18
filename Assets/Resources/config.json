@@ -24,5 +24,7 @@
 	"temperatureMinC": 0,
 	"temperatureMaxC": 100,
 	"temperatureMinF": 32,
-	"temperatureMaxF": 212
+	"temperatureMaxF": 212,
+	"customTemperatureGradient" : [[0,0,255,0],[255,0,0,100],[255,255,0,50]],
+	"useCustomGradient" : true
 }

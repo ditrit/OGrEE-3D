@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
+  - {fileID: 2100000, guid: 2249001b74060c24ab3f93c6ab98c5a9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,7 +91,7 @@ BoxCollider:
   m_GameObject: {fileID: 4254767957273672101}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -104,14 +104,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8422964209624112029}
-  - component: {fileID: 6209576081181784069}
-  - component: {fileID: 226685182499933010}
-  - component: {fileID: -7375449237141215194}
-  - component: {fileID: 896571463841240914}
   - component: {fileID: 530606338633814678}
   - component: {fileID: 7641173002511634591}
+  - component: {fileID: 7990539262673825364}
+  - component: {fileID: 1232021923839479270}
   m_Layer: 0
-  m_Name: SensorPointCloud
+  m_Name: SensorBar
   m_TagString: Selectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,81 +130,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6209576081181784069
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 448106aed078b7344a965d75d7d7849b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  temperature: 0
-  temperatureUnit: "\xB0C"
-  color: {r: 0, g: 0, b: 0, a: 0}
-  fromTemplate: 0
-  sensorPointCloudModel: {fileID: 0}
---- !u!114 &226685182499933010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b42dd2f19759194496c13696d98ac2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  labelFront: {fileID: 0}
-  labelRear: {fileID: 0}
-  labelTop: {fileID: 0}
-  labelBottom: {fileID: 0}
-  labelLeft: {fileID: 0}
-  labelRight: {fileID: 0}
-  usedLabels: []
-  attrToDisplay: 
---- !u!114 &-7375449237141215194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ead1eefb9e5dfc409361e81e364eeeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 0
-  isSelected: 0
-  isHovered: 0
-  isHighlighted: 0
-  isFocused: 0
---- !u!114 &896571463841240914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OwnObjectsList: []
-  ogreeChildObjects: []
-  slotsChildObjects: []
-  ogreeChildMeshRendererList: []
-  slotChildMeshRendererList: []
-  isActive: 0
-  isDeleted: 0
-  isSelected: 0
-  isFocused: 0
 --- !u!205 &530606338633814678
 LODGroup:
   m_ObjectHideFlags: 0
@@ -247,3 +170,50 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7990539262673825364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22a5588a52cfbe4fa226b3063609e95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: SensorBar
+  hierarchyName: 
+  id: 
+  parentId: 
+  category: tempBar
+  description: []
+  domain: 
+  tempBar: {fileID: 0}
+  attributesKeys: []
+  attributesValues: []
+  currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
+--- !u!114 &1232021923839479270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6010235731161253863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OwnObjectsList: []
+  ogreeChildObjects: []
+  slotsChildObjects: []
+  ogreeChildMeshRendererList: []
+  slotChildMeshRendererList: []
+  isActive: 0
+  isDeleted: 0
+  isSelected: 0
+  isFocused: 0

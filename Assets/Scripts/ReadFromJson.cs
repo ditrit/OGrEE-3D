@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Threading.Tasks;
+using System;
 
 public class ReadFromJson
 {
@@ -383,12 +384,12 @@ public class ReadFromJson
         GameObject newSensor;
         if (_sensor.elemSize.Length == 1)
         {
-            newSensor = Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * _sensor.elemSize[0] * Vector3.one;
         }
         else
         {
-            newSensor = Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * new Vector3(_sensor.elemSize[0], _sensor.elemSize[1], _sensor.elemSize[2]);
         }
         newSensor.name = _sensor.location;
@@ -405,7 +406,17 @@ public class ReadFromJson
                 newSensor.transform.localPosition += (offset.x) * Vector3.right;
                 break;
             default:
-                GameManager.gm.AppendLogLine($"Wrong width value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[0] = _parent.GetChild(0).localScale[0] / -2;
+                    pos[0] += Utils.ParseDecFrac(_sensor.elemPos[0]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
                 break;
         }
         switch (_sensor.elemPos[1])
@@ -419,7 +430,17 @@ public class ReadFromJson
                 newSensor.transform.localPosition += (offset.z) * Vector3.back;
                 break;
             default:
-                GameManager.gm.AppendLogLine($"Wrong depth value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[2] = _parent.GetChild(0).localScale[2] / -2;
+                    pos[2] += Utils.ParseDecFrac(_sensor.elemPos[1]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
                 break;
         }
         switch (_sensor.elemPos[2])
@@ -433,7 +454,17 @@ public class ReadFromJson
                 newSensor.transform.localPosition += (offset.y) * Vector3.up;
                 break;
             default:
-                GameManager.gm.AppendLogLine($"Wrong height value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[1] = _parent.GetChild(0).localScale[1] / -2;
+                    pos[1] += Utils.ParseDecFrac(_sensor.elemPos[2]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
                 break;
         }
         Sensor sensor = newSensor.GetComponent<Sensor>();

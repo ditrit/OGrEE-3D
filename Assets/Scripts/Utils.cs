@@ -210,4 +210,48 @@ public static class Utils
             return true;
         return false;
     }
+    public static float SignedVolumeOfTriangle(Vector3 _p1, Vector3 _p2, Vector3 _p3)
+    {
+        float v321 = _p3.x * _p2.y * _p1.z;
+        float v231 = _p2.x * _p3.y * _p1.z;
+        float v312 = _p3.x * _p1.y * _p2.z;
+        float v132 = _p1.x * _p3.y * _p2.z;
+        float v213 = _p2.x * _p1.y * _p3.z;
+        float v123 = _p1.x * _p2.y * _p3.z;
+
+        return (1.0f / 6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
+    }
+
+    public static float VolumeOfMesh(MeshFilter _meshFilter)
+    {
+        Mesh mesh = _meshFilter.sharedMesh;
+        float volume = 0;
+
+        Vector3[] vertices = mesh.vertices;
+        int[] triangles = mesh.triangles;
+
+        for (int i = 0; i < triangles.Length; i += 3)
+        {
+            Vector3 p1 = vertices[triangles[i + 0]];
+            Vector3 p2 = vertices[triangles[i + 1]];
+            Vector3 p3 = vertices[triangles[i + 2]];
+            volume += SignedVolumeOfTriangle(p1, p2, p3);
+        }
+        volume *= _meshFilter.transform.localScale.x * _meshFilter.transform.localScale.y * _meshFilter.transform.localScale.z;
+        return Mathf.Abs(volume);
+    }
+
+    ///<summary>
+    /// Map a Value from a given range to another range and clamp it.
+    ///</summary>
+    ///<param name="_input">The value to map</param>
+    ///<param name="_inMin">The minimal value of the input range</param>
+    ///<param name="_inMax">The maximal value of the input range</param>
+    ///<param name="_outMin">The minimal value of the output range</param>
+    ///<param name="_outMax">The maximal value of the output range</param>
+    ///<returns>The maped and clamped value</returns>
+    public static float MapAndClamp(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    {
+        return Mathf.Clamp((_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin, Mathf.Min(_outMin, _outMax), Mathf.Max(_outMin, _outMax));
+    }
 }

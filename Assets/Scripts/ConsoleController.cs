@@ -1027,7 +1027,7 @@ public class ConsoleController : MonoBehaviour
     /// Parse a "create sensor" command and call ObjectGenerator.CreateSensor().
     ///</summary>
     ///<param name="_input">String with sensor data to parse</param>
-    private async void CreateSensor(string _input)
+    private void CreateSensor(string _input)
     {
         _input = Regex.Replace(_input, " ", "");
         string pattern = "^[^@\\s]+@(ext@[0-9.]+|int@\\[[0-9.]+,[0-9.]+,[0-9.]+\\]@[0-9.]+)$";
@@ -1064,7 +1064,7 @@ public class ConsoleController : MonoBehaviour
                 se.domain = parent.GetComponent<OgreeObject>().domain;
 
                 se.id = data[0];
-                await OgreeGenerator.instance.CreateItemFromSApiObject(se, parent);
+                OgreeGenerator.instance.CreateSensorFromSApiObject(se, parent);
             }
         }
         else
@@ -1081,7 +1081,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="input">String with attribute to modify data</param>
     private async Task SetAttribute(string _input)
     {
-        string pattern = "^[a-zA-Z0-9._]+\\:[a-zA-Z0-9.]+=.+$";
+        string pattern = "^[a-zA-Z0-9._]+\\:[a-zA-Z0-9._]+=.+$";
         if (Regex.IsMatch(_input, pattern))
         {
             string[] data = _input.Split(new char[] { ':', '=' });
