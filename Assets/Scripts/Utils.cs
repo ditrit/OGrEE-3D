@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -103,15 +104,39 @@ public static class Utils
     /// Get an object from GameManager.allItems by it's id.
     ///</summary>
     ///<param name="_id">The id to search</param>
+    ///<returns>The asked object</returns>
     public static GameObject GetObjectById(string _id)
     {
+        if (!string.IsNullOrEmpty(_id))
+        {
+            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            {
+                GameObject obj = (GameObject)de.Value;
+                if (obj.GetComponent<OgreeObject>().id == _id)
+                    return obj;
+            }
+        }
+        return null;
+    }
+
+    ///<summary>
+    /// Get a list of objects from GameManager.allItems by their id.
+    ///</summary>
+    ///<param name="_id">The array of ids to search</param>
+    ///<returns>Asked list of objects</returns>
+    public static List<GameObject> GetObjectsById(string _idArray)
+    {
+        string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
+
+        List<GameObject> objects = new List<GameObject>();
         foreach (DictionaryEntry de in GameManager.gm.allItems)
         {
             GameObject obj = (GameObject)de.Value;
-            if (obj.GetComponent<OgreeObject>().id == _id)
-                return obj;
+            foreach (string objId in ids)
+                if (obj.GetComponent<OgreeObject>().id == objId)
+                    objects.Add(obj);
         }
-        return null;
+        return objects;
     }
 
     ///<summary>
