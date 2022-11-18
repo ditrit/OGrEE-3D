@@ -415,7 +415,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong depth value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }
@@ -439,7 +439,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong depth value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }
@@ -463,7 +463,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong depth value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.gm.AppendLogLine($"Wrong heigth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }

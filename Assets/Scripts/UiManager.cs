@@ -62,7 +62,7 @@ public class UiManager : MonoBehaviour
         mouseName.gameObject.SetActive(false);
         tempDiagramBBtn.interactable = false;
         tempScatterPlotBtn.interactable = false;
-        heatMapBtn.interactable = false; 
+        heatMapBtn.interactable = false;
 
         EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
@@ -146,7 +146,7 @@ public class UiManager : MonoBehaviour
         {
             editBtn.interactable = false;
         }
-            SetCurrentItemText();
+        SetCurrentItemText();
         UpdateGuiInfos();
     }
 

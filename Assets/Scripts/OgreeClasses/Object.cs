@@ -14,6 +14,7 @@ public class OObject : OgreeObject
     /// The direct child of a room which is a parent of this object or which is this object
     /// </summary>
     public OObject referent;
+    public GameObject tempBar;
 
     private void Awake()
     {

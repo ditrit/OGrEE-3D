@@ -14,7 +14,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public string category;
     public List<string> description = new List<string>();
     public string domain; // = tenant
-    public GameObject tempBar;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();

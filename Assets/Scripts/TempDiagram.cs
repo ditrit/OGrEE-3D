@@ -87,18 +87,9 @@ public class TempDiagram : MonoBehaviour
                 roomHeight /= 100; break;
             case "mm":
                 roomHeight /= 1000; break;
-            case "U":
-                roomHeight *= GameManager.gm.uSize; break;
             default:
                 GameManager.gm.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
         }
-
-        if (_room.attributes["heightUnit"] == "mm")
-            roomHeight /= 1000;
-        else if (_room.attributes["heightUnit"] == "cm")
-            roomHeight /= 100;
-        else if (_room.attributes["heightUnit"] == "U")
-            roomHeight *= GameManager.gm.uSize;
 
         string tempUnit = "";
         OgreeObject site = _room.transform.parent?.parent?.GetComponent<OgreeObject>();
