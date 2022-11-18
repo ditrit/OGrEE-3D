@@ -240,10 +240,9 @@ public class CameraControl : MonoBehaviour
         if (rotY < 0 || rotY > 180)
             rotY -= 360;
 
-        infosTMP.text = $"Camera pos: [{transform.localPosition.x:0.##};{transform.localPosition.z:0.##};{transform.localPosition.y:0.##}]";
+        infosTMP.text = $"Camera pos/angle: [{transform.localPosition.x:0.##};{transform.localPosition.z:0.##};{transform.localPosition.y:0.##}] / [{rotX:0};{rotY:0}]";
         if (!isReady)
             infosTMP.text += " (Waiting)";
-        infosTMP.text += $"\nCamera angle: [{rotX:0};{rotY:0}]";
     }
 
     ///<summary>

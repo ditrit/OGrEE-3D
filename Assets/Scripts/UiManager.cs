@@ -213,10 +213,17 @@ public class UiManager : MonoBehaviour
     private void OnApiConnected(ConnectApiEvent _e)
     {
         if (ApiManager.instance.isInit)
+        {
             ChangeApiButton("Connected to Api", Color.green);
+            apiUrl.text = "Connected to " + GameManager.gm.configLoader.GetApiUrl();
+            apiUrl.color = Color.green;
+        }
         else
+        {
             ChangeApiButton("Fail to connected to Api", Color.red);
-        apiUrl.text = GameManager.gm.configLoader.GetApiUrl();
+            apiUrl.text = "Fail to connected to " + GameManager.gm.configLoader.GetApiUrl();
+            apiUrl.color = Color.red;
+        }
     }
 
     ///<summary>
