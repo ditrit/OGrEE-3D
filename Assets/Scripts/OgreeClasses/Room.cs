@@ -92,7 +92,10 @@ public class Room : Building
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (root)
+        {
+            root.SetActive(false); //for UI
             Destroy(root);
+        }
         else
         {
             root = new GameObject("tilesNameRoot");
@@ -149,7 +152,10 @@ public class Room : Building
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (root)
+        {
+            root.SetActive(false); // for UI
             Destroy(root);
+        }
         else
         {
             root = new GameObject("tilesColorRoot");
