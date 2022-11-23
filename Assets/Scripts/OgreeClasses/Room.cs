@@ -507,7 +507,8 @@ public class Room : Building
         Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
 
         float length = Vector2.Distance(startPos, endPos);
-        float height = walls.GetChild(0).localScale.y;
+        // float height = walls.GetChild(0).localScale.y;
+        float height = Utils.ParseDecFrac(attributes["height"]);
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.gm.separatorModel);
@@ -519,9 +520,14 @@ public class Room : Building
         Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
         rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
 
-        // Place the separator in the right place
-        Vector3 roomScale = technicalZone.localScale * -5;
-        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        if (technicalZone)
+        {
+            // Place the separator in the right place
+            Vector3 roomScale = technicalZone.localScale * -5;
+            separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        }
+        else
+            separator.transform.localPosition = Vector3.zero;
 
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);

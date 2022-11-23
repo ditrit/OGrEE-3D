@@ -196,14 +196,12 @@ public class BuildingGenerator : MonoBehaviour
         if (!string.IsNullOrEmpty(template.slug))
         {
             if (template.vertices == null)
-            {
                 room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
-                if (template.separators != null)
-                {
-                    foreach (ReadFromJson.SSeparator sep in template.separators)
-                        room.AddSeparator(sep); // Will be updated to works with non convex walls
-                }
+            if (template.separators != null)
+            {
+                foreach (ReadFromJson.SSeparator sep in template.separators)
+                    room.AddSeparator(sep); // Will be updated to works with non convex walls
             }
 
             if (template.tiles != null)
