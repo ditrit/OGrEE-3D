@@ -257,6 +257,7 @@ public class OObject : OgreeObject
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS)
         {
+            localCS.SetActive(false); //for UI
             Destroy(localCS);
             GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", false, eLogtype.success);
         }

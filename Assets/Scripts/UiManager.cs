@@ -35,12 +35,17 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
+    [SerializeField] private Button toggleTilesNameBtn;
+    [SerializeField] private Button toggleTilesColorBtn;
+    [SerializeField] private Button toggleUHelpersBtn;
+    [SerializeField] private Button toggleLocalCSBtn;
 
     [Header("Panel Infos")]
     [SerializeField] private GameObject infosPanel;
     [SerializeField] private GUIObjectInfos objInfos;
     public DetailsInputField detailsInputField;
 
+    public GameObject test;
 
     private void Awake()
     {
@@ -148,6 +153,133 @@ public class UiManager : MonoBehaviour
         }
         SetCurrentItemText();
         UpdateGuiInfos();
+
+        //ugly part : checking toggling buttons status
+        ColorBlock cb;
+        if (GameManager.gm.currentItems.Count > 0)
+        {
+            Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+            if (currentRoom)
+            {
+                //Toggle tiles name
+                cb = toggleTilesNameBtn.colors;
+                if (currentRoom.transform.Find("tilesNameRoot"))
+                {
+                    cb.normalColor = Color.gray;
+                    cb.selectedColor = Color.gray;
+                }
+                else
+                {
+                    cb.normalColor = Color.white;
+                    cb.selectedColor = Color.white;
+                }
+                toggleTilesNameBtn.colors = cb;
+
+                //Toggle tiles color
+                cb = toggleTilesColorBtn.colors;
+                if (currentRoom.transform.Find("tilesColorRoot"))
+                {
+                    cb.normalColor = Color.gray;
+                    cb.selectedColor = Color.gray;
+                }
+                else
+                {
+                    cb.normalColor = Color.white;
+                    cb.selectedColor = Color.white;
+                }
+                toggleTilesColorBtn.colors = cb;
+            }
+            else
+            {
+                cb = toggleTilesColorBtn.colors;
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+                toggleTilesNameBtn.colors = cb;
+                cb = toggleTilesNameBtn.colors;
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+                toggleTilesColorBtn.colors = cb;
+            }
+
+            //Toggle U helpers
+            Transform _transform = GameManager.gm.currentItems[0].transform;
+            while (_transform != null)
+            {
+                if (_transform.GetComponent<Rack>())
+                {
+                    cb = toggleUHelpersBtn.colors;
+                    Transform uRoot = _transform.GetComponent<Rack>().uRoot;
+                    if (!uRoot || !uRoot.gameObject.activeSelf)
+                    {
+                        cb.normalColor = Color.white;
+                        cb.selectedColor = Color.white;
+                    }
+                    else
+                    {
+                        cb.normalColor = Color.gray;
+                        cb.selectedColor = Color.gray;
+                    }
+                    toggleUHelpersBtn.colors = cb;
+                    break;
+                }
+                _transform = _transform.parent;
+            }
+            if (_transform == null)
+            {
+                cb = toggleUHelpersBtn.colors;
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+                toggleUHelpersBtn.colors = cb;
+            }
+
+            //Toggle local CS
+            if (GameManager.gm.currentItems[0].GetComponent<OObject>())
+            {
+                cb = toggleLocalCSBtn.colors;
+                if (GameManager.gm.currentItems[0].transform.Find("localCS"))
+                {
+                    cb.normalColor = Color.gray;
+                    cb.selectedColor = Color.gray;
+                }
+                else
+                {
+                    cb.normalColor = Color.white;
+                    cb.selectedColor = Color.white;
+                }
+                toggleLocalCSBtn.colors = cb;
+            }
+            else
+            {
+                cb = toggleLocalCSBtn.colors;
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+                toggleLocalCSBtn.colors = cb; 
+            }
+        }
+        else
+        {
+            cb = toggleTilesColorBtn.colors;
+            cb.normalColor = Color.white;
+            cb.selectedColor = Color.white;
+            toggleTilesNameBtn.colors = cb;
+
+            cb = toggleTilesNameBtn.colors;
+            cb.normalColor = Color.white;
+            cb.selectedColor = Color.white;
+            toggleTilesColorBtn.colors = cb;
+
+            cb = toggleUHelpersBtn.colors;
+            cb.normalColor = Color.white;
+            cb.selectedColor = Color.white;
+            toggleUHelpersBtn.colors = cb;
+
+            cb = toggleLocalCSBtn.colors;
+            cb.normalColor = Color.white;
+            cb.selectedColor = Color.white;
+            toggleLocalCSBtn.colors = cb;
+
+        }
+
     }
 
     ///<summary>
@@ -354,6 +486,18 @@ public class UiManager : MonoBehaviour
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
+            ColorBlock cb = toggleTilesNameBtn.colors;
+            if (GameManager.gm.currentItems[0].transform.Find("tilesNameRoot") && GameManager.gm.currentItems[0].transform.Find("tilesNameRoot").gameObject.activeSelf)
+            {
+                cb.normalColor = Color.gray;
+                cb.selectedColor = Color.gray;
+            }
+            else
+            {
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+            }
+            toggleTilesNameBtn.colors = cb;
             GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
@@ -380,6 +524,18 @@ public class UiManager : MonoBehaviour
                 return;
             }
             currentRoom.ToggleTilesColor();
+            ColorBlock cb = toggleTilesColorBtn.colors;
+            if (currentRoom.transform.Find("tilesColorRoot") && GameManager.gm.currentItems[0].transform.Find("tilesColorRoot").gameObject.activeSelf)
+            {
+                cb.normalColor = Color.gray;
+                cb.selectedColor = Color.gray;
+            }
+            else
+            {
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
+            }
+            toggleTilesColorBtn.colors = cb;
             GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
         }
         else
@@ -391,7 +547,32 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        UHelpersManager.um.ToggleU(GameManager.gm.currentItems[0].transform);
+        if (GameManager.gm.currentItems.Count > 0)
+        {
+            UHelpersManager.um.ToggleU(GameManager.gm.currentItems[0].transform);
+            Transform _transform = GameManager.gm.currentItems[0].transform;
+            while (_transform != null)
+            {
+                if (_transform.GetComponent<Rack>())
+                {
+                    ColorBlock cb = toggleUHelpersBtn.colors;
+                    Transform uRoot = _transform.GetComponent<Rack>().uRoot;
+                    if (!uRoot || !uRoot.gameObject.activeSelf)
+                    {
+                        cb.normalColor = Color.white;
+                        cb.selectedColor = Color.white;
+                    }
+                    else
+                    {
+                        cb.normalColor = Color.gray;
+                        cb.selectedColor = Color.gray;
+                    }
+                    toggleUHelpersBtn.colors = cb;
+                    return;
+                }
+                _transform = _transform.parent;
+            }
+        }
     }
 
     ///<summary>
@@ -408,8 +589,22 @@ public class UiManager : MonoBehaviour
         foreach (GameObject obj in GameManager.gm.currentItems)
         {
             if (obj.GetComponent<OObject>())
+            {
                 obj.GetComponent<OObject>().ToggleCS();
+            }
         }
+        ColorBlock cb = toggleLocalCSBtn.colors;
+        if (GameManager.gm.currentItems[0].transform.Find("localCS") && GameManager.gm.currentItems[0].transform.Find("localCS").gameObject.activeSelf)
+        {
+            cb.normalColor = Color.gray;
+            cb.selectedColor = Color.gray;
+        }
+        else
+        {
+            cb.normalColor = Color.white;
+            cb.selectedColor = Color.white;
+        }
+        toggleLocalCSBtn.colors = cb;
     }
 
     ///<summary>
