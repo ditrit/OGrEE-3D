@@ -9,6 +9,9 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
+    [SerializeField] private Transform canvas;
+    [SerializeField] private GameObject promptPrefab;
+
     [SerializeField] private GameObject menuPanel = null;
 
     [Header("Updated Canvas")]
@@ -107,7 +110,7 @@ public class UiManager : MonoBehaviour
             selectParentBtn.interactable = false;
             resetTransBtn.interactable = false;
         }
-        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count -1]))
+        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]))
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = true;
@@ -251,6 +254,30 @@ public class UiManager : MonoBehaviour
             focusText.text = "No focus";
 
         GameManager.gm.AppendLogLine(focusText.text, true, eLogtype.success);
+    }
+
+    ///<summary>
+    /// Generate a prompt message with 1 or 2 buttons
+    ///</summary>
+    ///<param name="_mainText">Message to display</param>
+    ///<param name="_buttonAText">Custom text for "accept" button</param>
+    ///<param name="_buttonBText">Custom text for "refuse" button. The button will be hidden if empty</param>
+    ///<returns>The Prompt class of the generated item</returns>
+    public Prompt GeneratePrompt(string _mainText, string _buttonAText, string _buttonBText)
+    {
+        Prompt prompt = Instantiate(promptPrefab, canvas).GetComponent<Prompt>();
+        prompt.Setup(_mainText, _buttonAText, _buttonBText);
+        return prompt;
+    }
+
+    ///<summary>
+    /// Delete the given Prompt
+    ///</summary>
+    ///<param name="_prompt">The Prompt to delete</param>
+    public void DeletePrompt(Prompt _prompt)
+    {
+        _prompt.gameObject.SetActive(false);
+        Destroy(_prompt.gameObject);
     }
 
     ///<summary>

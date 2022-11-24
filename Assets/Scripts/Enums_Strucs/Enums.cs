@@ -17,3 +17,10 @@ public enum eLogtype
     errorCli,
     errorApi
 }
+
+public enum EPromptStatus
+{
+    wait,
+    accept,
+    refuse
+}
