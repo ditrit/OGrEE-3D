@@ -284,6 +284,5 @@ public class TempDiagram : MonoBehaviour
         MakeCustomGradient(_colors);
         heatMapGradient = _useCustomGradient ? heatMapGradientCustom : heatMapGradientDefault;
         heatMapMat.SetTexture("_HeatTex", heatMapGradient);
-        heatMapMat.GetTexturePropertyNames().ToList().ForEach(v => print(v+"("+heatMapMat.GetTexture(v)+")"));
     }
 }

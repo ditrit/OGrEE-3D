@@ -64,10 +64,10 @@ public class CliParser// : MonoBehaviour
         switch (command["type"])
         {
             case "login":
-                Login(command["data"].ToString());
+                await Login(command["data"].ToString());
                 break;
             case "load template":
-                rfJson.CreateObjTemplateJson(command["data"].ToString());
+                await rfJson.CreateObjTemplateJson(command["data"].ToString());
                 break;
             case "select":
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
@@ -108,7 +108,7 @@ public class CliParser// : MonoBehaviour
                 }
                 break;
             case "create":
-                CreateObjectFromData(command["data"].ToString());
+                await CreateObjectFromData(command["data"].ToString());
                 break;
             case "modify":
                 ModifyObject(command["data"].ToString());
@@ -132,7 +132,7 @@ public class CliParser// : MonoBehaviour
     /// Connect client to the API with.
     ///</summary>
     ///<param name="_input">Login credentials given by CLI</param>
-    private async void Login(string _input)
+    private async Task Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
@@ -143,7 +143,7 @@ public class CliParser// : MonoBehaviour
     /// Deserialize given SApiObject and call the good generator.
     ///</summary>
     ///<param name="_input">The SApiObject to deserialize</param>
-    private async void CreateObjectFromData(string _input)
+    private async Task CreateObjectFromData(string _input)
     {
         SApiObject src = JsonConvert.DeserializeObject<SApiObject>(_input);
         List<SApiObject> physicalObjects = new List<SApiObject>();
@@ -201,7 +201,7 @@ public class CliParser// : MonoBehaviour
                 {
                     foreach (Transform wall in room.walls)
                     {
-                        if (wall.name.Contains("separator"))
+                        if (wall.name.Contains("Separator"))
                             Object.Destroy(wall.gameObject);
                     }
                     List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
