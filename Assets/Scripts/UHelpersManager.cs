@@ -255,7 +255,7 @@ public class UHelpersManager : MonoBehaviour
                     if (firstSlot)
                     {
                         // Should use position.y instead of its name
-                        int height = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        int height = GetUNumberFromName(child.name);
                         if (height < minHeight)
                             firstSlot = child;
                         else if (height > max)
@@ -264,7 +264,7 @@ public class UHelpersManager : MonoBehaviour
                     else
                     {
                         firstSlot = child;
-                        minHeight = (int)Utils.ParseDecFrac(child.name.Substring(1));
+                        minHeight = GetUNumberFromName(child.name);
                         max = minHeight;
                     }
                 }
@@ -325,6 +325,23 @@ public class UHelpersManager : MonoBehaviour
             wasEdited = false;
             ToggleU(GameManager.gm.currentItems[0].transform, true);
         }
+    }
+
+    private int GetUNumberFromName(string _name)
+    {
+        string iteratedName = _name;
+        while (iteratedName.Length > 0)
+        {
+            try
+            {
+                return (int)Utils.ParseDecFrac(_name);
+            }
+            catch (System.FormatException)
+            {
+                iteratedName = iteratedName.Substring(1);
+            }
+        }
+        return 0;
     }
 
 }
