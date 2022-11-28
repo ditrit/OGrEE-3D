@@ -198,7 +198,7 @@ public class BuildingGenerator : MonoBehaviour
             if (template.vertices == null)
                 room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
-            if (template.separators != null)
+            if (template.separators != null && !room.attributes.ContainsKey("separators"))
             {
                 foreach (ReadFromJson.SSeparator sep in template.separators)
                     room.AddSeparator(sep); // Will be updated to works with non convex walls
@@ -227,6 +227,13 @@ public class BuildingGenerator : MonoBehaviour
                     colors.Add(c);
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
+        }
+
+        if (room.attributes.ContainsKey("separators"))
+        {
+            List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(room.attributes["separators"]);
+            foreach (ReadFromJson.SSeparator sep in separators)
+                room.BuildSeparator(sep);
         }
 
         return room;
