@@ -323,7 +323,7 @@ public class GameManager : MonoBehaviour
     }
 
     ///
-    public async Task PurgeTenants(string _exception)
+    public async Task PurgeTenants(string _exception = null)
     {
         await SetCurrentItem(null);
         List<GameObject> tnToDel = new List<GameObject>();

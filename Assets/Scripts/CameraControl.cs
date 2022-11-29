@@ -323,7 +323,7 @@ public class CameraControl : MonoBehaviour
     /// Move the camera in front of given _target.
     ///</summary>
     ///<param name="_target">The object to look at</param>
-    private void MoveToObject(Transform _target)
+    public void MoveToObject(Transform _target)
     {
         transform.position = _target.position;
         float offset = 3f;

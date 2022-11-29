@@ -25,6 +25,12 @@ public class OgreeGenerator : MonoBehaviour
     ///<param name="_obj">The item to generate</param>
     public async Task<OgreeObject> CreateItemFromSApiObject(SApiObject _obj, Transform _parent = null)
     {
+        if (Utils.GetObjectById(_obj.id))
+        {
+            GameManager.gm.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
+            return null;
+        }
+
         OgreeObject newItem;
         // Get dependencies from API
         if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
@@ -125,7 +131,10 @@ public class OgreeGenerator : MonoBehaviour
             if (newItem.category != "tenant")
             {
                 if (!GameManager.gm.objectRoot && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
+                {
                     GameManager.gm.objectRoot = newItem.gameObject;
+                    GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
+                }
             }
 
         }
