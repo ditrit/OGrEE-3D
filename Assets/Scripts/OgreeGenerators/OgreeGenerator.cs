@@ -66,17 +66,13 @@ public class OgreeGenerator : MonoBehaviour
                 return null;
             }
 
-            // if (_obj.category != "tenant" && !GameManager.gm.allItems.Contains(_obj.name))
             if (_obj.category != "tenant" && GameManager.gm.objectRoot)
             {
                 Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
-                if (prompt.state == EPromptStatus.wait)
-                    Debug.Log("Prompt !");
                 while (prompt.state == EPromptStatus.wait)
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
-                    Debug.Log($"Draw as standalone {_obj.name}");
                     Destroy(GameManager.gm.objectRoot);
                     await GameManager.gm.PurgeTenants(_obj.domain);
                     GameManager.gm.objectRoot = null;
@@ -84,7 +80,6 @@ public class OgreeGenerator : MonoBehaviour
                 }
                 else //if (prompt.state == EPromptResp.refuse)
                 {
-                    Debug.Log("Abort mission");
                     UiManager.instance.DeletePrompt(prompt);
                     return null;
                 }

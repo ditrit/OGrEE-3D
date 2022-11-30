@@ -2,18 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class NonSquareRoomGenerator// : MonoBehaviour
+public static class NonSquareRoomGenerator
 {
-    // public static NonSquareRoomGenerator instance;
-
-    // private void Awake()
-    // {
-    //     if (!instance)
-    //         instance = this;
-    //     else
-    //         Destroy(this);
-    // }
-
     public static void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
