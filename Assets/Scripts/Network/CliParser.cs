@@ -86,11 +86,16 @@ public class CliParser// : MonoBehaviour
                 }
                 break;
             case "delete":
-                GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
-                if (objToDel)
-                    await GameManager.gm.DeleteItem(objToDel, false); // deleteServer == true ??
+                if (string.IsNullOrEmpty(command["data"].ToString()))
+                    await GameManager.gm.PurgeTenants();
                 else
-                    GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.errorCli);
+                {
+                    GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
+                    if (objToDel)
+                        await GameManager.gm.DeleteItem(objToDel, false);
+                    else
+                        GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.errorCli);
+                }
                 break;
             case "focus":
                 GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
@@ -177,14 +182,14 @@ public class CliParser// : MonoBehaviour
         if (newData.category == "rack" || newData.category == "device")
         {
             OObject item = (OObject)obj;
-            if (newData.attributes.ContainsKey("color") 
+            if (newData.attributes.ContainsKey("color")
                 && (!item.attributes.ContainsKey("color")
                     || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
-                    item.SetColor(newData.attributes["color"]);
+                item.SetColor(newData.attributes["color"]);
 
 
             foreach (string attribute in newData.attributes.Keys)
-                if (attribute.StartsWith("temperature_") 
+                if (attribute.StartsWith("temperature_")
                     && (!item.attributes.ContainsKey(attribute)
                         || item.attributes[attribute] != newData.attributes[attribute]))
                     item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
