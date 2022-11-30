@@ -113,7 +113,7 @@ public class FocusHandler : MonoBehaviour
             }
             else
             {
-                if (!GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+                if (!GameManager.gm.currentItems.Contains(transform.parent?.gameObject))
                 {
                     UpdateOwnMeshRenderers(false);
                     UpdateChildMeshRenderers(false);
@@ -227,17 +227,17 @@ public class FocusHandler : MonoBehaviour
 
         OObject selectionReferent = GameManager.gm.currentItems.Count > 0 ? GameManager.gm.currentItems[0].GetComponent<OObject>()?.referent : null;
 
-        if (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent)
+        if (!GetComponent<OObject>().referent || (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent))
             UpdateChildMeshRenderersRec(false);
         else if (selectionReferent == GetComponent<OObject>().referent)
         {
-            if (!GameManager.gm.currentItems.Contains(gameObject) && !GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+            if (!GameManager.gm.currentItems.Contains(gameObject) && (!transform.parent || !GameManager.gm.currentItems.Contains(transform.parent.gameObject)))
             {
                 ToggleCollider(gameObject, false);
                 UpdateOwnMeshRenderers(false);
                 UpdateChildMeshRenderers(false);
             }
-            if (GameManager.gm.currentItems.Contains(transform.parent.gameObject))
+            if (GameManager.gm.currentItems.Contains(transform.parent?.gameObject))
                 UpdateChildMeshRenderers(false);
         }
     }
@@ -451,7 +451,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateParentRenderers(GameObject _obj, bool _value)
     {
-        if (_obj.GetComponent<OgreeObject>().category != "device")
+        if (!_obj.transform.parent || _obj.GetComponent<OgreeObject>().category != "device")
             return;
         _obj.transform.parent.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
         UpdateParentRenderers(_obj.transform.parent.gameObject, _value);
@@ -464,7 +464,7 @@ public class FocusHandler : MonoBehaviour
     private void ResetToRack()
     {
         UpdateChildMeshRenderers(false);
-        if (GetComponent<OgreeObject>().category != "device")
+        if (!transform.parent || GetComponent<OgreeObject>().category != "device")
         {
             UpdateOwnMeshRenderers(true);
             ToggleCollider(gameObject, true);

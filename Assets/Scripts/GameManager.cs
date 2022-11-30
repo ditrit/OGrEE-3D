@@ -58,6 +58,8 @@ public class GameManager : MonoBehaviour
     public bool tempMode = false;
     private string startDateTime;
 
+    public GameObject objectRoot;
+
     #region UnityMethods
 
     private void Awake()
@@ -322,6 +324,39 @@ public class GameManager : MonoBehaviour
             }
         }
         Destroy(_toDel);
+    }
+
+    ///<summary>
+    /// Delete all tenants unless an _exception is given.
+    ///</summary>
+    ///<param name="_exception">The name of the tenant to keep</param>
+    public async Task PurgeTenants(string _exception = null)
+    {
+        await SetCurrentItem(null);
+        List<GameObject> tnToDel = new List<GameObject>();
+        foreach (DictionaryEntry de in allItems)
+        {
+            GameObject go = (GameObject)de.Value;
+            if (go.GetComponent<OgreeObject>().category == "tenant" && go.name != _exception)
+                tnToDel.Add(go);
+        }
+        for (int i = 0; i < tnToDel.Count; i++)
+            Destroy(tnToDel[i]);
+
+    }
+
+    ///<summary>
+    /// Delete all room and object templates.
+    ///</summary>
+    public void PurgeTemplates()
+    {
+        List<GameObject> templatesToDel = new List<GameObject>();
+        foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
+            templatesToDel.Add(kvp.Value);
+        for (int i = 0; i < templatesToDel.Count; i++)
+            Destroy(templatesToDel[i]);
+        objectTemplates.Clear();
+        roomTemplates.Clear();
     }
 
     ///<summary>

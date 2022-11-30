@@ -10,7 +10,11 @@ public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
 
+    [SerializeField] private Transform canvas;
+    [SerializeField] private GameObject promptPrefab;
+
     [SerializeField] private GameObject menuPanel;
+
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
@@ -276,6 +280,30 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Generate a prompt message with 1 or 2 buttons
+    ///</summary>
+    ///<param name="_mainText">Message to display</param>
+    ///<param name="_buttonAText">Custom text for "accept" button</param>
+    ///<param name="_buttonBText">Custom text for "refuse" button. The button will be hidden if empty</param>
+    ///<returns>The Prompt class of the generated item</returns>
+    public Prompt GeneratePrompt(string _mainText, string _buttonAText, string _buttonBText)
+    {
+        Prompt prompt = Instantiate(promptPrefab, canvas).GetComponent<Prompt>();
+        prompt.Setup(_mainText, _buttonAText, _buttonBText);
+        return prompt;
+    }
+
+    ///<summary>
+    /// Delete the given Prompt
+    ///</summary>
+    ///<param name="_prompt">The Prompt to delete</param>
+    public void DeletePrompt(Prompt _prompt)
+    {
+        _prompt.gameObject.SetActive(false);
+        Destroy(_prompt.gameObject);
+    }
+
+    ///<summary>
     /// Change text and color of apiBtn.
     ///</summary>
     ///<param name="_str">The new text of the button</param>
@@ -535,6 +563,7 @@ public class UiManager : MonoBehaviour
                 file.Delete();
         }
         GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", true, eLogtype.success);
+        GameManager.gm.PurgeTemplates();
     }
 
     ///<summary>
@@ -546,21 +575,9 @@ public class UiManager : MonoBehaviour
         GameManager.gm.focus.Clear();
         UpdateFocusText();
 
-        List<GameObject> tenants = new List<GameObject>();
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
-        {
-            GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>()?.category == "tenant")
-                tenants.Add(go);
-        }
-        for (int i = 0; i < tenants.Count; i++)
-            Destroy(tenants[i]);
+        await GameManager.gm.PurgeTenants();
         GameManager.gm.allItems.Clear();
-
-        foreach (KeyValuePair<string, GameObject> kvp in GameManager.gm.objectTemplates)
-            Destroy(kvp.Value);
-        GameManager.gm.objectTemplates.Clear();
-        GameManager.gm.roomTemplates.Clear();
+        GameManager.gm.PurgeTemplates();
         GameManager.gm.consoleController.variables.Clear();
         GameManager.gm.consoleController.ResetCounts();
         StartCoroutine(LoadFile());

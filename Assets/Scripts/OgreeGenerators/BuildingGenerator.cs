@@ -4,23 +4,21 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class BuildingGenerator : MonoBehaviour
+public class BuildingGenerator
 {
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_bd">The building data to apply</param>
-    ///<param name="_parent">The parent of the created building. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created building</param>
     ///<returns>The created Building</returns>
-    public Building CreateBuilding(SApiObject _bd, Transform _parent = null)
+    public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        Transform si = Utils.FindParent(_parent, _bd.parentId);
-        if (!si || si.GetComponent<OgreeObject>().category != "site")
-        {
-            GameManager.gm.AppendLogLine($"Parent site not found", true, eLogtype.error);
-            return null;
-        }
-        string hierarchyName = $"{si.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
+        string hierarchyName;
+        if (_parent)
+            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
+        else
+            hierarchyName = _bd.name;
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -32,9 +30,9 @@ public class BuildingGenerator : MonoBehaviour
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
-        GameObject newBD = Instantiate(GameManager.gm.buildingModel);
+        GameObject newBD = Object.Instantiate(GameManager.gm.buildingModel);
         newBD.name = _bd.name;
-        newBD.transform.parent = si;
+        newBD.transform.parent = _parent;
         newBD.transform.localEulerAngles = Vector3.zero;
 
         // originalSize
@@ -51,7 +49,6 @@ public class BuildingGenerator : MonoBehaviour
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        // string hn = building.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newBD);
 
         return building;
@@ -61,17 +58,15 @@ public class BuildingGenerator : MonoBehaviour
     /// Instantiate a roomModel (from GameManager) and apply given data to it.
     ///</summary>
     ///<param name="_ro">The room data to apply</param>    
-    ///<param name="_parent">The parent of the created room. Leave null if _bd contains the parendId</param>
+    ///<param name="_parent">The parent of the created room</param>
     ///<returns>The created Room</returns>
-    public Room CreateRoom(SApiObject _ro, Transform _parent = null)
+    public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        Transform bd = Utils.FindParent(_parent, _ro.parentId);
-        if (!bd || bd.GetComponent<OgreeObject>().category != "building")
-        {
-            GameManager.gm.AppendLogLine($"Parent building not found", true, eLogtype.error);
-            return null;
-        }
-        string hierarchyName = $"{bd.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
+        string hierarchyName;
+        if (_parent)
+            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
+        else
+            hierarchyName = _ro.name;
         if (GameManager.gm.allItems.Contains(hierarchyName))
         {
             GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
@@ -97,11 +92,11 @@ public class BuildingGenerator : MonoBehaviour
 
         GameObject newRoom;
         if (template.vertices != null)
-            newRoom = Instantiate(GameManager.gm.nonConvexRoomModel);
+            newRoom = Object.Instantiate(GameManager.gm.nonConvexRoomModel);
         else
-            newRoom = Instantiate(GameManager.gm.roomModel);
+            newRoom = Object.Instantiate(GameManager.gm.roomModel);
         newRoom.name = _ro.name;
-        newRoom.transform.parent = bd;
+        newRoom.transform.parent = _parent;
 
         Room room = newRoom.GetComponent<Room>();
         room.hierarchyName = hierarchyName;
@@ -109,7 +104,7 @@ public class BuildingGenerator : MonoBehaviour
 
         if (template.vertices != null)
         {
-            NonSquareRoomGenerator.instance.CreateShape(newRoom, template);
+            NonSquareRoomGenerator.CreateShape(newRoom, template);
 
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
@@ -145,9 +140,14 @@ public class BuildingGenerator : MonoBehaviour
             room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-            Vector3 bdOrigin = bd.GetChild(0).localScale / -0.2f;
+            Vector3 bdOrigin = Vector3.zero;
+            if (_parent)
+                bdOrigin = _parent.GetChild(0).localScale / -0.2f;
             Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-            newRoom.transform.position = bd.position;
+            if (_parent)
+                newRoom.transform.position = _parent.position;
+            else
+                newRoom.transform.position = Vector3.zero;
             newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
 
@@ -178,8 +178,6 @@ public class BuildingGenerator : MonoBehaviour
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-
-        // string hn = room.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRoom);
 
         if (template.vertices == null)

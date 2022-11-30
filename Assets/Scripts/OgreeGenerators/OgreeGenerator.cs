@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(CustomerGenerator))]
-[RequireComponent(typeof(BuildingGenerator))]
-[RequireComponent(typeof(ObjectGenerator))]
 public class OgreeGenerator : MonoBehaviour
 {
     public static OgreeGenerator instance;
-    [SerializeField] private CustomerGenerator customerGenerator;
-    [SerializeField] private BuildingGenerator buildingGenerator;
-    [SerializeField] private ObjectGenerator objectGenerator;
+    private CustomerGenerator customerGenerator = new CustomerGenerator();
+    private BuildingGenerator buildingGenerator = new BuildingGenerator();
+    private ObjectGenerator objectGenerator = new ObjectGenerator();
     private Coroutine waitCoroutine = null;
 
     private void Awake()
@@ -22,19 +19,18 @@ public class OgreeGenerator : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
-    {
-        customerGenerator = GetComponent<CustomerGenerator>();
-        buildingGenerator = GetComponent<BuildingGenerator>();
-        objectGenerator = GetComponent<ObjectGenerator>();
-    }
-
     ///<summary>
     /// Call the good CreateX function according to the item's category.
     ///</summary>
     ///<param name="_obj">The item to generate</param>
     public async Task<OgreeObject> CreateItemFromSApiObject(SApiObject _obj, Transform _parent = null)
     {
+        if (Utils.GetObjectById(_obj.id))
+        {
+            GameManager.gm.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
+            return null;
+        }
+
         OgreeObject newItem;
         // Get dependencies from API
         if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
@@ -55,6 +51,40 @@ public class OgreeGenerator : MonoBehaviour
             await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
+        // Find parent
+        Transform parent = Utils.FindParent(_parent, _obj.parentId);
+        if (!parent)
+        {
+            if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
+            {
+                GameManager.gm.AppendLogLine("Unable to draw a basic device without its parent.", true, eLogtype.errorCli);
+                return null;
+            }
+            if (_obj.category == "corridor" || _obj.category == "group")
+            {
+                GameManager.gm.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, eLogtype.errorCli);
+                return null;
+            }
+
+            if (_obj.category != "tenant" && GameManager.gm.objectRoot)
+            {
+                Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
+                while (prompt.state == EPromptStatus.wait)
+                    await Task.Delay(10);
+                if (prompt.state == EPromptStatus.accept)
+                {
+                    Destroy(GameManager.gm.objectRoot);
+                    await GameManager.gm.PurgeTenants(_obj.domain);
+                    GameManager.gm.objectRoot = null;
+                    UiManager.instance.DeletePrompt(prompt);
+                }
+                else //if (prompt.state == EPromptResp.refuse)
+                {
+                    UiManager.instance.DeletePrompt(prompt);
+                    return null;
+                }
+            }
+        }
         // Call Create function
         switch (_obj.category)
         {
@@ -62,32 +92,44 @@ public class OgreeGenerator : MonoBehaviour
                 newItem = customerGenerator.CreateTenant(_obj);
                 break;
             case "site":
-                newItem = customerGenerator.CreateSite(_obj, _parent);
+                newItem = customerGenerator.CreateSite(_obj, parent);
                 break;
             case "building":
-                newItem = buildingGenerator.CreateBuilding(_obj, _parent);
+                newItem = buildingGenerator.CreateBuilding(_obj, parent);
                 break;
             case "room":
-                newItem = buildingGenerator.CreateRoom(_obj, _parent);
+                newItem = buildingGenerator.CreateRoom(_obj, parent);
                 break;
             case "rack":
-                newItem = objectGenerator.CreateRack(_obj, _parent);
+                newItem = objectGenerator.CreateRack(_obj, parent);
                 break;
             case "device":
-                newItem = objectGenerator.CreateDevice(_obj, _parent);
+                newItem = objectGenerator.CreateDevice(_obj, parent);
                 break;
             case "corridor":
-                newItem = objectGenerator.CreateCorridor(_obj, _parent);
+                newItem = objectGenerator.CreateCorridor(_obj, parent);
                 break;
             case "group":
-                newItem = objectGenerator.CreateGroup(_obj, _parent);
+                newItem = objectGenerator.CreateGroup(_obj, parent);
                 break;
             default:
                 newItem = null;
                 GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
                 break;
         }
-        newItem?.SetBaseTransform();
+        if (newItem)
+        {
+            newItem.SetBaseTransform();
+            if (newItem.category != "tenant")
+            {
+                if (!GameManager.gm.objectRoot && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
+                {
+                    GameManager.gm.objectRoot = newItem.gameObject;
+                    GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
+                }
+            }
+
+        }
         ResetCoroutine();
         return newItem;
     }

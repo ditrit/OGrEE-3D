@@ -94,7 +94,6 @@ public class GUIObjectInfos : MonoBehaviour
 
         if (GameManager.gm.tempMode && _obj is OObject @object)
         {
-
             STemp tempInfos = @object.GetTemperatureInfos();
             tmpAttributes.text += $"<b>average:</b> {tempInfos.mean} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>standard deviation:</b> {tempInfos.std} {tempInfos.unit}\n";
@@ -120,7 +119,7 @@ public class GUIObjectInfos : MonoBehaviour
                 i++;
 
                 // If rack, display pos by tile name if available
-                if (_obj.category == "rack")
+                if (_obj.category == "rack" && _obj.transform.parent)
                 {
                     Room room = _obj.transform.parent.GetComponent<Room>();
                     if (room.attributes.ContainsKey("tiles"))
