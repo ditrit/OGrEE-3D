@@ -472,7 +472,7 @@ public class ConsoleController : MonoBehaviour
                 if (ApiManager.instance.isInit)
                     await ApiManager.instance.PostTemplateObject(json, "obj");
                 else
-                    rfJson.CreateObjTemplateJson(json);
+                    await rfJson.CreateObjTemplateJson(json);
             }
         }
     }

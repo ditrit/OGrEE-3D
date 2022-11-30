@@ -69,7 +69,7 @@ public class TcpConnection : AConnection
     {
         byte[] sizeBuffer = await ReadBytes(4);
         int size = BitConverter.ToInt32(sizeBuffer, 0);
-        Debug.Log($"Size of incoming message: {size}");
+        // Debug.Log($"Size of incoming message: {size}");
 
         byte[] msgBuffer = await ReadBytes(size);
         string msg = Encoding.UTF8.GetString(msgBuffer);

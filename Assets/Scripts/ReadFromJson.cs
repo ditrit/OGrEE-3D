@@ -129,7 +129,7 @@ public class ReadFromJson
     /// Create a rack or a device from received json and add it to correct GameManager list
     ///</summary>
     ///<param name="_json">Json to parse</param>
-    public async void CreateObjTemplateJson(string _json)
+    public async Task CreateObjTemplateJson(string _json)
     {
         STemplate data;
         try
@@ -208,13 +208,13 @@ public class ReadFromJson
         OgreeObject newObject;
         if (obj.category == "rack")
         {
-            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder).Result;
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0)).Result;
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0));
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
@@ -247,9 +247,7 @@ public class ReadFromJson
         if (_data.sensors != null)
         {
             foreach (STemplateSensor sensor in _data.sensors)
-            {
                 GenerateSensorTemplate(sensor, newObject.transform);
-            }
         }
 
         // For rack, update height counting
