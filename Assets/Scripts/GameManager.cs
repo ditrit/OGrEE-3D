@@ -322,7 +322,10 @@ public class GameManager : MonoBehaviour
         Destroy(_toDel);
     }
 
-    ///
+    ///<summary>
+    /// Delete all tenants unless an _exception is given.
+    ///</summary>
+    ///<param name="_exception">The name of the tenant to keep</param>
     public async Task PurgeTenants(string _exception = null)
     {
         await SetCurrentItem(null);
@@ -336,6 +339,20 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < tnToDel.Count; i++)
             Destroy(tnToDel[i]);
 
+    }
+
+    ///<summary>
+    /// Delete all room and object templates.
+    ///</summary>
+    public void PurgeTemplates()
+    {
+        List<GameObject> templatesToDel = new List<GameObject>();
+        foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
+            templatesToDel.Add(kvp.Value);
+        for (int i = 0; i < templatesToDel.Count; i++)
+            Destroy(templatesToDel[i]);
+        objectTemplates.Clear();
+        roomTemplates.Clear();
     }
 
     ///<summary>
