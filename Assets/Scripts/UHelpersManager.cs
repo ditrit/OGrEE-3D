@@ -51,7 +51,7 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.gm.currentItems.Count > 0)
+        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
         {
             ToggleU(GameManager.gm.currentItems[0].transform, true);
             HighlightULocation();
@@ -236,7 +236,7 @@ public class UHelpersManager : MonoBehaviour
     {
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
 
-        // By defalut, attributes["heightUnit"] == "U"
+        // By default, attributes["heightUnit"] == "U"
         float scale = GameManager.gm.uSize;
         int max = (int)Utils.ParseDecFrac(_rack.attributes["height"]);
         if (_rack.attributes["heightUnit"] == "OU")

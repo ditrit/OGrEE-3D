@@ -61,7 +61,6 @@ public class CliParser// : MonoBehaviour
         {
             GameManager.gm.AppendLogLine("Received data with unknow format.", true, eLogtype.errorCli);
         }
-        GameObject obj;
         switch (command["type"])
         {
             case "login":
@@ -71,28 +70,42 @@ public class CliParser// : MonoBehaviour
                 rfJson.CreateObjTemplateJson(command["data"].ToString());
                 break;
             case "select":
-                obj = Utils.GetObjectById(command["data"].ToString());
-                if (obj)
-                    await GameManager.gm.SetCurrentItem(obj);
+                List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
+                if (objsToSelect.Count == 0)
+                    await GameManager.gm.SetCurrentItem(null);
+                else if (objsToSelect.Count == 1)
+                    await GameManager.gm.SetCurrentItem(objsToSelect[0]);
                 else
-                    GameManager.gm.AppendLogLine("Error on select", true, eLogtype.errorCli);
+                {
+                    await GameManager.gm.SetCurrentItem(objsToSelect[0]);
+                    for (int i = 1; i < objsToSelect.Count; i++)
+                    {
+                        GameObject obj = objsToSelect[i];
+                        await GameManager.gm.UpdateCurrentItems(obj);
+                    }
+                }
                 break;
             case "delete":
-                obj = Utils.GetObjectById(command["data"].ToString());
-                if (obj)
-                    await GameManager.gm.DeleteItem(obj, false); // deleteServer == true ??
+                GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
+                if (objToDel)
+                    await GameManager.gm.DeleteItem(objToDel, false); // deleteServer == true ??
                 else
                     GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.errorCli);
                 break;
             case "focus":
-                obj = Utils.GetObjectById(command["data"].ToString());
-                if (obj)
+                GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
+                if (objToFocus)
                 {
-                    await GameManager.gm.SetCurrentItem(obj);
-                    await GameManager.gm.FocusItem(obj);
+                    await GameManager.gm.SetCurrentItem(objToFocus);
+                    await Task.Delay(100);
+                    await GameManager.gm.FocusItem(objToFocus);
                 }
                 else
-                    GameManager.gm.AppendLogLine("Error on focus", true, eLogtype.errorCli);
+                {
+                    int count = GameManager.gm.focus.Count;
+                    for (int i = 0; i < count; i++)
+                        await GameManager.gm.UnfocusItem();
+                }
                 break;
             case "create":
                 CreateObjectFromData(command["data"].ToString());
@@ -164,22 +177,17 @@ public class CliParser// : MonoBehaviour
         if (newData.category == "rack" || newData.category == "device")
         {
             OObject item = (OObject)obj;
-            if (newData.attributes.ContainsKey("color"))
-            {
-                if ((obj.attributes.ContainsKey("color") && obj.attributes["color"] != newData.attributes["color"])
-                    || !item.attributes.ContainsKey("color"))
-                {
+            if (newData.attributes.ContainsKey("color") 
+                && (!item.attributes.ContainsKey("color")
+                    || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
-                }
-            }
-            if (newData.attributes.ContainsKey("temperature"))
-            {
-                if ((obj.attributes.ContainsKey("temperature") && obj.attributes["temperature"] != newData.attributes["temperature"])
-                    || !item.attributes.ContainsKey("temperature"))
-                {
-                    item.SetTemperature(newData.attributes["temperature"]);
-                }
-            }
+
+
+            foreach (string attribute in newData.attributes.Keys)
+                if (attribute.StartsWith("temperature_") 
+                    && (!item.attributes.ContainsKey(attribute)
+                        || item.attributes[attribute] != newData.attributes[attribute]))
+                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
 
         // Case of a separator/areas modification in a room
@@ -252,6 +260,14 @@ public class CliParser// : MonoBehaviour
                     device.SetAttribute(command.param, command.value);
                 else
                     GameManager.gm.AppendLogLine("Incorrect device interaction", true, eLogtype.warningCli);
+                break;
+            case "group":
+                Group group = (Group)obj;
+                usableParams = new List<string>() { "label", "labelFont", "content" };
+                if (usableParams.Contains(command.param))
+                    group.SetAttribute(command.param, command.value);
+                else
+                    GameManager.gm.AppendLogLine("Incorrect group interaction", true, eLogtype.warningCli);
                 break;
             default:
                 GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warningCli);

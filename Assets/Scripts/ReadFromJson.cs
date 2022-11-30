@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Threading.Tasks;
+using System;
 
 public class ReadFromJson
 {
@@ -64,6 +65,7 @@ public class ReadFromJson
         public SColor[] colors;
         public STemplateChild[] components;
         public STemplateChild[] slots;
+        public STemplateSensor[] sensors;
     }
 
     [System.Serializable]
@@ -77,6 +79,14 @@ public class ReadFromJson
         public string labelPos;
         public string color;
         public Dictionary<string, string> attributes;
+    }
+
+    [System.Serializable]
+    public struct STemplateSensor
+    {
+        public string location;
+        public string[] elemPos;
+        public float[] elemSize;
     }
 
     [System.Serializable]
@@ -234,6 +244,14 @@ public class ReadFromJson
                 PopulateSlot(true, slotData, newObject, customColors);
         }
 
+        if (_data.sensors != null)
+        {
+            foreach (STemplateSensor sensor in _data.sensors)
+            {
+                GenerateSensorTemplate(sensor, newObject.transform);
+            }
+        }
+
         // For rack, update height counting
         if (newObject.category == "rack")
         {
@@ -356,4 +374,105 @@ public class ReadFromJson
         }
     }
 
+    ///<summary>
+    /// Generate a sensor from a rack or device template.
+    ///</summary>
+    ///<param name="_sensor">The sensor data to apply</param>
+    ///<param name="_parent">The parent of the created sensor</param>
+    private void GenerateSensorTemplate(STemplateSensor _sensor, Transform _parent)
+    {
+        GameObject newSensor;
+        if (_sensor.elemSize.Length == 1)
+        {
+            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor.transform.GetChild(0).localScale = 0.001f * _sensor.elemSize[0] * Vector3.one;
+        }
+        else
+        {
+            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor.transform.GetChild(0).localScale = 0.001f * new Vector3(_sensor.elemSize[0], _sensor.elemSize[1], _sensor.elemSize[2]);
+        }
+        newSensor.name = _sensor.location;
+        newSensor.transform.localPosition = new Vector3(0, 0, 0);
+        Vector3 offset = 0.5f * (_parent.GetChild(0).localScale - newSensor.transform.GetChild(0).localScale);
+        switch (_sensor.elemPos[0])
+        {
+            case "left":
+                newSensor.transform.localPosition += (offset.x) * Vector3.left;
+                break;
+            case "center":
+                break;
+            case "right":
+                newSensor.transform.localPosition += (offset.x) * Vector3.right;
+                break;
+            default:
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[0] = _parent.GetChild(0).localScale[0] / -2;
+                    pos[0] += Utils.ParseDecFrac(_sensor.elemPos[0]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
+                break;
+        }
+        switch (_sensor.elemPos[1])
+        {
+            case "front":
+                newSensor.transform.localPosition += (offset.z) * Vector3.forward;
+                break;
+            case "center":
+                break;
+            case "rear":
+                newSensor.transform.localPosition += (offset.z) * Vector3.back;
+                break;
+            default:
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[2] = _parent.GetChild(0).localScale[2] / -2;
+                    pos[2] += Utils.ParseDecFrac(_sensor.elemPos[1]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
+                break;
+        }
+        switch (_sensor.elemPos[2])
+        {
+            case "lower":
+                newSensor.transform.localPosition += (offset.y) * Vector3.down;
+                break;
+            case "center":
+                break;
+            case "upper":
+                newSensor.transform.localPosition += (offset.y) * Vector3.up;
+                break;
+            default:
+                try
+                {
+                    Vector3 pos = newSensor.transform.localPosition;
+                    pos[1] = _parent.GetChild(0).localScale[1] / -2;
+                    pos[1] += Utils.ParseDecFrac(_sensor.elemPos[2]) / 1000;
+                    newSensor.transform.localPosition = pos;
+                }
+                catch (FormatException)
+                {
+                    GameManager.gm.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                }
+                break;
+        }
+        Sensor sensor = newSensor.GetComponent<Sensor>();
+
+        sensor.UpdateSensorColor();
+        sensor.fromTemplate = true;
+        newSensor.GetComponent<DisplayObjectData>().PlaceTexts(_sensor.elemPos[1]);
+        newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
+        newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+    }
 }

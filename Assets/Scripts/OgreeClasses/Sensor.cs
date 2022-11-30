@@ -1,36 +1,50 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class Sensor : OObject
+public class Sensor : MonoBehaviour
 {
-    ///<summary>
-    /// Check for a _param attribute "temperature" and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
+    public float temperature = 0f;
+    public string temperatureUnit = "°C";
+    public Color color;
+    public bool fromTemplate;
+    public GameObject sensorTempDiagram = null;
+
+    private void Start()
     {
-        if (_param == "temperature")
-        {
-            attributes["temperature"] = _value;
-            UpdateSensorColor();
-        }
-        GetComponent<DisplayObjectData>().UpdateLabels();
+        if (!fromTemplate)
+            EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
-    ///<summary>
-    /// Update the Sensor attributes with given SApiObject.
-    ///</summary>
-    ///<param name="_src">The SApiObject used to update attributes</param>
-    public override void UpdateFromSApiObject(SApiObject _src)
+    private void OnDestroy()
     {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
-        domain = _src.domain;
-        description = _src.description;
-        attributes = _src.attributes;
+        if (!fromTemplate)
+            EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+    }
+    ///<summary>
+    /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
+    /// Set this sensor's temperature to _value (converted to float)
+    ///</summary>
+    ///<param name="_value">The temperature value</param>
+    public void SetTemperature(string _value)
+    {
+        temperature = Utils.ParseDecFrac(_value);
+        OgreeObject site;
+        if (transform.parent.GetComponent<OObject>())
+        {
+            if (transform.parent.GetComponent<OObject>().referent)
+                site = transform.parent.GetComponent<OObject>().referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+            else if (transform.parent.parent && transform.parent.parent.GetComponent<OgreeObject>().category == "room")
+                site = transform.parent.parent.parent?.parent?.GetComponent<OgreeObject>();
+            else
+                site = transform.parent.parent?.GetComponent<OObject>().referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        }
+        else
+            site = transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+        if (site && site.attributes.ContainsKey("temperatureUnit"))
+            temperatureUnit = site.attributes["temperatureUnit"];
+        UpdateSensorColor();
+        GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
     ///<summary>
@@ -39,26 +53,22 @@ public class Sensor : OObject
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        float temp = float.Parse(attributes["temperature"]);
+        (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(temperatureUnit);
+        Texture2D text = TempDiagram.instance.heatMapGradient;
+        float pixelX = Utils.MapAndClamp(temperature, tempMin, tempMax, 0, text.width);
+        mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);
 
-        float blue = map(temp, 0, 100, 1, 0);
-        float red = map(temp, 0, 100, 0, 1);
-
-        mat.color = new Color(red, 0, blue);
         color = mat.color;
     }
 
-    ///<summary>
-    /// Map a Value from a given range to another range.
-    ///</summary>
-    ///<param name="_input">The value to map</param>
-    ///<param name="_inMin">The minimal value of the input range</param>
-    ///<param name="_inMax">The maximal value of the input range</param>
-    ///<param name="_outMin">The minimal value of the input range</param>
-    ///<param name="_outMax">The maximal value of the input range</param>
-    ///<returns>The maped value</returns>
-    float map(float _input, float _inMin, float _inMax, float _outMin, float _outMax)
+    /// <summary>
+    /// When called, update the sensor temperature
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
+    private void OnImportFinished(ImportFinishedEvent _e)
     {
-        return (_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin;
+        OObject parent = transform.parent.GetComponent<OObject>();
+        if (parent)
+            SetTemperature(parent.GetTemperatureInfos().mean.ToString());
     }
 }

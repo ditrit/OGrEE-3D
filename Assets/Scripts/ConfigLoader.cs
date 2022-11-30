@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -10,15 +11,21 @@ public class ConfigLoader
 {
     private struct SConfig
     {
-        public string verbose;
-        public string fullscreen;
+        public bool verbose;
+        public bool fullscreen;
         public string cachePath;
-        public float cacheLimitMo;
-        public string cliPort;
+        public int cacheLimitMo;
+        public int cliPort;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
-        public string api_url;
-        public string api_token;
+        public string apiUrl;
+        public string apiToken;
+        public int temperatureMinC;
+        public int temperatureMaxC;
+        public int temperatureMinF;
+        public int temperatureMaxF;
+        public int[][] customTemperatureGradient;
+        public bool useCustomGradient;
     }
 
     private SConfig config;
@@ -72,16 +79,16 @@ public class ConfigLoader
                 switch (i)
                 {
                     case 0:
-                        config.verbose = str;
+                        config.verbose = bool.Parse(str);
                         break;
                     case 1:
-                        config.fullscreen = str;
+                        config.fullscreen = bool.Parse(str);
                         break;
                     case 2:
-                        config.api_url = str;
+                        config.apiUrl = str;
                         break;
                     case 3:
-                        config.api_token = str;
+                        config.apiToken = str;
                         break;
                 }
 
@@ -96,15 +103,15 @@ public class ConfigLoader
     {
         try
         {
-            StreamReader jsonCongif = File.OpenText("OGrEE-3D_Data/config.json");
+            StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
             _fileType = "custom";
-            return JsonConvert.DeserializeObject<SConfig>(jsonCongif.ReadToEnd());
+            return JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd());
         }
         catch
         {
-            TextAsset ResourcesCongif = Resources.Load<TextAsset>("config");
+            TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
             _fileType = "default";
-            return JsonConvert.DeserializeObject<SConfig>(ResourcesCongif.ToString());
+            return JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         }
     }
 
@@ -113,11 +120,11 @@ public class ConfigLoader
     ///</summary>
     private void ApplyConfig()
     {
-        verbose = (config.verbose == "true");
+        verbose = config.verbose;
 
         GameManager.gm.server.SetupPorts(config.cliPort);
         CreateCacheDir();
-        FullScreenMode((config.fullscreen == "true"));
+        FullScreenMode(config.fullscreen);
         SetMaterialColor("selection", GameManager.gm.selectMat);
         SetMaterialColor("focus", GameManager.gm.focusMat);
         SetMaterialColor("edit", GameManager.gm.editMat);
@@ -186,7 +193,7 @@ public class ConfigLoader
     /// Get the limit size in Mo of the cache from config.
     ///</summary>
     ///<returns>The limit size (Mo) of the cache</returns>
-    public float GetCacheLimit()
+    public int GetCacheLimit()
     {
         return config.cacheLimitMo;
     }
@@ -198,8 +205,8 @@ public class ConfigLoader
     ///<param name="_token">Corresponding authorisation token</param>
     public void RegisterApi(string _url, string _token)
     {
-        config.api_url = _url;
-        config.api_token = _token;
+        config.apiUrl = _url;
+        config.apiToken = _token;
     }
 
     ///<summary>
@@ -213,7 +220,7 @@ public class ConfigLoader
         // config.api_url = "http://172.24.22.55:3001";
         config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA"; // master key
 #endif
-        await ApiManager.instance.Initialize(config.api_url, config.api_token);
+        await ApiManager.instance.Initialize(config.apiUrl, config.apiToken);
         return ApiManager.instance.isInit;
     }
 
@@ -253,7 +260,7 @@ public class ConfigLoader
     ///</summary>
     public string GetApiUrl()
     {
-        return config.api_url;
+        return config.apiUrl;
     }
 
     ///<summary>
@@ -269,5 +276,40 @@ public class ConfigLoader
                 return kvp.Value;
         }
         return null;
+    }
+
+    ///<summary>
+    /// Get a temperature extremum of a temperature unit
+    ///</summary>
+    ///<param name="_extremum">The extremum to get, must be "min" or "max"</param>
+    ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
+    ///<returns>The extremum for the temperature unit</returns>
+    public (int min, int max) GetTemperatureLimit(string _unit)
+    {
+        _unit = _unit.ToLower();
+        if (_unit == "°c")
+            return (config.temperatureMinC, config.temperatureMaxC);
+        if (_unit == "°f")
+            return (config.temperatureMinF, config.temperatureMaxF);
+        GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        return (0, 0);
+    }
+
+    /// <summary>
+    /// Get custom gradient colors to be used to represent temperatures
+    /// </summary>
+    /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
+    public List<int[]> GetCustomGradientColors()
+    {
+        return config.customTemperatureGradient.ToList();
+    }
+
+    /// <summary>
+    /// Should the user-defined temperature color gradient be used ?
+    /// </summary>
+    /// <returns>True if yes, false if not </returns>
+    public bool IsUsingCustomGradient()
+    {
+        return config.useCustomGradient;
     }
 }

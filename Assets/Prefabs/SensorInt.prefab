@@ -978,8 +978,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6010235731161253863}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.16692063, y: -0.6836239, z: 0.1651138, w: 0.69103783}
+  m_LocalPosition: {x: 0.30820048, y: 0.15811837, z: -0.0033226567}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9211944905368113438}
@@ -1004,22 +1004,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448106aed078b7344a965d75d7d7849b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: 
-  hierarchyName: 
-  id: 
-  parentId: 
-  category: 
-  description: []
-  domain: 
-  attributesKeys: []
-  attributesValues: []
-  currentLod: 0
-  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
-  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  originalLocalScale: {x: 1, y: 1, z: 1}
+  temperature: 0
+  temperatureUnit: "\xB0C"
   color: {r: 0, g: 0, b: 0, a: 0}
-  isHidden: 0
-  referent: {fileID: 0}
+  fromTemplate: 0
+  sensorTempDiagram: {fileID: 0}
 --- !u!114 &226685182499933010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1038,7 +1027,11 @@ MonoBehaviour:
   labelBottom: {fileID: 7045867512332830116}
   labelLeft: {fileID: 4991055209020205873}
   labelRight: {fileID: 3970544498558124524}
+  floatingLabel: {fileID: 0}
+  hasFloatingLabel: 0
   usedLabels: []
+  attrToDisplay: 
+  cc: {fileID: 0}
 --- !u!114 &-7375449237141215194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1051,11 +1044,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ead1eefb9e5dfc409361e81e364eeeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedMaterial: {fileID: 2100000, guid: b66bd900e59854148a79acba851960d0, type: 2}
-  mouseHoverMaterial: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
-  highlightMaterial: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
-  focusMaterial: {fileID: 2100000, guid: 62d6defc7ea4a1041b2b2b2e713aa5d0, type: 2}
-  editMaterial: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   isActive: 0
   isSelected: 0
   isHovered: 0

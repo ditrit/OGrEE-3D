@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     public GameObject separatorModel;
     public GameObject sensorExtModel;
     public GameObject sensorIntModel;
+    public GameObject sensorBarModel;
+    public GameObject sensorBarStdModel;
 
     [Header("Runtime data")]
     public string lastCmdFilePath;
@@ -53,6 +55,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
     public bool editMode = false;
+    public bool tempMode = false;
     private string startDateTime;
 
     public GameObject objectRoot;
@@ -73,6 +76,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
 #if API_DEBUG
         configLoader.ConnectToApi();
 #endif

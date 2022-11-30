@@ -92,80 +92,98 @@ public class GUIObjectInfos : MonoBehaviour
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
-        // Display posXY if available
-        if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
-            && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
+        if (GameManager.gm.tempMode && _obj is OObject @object)
         {
-            Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
-            tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
-            i++;
-
-            // If rack, display pos by tile name if available
-            if (_obj.category == "rack" && _obj.transform.parent)
+            STemp tempInfos = @object.GetTemperatureInfos();
+            tmpAttributes.text += $"<b>average:</b> {tempInfos.mean} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>standard deviation:</b> {tempInfos.std} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>minimum:</b> {tempInfos.min} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>maximum:</b> {tempInfos.max} {tempInfos.unit}\n";
+            i += 4;
+            if (!string.IsNullOrEmpty(tempInfos.hottestChild))
             {
-                Room room = _obj.transform.parent.GetComponent<Room>();
-                if (room.attributes.ContainsKey("tiles"))
+                tmpAttributes.text += $"<b>hottest child:</b> {tempInfos.hottestChild}\n";
+                i++;
+            }
+
+
+        }
+        else
+        {
+            // Display posXY if available
+            if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
+                && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
+            {
+                Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
+                tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
+                i++;
+
+                // If rack, display pos by tile name if available
+                if (_obj.category == "rack" && _obj.transform.parent)
                 {
-                    List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(room.attributes["tiles"]);
-                    ReadFromJson.STile tileData = new ReadFromJson.STile();
-                    foreach (ReadFromJson.STile t in tiles)
+                    Room room = _obj.transform.parent.GetComponent<Room>();
+                    if (room.attributes.ContainsKey("tiles"))
                     {
-                        if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
-                            tileData = t;
-                    }
-                    if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
-                    {
-                        tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
-                        i++;
+                        List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(room.attributes["tiles"]);
+                        ReadFromJson.STile tileData = new ReadFromJson.STile();
+                        foreach (ReadFromJson.STile t in tiles)
+                        {
+                            if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
+                                tileData = t;
+                        }
+                        if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
+                        {
+                            tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
+                            i++;
+                        }
                     }
                 }
             }
-        }
 
-        // Display orientation if available
-        if (_obj.attributes.ContainsKey("orientation"))
-        {
-            tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
-            i++;
-        }
-
-        // Display size if available
-        if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
-        {
-            Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
-            tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
-            i++;
-        }
-
-        // Display template if available
-        if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
-        {
-            tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
-            i++;
-        }
-
-        // Display all other attributes
-        List<string> excludeAttr = new List<string> { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "customColors" };
-        foreach (KeyValuePair<string, string> kvp in _obj.attributes)
-        {
-            if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
+            // Display orientation if available
+            if (_obj.attributes.ContainsKey("orientation"))
             {
-                tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+                tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
                 i++;
             }
-        }
 
-        // Display all descriptions
-        if (_obj.description.Count != 0)
-        {
-            tmpAttributes.text += "<b>description:</b>\n";
-            for (int j = 0; j < _obj.description.Count; j++)
+            // Display size if available
+            if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
             {
-                tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
+                Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
+                tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
                 i++;
             }
-        }
 
+            // Display template if available
+            if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
+            {
+                tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
+                i++;
+            }
+
+            // Display all other attributes
+            List<string> excludeAttr = new List<string> { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "customColors" };
+            foreach (KeyValuePair<string, string> kvp in _obj.attributes)
+            {
+                if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
+                {
+                    tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+                    i++;
+                }
+            }
+
+            // Display all descriptions
+            if (_obj.description.Count != 0)
+            {
+                tmpAttributes.text += "<b>description:</b>\n";
+                for (int j = 0; j < _obj.description.Count; j++)
+                {
+                    tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
+                    i++;
+                }
+            }
+        }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(0, i * 30);
