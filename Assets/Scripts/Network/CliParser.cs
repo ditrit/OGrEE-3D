@@ -87,7 +87,10 @@ public class CliParser// : MonoBehaviour
                 break;
             case "delete":
                 if (string.IsNullOrEmpty(command["data"].ToString()))
+                {
+                    await GameManager.gm.DeleteItem(GameManager.gm.objectRoot, false);
                     await GameManager.gm.PurgeTenants();
+                }
                 else
                 {
                     GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
