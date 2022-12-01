@@ -24,7 +24,9 @@ public class Server : MonoBehaviour
     [SerializeField] private bool triggerSend = false;
     [SerializeField] private string debugMsg;
 
-    private async void Update()
+    private Coroutine dequeueCoroutine;
+
+    private void Update()
     {
         // Debug from Editor
         if (triggerSend)
@@ -35,10 +37,13 @@ public class Server : MonoBehaviour
 
         if (connection.incomingQueue.Count > 0)
         {
-            string msg = connection.incomingQueue.Dequeue();
-            await Task.Delay(timer);
-            GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
-            await parser.DeserializeInput(msg);
+            if (dequeueCoroutine == null)
+                dequeueCoroutine = StartCoroutine(DequeueAndParse(timer));
+
+            // string msg = connection.incomingQueue.Dequeue();
+            // await Task.Delay(timer);
+            // GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
+            // await parser.DeserializeInput(msg);
         }
     }
 
@@ -46,6 +51,17 @@ public class Server : MonoBehaviour
     {
         connection.Stop();
     }
+
+    private IEnumerator DequeueAndParse(int _timer)
+    {
+        string msg = connection.incomingQueue.Dequeue();
+        yield return new WaitForSeconds(timer);
+        GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
+        Task parse = parser.DeserializeInput(msg);
+        yield return new WaitUntil(() => parse.IsCompleted);
+        dequeueCoroutine = null;
+    }
+
 
     ///<summary>
     /// Set values for listenPort and sendPort.

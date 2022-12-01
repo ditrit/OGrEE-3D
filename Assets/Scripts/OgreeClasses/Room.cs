@@ -92,7 +92,10 @@ public class Room : Building
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (root)
+        {
+            root.SetActive(false); //for UI
             Destroy(root);
+        }
         else
         {
             root = new GameObject("tilesNameRoot");
@@ -149,7 +152,10 @@ public class Room : Building
         EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (root)
+        {
+            root.SetActive(false); // for UI
             Destroy(root);
+        }
         else
         {
             root = new GameObject("tilesColorRoot");
@@ -499,11 +505,46 @@ public class Room : Building
         separators.Add(_sep);
         attributes["separators"] = JsonConvert.SerializeObject(separators);
 
+        BuildSeparator(_sep);
+        // Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
+        // Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
+
+        // float length = Vector2.Distance(startPos, endPos);
+        // // float height = walls.GetChild(0).localScale.y;
+        // float height = Utils.ParseDecFrac(attributes["height"]);
+        // float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
+
+        // GameObject separator = Instantiate(GameManager.gm.separatorModel);
+        // separator.transform.parent = walls;
+
+        // // Set textured box
+        // separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
+        // separator.transform.GetChild(0).localPosition = new Vector3(length, height, 0) / 2;
+        // Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
+        // rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
+
+        // if (technicalZone)
+        // {
+        //     // Place the separator in the right place
+        //     Vector3 roomScale = technicalZone.localScale * -5;
+        //     separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        // }
+        // else
+        //     separator.transform.localPosition = Vector3.zero;
+
+        // // Apply wanted transform
+        // separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
+        // separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+    }
+
+    ///
+    public void BuildSeparator(ReadFromJson.SSeparator _sep)
+    {
         Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
         Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
 
         float length = Vector2.Distance(startPos, endPos);
-        float height = walls.GetChild(0).localScale.y;
+        float height = Utils.ParseDecFrac(attributes["height"]);
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.gm.separatorModel);
@@ -516,12 +557,16 @@ public class Room : Building
         rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
 
         // Place the separator in the right place
-        Vector3 roomScale = technicalZone.localScale * -5;
-        separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        if (technicalZone)
+        {
+            Vector3 roomScale = technicalZone.localScale * -5;
+            separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        }
+        else
+            separator.transform.localPosition = Vector3.zero;
 
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
-
     }
 }

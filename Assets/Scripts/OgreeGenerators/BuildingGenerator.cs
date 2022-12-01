@@ -194,14 +194,12 @@ public class BuildingGenerator
         if (!string.IsNullOrEmpty(template.slug))
         {
             if (template.vertices == null)
-            {
                 room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
-                if (template.separators != null)
-                {
-                    foreach (ReadFromJson.SSeparator sep in template.separators)
-                        room.AddSeparator(sep); // Will be updated to works with non convex walls
-                }
+            if (template.separators != null && !room.attributes.ContainsKey("separators"))
+            {
+                foreach (ReadFromJson.SSeparator sep in template.separators)
+                    room.AddSeparator(sep); // Will be updated to works with non convex walls
             }
 
             if (template.tiles != null)
@@ -227,6 +225,13 @@ public class BuildingGenerator
                     colors.Add(c);
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
+        }
+
+        if (room.attributes.ContainsKey("separators"))
+        {
+            List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(room.attributes["separators"]);
+            foreach (ReadFromJson.SSeparator sep in separators)
+                room.BuildSeparator(sep);
         }
 
         return room;
