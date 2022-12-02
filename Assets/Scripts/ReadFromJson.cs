@@ -31,6 +31,7 @@ public class ReadFromJson
     {
         public float[] startPosXYm;
         public float[] endPosXYm;
+        public string type;
     }
 
     [System.Serializable]
