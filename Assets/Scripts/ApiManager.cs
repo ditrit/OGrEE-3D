@@ -209,7 +209,7 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         }
     }
 
@@ -324,7 +324,10 @@ public class ApiManager : MonoBehaviour
         else if (_input.Contains("successfully got room_template"))
             await CreateTemplateFromJson(_input, "room");
         else
+        {
             GameManager.gm.AppendLogLine("Unknown object received", true, eLogtype.errorApi);
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        }
     }
 
     ///<summary>
