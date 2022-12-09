@@ -18,6 +18,7 @@ public class ConfigLoader
         public int cliPort;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
+        public float alphaOnInteract;
         public string apiUrl;
         public string apiToken;
         public int temperatureMinC;
@@ -125,6 +126,7 @@ public class ConfigLoader
         GameManager.gm.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
+        config.alphaOnInteract = Mathf.Clamp(config.alphaOnInteract, 0, 1);
         SetMaterialColor("selection", GameManager.gm.selectMat);
         SetMaterialColor("focus", GameManager.gm.focusMat);
         SetMaterialColor("edit", GameManager.gm.editMat);
@@ -175,7 +177,7 @@ public class ConfigLoader
         if (config.colors.ContainsKey(_key))
         {
             tmp = Utils.ParseHtmlColor(config.colors[_key]);
-            tmp.a = 0.5f;
+            tmp.a = config.alphaOnInteract;
             _mat.color = tmp;
         }
     }

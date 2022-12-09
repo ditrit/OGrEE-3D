@@ -18,6 +18,7 @@
         "reservedZone": "#F2F2F2",
         "technicalZone": "#EBF2DE"
     },
+    "alphaOnInteract ": 0.5,
 
     "apiUrl": "",
     "apiToken": "",
