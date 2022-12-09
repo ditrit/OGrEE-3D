@@ -326,7 +326,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             GameManager.gm.AppendLogLine("Unknown object received", true, eLogtype.errorApi);
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         }
     }
 
