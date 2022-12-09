@@ -34,8 +34,8 @@ public static class NonSquareRoomGenerator
 
         for (int i = 0; i < vCount; i++)
         {
-            xWalls[i] = (float)_template.vertices[i][0] / 100f;
-            zWalls[i] = (float)_template.vertices[i][1] / 100f;
+            xWalls[i] = _template.vertices[i][0] / 100f;
+            zWalls[i] = _template.vertices[i][1] / 100f;
         }
 
         for (int i = 0; i < vCount - 1; i++)
