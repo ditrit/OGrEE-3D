@@ -18,10 +18,8 @@
         "reservedZone": "#F2F2F2",
         "technicalZone": "#EBF2DE"
     },
-    "alphaOnInteract ": 0.5,
+    "alphaOnInteract": 50,
 
-    "apiUrl": "",
-    "apiToken": "",
 	"temperatureMinC": 0,
 	"temperatureMaxC": 100,
 	"temperatureMinF": 32,

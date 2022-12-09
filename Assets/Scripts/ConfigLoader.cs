@@ -38,7 +38,7 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        config = LoadConfigFile(out string fileType);
+        LoadConfigFile(out string fileType);
         OverrideConfig();
         ApplyConfig();
         GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
@@ -46,6 +46,9 @@ public class ConfigLoader
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
             GameManager.gm.consoleController.RunCommandString($".cmds:{startFile}");
+
+        Debug.Log(config.alphaOnInteract);
+        Debug.Log(config.cacheLimitMo);
     }
 
     ///<summary>
@@ -100,20 +103,64 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private SConfig LoadConfigFile(out string _fileType)
+    private void LoadConfigFile(out string _fileType)
     {
+        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
+        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         try
         {
             StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
+            ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
             _fileType = "custom";
-            return JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd());
         }
-        catch
+        catch (System.Exception _e)
         {
-            TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
             _fileType = "default";
-            return JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
+            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.error);
         }
+    }
+
+    ///
+    private void ModifyConfig(SConfig _custom)
+    {
+        config.verbose = _custom.verbose;
+        config.fullscreen = _custom.fullscreen;
+        if (!string.IsNullOrEmpty(_custom.cachePath))
+            config.cachePath = _custom.cachePath;
+        if (_custom.cacheLimitMo > 0)
+            config.cacheLimitMo = _custom.cacheLimitMo;
+        if (_custom.cliPort > 0)
+            config.cliPort = _custom.cliPort;
+        foreach (KeyValuePair<string, string> kvp in _custom.textures)
+        {
+            if (kvp.Key == "perf22" || kvp.Key == "perf29")
+            {
+                if (!string.IsNullOrEmpty(kvp.Value))
+                    config.textures[kvp.Key] = kvp.Value;
+            }
+            else
+                config.textures.Add(kvp.Key, kvp.Value);
+        }
+        List<string> colorsToCheck = new List<string>() { "selection", "edit", "focus", "highlight", "usableZone", "reservedZone", "technicalZone" };
+        foreach (KeyValuePair<string, string> kvp in _custom.colors)
+        {
+            if (colorsToCheck.Contains(kvp.Key))
+            {
+                if (!string.IsNullOrEmpty(kvp.Value))
+                    config.colors[kvp.Key] = kvp.Value;
+            }
+            else
+                config.colors.Add(kvp.Key, kvp.Value);
+        }
+        config.alphaOnInteract = Mathf.Clamp(_custom.alphaOnInteract, 0, 100);
+        config.temperatureMinC = _custom.temperatureMinC;
+        config.temperatureMaxC = _custom.temperatureMaxC;
+        config.temperatureMinF = _custom.temperatureMinF;
+        config.temperatureMaxF = _custom.temperatureMaxF;
+        if (_custom.customTemperatureGradient.Length == 3 && _custom.customTemperatureGradient[0].Length == 4
+            && _custom.customTemperatureGradient[1].Length == 4 && _custom.customTemperatureGradient[2].Length == 4)
+            config.customTemperatureGradient = _custom.customTemperatureGradient;
+        config.useCustomGradient = _custom.useCustomGradient;
     }
 
     ///<summary>
@@ -126,7 +173,6 @@ public class ConfigLoader
         GameManager.gm.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
-        config.alphaOnInteract = Mathf.Clamp(config.alphaOnInteract, 0, 1);
         SetMaterialColor("selection", GameManager.gm.selectMat);
         SetMaterialColor("focus", GameManager.gm.focusMat);
         SetMaterialColor("edit", GameManager.gm.editMat);
@@ -177,7 +223,7 @@ public class ConfigLoader
         if (config.colors.ContainsKey(_key))
         {
             tmp = Utils.ParseHtmlColor(config.colors[_key]);
-            tmp.a = config.alphaOnInteract;
+            tmp.a = config.alphaOnInteract / 100;
             _mat.color = tmp;
         }
     }
