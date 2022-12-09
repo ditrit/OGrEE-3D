@@ -115,7 +115,6 @@ public class ObjectGenerator
 
         rack.UpdateColorByTenant();
 
-        // string hn = rack.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
@@ -311,7 +310,6 @@ public class ObjectGenerator
             newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        // string hn = dv.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
@@ -455,7 +453,6 @@ public class ObjectGenerator
         else if (parentCategory == "rack")
             newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
         newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
-        // string hn = gr.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newGr);
 
         return gr;
@@ -584,43 +581,61 @@ public class ObjectGenerator
 
         string roomHierarchyName = parent.GetComponent<OgreeObject>().hierarchyName;
         string[] rackNames = _co.attributes["content"].Split(',');
-        Transform lowerLeft = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
-        Transform upperRight = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
-
-        if (lowerLeft == null || upperRight == null)
+        Transform cornerA = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
+        Transform cornerB = GameManager.gm.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
+        if (cornerA == null || cornerB == null)
         {
             GameManager.gm.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", true, eLogtype.error);
             return null;
         }
 
-        float maxHeight = lowerLeft.GetChild(0).localScale.y;
-        if (upperRight.GetChild(0).localScale.y > maxHeight)
-            maxHeight = upperRight.GetChild(0).localScale.y;
+        bool horizontalCorridor = (cornerA.GetComponent<Rack>().attributes["orientation"] == "front" || cornerA.GetComponent<Rack>().attributes["orientation"] == "rear");
+
+        Vector2 orient = Vector2.one;
+        if (cornerA.localPosition.x > cornerB.localPosition.x)
+            orient.x = -1;
+        if (cornerA.localPosition.z > cornerB.localPosition.z)
+            orient.y = -1;
+
+        float maxHeight = cornerA.GetChild(0).localScale.y;
+        if (cornerB.GetChild(0).localScale.y > maxHeight)
+            maxHeight = cornerB.GetChild(0).localScale.y;
 
         GameObject newCo = Object.Instantiate(GameManager.gm.labeledBoxModel);
         newCo.name = _co.name;
         newCo.transform.parent = parent;
 
-        float x = upperRight.localPosition.x - lowerLeft.localPosition.x;
-        float z = upperRight.localPosition.z - lowerLeft.localPosition.z;
-        if (lowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
-            || lowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        // Scale
+        float x = (cornerB.localPosition.x - cornerA.localPosition.x) * orient.x;
+        float z = (cornerB.localPosition.z - cornerA.localPosition.z) * orient.y;
+        if (horizontalCorridor)
         {
-            x += (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
-            z -= (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
+            x += (cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x) / 2;
+            z -= (cornerB.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
         }
         else
         {
-            x += (upperRight.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
-            z -= (upperRight.GetChild(0).localScale.x + lowerLeft.GetChild(0).localScale.x) / 2;
+            x -= (cornerB.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
+            z += (cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x) / 2;
         }
-        newCo.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+        newCo.transform.GetChild(0).localScale = new Vector3(Mathf.Abs(x), maxHeight, Mathf.Abs(z));
 
+        // localPosition
         newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newCo.transform.localPosition = new Vector3(lowerLeft.localPosition.x, maxHeight / 2, lowerLeft.localPosition.z);
-        float xOffset = (newCo.transform.GetChild(0).localScale.x - lowerLeft.GetChild(0).localScale.x) / 2;
-        float zOffset = (newCo.transform.GetChild(0).localScale.z + lowerLeft.GetChild(0).localScale.z) / 2;
-        newCo.transform.localPosition += new Vector3(xOffset, 0, zOffset);
+        newCo.transform.localPosition = new Vector3(cornerA.localPosition.x, maxHeight / 2, cornerA.localPosition.z);
+        float xOffset;
+        float zOffset;
+        if (horizontalCorridor)
+        {
+            xOffset = (newCo.transform.GetChild(0).localScale.x - cornerA.GetChild(0).localScale.x) / 2;
+            zOffset = (newCo.transform.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
+        }
+        else
+        {
+            xOffset = (newCo.transform.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.z) / 2;
+            zOffset = (newCo.transform.GetChild(0).localScale.z - cornerA.GetChild(0).localScale.x) / 2;
+        }
+        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0, zOffset * orient.y);
 
         OObject co = newCo.AddComponent<OObject>();
         co.hierarchyName = hierarchyName;
@@ -638,7 +653,6 @@ public class ObjectGenerator
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
         newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        // string hn = co.UpdateHierarchyName();
         GameManager.gm.allItems.Add(hierarchyName, newCo);
 
         return co;
