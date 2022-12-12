@@ -18,6 +18,7 @@ public class ConfigLoader
         public int cliPort;
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
+        public float alphaOnInteract;
         public string apiUrl;
         public string apiToken;
         public int temperatureMinC;
@@ -37,7 +38,7 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        config = LoadConfigFile(out string fileType);
+        string fileType = LoadConfigFile();
         OverrideConfig();
         ApplyConfig();
         GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
@@ -99,20 +100,72 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private SConfig LoadConfigFile(out string _fileType)
+    private string LoadConfigFile()
     {
+        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
+        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         try
         {
             StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
-            _fileType = "custom";
-            return JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd());
+            ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
+            return "custom";
         }
-        catch
+        catch (System.Exception _e)
         {
-            TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
-            _fileType = "default";
-            return JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
+            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.warning);
+            return "default";
         }
+    }
+
+    ///
+    private void ModifyConfig(SConfig _custom)
+    {
+        config.verbose = _custom.verbose;
+        config.fullscreen = _custom.fullscreen;
+        if (!string.IsNullOrEmpty(_custom.cachePath))
+            config.cachePath = _custom.cachePath;
+        if (_custom.cacheLimitMo > 0)
+            config.cacheLimitMo = _custom.cacheLimitMo;
+        if (_custom.cliPort > 0)
+            config.cliPort = _custom.cliPort;
+        foreach (KeyValuePair<string, string> kvp in _custom.textures)
+        {
+            if (kvp.Key == "perf22" || kvp.Key == "perf29")
+            {
+                if (!string.IsNullOrEmpty(kvp.Value))
+                    config.textures[kvp.Key] = kvp.Value;
+            }
+            else
+                config.textures.Add(kvp.Key, kvp.Value);
+        }
+        List<string> colorsToCheck = new List<string>() { "selection", "edit", "focus", "highlight", "usableZone", "reservedZone", "technicalZone" };
+        foreach (KeyValuePair<string, string> kvp in _custom.colors)
+        {
+            if (colorsToCheck.Contains(kvp.Key))
+            {
+                if (!string.IsNullOrEmpty(kvp.Value))
+                    config.colors[kvp.Key] = kvp.Value;
+            }
+            else
+                config.colors.Add(kvp.Key, kvp.Value);
+        }
+        config.alphaOnInteract = Mathf.Clamp(_custom.alphaOnInteract, 0, 100);
+        config.temperatureMinC = _custom.temperatureMinC;
+        config.temperatureMaxC = _custom.temperatureMaxC;
+        config.temperatureMinF = _custom.temperatureMinF;
+        config.temperatureMaxF = _custom.temperatureMaxF;
+        bool canUpdateTempGradient = true;
+        if (_custom.customTemperatureGradient.Length >= 2)
+        {
+            foreach (int[] tab in _custom.customTemperatureGradient)
+            {
+                if (tab.Length != 4)
+                    canUpdateTempGradient = false;
+            }
+        }
+        if (canUpdateTempGradient)
+            config.customTemperatureGradient = _custom.customTemperatureGradient;
+        config.useCustomGradient = _custom.useCustomGradient;
     }
 
     ///<summary>
@@ -175,7 +228,7 @@ public class ConfigLoader
         if (config.colors.ContainsKey(_key))
         {
             tmp = Utils.ParseHtmlColor(config.colors[_key]);
-            tmp.a = 0.5f;
+            tmp.a = config.alphaOnInteract / 100;
             _mat.color = tmp;
         }
     }

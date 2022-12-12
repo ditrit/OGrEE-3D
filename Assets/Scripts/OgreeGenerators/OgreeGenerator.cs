@@ -28,6 +28,7 @@ public class OgreeGenerator : MonoBehaviour
         if (Utils.GetObjectById(_obj.id))
         {
             GameManager.gm.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
+            ResetCoroutine();
             return null;
         }
 
