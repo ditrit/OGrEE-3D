@@ -46,9 +46,6 @@ public class ConfigLoader
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
             GameManager.gm.consoleController.RunCommandString($".cmds:{startFile}");
-
-        Debug.Log(config.alphaOnInteract);
-        Debug.Log(config.cacheLimitMo);
     }
 
     ///<summary>
@@ -116,7 +113,7 @@ public class ConfigLoader
         catch (System.Exception _e)
         {
             _fileType = "default";
-            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.error);
+            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.warning);
         }
     }
 
