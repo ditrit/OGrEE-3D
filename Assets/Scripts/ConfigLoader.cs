@@ -38,7 +38,7 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        LoadConfigFile(out string fileType);
+        string fileType = LoadConfigFile();
         OverrideConfig();
         ApplyConfig();
         GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
@@ -100,7 +100,7 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private void LoadConfigFile(out string _fileType)
+    private string LoadConfigFile()
     {
         TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
         config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
@@ -108,12 +108,12 @@ public class ConfigLoader
         {
             StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
             ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
-            _fileType = "custom";
+            return "custom";
         }
         catch (System.Exception _e)
         {
-            _fileType = "default";
             GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.warning);
+            return "default";
         }
     }
 
@@ -154,8 +154,16 @@ public class ConfigLoader
         config.temperatureMaxC = _custom.temperatureMaxC;
         config.temperatureMinF = _custom.temperatureMinF;
         config.temperatureMaxF = _custom.temperatureMaxF;
-        if (_custom.customTemperatureGradient.Length == 3 && _custom.customTemperatureGradient[0].Length == 4
-            && _custom.customTemperatureGradient[1].Length == 4 && _custom.customTemperatureGradient[2].Length == 4)
+        bool canUpdateTempGradient = true;
+        if (_custom.customTemperatureGradient.Length >= 2)
+        {
+            foreach (int[] tab in _custom.customTemperatureGradient)
+            {
+                if (tab.Length != 4)
+                    canUpdateTempGradient = false;
+            }
+        }
+        if (canUpdateTempGradient)
             config.customTemperatureGradient = _custom.customTemperatureGradient;
         config.useCustomGradient = _custom.useCustomGradient;
     }
