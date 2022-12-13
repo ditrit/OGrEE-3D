@@ -56,7 +56,11 @@ public static class NonSquareRoomGenerator
         _room.GetComponent<Room>().nameText.transform.localPosition = center + new Vector3(0, 0.003f, 0);
     }
 
-    ///
+    /// <summary>
+    /// Build the walls of a non convex room
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
     private static void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
     {
         float height = _template.sizeWDHm[2];
@@ -104,7 +108,12 @@ public static class NonSquareRoomGenerator
         meshWalls.RecalculateNormals();
     }
 
-    ///
+    /// <summary>
+    /// Build the floor of a non convex room, optionnaly with its tiles
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
+    /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
     private static void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
