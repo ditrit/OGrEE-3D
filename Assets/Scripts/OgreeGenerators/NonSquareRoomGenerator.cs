@@ -42,6 +42,11 @@ public static class CircularListExtension
 
 public static class NonSquareRoomGenerator
 {
+    /// <summary>
+    /// Build the walls and floor of a non convex room then place it
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
     public static void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
@@ -126,14 +131,14 @@ public static class NonSquareRoomGenerator
         Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;
-
         Vector3 A, B, C;
         while (shrinkingWalls.Count >= 3)
         {
             A = shrinkingWalls.NextIndex(index, 0);
             B = shrinkingWalls.NextIndex(index, 1);
             C = shrinkingWalls.NextIndex(index, 2);
-            Debug.Log(ClockWise(A, B, C));
+            string s = "";
+            shrinkingWalls.ForEach(t => s += t.ToString() + ", ");
             if (ClockWise(A, B, C) && !TriangleIntersectWalls(A, B, C, walls))
             {
                 trianglesRoom.Add(walls.IndexOf(A));
@@ -158,14 +163,13 @@ public static class NonSquareRoomGenerator
                 string element = _template.tiles[i].location;
                 string[] separated = element.Split('/');
 
-                int x = int.Parse(separated[0]);
-                int z = int.Parse(separated[1]);
+                float x = Utils.ParseDecFrac(separated[0]);
+                float z = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
                 GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
-                tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
-                tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, 2 * GameManager.gm.tileSize) / 2;
+                tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
             }
         }
     }
@@ -182,7 +186,7 @@ public static class NonSquareRoomGenerator
         float sum = 0;
         for (int i = 0; i < _points.Count; i++)
         {
-            sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).x + _points[i].x);
+            sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).z + _points[i].z);
         }
         return sum > 0;
     }
