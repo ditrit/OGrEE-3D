@@ -110,6 +110,8 @@ public static class NonSquareRoomGenerator
         List<int> trianglesRoom = new List<int>();
 
         List<Vector3> walls = _template.vertices.Select(w => new Vector3(w[0] / 100f, 0, w[1] / 100f)).ToList();
+        if (!MostlyClockWise(walls))
+            walls.Reverse();
         List<Vector3> shrinkingWalls = new List<Vector3>(walls);
         Transform floor = _root.GetComponent<Room>().usableZone;
         Mesh meshFloor = new Mesh { name = "meshFloor" };
@@ -154,45 +156,26 @@ public static class NonSquareRoomGenerator
                 GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
                 tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
-                tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, 2*GameManager.gm.tileSize) / 2;
+                tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, 2 * GameManager.gm.tileSize) / 2;
             }
         }
     }
 
-    ///
-    private static double AngleOffAroundAxis(Vector3 a, Vector3 b, Vector3 axis, bool clockwise = true)
+    /// <summary>
+    /// Check if a list vertices defining a polygon is listed <i>mostly</i> clockwise
+    /// <br/> Mostly because, if the polygon is non-convex, it can no be just clockwise or non-clockwise
+    /// <br/><see href="https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order"/>
+    /// </summary>
+    /// <param name="_points">the list vertices defining a polygon</param>
+    /// <returns>True if the list is mostly clockwise</returns>
+    private static bool MostlyClockWise(List<Vector3> _points)
     {
-        Vector3 right;
-        if (clockwise)
+        float sum = 0;
+        for (int i = 0; i < _points.Count; i++)
         {
-            right = Vector3.Cross(b, axis);
-            b = Vector3.Cross(axis, right);
+            sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).x + _points[i].x);
         }
-        else
-        {
-            right = Vector3.Cross(axis, b);
-            b = Vector3.Cross(right, axis);
-        }
-        return Mathf.Atan2(Vector3.Dot(a, right), Vector3.Dot(a, b)) * 180 / Mathf.PI;
-    }
-
-    ///
-    private static bool LineSegmentsIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
-    {
-        Vector2 intersection = Vector2.zero;
-
-        var d = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
-        if (d == 0.0f)
-            return false;
-
-        var u = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d;
-        var v = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / d;
-        if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
-            return false;
-
-        intersection.x = p1.x + u * (p2.x - p1.x);
-        intersection.y = p1.y + u * (p2.y - p1.y);
-        return true;
+        return sum > 0;
     }
 
     /// <summary>
