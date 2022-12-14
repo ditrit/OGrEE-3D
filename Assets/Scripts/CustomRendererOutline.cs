@@ -310,7 +310,10 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.highlightMat);
             else
             {
-                SetMaterial(GameManager.gm.defaultMat);
+                if (GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(GameManager.gm.alphaMat);
+                else
+                    SetMaterial(GameManager.gm.defaultMat);
                 transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
         }
@@ -337,7 +340,10 @@ public class CustomRendererOutline : MonoBehaviour
                 SetMaterial(GameManager.gm.highlightMat);
             else
             {
-                SetMaterial(GameManager.gm.defaultMat);
+                if (GetComponent<OObject>().category.Equals("corridor"))
+                    SetMaterial(GameManager.gm.alphaMat);
+                else
+                    SetMaterial(GameManager.gm.defaultMat);
                 transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
         }
