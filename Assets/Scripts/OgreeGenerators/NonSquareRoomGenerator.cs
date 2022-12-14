@@ -1,9 +1,52 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+
+/// <summary>
+/// Two List extensions methods to be able to treat them as circular
+/// </summary>
+public static class CircularListExtension
+{
+    /// <summary>
+    /// Returns the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in a circular list
+    /// </summary>
+    /// <typeparam name="T">type of variables in the list</typeparam>
+    /// <param name="_input">the list from which we call the funciton</param>
+    /// <param name="_elem">the element of the list we start the count from</param>
+    /// <param name="_offset">how many times we go to the next element before returning it</param>
+    /// <returns>the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in <paramref name="_input"/> or the default value of <typeparamref name="T"/> if <paramref name="_elem"/> is not in <paramref name="_input"/></returns>
+    public static T NextElem<T>(this List<T> _input, T _elem, int _offset = 1)
+    {
+        int index = _input.IndexOf(_elem);
+        if (index == -1)
+            return default;
+        return _input[(index + _offset) % _input.Count];
+    }
+
+    /// <summary>
+    /// Returns the item at index <paramref name="_offset"/> + <paramref name="_index"/> in a circular list
+    /// </summary>
+    /// <typeparam name="T">type of variables in the list</typeparam>
+    /// <param name="_input">the list from which we call the funciton</param>
+    /// <param name="_index">the index of the list we start the count from</param>
+    /// <param name="_offset">how many times we go to the next element before returning it</param>
+    /// <returns>the item at index <paramref name="_index"/> in <paramref name="_input"/></returns>
+    public static T NextIndex<T>(this List<T> _input, int _index, int _offset = 1)
+    {
+        return _input[(_index + _offset) % _input.Count];
+    }
+
+}
 
 public static class NonSquareRoomGenerator
 {
+    /// <summary>
+    /// Build the walls and floor of a non convex room then place it
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
     public static void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
@@ -18,7 +61,11 @@ public static class NonSquareRoomGenerator
         _room.GetComponent<Room>().nameText.transform.localPosition = center + new Vector3(0, 0.003f, 0);
     }
 
-    ///
+    /// <summary>
+    /// Build the walls of a non convex room
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
     private static void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
     {
         float height = _template.sizeWDHm[2];
@@ -34,8 +81,8 @@ public static class NonSquareRoomGenerator
 
         for (int i = 0; i < vCount; i++)
         {
-            xWalls[i] = (float)_template.vertices[i][0] / 100f;
-            zWalls[i] = (float)_template.vertices[i][1] / 100f;
+            xWalls[i] = _template.vertices[i][0] / 100f;
+            zWalls[i] = _template.vertices[i][1] / 100f;
         }
 
         for (int i = 0; i < vCount - 1; i++)
@@ -66,95 +113,43 @@ public static class NonSquareRoomGenerator
         meshWalls.RecalculateNormals();
     }
 
-    ///
+    /// <summary>
+    /// Build the floor of a non convex room, optionnaly with its tiles
+    /// </summary>
+    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_template">the template of the non convex room</param>
+    /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
     private static void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
     {
-        List<List<int>> verticesClone = new List<List<int>>(_template.vertices);
-        List<Vector3> verticesRoom = new List<Vector3>();
         List<int> trianglesRoom = new List<int>();
 
+        List<Vector3> walls = _template.vertices.Select(w => new Vector3(w[0] / 100f, 0, w[1] / 100f)).ToList();
+        if (!MostlyClockWise(walls))
+            walls.Reverse();
+        List<Vector3> shrinkingWalls = new List<Vector3>(walls);
         Transform floor = _root.GetComponent<Room>().usableZone;
         Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
-
-        while (verticesClone.Count > 3)
+        int index = 0;
+        Vector3 A, B, C;
+        while (shrinkingWalls.Count >= 3)
         {
-            for (int i = 0; i < verticesClone.Count; i++)
+            A = shrinkingWalls.NextIndex(index, 0);
+            B = shrinkingWalls.NextIndex(index, 1);
+            C = shrinkingWalls.NextIndex(index, 2);
+            string s = "";
+            shrinkingWalls.ForEach(t => s += t.ToString() + ", ");
+            if (ClockWise(A, B, C) && !TriangleIntersectWalls(A, B, C, walls))
             {
-                int a = i;
-                int l = verticesClone.Count;
-                for (int j = 1; j < l - i - 2; j++)
-                {
-                    int b = i + j;
-                    int c = i + j + 1;
+                trianglesRoom.Add(walls.IndexOf(A));
+                trianglesRoom.Add(walls.IndexOf(B));
+                trianglesRoom.Add(walls.IndexOf(C));
 
-                    bool convex = true;
-
-                    Vector3 vertexA = new Vector3(verticesClone[a][0], 0, verticesClone[a][1]);
-                    Vector3 vertexB = new Vector3(verticesClone[b][0], 0, verticesClone[b][1]);
-                    Vector3 vertexC = new Vector3(verticesClone[c][0], 0, verticesClone[c][1]);
-
-                    double angle = AngleOffAroundAxis(vertexA - vertexB, vertexC - vertexB, Vector3.up);
-
-                    if (angle < 0)
-                    {
-                        convex = false;
-                        break;
-                    }
-                    for (int k = 0; k < l; k++)
-                    {
-                        if (k != a && k != b && k != c)
-                        {
-                            for (int h = 0; h < l; h++)
-                            {
-                                if (h != a && h != b && h != c && h != k)
-                                {
-                                    Vector2 vA = new Vector2(verticesClone[a][0], verticesClone[a][1]);
-                                    Vector2 vB = new Vector2(verticesClone[b][0], verticesClone[b][1]);
-                                    Vector2 vC = new Vector2(verticesClone[c][0], verticesClone[c][1]);
-                                    Vector2 vK = new Vector2(verticesClone[k][0], verticesClone[k][1]);
-                                    Vector2 vH = new Vector2(verticesClone[h][0], verticesClone[h][1]);
-                                    if (LineSegmentsIntersection(vA, vB, vK, vH) || LineSegmentsIntersection(vA, vC, vK, vH) || LineSegmentsIntersection(vertexC, vB, vK, vH))
-                                    {
-                                        convex = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!convex)
-                                break;
-                        }
-                    }
-                    if (convex)
-                    {
-                        int ind = verticesRoom.Count;
-                        verticesRoom.Add(new Vector3(verticesClone[a][0] / 100f, 0, verticesClone[a][1] / 100f));
-                        verticesRoom.Add(new Vector3(verticesClone[b][0] / 100f, 0, verticesClone[b][1] / 100f));
-                        verticesRoom.Add(new Vector3(verticesClone[c][0] / 100f, 0, verticesClone[c][1] / 100f));
-
-                        trianglesRoom.Add(ind);
-                        trianglesRoom.Add(ind + 2);
-                        trianglesRoom.Add(ind + 1);
-
-                        verticesClone.RemoveAt(b);
-
-                        break;
-                    }
-                }
-                if (l != verticesClone.Count)
-                    break;
+                shrinkingWalls.Remove(B);
             }
+            index++;
         }
-        int length = verticesRoom.Count;
-        verticesRoom.Add(new Vector3(verticesClone[0][0] / 100f, 0, verticesClone[0][1] / 100f));
-        verticesRoom.Add(new Vector3(verticesClone[1][0] / 100f, 0, verticesClone[1][1] / 100f));
-        verticesRoom.Add(new Vector3(verticesClone[2][0] / 100f, 0, verticesClone[2][1] / 100f));
-
-        trianglesRoom.Add(length);
-        trianglesRoom.Add(length + 2);
-        trianglesRoom.Add(length + 1);
-
-        meshFloor.vertices = verticesRoom.ToArray();
+        meshFloor.vertices = walls.ToArray();
         meshFloor.triangles = trianglesRoom.ToArray();
         meshFloor.RecalculateNormals();
 
@@ -163,58 +158,85 @@ public static class NonSquareRoomGenerator
 
         if (_tiles)
         {
-            int n = _template.tiles.Length;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < _template.tiles.Length; i++)
             {
                 string element = _template.tiles[i].location;
-                string[] separated = new string[2];
-                separated = element.Split('/');
+                string[] separated = element.Split('/');
 
-                int x = int.Parse(separated[0]);
-                int z = int.Parse(separated[1]);
+                float x = Utils.ParseDecFrac(separated[0]);
+                float z = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
                 GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
-                tile.transform.localPosition = 0.6f * (new Vector3(x, 0, z));
-                tile.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.001f, GameManager.gm.tileSize) / 2;
+                tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
             }
         }
     }
 
-    ///
-    private static double AngleOffAroundAxis(Vector3 a, Vector3 b, Vector3 axis, bool clockwise = true)
+    /// <summary>
+    /// Check if a list vertices defining a polygon is listed <i>mostly</i> clockwise
+    /// <br/> Mostly because, if the polygon is non-convex, it can no be just clockwise or non-clockwise
+    /// <br/><see href="https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order"/>
+    /// </summary>
+    /// <param name="_points">the list vertices defining a polygon</param>
+    /// <returns>True if the list is mostly clockwise</returns>
+    private static bool MostlyClockWise(List<Vector3> _points)
     {
-        Vector3 right;
-        if (clockwise)
+        float sum = 0;
+        for (int i = 0; i < _points.Count; i++)
         {
-            right = Vector3.Cross(b, axis);
-            b = Vector3.Cross(axis, right);
+            sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).z + _points[i].z);
         }
-        else
-        {
-            right = Vector3.Cross(axis, b);
-            b = Vector3.Cross(right, axis);
-        }
-        return Mathf.Atan2(Vector3.Dot(a, right), Vector3.Dot(a, b)) * 180 / Mathf.PI;
+        return sum > 0;
     }
 
-    ///
-    private static bool LineSegmentsIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
+    /// <summary>
+    /// Check if three points are listed in clockwise order 
+    /// <br/><b>IGNORE VERTICAL COMPONENT</b>
+    /// <br/><see href="https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/"/>
+    /// </summary>
+    /// <param name="A">the first point</param>
+    /// <param name="B">the second point</param>
+    /// <param name="C">the third point</param>
+    /// <returns>true if <paramref name="A"/>, <paramref name="B"/> and <paramref name="C"/> are in a clockwise order</returns>
+    private static bool ClockWise(Vector3 A, Vector3 B, Vector3 C)
     {
-        Vector2 intersection = Vector2.zero;
+        return (C.z - A.z) * (B.x - A.x) < (B.z - A.z) * (C.x - A.x);
+    }
 
-        var d = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
-        if (d == 0.0f)
-            return false;
+    /// <summary>
+    /// Check if two segments intersect 
+    /// <br/><b>IGNORE VERTICAL COMPONENT</b>
+    /// </summary>
+    /// <param name="_a">first end of the first segment</param>
+    /// <param name="_b">second end of the first segment</param>
+    /// <param name="_c">first end of the seoncd segment</param>
+    /// <param name="_d">second end of the second segment</param>
+    /// <returns>true if the two segments intersect</returns>
+    private static bool Intersect(Vector3 _a, Vector3 _b, Vector3 _c, Vector3 _d)
+    {
+        return ClockWise(_a, _c, _d) != ClockWise(_b, _c, _d) && ClockWise(_a, _b, _c) != ClockWise(_a, _b, _d);
+    }
 
-        var u = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d;
-        var v = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / d;
-        if (u < 0.0f || u > 1.0f || v < 0.0f || v > 1.0f)
-            return false;
-
-        intersection.x = p1.x + u * (p2.x - p1.x);
-        intersection.y = p1.y + u * (p2.y - p1.y);
-        return true;
+    /// <summary>
+    /// Check if a triangle intersect with at least one wall of a list
+    /// </summary>
+    /// <param name="_corner1">First corner of the triangle</param>
+    /// <param name="_corner2">Second corner of the triangle</param>
+    /// <param name="_corner3">Third corner of the triangle</param>
+    /// <param name="_walls">List of walls</param>
+    /// <returns>True if at least one wall intersect with a side of the triangle</returns>
+    private static bool TriangleIntersectWalls(Vector3 _corner1, Vector3 _corner2, Vector3 _corner3, List<Vector3> _walls)
+    {
+        for (int i = 0; i < _walls.Count - 1; i++)
+        {
+            if (_walls[i] == _corner1 || _walls[i] == _corner2 || _walls[i] == _corner3 || _walls[i + 1] == _corner1 || _walls[i + 1] == _corner2 || _walls[i + 1] == _corner3)
+                continue;
+            if (Intersect(_corner1, _corner2, _walls[i], _walls[i + 1]) || Intersect(_corner2, _corner3, _walls[i], _walls[i + 1]) || Intersect(_corner3, _corner1, _walls[i], _walls[i + 1]))
+                return true;
+        }
+        return false;
     }
 }
+
