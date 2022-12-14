@@ -50,7 +50,6 @@ public class BuildingGenerator
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
         GameManager.gm.allItems.Add(hierarchyName, newBD);
-
         return building;
     }
 
@@ -105,29 +104,15 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             NonSquareRoomGenerator.CreateShape(newRoom, template);
-
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
-
             if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-                // newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-                // newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-                // newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-                // newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-            }
         }
         else
         {
@@ -199,7 +184,7 @@ public class BuildingGenerator
             if (template.separators != null && !room.attributes.ContainsKey("separators"))
             {
                 foreach (ReadFromJson.SSeparator sep in template.separators)
-                    room.AddSeparator(sep); // Will be updated to works with non convex walls
+                    room.AddSeparator(sep);
             }
 
             if (template.tiles != null)

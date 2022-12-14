@@ -121,13 +121,11 @@ public class OgreeGenerator : MonoBehaviour
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != "tenant")
+            if (newItem.category != "tenant" && !GameManager.gm.objectRoot
+                && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
             {
-                if (!GameManager.gm.objectRoot && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
-                {
-                    GameManager.gm.objectRoot = newItem.gameObject;
-                    GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
-                }
+                GameManager.gm.objectRoot = newItem.gameObject;
+                GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
             }
 
         }
@@ -135,6 +133,12 @@ public class OgreeGenerator : MonoBehaviour
         return newItem;
     }
 
+    ///<summary>
+    /// Create a sensor in given object.
+    ///</summary>
+    ///<param name="_obj">The base object</param>
+    ///<param name="_parent"></param>
+    ///<returns>The created sensor</returns>
     public Sensor CreateSensorFromSApiObject(SApiObject _obj, Transform _parent = null)
     {
         return objectGenerator.CreateSensor(_obj, _parent);

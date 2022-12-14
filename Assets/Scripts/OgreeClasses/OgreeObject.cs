@@ -43,7 +43,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     public void OnAfterDeserialize()
     {
         attributes = new Dictionary<string, string>();
-        for (int i = 0; i != Mathf.Min(attributesKeys.Count, attributesValues.Count); i++)
+        for (int i = 0; i < attributesKeys.Count; i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
 
@@ -126,17 +126,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         }
         else
             GameManager.gm.AppendLogLine("Wrong description index.", true, eLogtype.error);
-    }
-
-    ///<summary>
-    /// Parse the index and give the correct description.
-    ///</summary>
-    ///<param name="_index">The index of the wanted description</param>
-    ///<returns>The asked description</returns>
-    protected string GetDescriptionAt(string _index)
-    {
-        int index = int.Parse(_index);
-        return description[index];
     }
 
     ///<summary>

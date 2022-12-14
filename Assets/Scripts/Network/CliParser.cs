@@ -4,18 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 
-public class CliParser// : MonoBehaviour
+public class CliParser
 {
     #region Structures
-    ///<summary>
-    /// Standard structure, helps to know which kind of data in received.
-    ///</summary>
-    // struct SData
-    // {
-    //     public string type;
-    //     public string data;
-    // }
-
     struct SLogin
     {
         public string api_url;
@@ -292,7 +283,7 @@ public class CliParser// : MonoBehaviour
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
         {
-            case "delay": // ?? Still needed ??
+            case "delay":
                 float time = Utils.ParseDecFrac(manip.data);
                 GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
                 break;

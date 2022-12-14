@@ -195,7 +195,7 @@ public class OObject : OgreeObject
     ///
     private async void OnSelection(OnSelectItemEvent _e)
     {
-        if (category == "group")
+        if (category == "group" || category == "corridor")
             return;
         if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == gameObject && currentLod == 0)
             await LoadChildren("1");

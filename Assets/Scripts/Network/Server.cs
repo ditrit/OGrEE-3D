@@ -35,16 +35,8 @@ public class Server : MonoBehaviour
             connection.Send(debugMsg);
         }
 
-        if (connection.incomingQueue.Count > 0)
-        {
-            if (dequeueCoroutine == null)
-                dequeueCoroutine = StartCoroutine(DequeueAndParse(timer));
-
-            // string msg = connection.incomingQueue.Dequeue();
-            // await Task.Delay(timer);
-            // GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
-            // await parser.DeserializeInput(msg);
-        }
+        if (connection.incomingQueue.Count > 0 && dequeueCoroutine == null)
+            dequeueCoroutine = StartCoroutine(DequeueAndParse(timer));
     }
 
     private void OnDestroy()

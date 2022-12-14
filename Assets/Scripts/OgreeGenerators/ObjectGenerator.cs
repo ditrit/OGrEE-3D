@@ -740,16 +740,11 @@ public class ObjectGenerator
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-
         sensor.UpdateSensorColor();
         sensor.fromTemplate = false;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
         newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-
-
-        // string hn = sensor.UpdateHierarchyName();
-        //GameManager.gm.allItems.Add(hierarchyName, newSensor);
 
         return sensor;
     }
@@ -798,7 +793,7 @@ public class ObjectGenerator
             }
         }
         // Go to the right corner of the room & apply pos
-        if (_obj.parent.GetComponent<Room>().isConvex)
+        if (_obj.parent.GetComponent<Room>().isSquare)
             _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
         _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
     }

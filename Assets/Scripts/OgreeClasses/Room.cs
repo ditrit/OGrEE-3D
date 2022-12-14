@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Room : Building
 {
-    public bool isConvex = true;
+    public bool isSquare = true;
     public SMargin reserved;
     public SMargin technical;
 
@@ -210,7 +210,7 @@ public class Room : Building
             _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
         }
 
-        if (isConvex)
+        if (isSquare)
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
             float x = size.x / GameManager.gm.tileSize - technical.right - technical.left + offsetX;

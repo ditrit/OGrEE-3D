@@ -21,8 +21,8 @@ public class CustomerGenerator
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
         tenant.hierarchyName = _tn.name;
         tenant.UpdateFromSApiObject(_tn);
-        GameManager.gm.allItems.Add(_tn.name, newTenant);
 
+        GameManager.gm.allItems.Add(_tn.name, newTenant);
         return tenant;
     }
 
@@ -69,7 +69,6 @@ public class CustomerGenerator
         }
 
         GameManager.gm.allItems.Add(hierarchyName, newSite);
-
         return site;
     }
 }
