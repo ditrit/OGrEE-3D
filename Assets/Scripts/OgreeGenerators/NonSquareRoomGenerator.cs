@@ -170,6 +170,7 @@ public static class NonSquareRoomGenerator
                 GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
                 tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
+                tile.transform.Rotate(Vector3.up, _template.tileAngle);
             }
         }
     }
