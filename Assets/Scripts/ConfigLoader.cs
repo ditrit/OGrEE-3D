@@ -19,8 +19,6 @@ public class ConfigLoader
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
         public float alphaOnInteract;
-        public string apiUrl;
-        public string apiToken;
         public int temperatureMinC;
         public int temperatureMaxC;
         public int temperatureMinF;
@@ -71,7 +69,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen", "--apiUrl", "--apiToken" };
+        string[] args = new string[] { "--verbose", "--fullscreen"};
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -84,12 +82,6 @@ public class ConfigLoader
                         break;
                     case 1:
                         config.fullscreen = bool.Parse(str);
-                        break;
-                    case 2:
-                        config.apiUrl = str;
-                        break;
-                    case 3:
-                        config.apiToken = str;
                         break;
                 }
 
@@ -252,32 +244,6 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// Save API url and token in config.
-    ///</summary>
-    ///<param name="_url">URL of the API to connect</param>
-    ///<param name="_token">Corresponding authorisation token</param>
-    public void RegisterApi(string _url, string _token)
-    {
-        config.apiUrl = _url;
-        config.apiToken = _token;
-    }
-
-    ///<summary>
-    /// Send a get request to the given url. If no error, initialize ApiManager.
-    ///</summary>
-    ///<returns>The value of ApiManager.isInit</returns>
-    public async Task<bool> ConnectToApi()
-    {
-#if API_DEBUG
-        config.api_url = "https://c.api.ogree.ditrit.io";
-        // config.api_url = "http://172.24.22.55:3001";
-        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA"; // master key
-#endif
-        await ApiManager.instance.Initialize(config.apiUrl, config.apiToken);
-        return ApiManager.instance.isInit;
-    }
-
-    ///<summary>
     /// Foreach texture declaration in config.textures, load it from url of file.
     /// Also load default "perf22" and "perf29" is needed.
     ///</summary>
@@ -306,14 +272,6 @@ public class ConfigLoader
             GameManager.gm.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
             GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
-    }
-
-    ///<summary>
-    /// Get registered API url.
-    ///</summary>
-    public string GetApiUrl()
-    {
-        return config.apiUrl;
     }
 
     ///<summary>

@@ -61,6 +61,9 @@ public class ApiManager : MonoBehaviour
 
     private ReadFromJson rfJson = new ReadFromJson();
 
+    private string url;
+    private string token;
+
     private void Awake()
     {
         if (!instance)
@@ -81,23 +84,41 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Save API url and token.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        url = _url;
+        token = _token;
+    }
+
+    ///<summary>
+    /// Get registered API url.
+    ///</summary>
+    ///<returns>The registered url</returns>
+    public string GetApiUrl()
+    {
+        return url;
+    }
+
+    ///<summary>
     /// Initialize the manager with url and token. 
     ///</summary>
-    ///<param name="_serverUrl">The base url of the API to use</param>
-    ///<param name="_token">The auth token of the API to use</param>
-    public async Task Initialize(string _serverUrl, string _token)
+    public async Task Initialize()
     {
-        if (string.IsNullOrEmpty(_serverUrl))
+        if (string.IsNullOrEmpty(url))
             GameManager.gm.AppendLogLine("Failed to connect with API: no url", true, eLogtype.errorApi);
-        else if (string.IsNullOrEmpty(_token))
+        else if (string.IsNullOrEmpty(token))
             GameManager.gm.AppendLogLine("Failed to connect with API: no token", true, eLogtype.errorApi);
         else
         {
-            server = _serverUrl + "/api";
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
+            server = url + "/api";
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                string response = await httpClient.GetStringAsync($"{_serverUrl}/api/token/valid");
+                string response = await httpClient.GetStringAsync($"{url}/api/token/valid");
                 isReady = true;
                 isInit = true;
                 GameManager.gm.AppendLogLine("Connected to API", true, eLogtype.successApi);

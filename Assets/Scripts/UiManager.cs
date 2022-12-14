@@ -351,13 +351,13 @@ public class UiManager : MonoBehaviour
         if (ApiManager.instance.isInit)
         {
             ChangeApiButton("Connected to Api", Color.green);
-            apiUrl.text = "Connected to " + GameManager.gm.configLoader.GetApiUrl();
+            apiUrl.text = "Connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.green;
         }
         else
         {
             ChangeApiButton("Fail to connected to Api", Color.red);
-            apiUrl.text = "Fail to connected to " + GameManager.gm.configLoader.GetApiUrl();
+            apiUrl.text = "Fail to connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.red;
         }
     }
@@ -636,7 +636,7 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: Connect or disconnect to API using configLoader.ConnectToApi().
+    /// Called by GUI button: Connect or disconnect to API using ApiManager.Initialize().
     ///</summary>
     public async void ToggleApi()
     {
@@ -648,7 +648,7 @@ public class UiManager : MonoBehaviour
             GameManager.gm.AppendLogLine("Disconnected from API", true, eLogtype.success);
         }
         else
-            await GameManager.gm.configLoader.ConnectToApi();
+            await ApiManager.instance.Initialize();
     }
 
     ///<summary>

@@ -143,8 +143,8 @@ public class CliParser// : MonoBehaviour
     private async Task Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
-        GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
-        await GameManager.gm.configLoader.ConnectToApi();
+        ApiManager.instance.RegisterApi(logData.api_url, logData.api_token);
+        await ApiManager.instance.Initialize();
     }
 
     ///<summary>
