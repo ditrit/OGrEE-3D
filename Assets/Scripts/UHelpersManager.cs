@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -7,18 +5,18 @@ using TMPro;
 
 public class UHelpersManager : MonoBehaviour
 {
-    static public UHelpersManager um;
+    static public UHelpersManager instance;
 
-    private string cornerRearLeft = "rearLeft";
-    private string cornerRearRight = "rearRight";
-    private string cornerFrontLeft = "frontLeft";
-    private string cornerFrontRight = "frontRight";
-    [SerializeField] private bool wasEdited = false;
+    private readonly string cornerRearLeft = "rearLeft";
+    private readonly string cornerRearRight = "rearRight";
+    private readonly string cornerFrontLeft = "frontLeft";
+    private readonly string cornerFrontRight = "frontRight";
+    private bool wasEdited = false;
 
     private void Awake()
     {
-        if (!um)
-            um = this;
+        if (!instance)
+            instance = this;
         else
             Destroy(this);
     }
@@ -103,9 +101,7 @@ public class UHelpersManager : MonoBehaviour
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
                     while (!t.GetComponent<Rack>().uRoot)
-                    {
-                        await Task.Delay(50);
-                    }
+                        await Task.Delay(100);
                     GameObject uRoot = t.Find("uRoot").gameObject;
                     uRoot.SetActive(true);
                     for (int i = 0; i < uRoot.transform.childCount; i++)
@@ -122,10 +118,11 @@ public class UHelpersManager : MonoBehaviour
         }
     }
 
-    ///<summary>
-    /// Disable Uhelpers when entering in edit mode.
-    ///</summary>
-    ///<param name="_e">Event raised when entering edit mode</param>
+    /// <summary>
+    /// Change the color of U helpers depending on their corner
+    /// </summary>
+    /// <param name="_uRoot">Root transform of U helpers</param>
+    /// <param name="_i"></param>
     private void ChangeUColor(GameObject _uRoot, int _i)
     {
         GameObject obj = _uRoot.transform.GetChild(_i).gameObject;
@@ -141,24 +138,25 @@ public class UHelpersManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Toggle U location cubes for rack or parent rack.
+    /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
     ///</summary>
-    ///<param name="_bool">True or false value</param>
-    public void ToggleU(Transform _transform, bool _bool)
+    ///<param name="_transform">The transform of a rack or a device</param>
+    ///<param name="_active">Should the U helpers be visible ?</param>
+    public void ToggleU(Transform _transform, bool _active)
     {
         while (_transform != null)
         {
             if (_transform.GetComponent<Rack>())
             {
                 Transform uRoot = _transform.GetComponent<Rack>().uRoot;
-                if (_bool)
+                if (_active)
                 {
                     if (!uRoot)
                         GenerateUHelpers(_transform.GetComponent<Rack>());
                     else
                         uRoot.gameObject.SetActive(true);
                 }
-                else if (!_bool && uRoot)
+                else if (!_active && uRoot)
                     uRoot.gameObject.SetActive(false);
                 return;
             }
@@ -167,8 +165,9 @@ public class UHelpersManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Toggle U location cubes for rack or parent rack.
+    /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
     ///</summary>
+    ///<param name="_transform">The transform of a rack or a device</param>
     public void ToggleU(Transform _transform)
     {
         if (GameManager.instance.currentItems.Count == 0)
@@ -204,8 +203,9 @@ public class UHelpersManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Create uRoot, place it and call GenerateUColumn() for each corner
+    /// Create uRoot, place it and call <see cref="GenerateUColumn"/> for each corner
     ///</summary>
+    ///<param name="_rack">The rack where we create the U helpers</param>
     public void GenerateUHelpers(Rack _rack)
     {
         if (_rack.uRoot)
@@ -229,9 +229,10 @@ public class UHelpersManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Instantiate one GameManager.uLocationModel per U in the given column
+    /// Instantiate one <see cref="GameManager.uLocationModel"/> per U in the given column
     ///</summary>
     ///<param name="_corner">Corner of the column</param>
+    ///<param name="_rack">The rack where we create the U helpers</param>
     private void GenerateUColumn(Rack _rack, string _corner)
     {
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
@@ -309,7 +310,6 @@ public class UHelpersManager : MonoBehaviour
             }
             else
                 Debug.LogError("Unkown Corner");
-
         }
     }
 
@@ -327,6 +327,11 @@ public class UHelpersManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the U number from the name of a U helper cube
+    /// </summary>
+    /// <param name="_name">the name of the U helper</param>
+    /// <returns>The number of the U helper</returns>
     private int GetUNumberFromName(string _name)
     {
         string iteratedName = _name;
@@ -343,5 +348,4 @@ public class UHelpersManager : MonoBehaviour
         }
         return 0;
     }
-
 }

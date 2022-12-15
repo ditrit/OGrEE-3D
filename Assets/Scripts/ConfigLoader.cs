@@ -69,7 +69,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen"};
+        string[] args = new string[] { "--verbose", "--fullscreen" };
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -84,7 +84,6 @@ public class ConfigLoader
                         config.fullscreen = bool.Parse(str);
                         break;
                 }
-
             }
         }
     }
@@ -147,7 +146,7 @@ public class ConfigLoader
         config.temperatureMinF = _custom.temperatureMinF;
         config.temperatureMaxF = _custom.temperatureMaxF;
         bool canUpdateTempGradient = true;
-        if (_custom.customTemperatureGradient.Length >= 2)
+        if (_custom.customTemperatureGradient.Length >= 2 && _custom.customTemperatureGradient.Length <= 8)
         {
             foreach (int[] tab in _custom.customTemperatureGradient)
             {

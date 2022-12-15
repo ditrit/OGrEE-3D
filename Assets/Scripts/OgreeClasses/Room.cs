@@ -234,8 +234,8 @@ public class Room : Building
         }
         else
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 string[] splittedLoc = tile.location.Split('/');
                 int tileX = int.Parse(splittedLoc[0]);
@@ -258,11 +258,11 @@ public class Room : Building
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        STile tileData = new STile();
         if (attributes.ContainsKey("tiles"))
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
@@ -290,20 +290,20 @@ public class Room : Building
     private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        STile tileData = new STile();
         if (attributes.ContainsKey("tiles"))
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
             }
         }
 
-        List<ReadFromJson.SColor> customColors = new List<ReadFromJson.SColor>();
+        List<SColor> customColors = new List<SColor>();
         if (attributes.ContainsKey("customColors"))
-            customColors = JsonConvert.DeserializeObject<List<ReadFromJson.SColor>>(attributes["customColors"]);
+            customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
 
         if (!string.IsNullOrEmpty(tileData.location))
         {
@@ -333,7 +333,7 @@ public class Room : Building
                     Color customColor = new Color();
                     if (tileData.color.StartsWith("@"))
                     {
-                        foreach (ReadFromJson.SColor color in customColors)
+                        foreach (SColor color in customColors)
                         {
                             if (color.name == tileData.color.Substring(1))
                                 ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
@@ -483,7 +483,7 @@ public class Room : Building
         Vector2 startPos = Utils.ParseVector2(data[0]);
         Vector2 endPos = Utils.ParseVector2(data[1]);
 
-        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator
+        SSeparator separator = new SSeparator
         {
             startPosXYm = new float[] { startPos.x, startPos.y },
             endPosXYm = new float[] { endPos.x, endPos.y }
@@ -495,13 +495,13 @@ public class Room : Building
     /// Add a separator to attributes["separators"] and instantiate it.
     ///</summary>
     ///<param name="_input">The separator data to add</param>
-    public void AddSeparator(ReadFromJson.SSeparator _sep)
+    public void AddSeparator(SSeparator _sep)
     {
-        List<ReadFromJson.SSeparator> separators;
+        List<SSeparator> separators;
         if (attributes.ContainsKey("separators"))
-            separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(attributes["separators"]);
+            separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
         else
-            separators = new List<ReadFromJson.SSeparator>();
+            separators = new List<SSeparator>();
         separators.Add(_sep);
         attributes["separators"] = JsonConvert.SerializeObject(separators);
         BuildSeparator(_sep);
@@ -511,7 +511,7 @@ public class Room : Building
     /// Place the given separator in the room.
     ///</summary>
     ///<param name="_sep">The separator to draw</param>
-    public void BuildSeparator(ReadFromJson.SSeparator _sep)
+    public void BuildSeparator(SSeparator _sep)
     {
         Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
         Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);

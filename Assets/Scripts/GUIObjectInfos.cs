@@ -105,8 +105,6 @@ public class GUIObjectInfos : MonoBehaviour
                 tmpAttributes.text += $"<b>hottest child:</b> {tempInfos.hottestChild}\n";
                 i++;
             }
-
-
         }
         else
         {
@@ -115,7 +113,7 @@ public class GUIObjectInfos : MonoBehaviour
                 && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
             {
                 Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
-                tmpAttributes.text += $"<b>posXY:</b> {posXY.x.ToString("0.##")}/{posXY.y.ToString("0.##")} ({_obj.attributes["posXYUnit"]})\n";
+                tmpAttributes.text += $"<b>posXY:</b> {posXY.x:0.##}/{posXY.y:0.##} ({_obj.attributes["posXYUnit"]})\n";
                 i++;
 
                 // If rack, display pos by tile name if available
@@ -124,11 +122,11 @@ public class GUIObjectInfos : MonoBehaviour
                     Room room = _obj.transform.parent.GetComponent<Room>();
                     if (room.attributes.ContainsKey("tiles"))
                     {
-                        List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(room.attributes["tiles"]);
-                        ReadFromJson.STile tileData = new ReadFromJson.STile();
-                        foreach (ReadFromJson.STile t in tiles)
+                        List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(room.attributes["tiles"]);
+                        STile tileData = new STile();
+                        foreach (STile t in tiles)
                         {
-                            if (t.location == $"{posXY.x.ToString("0")}/{posXY.y.ToString("0")}")
+                            if (t.location == $"{posXY.x:0}/{posXY.y:0}")
                                 tileData = t;
                         }
                         if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
@@ -190,11 +188,11 @@ public class GUIObjectInfos : MonoBehaviour
     }
 
     ///<summary>
-    /// Return the asked value if it exists in the dictionary.
+    /// Return the asked value if it exists in the dictionary
     ///</summary>
     ///<param name="_dictionary">The dictionary to search in</param>
-    ///<param name="_key">The ke to search</param>
-    ///<returns>The asked value</returns>
+    ///<param name="_key">The key to search</param>
+    ///<returns>The asked value if the key exists in the dictionary, the default value of the Dictionary's values' type otherwise</returns>
     private T IfInDictionary<T>(Dictionary<string, T> _dictionary, string _key)
     {
         if (_dictionary.ContainsKey(_key))

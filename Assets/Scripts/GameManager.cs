@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
-    public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
+    public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
@@ -77,13 +77,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
-#if API_DEBUG
-        configLoader.ConnectToApi();
-#endif
-
-#if !PROD
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-#endif
     }
 
     private void OnDestroy()
@@ -167,7 +160,7 @@ public class GameManager : MonoBehaviour
 
             EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        catch (System.Exception _e)
+        catch (Exception _e)
         {
             Debug.LogError(_e);
         }
@@ -176,6 +169,7 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
+    ///<param name="_obj">The object to be added or removed from the selection</param>
     public async Task UpdateCurrentItems(GameObject _obj)
     {
         previousItems = currentItems.GetRange(0, currentItems.Count);
@@ -208,13 +202,10 @@ public class GameManager : MonoBehaviour
                     //Are the previous and current selection both a rack or smaller and part of the same rack ?
                     if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
                         unloadChildren = false;
-
                 }
                 //if no to the previous question and previousSelected is a rack or smaller, unload its children
                 if (unloadChildren)
-                {
                     await currentDeselected.LoadChildren("0");
-                }
             }
         }
         else
@@ -342,7 +333,6 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < tnToDel.Count; i++)
             Destroy(tnToDel[i]);
-
     }
 
     ///<summary>
@@ -473,10 +463,8 @@ public class GameManager : MonoBehaviour
         try
         {
             fs = new FileStream(fileName, FileMode.Append);
-            using (StreamWriter writer = new StreamWriter(fs))
-            {
-                writer.Write($"{dateTime} | {type} : {_str}");
-            }
+            using StreamWriter writer = new StreamWriter(fs);
+            writer.Write($"{dateTime} | {type} : {_str}");
         }
         catch (Exception _e)
         {
@@ -487,12 +475,12 @@ public class GameManager : MonoBehaviour
             if (fs != null)
                 fs.Dispose();
         }
-
     }
 
     ///<summary>
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
+    ///<param name="_value">If the button should be interatable</param>
     ///<param name="_lastPath">The command file path to store</param>
     public void SetReloadBtn(bool _value, string _lastPath = null)
     {
@@ -504,13 +492,4 @@ public class GameManager : MonoBehaviour
             EventManager.instance.Raise(new ImportFinishedEvent());
         }
     }
-
-    ///<summary>
-    /// Quit the application.
-    ///</summary>
-    public void QuitApp()
-    {
-        Application.Quit();
-    }
-
 }

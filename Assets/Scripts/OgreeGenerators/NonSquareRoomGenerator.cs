@@ -47,7 +47,7 @@ public static class NonSquareRoomGenerator
     /// </summary>
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
-    public static void CreateShape(GameObject _room, ReadFromJson.SRoomFromJson _template)
+    public static void CreateShape(GameObject _room, SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
 
@@ -66,7 +66,7 @@ public static class NonSquareRoomGenerator
     /// </summary>
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
-    private static void BuildWalls(Transform _root, ReadFromJson.SRoomFromJson _template)
+    private static void BuildWalls(Transform _root, SRoomFromJson _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -119,7 +119,7 @@ public static class NonSquareRoomGenerator
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
-    private static void BuildFloor(Transform _root, ReadFromJson.SRoomFromJson _template, bool _tiles)
+    private static void BuildFloor(Transform _root, SRoomFromJson _template, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
 

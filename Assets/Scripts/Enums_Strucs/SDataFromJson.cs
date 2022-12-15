@@ -28,3 +28,94 @@ public struct SApiObject
         children = null;
     }
 }
+
+#region Room
+[System.Serializable]
+public struct SRoomFromJson
+{
+    public string slug;
+    public string orientation;
+    public float[] sizeWDHm;
+    public string floorUnit;
+    public List<int> center;
+    public List<List<int>> vertices;
+    public int[] technicalArea;
+    public int[] reservedArea;
+    public SSeparator[] separators;
+    public SColor[] colors;
+    public STile[] tiles;
+    public SRow[] rows;
+}
+
+[System.Serializable]
+public struct SSeparator
+{
+    public float[] startPosXYm;
+    public float[] endPosXYm;
+    public string type;
+}
+
+[System.Serializable]
+public struct STile
+{
+    public string location;
+    public string name;
+    public string label;
+    public string texture;
+    public string color;
+}
+
+[System.Serializable]
+public struct SRow
+{
+    public string name;
+    public string locationY; // should be posY
+    public string orientation;
+}
+#endregion
+
+#region Object
+[System.Serializable]
+public struct STemplate
+{
+    public string slug;
+    public string description;
+    public string category;
+    public float[] sizeWDHmm;
+    public string fbxModel;
+    public Dictionary<string, string> attributes;
+    public SColor[] colors;
+    public STemplateChild[] components;
+    public STemplateChild[] slots;
+    public STemplateSensor[] sensors;
+}
+
+[System.Serializable]
+public struct STemplateChild
+{
+    public string location;
+    public string type;
+    public string elemOrient;
+    public float[] elemPos;
+    public float[] elemSize;
+    public string labelPos;
+    public string color;
+    public Dictionary<string, string> attributes;
+}
+
+[System.Serializable]
+public struct STemplateSensor
+{
+    public string location;
+    public string[] elemPos;
+    public float[] elemSize;
+}
+
+[System.Serializable]
+public struct SColor
+{
+    public string name;
+    public string value;
+}
+
+#endregion

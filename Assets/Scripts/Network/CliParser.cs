@@ -203,8 +203,8 @@ public class CliParser
                         if (wall.name.Contains("Separator"))
                             Object.Destroy(wall.gameObject);
                     }
-                    List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
-                    foreach (ReadFromJson.SSeparator sep in separators)
+                    List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(newData.attributes["separators"]);
+                    foreach (SSeparator sep in separators)
                         room.AddSeparator(sep);
                 }
             }

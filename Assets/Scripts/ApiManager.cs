@@ -38,14 +38,14 @@ public class ApiManager : MonoBehaviour
     {
         public string message;
         public string status;
-        public ReadFromJson.STemplate data;
+        public STemplate data;
     }
 
     private struct SRoomResp
     {
         public string message;
         public string status;
-        public ReadFromJson.SRoomFromJson data;
+        public SRoomFromJson data;
     }
 
     public static ApiManager instance;

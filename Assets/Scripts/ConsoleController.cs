@@ -723,7 +723,7 @@ public class ConsoleController : MonoBehaviour
             else
             {
                 ro.attributes["template"] = data[2];
-                ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+                SRoomFromJson template = new SRoomFromJson();
                 if (GameManager.instance.roomTemplates.ContainsKey(ro.attributes["template"]))
                     template = GameManager.instance.roomTemplates[ro.attributes["template"]];
                 else if (ApiManager.instance.isInit)

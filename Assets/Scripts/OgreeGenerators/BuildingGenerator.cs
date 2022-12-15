@@ -72,7 +72,7 @@ public class BuildingGenerator
             return null;
         }
 
-        ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+        SRoomFromJson template = new SRoomFromJson();
         if (!string.IsNullOrEmpty(_ro.attributes["template"]))
         {
             if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
@@ -183,30 +183,30 @@ public class BuildingGenerator
 
             if (template.separators != null && !room.attributes.ContainsKey("separators"))
             {
-                foreach (ReadFromJson.SSeparator sep in template.separators)
+                foreach (SSeparator sep in template.separators)
                     room.AddSeparator(sep);
             }
 
             if (template.tiles != null)
             {
-                List<ReadFromJson.STile> tiles = new List<ReadFromJson.STile>();
-                foreach (ReadFromJson.STile t in template.tiles)
+                List<STile> tiles = new List<STile>();
+                foreach (STile t in template.tiles)
                     tiles.Add(t);
                 room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
             }
 
             if (template.rows != null)
             {
-                List<ReadFromJson.SRow> rows = new List<ReadFromJson.SRow>();
-                foreach (ReadFromJson.SRow r in template.rows)
+                List<SRow> rows = new List<SRow>();
+                foreach (SRow r in template.rows)
                     rows.Add(r);
                 room.attributes["rows"] = JsonConvert.SerializeObject(rows);
             }
 
             if (template.colors != null)
             {
-                List<ReadFromJson.SColor> colors = new List<ReadFromJson.SColor>();
-                foreach (ReadFromJson.SColor c in template.colors)
+                List<SColor> colors = new List<SColor>();
+                foreach (SColor c in template.colors)
                     colors.Add(c);
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
@@ -214,8 +214,8 @@ public class BuildingGenerator
 
         if (room.attributes.ContainsKey("separators"))
         {
-            List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(room.attributes["separators"]);
-            foreach (ReadFromJson.SSeparator sep in separators)
+            List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(room.attributes["separators"]);
+            foreach (SSeparator sep in separators)
                 room.BuildSeparator(sep);
         }
 

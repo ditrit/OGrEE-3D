@@ -10,6 +10,7 @@ public static class Utils
     /// Parse a string with format "[x,y]" into a Vector2.
     ///</summary>
     ///<param name="_input">String with format "[x,y]"</param>
+    ///<returns>The parsed Vector2</returns>
     public static Vector2 ParseVector2(string _input)
     {
         Vector2 res = new Vector2();
@@ -26,6 +27,7 @@ public static class Utils
     ///</summary>
     ///<param name="_input">String with format "[x,y,z]"</param>
     ///<param name="_ZUp">Is the coordinates given are in Z axis up or Y axis up ? </param>
+    ///<returns>The parsed Vector3</returns>
     public static Vector3 ParseVector3(string _input, bool _ZUp = true)
     {
         Vector3 res = new Vector3();
@@ -50,6 +52,7 @@ public static class Utils
     /// Parse a string into a float. Can be decimal, a fraction and/or negative.
     ///</summary>
     ///<param name="_input">The string which contains the float</param>
+    ///<returns>The parsed float</returns>
     public static float ParseDecFrac(string _input)
     {
         _input = _input.Replace(",", ".");
@@ -65,7 +68,7 @@ public static class Utils
     }
 
     ///<summary>
-    /// Tries to return given Transform, otherwise look for given parent Id
+    /// Tries to return given <see cref="Transform"/>, otherwise look for given parent Id
     ///</summary>
     ///<param name="_parent">The Transform to check</param>
     ///<param name="_parentId">The ID to search</param>
@@ -101,7 +104,7 @@ public static class Utils
     }
 
     ///<summary>
-    /// Get an object from GameManager.allItems by it's id.
+    /// Get an object from <see cref="GameManager.allItems"/> by it's id.
     ///</summary>
     ///<param name="_id">The id to search</param>
     ///<returns>The asked object</returns>
@@ -122,8 +125,8 @@ public static class Utils
     ///<summary>
     /// Get a list of objects from GameManager.allItems by their id.
     ///</summary>
-    ///<param name="_id">The array of ids to search</param>
-    ///<returns>Asked list of objects</returns>
+    ///<param name="_idArray">The array of ids to search</param>
+    ///<returns>the asked list of objects</returns>
     public static List<GameObject> GetObjectsById(string _idArray)
     {
         string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
@@ -210,7 +213,15 @@ public static class Utils
             return true;
         return false;
     }
-    public static float SignedVolumeOfTriangle(Vector3 _p1, Vector3 _p2, Vector3 _p3)
+
+    /// <summary>
+    /// Compute the signed volume of a pyramid from a Mesh
+    /// </summary>
+    /// <param name="_p1">First corner of the pyramid</param>
+    /// <param name="_p2">Second corner of the pyramid</param>
+    /// <param name="_p3">Third corner of the pyramid</param>
+    /// <returns>signed volume of the pyramid</returns>
+    public static float SignedVolumeOfPyramid(Vector3 _p1, Vector3 _p2, Vector3 _p3)
     {
         float v321 = _p3.x * _p2.y * _p1.z;
         float v231 = _p2.x * _p3.y * _p1.z;
@@ -222,6 +233,11 @@ public static class Utils
         return (1.0f / 6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
     }
 
+    /// <summary>
+    /// Compute the volume of a mesh by adding the volume of each of its pyramids
+    /// </summary>
+    /// <param name="_meshFilter">The MeshFilter of the object whose volume is needed</param>
+    /// <returns>The volume of the mesh</returns>
     public static float VolumeOfMesh(MeshFilter _meshFilter)
     {
         Mesh mesh = _meshFilter.sharedMesh;
@@ -235,14 +251,14 @@ public static class Utils
             Vector3 p1 = vertices[triangles[i + 0]];
             Vector3 p2 = vertices[triangles[i + 1]];
             Vector3 p3 = vertices[triangles[i + 2]];
-            volume += SignedVolumeOfTriangle(p1, p2, p3);
+            volume += SignedVolumeOfPyramid(p1, p2, p3);
         }
         volume *= _meshFilter.transform.localScale.x * _meshFilter.transform.localScale.y * _meshFilter.transform.localScale.z;
         return Mathf.Abs(volume);
     }
 
     ///<summary>
-    /// Map a Value from a given range to another range and clamp it.
+    /// Map a value from a given range to another range and clamp it.
     ///</summary>
     ///<param name="_input">The value to map</param>
     ///<param name="_inMin">The minimal value of the input range</param>

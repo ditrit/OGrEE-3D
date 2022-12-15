@@ -1,104 +1,15 @@
 ﻿using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using System.Threading.Tasks;
 using System;
 
 public class ReadFromJson
 {
-    #region Room
-    [System.Serializable]
-    public struct SRoomFromJson
-    {
-        public string slug;
-        public string orientation;
-        public float[] sizeWDHm;
-        public string floorUnit;
-        public List<int> center;
-        public List<List<int>> vertices;
-        public int[] technicalArea;
-        public int[] reservedArea;
-        public SSeparator[] separators;
-        public SColor[] colors;
-        public STile[] tiles;
-        public SRow[] rows;
-    }
-
-    [System.Serializable]
-    public struct SSeparator
-    {
-        public float[] startPosXYm;
-        public float[] endPosXYm;
-        public string type;
-    }
-
-    [System.Serializable]
-    public struct STile
-    {
-        public string location;
-        public string name;
-        public string label;
-        public string texture;
-        public string color;
-    }
-
-    [System.Serializable]
-    public struct SRow
-    {
-        public string name;
-        public string locationY; // should be posY
-        public string orientation;
-    }
-    #endregion
-
-    #region Object
-    [System.Serializable]
-    public struct STemplate
-    {
-        public string slug;
-        public string description;
-        public string category;
-        public float[] sizeWDHmm;
-        public string fbxModel;
-        public Dictionary<string, string> attributes;
-        public SColor[] colors;
-        public STemplateChild[] components;
-        public STemplateChild[] slots;
-        public STemplateSensor[] sensors;
-    }
-
-    [System.Serializable]
-    public struct STemplateChild
-    {
-        public string location;
-        public string type;
-        public string elemOrient;
-        public float[] elemPos;
-        public float[] elemSize;
-        public string labelPos;
-        public string color;
-        public Dictionary<string, string> attributes;
-    }
-
-    [System.Serializable]
-    public struct STemplateSensor
-    {
-        public string location;
-        public string[] elemPos;
-        public float[] elemSize;
-    }
-
-    [System.Serializable]
-    public struct SColor
-    {
-        public string name;
-        public string value;
-    }
-
-    #endregion
-
+    /// <summary>
+    /// Check if given JSON is a room template and call <see cref="CreateRoomTemplate(SRoomFromJson)"/> if the JSON is valid
+    /// </summary>
+    /// <param name="_json">the JSON to deserialize</param>
     public void CreateRoomTemplateJson(string _json)
     {
         SRoomFromJson roomData;
@@ -106,7 +17,7 @@ public class ReadFromJson
         {
             roomData = JsonConvert.DeserializeObject<SRoomFromJson>(_json);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
@@ -115,9 +26,9 @@ public class ReadFromJson
     }
 
     ///<summary>
-    /// Store room data in GameManager.roomTemplates.
+    /// Store <paramref name="_data"/> in <see cref="GameManager.roomTemplates"/>.
     ///</summary>
-    ///<param name="_json">Json to parse</param>
+    ///<param name="_data">Room data to store</param>
     public void CreateRoomTemplate(SRoomFromJson _data)
     {
         if (GameManager.instance.roomTemplates.ContainsKey(_data.slug))
@@ -127,9 +38,9 @@ public class ReadFromJson
     }
 
     ///<summary>
-    /// Create a rack or a device from received json and add it to correct GameManager list
+    /// Create a rack or a device from received JSON and add it to correct <see cref="GameManager"/> list
     ///</summary>
-    ///<param name="_json">Json to parse</param>
+    ///<param name="_json">JSON to parse</param>
     public async Task CreateObjTemplateJson(string _json)
     {
         STemplate data;
@@ -137,7 +48,7 @@ public class ReadFromJson
         {
             data = JsonConvert.DeserializeObject<STemplate>(_json);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
@@ -286,10 +197,9 @@ public class ReadFromJson
     ///<param name="_data">Data for Slot/Component creation</param>
     ///<param name="_parent">The parent of the Slot/Component</param>
     ///<param name="_customColors">Custom colors to use</param>
-    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent,
-                                Dictionary<string, string> _customColors)
+    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent, Dictionary<string, string> _customColors)
     {
-        GameObject go = MonoBehaviour.Instantiate(GameManager.instance.labeledBoxModel);
+        GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
         Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
@@ -307,8 +217,8 @@ public class ReadFromJson
         {
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
             go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
-                                                        go.transform.GetChild(0).localScale.x,
-                                                        go.transform.GetChild(0).localScale.z) / 2;
+                                                      go.transform.GetChild(0).localScale.x,
+                                                      go.transform.GetChild(0).localScale.z) / 2;
         }
         else
         {
@@ -330,7 +240,6 @@ public class ReadFromJson
         {
             OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
-            // obj.id // ??
             obj.parentId = _parent.id;
             obj.category = "device";
             obj.domain = _parent.domain;

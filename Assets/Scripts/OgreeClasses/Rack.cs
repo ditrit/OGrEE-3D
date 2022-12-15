@@ -63,12 +63,12 @@ public class Rack : OObject
                 case "U":
                     if (_value == "true")
                     {
-                        UHelpersManager.um.ToggleU(transform, true);
+                        UHelpersManager.instance.ToggleU(transform, true);
                         GameManager.instance.AppendLogLine($"U helpers ON for {name}.", false, ELogtype.info);
                     }
                     else if (_value == "false")
                     {
-                        UHelpersManager.um.ToggleU(transform, false);
+                        UHelpersManager.instance.ToggleU(transform, false);
                         GameManager.instance.AppendLogLine($"U helpers OFF for {name}.", false, ELogtype.info);
                     }
                     break;

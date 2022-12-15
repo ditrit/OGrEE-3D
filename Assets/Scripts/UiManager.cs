@@ -15,7 +15,6 @@ public class UiManager : MonoBehaviour
 
     [SerializeField] private GameObject menuPanel;
 
-
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
 
@@ -152,9 +151,8 @@ public class UiManager : MonoBehaviour
             editBtn.interactable = true;
         }
         else
-        {
             editBtn.interactable = false;
-        }
+
         SetCurrentItemText();
         UpdateGuiInfos();
 
@@ -257,7 +255,7 @@ public class UiManager : MonoBehaviour
                 cb = toggleLocalCSBtn.colors;
                 cb.normalColor = Color.white;
                 cb.selectedColor = Color.white;
-                toggleLocalCSBtn.colors = cb; 
+                toggleLocalCSBtn.colors = cb;
             }
         }
         else
@@ -489,7 +487,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Make the reload button interatable or not.
     ///</summary>
-    ///<param name="_value">Boolean if the button should be interatable</param>
+    ///<param name="_value">If the button should be interatable</param>
     public void SetReloadBtn(bool _value)
     {
         reloadBtn.interactable = _value;
@@ -577,7 +575,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count > 0)
         {
-            UHelpersManager.um.ToggleU(GameManager.instance.currentItems[0].transform);
+            UHelpersManager.instance.ToggleU(GameManager.instance.currentItems[0].transform);
             Transform _transform = GameManager.instance.currentItems[0].transform;
             while (_transform != null)
             {
@@ -615,12 +613,8 @@ public class UiManager : MonoBehaviour
         }
 
         foreach (GameObject obj in GameManager.instance.currentItems)
-        {
-            if (obj.GetComponent<OObject>())
-            {
-                obj.GetComponent<OObject>().ToggleCS();
-            }
-        }
+            obj.GetComponent<OObject>()?.ToggleCS();
+
         ColorBlock cb = toggleLocalCSBtn.colors;
         if (GameManager.instance.currentItems[0].transform.Find("localCS") && GameManager.instance.currentItems[0].transform.Find("localCS").gameObject.activeSelf)
         {
@@ -842,10 +836,12 @@ public class UiManager : MonoBehaviour
         {
             OObject oObject = GameManager.instance.currentItems[0].GetComponent<OObject>();
             if (oObject && oObject.category == "device")
+            {
                 if (DepthCheck(GameManager.instance.currentItems[0].GetComponent<OgreeObject>()) <= 1)
                     TempDiagram.instance.HandleHeatMap(GameManager.instance.currentItems[0].GetComponent<OObject>());
                 else
                     GameManager.instance.AppendLogLine("This device has too many nested children levels", true, ELogtype.warning);
+            }
             else
                 GameManager.instance.AppendLogLine("You have to select a device", true, ELogtype.warning);
         }
@@ -868,6 +864,22 @@ public class UiManager : MonoBehaviour
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
         }
         return depth;
+    }
+
+    ///<summary>
+    /// Called by GUI button
+    ///</summary>
+    public void FocusHandlerUpdateArrayButtonPressed()
+    {
+        EventManager.instance.Raise(new ImportFinishedEvent());
+    }
+
+    ///<summary>
+    /// Quit the application.
+    ///</summary>
+    public void QuitApp()
+    {
+        Application.Quit();
     }
 
     #endregion

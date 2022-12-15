@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Text.RegularExpressions;
 
 public class GridCell : MonoBehaviour
 {
@@ -51,7 +47,7 @@ public class GridCell : MonoBehaviour
     {
         GameObject previousGrid = GetComponent<Rack>().gridForULocation;
         if (previousGrid)
-            Destroy(previousGrid.gameObject);
+            Destroy(previousGrid);
 
         if (_location != currentGridLocation)
         {
@@ -92,5 +88,4 @@ public class GridCell : MonoBehaviour
 
         return grid;
     }
-
 }
