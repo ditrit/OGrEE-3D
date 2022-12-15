@@ -96,7 +96,7 @@ public class Group : OObject
     public void DisplayContent(bool _value)
     {
         foreach (GameObject r in GetContent())
-            r.gameObject.SetActive(_value);
+            r.SetActive(_value);
 
         GetComponent<DisplayObjectData>().ToggleLabel(!_value);
     }

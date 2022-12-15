@@ -6,9 +6,9 @@ using UnityEngine;
 public class OgreeGenerator : MonoBehaviour
 {
     public static OgreeGenerator instance;
-    private CustomerGenerator customerGenerator = new CustomerGenerator();
-    private BuildingGenerator buildingGenerator = new BuildingGenerator();
-    private ObjectGenerator objectGenerator = new ObjectGenerator();
+    private readonly CustomerGenerator customerGenerator = new CustomerGenerator();
+    private readonly BuildingGenerator buildingGenerator = new BuildingGenerator();
+    private readonly ObjectGenerator objectGenerator = new ObjectGenerator();
     private Coroutine waitCoroutine = null;
 
     private void Awake()
@@ -27,7 +27,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (Utils.GetObjectById(_obj.id))
         {
-            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
+            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", false, ELogtype.info);
             ResetCoroutine();
             return null;
         }
@@ -58,12 +58,12 @@ public class OgreeGenerator : MonoBehaviour
         {
             if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
             {
-                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", true, ELogtype.errorCli);
                 return null;
             }
             if (_obj.category == "corridor" || _obj.category == "group")
             {
-                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, ELogtype.errorCli);
                 return null;
             }
 
@@ -115,7 +115,7 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             default:
                 newItem = null;
-                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", true, ELogtype.error);
                 break;
         }
         if (newItem)

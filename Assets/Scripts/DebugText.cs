@@ -8,11 +8,13 @@ using UnityEditor;
 public class DebugText : MonoBehaviour
 {
     private TextMeshProUGUI txt;
-    private int[] last100FPS = new int[100];
+    private readonly int[] last100FPS = new int[100];
     private int currentIndex = 0;
+#pragma warning disable IDE1006 // Name assignment styles
     public int averageFPS { get; private set; }
     public int goCount { get; private set; }
     public int ooCount { get; private set; }
+#pragma warning restore IDE1006 // Name assignment styles
 
     private void Start()
     {

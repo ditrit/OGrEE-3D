@@ -88,7 +88,7 @@ public class TempDiagram : MonoBehaviour
             case "mm":
                 roomHeight /= 1000; break;
             default:
-                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
+                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, ELogtype.warning); break;
         }
 
         string tempUnit = "";

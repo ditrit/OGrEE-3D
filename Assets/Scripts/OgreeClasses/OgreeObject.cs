@@ -118,14 +118,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             if (index > description.Count)
             {
                 if (index != description.Count + 1)
-                    GameManager.instance.AppendLogLine($"Description set at index {description.Count + 1}.", true, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"Description set at index {description.Count + 1}.", true, ELogtype.info);
                 description.Add(_value);
             }
             else
                 description[index - 1] = _value;
         }
         else
-            GameManager.instance.AppendLogLine("Wrong description index.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Wrong description index.", true, ELogtype.error);
     }
 
     ///<summary>
@@ -137,7 +137,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         if (GameManager.instance.allItems.ContainsKey(_newDomain))
             domain = _newDomain;
         else
-            GameManager.instance.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, ELogtype.warning);
     }
 
     ///<summary>
@@ -216,7 +216,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
         if (id == "")
         {
-            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, ELogtype.warning);
             return;
         }
         int.TryParse(_level, out int lvl);
@@ -245,7 +245,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", false, ELogtype.success);
 
         if (_level != 0)
         {

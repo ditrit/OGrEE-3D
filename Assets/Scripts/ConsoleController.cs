@@ -12,20 +12,20 @@ public class ConsoleController : MonoBehaviour
 {
     // Used to communicate with ConsoleView
     public delegate void LogChangedHandler(string[] log);
-    public event LogChangedHandler logChanged;
+    public event LogChangedHandler LogChanged;
 
     /// <summary>
     /// How many log lines should be retained?
     /// Note that strings submitted to AppendLogLine with embedded newlines will be counted as a single line.
     /// </summary>
     const int scrollbackSize = 500;
-    Queue<string> scrollback = new Queue<string>(scrollbackSize);
-    public string[] log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
+    readonly Queue<string> scrollback = new Queue<string>(scrollbackSize);
+    public string[] Log { get; private set; } //Copy of scrollback as an array for easier use by ConsoleView
 
     public ReadFromJson rfJson = new ReadFromJson();
     public Dictionary<string, string> variables = new Dictionary<string, string>();
 
-    private Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
+    private readonly Dictionary<string, string> cmdsHistory = new Dictionary<string, string>();
     private string lastCmd = "";
     private int warningsCount = 0;
     private int errorsCount = 0;
@@ -67,11 +67,8 @@ public class ConsoleController : MonoBehaviour
         }
         scrollback.Enqueue(_line);
 
-        log = scrollback.ToArray();
-        if (logChanged != null)
-        {
-            logChanged(log);
-        }
+        Log = scrollback.ToArray();
+        LogChanged?.Invoke(Log);
     }
 
     ///<summary>
@@ -175,7 +172,7 @@ public class ConsoleController : MonoBehaviour
         }
         else
         {
-            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, ELogtype.error);
             UnlockController();
         }
         if (timerValue > 0)
@@ -259,7 +256,7 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 if (!found)
-                    GameManager.instance.AppendLogLine($"\"{items[i]}\" is not a child of {root.name} or does not exist", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"\"{items[i]}\" is not a child of {root.name} or does not exist", false, ELogtype.warning);
             }
         }
         else if (GameManager.instance.allItems.Contains(_input))
@@ -268,7 +265,7 @@ public class ConsoleController : MonoBehaviour
             yield return new WaitUntil(() => task.IsCompleted);
         }
         else
-            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, ELogtype.warning);
 
         yield return new WaitForEndOfFrame();
         UnlockController();
@@ -322,7 +319,7 @@ public class ConsoleController : MonoBehaviour
             // else if (GameManager.gm.tenants.ContainsKey(data[0]))
             //     GameManager.gm.tenants.Remove(data[0]);
             else
-                GameManager.instance.AppendLogLine($"\"{data[0]}\" does not exist", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"\"{data[0]}\" does not exist", false, ELogtype.warning);
         }
 
         yield return new WaitForEndOfFrame();
@@ -351,11 +348,11 @@ public class ConsoleController : MonoBehaviour
                 await GameManager.instance.FocusItem(obj);
             }
             else
-                GameManager.instance.AppendLogLine($"Can't focus \"{_input}\"", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Can't focus \"{_input}\"", false, ELogtype.warning);
 
         }
         else
-            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.error);
+            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, ELogtype.error);
 
         UnlockController();
     }
@@ -382,7 +379,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
-            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, ELogtype.error);
 
         UnlockController();
     }
@@ -404,14 +401,14 @@ public class ConsoleController : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.error);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.error);
             if (_saveCmd)
                 GameManager.instance.SetReloadBtn(false, "");
         }
         for (int i = 0; i < lines.Length; i++)
         {
             if (!cmdsHistory.ContainsKey(lines[i].Trim()))
-                cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{(i + 1).ToString()}");
+                cmdsHistory.Add(lines[i].Trim(), $"{_input}, l.{i + 1}");
             RunCommandString(lines[i], false);
         }
         StartCoroutine(DisplayLogCount(lines.Length));
@@ -426,13 +423,13 @@ public class ConsoleController : MonoBehaviour
         yield return new WaitUntil(() => isReady == true);
         LockController();
 
-        eLogtype color;
+        ELogtype color;
         if (errorsCount > 0)
-            color = eLogtype.error;
+            color = ELogtype.error;
         else if (warningsCount > 0)
-            color = eLogtype.warning;
+            color = ELogtype.warning;
         else
-            color = eLogtype.success;
+            color = ELogtype.success;
 
         lastCmd = "LogCount";
         GameManager.instance.AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", false, color);
@@ -451,12 +448,12 @@ public class ConsoleController : MonoBehaviour
         string json = "";
         try
         {
-            using (StreamReader sr = File.OpenText(_input))
-                json = sr.ReadToEnd();
+            using StreamReader sr = File.OpenText(_input);
+            json = sr.ReadToEnd();
         }
         catch (System.Exception e)
         {
-            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.error);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.error);
         }
         if (!string.IsNullOrEmpty(json))
         {
@@ -488,12 +485,12 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
-                GameManager.instance.AppendLogLine($"{data[0]} already exists", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"{data[0]} already exists", false, ELogtype.warning);
             else
                 variables.Add(data[0], data[1]);
         }
         else
-            GameManager.instance.AppendLogLine("Syntax Error on variable creation", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax Error on variable creation", false, ELogtype.error);
     }
 
     ///<summary>
@@ -530,11 +527,11 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 else
-                    GameManager.instance.AppendLogLine($"{data[1]} doesn't exist", false, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"{data[1]} doesn't exist", false, ELogtype.error);
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax Error on API call", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax Error on API call", false, ELogtype.error);
 
         UnlockController();
     }
@@ -570,7 +567,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "sensor" || str[0] == "se")
             CreateSensor(str[1]);
         else
-            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, ELogtype.error);
 
         UnlockController();
     }
@@ -604,7 +601,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -642,7 +639,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -690,7 +687,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -743,7 +740,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.instance.AppendLogLine($"Unknown template \"{data[2]}\"", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Unknown template \"{data[2]}\"", false, ELogtype.warning);
                     return;
                 }
             }
@@ -770,7 +767,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -824,7 +821,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.instance.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", false, ELogtype.warning);
                     return;
                 }
             }
@@ -848,7 +845,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -912,7 +909,7 @@ public class ConsoleController : MonoBehaviour
                     }
                     else
                     {
-                        GameManager.instance.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", false, eLogtype.warning);
+                        GameManager.instance.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", false, ELogtype.warning);
                         return;
                     }
                 }
@@ -941,7 +938,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -980,7 +977,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -1020,7 +1017,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     ///<summary>
@@ -1068,7 +1065,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
     }
 
     #endregion
@@ -1112,13 +1109,13 @@ public class ConsoleController : MonoBehaviour
                     UiManager.instance.UpdateGuiInfos();
                 }
                 else
-                    GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, ELogtype.warning);
             }
             else
-                GameManager.instance.AppendLogLine($"Object doesn't exist.", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Object doesn't exist.", false, ELogtype.warning);
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
 
         UnlockController();
     }
@@ -1140,7 +1137,7 @@ public class ConsoleController : MonoBehaviour
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }
             else
-                GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, ELogtype.warning);
         }
     }
 
@@ -1167,12 +1164,12 @@ public class ConsoleController : MonoBehaviour
                     cc.WaitCamera(Utils.ParseDecFrac(data[1]));
                     break;
                 default:
-                    GameManager.instance.AppendLogLine("Unknown Camera control", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine("Unknown Camera control", false, ELogtype.warning);
                     break;
             }
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
 
         UnlockController();
     }
@@ -1213,7 +1210,7 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(HighlightItem(data[1]));
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
 
         UnlockController();
     }
@@ -1245,12 +1242,12 @@ public class ConsoleController : MonoBehaviour
             if (time < 0 || time > 2)
             {
                 time = Mathf.Clamp(time, 0, 2);
-                GameManager.instance.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine("Delay is a value between 0 and 2s", false, ELogtype.warning);
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);
 
         UnlockController();
     }
@@ -1281,23 +1278,8 @@ public class ConsoleController : MonoBehaviour
         {
             parent = null;
             name = "";
-            GameManager.instance.AppendLogLine($"Error: path doesn't exist ({parentPath})", false, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error: path doesn't exist ({parentPath})", false, ELogtype.error);
         }
-    }
-
-    ///<summary>
-    /// Isolate parent path from hierarchyName
-    ///</summary>
-    ///<param name="_input">The hierarchyName to parse</param>
-    ///<returns>The parent hierarchyName</returns>
-    private string IsolateParentPath(string _input)
-    {
-        string[] path = _input.Split('.');
-        string parentPath = "";
-        for (int i = 0; i < path.Length - 1; i++)
-            parentPath += $"{path[i]}.";
-        parentPath = parentPath.Remove(parentPath.Length - 1);
-        return parentPath;
     }
 
     ///<summary>

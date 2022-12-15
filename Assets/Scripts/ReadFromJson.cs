@@ -108,7 +108,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
         }
         CreateRoomTemplate(roomData);
@@ -139,7 +139,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
         }
         await CreateObjectTemplate(data);
@@ -153,12 +153,12 @@ public class ReadFromJson
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", true, ELogtype.error);
             return;
         }
         if (GameManager.instance.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.instance.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{_data.slug} already exists.", false, ELogtype.warning);
             return;
         }
 
@@ -414,7 +414,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.instance.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }
@@ -438,7 +438,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.instance.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }
@@ -462,7 +462,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.instance.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }

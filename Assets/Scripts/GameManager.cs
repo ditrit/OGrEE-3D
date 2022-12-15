@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        AppendLogLine("--- Client closed ---\n\n", true, eLogtype.info);
+        AppendLogLine("--- Client closed ---\n\n", true, ELogtype.info);
     }
 
     #endregion
@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
-                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
+                AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
                 OObject currentSelected = _obj.GetComponent<OObject>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in currentItems)
@@ -152,7 +152,7 @@ public class GameManager : MonoBehaviour
             }
             else // deselection => unload children if level of details is <=1
             {
-                AppendLogLine("Empty selection.", true, eLogtype.success);
+                AppendLogLine("Empty selection.", true, ELogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
@@ -182,12 +182,12 @@ public class GameManager : MonoBehaviour
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
             || currentItems[0].transform.parent != _obj.transform.parent)
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, eLogtype.warning);
+            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, ELogtype.warning);
             return;
         }
         if (currentItems.Contains(_obj))
         {
-            AppendLogLine($"Remove {_obj.name} from selection.", true, eLogtype.success);
+            AppendLogLine($"Remove {_obj.name} from selection.", true, ELogtype.success);
             currentItems.Remove(_obj);
             if (currentItems.Count == 0)
             {
@@ -219,7 +219,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
+            AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
             currentItems.Add(_obj);
         }
         EventManager.instance.Raise(new OnSelectItemEvent());
@@ -237,7 +237,7 @@ public class GameManager : MonoBehaviour
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, eLogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, ELogtype.warning);
             return;
         }
 
@@ -365,20 +365,20 @@ public class GameManager : MonoBehaviour
     ///<param name="_line">The text to display</param>
     ///<param name="_writeInCli">Should the message be send to the CLI ?</param>
     ///<param name="_type">The type of message. Default is info</param>
-    public void AppendLogLine(string _line, bool _writeInCli, eLogtype _type = eLogtype.info)
+    public void AppendLogLine(string _line, bool _writeInCli, ELogtype _type = ELogtype.info)
     {
         if (!writeLogs)
             return;
 
         // Legacy build-in CLI
         string color = "";
-        if (_type == eLogtype.info || _type == eLogtype.infoCli || _type == eLogtype.infoApi)
+        if (_type == ELogtype.info || _type == ELogtype.infoCli || _type == ELogtype.infoApi)
             color = "white";
-        else if (_type == eLogtype.success || _type == eLogtype.successCli || _type == eLogtype.successApi)
+        else if (_type == ELogtype.success || _type == ELogtype.successCli || _type == ELogtype.successApi)
             color = "green";
-        else if (_type == eLogtype.warning || _type == eLogtype.warningCli || _type == eLogtype.warningApi)
+        else if (_type == ELogtype.warning || _type == ELogtype.warningCli || _type == ELogtype.warningApi)
             color = "yellow";
-        else if (_type == eLogtype.error || _type == eLogtype.errorCli || _type == eLogtype.errorApi)
+        else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
             color = "red";
         if (_writeInCli)
             consoleController.AppendLogLine(_line, color);
@@ -399,10 +399,10 @@ public class GameManager : MonoBehaviour
         WriteLogFile(_line, _type);
         switch (_type)
         {
-            case eLogtype.warning:
+            case ELogtype.warning:
                 Debug.LogWarning(_line);
                 break;
-            case eLogtype.error:
+            case ELogtype.error:
                 Debug.LogError(_line);
                 break;
             default:
@@ -416,7 +416,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_str">The message to write</param>
     ///<param name="_type">The type of message</param>
-    private void WriteLogFile(string _str, eLogtype _type)
+    private void WriteLogFile(string _str, ELogtype _type)
     {
         if (string.IsNullOrEmpty(startDateTime))
         {
@@ -428,40 +428,40 @@ public class GameManager : MonoBehaviour
         string type = "";
         switch (_type)
         {
-            case eLogtype.info:
+            case ELogtype.info:
                 type = "INFO";
                 break;
-            case eLogtype.infoCli:
+            case ELogtype.infoCli:
                 type = "INFO [CLI]";
                 break;
-            case eLogtype.infoApi:
+            case ELogtype.infoApi:
                 type = "INFO [API]";
                 break;
-            case eLogtype.success:
+            case ELogtype.success:
                 type = "SUCCESS";
                 break;
-            case eLogtype.successCli:
+            case ELogtype.successCli:
                 type = "SUCCESS [CLI]";
                 break;
-            case eLogtype.successApi:
+            case ELogtype.successApi:
                 type = "SUCCESS [API]";
                 break;
-            case eLogtype.warning:
+            case ELogtype.warning:
                 type = "WARNING";
                 break;
-            case eLogtype.warningCli:
+            case ELogtype.warningCli:
                 type = "WARNING [CLI]";
                 break;
-            case eLogtype.warningApi:
+            case ELogtype.warningApi:
                 type = "WARNING [API]";
                 break;
-            case eLogtype.error:
+            case ELogtype.error:
                 type = "ERROR";
                 break;
-            case eLogtype.errorCli:
+            case ELogtype.errorCli:
                 type = "ERROR [CLI]";
                 break;
-            case eLogtype.errorApi:
+            case ELogtype.errorApi:
                 type = "ERROR [API]";
                 break;
         }

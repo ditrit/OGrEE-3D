@@ -27,7 +27,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, ELogtype.error);
             return;
         }
         tilesEdges.gameObject.SetActive(true);
@@ -61,7 +61,7 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("tilesName value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("tilesName value has to be true or false", true, ELogtype.warning);
             return;
         }
 
@@ -117,12 +117,12 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", true, ELogtype.warning);
             return;
         }
         if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"There is no template for {name}", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"There is no template for {name}", false, ELogtype.warning);
             return;
         }
 
@@ -325,7 +325,7 @@ public class Room : Building
                         };
                     }
                     else
-                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", false, eLogtype.warning);
+                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", false, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -464,7 +464,7 @@ public class Room : Building
             SetAreas(resDim, techDim);
         }
         else
-            GameManager.instance.AppendLogLine("Syntax error", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
     }
 
     ///<summary>
@@ -475,7 +475,7 @@ public class Room : Building
     {
         if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
         {
-            GameManager.instance.AppendLogLine("Syntax error", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
             return;
         }
 

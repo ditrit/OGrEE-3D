@@ -35,7 +35,7 @@ public class CliParser
 
     #endregion
 
-    ReadFromJson rfJson = new ReadFromJson();
+    readonly ReadFromJson rfJson = new ReadFromJson();
 
     ///<summary>
     /// Deserialize CLI input and parse it. 
@@ -50,7 +50,7 @@ public class CliParser
         }
         catch (System.Exception)
         {
-            GameManager.instance.AppendLogLine("Received data with unknow format.", true, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine("Received data with unknow format.", true, ELogtype.errorCli);
         }
         switch (command["type"])
         {
@@ -88,7 +88,7 @@ public class CliParser
                     if (objToDel)
                         await GameManager.instance.DeleteItem(objToDel, false);
                     else
-                        GameManager.instance.AppendLogLine("Error on delete", true, eLogtype.errorCli);
+                        GameManager.instance.AppendLogLine("Error on delete", true, ELogtype.errorCli);
                 }
                 break;
             case "focus":
@@ -122,7 +122,7 @@ public class CliParser
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown type", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown type", true, ELogtype.errorCli);
                 break;
         }
     }
@@ -155,7 +155,7 @@ public class CliParser
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, eLogtype.infoCli);
+        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
     }
 
     ///<summary>
@@ -242,7 +242,7 @@ public class CliParser
                 if (usableParams.Contains(command.param))
                     room.SetAttribute(command.param, command.value);
                 else
-                    GameManager.instance.AppendLogLine("Incorrect room interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect room interaction", true, ELogtype.warningCli);
                 break;
             case "rack":
                 Rack rack = (Rack)obj;
@@ -250,7 +250,7 @@ public class CliParser
                 if (usableParams.Contains(command.param))
                     rack.SetAttribute(command.param, command.value);
                 else
-                    GameManager.instance.AppendLogLine("Incorrect rack interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect rack interaction", true, ELogtype.warningCli);
                 break;
             case "device":
                 OObject device = (OObject)obj;
@@ -258,7 +258,7 @@ public class CliParser
                 if (usableParams.Contains(command.param))
                     device.SetAttribute(command.param, command.value);
                 else
-                    GameManager.instance.AppendLogLine("Incorrect device interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect device interaction", true, ELogtype.warningCli);
                 break;
             case "group":
                 Group group = (Group)obj;
@@ -266,10 +266,10 @@ public class CliParser
                 if (usableParams.Contains(command.param))
                     group.SetAttribute(command.param, command.value);
                 else
-                    GameManager.instance.AppendLogLine("Incorrect group interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect group interaction", true, ELogtype.warningCli);
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown category to interact with", true, eLogtype.warningCli);
+                GameManager.instance.AppendLogLine("Unknown category to interact with", true, ELogtype.warningCli);
                 break;
         }
     }
@@ -304,10 +304,10 @@ public class CliParser
                 if (obj)
                     EventManager.instance.Raise(new HighlightEvent { obj = obj });
                 else
-                    GameManager.instance.AppendLogLine("Error on highlight", true, eLogtype.errorCli);
+                    GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown command", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
                 break;
         }
     }
@@ -333,7 +333,7 @@ public class CliParser
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown command", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
                 break;
         }
 

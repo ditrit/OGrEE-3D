@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class OnFocusEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class OnUnFocusEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class OnSelectItemEvent : CustomEvent
@@ -18,17 +18,17 @@ public class OnSelectItemEvent : CustomEvent
 
 public class OnMouseHoverEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class OnMouseUnHoverEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class HighlightEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class ImportFinishedEvent : CustomEvent
@@ -48,23 +48,17 @@ public class UpdateTenantEvent : CustomEvent
 
 public class ToggleLabelEvent : CustomEvent
 {
-    public enum ELabelMode
-    {
-        FrontAndRear,
-        FloatingOnTop,
-        Hidden
-    }
     public ELabelMode value;
 }
 
 public class EditModeInEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class EditModeOutEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 
 public class ConnectApiEvent : CustomEvent
@@ -73,7 +67,7 @@ public class ConnectApiEvent : CustomEvent
 
 public class TemperatureDiagramEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }
 public class TemperatureColorEvent : CustomEvent
 {
@@ -81,5 +75,5 @@ public class TemperatureColorEvent : CustomEvent
 
 public class TemperatureScatterPlotEvent : CustomEvent
 {
-    public GameObject obj { get; set; }
+    public GameObject obj;
 }

@@ -20,8 +20,10 @@ public class TcpConnection : AConnection
     public override void StartConnection(int _receivePort)
     {
         cliPort = _receivePort;
-        comThread = new Thread(ConnexionLoop);
-        comThread.IsBackground = true;
+        comThread = new Thread(ConnexionLoop)
+        {
+            IsBackground = true
+        };
         threadRunning = true;
         comThread.Start();
     }
@@ -32,19 +34,19 @@ public class TcpConnection : AConnection
         {
             server = new TcpListener(IPAddress.Any, cliPort);
             server.Start();
-            GameManager.instance.AppendLogLine($"Tcp Server is listening at port {cliPort}", false, eLogtype.info);
+            GameManager.instance.AppendLogLine($"Tcp Server is listening at port {cliPort}", false, ELogtype.info);
             while (threadRunning)
             {
                 client = server.AcceptTcpClient();
                 netStream = client.GetStream();
                 await ReceiveLoop();
                 client.Close();
-                GameManager.instance.AppendLogLine("Connection with client lost.", false, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Connection with client lost.", false, ELogtype.errorCli);
             }
         }
         catch (SocketException socketException)
         {
-            GameManager.instance.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.error);
+            GameManager.instance.AppendLogLine("SocketException " + socketException.ToString(), false, ELogtype.error);
         }
     }
 
@@ -61,7 +63,7 @@ public class TcpConnection : AConnection
         }
         catch (System.IO.IOException e)
         {
-            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorCli);
         }
     }
 
@@ -108,7 +110,7 @@ public class TcpConnection : AConnection
     {
         if (client == null || !client.Connected)
         {
-            GameManager.instance.AppendLogLine("TCP client is closed.", false, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine("TCP client is closed.", false, ELogtype.errorCli);
             return;
         }
         try
@@ -121,7 +123,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException se)
         {
-            GameManager.instance.AppendLogLine("Socket exception: " + se, false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Socket exception: " + se, false, ELogtype.error);
         }
     }
 

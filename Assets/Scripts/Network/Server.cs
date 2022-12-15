@@ -5,16 +5,16 @@ using UnityEngine;
 
 public class Server : MonoBehaviour
 {
-    private enum eConnectionType
+    private enum EConnectionType
     {
         udp,
         tcp
     }
 
-    CliParser parser = new CliParser();
+    readonly CliParser parser = new CliParser();
 
     [Header("Client config")]
-    [SerializeField] private eConnectionType protocol;
+    [SerializeField] private EConnectionType protocol;
     private AConnection connection;
 
     [SerializeField] private int cliPort;
@@ -36,7 +36,7 @@ public class Server : MonoBehaviour
         }
 
         if (connection.incomingQueue.Count > 0 && dequeueCoroutine == null)
-            dequeueCoroutine = StartCoroutine(DequeueAndParse(timer));
+            dequeueCoroutine = StartCoroutine(DequeueAndParse());
     }
 
     private void OnDestroy()
@@ -44,11 +44,11 @@ public class Server : MonoBehaviour
         connection.Stop();
     }
 
-    private IEnumerator DequeueAndParse(int _timer)
+    private IEnumerator DequeueAndParse()
     {
         string msg = connection.incomingQueue.Dequeue();
         yield return new WaitForSeconds(timer);
-        GameManager.instance.AppendLogLine(msg, false, eLogtype.infoCli);
+        GameManager.instance.AppendLogLine(msg, false, ELogtype.infoCli);
         Task parse = parser.DeserializeInput(msg);
         yield return new WaitUntil(() => parse.IsCompleted);
         dequeueCoroutine = null;
@@ -70,9 +70,9 @@ public class Server : MonoBehaviour
     ///</summary>
     public void StartServer()
     {
-        if (protocol == eConnectionType.udp)
+        if (protocol == EConnectionType.udp)
             connection = new UdpConnection();
-        else if (protocol == eConnectionType.tcp)
+        else if (protocol == EConnectionType.tcp)
             connection = new TcpConnection();
 
         connection.StartConnection(cliPort);

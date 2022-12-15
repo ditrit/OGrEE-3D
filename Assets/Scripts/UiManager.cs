@@ -415,7 +415,7 @@ public class UiManager : MonoBehaviour
         else
             focusText.text = "No focus";
 
-        GameManager.instance.AppendLogLine(focusText.text, true, eLogtype.success);
+        GameManager.instance.AppendLogLine(focusText.text, true, ELogtype.success);
     }
 
     ///<summary>
@@ -506,7 +506,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
@@ -526,10 +526,10 @@ public class UiManager : MonoBehaviour
                 cb.selectedColor = Color.white;
             }
             toggleTilesNameBtn.colors = cb;
-            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.currentItems[0].name}.", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.currentItems[0].name}.", false, ELogtype.success);
         }
         else
-            GameManager.instance.AppendLogLine("Selected item must be a room", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
     }
 
     ///<summary>
@@ -539,7 +539,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
@@ -548,7 +548,7 @@ public class UiManager : MonoBehaviour
         {
             if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
-                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", false, ELogtype.warning);
                 return;
             }
             currentRoom.ToggleTilesColor();
@@ -564,10 +564,10 @@ public class UiManager : MonoBehaviour
                 cb.selectedColor = Color.white;
             }
             toggleTilesColorBtn.colors = cb;
-            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.currentItems[0].name}.", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.currentItems[0].name}.", false, ELogtype.success);
         }
         else
-            GameManager.instance.AppendLogLine("Selected item must be a room", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
     }
 
     ///<summary>
@@ -610,7 +610,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
@@ -645,7 +645,7 @@ public class UiManager : MonoBehaviour
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
             apiUrl.text = "";
-            GameManager.instance.AppendLogLine("Disconnected from API", true, eLogtype.success);
+            GameManager.instance.AppendLogLine("Disconnected from API", true, ELogtype.success);
         }
         else
             await ApiManager.instance.Initialize();
@@ -734,11 +734,11 @@ public class UiManager : MonoBehaviour
         if (_value)
         {
             GameManager.instance.writeLogs = true;
-            GameManager.instance.AppendLogLine("Enable CLI", false, eLogtype.success);
+            GameManager.instance.AppendLogLine("Enable CLI", false, ELogtype.success);
         }
         else
         {
-            GameManager.instance.AppendLogLine("Disable CLI", false, eLogtype.success);
+            GameManager.instance.AppendLogLine("Disable CLI", false, ELogtype.success);
             GameManager.instance.writeLogs = false;
         }
     }
@@ -749,7 +749,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.ELabelMode)_value });
+        EventManager.instance.Raise(new ToggleLabelEvent() { value = (ELabelMode)_value });
         mouseName.gameObject.SetActive(_value == 2);
     }
 
@@ -764,7 +764,7 @@ public class UiManager : MonoBehaviour
             if (file.Name != "log.txt")
                 file.Delete();
         }
-        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", true, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", true, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
 
@@ -807,7 +807,7 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         }
         else
-            GameManager.instance.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room", true, ELogtype.warning);
     }
 
     ///<summary>
@@ -829,7 +829,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.currentItems.Count == 1 && (GameManager.instance.currentItems[0].GetComponent<OObject>() || GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "room"))
             TempDiagram.instance.HandleScatterPlot(GameManager.instance.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", true, ELogtype.warning);
     }
 
 
@@ -845,12 +845,12 @@ public class UiManager : MonoBehaviour
                 if (DepthCheck(GameManager.instance.currentItems[0].GetComponent<OgreeObject>()) <= 1)
                     TempDiagram.instance.HandleHeatMap(GameManager.instance.currentItems[0].GetComponent<OObject>());
                 else
-                    GameManager.instance.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
+                    GameManager.instance.AppendLogLine("This device has too many nested children levels", true, ELogtype.warning);
             else
-                GameManager.instance.AppendLogLine("You have to select a device", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine("You have to select a device", true, ELogtype.warning);
         }
         else
-            GameManager.instance.AppendLogLine("You have to select one device", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one device", true, ELogtype.warning);
     }
 
     /// <summary>

@@ -17,7 +17,9 @@ using System.Collections.Generic;
 /// </summary>
 public class EventManager
 {
+#pragma warning disable IDE1006 // Name assignment styles
     public static EventManager instance
+#pragma warning restore IDE1006 // Name assignment styles
     {
         get
         {
@@ -38,12 +40,12 @@ public class EventManager
     /// The actual delegate, there is one delegate per unique event. Each
     /// delegate has multiple invocation list items.
     /// </summary>
-    private Dictionary<System.Type, EventDelegate> delegates = new Dictionary<System.Type, EventDelegate>();
+    private readonly Dictionary<System.Type, EventDelegate> delegates = new Dictionary<System.Type, EventDelegate>();
 
     /// <summary>
     /// Lookups only, there is one delegate lookup per listener
     /// </summary>
-    private Dictionary<System.Delegate, EventDelegate> delegateLookup = new Dictionary<System.Delegate, EventDelegate>();
+    private readonly Dictionary<System.Delegate, EventDelegate> delegateLookup = new Dictionary<System.Delegate, EventDelegate>();
 
     /// <summary>
     /// Add the delegate.
@@ -61,8 +63,7 @@ public class EventManager
         EventDelegate internalDelegate = (e) => del((T)e);
         delegateLookup[del] = internalDelegate;
 
-        EventDelegate tempDel;
-        if (delegates.TryGetValue(typeof(T), out tempDel))
+        if (delegates.TryGetValue(typeof(T), out EventDelegate tempDel))
         {
             delegates[typeof(T)] = tempDel += internalDelegate;
         }
@@ -78,11 +79,9 @@ public class EventManager
     public void RemoveListener<T>(EventDelegate<T> del) where T : CustomEvent
     {
 
-        EventDelegate internalDelegate;
-        if (delegateLookup.TryGetValue(del, out internalDelegate))
+        if (delegateLookup.TryGetValue(del, out EventDelegate internalDelegate))
         {
-            EventDelegate tempDel;
-            if (delegates.TryGetValue(typeof(T), out tempDel))
+            if (delegates.TryGetValue(typeof(T), out EventDelegate tempDel))
             {
                 tempDel -= internalDelegate;
                 if (tempDel == null)
@@ -110,8 +109,7 @@ public class EventManager
     /// </summary>
     public void Raise(CustomEvent e)
     {
-        EventDelegate del;
-        if (delegates.TryGetValue(e.GetType(), out del))
+        if (delegates.TryGetValue(e.GetType(), out EventDelegate del))
         {
             del.Invoke(e);
         }

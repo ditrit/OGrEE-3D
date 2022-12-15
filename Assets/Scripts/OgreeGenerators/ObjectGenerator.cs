@@ -20,7 +20,7 @@ public class ObjectGenerator
             hierarchyName = _rk.name;
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -33,7 +33,7 @@ public class ObjectGenerator
                 newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", true, ELogtype.error);
                 return null;
             }
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
@@ -146,7 +146,7 @@ public class ObjectGenerator
         {
             if (_parent.GetComponent<OObject>() == null)
             {
-                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", true, ELogtype.error);
                 return null;
             }
 
@@ -154,14 +154,14 @@ public class ObjectGenerator
             if (_parent.GetComponent<Rack>() == null
                 && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
             {
-                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", true, eLogtype.error);
+                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", true, ELogtype.error);
                 return null;
             }
 
             // Check if parent not hidden in a group
             if (_parent.gameObject.activeSelf == false)
             {
-                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", true, eLogtype.error);
+                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", true, ELogtype.error);
                 return null;
             }
         }
@@ -174,14 +174,14 @@ public class ObjectGenerator
             hierarchyName = _dv.name;
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
         // Check template
         if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", true, ELogtype.error);
             return null;
         }
 
@@ -215,7 +215,7 @@ public class ObjectGenerator
                 }
                 else
                 {
-                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", true, ELogtype.error);
                     return null;
                 }
             }
@@ -370,7 +370,7 @@ public class ObjectGenerator
         }
         else
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", true, ELogtype.error);
             return null;
         }
     }
@@ -386,20 +386,20 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _gr.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine("Parent not found", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Parent not found", true, ELogtype.error);
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
         if (parentCategory != "room" && parentCategory != "rack")
         {
-            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", true, ELogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -415,7 +415,7 @@ public class ObjectGenerator
                     content.Add(go.transform);
             }
             else
-                GameManager.instance.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", true, ELogtype.warning);
         }
         if (content.Count == 0)
             return null;
@@ -568,14 +568,14 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _co.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
-            GameManager.instance.AppendLogLine($"Parent room not found", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Parent room not found", true, ELogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -585,7 +585,7 @@ public class ObjectGenerator
         Transform cornerB = GameManager.instance.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
         if (cornerA == null || cornerB == null)
         {
-            GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", true, ELogtype.error);
             return null;
         }
 
@@ -669,7 +669,7 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine($"Parent not found", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Parent not found", true, ELogtype.error);
             return null;
         }
         OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
@@ -677,13 +677,13 @@ public class ObjectGenerator
         if (_se.attributes["formFactor"] == "ext"
             && (parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.instance.AppendLogLine("An external sensor must be child of a rack or a device", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("An external sensor must be child of a rack or a device", true, ELogtype.error);
             return null;
         }
         if (_se.attributes["formFactor"] == "int"
             && (parentCategory != "room" && parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.instance.AppendLogLine("An internal sensor must be child of a room, a rack or a device", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("An internal sensor must be child of a room, a rack or a device", true, ELogtype.error);
             return null;
         }
 

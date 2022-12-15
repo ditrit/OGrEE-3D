@@ -29,7 +29,7 @@ public class ConfigLoader
 
     private SConfig config;
     private bool verbose = false;
-    private string cacheDirName = ".ogreeCache";
+    private readonly string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file, look for CLI overrides and starts with --file if given.
@@ -39,7 +39,7 @@ public class ConfigLoader
         string fileType = LoadConfigFile();
         OverrideConfig();
         ApplyConfig();
-        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
@@ -104,7 +104,7 @@ public class ConfigLoader
         }
         catch (System.Exception _e)
         {
-            GameManager.instance.AppendLogLine(_e.Message, false, eLogtype.warning);
+            GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
             return "default";
         }
     }
@@ -200,7 +200,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
+                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", false, ELogtype.success);
             }
         }
         catch (IOException ex)
@@ -258,18 +258,18 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
+                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, ELogtype.error);
             else
                 GameManager.instance.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
         if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Load default texture for perf22", false, ELogtype.warning);
             GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Load default texture for perf29", false, ELogtype.warning);
             GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
@@ -302,7 +302,7 @@ public class ConfigLoader
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == "°f")
             return (config.temperatureMinF, config.temperatureMaxF);
-        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, ELogtype.error);
         return (0, 0);
     }
 

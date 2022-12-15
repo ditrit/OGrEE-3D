@@ -21,7 +21,7 @@ public class BuildingGenerator
             hierarchyName = _bd.name;
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -68,7 +68,7 @@ public class BuildingGenerator
             hierarchyName = _ro.name;
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -79,7 +79,7 @@ public class BuildingGenerator
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, ELogtype.error);
                 return null;
             }
         }

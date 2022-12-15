@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
 
 public class DetailsInputField : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class DetailsInputField : MonoBehaviour
         EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
     }
 
-    public void OnValueChanged(string _value)
+    public async void OnValueChanged(string _value)
     {
         if (_value.Contains("-"))
             _value = "0";
@@ -32,7 +33,7 @@ public class DetailsInputField : MonoBehaviour
         foreach (GameObject go in GameManager.instance.currentItems)
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
-            obj?.LoadChildren(_value);
+            await obj.LoadChildren(_value);
     }
 
     ///

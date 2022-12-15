@@ -173,7 +173,7 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
@@ -185,17 +185,17 @@ public class UHelpersManager : MonoBehaviour
                 if (!uRoot)
                 {
                     GenerateUHelpers(_transform.GetComponent<Rack>());
-                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
                 }
                 else if (uRoot.gameObject.activeSelf == false)
                 {
                     uRoot.gameObject.SetActive(true);
-                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
                 }
                 else
                 {
                     uRoot.gameObject.SetActive(false);
-                    GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, ELogtype.info);
                 }
                 return;
             }

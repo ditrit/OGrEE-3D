@@ -33,8 +33,10 @@ public class UdpConnection : AConnection
 
     private void StartReceiveThread()
     {
-        receiveThread = new Thread(() => ListenForMessages(udpClient));
-        receiveThread.IsBackground = true;
+        receiveThread = new Thread(() => ListenForMessages(udpClient))
+        {
+            IsBackground = true
+        };
         threadRunning = true;
         receiveThread.Start();
     }
@@ -56,7 +58,7 @@ public class UdpConnection : AConnection
                     // Set sender data according to received client.
                     senderIp = remoteIpEndPoint.Address.ToString();
                     cliPort = remoteIpEndPoint.Port;
-                    Debug.Log($"=> Received msg from {remoteIpEndPoint.Address.ToString()}:{remoteIpEndPoint.Port}: {returnData}");
+                    Debug.Log($"=> Received msg from {remoteIpEndPoint.Address}:{remoteIpEndPoint.Port}: {returnData}");
 
                     // Then, send automatic message (debug).
                     Send("Roger Roger");
