@@ -32,19 +32,19 @@ public class TcpConnection : AConnection
         {
             server = new TcpListener(IPAddress.Any, cliPort);
             server.Start();
-            GameManager.gm.AppendLogLine($"Tcp Server is listening at port {cliPort}", false, eLogtype.info);
+            GameManager.instance.AppendLogLine($"Tcp Server is listening at port {cliPort}", false, eLogtype.info);
             while (threadRunning)
             {
                 client = server.AcceptTcpClient();
                 netStream = client.GetStream();
                 await ReceiveLoop();
                 client.Close();
-                GameManager.gm.AppendLogLine("Connection with client lost.", false, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Connection with client lost.", false, eLogtype.errorCli);
             }
         }
         catch (SocketException socketException)
         {
-            GameManager.gm.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.error);
+            GameManager.instance.AppendLogLine("SocketException " + socketException.ToString(), false, eLogtype.error);
         }
     }
 
@@ -61,7 +61,7 @@ public class TcpConnection : AConnection
         }
         catch (System.IO.IOException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.errorCli);
         }
     }
 
@@ -108,7 +108,7 @@ public class TcpConnection : AConnection
     {
         if (client == null || !client.Connected)
         {
-            GameManager.gm.AppendLogLine("TCP client is closed.", false, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine("TCP client is closed.", false, eLogtype.errorCli);
             return;
         }
         try
@@ -121,7 +121,7 @@ public class TcpConnection : AConnection
         }
         catch (SocketException se)
         {
-            GameManager.gm.AppendLogLine("Socket exception: " + se, false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Socket exception: " + se, false, eLogtype.error);
         }
     }
 

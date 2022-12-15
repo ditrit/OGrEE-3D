@@ -73,16 +73,16 @@ public class UiManager : MonoBehaviour
         tempScatterPlotBtn.interactable = false;
         heatMapBtn.interactable = false;
 
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.AddListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.AddListener<ConnectApiEvent>(OnApiConnected);
+        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     private void Update()
@@ -99,16 +99,16 @@ public class UiManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
 
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
+        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
+        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     ///<summary>
@@ -117,7 +117,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = false;
@@ -128,7 +128,7 @@ public class UiManager : MonoBehaviour
             heatMapBtn.interactable = false;
 
         }
-        else if (GameManager.gm.focus.Contains(GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1]))
+        else if (GameManager.instance.focus.Contains(GameManager.instance.currentItems[GameManager.instance.currentItems.Count - 1]))
         {
             focusBtn.interactable = false;
             selectParentBtn.interactable = true;
@@ -146,7 +146,7 @@ public class UiManager : MonoBehaviour
             tempScatterPlotBtn.interactable = true;
             heatMapBtn.interactable = true;
         }
-        if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count - 1] == GameManager.gm.currentItems[0])
+        if (GameManager.instance.focus.Count > 0 && GameManager.instance.focus[GameManager.instance.focus.Count - 1] == GameManager.instance.currentItems[0])
         {
             selectParentBtn.interactable = false;
             editBtn.interactable = true;
@@ -160,9 +160,9 @@ public class UiManager : MonoBehaviour
 
         //ugly part : checking toggling buttons status
         ColorBlock cb;
-        if (GameManager.gm.currentItems.Count > 0)
+        if (GameManager.instance.currentItems.Count > 0)
         {
-            Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+            Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
             if (currentRoom)
             {
                 //Toggle tiles name
@@ -206,7 +206,7 @@ public class UiManager : MonoBehaviour
             }
 
             //Toggle U helpers
-            Transform _transform = GameManager.gm.currentItems[0].transform;
+            Transform _transform = GameManager.instance.currentItems[0].transform;
             while (_transform != null)
             {
                 if (_transform.GetComponent<Rack>())
@@ -237,10 +237,10 @@ public class UiManager : MonoBehaviour
             }
 
             //Toggle local CS
-            if (GameManager.gm.currentItems[0].GetComponent<OObject>())
+            if (GameManager.instance.currentItems[0].GetComponent<OObject>())
             {
                 cb = toggleLocalCSBtn.colors;
-                if (GameManager.gm.currentItems[0].transform.Find("localCS"))
+                if (GameManager.instance.currentItems[0].transform.Find("localCS"))
                 {
                     cb.normalColor = Color.gray;
                     cb.selectedColor = Color.gray;
@@ -295,12 +295,12 @@ public class UiManager : MonoBehaviour
         UpdateFocusText();
         unfocusBtn.interactable = true;
         resetChildrenBtn.interactable = true;
-        if (_e.obj == GameManager.gm.currentItems[0])
+        if (_e.obj == GameManager.instance.currentItems[0])
         {
             selectParentBtn.interactable = false;
             editBtn.interactable = true;
         }
-        if (GameManager.gm.currentItems.Contains(_e.obj))
+        if (GameManager.instance.currentItems.Contains(_e.obj))
             focusBtn.interactable = false;
     }
 
@@ -312,9 +312,9 @@ public class UiManager : MonoBehaviour
     {
         UpdateFocusText();
         resetChildrenBtn.interactable = false;
-        if (GameManager.gm.focus.Count == 0)
+        if (GameManager.instance.focus.Count == 0)
             unfocusBtn.interactable = false;
-        if (GameManager.gm.currentItems.Contains(_e.obj))
+        if (GameManager.instance.currentItems.Contains(_e.obj))
             focusBtn.interactable = false;
     }
 
@@ -327,7 +327,7 @@ public class UiManager : MonoBehaviour
         focusBtn.interactable = false;
         selectParentBtn.interactable = false;
         resetTransBtn.interactable = true;
-        editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("edit"));
+        editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"));
     }
 
     ///<summary>
@@ -368,9 +368,9 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
-        if (GameManager.gm.currentItems.Count > 0)
+        if (GameManager.instance.currentItems.Count > 0)
         {
-            string value = GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString();
+            string value = GameManager.instance.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString();
             detailsInputField.UpdateInputField(value);
         }
         else
@@ -394,12 +394,12 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void UpdateGuiInfos()
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
             objInfos.UpdateSingleFields(null);
-        else if (GameManager.gm.currentItems.Count == 1)
-            objInfos.UpdateSingleFields(GameManager.gm.currentItems[0]);
+        else if (GameManager.instance.currentItems.Count == 1)
+            objInfos.UpdateSingleFields(GameManager.instance.currentItems[0]);
         else
-            objInfos.UpdateMultiFields(GameManager.gm.currentItems);
+            objInfos.UpdateMultiFields(GameManager.instance.currentItems);
     }
 
     ///<summary>
@@ -407,15 +407,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void UpdateFocusText()
     {
-        if (GameManager.gm.focus.Count > 0)
+        if (GameManager.instance.focus.Count > 0)
         {
-            string objName = GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
+            string objName = GameManager.instance.focus[GameManager.instance.focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
         }
         else
             focusText.text = "No focus";
 
-        GameManager.gm.AppendLogLine(focusText.text, true, eLogtype.success);
+        GameManager.instance.AppendLogLine(focusText.text, true, eLogtype.success);
     }
 
     ///<summary>
@@ -478,9 +478,9 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void SetCurrentItemText()
     {
-        if (GameManager.gm.currentItems.Count == 1)
-            currentItemText.text = (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
-        else if (GameManager.gm.currentItems.Count > 1)
+        if (GameManager.instance.currentItems.Count == 1)
+            currentItemText.text = (GameManager.instance.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
+        else if (GameManager.instance.currentItems.Count > 1)
             currentItemText.text = ("Selection");
         else
             currentItemText.text = ("OGrEE-3D");
@@ -504,18 +504,18 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTilesName()
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
-        Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+        Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
             ColorBlock cb = toggleTilesNameBtn.colors;
-            if (GameManager.gm.currentItems[0].transform.Find("tilesNameRoot") && GameManager.gm.currentItems[0].transform.Find("tilesNameRoot").gameObject.activeSelf)
+            if (GameManager.instance.currentItems[0].transform.Find("tilesNameRoot") && GameManager.instance.currentItems[0].transform.Find("tilesNameRoot").gameObject.activeSelf)
             {
                 cb.normalColor = Color.gray;
                 cb.selectedColor = Color.gray;
@@ -526,10 +526,10 @@ public class UiManager : MonoBehaviour
                 cb.selectedColor = Color.white;
             }
             toggleTilesNameBtn.colors = cb;
-            GameManager.gm.AppendLogLine($"Tiles name toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -537,23 +537,23 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTilesColor()
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
-        Room currentRoom = GameManager.gm.currentItems[0].GetComponent<Room>();
+        Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
         if (currentRoom)
         {
-            if (!GameManager.gm.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
+            if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
-                GameManager.gm.AppendLogLine($"There is no template for {currentRoom.name}", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", false, eLogtype.warning);
                 return;
             }
             currentRoom.ToggleTilesColor();
             ColorBlock cb = toggleTilesColorBtn.colors;
-            if (currentRoom.transform.Find("tilesColorRoot") && GameManager.gm.currentItems[0].transform.Find("tilesColorRoot").gameObject.activeSelf)
+            if (currentRoom.transform.Find("tilesColorRoot") && GameManager.instance.currentItems[0].transform.Find("tilesColorRoot").gameObject.activeSelf)
             {
                 cb.normalColor = Color.gray;
                 cb.selectedColor = Color.gray;
@@ -564,10 +564,10 @@ public class UiManager : MonoBehaviour
                 cb.selectedColor = Color.white;
             }
             toggleTilesColorBtn.colors = cb;
-            GameManager.gm.AppendLogLine($"Tiles color toggled for {GameManager.gm.currentItems[0].name}.", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.currentItems[0].name}.", false, eLogtype.success);
         }
         else
-            GameManager.gm.AppendLogLine("Selected item must be a room", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", false, eLogtype.error);
     }
 
     ///<summary>
@@ -575,10 +575,10 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.gm.currentItems.Count > 0)
+        if (GameManager.instance.currentItems.Count > 0)
         {
-            UHelpersManager.um.ToggleU(GameManager.gm.currentItems[0].transform);
-            Transform _transform = GameManager.gm.currentItems[0].transform;
+            UHelpersManager.um.ToggleU(GameManager.instance.currentItems[0].transform);
+            Transform _transform = GameManager.instance.currentItems[0].transform;
             while (_transform != null)
             {
                 if (_transform.GetComponent<Rack>())
@@ -608,13 +608,13 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void GuiToggleCS()
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
-        foreach (GameObject obj in GameManager.gm.currentItems)
+        foreach (GameObject obj in GameManager.instance.currentItems)
         {
             if (obj.GetComponent<OObject>())
             {
@@ -622,7 +622,7 @@ public class UiManager : MonoBehaviour
             }
         }
         ColorBlock cb = toggleLocalCSBtn.colors;
-        if (GameManager.gm.currentItems[0].transform.Find("localCS") && GameManager.gm.currentItems[0].transform.Find("localCS").gameObject.activeSelf)
+        if (GameManager.instance.currentItems[0].transform.Find("localCS") && GameManager.instance.currentItems[0].transform.Find("localCS").gameObject.activeSelf)
         {
             cb.normalColor = Color.gray;
             cb.selectedColor = Color.gray;
@@ -645,7 +645,7 @@ public class UiManager : MonoBehaviour
             ApiManager.instance.isInit = false;
             ChangeApiButton("Connect to Api", Color.white);
             apiUrl.text = "";
-            GameManager.gm.AppendLogLine("Disconnected from API", true, eLogtype.success);
+            GameManager.instance.AppendLogLine("Disconnected from API", true, eLogtype.success);
         }
         else
             await ApiManager.instance.Initialize();
@@ -656,8 +656,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void FocusSelected()
     {
-        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OObject>())
-            await GameManager.gm.FocusItem(GameManager.gm.currentItems[0]);
+        if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OObject>())
+            await GameManager.instance.FocusItem(GameManager.instance.currentItems[0]);
     }
 
     ///<summary>
@@ -665,8 +665,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void UnfocusSelected()
     {
-        if (GameManager.gm.focus.Count > 0)
-            await GameManager.gm.UnfocusItem();
+        if (GameManager.instance.focus.Count > 0)
+            await GameManager.instance.UnfocusItem();
     }
 
     ///<summary>
@@ -674,17 +674,17 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void EditFocused()
     {
-        if (GameManager.gm.editMode)
+        if (GameManager.instance.editMode)
         {
-            GameManager.gm.editMode = false;
-            EventManager.Instance.Raise(new EditModeOutEvent() { obj = GameManager.gm.currentItems[0] });
-            Debug.Log($"Edit out: {GameManager.gm.currentItems[0]}");
+            GameManager.instance.editMode = false;
+            EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.currentItems[0] });
+            Debug.Log($"Edit out: {GameManager.instance.currentItems[0]}");
         }
         else
         {
-            GameManager.gm.editMode = true;
-            EventManager.Instance.Raise(new EditModeInEvent() { obj = GameManager.gm.currentItems[0] });
-            Debug.Log($"Edit in: {GameManager.gm.currentItems[0]}");
+            GameManager.instance.editMode = true;
+            EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.currentItems[0] });
+            Debug.Log($"Edit in: {GameManager.instance.currentItems[0]}");
         }
     }
 
@@ -693,7 +693,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        GameObject obj = GameManager.gm.currentItems[0];
+        GameObject obj = GameManager.instance.currentItems[0];
         if (obj)
             obj.GetComponent<OgreeObject>().ResetTransform();
     }
@@ -703,7 +703,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetChildrenTransforms()
     {
-        GameObject obj = GameManager.gm.currentItems[0];
+        GameObject obj = GameManager.instance.currentItems[0];
         if (obj)
         {
             foreach (Transform child in obj.transform)
@@ -719,10 +719,10 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void SelectParentItem()
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
             return;
 
-        await GameManager.gm.SetCurrentItem(GameManager.gm.currentItems[0].transform.parent?.gameObject);
+        await GameManager.instance.SetCurrentItem(GameManager.instance.currentItems[0].transform.parent?.gameObject);
     }
 
     ///<summary>
@@ -733,13 +733,13 @@ public class UiManager : MonoBehaviour
     {
         if (_value)
         {
-            GameManager.gm.writeLogs = true;
-            GameManager.gm.AppendLogLine("Enable CLI", false, eLogtype.success);
+            GameManager.instance.writeLogs = true;
+            GameManager.instance.AppendLogLine("Enable CLI", false, eLogtype.success);
         }
         else
         {
-            GameManager.gm.AppendLogLine("Disable CLI", false, eLogtype.success);
-            GameManager.gm.writeLogs = false;
+            GameManager.instance.AppendLogLine("Disable CLI", false, eLogtype.success);
+            GameManager.instance.writeLogs = false;
         }
     }
 
@@ -749,7 +749,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.Instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.ELabelMode)_value });
+        EventManager.instance.Raise(new ToggleLabelEvent() { value = (ToggleLabelEvent.ELabelMode)_value });
         mouseName.gameObject.SetActive(_value == 2);
     }
 
@@ -758,14 +758,14 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ClearCache()
     {
-        DirectoryInfo dir = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
         {
             if (file.Name != "log.txt")
                 file.Delete();
         }
-        GameManager.gm.AppendLogLine($"Cache cleared at \"{GameManager.gm.configLoader.GetCacheDir()}\"", true, eLogtype.success);
-        GameManager.gm.PurgeTemplates();
+        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", true, eLogtype.success);
+        GameManager.instance.PurgeTemplates();
     }
 
     ///<summary>
@@ -773,15 +773,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void ReloadFile()
     {
-        await GameManager.gm.SetCurrentItem(null);
-        GameManager.gm.focus.Clear();
+        await GameManager.instance.SetCurrentItem(null);
+        GameManager.instance.focus.Clear();
         UpdateFocusText();
 
-        await GameManager.gm.PurgeTenants();
-        GameManager.gm.allItems.Clear();
-        GameManager.gm.PurgeTemplates();
-        GameManager.gm.consoleController.variables.Clear();
-        GameManager.gm.consoleController.ResetCounts();
+        await GameManager.instance.PurgeTenants();
+        GameManager.instance.allItems.Clear();
+        GameManager.instance.PurgeTemplates();
+        GameManager.instance.consoleController.variables.Clear();
+        GameManager.instance.consoleController.ResetCounts();
         StartCoroutine(LoadFile());
     }
 
@@ -791,7 +791,7 @@ public class UiManager : MonoBehaviour
     private IEnumerator LoadFile()
     {
         yield return new WaitForEndOfFrame();
-        GameManager.gm.consoleController.RunCommandString($".cmds:{GameManager.gm.lastCmdFilePath}");
+        GameManager.instance.consoleController.RunCommandString($".cmds:{GameManager.instance.lastCmdFilePath}");
     }
 
     ///<summary>
@@ -799,15 +799,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void ToggleTempBarChart()
     {
-        if (GameManager.gm.currentItems.Count == 1 && GameManager.gm.currentItems[0].GetComponent<Room>())
-            TempDiagram.instance.HandleTempBarChart(GameManager.gm.currentItems[0].GetComponent<Room>());
-        else if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
+        if (GameManager.instance.currentItems.Count == 1 && GameManager.instance.currentItems[0].GetComponent<Room>())
+            TempDiagram.instance.HandleTempBarChart(GameManager.instance.currentItems[0].GetComponent<Room>());
+        else if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
         {
             TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
-            await GameManager.gm.SetCurrentItem(null);
+            await GameManager.instance.SetCurrentItem(null);
         }
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room", true, eLogtype.warning);
     }
 
     ///<summary>
@@ -815,8 +815,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void TempColorMode(bool _value)
     {
-        GameManager.gm.tempMode = _value;
-        EventManager.Instance.Raise(new TemperatureColorEvent());
+        GameManager.instance.tempMode = _value;
+        EventManager.instance.Raise(new TemperatureColorEvent());
         UpdateGuiInfos();
     }
 
@@ -826,10 +826,10 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTempScatterPlot()
     {
-        if (GameManager.gm.currentItems.Count == 1 && (GameManager.gm.currentItems[0].GetComponent<OObject>() || GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "room"))
-            TempDiagram.instance.HandleScatterPlot(GameManager.gm.currentItems[0].GetComponent<OgreeObject>());
+        if (GameManager.instance.currentItems.Count == 1 && (GameManager.instance.currentItems[0].GetComponent<OObject>() || GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "room"))
+            TempDiagram.instance.HandleScatterPlot(GameManager.instance.currentItems[0].GetComponent<OgreeObject>());
         else
-            GameManager.gm.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", true, eLogtype.warning);
     }
 
 
@@ -838,19 +838,19 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleHeatMap()
     {
-        if (GameManager.gm.currentItems.Count == 1)
+        if (GameManager.instance.currentItems.Count == 1)
         {
-            OObject oObject = GameManager.gm.currentItems[0].GetComponent<OObject>();
+            OObject oObject = GameManager.instance.currentItems[0].GetComponent<OObject>();
             if (oObject && oObject.category == "device")
-                if (DepthCheck(GameManager.gm.currentItems[0].GetComponent<OgreeObject>()) <= 1)
-                    TempDiagram.instance.HandleHeatMap(GameManager.gm.currentItems[0].GetComponent<OObject>());
+                if (DepthCheck(GameManager.instance.currentItems[0].GetComponent<OgreeObject>()) <= 1)
+                    TempDiagram.instance.HandleHeatMap(GameManager.instance.currentItems[0].GetComponent<OObject>());
                 else
-                    GameManager.gm.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
+                    GameManager.instance.AppendLogLine("This device has too many nested children levels", true, eLogtype.warning);
             else
-                GameManager.gm.AppendLogLine("You have to select a device", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine("You have to select a device", true, eLogtype.warning);
         }
         else
-            GameManager.gm.AppendLogLine("You have to select one device", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one device", true, eLogtype.warning);
     }
 
     /// <summary>

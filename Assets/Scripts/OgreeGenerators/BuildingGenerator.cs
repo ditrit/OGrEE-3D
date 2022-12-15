@@ -19,9 +19,9 @@ public class BuildingGenerator
             hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         else
             hierarchyName = _bd.name;
-        if (GameManager.gm.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -30,7 +30,7 @@ public class BuildingGenerator
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
-        GameObject newBD = Object.Instantiate(GameManager.gm.buildingModel);
+        GameObject newBD = Object.Instantiate(GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
         newBD.transform.localEulerAngles = Vector3.zero;
@@ -49,7 +49,7 @@ public class BuildingGenerator
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        GameManager.gm.allItems.Add(hierarchyName, newBD);
+        GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;
     }
 
@@ -66,20 +66,20 @@ public class BuildingGenerator
             hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         else
             hierarchyName = _ro.name;
-        if (GameManager.gm.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
         ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
         if (!string.IsNullOrEmpty(_ro.attributes["template"]))
         {
-            if (GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
-                template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
+            if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
+                template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, eLogtype.error);
                 return null;
             }
         }
@@ -91,9 +91,9 @@ public class BuildingGenerator
 
         GameObject newRoom;
         if (template.vertices != null)
-            newRoom = Object.Instantiate(GameManager.gm.nonConvexRoomModel);
+            newRoom = Object.Instantiate(GameManager.instance.nonConvexRoomModel);
         else
-            newRoom = Object.Instantiate(GameManager.gm.roomModel);
+            newRoom = Object.Instantiate(GameManager.instance.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = _parent;
 
@@ -163,7 +163,7 @@ public class BuildingGenerator
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-        GameManager.gm.allItems.Add(hierarchyName, newRoom);
+        GameManager.instance.allItems.Add(hierarchyName, newRoom);
 
         if (template.vertices == null)
         {

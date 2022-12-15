@@ -33,14 +33,14 @@ public class CameraControl : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocus);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.instance.AddListener<OnFocusEvent>(OnFocus);
+        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocus);
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocus);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocus);
+        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
     }
 
     private void Update()
@@ -153,10 +153,10 @@ public class CameraControl : MonoBehaviour
     private void FreeModeControls()
     {
         float moveSpeed;
-        if (GameManager.gm.focus.Count > 0)
+        if (GameManager.instance.focus.Count > 0)
         {
             moveSpeed = Vector3.Distance(Camera.main.transform.position,
-                                                GameManager.gm.focus[GameManager.gm.focus.Count - 1].transform.position);
+                                                GameManager.instance.focus[GameManager.instance.focus.Count - 1].transform.position);
         }
         else
             moveSpeed = defaultMoveSpeed;
@@ -272,7 +272,7 @@ public class CameraControl : MonoBehaviour
     ///<param name="_e">The raised event</param>
     private void OnUnFocus(OnUnFocusEvent _e)
     {
-        if (GameManager.gm.focus.Count == 0)
+        if (GameManager.instance.focus.Count == 0)
         {
             transform.position = labeledTransforms[0].pos;
             transform.eulerAngles = labeledTransforms[0].rot;
@@ -295,7 +295,7 @@ public class CameraControl : MonoBehaviour
         }
         else
         {
-            newTrans.label = GameManager.gm.focus[GameManager.gm.focus.Count - 2].name;
+            newTrans.label = GameManager.instance.focus[GameManager.instance.focus.Count - 2].name;
             newTrans.pos = transform.position;
             newTrans.rot = transform.eulerAngles;
         }

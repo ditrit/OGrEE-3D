@@ -30,7 +30,7 @@ public class ModelLoader : MonoBehaviour
     {
         isLocked = true;
 
-        Uri filePath = new Uri($"{GameManager.gm.configLoader.GetCacheDir()}/{_object.name}.fbx");
+        Uri filePath = new Uri($"{GameManager.instance.configLoader.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
@@ -63,15 +63,15 @@ public class ModelLoader : MonoBehaviour
     ///<param name="_filePath">The path to write the file</param>
     private async Task DownloadFile(string _url, string _filePath)
     {
-        DirectoryInfo info = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        DirectoryInfo info = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
         float totalSize = 0;
         foreach (FileInfo file in info.EnumerateFiles())
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
 
-        if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
+        if (sizeMo > GameManager.instance.configLoader.GetCacheLimit())
         {
-            GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, eLogtype.warning);
             return;
         }
 
@@ -84,7 +84,7 @@ public class ModelLoader : MonoBehaviour
             }
             catch (System.Exception _e)
             {
-                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Error while downloading file: {_e.Message}", true, eLogtype.error);
                 File.Delete(_filePath);
             }
         }

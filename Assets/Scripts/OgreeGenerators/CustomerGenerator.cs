@@ -11,9 +11,9 @@ public class CustomerGenerator
     ///<returns>The created Tenant</returns>
     public OgreeObject CreateTenant(SApiObject _tn)
     {
-        if (GameManager.gm.allItems.Contains(_tn.name))
+        if (GameManager.instance.allItems.Contains(_tn.name))
         {
-            GameManager.gm.AppendLogLine($"{_tn.name} already exists.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", true, eLogtype.error);
             return null;
         }
 
@@ -22,7 +22,7 @@ public class CustomerGenerator
         tenant.hierarchyName = _tn.name;
         tenant.UpdateFromSApiObject(_tn);
 
-        GameManager.gm.allItems.Add(_tn.name, newTenant);
+        GameManager.instance.allItems.Add(_tn.name, newTenant);
         return tenant;
     }
 
@@ -39,9 +39,9 @@ public class CustomerGenerator
             hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
         else
             hierarchyName = _si.name;
-        if (GameManager.gm.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
             return null;
         }
 
@@ -68,7 +68,7 @@ public class CustomerGenerator
                 break;
         }
 
-        GameManager.gm.allItems.Add(hierarchyName, newSite);
+        GameManager.instance.allItems.Add(hierarchyName, newSite);
         return site;
     }
 }

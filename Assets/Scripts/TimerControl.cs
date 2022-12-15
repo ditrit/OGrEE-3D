@@ -23,7 +23,7 @@ public class TimerControl : MonoBehaviour
     {
         slider.value = _value;
         consoleController.timerValue = _value;
-        GameManager.gm.server.timer = (int)(_value);
+        GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
     }
 }

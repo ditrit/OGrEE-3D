@@ -33,7 +33,7 @@ public class TempDiagram : MonoBehaviour
             instance = this;
         else
             Destroy(this);
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     ///<summary>
@@ -42,7 +42,7 @@ public class TempDiagram : MonoBehaviour
     ///<param name="e">The event's instance</param>
     void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isDiagramShown && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
+        if (isDiagramShown && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
             HandleTempBarChart(lastRoom);
         if (isScatterPlotShown)
             HandleScatterPlot(lastScatterPlot);
@@ -88,7 +88,7 @@ public class TempDiagram : MonoBehaviour
             case "mm":
                 roomHeight /= 1000; break;
             default:
-                GameManager.gm.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
+                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
         }
 
         string tempUnit = "";
@@ -97,7 +97,7 @@ public class TempDiagram : MonoBehaviour
             tempUnit = site.attributes["temperatureUnit"];
 
 
-        EventManager.Instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
+        EventManager.instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
 
         if (!isDiagramShown)
         {
@@ -134,13 +134,13 @@ public class TempDiagram : MonoBehaviour
         STemp tempInfos = _oobject.GetTemperatureInfos();
         if (!(tempInfos.mean is float.NaN))
         {
-            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(_tempUnit);
+            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(_tempUnit);
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);
             float heigthStd = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, _roomheight);
             float yBase = _oobject.transform.parent.position.y + 0.01f;
 
 
-            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
@@ -152,7 +152,7 @@ public class TempDiagram : MonoBehaviour
             if (tempInfos.std != 0)
             {
 
-                GameObject sensorBarStd = Instantiate(GameManager.gm.sensorBarStdModel, _oobject.transform);
+                GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _oobject.transform);
                 sensorBarStd.transform.position = new Vector3(_oobject.transform.position.x, yBase + height, _oobject.transform.position.z);
                 sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
@@ -170,7 +170,7 @@ public class TempDiagram : MonoBehaviour
             float height = _roomheight / 2;
 
             float yBase = _oobject.transform.parent.position.y + 0.01f;
-            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
@@ -193,7 +193,7 @@ public class TempDiagram : MonoBehaviour
     public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
         lastScatterPlot = _ogreeObject;
-        EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
+        EventManager.instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
 
         GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !isScatterPlotShown);
 
@@ -236,7 +236,7 @@ public class TempDiagram : MonoBehaviour
             sensorPos = Quaternion.Inverse(heatmap.transform.rotation) * sensorPos;
             sensorPos.Scale(new Vector3(1 / heatmap.transform.lossyScale.x, 1 / heatmap.transform.lossyScale.y, 1 / heatmap.transform.lossyScale.z));
             sensorPositions[i] = new Vector4(sensorPos.x, sensorPos.y, 0, 0);
-            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
+            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
             float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, intensityMin, intensityMax);
             sensorProperties[i] = new Vector4(objTransform.localScale.sqrMagnitude * radiusRatio, intensity, 0, 0);
         }

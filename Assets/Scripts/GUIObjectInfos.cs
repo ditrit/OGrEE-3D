@@ -83,7 +83,7 @@ public class GUIObjectInfos : MonoBehaviour
         tmpName.text = _obj.hierarchyName;
         if (!string.IsNullOrEmpty(_obj.domain))
         {
-            OgreeObject domain = ((GameObject)GameManager.gm.allItems[_obj.domain]).GetComponent<OgreeObject>();
+            OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpTenantName.text = domain.name;
             tmpTenantContact.text = IfInDictionary(domain.attributes, "mainContact");
             tmpTenantPhone.text = IfInDictionary(domain.attributes, "mainPhone");
@@ -92,7 +92,7 @@ public class GUIObjectInfos : MonoBehaviour
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
-        if (GameManager.gm.tempMode && _obj is OObject @object)
+        if (GameManager.instance.tempMode && _obj is OObject @object)
         {
             STemp tempInfos = @object.GetTemperatureInfos();
             tmpAttributes.text += $"<b>average:</b> {tempInfos.mean} {tempInfos.unit}\n";

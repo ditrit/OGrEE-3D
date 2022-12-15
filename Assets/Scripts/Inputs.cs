@@ -32,7 +32,7 @@ public class Inputs : MonoBehaviour
         if (!isDragging && !isRotating && !isScaling)
             target = Utils.RaycastFromCameraToMouse()?.transform;
 
-        if (GameManager.gm.editMode)
+        if (GameManager.instance.editMode)
         {
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
             {
@@ -75,7 +75,7 @@ public class Inputs : MonoBehaviour
 
             if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
             {
-                if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == target.parent.gameObject)
+                if (GameManager.instance.focus.Count > 0 && GameManager.instance.focus[GameManager.instance.focus.Count -1] == target.parent.gameObject)
                 {
                     isDragging = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
@@ -111,14 +111,14 @@ public class Inputs : MonoBehaviour
         coroutineAllowed = false;
         while (Time.time < _firstClickTime + doubleClickTimeLimit)
         {
-            if (clickCount == 2 && !GameManager.gm.editMode)
+            if (clickCount == 2 && !GameManager.instance.editMode)
             {
                 ClickFocus();
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !GameManager.gm.editMode)
+        if (clickCount == 1 && !GameManager.instance.editMode)
             ClickSelect();
         clickCount = 0;
         coroutineAllowed = true;
@@ -133,23 +133,23 @@ public class Inputs : MonoBehaviour
         if (target && target.tag == "Selectable")
         {
             bool canSelect = false;
-            if (GameManager.gm.focus.Count > 0)
-                canSelect = GameManager.gm.IsInFocus(target.gameObject);
+            if (GameManager.instance.focus.Count > 0)
+                canSelect = GameManager.instance.IsInFocus(target.gameObject);
             else
                 canSelect = true;
 
             if (canSelect)
             {
-                if (Input.GetKey(KeyCode.LeftControl) && GameManager.gm.currentItems.Count > 0)
-                    await GameManager.gm.UpdateCurrentItems(target.gameObject);
+                if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.currentItems.Count > 0)
+                    await GameManager.instance.UpdateCurrentItems(target.gameObject);
                 else
-                    await GameManager.gm.SetCurrentItem(target.gameObject);
+                    await GameManager.instance.SetCurrentItem(target.gameObject);
             }
         }
-        else if (GameManager.gm.focus.Count > 0)
-            await GameManager.gm.SetCurrentItem(GameManager.gm.focus[GameManager.gm.focus.Count - 1]);
+        else if (GameManager.instance.focus.Count > 0)
+            await GameManager.instance.SetCurrentItem(GameManager.instance.focus[GameManager.instance.focus.Count - 1]);
         else
-            await GameManager.gm.SetCurrentItem(null);
+            await GameManager.instance.SetCurrentItem(null);
     }
 
     ///<summary>
@@ -163,12 +163,12 @@ public class Inputs : MonoBehaviour
                 target.GetComponent<Group>().ToggleContent("true");
             else
             {
-                await GameManager.gm.SetCurrentItem(target.gameObject);
-                await GameManager.gm.FocusItem(target.gameObject);
+                await GameManager.instance.SetCurrentItem(target.gameObject);
+                await GameManager.instance.FocusItem(target.gameObject);
             }
         }
-        else if (GameManager.gm.focus.Count > 0)
-            await GameManager.gm.UnfocusItem();
+        else if (GameManager.instance.focus.Count > 0)
+            await GameManager.instance.UnfocusItem();
     }
 
     ///<summary>
@@ -190,16 +190,16 @@ public class Inputs : MonoBehaviour
             if (!target.Equals(savedObjectThatWeHover))
             {
                 if (savedObjectThatWeHover)
-                    EventManager.Instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                    EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
 
                 savedObjectThatWeHover = target.gameObject;
-                EventManager.Instance.Raise(new OnMouseHoverEvent { obj = target.gameObject });
+                EventManager.instance.Raise(new OnMouseHoverEvent { obj = target.gameObject });
             }
         }
         else
         {
             if (savedObjectThatWeHover)
-                EventManager.Instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
             savedObjectThatWeHover = null;
         }
     }

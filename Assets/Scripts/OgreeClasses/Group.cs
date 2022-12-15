@@ -112,7 +112,7 @@ public class Group : OObject
 
         foreach (string rn in names)
         {
-            GameObject go = GameManager.gm.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
+            GameObject go = GameManager.instance.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
             if (go)
                 content.Add(go);
         }
@@ -125,6 +125,6 @@ public class Group : OObject
     private IEnumerator ImportFinished()
     {
         yield return new WaitForEndOfFrame();
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+        EventManager.instance.Raise(new ImportFinishedEvent());
     }
 }

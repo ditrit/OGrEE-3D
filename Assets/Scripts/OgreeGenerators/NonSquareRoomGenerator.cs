@@ -167,7 +167,7 @@ public static class NonSquareRoomGenerator
                 float z = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
-                GameObject tile = Object.Instantiate(GameManager.gm.tileModel, floor);
+                GameObject tile = Object.Instantiate(GameManager.instance.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
                 tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
             }

@@ -108,7 +108,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         CreateRoomTemplate(roomData);
@@ -120,10 +120,10 @@ public class ReadFromJson
     ///<param name="_json">Json to parse</param>
     public void CreateRoomTemplate(SRoomFromJson _data)
     {
-        if (GameManager.gm.roomTemplates.ContainsKey(_data.slug))
+        if (GameManager.instance.roomTemplates.ContainsKey(_data.slug))
             return;
 
-        GameManager.gm.roomTemplates.Add(_data.slug, _data);
+        GameManager.instance.roomTemplates.Add(_data.slug, _data);
     }
 
     ///<summary>
@@ -139,7 +139,7 @@ public class ReadFromJson
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
             return;
         }
         await CreateObjectTemplate(data);
@@ -153,12 +153,12 @@ public class ReadFromJson
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
             return;
         }
-        if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
+        if (GameManager.instance.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
             return;
         }
 
@@ -188,7 +188,7 @@ public class ReadFromJson
             if (_data.attributes.ContainsKey("type")
                 && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.instance.uSize);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
@@ -209,13 +209,13 @@ public class ReadFromJson
         OgreeObject newObject;
         if (obj.category == "rack")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder);
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
@@ -275,8 +275,8 @@ public class ReadFromJson
             r.enabled = false;
         newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 #endif
-        GameManager.gm.allItems.Remove(newObject.hierarchyName);
-        GameManager.gm.objectTemplates.Add(newObject.name, newObject.gameObject);
+        GameManager.instance.allItems.Remove(newObject.hierarchyName);
+        GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
     }
 
     ///<summary>
@@ -289,7 +289,7 @@ public class ReadFromJson
     private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent,
                                 Dictionary<string, string> _customColors)
     {
-        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
+        GameObject go = MonoBehaviour.Instantiate(GameManager.instance.labeledBoxModel);
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
         Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
@@ -354,7 +354,7 @@ public class ReadFromJson
             dod.SetLabelFont("color@888888");
         dod.SetLabel("#name");
 
-        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.defaultMat;
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
         Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
@@ -363,7 +363,7 @@ public class ReadFromJson
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
         {
-            rend.material = GameManager.gm.alphaMat;
+            rend.material = GameManager.instance.alphaMat;
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
         }
         else
@@ -383,12 +383,12 @@ public class ReadFromJson
         GameObject newSensor;
         if (_sensor.elemSize.Length == 1)
         {
-            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.instance.sensorIntModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * _sensor.elemSize[0] * Vector3.one;
         }
         else
         {
-            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * new Vector3(_sensor.elemSize[0], _sensor.elemSize[1], _sensor.elemSize[2]);
         }
         newSensor.name = _sensor.location;
@@ -414,7 +414,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }
@@ -438,7 +438,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }
@@ -462,7 +462,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
                 }
                 break;
         }

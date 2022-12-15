@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    static public GameManager gm;
+    static public GameManager instance;
     public ConsoleController consoleController;
     public Server server;
     public ConfigLoader configLoader = new ConfigLoader();
@@ -64,11 +64,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (!gm)
-            gm = this;
+        if (!instance)
+            instance = this;
         else
             Destroy(this);
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         server.StartServer();
         StartCoroutine(configLoader.LoadTextures());
@@ -165,7 +165,7 @@ public class GameManager : MonoBehaviour
             if (_obj)
                 currentItems.Add(_obj);
 
-            EventManager.Instance.Raise(new OnSelectItemEvent());
+            EventManager.instance.Raise(new OnSelectItemEvent());
         }
         catch (System.Exception _e)
         {
@@ -222,7 +222,7 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
             currentItems.Add(_obj);
         }
-        EventManager.Instance.Raise(new OnSelectItemEvent());
+        EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
@@ -251,7 +251,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
-            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
             await UnfocusItem();
@@ -265,10 +265,10 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
 
-        EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
         {
-            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
             await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
@@ -501,7 +501,7 @@ public class GameManager : MonoBehaviour
         if (!string.IsNullOrEmpty(lastCmdFilePath))
         {
             UiManager.instance.SetReloadBtn(_value);
-            EventManager.Instance.Raise(new ImportFinishedEvent());
+            EventManager.instance.Raise(new ImportFinishedEvent());
         }
     }
 

@@ -25,14 +25,14 @@ public class UHelpersManager : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelect);
+        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelect);
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelect);
+        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelect);
     }
 
     ///<summary>
@@ -42,7 +42,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;
-        ToggleU(GameManager.gm.currentItems[0].transform, false);
+        ToggleU(GameManager.instance.currentItems[0].transform, false);
     }
 
     ///<summary>
@@ -51,9 +51,9 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
+        if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
         {
-            ToggleU(GameManager.gm.currentItems[0].transform, true);
+            ToggleU(GameManager.instance.currentItems[0].transform, true);
             HighlightULocation();
         }
     }
@@ -64,10 +64,10 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     private async void HighlightULocation()
     {
-        string category = GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category;
+        string category = GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category;
         if (category == "rack")
         {
-            Transform t = GameManager.gm.currentItems[0].transform;
+            Transform t = GameManager.instance.currentItems[0].transform;
             while (!t.GetComponent<Rack>().uRoot)
                 await Task.Delay(50);
             GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
@@ -82,7 +82,7 @@ public class UHelpersManager : MonoBehaviour
                 return;
 
             float difference;
-            Transform t = GameManager.gm.currentItems[0].transform.GetChild(0);
+            Transform t = GameManager.instance.currentItems[0].transform.GetChild(0);
             float center = t.position.y;
 
             if (t.GetComponent<BoxCollider>().enabled)
@@ -94,7 +94,7 @@ public class UHelpersManager : MonoBehaviour
                 t.GetComponent<BoxCollider>().enabled = false;
             }
 
-            t = GameManager.gm.currentItems[0].transform;
+            t = GameManager.instance.currentItems[0].transform;
             float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
             float lowerBound = center - difference - delta;
             float upperBound = center + difference - delta;
@@ -171,9 +171,9 @@ public class UHelpersManager : MonoBehaviour
     ///</summary>
     public void ToggleU(Transform _transform)
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
-            GameManager.gm.AppendLogLine("Empty selection.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", false, eLogtype.warning);
             return;
         }
 
@@ -185,17 +185,17 @@ public class UHelpersManager : MonoBehaviour
                 if (!uRoot)
                 {
                     GenerateUHelpers(_transform.GetComponent<Rack>());
-                    GameManager.gm.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
                 }
                 else if (uRoot.gameObject.activeSelf == false)
                 {
                     uRoot.gameObject.SetActive(true);
-                    GameManager.gm.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, eLogtype.info);
                 }
                 else
                 {
                     uRoot.gameObject.SetActive(false);
-                    GameManager.gm.AppendLogLine($"U helpers OFF for {_transform.name}.", false, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, eLogtype.info);
                 }
                 return;
             }
@@ -237,12 +237,12 @@ public class UHelpersManager : MonoBehaviour
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
 
         // By default, attributes["heightUnit"] == "U"
-        float scale = GameManager.gm.uSize;
+        float scale = GameManager.instance.uSize;
         int max = (int)Utils.ParseDecFrac(_rack.attributes["height"]);
         if (_rack.attributes["heightUnit"] == "OU")
-            scale = GameManager.gm.ouSize;
+            scale = GameManager.instance.ouSize;
         else if (_rack.attributes["heightUnit"] == "cm")
-            max = Mathf.FloorToInt(Utils.ParseDecFrac(_rack.attributes["height"]) / (GameManager.gm.uSize * 100));
+            max = Mathf.FloorToInt(Utils.ParseDecFrac(_rack.attributes["height"]) / (GameManager.instance.uSize * 100));
 
         if (!string.IsNullOrEmpty(_rack.attributes["template"]))
         {
@@ -278,7 +278,7 @@ public class UHelpersManager : MonoBehaviour
 
         for (int i = 1; i <= max; i++)
         {
-            Transform obj = Instantiate(GameManager.gm.uLocationModel).transform;
+            Transform obj = Instantiate(GameManager.instance.uLocationModel).transform;
             obj.name = $"{_corner}_u{i}";
             obj.GetComponentInChildren<TextMeshPro>().text = i.ToString();
             obj.parent = _rack.uRoot;
@@ -318,12 +318,12 @@ public class UHelpersManager : MonoBehaviour
     ///</summary>
     public void ResetUHelpers()
     {
-        if (GameManager.gm.editMode)
+        if (GameManager.instance.editMode)
             return;
-        if (!Utils.IsObjectMoved(GameManager.gm.focus[GameManager.gm.focus.Count - 1].GetComponent<OgreeObject>()))
+        if (!Utils.IsObjectMoved(GameManager.instance.focus[GameManager.instance.focus.Count - 1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
-            ToggleU(GameManager.gm.currentItems[0].transform, true);
+            ToggleU(GameManager.instance.currentItems[0].transform, true);
         }
     }
 

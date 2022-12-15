@@ -27,7 +27,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (Utils.GetObjectById(_obj.id))
         {
-            GameManager.gm.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
+            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", false, eLogtype.info);
             ResetCoroutine();
             return null;
         }
@@ -35,18 +35,18 @@ public class OgreeGenerator : MonoBehaviour
         OgreeObject newItem;
         // Get dependencies from API
         if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
-            && !GameManager.gm.allItems.Contains(_obj.domain))
+            && !GameManager.instance.allItems.Contains(_obj.domain))
             await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
 
         if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
-            && !GameManager.gm.roomTemplates.ContainsKey(_obj.attributes["template"]))
+            && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         if ((_obj.category == "rack" || _obj.category == "device") && !string.IsNullOrEmpty(_obj.attributes["template"])
-            && !GameManager.gm.objectTemplates.ContainsKey(_obj.attributes["template"]))
+            && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
@@ -58,25 +58,25 @@ public class OgreeGenerator : MonoBehaviour
         {
             if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
             {
-                GameManager.gm.AppendLogLine("Unable to draw a basic device without its parent.", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", true, eLogtype.errorCli);
                 return null;
             }
             if (_obj.category == "corridor" || _obj.category == "group")
             {
-                GameManager.gm.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, eLogtype.errorCli);
                 return null;
             }
 
-            if (_obj.category != "tenant" && GameManager.gm.objectRoot)
+            if (_obj.category != "tenant" && GameManager.instance.objectRoot)
             {
                 Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
                 while (prompt.state == EPromptStatus.wait)
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
-                    Destroy(GameManager.gm.objectRoot);
-                    await GameManager.gm.PurgeTenants(_obj.domain);
-                    GameManager.gm.objectRoot = null;
+                    Destroy(GameManager.instance.objectRoot);
+                    await GameManager.instance.PurgeTenants(_obj.domain);
+                    GameManager.instance.objectRoot = null;
                     UiManager.instance.DeletePrompt(prompt);
                 }
                 else //if (prompt.state == EPromptResp.refuse)
@@ -115,16 +115,16 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             default:
                 newItem = null;
-                GameManager.gm.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", true, eLogtype.error);
                 break;
         }
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != "tenant" && !GameManager.gm.objectRoot
-                && !(parent == GameManager.gm.templatePlaceholder || parent == GameManager.gm.templatePlaceholder.GetChild(0)))
+            if (newItem.category != "tenant" && !GameManager.instance.objectRoot
+                && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
-                GameManager.gm.objectRoot = newItem.gameObject;
+                GameManager.instance.objectRoot = newItem.gameObject;
                 GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
             }
 
@@ -160,8 +160,8 @@ public class OgreeGenerator : MonoBehaviour
     private IEnumerator WaitAndRaiseEvent()
     {
         yield return new WaitForSeconds(1f);
-        EventManager.Instance.Raise(new ImportFinishedEvent());
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ImportFinishedEvent());
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         // Debug.Log("[] event raised !");
     }
 }

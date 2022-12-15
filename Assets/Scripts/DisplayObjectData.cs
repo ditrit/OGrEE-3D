@@ -26,13 +26,13 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private CameraControl cc;
     private void Start()
     {
-        EventManager.Instance.AddListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.AddListener<ToggleLabelEvent>(ToggleLabel);
         cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
     }
 
     private void Update()
@@ -80,7 +80,7 @@ public class DisplayObjectData : MonoBehaviour
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == "U")
-                height *= GameManager.gm.uSize;
+                height *= GameManager.instance.uSize;
             else if (oObj.attributes["heightUnit"] == "mm")
                 height /= 1000;
             else if (oObj.attributes["heightUnit"] == "cm")
@@ -183,13 +183,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.gm.AppendLogLine("Wrong description index", true, eLogtype.warning);
+                        GameManager.instance.AppendLogLine("Wrong description index", true, eLogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, eLogtype.warning);
                     return;
                 }
             }
@@ -206,7 +206,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_str == "#temperature")
                 WriteLabels($"{sensor.temperature} {sensor.temperatureUnit}");
             else
-                GameManager.gm.AppendLogLine($"Sensor can only show temperature (for now)", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", true, eLogtype.warning);
         }
     }
 
@@ -297,8 +297,8 @@ public class DisplayObjectData : MonoBehaviour
         if (GetComponent<Slot>())
             return;
 
-        if (GameManager.gm.focus.Count == 0 || GameManager.gm.focus.Contains(gameObject)
-            || GameManager.gm.focus.Contains(transform.parent.gameObject))
+        if (GameManager.instance.focus.Count == 0 || GameManager.instance.focus.Contains(gameObject)
+            || GameManager.instance.focus.Contains(transform.parent.gameObject))
             ToggleLabel(_e.value);
     }
 
@@ -322,9 +322,13 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
     }
 
+    ///<summary>
+    /// Set background color for a box label.
+    ///</summary>
+    ///<param name="_value">The color to set</param>
     public void SetBackgroundColor(string _value)
     {
         string pattern = "[0-9a-fA-F]{6}$";
@@ -333,6 +337,6 @@ public class DisplayObjectData : MonoBehaviour
             backgroundColor = _value;
         }
         else
-            GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color", true, eLogtype.warning);
     }
 }

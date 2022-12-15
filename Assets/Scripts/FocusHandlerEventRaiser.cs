@@ -9,7 +9,7 @@ public class FocusHandlerEventRaiser : MonoBehaviour
     ///</summary>
     public void FocusHandlerUpdateArrayButtonPressed()
     {
-        EventManager.Instance.Raise(new ImportFinishedEvent());
+        EventManager.instance.Raise(new ImportFinishedEvent());
     }
 
 }

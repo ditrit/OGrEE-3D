@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sensor : MonoBehaviour
 {
     public float temperature = 0f;
-    public string temperatureUnit = "°C";
+    public string temperatureUnit = "ï¿½C";
     public Color color;
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
@@ -13,13 +13,13 @@ public class Sensor : MonoBehaviour
     private void Start()
     {
         if (!fromTemplate)
-            EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+            EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
     private void OnDestroy()
     {
         if (!fromTemplate)
-            EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+            EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
     ///<summary>
     /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
@@ -53,7 +53,7 @@ public class Sensor : MonoBehaviour
     public void UpdateSensorColor()
     {
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(temperatureUnit);
+        (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(temperatureUnit);
         Texture2D text = TempDiagram.instance.heatMapGradient;
         float pixelX = Utils.MapAndClamp(temperature, tempMin, tempMax, 0, text.width);
         mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);

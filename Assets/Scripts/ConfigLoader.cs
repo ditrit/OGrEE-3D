@@ -39,11 +39,11 @@ public class ConfigLoader
         string fileType = LoadConfigFile();
         OverrideConfig();
         ApplyConfig();
-        GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
-            GameManager.gm.consoleController.RunCommandString($".cmds:{startFile}");
+            GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
     }
 
     ///<summary>
@@ -104,7 +104,7 @@ public class ConfigLoader
         }
         catch (System.Exception _e)
         {
-            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.warning);
+            GameManager.instance.AppendLogLine(_e.Message, false, eLogtype.warning);
             return "default";
         }
     }
@@ -167,13 +167,13 @@ public class ConfigLoader
     {
         verbose = config.verbose;
 
-        GameManager.gm.server.SetupPorts(config.cliPort);
+        GameManager.instance.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
-        SetMaterialColor("selection", GameManager.gm.selectMat);
-        SetMaterialColor("focus", GameManager.gm.focusMat);
-        SetMaterialColor("edit", GameManager.gm.editMat);
-        SetMaterialColor("highlight", GameManager.gm.highlightMat);
+        SetMaterialColor("selection", GameManager.instance.selectMat);
+        SetMaterialColor("focus", GameManager.instance.focusMat);
+        SetMaterialColor("edit", GameManager.instance.editMat);
+        SetMaterialColor("highlight", GameManager.instance.highlightMat);
     }
 
     ///<summary> 
@@ -183,7 +183,7 @@ public class ConfigLoader
     private void FullScreenMode(bool _value)
     {
         if (verbose)
-            GameManager.gm.AppendLogLine($"Fullscreen: {_value}", false);
+            GameManager.instance.AppendLogLine($"Fullscreen: {_value}", false);
         Screen.fullScreen = _value;
     }
 
@@ -200,7 +200,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
+                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
             }
         }
         catch (IOException ex)
@@ -258,19 +258,19 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
+                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
             else
-                GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
+                GameManager.instance.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
-        if (!GameManager.gm.textures.ContainsKey("perf22"))
+        if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
-            GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
+            GameManager.instance.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
+            GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
-        if (!GameManager.gm.textures.ContainsKey("perf29"))
+        if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
-            GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
+            GameManager.instance.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
+            GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
 
@@ -302,7 +302,7 @@ public class ConfigLoader
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == "°f")
             return (config.temperatureMinF, config.temperatureMaxF);
-        GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
         return (0, 0);
     }
 

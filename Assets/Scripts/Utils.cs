@@ -77,7 +77,7 @@ public static class Utils
             parent = _parent;
         else
         {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
                 GameObject go = (GameObject)de.Value;
                 if (go && go.GetComponent<OgreeObject>().id == _parentId)
@@ -109,7 +109,7 @@ public static class Utils
     {
         if (!string.IsNullOrEmpty(_id))
         {
-            foreach (DictionaryEntry de in GameManager.gm.allItems)
+            foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
                 GameObject obj = (GameObject)de.Value;
                 if (obj.GetComponent<OgreeObject>().id == _id)
@@ -129,7 +129,7 @@ public static class Utils
         string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
 
         List<GameObject> objects = new List<GameObject>();
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject obj = (GameObject)de.Value;
             foreach (string objId in ids)

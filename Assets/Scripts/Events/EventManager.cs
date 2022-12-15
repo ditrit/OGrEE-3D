@@ -17,20 +17,19 @@ using System.Collections.Generic;
 /// </summary>
 public class EventManager
 {
-
-    public static EventManager Instance
+    public static EventManager instance
     {
         get
         {
-            if (instance == null)
+            if (eventManagerInstance == null)
             {
-                instance = new EventManager();
+                eventManagerInstance = new EventManager();
             }
 
-            return instance;
+            return eventManagerInstance;
         }
     }
-    private static EventManager instance = null;
+    private static EventManager eventManagerInstance = null;
 
     public delegate void EventDelegate<T>(T e) where T : CustomEvent;
     private delegate void EventDelegate(CustomEvent e);

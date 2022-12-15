@@ -48,7 +48,7 @@ public class Server : MonoBehaviour
     {
         string msg = connection.incomingQueue.Dequeue();
         yield return new WaitForSeconds(timer);
-        GameManager.gm.AppendLogLine(msg, false, eLogtype.infoCli);
+        GameManager.instance.AppendLogLine(msg, false, eLogtype.infoCli);
         Task parse = parser.DeserializeInput(msg);
         yield return new WaitUntil(() => parse.IsCompleted);
         dequeueCoroutine = null;

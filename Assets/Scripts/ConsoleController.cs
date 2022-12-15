@@ -42,7 +42,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_color">The color of the line, white by default</param>
     public void AppendLogLine(string _line, string _color = "white")
     {
-        if (!GameManager.gm.writeLogs)
+        if (!GameManager.instance.writeLogs)
             return;
 
         // Troncate too long strings
@@ -89,9 +89,9 @@ public class ConsoleController : MonoBehaviour
     private void LockController()
     {
         isReady = false;
-        GameManager.gm.SetReloadBtn(false);
+        GameManager.instance.SetReloadBtn(false);
 
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 
     ///<summary>
@@ -102,7 +102,7 @@ public class ConsoleController : MonoBehaviour
         isReady = true;
         StartCoroutine(WaitAndEnableBtn());
 
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     ///<summary>
@@ -112,7 +112,7 @@ public class ConsoleController : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         if (isReady)
-            GameManager.gm.SetReloadBtn(true);
+            GameManager.instance.SetReloadBtn(true);
     }
 
     ///<summary>
@@ -143,7 +143,7 @@ public class ConsoleController : MonoBehaviour
         lastCmd = _input;
 
         _input = ApplyVariables(_input);
-        GameManager.gm.AppendLogLine("$ " + _input, false);
+        GameManager.instance.AppendLogLine("$ " + _input, false);
         if (_input == "..")
         {
             task = SelectParent();
@@ -175,7 +175,7 @@ public class ConsoleController : MonoBehaviour
         }
         else
         {
-            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
             UnlockController();
         }
         if (timerValue > 0)
@@ -193,18 +193,18 @@ public class ConsoleController : MonoBehaviour
     ///</summary>
     private async Task SelectParent()
     {
-        if (!GameManager.gm.currentItems[0])
+        if (!GameManager.instance.currentItems[0])
         {
             UnlockController();
             return;
         }
-        else if (GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
-            await GameManager.gm.SetCurrentItem(null);
+        else if (GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
+            await GameManager.instance.SetCurrentItem(null);
         else
         {
-            GameObject parent = GameManager.gm.currentItems[0].transform.parent.gameObject;
+            GameObject parent = GameManager.instance.currentItems[0].transform.parent.gameObject;
             if (parent)
-                await GameManager.gm.SetCurrentItem(parent);
+                await GameManager.instance.SetCurrentItem(parent);
         }
 
         UnlockController();
@@ -219,20 +219,20 @@ public class ConsoleController : MonoBehaviour
         Task task;
         if (string.IsNullOrEmpty(_input))
         {
-            task = GameManager.gm.SetCurrentItem(null);
+            task = GameManager.instance.SetCurrentItem(null);
             yield return new WaitUntil(() => task.IsCompleted);
             UnlockController();
             yield break;
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
         {
-            if (GameManager.gm.currentItems.Count == 0)
+            if (GameManager.instance.currentItems.Count == 0)
             {
                 UnlockController();
                 yield break;
             }
-            Transform root = GameManager.gm.currentItems[0].transform;
-            task = GameManager.gm.SetCurrentItem(null);
+            Transform root = GameManager.instance.currentItems[0].transform;
+            task = GameManager.instance.SetCurrentItem(null);
             yield return new WaitUntil(() => task.IsCompleted);
             _input = _input.Trim('{', '}');
             string[] items = _input.Split(',');
@@ -245,30 +245,30 @@ public class ConsoleController : MonoBehaviour
                 {
                     if (child.hierarchyName == items[i])
                     {
-                        if (GameManager.gm.currentItems.Count == 0)
+                        if (GameManager.instance.currentItems.Count == 0)
                         {
-                            task = GameManager.gm.SetCurrentItem(child.gameObject);
+                            task = GameManager.instance.SetCurrentItem(child.gameObject);
                             yield return new WaitUntil(() => task.IsCompleted);
                         }
                         else
                         {
-                            task = GameManager.gm.UpdateCurrentItems(child.gameObject);
+                            task = GameManager.instance.UpdateCurrentItems(child.gameObject);
                             yield return new WaitUntil(() => task.IsCompleted);
                         }
                         found = true;
                     }
                 }
                 if (!found)
-                    GameManager.gm.AppendLogLine($"\"{items[i]}\" is not a child of {root.name} or does not exist", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"\"{items[i]}\" is not a child of {root.name} or does not exist", false, eLogtype.warning);
             }
         }
-        else if (GameManager.gm.allItems.Contains(_input))
+        else if (GameManager.instance.allItems.Contains(_input))
         {
-            task = GameManager.gm.SetCurrentItem((GameObject)GameManager.gm.allItems[_input]);
+            task = GameManager.instance.SetCurrentItem((GameObject)GameManager.instance.allItems[_input]);
             yield return new WaitUntil(() => task.IsCompleted);
         }
         else
-            GameManager.gm.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.warning);
 
         yield return new WaitForEndOfFrame();
         UnlockController();
@@ -288,33 +288,33 @@ public class ConsoleController : MonoBehaviour
             if (_input.StartsWith("selection"))
             {
                 List<string> itemsToDel = new List<string>();
-                foreach (GameObject item in GameManager.gm.currentItems)
+                foreach (GameObject item in GameManager.instance.currentItems)
                     itemsToDel.Add(item.GetComponent<OgreeObject>().hierarchyName);
                 foreach (string item in itemsToDel)
                 {
                     if (data.Length > 1)
                     {
-                        task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], true);
+                        task = GameManager.instance.DeleteItem((GameObject)GameManager.instance.allItems[item], true);
                         yield return new WaitUntil(() => task.IsCompleted);
                     }
                     else
                     {
-                        task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[item], false);
+                        task = GameManager.instance.DeleteItem((GameObject)GameManager.instance.allItems[item], false);
                         yield return new WaitUntil(() => task.IsCompleted);
                     }
                 }
             }
             // Try to delete an Ogree object
-            else if (GameManager.gm.allItems.Contains(data[0]))
+            else if (GameManager.instance.allItems.Contains(data[0]))
             {
                 if (data.Length > 1)
                 {
-                    task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], true);
+                    task = GameManager.instance.DeleteItem((GameObject)GameManager.instance.allItems[data[0]], true);
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
                 else
                 {
-                    task = GameManager.gm.DeleteItem((GameObject)GameManager.gm.allItems[data[0]], false);
+                    task = GameManager.instance.DeleteItem((GameObject)GameManager.instance.allItems[data[0]], false);
                     yield return new WaitUntil(() => task.IsCompleted);
                 }
             }
@@ -322,7 +322,7 @@ public class ConsoleController : MonoBehaviour
             // else if (GameManager.gm.tenants.ContainsKey(data[0]))
             //     GameManager.gm.tenants.Remove(data[0]);
             else
-                GameManager.gm.AppendLogLine($"\"{data[0]}\" does not exist", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"\"{data[0]}\" does not exist", false, eLogtype.warning);
         }
 
         yield return new WaitForEndOfFrame();
@@ -338,24 +338,24 @@ public class ConsoleController : MonoBehaviour
         if (string.IsNullOrEmpty(_input))
         {
             // unfocus all items
-            int count = GameManager.gm.focus.Count;
+            int count = GameManager.instance.focus.Count;
             for (int i = 0; i < count; i++)
-                await GameManager.gm.UnfocusItem();
+                await GameManager.instance.UnfocusItem();
         }
-        else if (GameManager.gm.allItems.Contains(_input))
+        else if (GameManager.instance.allItems.Contains(_input))
         {
-            GameObject obj = (GameObject)GameManager.gm.allItems[_input];
+            GameObject obj = (GameObject)GameManager.instance.allItems[_input];
             if (obj.GetComponent<OObject>())
             {
-                await GameManager.gm.SetCurrentItem(obj);
-                await GameManager.gm.FocusItem(obj);
+                await GameManager.instance.SetCurrentItem(obj);
+                await GameManager.instance.FocusItem(obj);
             }
             else
-                GameManager.gm.AppendLogLine($"Can't focus \"{_input}\"", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Can't focus \"{_input}\"", false, eLogtype.warning);
 
         }
         else
-            GameManager.gm.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.error);
+            GameManager.instance.AppendLogLine($"\"{_input}\" does not exist", false, eLogtype.error);
 
         UnlockController();
     }
@@ -382,7 +382,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "var")
             SaveVariable(str[1]);
         else
-            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
 
         UnlockController();
     }
@@ -400,13 +400,13 @@ public class ConsoleController : MonoBehaviour
             using (StreamReader sr = File.OpenText(_input))
                 lines = Regex.Split(sr.ReadToEnd(), System.Environment.NewLine);
             if (_saveCmd)
-                GameManager.gm.SetReloadBtn(false, _input);
+                GameManager.instance.SetReloadBtn(false, _input);
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.error);
+            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.error);
             if (_saveCmd)
-                GameManager.gm.SetReloadBtn(false, "");
+                GameManager.instance.SetReloadBtn(false, "");
         }
         for (int i = 0; i < lines.Length; i++)
         {
@@ -435,7 +435,7 @@ public class ConsoleController : MonoBehaviour
             color = eLogtype.success;
 
         lastCmd = "LogCount";
-        GameManager.gm.AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", false, color);
+        GameManager.instance.AppendLogLine($"Read lines: {_linesCount}; Warnings: {warningsCount}; Errors:{errorsCount}", false, color);
         warningsCount = 0;
         errorsCount = 0;
 
@@ -456,7 +456,7 @@ public class ConsoleController : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.error);
+            GameManager.instance.AppendLogLine(e.Message, false, eLogtype.error);
         }
         if (!string.IsNullOrEmpty(json))
         {
@@ -488,12 +488,12 @@ public class ConsoleController : MonoBehaviour
         {
             string[] data = _input.Split(new char[] { '=' }, 2);
             if (variables.ContainsKey(data[0]))
-                GameManager.gm.AppendLogLine($"{data[0]} already exists", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"{data[0]} already exists", false, eLogtype.warning);
             else
                 variables.Add(data[0], data[1]);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax Error on variable creation", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax Error on variable creation", false, eLogtype.error);
     }
 
     ///<summary>
@@ -513,7 +513,7 @@ public class ConsoleController : MonoBehaviour
             }
             else
             {
-                OgreeObject obj = GameManager.gm.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
+                OgreeObject obj = GameManager.instance.FindByAbsPath(data[1])?.GetComponent<OgreeObject>();
                 if (obj)
                 {
                     switch (data[0])
@@ -530,11 +530,11 @@ public class ConsoleController : MonoBehaviour
                     }
                 }
                 else
-                    GameManager.gm.AppendLogLine($"{data[1]} doesn't exist", false, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"{data[1]} doesn't exist", false, eLogtype.error);
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax Error on API call", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax Error on API call", false, eLogtype.error);
 
         UnlockController();
     }
@@ -570,7 +570,7 @@ public class ConsoleController : MonoBehaviour
         else if (str[0] == "sensor" || str[0] == "se")
             CreateSensor(str[1]);
         else
-            GameManager.gm.AppendLogLine("Unknown command", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Unknown command", false, eLogtype.error);
 
         UnlockController();
     }
@@ -604,7 +604,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -642,7 +642,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -690,7 +690,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -727,12 +727,12 @@ public class ConsoleController : MonoBehaviour
             {
                 ro.attributes["template"] = data[2];
                 ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
-                if (GameManager.gm.roomTemplates.ContainsKey(ro.attributes["template"]))
-                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                if (GameManager.instance.roomTemplates.ContainsKey(ro.attributes["template"]))
+                    template = GameManager.instance.roomTemplates[ro.attributes["template"]];
                 else if (ApiManager.instance.isInit)
                 {
                     await ApiManager.instance.GetObject($"room-templates/{ro.attributes["template"]}", ApiManager.instance.DrawObject);
-                    template = GameManager.gm.roomTemplates[ro.attributes["template"]];
+                    template = GameManager.instance.roomTemplates[ro.attributes["template"]];
                 }
 
                 if (!string.IsNullOrEmpty(template.slug))
@@ -743,7 +743,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.gm.AppendLogLine($"Unknown template \"{data[2]}\"", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Unknown template \"{data[2]}\"", false, eLogtype.warning);
                     return;
                 }
             }
@@ -770,7 +770,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -805,12 +805,12 @@ public class ConsoleController : MonoBehaviour
             {
                 rk.attributes["template"] = data[2];
                 OgreeObject template = null;
-                if (GameManager.gm.objectTemplates.ContainsKey(rk.attributes["template"]))
-                    template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
+                if (GameManager.instance.objectTemplates.ContainsKey(rk.attributes["template"]))
+                    template = GameManager.instance.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 else if (ApiManager.instance.isInit)
                 {
                     await ApiManager.instance.GetObject($"obj-templates/{rk.attributes["template"]}", ApiManager.instance.DrawObject);
-                    template = GameManager.gm.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
+                    template = GameManager.instance.objectTemplates[rk.attributes["template"]].GetComponent<OgreeObject>();
                 }
 
                 if (template)
@@ -824,7 +824,7 @@ public class ConsoleController : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.gm.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Unknown template \"{rk.attributes["template"]}\"", false, eLogtype.warning);
                     return;
                 }
             }
@@ -848,7 +848,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -886,19 +886,19 @@ public class ConsoleController : MonoBehaviour
                     Vector3 scale = parent.GetChild(0).localScale * 1000;
                     dv.attributes["size"] = JsonUtility.ToJson(new Vector2(scale.x, scale.z));
                     dv.attributes["sizeUnit"] = "mm";
-                    dv.attributes["height"] = (sizeU * GameManager.gm.uSize * 1000).ToString();
+                    dv.attributes["height"] = (sizeU * GameManager.instance.uSize * 1000).ToString();
                     dv.attributes["heightUnit"] = "mm";
                 }
                 else
                 {
                     OgreeObject template = null;
 
-                    if (GameManager.gm.objectTemplates.ContainsKey(dv.attributes["template"]))
-                        template = GameManager.gm.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
+                    if (GameManager.instance.objectTemplates.ContainsKey(dv.attributes["template"]))
+                        template = GameManager.instance.objectTemplates[dv.attributes["template"]].GetComponent<OgreeObject>();
                     else if (ApiManager.instance.isInit)
                     {
                         await ApiManager.instance.GetObject($"obj-templates/{dv.attributes["template"]}", ApiManager.instance.DrawObject);
-                        template = GameManager.gm.objectTemplates[dv.attributes["template"]]?.GetComponent<OgreeObject>();
+                        template = GameManager.instance.objectTemplates[dv.attributes["template"]]?.GetComponent<OgreeObject>();
                     }
 
                     if (template)
@@ -912,7 +912,7 @@ public class ConsoleController : MonoBehaviour
                     }
                     else
                     {
-                        GameManager.gm.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", false, eLogtype.warning);
+                        GameManager.instance.AppendLogLine($"Unknown template \"{dv.attributes["template"]}\"", false, eLogtype.warning);
                         return;
                     }
                 }
@@ -941,7 +941,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -980,7 +980,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -1020,7 +1020,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     ///<summary>
@@ -1046,7 +1046,7 @@ public class ConsoleController : MonoBehaviour
             if (data[1] == "ext")
             {
                 se.name = "sensor"; // ?
-                parent = GameManager.gm.FindByAbsPath(data[0])?.transform;
+                parent = GameManager.instance.FindByAbsPath(data[0])?.transform;
                 se.attributes["linkedObject"] = data[0];
                 se.attributes["temperature"] = data[2];
             }
@@ -1068,7 +1068,7 @@ public class ConsoleController : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
     }
 
     #endregion
@@ -1096,7 +1096,7 @@ public class ConsoleController : MonoBehaviour
 
             }
             // ...else is an OgreeObject
-            GameObject obj = GameManager.gm.FindByAbsPath(data[0]);
+            GameObject obj = GameManager.instance.FindByAbsPath(data[0]);
             if (obj)
             {
                 if (obj.GetComponent<OgreeObject>() != null)
@@ -1107,18 +1107,18 @@ public class ConsoleController : MonoBehaviour
                     {
                         obj.GetComponent<OgreeObject>().SetAttribute(data[1], data[2]);
                         if (obj.GetComponent<OgreeObject>().category == "tenant" && data[1] == "color")
-                            EventManager.Instance.Raise(new UpdateTenantEvent { name = obj.name });
+                            EventManager.instance.Raise(new UpdateTenantEvent { name = obj.name });
                     }
                     UiManager.instance.UpdateGuiInfos();
                 }
                 else
-                    GameManager.gm.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
             }
             else
-                GameManager.gm.AppendLogLine($"Object doesn't exist.", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Object doesn't exist.", false, eLogtype.warning);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1130,7 +1130,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_value">The value to assign</param>
     private async Task SetMultiAttribute(string _attr, string _value)
     {
-        foreach (GameObject obj in GameManager.gm.currentItems)
+        foreach (GameObject obj in GameManager.instance.currentItems)
         {
             if (obj.GetComponent<OgreeObject>() != null)
             {
@@ -1140,7 +1140,7 @@ public class ConsoleController : MonoBehaviour
                     obj.GetComponent<OgreeObject>().SetAttribute(_attr, _value);
             }
             else
-                GameManager.gm.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Can't modify {obj.name} attributes.", false, eLogtype.warning);
         }
     }
 
@@ -1167,12 +1167,12 @@ public class ConsoleController : MonoBehaviour
                     cc.WaitCamera(Utils.ParseDecFrac(data[1]));
                     break;
                 default:
-                    GameManager.gm.AppendLogLine("Unknown Camera control", false, eLogtype.warning);
+                    GameManager.instance.AppendLogLine("Unknown Camera control", false, eLogtype.warning);
                     break;
             }
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1213,7 +1213,7 @@ public class ConsoleController : MonoBehaviour
             StartCoroutine(HighlightItem(data[1]));
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1225,10 +1225,10 @@ public class ConsoleController : MonoBehaviour
     private IEnumerator HighlightItem(string _name)
     {
         yield return new WaitForEndOfFrame();
-        if (GameManager.gm.allItems.Contains(_name))
+        if (GameManager.instance.allItems.Contains(_name))
         {
-            GameObject obj = (GameObject)GameManager.gm.allItems[_name];
-            EventManager.Instance.Raise(new HighlightEvent { obj = obj });
+            GameObject obj = (GameObject)GameManager.instance.allItems[_name];
+            EventManager.instance.Raise(new HighlightEvent { obj = obj });
         }
     }
 
@@ -1245,12 +1245,12 @@ public class ConsoleController : MonoBehaviour
             if (time < 0 || time > 2)
             {
                 time = Mathf.Clamp(time, 0, 2);
-                GameManager.gm.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
+                GameManager.instance.AppendLogLine("Delay is a value between 0 and 2s", false, eLogtype.warning);
             }
             GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", false, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", false, eLogtype.error);
 
         UnlockController();
     }
@@ -1271,7 +1271,7 @@ public class ConsoleController : MonoBehaviour
         for (int i = 0; i < path.Length - 1; i++)
             parentPath += $"{path[i]}.";
         parentPath = parentPath.Remove(parentPath.Length - 1);
-        GameObject tmp = GameManager.gm.FindByAbsPath(parentPath);
+        GameObject tmp = GameManager.instance.FindByAbsPath(parentPath);
         if (tmp)
         {
             name = path[path.Length - 1];
@@ -1281,7 +1281,7 @@ public class ConsoleController : MonoBehaviour
         {
             parent = null;
             name = "";
-            GameManager.gm.AppendLogLine($"Error: path doesn't exist ({parentPath})", false, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error: path doesn't exist ({parentPath})", false, eLogtype.error);
         }
     }
 

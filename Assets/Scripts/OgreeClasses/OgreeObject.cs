@@ -54,7 +54,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
     protected virtual void OnDestroy()
     {
-        GameManager.gm.allItems.Remove(hierarchyName);
+        GameManager.instance.allItems.Remove(hierarchyName);
     }
 
     ///<summary>
@@ -118,14 +118,14 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             if (index > description.Count)
             {
                 if (index != description.Count + 1)
-                    GameManager.gm.AppendLogLine($"Description set at index {description.Count + 1}.", true, eLogtype.info);
+                    GameManager.instance.AppendLogLine($"Description set at index {description.Count + 1}.", true, eLogtype.info);
                 description.Add(_value);
             }
             else
                 description[index - 1] = _value;
         }
         else
-            GameManager.gm.AppendLogLine("Wrong description index.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Wrong description index.", true, eLogtype.error);
     }
 
     ///<summary>
@@ -134,10 +134,10 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     ///<param name="_newDomain">The domain name to assign</param>
     protected void SetDomain(string _newDomain)
     {
-        if (GameManager.gm.allItems.ContainsKey(_newDomain))
+        if (GameManager.instance.allItems.ContainsKey(_newDomain))
             domain = _newDomain;
         else
-            GameManager.gm.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, eLogtype.warning);
     }
 
     ///<summary>
@@ -216,7 +216,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
 
         if (id == "")
         {
-            GameManager.gm.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, eLogtype.warning);
             return;
         }
         int.TryParse(_level, out int lvl);
@@ -245,7 +245,7 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.gm.AppendLogLine($"Set {name}'s details level to {currentLod}", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", false, eLogtype.success);
 
         if (_level != 0)
         {
@@ -278,9 +278,9 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
                 obj.transform.parent = null;
-                await GameManager.gm.DeleteItem(obj.gameObject, false, false);
-                if (obj.GetComponent<FocusHandler>())
-                    obj.GetComponent<FocusHandler>().isDeleted = true;
+                await GameManager.instance.DeleteItem(obj.gameObject, false, false);
+                obj.GetComponent<FocusHandler>()?.UnsubscribeEvents();
+                obj.GetComponent<CustomRendererOutline>()?.UnsubscribeEvents();
             }
             GetComponent<FocusHandler>()?.InitHandler();
         }
