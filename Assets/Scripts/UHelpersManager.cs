@@ -23,12 +23,14 @@ public class UHelpersManager : MonoBehaviour
     private void Start()
     {
         EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOut);
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelect);
     }
 
     private void OnDestroy()
     {
         EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
         EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelect);
     }
 
@@ -40,6 +42,16 @@ public class UHelpersManager : MonoBehaviour
     {
         wasEdited = true;
         ToggleU(GameManager.instance.currentItems[0].transform, false);
+    }
+
+    ///<summary>
+    /// Disable Uhelpers when entering in edit mode.
+    ///</summary>
+    ///<param name="_e">Event raised when entering edit mode</param>
+    private void OnEditModeOut(EditModeOutEvent _e)
+    {
+        wasEdited = false;
+        ToggleU(GameManager.instance.currentItems[0].transform, true);
     }
 
     ///<summary>
