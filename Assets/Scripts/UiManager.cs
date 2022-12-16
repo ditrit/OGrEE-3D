@@ -43,6 +43,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Button toggleUHelpersBtn;
     [SerializeField] private Button toggleLocalCSBtn;
 
+    [Header("Delay Slider")]
+    [SerializeField] private ConsoleController consoleController;
+    [SerializeField] private Slider slider;
+    [SerializeField] private TextMeshProUGUI value;
+
     [Header("Panel Infos")]
     [SerializeField] private GameObject infosPanel;
     [SerializeField] private GUIObjectInfos objInfos;
@@ -71,6 +76,7 @@ public class UiManager : MonoBehaviour
         tempDiagramBBtn.interactable = false;
         tempScatterPlotBtn.interactable = false;
         heatMapBtn.interactable = false;
+        UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
@@ -847,6 +853,18 @@ public class UiManager : MonoBehaviour
         }
         else
             GameManager.instance.AppendLogLine("You have to select one device", true, ELogtype.warning);
+    }
+
+    ///<summary>
+    /// Attached to GUI Slider. Change value of ConsoleController.timerValue. Also update text field.
+    ///</summary>
+    ///<param name="_value">Value given by the slider</param>
+    public void UpdateTimerValue(float _value)
+    {
+        slider.value = _value;
+        consoleController.timerValue = _value;
+        GameManager.instance.server.timer = (int)(_value);
+        value.text = _value.ToString("0.##") + "s";
     }
 
     /// <summary>

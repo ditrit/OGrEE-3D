@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TMPro;
 
 public class UHelpersManager : MonoBehaviour
@@ -60,14 +58,12 @@ public class UHelpersManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    private async void HighlightULocation()
+    private void HighlightULocation()
     {
         string category = GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category;
         if (category == "rack")
         {
-            Transform t = GameManager.instance.currentItems[0].transform;
-            while (!t.GetComponent<Rack>().uRoot)
-                await Task.Delay(50);
+            Transform t = GameManager.instance.currentItems[0].transform;;
             GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
             uRoot.SetActive(true);
             for (int i = 0; i < uRoot.transform.childCount; i++)
@@ -100,9 +96,7 @@ public class UHelpersManager : MonoBehaviour
             {
                 if (t.GetComponent<OgreeObject>().category == "rack")
                 {
-                    while (!t.GetComponent<Rack>().uRoot)
-                        await Task.Delay(100);
-                    GameObject uRoot = t.Find("uRoot").gameObject;
+                    GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
                     uRoot.SetActive(true);
                     for (int i = 0; i < uRoot.transform.childCount; i++)
                     {
@@ -127,13 +121,13 @@ public class UHelpersManager : MonoBehaviour
     {
         GameObject obj = _uRoot.transform.GetChild(_i).gameObject;
         string name = obj.name;
-        if (Regex.IsMatch(name, cornerRearLeft, RegexOptions.IgnoreCase))
+        if (obj.name.StartsWith(cornerRearLeft))
             obj.GetComponent<Renderer>().material.color = Color.red;
-        if (Regex.IsMatch(name, cornerRearRight, RegexOptions.IgnoreCase))
+        if (obj.name.StartsWith(cornerRearRight))
             obj.GetComponent<Renderer>().material.color = Color.yellow;
-        if (Regex.IsMatch(name, cornerFrontLeft, RegexOptions.IgnoreCase))
+        if (obj.name.StartsWith(cornerFrontLeft))
             obj.GetComponent<Renderer>().material.color = Color.blue;
-        if (Regex.IsMatch(name, cornerFrontRight, RegexOptions.IgnoreCase))
+        if (obj.name.StartsWith(cornerFrontRight))
             obj.GetComponent<Renderer>().material.color = Color.green;
     }
 

@@ -1244,7 +1244,7 @@ public class ConsoleController : MonoBehaviour
                 time = Mathf.Clamp(time, 0, 2);
                 GameManager.instance.AppendLogLine("Delay is a value between 0 and 2s", false, ELogtype.warning);
             }
-            GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+            UiManager.instance.UpdateTimerValue(time);
         }
         else
             GameManager.instance.AppendLogLine("Syntax error", false, ELogtype.error);

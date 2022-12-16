@@ -285,7 +285,7 @@ public class CliParser
         {
             case "delay":
                 float time = Utils.ParseDecFrac(manip.data);
-                GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+                UiManager.instance.UpdateTimerValue(time);
                 break;
             case "infos":
                 if (manip.data == "true")
