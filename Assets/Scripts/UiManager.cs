@@ -660,6 +660,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void UnfocusSelected()
     {
+        if (GameManager.instance.editMode)
+            EditFocused();
         if (GameManager.instance.focus.Count > 0)
             await GameManager.instance.UnfocusItem();
     }
