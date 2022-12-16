@@ -141,7 +141,8 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-
+                if (_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                    await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             }
             else // deselection => unload children if level of details is <=1
             {
@@ -222,7 +223,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj.GetComponent<OgreeObject>().category == "corridor")
+        if (_obj && _obj.GetComponent<OgreeObject>().category == "corridor")
             return;
 
         OObject[] children = _obj.GetComponentsInChildren<OObject>();

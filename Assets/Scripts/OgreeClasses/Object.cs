@@ -17,14 +17,12 @@ public class OObject : OgreeObject
     private void Awake()
     {
         EventManager.instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelection);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         EventManager.instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelection);
     }
 
     ///<summary>
@@ -188,15 +186,6 @@ public class OObject : OgreeObject
     {
         if (_event.name == domain)
             UpdateColorByTenant();
-    }
-
-    ///
-    private async void OnSelection(OnSelectItemEvent _e)
-    {
-        if (category == "group" || category == "corridor")
-            return;
-        if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[GameManager.instance.currentItems.Count - 1] == gameObject && currentLod == 0)
-            await LoadChildren("1");
     }
 
     ///<summary>

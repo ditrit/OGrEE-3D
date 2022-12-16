@@ -96,7 +96,6 @@ public class CliParser
                 if (objToFocus)
                 {
                     await GameManager.instance.SetCurrentItem(objToFocus);
-                    await Task.Delay(100);////
                     await GameManager.instance.FocusItem(objToFocus);
                 }
                 else

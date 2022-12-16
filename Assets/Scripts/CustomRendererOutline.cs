@@ -330,10 +330,10 @@ public class CustomRendererOutline : MonoBehaviour
         }
         else
         {
-            if (isSelected)
-                SetMaterial(GameManager.instance.selectMat);
-            else if (isFocused)
+            if (isFocused)
                 SetMaterial(GameManager.instance.focusMat);
+            else if (isSelected)
+                SetMaterial(GameManager.instance.selectMat);
             else if (isHighlighted)
                 SetMaterial(GameManager.instance.highlightMat);
             else
