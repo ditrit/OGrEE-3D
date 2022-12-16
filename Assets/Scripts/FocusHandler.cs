@@ -368,7 +368,7 @@ public class FocusHandler : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (!ogreeChildObjects.Contains(go) && go != this.gameObject)
+            if (!ogreeChildObjects.Contains(go) && go != gameObject)
             {
                 switch (go.GetComponent<OgreeObject>().category)
                 {
@@ -388,9 +388,17 @@ public class FocusHandler : MonoBehaviour
                     case "room":
                         Room ro = go.GetComponent<Room>();
                         ro.usableZone.GetComponent<Renderer>().enabled = _value;
+                        ro.usableZone.GetComponent<Collider>().enabled = _value;
+
                         ro.reservedZone.GetComponent<Renderer>().enabled = _value;
+                        ro.reservedZone.GetComponent<Collider>().enabled = _value;
+
                         ro.technicalZone.GetComponent<Renderer>().enabled = _value;
+                        ro.technicalZone.GetComponent<Collider>().enabled = _value;
+
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
+                        ro.tilesEdges.GetComponent<Collider>().enabled = _value;
+
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
                         {

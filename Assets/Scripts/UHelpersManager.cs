@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class UHelpersManager : MonoBehaviour
 {
@@ -60,17 +61,20 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     private void HighlightULocation()
     {
-        string category = GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category;
-        if (category == "rack")
+        OObject oObject = GameManager.instance.currentItems[0].GetComponent<OObject>();
+        Rack rack = Utils.GetRackReferent(oObject);
+        if (!rack)
+            return;
+
+        if (oObject.category == "rack")
         {
-            Transform t = GameManager.instance.currentItems[0].transform;;
-            GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
+            GameObject uRoot = rack.uRoot.gameObject;
             uRoot.SetActive(true);
             for (int i = 0; i < uRoot.transform.childCount; i++)
                 ChangeUColor(uRoot, i);
             wasEdited = false;
         }
-        else if (category == "device")
+        else if (oObject.category == "device")
         {
             if (wasEdited)
                 return;
@@ -92,23 +96,17 @@ public class UHelpersManager : MonoBehaviour
             float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
             float lowerBound = center - difference - delta;
             float upperBound = center + difference - delta;
-            while (t != null)
+
+            GameObject uRoot = rack.GetComponent<Rack>().uRoot.gameObject;
+            uRoot.SetActive(true);
+            for (int i = 0; i < uRoot.transform.childCount; i++)
             {
-                if (t.GetComponent<OgreeObject>().category == "rack")
-                {
-                    GameObject uRoot = t.GetComponent<Rack>().uRoot.gameObject;
-                    uRoot.SetActive(true);
-                    for (int i = 0; i < uRoot.transform.childCount; i++)
-                    {
-                        if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
-                            ChangeUColor(uRoot, i);
-                        else
-                            uRoot.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = Color.black;
-                    }
-                    return;
-                }
-                t = t.parent;
+                if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
+                    ChangeUColor(uRoot, i);
+                else
+                    uRoot.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = Color.black;
             }
+            return;
         }
     }
 
@@ -116,11 +114,10 @@ public class UHelpersManager : MonoBehaviour
     /// Change the color of U helpers depending on their corner
     /// </summary>
     /// <param name="_uRoot">Root transform of U helpers</param>
-    /// <param name="_i"></param>
-    private void ChangeUColor(GameObject _uRoot, int _i)
+    /// <param name="_index">U helper index</param>
+    private void ChangeUColor(GameObject _uRoot, int _index)
     {
-        GameObject obj = _uRoot.transform.GetChild(_i).gameObject;
-        string name = obj.name;
+        GameObject obj = _uRoot.transform.GetChild(_index).gameObject;
         if (obj.name.StartsWith(cornerRearLeft))
             obj.GetComponent<Renderer>().material.color = Color.red;
         if (obj.name.StartsWith(cornerRearRight))
@@ -138,24 +135,21 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_active">Should the U helpers be visible ?</param>
     public void ToggleU(Transform _transform, bool _active)
     {
-        while (_transform != null)
+        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
+        if (!rack)
+            return;
+
+        Transform uRoot = rack.uRoot;
+        if (_active)
         {
-            if (_transform.GetComponent<Rack>())
-            {
-                Transform uRoot = _transform.GetComponent<Rack>().uRoot;
-                if (_active)
-                {
-                    if (!uRoot)
-                        GenerateUHelpers(_transform.GetComponent<Rack>());
-                    else
-                        uRoot.gameObject.SetActive(true);
-                }
-                else if (!_active && uRoot)
-                    uRoot.gameObject.SetActive(false);
-                return;
-            }
-            _transform = _transform.parent;
+            if (!uRoot)
+                GenerateUHelpers(_transform.GetComponent<Rack>());
+            else
+                uRoot.gameObject.SetActive(true);
         }
+        else if (!_active && uRoot)
+            uRoot.gameObject.SetActive(false);
+        return;
     }
 
     ///<summary>
@@ -164,36 +158,27 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_transform">The transform of a rack or a device</param>
     public void ToggleU(Transform _transform)
     {
-        if (GameManager.instance.currentItems.Count == 0)
-        {
-            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
+        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
+        if (!rack)
             return;
-        }
 
-        while (_transform != null)
+        Transform uRoot = rack.uRoot;
+        if (!uRoot)
         {
-            if (_transform.GetComponent<Rack>())
-            {
-                Transform uRoot = _transform.GetComponent<Rack>().uRoot;
-                if (!uRoot)
-                {
-                    GenerateUHelpers(_transform.GetComponent<Rack>());
-                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
-                }
-                else if (uRoot.gameObject.activeSelf == false)
-                {
-                    uRoot.gameObject.SetActive(true);
-                    GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
-                }
-                else
-                {
-                    uRoot.gameObject.SetActive(false);
-                    GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, ELogtype.info);
-                }
-                return;
-            }
-            _transform = _transform.parent;
+            GenerateUHelpers(_transform.GetComponent<Rack>());
+            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
         }
+        else if (uRoot.gameObject.activeSelf == false)
+        {
+            uRoot.gameObject.SetActive(true);
+            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
+        }
+        else
+        {
+            uRoot.gameObject.SetActive(false);
+            GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, ELogtype.info);
+        }
+        return;
     }
 
     ///<summary>
@@ -204,7 +189,6 @@ public class UHelpersManager : MonoBehaviour
     {
         if (_rack.uRoot)
             return;
-
         Vector3 rootPos;
         Transform box = _rack.transform.GetChild(0);
         if (box.childCount == 0)
@@ -270,7 +254,6 @@ public class UHelpersManager : MonoBehaviour
                 _rack.uRoot.localPosition -= new Vector3(0, firstSlot.GetChild(0).localScale.y / 2, 0);
             }
         }
-
         for (int i = 1; i <= max; i++)
         {
             Transform obj = Instantiate(GameManager.instance.uLocationModel).transform;
@@ -333,9 +316,9 @@ public class UHelpersManager : MonoBehaviour
         {
             try
             {
-                return (int)Utils.ParseDecFrac(_name);
+                return (int)Utils.ParseDecFrac(iteratedName);
             }
-            catch (System.FormatException)
+            catch (FormatException)
             {
                 iteratedName = iteratedName.Substring(1);
             }

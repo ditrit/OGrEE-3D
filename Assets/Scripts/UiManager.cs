@@ -581,29 +581,24 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.currentItems.Count > 0)
         {
+            Rack rack = Utils.GetRackReferent(GameManager.instance.currentItems[0].GetComponent<OObject>());
+            if (!rack)
+                return;
+
             UHelpersManager.instance.ToggleU(GameManager.instance.currentItems[0].transform);
-            Transform _transform = GameManager.instance.currentItems[0].transform;
-            while (_transform != null)
+            ColorBlock cb = toggleUHelpersBtn.colors;
+            Transform uRoot = rack.uRoot;
+            if (!uRoot || !uRoot.gameObject.activeSelf)
             {
-                if (_transform.GetComponent<Rack>())
-                {
-                    ColorBlock cb = toggleUHelpersBtn.colors;
-                    Transform uRoot = _transform.GetComponent<Rack>().uRoot;
-                    if (!uRoot || !uRoot.gameObject.activeSelf)
-                    {
-                        cb.normalColor = Color.white;
-                        cb.selectedColor = Color.white;
-                    }
-                    else
-                    {
-                        cb.normalColor = Color.gray;
-                        cb.selectedColor = Color.gray;
-                    }
-                    toggleUHelpersBtn.colors = cb;
-                    return;
-                }
-                _transform = _transform.parent;
+                cb.normalColor = Color.white;
+                cb.selectedColor = Color.white;
             }
+            else
+            {
+                cb.normalColor = Color.gray;
+                cb.selectedColor = Color.gray;
+            }
+            toggleUHelpersBtn.colors = cb;
         }
     }
 

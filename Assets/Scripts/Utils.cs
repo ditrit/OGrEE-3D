@@ -270,4 +270,21 @@ public static class Utils
     {
         return Mathf.Clamp((_input - _inMin) * (_outMax - _outMin) / (_inMax - _inMin) + _outMin, Mathf.Min(_outMin, _outMax), Mathf.Max(_outMin, _outMax));
     }
+
+    /// <summary>
+    /// Returns the referent of an OObject if it's a rack, returns null otherwise
+    /// </summary>
+    /// <param name="_oObject">The Oobject whose referent is returned</param>
+    /// <returns>the Rack which is the referent of <paramref name="_oObject"/> or null</returns>
+    public static Rack GetRackReferent(OObject _oObject)
+    {
+        try
+        {
+            return (Rack)_oObject.referent;
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
 }
