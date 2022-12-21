@@ -45,8 +45,6 @@ You can override the config file parameters with command line arguments
 ```
 --verbose [true|false]
 --fullscreen [true|false]
---apiUrl [url]
---apiToken [token]
 --file [path to ocli file to load]
 ```  
 
