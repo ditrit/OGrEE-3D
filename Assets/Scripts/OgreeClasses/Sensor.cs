@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sensor : MonoBehaviour
 {
     public float temperature = 0f;
-    public string temperatureUnit = "�C";
+    public string temperatureUnit = "°C";
     public Color color;
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
