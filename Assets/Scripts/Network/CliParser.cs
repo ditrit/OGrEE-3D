@@ -143,18 +143,29 @@ public class CliParser
     ///<param name="_input">The SApiObject to deserialize</param>
     private async Task CreateObjectFromData(string _input)
     {
-        SApiObject src = JsonConvert.DeserializeObject<SApiObject>(_input);
-        List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
-        Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
+        SApiObject src = new SApiObject();
+        try
+        {
+            src = JsonConvert.DeserializeObject<SApiObject>(_input);
+        }
+        catch (System.Exception e)
+        {
+            GameManager.instance.AppendLogLine(e.Message, true, ELogtype.errorCli);
+        }
+        if (!string.IsNullOrEmpty(src.category))
+        {
+            List<SApiObject> physicalObjects = new List<SApiObject>();
+            List<SApiObject> logicalObjects = new List<SApiObject>();
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
 
-        foreach (SApiObject obj in physicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            foreach (SApiObject obj in physicalObjects)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        foreach (SApiObject obj in logicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            foreach (SApiObject obj in logicalObjects)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
+        }
     }
 
     ///<summary>

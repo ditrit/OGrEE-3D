@@ -44,6 +44,9 @@ public class Server : MonoBehaviour
         connection.Stop();
     }
 
+    ///<summary>
+    /// Dequeue connection.incomingQueue and call parser.DeserializeInput() to execute received command from CLI
+    ///</summary>
     private IEnumerator DequeueAndParse()
     {
         string msg = connection.incomingQueue.Dequeue();
