@@ -45,6 +45,7 @@ public struct SRoomFromJson
     public SColor[] colors;
     public STile[] tiles;
     public SRow[] rows;
+    public float tileAngle;
 }
 
 [System.Serializable]
