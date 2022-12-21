@@ -15,18 +15,16 @@ public class FocusHandler : MonoBehaviour
     public List<MeshRenderer> slotChildMeshRendererList;
 
     public bool isActive = false;
-    public bool isDeleted = false;
-
     public bool isSelected = false;
     public bool isFocused = false;
 
     private void Start()
     {
-        if (GameManager.gm.allItems.ContainsValue(gameObject))
+        if (GameManager.instance.allItems.ContainsValue(gameObject))
+        {
             isActive = true;
-
-        if (isActive)
             SubscribeEvents();
+        }
     }
 
     private void OnDestroy()
@@ -40,19 +38,18 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void SubscribeEvents()
     {
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
 
-        EventManager.Instance.AddListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.AddListener<OnFocusEvent>(OnFocusItem);
+        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.AddListener<EditModeOutEvent>(OnEditModeOut);
+        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
 
-        EventManager.Instance.AddListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
-
-        EventManager.Instance.AddListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
+        EventManager.instance.AddListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
+        EventManager.instance.AddListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
     }
 
     ///<summary>
@@ -60,19 +57,18 @@ public class FocusHandler : MonoBehaviour
     ///</summary>
     public void UnsubscribeEvents()
     {
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
 
-        EventManager.Instance.RemoveListener<OnFocusEvent>(OnFocusItem);
-        EventManager.Instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocusItem);
+        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
+        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
-        EventManager.Instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
 
-        EventManager.Instance.RemoveListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
-
-        EventManager.Instance.RemoveListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
+        EventManager.instance.RemoveListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
+        EventManager.instance.RemoveListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
     }
 
     ///<summary>
@@ -81,9 +77,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isDeleted)
-            return;
-        if (GameManager.gm.currentItems.Contains(gameObject))
+        if (GameManager.instance.currentItems.Contains(gameObject))
         {
             // We manage all collider and renderer changes due to the selection
             isSelected = true;
@@ -98,12 +92,12 @@ public class FocusHandler : MonoBehaviour
         }
 
         // If this one is part of it and is in a rack which is not the parent of a selected object we display it again
-        if (GameManager.gm.previousItems.Contains(gameObject))
+        if (GameManager.instance.previousItems.Contains(gameObject))
         {
             isSelected = false;
 
             // Parent racks of previously selected objects
-            OObject selectionParentRack = GameManager.gm.currentItems.Count > 0 ? GameManager.gm.currentItems[0].GetComponent<OObject>()?.referent : null;
+            OObject selectionParentRack = GameManager.instance.currentItems.Count > 0 ? GameManager.instance.currentItems[0].GetComponent<OObject>()?.referent : null;
             OObject parentRack = GetComponent<OObject>().referent;
 
             if (selectionParentRack != parentRack)
@@ -113,7 +107,7 @@ public class FocusHandler : MonoBehaviour
             }
             else
             {
-                if (!GameManager.gm.currentItems.Contains(transform.parent?.gameObject))
+                if (!GameManager.instance.currentItems.Contains(transform.parent?.gameObject))
                 {
                     UpdateOwnMeshRenderers(false);
                     UpdateChildMeshRenderers(false);
@@ -122,11 +116,9 @@ public class FocusHandler : MonoBehaviour
                     UpdateChildMeshRenderers(false);
             }
 
-
             //destroy heatmap if there is one
             if (transform.GetChild(0).childCount > 0)
                 Destroy(transform.GetChild(0).GetChild(0).gameObject);
-
         }
     }
 
@@ -137,8 +129,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent _e)
     {
-        if (isDeleted)
-            return;
         if (_e.obj == gameObject)
         {
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
@@ -147,7 +137,6 @@ public class FocusHandler : MonoBehaviour
             isFocused = true;
             ToggleCollider(gameObject, false);
             GetComponent<DisplayObjectData>()?.ToggleLabel(false);
-
         }
     }
 
@@ -157,8 +146,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent e)
     {
-        if (isDeleted)
-            return;
         if (e.obj == gameObject)
         {
             UpdateOtherObjectsMeshRenderers(true);
@@ -182,8 +169,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent e)
     {
-        if (isDeleted)
-            return;
         if (e.obj == gameObject)
         {
             //enable collider used for manipulation
@@ -200,8 +185,6 @@ public class FocusHandler : MonoBehaviour
     ///<param name="e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent e)
     {
-        if (isDeleted)
-            return;
         if (e.obj == gameObject)
         {
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
@@ -215,29 +198,27 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
-        if (isDeleted)
-            return;
         InitHandler();
-        if (GameManager.gm.currentItems.Contains(gameObject))
+        if (GameManager.instance.currentItems.Contains(gameObject))
         {
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             return;
         }
 
-        OObject selectionReferent = GameManager.gm.currentItems.Count > 0 ? GameManager.gm.currentItems[0].GetComponent<OObject>()?.referent : null;
+        OObject selectionReferent = GameManager.instance.currentItems.Count > 0 ? GameManager.instance.currentItems[0].GetComponent<OObject>()?.referent : null;
 
         if (!GetComponent<OObject>().referent || (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent))
             UpdateChildMeshRenderersRec(false);
         else if (selectionReferent == GetComponent<OObject>().referent)
         {
-            if (!GameManager.gm.currentItems.Contains(gameObject) && (!transform.parent || !GameManager.gm.currentItems.Contains(transform.parent.gameObject)))
+            if (!GameManager.instance.currentItems.Contains(gameObject) && (!transform.parent || !GameManager.instance.currentItems.Contains(transform.parent.gameObject)))
             {
                 ToggleCollider(gameObject, false);
                 UpdateOwnMeshRenderers(false);
                 UpdateChildMeshRenderers(false);
             }
-            if (GameManager.gm.currentItems.Contains(transform.parent?.gameObject))
+            if (GameManager.instance.currentItems.Contains(transform.parent?.gameObject))
                 UpdateChildMeshRenderers(false);
         }
     }
@@ -255,13 +236,17 @@ public class FocusHandler : MonoBehaviour
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.instance.isDiagramShown && GameManager.gm.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isDiagramShown && GameManager.instance.currentItems.Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
             if (!TempDiagram.instance.isDiagramShown)
                 UpdateChildMeshRenderers(false, false);
         }
     }
 
+    /// <summary>
+    /// When called, hide renderer to show temperature scatter plot
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
     public void OnTemperatureScatterPlot(TemperatureScatterPlotEvent _e)
     {
         if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
@@ -271,7 +256,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.instance.isScatterPlotShown && GameManager.gm.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isScatterPlotShown && GameManager.instance.currentItems.Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
             if (!TempDiagram.instance.isScatterPlotShown)
                 UpdateChildMeshRenderers(false, false);
@@ -380,10 +365,10 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_value">The value to give to all MeshRenderer</param>
     private void UpdateOtherObjectsMeshRenderers(bool _value)
     {
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (!ogreeChildObjects.Contains(go) && go != this.gameObject)
+            if (!ogreeChildObjects.Contains(go) && go != gameObject)
             {
                 switch (go.GetComponent<OgreeObject>().category)
                 {
@@ -403,9 +388,17 @@ public class FocusHandler : MonoBehaviour
                     case "room":
                         Room ro = go.GetComponent<Room>();
                         ro.usableZone.GetComponent<Renderer>().enabled = _value;
+                        ro.usableZone.GetComponent<Collider>().enabled = _value;
+
                         ro.reservedZone.GetComponent<Renderer>().enabled = _value;
+                        ro.reservedZone.GetComponent<Collider>().enabled = _value;
+
                         ro.technicalZone.GetComponent<Renderer>().enabled = _value;
+                        ro.technicalZone.GetComponent<Collider>().enabled = _value;
+
                         ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
+                        ro.tilesEdges.GetComponent<Collider>().enabled = _value;
+
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
                         {

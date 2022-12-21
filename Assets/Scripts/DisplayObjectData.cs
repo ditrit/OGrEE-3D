@@ -21,44 +21,30 @@ public class DisplayObjectData : MonoBehaviour
     private bool isItalic = false;
     private string color = "ffffff";
     private string backgroundColor = "000000";
-    private ToggleLabelEvent.ELabelMode previousLabelMode;
+    private ELabelMode previousLabelMode;
     private Vector3 boxSize;
     [SerializeField] private CameraControl cc;
     private void Start()
     {
-        EventManager.Instance.AddListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.AddListener<ToggleLabelEvent>(ToggleLabel);
         cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
     }
 
     private void Update()
     {
 
-        if (hasFloatingLabel && previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
+        if (hasFloatingLabel && previousLabelMode == ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(cc.transform);
             floatingLabel.transform.rotation = Quaternion.LookRotation(cc.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
         }
-    }
-
-    ///<summary>
-    /// Assign labels references with children of a Device prefab
-    ///</summary>
-    public void Setup()
-    {
-        labelFront = transform.GetChild(1).GetComponent<TextMeshPro>();
-        labelRear = transform.GetChild(2).GetComponent<TextMeshPro>();
-        labelRight = transform.GetChild(3).GetComponent<TextMeshPro>();
-        labelLeft = transform.GetChild(4).GetComponent<TextMeshPro>();
-        labelTop = transform.GetChild(5).GetComponent<TextMeshPro>();
-        labelBottom = transform.GetChild(6).GetComponent<TextMeshPro>();
-        floatingLabel = transform.GetChild(7).GetComponent<TextMeshPro>();
     }
 
     ///<summary>
@@ -80,7 +66,7 @@ public class DisplayObjectData : MonoBehaviour
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == "U")
-                height *= GameManager.gm.uSize;
+                height *= GameManager.instance.uSize;
             else if (oObj.attributes["heightUnit"] == "mm")
                 height /= 1000;
             else if (oObj.attributes["heightUnit"] == "cm")
@@ -183,13 +169,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.gm.AppendLogLine("Wrong description index", true, eLogtype.warning);
+                        GameManager.instance.AppendLogLine("Wrong description index", true, ELogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.gm.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, ELogtype.warning);
                     return;
                 }
             }
@@ -206,7 +192,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_str == "#temperature")
                 WriteLabels($"{sensor.temperature} {sensor.temperatureUnit}");
             else
-                GameManager.gm.AppendLogLine($"Sensor can only show temperature (for now)", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", true, ELogtype.warning);
         }
     }
 
@@ -253,18 +239,18 @@ public class DisplayObjectData : MonoBehaviour
     /// Display or hide labels.
     ///</summary>
     ///<param name="_value">The value to assign</param>
-    public void ToggleLabel(ToggleLabelEvent.ELabelMode _value)
+    public void ToggleLabel(ELabelMode _value)
     {
         switch (_value)
         {
-            case ToggleLabelEvent.ELabelMode.FrontAndRear:
+            case ELabelMode.FrontAndRear:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = true;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 previousLabelMode = _value;
                 break;
-            case ToggleLabelEvent.ELabelMode.FloatingOnTop:
+            case ELabelMode.FloatingOnTop:
                 if (hasFloatingLabel)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
@@ -273,7 +259,7 @@ public class DisplayObjectData : MonoBehaviour
                     previousLabelMode = _value;
                 }
                 break;
-            case ToggleLabelEvent.ELabelMode.Hidden:
+            case ELabelMode.Hidden:
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = false;
                 if (hasFloatingLabel)
@@ -285,10 +271,10 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (previousLabelMode == ToggleLabelEvent.ELabelMode.FrontAndRear)
+        if (previousLabelMode == ELabelMode.FrontAndRear)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.enabled = _value;
-        else if (previousLabelMode == ToggleLabelEvent.ELabelMode.FloatingOnTop)
+        else if (previousLabelMode == ELabelMode.FloatingOnTop)
             floatingLabel.gameObject.SetActive(_value);
     }
     private void ToggleLabel(ToggleLabelEvent _e)
@@ -297,8 +283,8 @@ public class DisplayObjectData : MonoBehaviour
         if (GetComponent<Slot>())
             return;
 
-        if (GameManager.gm.focus.Count == 0 || GameManager.gm.focus.Contains(gameObject)
-            || GameManager.gm.focus.Contains(transform.parent.gameObject))
+        if (GameManager.instance.focus.Count == 0 || GameManager.instance.focus.Contains(gameObject)
+            || GameManager.instance.focus.Contains(transform.parent.gameObject))
             ToggleLabel(_e.value);
     }
 
@@ -322,9 +308,13 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.gm.AppendLogLine("Unknown labelFont attribute", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown labelFont attribute", true, ELogtype.warning);
     }
 
+    ///<summary>
+    /// Set background color for a box label.
+    ///</summary>
+    ///<param name="_value">The color to set</param>
     public void SetBackgroundColor(string _value)
     {
         string pattern = "[0-9a-fA-F]{6}$";
@@ -333,6 +323,6 @@ public class DisplayObjectData : MonoBehaviour
             backgroundColor = _value;
         }
         else
-            GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
     }
 }

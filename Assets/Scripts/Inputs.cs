@@ -1,27 +1,29 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Inputs : MonoBehaviour
 {
-    private float doubleClickTimeLimit = 0.25f;
+    private readonly float doubleClickTimeLimit = 0.25f;
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
-    private float delayUntilDrag = 0.2f;
+    private readonly float delayUntilDrag = 0.2f;
     [SerializeField] Transform target;
+
     // Drag
     private bool isDragging = false;
     private Vector3 screenSpace;
     private Vector3 offsetPos;
+
     // Rotate
     private bool isRotating = false;
     private Vector3 mouseRef;
+
     // Scale
     private bool isScaling = false;
 
-    [SerializeField] private GameObject savedObjectThatWeHover;
+    private GameObject savedObjectThatWeHover;
 
     private void Update()
     {
@@ -32,7 +34,7 @@ public class Inputs : MonoBehaviour
         if (!isDragging && !isRotating && !isScaling)
             target = Utils.RaycastFromCameraToMouse()?.transform;
 
-        if (GameManager.gm.editMode)
+        if (GameManager.instance.editMode)
         {
             if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
             {
@@ -75,7 +77,7 @@ public class Inputs : MonoBehaviour
 
             if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
             {
-                if (GameManager.gm.focus.Count > 0 && GameManager.gm.focus[GameManager.gm.focus.Count -1] == target.parent.gameObject)
+                if (GameManager.instance.focus.Count > 0 && GameManager.instance.focus[GameManager.instance.focus.Count - 1] == target.parent.gameObject)
                 {
                     isDragging = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
@@ -83,14 +85,14 @@ public class Inputs : MonoBehaviour
                 }
             }
 
-            if (clickCount == 1 && target && target.tag == "UHelper")
+            if (clickCount == 1 && target && target.CompareTag("UHelper"))
             {
                 ClickOnU();
                 clickCount = 0;
             }
 
             if (!isDragging && clickCount == 1 && coroutineAllowed)
-                StartCoroutine(DoubleClickDetection(Time.time));
+                StartCoroutine(DoubleClickDetection(Time.realtimeSinceStartup));
         }
 
         if (isDragging)
@@ -108,71 +110,70 @@ public class Inputs : MonoBehaviour
     ///<param name="_firstClickTime">The time of the first click</param>
     private IEnumerator DoubleClickDetection(float _firstClickTime)
     {
+        Transform savedTarget = target;
         coroutineAllowed = false;
-        while (Time.time < _firstClickTime + doubleClickTimeLimit)
+        while (Time.realtimeSinceStartup < _firstClickTime + doubleClickTimeLimit)
         {
-            if (clickCount == 2 && !GameManager.gm.editMode)
+            if (clickCount == 2 && !GameManager.instance.editMode)
             {
                 ClickFocus();
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !GameManager.gm.editMode)
-            ClickSelect();
+        if (clickCount == 1 && !GameManager.instance.editMode)
+            ClickSelect(savedTarget);
         clickCount = 0;
         coroutineAllowed = true;
-
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when single clicking on a gameObject.
     ///</summary>
-    private async void ClickSelect()
+    ///<param name="_target">the object clicked on</param>
+    private async void ClickSelect(Transform _target)
     {
-        if (target && target.tag == "Selectable")
+        if (_target && _target.CompareTag("Selectable"))
         {
-            bool canSelect = false;
-            if (GameManager.gm.focus.Count > 0)
-                canSelect = GameManager.gm.IsInFocus(target.gameObject);
-            else
-                canSelect = true;
+            bool canSelect = true;
+            if (GameManager.instance.focus.Count > 0)
+                canSelect = GameManager.instance.IsInFocus(_target.gameObject);
 
             if (canSelect)
             {
-                if (Input.GetKey(KeyCode.LeftControl) && GameManager.gm.currentItems.Count > 0)
-                    await GameManager.gm.UpdateCurrentItems(target.gameObject);
+                if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.currentItems.Count > 0)
+                    await GameManager.instance.UpdateCurrentItems(_target.gameObject);
                 else
-                    await GameManager.gm.SetCurrentItem(target.gameObject);
+                    await GameManager.instance.SetCurrentItem(_target.gameObject);
             }
         }
-        else if (GameManager.gm.focus.Count > 0)
-            await GameManager.gm.SetCurrentItem(GameManager.gm.focus[GameManager.gm.focus.Count - 1]);
+        else if (GameManager.instance.focus.Count > 0)
+            await GameManager.instance.SetCurrentItem(GameManager.instance.focus[GameManager.instance.focus.Count - 1]);
         else
-            await GameManager.gm.SetCurrentItem(null);
+            await GameManager.instance.SetCurrentItem(null);
     }
 
     ///<summary>
-    /// Method called when single click on a gameObject.
+    /// Method called when double clicking on a gameObject.
     ///</summary>
     private async void ClickFocus()
     {
-        if (target && target.tag == "Selectable" && target.GetComponent<OObject>())
+        if (target && target.CompareTag("Selectable") && target.GetComponent<OObject>())
         {
             if (target.GetComponent<Group>())
                 target.GetComponent<Group>().ToggleContent("true");
             else
             {
-                await GameManager.gm.SetCurrentItem(target.gameObject);
-                await GameManager.gm.FocusItem(target.gameObject);
+                await GameManager.instance.SetCurrentItem(target.gameObject);
+                await GameManager.instance.FocusItem(target.gameObject);
             }
         }
-        else if (GameManager.gm.focus.Count > 0)
-            await GameManager.gm.UnfocusItem();
+        else if (GameManager.instance.focus.Count > 0)
+            await GameManager.instance.UnfocusItem();
     }
 
     ///<summary>
-    /// Method called when click on a U helper.
+    /// Method called when clicking on a U helper.
     ///</summary>
     private void ClickOnU()
     {
@@ -190,16 +191,16 @@ public class Inputs : MonoBehaviour
             if (!target.Equals(savedObjectThatWeHover))
             {
                 if (savedObjectThatWeHover)
-                    EventManager.Instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                    EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
 
                 savedObjectThatWeHover = target.gameObject;
-                EventManager.Instance.Raise(new OnMouseHoverEvent { obj = target.gameObject });
+                EventManager.instance.Raise(new OnMouseHoverEvent { obj = target.gameObject });
             }
         }
         else
         {
             if (savedObjectThatWeHover)
-                EventManager.Instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
             savedObjectThatWeHover = null;
         }
     }
@@ -212,13 +213,9 @@ public class Inputs : MonoBehaviour
         Vector3 curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenSpace) + offsetPos;
         if (target.GetComponent<OgreeObject>().category == "rack")
-        {
             target.position = new Vector3(target.position.x, curPosition.y, target.position.z);
-        }
         else if (target.GetComponent<OgreeObject>().category == "device")
-        {
             target.position = curPosition;
-        }
     }
 
     ///<summary>

@@ -4,45 +4,47 @@ using System.Linq;
 
 public class TempDiagram : MonoBehaviour
 {
+    public static TempDiagram instance;
+
     /// <summary>
-    /// true if thetemperature diagram is displayed
+    /// true if the temperature diagram is displayed
     /// </summary>
     public bool isDiagramShown = false;
     public bool isScatterPlotShown = false;
     public Room lastRoom;
     private OgreeObject lastScatterPlot;
-    [SerializeField]
-    private GameObject heatMapModel;
-    [SerializeField]
-    private float radiusRatio;
-    [SerializeField]
-    private float intensityMin;
-    [SerializeField]
-    private float intensityMax;
+    [SerializeField] private GameObject heatMapModel;
+    [SerializeField] private float radiusRatio;
+    [SerializeField] private float intensityMin;
+    [SerializeField] private float intensityMax;
     public int heatMapSensorsMaxNumber;
     public Texture2D heatMapGradient;
-    public Texture2D heatMapGradientDefault;
-    public Texture2D heatMapGradientCustom;
-    public static TempDiagram instance;
+    [SerializeField] private Texture2D heatMapGradientDefault;
+    private Texture2D heatMapGradientCustom;
     private Gradient gradient;
-    [SerializeField]
-    private Material heatMapMat;
+    [SerializeField] private Material heatMapMat;
+
     private void Awake()
     {
         if (!instance)
             instance = this;
         else
             Destroy(this);
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     ///<summary>
     /// When called checks if the temperature diagram is currently shown if true hide it.
     ///</summary>
-    ///<param name="e">The event's instance</param>
-    void OnSelectItem(OnSelectItemEvent _e)
+    ///<param name="_e">The event's instance</param>
+    private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isDiagramShown && GameManager.gm.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
+        if (isDiagramShown && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
             HandleTempBarChart(lastRoom);
         if (isScatterPlotShown)
             HandleScatterPlot(lastScatterPlot);
@@ -60,15 +62,12 @@ public class TempDiagram : MonoBehaviour
         {
             OgreeObject childOgreeObject = childTransform.GetComponent<OgreeObject>();
             if (childOgreeObject)
-            {
                 sensors.AddRange(GetObjectSensors(childOgreeObject));
-            }
             Sensor childSensor = childTransform.GetComponent<Sensor>();
             if (childSensor && childSensor.fromTemplate)
                 sensors.Add(childSensor);
         }
         return sensors;
-
     }
 
     /// <summary>
@@ -88,7 +87,7 @@ public class TempDiagram : MonoBehaviour
             case "mm":
                 roomHeight /= 1000; break;
             default:
-                GameManager.gm.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, eLogtype.warning); break;
+                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, ELogtype.warning); break;
         }
 
         string tempUnit = "";
@@ -96,12 +95,10 @@ public class TempDiagram : MonoBehaviour
         if (site && site.attributes.ContainsKey("temperatureUnit"))
             tempUnit = site.attributes["temperatureUnit"];
 
-
-        EventManager.Instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
+        EventManager.instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
 
         if (!isDiagramShown)
         {
-
             foreach (Transform childTransform in _room.transform)
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
@@ -111,13 +108,14 @@ public class TempDiagram : MonoBehaviour
             lastRoom = _room;
         }
         else
+        {
             foreach (Transform childTransform in _room.transform)
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
                     Destroy(childOgreeObject.tempBar);
-
             }
+        }
         isDiagramShown = !isDiagramShown;
     }
 
@@ -134,13 +132,13 @@ public class TempDiagram : MonoBehaviour
         STemp tempInfos = _oobject.GetTemperatureInfos();
         if (!(tempInfos.mean is float.NaN))
         {
-            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(_tempUnit);
+            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(_tempUnit);
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);
             float heigthStd = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, _roomheight);
             float yBase = _oobject.transform.parent.position.y + 0.01f;
 
 
-            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
@@ -151,8 +149,7 @@ public class TempDiagram : MonoBehaviour
 
             if (tempInfos.std != 0)
             {
-
-                GameObject sensorBarStd = Instantiate(GameManager.gm.sensorBarStdModel, _oobject.transform);
+                GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _oobject.transform);
                 sensorBarStd.transform.position = new Vector3(_oobject.transform.position.x, yBase + height, _oobject.transform.position.z);
                 sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
@@ -166,16 +163,14 @@ public class TempDiagram : MonoBehaviour
         }
         else
         {
-
             float height = _roomheight / 2;
 
             float yBase = _oobject.transform.parent.position.y + 0.01f;
-            sensorBar = Instantiate(GameManager.gm.sensorBarModel, _oobject.transform);
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
             sensorBar.name = _oobject.name + "TempBar";
             sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
             sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f, 0.85f);
-
         }
         OgreeObject sensorBarOO = sensorBar.GetComponent<OgreeObject>();
         sensorBarOO.attributes["average"] = $"{tempInfos.mean} {tempInfos.unit}";
@@ -193,7 +188,7 @@ public class TempDiagram : MonoBehaviour
     public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
         lastScatterPlot = _ogreeObject;
-        EventManager.Instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
+        EventManager.instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
 
         GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !isScatterPlotShown);
 
@@ -203,10 +198,10 @@ public class TempDiagram : MonoBehaviour
     /// <summary>
     /// Create a heatmap for an object which show its temperature values. The normal of the heatmap is the smallest dimension (x,y or z) of the object
     /// </summary>
-    /// <param name="oObject">the object which will have the heatmap</param>
-    public void HandleHeatMap(OObject oObject)
+    /// <param name="_oObject">the object which will have the heatmap</param>
+    public void HandleHeatMap(OObject _oObject)
     {
-        Transform objTransform = oObject.transform.GetChild(0);
+        Transform objTransform = _oObject.transform.GetChild(0);
         if (objTransform.childCount > 0)
         {
             Destroy(objTransform.GetChild(0).gameObject);
@@ -223,7 +218,7 @@ public class TempDiagram : MonoBehaviour
         else
             heatmap.transform.SetPositionAndRotation(objTransform.position + (objTransform.localScale.x / 2 + 0.01f) * (objTransform.rotation * Vector3.left), objTransform.rotation * Quaternion.Euler(0, 90, 0));
 
-        List<Sensor> sensors = GetObjectSensors(oObject);
+        List<Sensor> sensors = GetObjectSensors(_oObject);
 
         Vector4[] sensorPositions = new Vector4[sensors.Count];
         Vector4[] sensorProperties = new Vector4[sensors.Count];
@@ -236,7 +231,7 @@ public class TempDiagram : MonoBehaviour
             sensorPos = Quaternion.Inverse(heatmap.transform.rotation) * sensorPos;
             sensorPos.Scale(new Vector3(1 / heatmap.transform.lossyScale.x, 1 / heatmap.transform.lossyScale.y, 1 / heatmap.transform.lossyScale.z));
             sensorPositions[i] = new Vector4(sensorPos.x, sensorPos.y, 0, 0);
-            (int tempMin, int tempMax) = GameManager.gm.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
+            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
             float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, intensityMin, intensityMax);
             sensorProperties[i] = new Vector4(objTransform.localScale.sqrMagnitude * radiusRatio, intensity, 0, 0);
         }
@@ -245,14 +240,16 @@ public class TempDiagram : MonoBehaviour
     }
 
     /// <summary>
-    /// Create a custom gradient texture (Texture2D) using Unity's Gradient class.<br></br> <b>8 colors max, colors after the 8th one will not be used</b>
+    /// Create a custom gradient texture (Texture2D) using Unity's Gradient class.
+    /// <br/><b>8 colors max, colors after the 8th one will not be used</b>
     /// </summary>
-    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)<br></br> <b>8 colors max, colors after the 8th one will not be used</b></param>
+    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)
+    /// <br/><b>8 colors max, colors after the 8th one will not be used</b></param>
     public void MakeCustomGradient(List<int[]> _colors)
     {
-        GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count,8)]; //Unity gradients can only take 8 colors max
+        GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count, 8)]; //Unity gradients can only take 8 colors max
         foreach (int[] color in _colors)
-            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3]/100.0f };
+            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3] / 100.0f };
 
         gradient = new Gradient();
         gradient.SetKeys(colorKeys, new GradientAlphaKey[0]);
@@ -266,8 +263,8 @@ public class TempDiagram : MonoBehaviour
         for (int x = 0; x < 1024; x++)
             for (int y = 0; y < 128; y++)
             {
-                Color color = gradient.Evaluate(x/(float)1024);
-                color = new Color(color.r / 255,color.g / 255, color.b / 255, 1);
+                Color color = gradient.Evaluate(x / (float)1024);
+                color = new Color(color.r / 255, color.g / 255, color.b / 255, 1);
                 outputTex.SetPixel(x, y, color);
             }
         outputTex.Apply();
@@ -277,8 +274,8 @@ public class TempDiagram : MonoBehaviour
     /// <summary>
     /// Create a custom gradient and set the gradient to use
     /// </summary>
-    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)</param>
-    /// <param name="_useCustomGradient">if true, temperature colors will use the gradient created with <paramref name="_colors"/>, else they will use the default gradient </param>
+    /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position on the gradient (0-100)</param>
+    /// <param name="_useCustomGradient">if true, temperature colors will use the gradient created with <paramref name="_colors"/>, otherwise they will use the default gradient </param>
     public void SetGradient(List<int[]> _colors, bool _useCustomGradient)
     {
         MakeCustomGradient(_colors);

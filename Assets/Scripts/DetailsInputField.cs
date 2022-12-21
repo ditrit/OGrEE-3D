@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
 
 public class DetailsInputField : MonoBehaviour
 {
@@ -15,30 +16,30 @@ public class DetailsInputField : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
     }
 
-    public void OnValueChanged(string _value)
+    public async void OnValueChanged(string _value)
     {
         if (_value.Contains("-"))
             _value = "0";
 
         List<OgreeObject> objsToUpdate = new List<OgreeObject>();
-        foreach (GameObject go in GameManager.gm.currentItems)
+        foreach (GameObject go in GameManager.instance.currentItems)
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
-            obj?.LoadChildren(_value);
+            await obj.LoadChildren(_value);
     }
 
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.gm.currentItems.Count == 0)
+        if (GameManager.instance.currentItems.Count == 0)
         {
             ActiveInputField(false);
             UpdateInputField("0");
@@ -46,7 +47,7 @@ public class DetailsInputField : MonoBehaviour
         else
         {
             ActiveInputField(true);
-            UpdateInputField(GameManager.gm.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+            UpdateInputField(GameManager.instance.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
         }
     }
 

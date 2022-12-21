@@ -1,105 +1,15 @@
 ﻿using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 using System.Threading.Tasks;
 using System;
 
 public class ReadFromJson
 {
-    #region Room
-    [System.Serializable]
-    public struct SRoomFromJson
-    {
-        public string slug;
-        public string orientation;
-        public float[] sizeWDHm;
-        public string floorUnit;
-        public List<int> center;
-        public List<List<int>> vertices;
-        public int[] technicalArea;
-        public int[] reservedArea;
-        public SSeparator[] separators;
-        public SColor[] colors;
-        public STile[] tiles;
-        public SRow[] rows;
-        public float tileAngle;
-    }
-
-    [System.Serializable]
-    public struct SSeparator
-    {
-        public float[] startPosXYm;
-        public float[] endPosXYm;
-        public string type;
-    }
-
-    [System.Serializable]
-    public struct STile
-    {
-        public string location;
-        public string name;
-        public string label;
-        public string texture;
-        public string color;
-    }
-
-    [System.Serializable]
-    public struct SRow
-    {
-        public string name;
-        public string locationY; // should be posY
-        public string orientation;
-    }
-    #endregion
-
-    #region Object
-    [System.Serializable]
-    public struct STemplate
-    {
-        public string slug;
-        public string description;
-        public string category;
-        public float[] sizeWDHmm;
-        public string fbxModel;
-        public Dictionary<string, string> attributes;
-        public SColor[] colors;
-        public STemplateChild[] components;
-        public STemplateChild[] slots;
-        public STemplateSensor[] sensors;
-    }
-
-    [System.Serializable]
-    public struct STemplateChild
-    {
-        public string location;
-        public string type;
-        public string elemOrient;
-        public float[] elemPos;
-        public float[] elemSize;
-        public string labelPos;
-        public string color;
-        public Dictionary<string, string> attributes;
-    }
-
-    [System.Serializable]
-    public struct STemplateSensor
-    {
-        public string location;
-        public string[] elemPos;
-        public float[] elemSize;
-    }
-
-    [System.Serializable]
-    public struct SColor
-    {
-        public string name;
-        public string value;
-    }
-
-    #endregion
-
+    /// <summary>
+    /// Check if given JSON is a room template and call <see cref="CreateRoomTemplate(SRoomFromJson)"/> if the JSON is valid
+    /// </summary>
+    /// <param name="_json">the JSON to deserialize</param>
     public void CreateRoomTemplateJson(string _json)
     {
         SRoomFromJson roomData;
@@ -107,30 +17,30 @@ public class ReadFromJson
         {
             roomData = JsonConvert.DeserializeObject<SRoomFromJson>(_json);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
         }
         CreateRoomTemplate(roomData);
     }
 
     ///<summary>
-    /// Store room data in GameManager.roomTemplates.
+    /// Store <paramref name="_data"/> in <see cref="GameManager.roomTemplates"/>.
     ///</summary>
-    ///<param name="_json">Json to parse</param>
+    ///<param name="_data">Room data to store</param>
     public void CreateRoomTemplate(SRoomFromJson _data)
     {
-        if (GameManager.gm.roomTemplates.ContainsKey(_data.slug))
+        if (GameManager.instance.roomTemplates.ContainsKey(_data.slug))
             return;
 
-        GameManager.gm.roomTemplates.Add(_data.slug, _data);
+        GameManager.instance.roomTemplates.Add(_data.slug, _data);
     }
 
     ///<summary>
-    /// Create a rack or a device from received json and add it to correct GameManager list
+    /// Create a rack or a device from received JSON and add it to correct <see cref="GameManager"/> list
     ///</summary>
-    ///<param name="_json">Json to parse</param>
+    ///<param name="_json">JSON to parse</param>
     public async Task CreateObjTemplateJson(string _json)
     {
         STemplate data;
@@ -138,9 +48,9 @@ public class ReadFromJson
         {
             data = JsonConvert.DeserializeObject<STemplate>(_json);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            GameManager.gm.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", true, ELogtype.error);
             return;
         }
         await CreateObjectTemplate(data);
@@ -154,12 +64,12 @@ public class ReadFromJson
     {
         if (_data.category != "rack" && _data.category != "device")
         {
-            GameManager.gm.AppendLogLine($"Unknown category for {_data.slug} template.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", true, ELogtype.error);
             return;
         }
-        if (GameManager.gm.objectTemplates.ContainsKey(_data.slug))
+        if (GameManager.instance.objectTemplates.ContainsKey(_data.slug))
         {
-            GameManager.gm.AppendLogLine($"{_data.slug} already exists.", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{_data.slug} already exists.", false, ELogtype.warning);
             return;
         }
 
@@ -189,7 +99,7 @@ public class ReadFromJson
             if (_data.attributes.ContainsKey("type")
                 && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.gm.uSize);
+                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.instance.uSize);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
@@ -210,13 +120,13 @@ public class ReadFromJson
         OgreeObject newObject;
         if (obj.category == "rack")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder);
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.gm.templatePlaceholder.GetChild(0));
+            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             if (string.IsNullOrEmpty(_data.fbxModel))
                 newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             else
@@ -276,8 +186,8 @@ public class ReadFromJson
             r.enabled = false;
         newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 #endif
-        GameManager.gm.allItems.Remove(newObject.hierarchyName);
-        GameManager.gm.objectTemplates.Add(newObject.name, newObject.gameObject);
+        GameManager.instance.allItems.Remove(newObject.hierarchyName);
+        GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
     }
 
     ///<summary>
@@ -287,10 +197,9 @@ public class ReadFromJson
     ///<param name="_data">Data for Slot/Component creation</param>
     ///<param name="_parent">The parent of the Slot/Component</param>
     ///<param name="_customColors">Custom colors to use</param>
-    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent,
-                                Dictionary<string, string> _customColors)
+    private void PopulateSlot(bool _isSlot, STemplateChild _data, OgreeObject _parent, Dictionary<string, string> _customColors)
     {
-        GameObject go = MonoBehaviour.Instantiate(GameManager.gm.labeledBoxModel);
+        GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
         Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
@@ -308,8 +217,8 @@ public class ReadFromJson
         {
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
             go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
-                                                        go.transform.GetChild(0).localScale.x,
-                                                        go.transform.GetChild(0).localScale.z) / 2;
+                                                      go.transform.GetChild(0).localScale.x,
+                                                      go.transform.GetChild(0).localScale.z) / 2;
         }
         else
         {
@@ -331,7 +240,6 @@ public class ReadFromJson
         {
             OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
-            // obj.id // ??
             obj.parentId = _parent.id;
             obj.category = "device";
             obj.domain = _parent.domain;
@@ -355,7 +263,7 @@ public class ReadFromJson
             dod.SetLabelFont("color@888888");
         dod.SetLabel("#name");
 
-        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.gm.defaultMat;
+        go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.defaultMat;
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
         Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
@@ -364,7 +272,7 @@ public class ReadFromJson
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
         {
-            rend.material = GameManager.gm.alphaMat;
+            rend.material = GameManager.instance.alphaMat;
             rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
         }
         else
@@ -384,12 +292,12 @@ public class ReadFromJson
         GameObject newSensor;
         if (_sensor.elemSize.Length == 1)
         {
-            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorIntModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.instance.sensorIntModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * _sensor.elemSize[0] * Vector3.one;
         }
         else
         {
-            newSensor = UnityEngine.Object.Instantiate(GameManager.gm.sensorExtModel, _parent);
+            newSensor = UnityEngine.Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
             newSensor.transform.GetChild(0).localScale = 0.001f * new Vector3(_sensor.elemSize[0], _sensor.elemSize[1], _sensor.elemSize[2]);
         }
         newSensor.name = _sensor.location;
@@ -415,7 +323,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong width pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }
@@ -439,7 +347,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong depth pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }
@@ -463,7 +371,7 @@ public class ReadFromJson
                 }
                 catch (FormatException)
                 {
-                    GameManager.gm.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, eLogtype.error);
+                    GameManager.instance.AppendLogLine($"Wrong height pos value for sensor {_sensor.location} in template {_parent.name}", true, ELogtype.error);
                 }
                 break;
         }

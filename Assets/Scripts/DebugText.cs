@@ -8,11 +8,13 @@ using UnityEditor;
 public class DebugText : MonoBehaviour
 {
     private TextMeshProUGUI txt;
-    private int[] last100FPS = new int[100];
+    private readonly int[] last100FPS = new int[100];
     private int currentIndex = 0;
+#pragma warning disable IDE1006 // Name assignment styles
     public int averageFPS { get; private set; }
     public int goCount { get; private set; }
     public int ooCount { get; private set; }
+#pragma warning restore IDE1006 // Name assignment styles
 
     private void Start()
     {
@@ -50,10 +52,10 @@ public class DebugText : MonoBehaviour
         int racksCount = 0;
         int devicesCount = 0;
 
-        ooCount = GameManager.gm.allItems.Count;
+        ooCount = GameManager.instance.allItems.Count;
         goCount = GameObject.FindObjectsOfType<GameObject>().Length;
 
-        foreach (DictionaryEntry de in GameManager.gm.allItems)
+        foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
             switch (obj.category)
@@ -78,12 +80,12 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        GameManager.gm.AppendLogLine($"Tenants: {tenantsCount}", true);
-        GameManager.gm.AppendLogLine($"Sites: {sitesCount}", true);
-        GameManager.gm.AppendLogLine($"Buildings: {buildingsCount}", true);
-        GameManager.gm.AppendLogLine($"Rooms: {roomsCount}", true);
-        GameManager.gm.AppendLogLine($"Racks: {racksCount}", true);
-        GameManager.gm.AppendLogLine($"Devices: {devicesCount}", true);
+        GameManager.instance.AppendLogLine($"Tenants: {tenantsCount}", true);
+        GameManager.instance.AppendLogLine($"Sites: {sitesCount}", true);
+        GameManager.instance.AppendLogLine($"Buildings: {buildingsCount}", true);
+        GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", true);
+        GameManager.instance.AppendLogLine($"Racks: {racksCount}", true);
+        GameManager.instance.AppendLogLine($"Devices: {devicesCount}", true);
     }
 
     ///<summary>

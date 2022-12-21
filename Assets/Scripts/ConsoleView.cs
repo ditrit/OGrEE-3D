@@ -17,14 +17,14 @@ public class ConsoleView : MonoBehaviour
     {
         if (console != null)
         {
-            console.logChanged += OnLogChanged;
+            console.LogChanged += OnLogChanged;
         }
-        UpdateLogStr(console.log);
+        UpdateLogStr(console.Log);
     }
 
     private void OnDestroy()
     {
-        console.logChanged -= OnLogChanged;
+        console.LogChanged -= OnLogChanged;
     }
 
     ///<summary>

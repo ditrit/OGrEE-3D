@@ -19,8 +19,6 @@ public class ConfigLoader
         public Dictionary<string, string> textures;
         public Dictionary<string, string> colors;
         public float alphaOnInteract;
-        public string apiUrl;
-        public string apiToken;
         public int temperatureMinC;
         public int temperatureMaxC;
         public int temperatureMinF;
@@ -31,7 +29,7 @@ public class ConfigLoader
 
     private SConfig config;
     private bool verbose = false;
-    private string cacheDirName = ".ogreeCache";
+    private readonly string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file, look for CLI overrides and starts with --file if given.
@@ -41,11 +39,11 @@ public class ConfigLoader
         string fileType = LoadConfigFile();
         OverrideConfig();
         ApplyConfig();
-        GameManager.gm.AppendLogLine($"Load {fileType} config file", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
 
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
-            GameManager.gm.consoleController.RunCommandString($".cmds:{startFile}");
+            GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
     }
 
     ///<summary>
@@ -71,7 +69,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen", "--apiUrl", "--apiToken" };
+        string[] args = new string[] { "--verbose", "--fullscreen" };
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -85,14 +83,7 @@ public class ConfigLoader
                     case 1:
                         config.fullscreen = bool.Parse(str);
                         break;
-                    case 2:
-                        config.apiUrl = str;
-                        break;
-                    case 3:
-                        config.apiToken = str;
-                        break;
                 }
-
             }
         }
     }
@@ -112,7 +103,7 @@ public class ConfigLoader
         }
         catch (System.Exception _e)
         {
-            GameManager.gm.AppendLogLine(_e.Message, false, eLogtype.warning);
+            GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
             return "default";
         }
     }
@@ -155,7 +146,7 @@ public class ConfigLoader
         config.temperatureMinF = _custom.temperatureMinF;
         config.temperatureMaxF = _custom.temperatureMaxF;
         bool canUpdateTempGradient = true;
-        if (_custom.customTemperatureGradient.Length >= 2)
+        if (_custom.customTemperatureGradient.Length >= 2 && _custom.customTemperatureGradient.Length <= 8)
         {
             foreach (int[] tab in _custom.customTemperatureGradient)
             {
@@ -175,13 +166,13 @@ public class ConfigLoader
     {
         verbose = config.verbose;
 
-        GameManager.gm.server.SetupPorts(config.cliPort);
+        GameManager.instance.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
-        SetMaterialColor("selection", GameManager.gm.selectMat);
-        SetMaterialColor("focus", GameManager.gm.focusMat);
-        SetMaterialColor("edit", GameManager.gm.editMat);
-        SetMaterialColor("highlight", GameManager.gm.highlightMat);
+        SetMaterialColor("selection", GameManager.instance.selectMat);
+        SetMaterialColor("focus", GameManager.instance.focusMat);
+        SetMaterialColor("edit", GameManager.instance.editMat);
+        SetMaterialColor("highlight", GameManager.instance.highlightMat);
     }
 
     ///<summary> 
@@ -191,7 +182,7 @@ public class ConfigLoader
     private void FullScreenMode(bool _value)
     {
         if (verbose)
-            GameManager.gm.AppendLogLine($"Fullscreen: {_value}", false);
+            GameManager.instance.AppendLogLine($"Fullscreen: {_value}", false);
         Screen.fullScreen = _value;
     }
 
@@ -208,7 +199,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.gm.AppendLogLine($"Cache folder created at {fullPath}", false, eLogtype.success);
+                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", false, ELogtype.success);
             }
         }
         catch (IOException ex)
@@ -252,32 +243,6 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// Save API url and token in config.
-    ///</summary>
-    ///<param name="_url">URL of the API to connect</param>
-    ///<param name="_token">Corresponding authorisation token</param>
-    public void RegisterApi(string _url, string _token)
-    {
-        config.apiUrl = _url;
-        config.apiToken = _token;
-    }
-
-    ///<summary>
-    /// Send a get request to the given url. If no error, initialize ApiManager.
-    ///</summary>
-    ///<returns>The value of ApiManager.isInit</returns>
-    public async Task<bool> ConnectToApi()
-    {
-#if API_DEBUG
-        config.api_url = "https://c.api.ogree.ditrit.io";
-        // config.api_url = "http://172.24.22.55:3001";
-        config.api_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjY4MTM2NTc0MTE1NTc3ODU2MX0.eNWzvP3TwakyHMMPS8HJYW_Jd2GZwbVp-_DHwbB0DaA"; // master key
-#endif
-        await ApiManager.instance.Initialize(config.apiUrl, config.apiToken);
-        return ApiManager.instance.isInit;
-    }
-
-    ///<summary>
     /// Foreach texture declaration in config.textures, load it from url of file.
     /// Also load default "perf22" and "perf29" is needed.
     ///</summary>
@@ -292,28 +257,20 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.gm.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, eLogtype.error);
+                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, ELogtype.error);
             else
-                GameManager.gm.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
+                GameManager.instance.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
-        if (!GameManager.gm.textures.ContainsKey("perf22"))
+        if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf22", false, eLogtype.warning);
-            GameManager.gm.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
+            GameManager.instance.AppendLogLine("Load default texture for perf22", false, ELogtype.warning);
+            GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
-        if (!GameManager.gm.textures.ContainsKey("perf29"))
+        if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.gm.AppendLogLine("Load default texture for perf29", false, eLogtype.warning);
-            GameManager.gm.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
+            GameManager.instance.AppendLogLine("Load default texture for perf29", false, ELogtype.warning);
+            GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
-    }
-
-    ///<summary>
-    /// Get registered API url.
-    ///</summary>
-    public string GetApiUrl()
-    {
-        return config.apiUrl;
     }
 
     ///<summary>
@@ -344,7 +301,7 @@ public class ConfigLoader
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == "°f")
             return (config.temperatureMinF, config.temperatureMaxF);
-        GameManager.gm.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, eLogtype.error);
+        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, ELogtype.error);
         return (0, 0);
     }
 

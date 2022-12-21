@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -30,10 +28,11 @@ public class ModelLoader : MonoBehaviour
     {
         isLocked = true;
 
-        Uri filePath = new Uri($"{GameManager.gm.configLoader.GetCacheDir()}/{_object.name}.fbx");
+        Uri filePath = new Uri($"{GameManager.instance.configLoader.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
+
         // BoxCollider added later
         assetLoaderOptions.GenerateColliders = false;
         assetLoaderOptions.ConvexColliders = false;
@@ -53,7 +52,7 @@ public class ModelLoader : MonoBehaviour
                                                 _object, assetLoaderOptions, null, "fbx");
         }
         while (isLocked)
-            await Task.Delay(10);
+            await Task.Delay(100);
     }
 
     ///<summary>
@@ -63,15 +62,15 @@ public class ModelLoader : MonoBehaviour
     ///<param name="_filePath">The path to write the file</param>
     private async Task DownloadFile(string _url, string _filePath)
     {
-        DirectoryInfo info = new DirectoryInfo(GameManager.gm.configLoader.GetCacheDir());
+        DirectoryInfo info = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
         float totalSize = 0;
         foreach (FileInfo file in info.EnumerateFiles())
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
 
-        if (sizeMo > GameManager.gm.configLoader.GetCacheLimit())
+        if (sizeMo > GameManager.instance.configLoader.GetCacheLimit())
         {
-            GameManager.gm.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, ELogtype.warning);
             return;
         }
 
@@ -82,9 +81,9 @@ public class ModelLoader : MonoBehaviour
                 WebClient client = new WebClient();
                 await client.DownloadFileTaskAsync(_url, _filePath);
             }
-            catch (System.Exception _e)
+            catch (Exception _e)
             {
-                GameManager.gm.AppendLogLine($"Error while downloading file: {_e.Message}", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Error while downloading file: {_e.Message}", true, ELogtype.error);
                 File.Delete(_filePath);
             }
         }
@@ -109,7 +108,7 @@ public class ModelLoader : MonoBehaviour
     }
 
     // This event is called when all model GameObjects and Meshes have been loaded.
-    // There may still Materials and Textures processing at this stage.
+    // There may still be Materials and Textures processing at this stage.
     private void OnLoad(AssetLoaderContext assetLoaderContext)
     {
         Transform triLibWrapper = assetLoaderContext.RootGameObject.transform;
@@ -133,7 +132,6 @@ public class ModelLoader : MonoBehaviour
         triLibObj.GetComponent<Renderer>().enabled = false;
         triLibObj.GetComponent<Collider>().enabled = false;
 #endif
-        // Destroy(triLibWrapper.GetChild(1).gameObject);
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.
@@ -144,5 +142,4 @@ public class ModelLoader : MonoBehaviour
         Destroy(assetLoaderContext.WrapperGameObject.transform.GetChild(1).gameObject);
         isLocked = false;
     }
-
 }

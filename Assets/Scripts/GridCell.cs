@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Text.RegularExpressions;
 
 public class GridCell : MonoBehaviour
 {
@@ -14,14 +10,14 @@ public class GridCell : MonoBehaviour
 
     private void Start()
     {
-        EventManager.Instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     private void OnDestroy()
     {
-        EventManager.Instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
     }
 
     ///<summary>
@@ -51,7 +47,7 @@ public class GridCell : MonoBehaviour
     {
         GameObject previousGrid = GetComponent<Rack>().gridForULocation;
         if (previousGrid)
-            Destroy(previousGrid.gameObject);
+            Destroy(previousGrid);
 
         if (_location != currentGridLocation)
         {
@@ -74,9 +70,9 @@ public class GridCell : MonoBehaviour
 
         Vector3 newPosition = grid.transform.position;
         if (GetComponent<Rack>().attributes["heightUnit"] == "OU")
-            newPosition.y = _height - GameManager.gm.ouSize / 2;
+            newPosition.y = _height - GameManager.instance.ouSize / 2;
         else
-            newPosition.y = _height - GameManager.gm.uSize / 2;
+            newPosition.y = _height - GameManager.instance.uSize / 2;
         grid.transform.position = newPosition;
 
         Vector2 size = new Vector2(transform.GetChild(0).localScale.x, transform.GetChild(0).localScale.z) / 10;
@@ -92,5 +88,4 @@ public class GridCell : MonoBehaviour
 
         return grid;
     }
-
 }

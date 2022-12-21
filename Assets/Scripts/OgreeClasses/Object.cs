@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Linq;
@@ -18,15 +16,13 @@ public class OObject : OgreeObject
 
     private void Awake()
     {
-        EventManager.Instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
-        EventManager.Instance.AddListener<OnSelectItemEvent>(OnSelection);
+        EventManager.instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.Instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
-        EventManager.Instance.RemoveListener<OnSelectItemEvent>(OnSelection);
+        EventManager.instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
     }
 
     ///<summary>
@@ -141,7 +137,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("alpha value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("alpha value has to be true or false", true, ELogtype.warning);
             return;
         }
 
@@ -181,7 +177,7 @@ public class OObject : OgreeObject
         {
             UpdateColorByTenant();
             attributes.Remove("color");
-            GameManager.gm.AppendLogLine("Unknown color", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
         }
     }
 
@@ -192,15 +188,6 @@ public class OObject : OgreeObject
             UpdateColorByTenant();
     }
 
-    ///
-    private async void OnSelection(OnSelectItemEvent _e)
-    {
-        if (category == "group")
-            return;
-        if (GameManager.gm.currentItems.Count > 0 && GameManager.gm.currentItems[GameManager.gm.currentItems.Count - 1] == gameObject && currentLod == 0)
-            await LoadChildren("1");
-    }
-
     ///<summary>
     /// Update object's color according to its Tenant.
     ///</summary>
@@ -209,7 +196,7 @@ public class OObject : OgreeObject
         if (string.IsNullOrEmpty(domain))
             return;
 
-        OgreeObject tenant = ((GameObject)GameManager.gm.allItems[domain]).GetComponent<OgreeObject>();
+        OgreeObject tenant = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
@@ -228,7 +215,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("slots value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("slots value has to be true or false", true, ELogtype.warning);
             return;
         }
 
@@ -259,7 +246,7 @@ public class OObject : OgreeObject
         {
             localCS.SetActive(false); //for UI
             Destroy(localCS);
-            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", false, ELogtype.success);
         }
         else
             PopLocalCS(csName);
@@ -274,7 +261,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("slots value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("slots value has to be true or false", true, ELogtype.warning);
             return;
         }
 
@@ -283,7 +270,7 @@ public class OObject : OgreeObject
         if (localCS && _value == "false")
         {
             Destroy(localCS);
-            GameManager.gm.AppendLogLine($"Hide local Coordinate System for {name}", false, eLogtype.success);
+            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", false, ELogtype.success);
         }
         else if (!localCS && _value == "true")
             PopLocalCS(csName);
@@ -295,13 +282,13 @@ public class OObject : OgreeObject
     ///<param name="_name">The name of the local CS</param>
     private void PopLocalCS(string _name)
     {
-        GameObject localCS = Instantiate(GameManager.gm.coordinateSystemModel);
+        GameObject localCS = Instantiate(GameManager.instance.coordinateSystemModel);
         localCS.name = _name;
         localCS.transform.parent = transform;
         localCS.transform.localScale = Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
-        GameManager.gm.AppendLogLine($"Display local Coordinate System for {name}", false, eLogtype.success);
+        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", false, ELogtype.success);
     }
 
     ///<summary>
@@ -314,11 +301,11 @@ public class OObject : OgreeObject
         if (category == "corridor")
         {
             if (_sensorName != "")
-                GameManager.gm.AppendLogLine("Corridors can not have sensors", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine("Corridors can not have sensors", true, ELogtype.warning);
             else if (Regex.IsMatch(_value, "^(cold|warm)$"))
                 attributes["temperature"] = _value;
             else
-                GameManager.gm.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, ELogtype.warning);
         }
         else
         {
@@ -349,10 +336,10 @@ public class OObject : OgreeObject
                 if (sensorTransform)
                     sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
                 else
-                    GameManager.gm.AppendLogLine($"Sensor {_sensorName} does not exist", true, eLogtype.warning);
+                    GameManager.instance.AppendLogLine($"Sensor {_sensorName} does not exist", true, ELogtype.warning);
             }
             else
-                GameManager.gm.AppendLogLine("Temperature must be a numerical value", true, eLogtype.warning);
+                GameManager.instance.AppendLogLine("Temperature must be a numerical value", true, ELogtype.warning);
         }
     }
 

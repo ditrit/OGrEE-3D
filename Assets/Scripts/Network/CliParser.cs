@@ -4,18 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 
-public class CliParser// : MonoBehaviour
+public class CliParser
 {
     #region Structures
-    ///<summary>
-    /// Standard structure, helps to know which kind of data in received.
-    ///</summary>
-    // struct SData
-    // {
-    //     public string type;
-    //     public string data;
-    // }
-
     struct SLogin
     {
         public string api_url;
@@ -44,7 +35,7 @@ public class CliParser// : MonoBehaviour
 
     #endregion
 
-    ReadFromJson rfJson = new ReadFromJson();
+    readonly ReadFromJson rfJson = new ReadFromJson();
 
     ///<summary>
     /// Deserialize CLI input and parse it. 
@@ -59,7 +50,7 @@ public class CliParser// : MonoBehaviour
         }
         catch (System.Exception)
         {
-            GameManager.gm.AppendLogLine("Received data with unknow format.", true, eLogtype.errorCli);
+            GameManager.instance.AppendLogLine("Received data with unknow format.", true, ELogtype.errorCli);
         }
         switch (command["type"])
         {
@@ -72,47 +63,46 @@ public class CliParser// : MonoBehaviour
             case "select":
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
                 if (objsToSelect.Count == 0)
-                    await GameManager.gm.SetCurrentItem(null);
+                    await GameManager.instance.SetCurrentItem(null);
                 else if (objsToSelect.Count == 1)
-                    await GameManager.gm.SetCurrentItem(objsToSelect[0]);
+                    await GameManager.instance.SetCurrentItem(objsToSelect[0]);
                 else
                 {
-                    await GameManager.gm.SetCurrentItem(objsToSelect[0]);
+                    await GameManager.instance.SetCurrentItem(objsToSelect[0]);
                     for (int i = 1; i < objsToSelect.Count; i++)
                     {
                         GameObject obj = objsToSelect[i];
-                        await GameManager.gm.UpdateCurrentItems(obj);
+                        await GameManager.instance.UpdateCurrentItems(obj);
                     }
                 }
                 break;
             case "delete":
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
-                    await GameManager.gm.DeleteItem(GameManager.gm.objectRoot, false);
-                    await GameManager.gm.PurgeTenants();
+                    await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
+                    await GameManager.instance.PurgeTenants();
                 }
                 else
                 {
                     GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
                     if (objToDel)
-                        await GameManager.gm.DeleteItem(objToDel, false);
+                        await GameManager.instance.DeleteItem(objToDel, false);
                     else
-                        GameManager.gm.AppendLogLine("Error on delete", true, eLogtype.errorCli);
+                        GameManager.instance.AppendLogLine("Error on delete", true, ELogtype.errorCli);
                 }
                 break;
             case "focus":
                 GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
                 if (objToFocus)
                 {
-                    await GameManager.gm.SetCurrentItem(objToFocus);
-                    await Task.Delay(100);
-                    await GameManager.gm.FocusItem(objToFocus);
+                    await GameManager.instance.SetCurrentItem(objToFocus);
+                    await GameManager.instance.FocusItem(objToFocus);
                 }
                 else
                 {
-                    int count = GameManager.gm.focus.Count;
+                    int count = GameManager.instance.focus.Count;
                     for (int i = 0; i < count; i++)
-                        await GameManager.gm.UnfocusItem();
+                        await GameManager.instance.UnfocusItem();
                 }
                 break;
             case "create":
@@ -131,7 +121,7 @@ public class CliParser// : MonoBehaviour
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown type", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown type", true, ELogtype.errorCli);
                 break;
         }
     }
@@ -143,8 +133,8 @@ public class CliParser// : MonoBehaviour
     private async Task Login(string _input)
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
-        GameManager.gm.configLoader.RegisterApi(logData.api_url, logData.api_token);
-        await GameManager.gm.configLoader.ConnectToApi();
+        ApiManager.instance.RegisterApi(logData.api_url, logData.api_token);
+        await ApiManager.instance.Initialize();
     }
 
     ///<summary>
@@ -153,18 +143,29 @@ public class CliParser// : MonoBehaviour
     ///<param name="_input">The SApiObject to deserialize</param>
     private async Task CreateObjectFromData(string _input)
     {
-        SApiObject src = JsonConvert.DeserializeObject<SApiObject>(_input);
-        List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
-        Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
+        SApiObject src = new SApiObject();
+        try
+        {
+            src = JsonConvert.DeserializeObject<SApiObject>(_input);
+        }
+        catch (System.Exception e)
+        {
+            GameManager.instance.AppendLogLine(e.Message, true, ELogtype.errorCli);
+        }
+        if (!string.IsNullOrEmpty(src.category))
+        {
+            List<SApiObject> physicalObjects = new List<SApiObject>();
+            List<SApiObject> logicalObjects = new List<SApiObject>();
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
 
-        foreach (SApiObject obj in physicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            foreach (SApiObject obj in physicalObjects)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        foreach (SApiObject obj in logicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            foreach (SApiObject obj in logicalObjects)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, eLogtype.infoCli);
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
+        }
     }
 
     ///<summary>
@@ -212,8 +213,8 @@ public class CliParser// : MonoBehaviour
                         if (wall.name.Contains("Separator"))
                             Object.Destroy(wall.gameObject);
                     }
-                    List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(newData.attributes["separators"]);
-                    foreach (ReadFromJson.SSeparator sep in separators)
+                    List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(newData.attributes["separators"]);
+                    foreach (SSeparator sep in separators)
                         room.AddSeparator(sep);
                 }
             }
@@ -231,7 +232,7 @@ public class CliParser// : MonoBehaviour
 
         obj.UpdateFromSApiObject(newData);
         if (tenantColorChanged)
-            EventManager.Instance.Raise(new UpdateTenantEvent { name = newData.name });
+            EventManager.instance.Raise(new UpdateTenantEvent { name = newData.name });
     }
 
     ///<summary>
@@ -251,7 +252,7 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     room.SetAttribute(command.param, command.value);
                 else
-                    GameManager.gm.AppendLogLine("Incorrect room interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect room interaction", true, ELogtype.warningCli);
                 break;
             case "rack":
                 Rack rack = (Rack)obj;
@@ -259,7 +260,7 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     rack.SetAttribute(command.param, command.value);
                 else
-                    GameManager.gm.AppendLogLine("Incorrect rack interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect rack interaction", true, ELogtype.warningCli);
                 break;
             case "device":
                 OObject device = (OObject)obj;
@@ -267,7 +268,7 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     device.SetAttribute(command.param, command.value);
                 else
-                    GameManager.gm.AppendLogLine("Incorrect device interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect device interaction", true, ELogtype.warningCli);
                 break;
             case "group":
                 Group group = (Group)obj;
@@ -275,10 +276,10 @@ public class CliParser// : MonoBehaviour
                 if (usableParams.Contains(command.param))
                     group.SetAttribute(command.param, command.value);
                 else
-                    GameManager.gm.AppendLogLine("Incorrect group interaction", true, eLogtype.warningCli);
+                    GameManager.instance.AppendLogLine("Incorrect group interaction", true, ELogtype.warningCli);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown category to interact with", true, eLogtype.warningCli);
+                GameManager.instance.AppendLogLine("Unknown category to interact with", true, ELogtype.warningCli);
                 break;
         }
     }
@@ -292,9 +293,9 @@ public class CliParser// : MonoBehaviour
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
         {
-            case "delay": // ?? Still needed ??
+            case "delay":
                 float time = Utils.ParseDecFrac(manip.data);
-                GameObject.FindObjectOfType<TimerControl>().UpdateTimerValue(time);
+                UiManager.instance.UpdateTimerValue(time);
                 break;
             case "infos":
                 if (manip.data == "true")
@@ -311,12 +312,12 @@ public class CliParser// : MonoBehaviour
             case "highlight":
                 GameObject obj = Utils.GetObjectById(manip.data);
                 if (obj)
-                    EventManager.Instance.Raise(new HighlightEvent { obj = obj });
+                    EventManager.instance.Raise(new HighlightEvent { obj = obj });
                 else
-                    GameManager.gm.AppendLogLine("Error on highlight", true, eLogtype.errorCli);
+                    GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
                 break;
         }
     }
@@ -342,7 +343,7 @@ public class CliParser// : MonoBehaviour
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.gm.AppendLogLine("Unknown command", true, eLogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
                 break;
         }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Room : Building
 {
-    public bool isConvex = true;
+    public bool isSquare = true;
     public SMargin reserved;
     public SMargin technical;
 
@@ -27,7 +27,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.gm.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, ELogtype.error);
             return;
         }
         tilesEdges.gameObject.SetActive(true);
@@ -61,11 +61,11 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("tilesName value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("tilesName value has to be true or false", true, ELogtype.warning);
             return;
         }
 
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (_value == "true")
         {
@@ -74,7 +74,7 @@ public class Room : Building
                 root = new GameObject("tilesNameRoot");
                 root.transform.parent = transform;
                 root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
+                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
                 root.transform.localEulerAngles = Vector3.zero;
                 LoopThroughTiles("name", root.transform);
             }
@@ -84,12 +84,12 @@ public class Room : Building
             if (root)
                 Destroy(root);
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     public void ToggleTilesName()
     {
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesNameRoot")?.gameObject;
         if (root)
         {
@@ -101,11 +101,11 @@ public class Room : Building
             root = new GameObject("tilesNameRoot");
             root.transform.parent = transform;
             root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.003f, GameManager.gm.tileSize) / 2;
+            root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("name", root.transform);
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
 
@@ -117,16 +117,16 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.gm.AppendLogLine("tilesColor value has to be true or false", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", true, ELogtype.warning);
             return;
         }
-        if (!GameManager.gm.roomTemplates.ContainsKey(attributes["template"]))
+        if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.gm.AppendLogLine($"There is no template for {name}", false, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"There is no template for {name}", false, ELogtype.warning);
             return;
         }
 
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (_value == "true")
         {
@@ -135,7 +135,7 @@ public class Room : Building
                 root = new GameObject("tilesColorRoot");
                 root.transform.parent = transform;
                 root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
+                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
                 root.transform.localEulerAngles = Vector3.zero;
                 LoopThroughTiles("color", root.transform);
             }
@@ -145,11 +145,11 @@ public class Room : Building
             if (root)
                 Destroy(root);
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
     public void ToggleTilesColor()
     {
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         GameObject root = transform.Find("tilesColorRoot")?.gameObject;
         if (root)
         {
@@ -161,11 +161,11 @@ public class Room : Building
             root = new GameObject("tilesColorRoot");
             root.transform.parent = transform;
             root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.gm.tileSize, 0.002f, GameManager.gm.tileSize) / 2;
+            root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
             root.transform.localEulerAngles = Vector3.zero;
             LoopThroughTiles("color", root.transform);
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     ///<summary>
@@ -191,7 +191,7 @@ public class Room : Building
             orient = new Vector2(-1, 1);
             offsetX = (int)-reserved.right;
             offsetY = (int)-reserved.bottom;
-            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, 0);
+            _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
         }
         else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
         {
@@ -199,7 +199,7 @@ public class Room : Building
             orient = new Vector2(-1, -1);
             offsetX = (int)-reserved.right;
             offsetY = (int)-reserved.top;
-            _root.transform.localPosition -= new Vector3(GameManager.gm.tileSize, 0, GameManager.gm.tileSize);
+            _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
         }
         else if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
         {
@@ -207,14 +207,14 @@ public class Room : Building
             orient = new Vector2(1, -1);
             offsetX = (int)-reserved.left;
             offsetY = (int)-reserved.top;
-            _root.transform.localPosition -= new Vector3(0, 0, GameManager.gm.tileSize);
+            _root.transform.localPosition -= new Vector3(0, 0, GameManager.instance.tileSize);
         }
 
-        if (isConvex)
+        if (isSquare)
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
-            float x = size.x / GameManager.gm.tileSize - technical.right - technical.left + offsetX;
-            float y = size.y / GameManager.gm.tileSize - technical.top - technical.bottom + offsetY;
+            float x = size.x / GameManager.instance.tileSize - technical.right - technical.left + offsetX;
+            float y = size.y / GameManager.instance.tileSize - technical.top - technical.bottom + offsetY;
             Vector3 origin = usableZone.localScale / 0.2f;
             _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
@@ -222,7 +222,7 @@ public class Room : Building
             {
                 for (int i = offsetX; i < x; i++)
                 {
-                    Vector2 pos = new Vector2(i, j) * orient * GameManager.gm.tileSize;
+                    Vector2 pos = new Vector2(i, j) * orient * GameManager.instance.tileSize;
 
                     string tileID = $"{i}/{j}";
                     if (_mode == "name")
@@ -234,13 +234,13 @@ public class Room : Building
         }
         else
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 string[] splittedLoc = tile.location.Split('/');
                 int tileX = int.Parse(splittedLoc[0]);
                 int tileY = int.Parse(splittedLoc[1]);
-                Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.gm.tileSize;
+                Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.instance.tileSize;
                 if (_mode == "name")
                     GenerateTileName(_root, pos, tile.location);
                 else if (_mode == "color")
@@ -258,18 +258,18 @@ public class Room : Building
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        STile tileData = new STile();
         if (attributes.ContainsKey("tiles"))
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
             }
         }
 
-        GameObject tileText = Instantiate(GameManager.gm.tileNameModel);
+        GameObject tileText = Instantiate(GameManager.instance.tileNameModel);
         tileText.name = $"Text_{_id}";
         tileText.transform.SetParent(_root);
         tileText.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
@@ -290,26 +290,26 @@ public class Room : Building
     private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        ReadFromJson.STile tileData = new ReadFromJson.STile();
+        STile tileData = new STile();
         if (attributes.ContainsKey("tiles"))
         {
-            List<ReadFromJson.STile> tiles = JsonConvert.DeserializeObject<List<ReadFromJson.STile>>(attributes["tiles"]);
-            foreach (ReadFromJson.STile tile in tiles)
+            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
             }
         }
 
-        List<ReadFromJson.SColor> customColors = new List<ReadFromJson.SColor>();
+        List<SColor> customColors = new List<SColor>();
         if (attributes.ContainsKey("customColors"))
-            customColors = JsonConvert.DeserializeObject<List<ReadFromJson.SColor>>(attributes["customColors"]);
+            customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
 
         if (!string.IsNullOrEmpty(tileData.location))
         {
             if (!string.IsNullOrEmpty(tileData.texture) || !string.IsNullOrEmpty(tileData.color))
             {
-                GameObject tile = Instantiate(GameManager.gm.tileModel);
+                GameObject tile = Instantiate(GameManager.instance.tileModel);
                 tile.name = $"Color_{_id}";
                 tile.transform.parent = _root;
                 tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
@@ -317,15 +317,15 @@ public class Room : Building
                 if (!string.IsNullOrEmpty(tileData.texture))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
-                    if (GameManager.gm.textures.ContainsKey(tileData.texture))
+                    if (GameManager.instance.textures.ContainsKey(tileData.texture))
                     {
-                        rend.material = new Material(GameManager.gm.perfMat)
+                        rend.material = new Material(GameManager.instance.perfMat)
                         {
-                            mainTexture = GameManager.gm.textures[tileData.texture]
+                            mainTexture = GameManager.instance.textures[tileData.texture]
                         };
                     }
                     else
-                        GameManager.gm.AppendLogLine($"Unknow texture: {tileData.texture}", false, eLogtype.warning);
+                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", false, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -333,7 +333,7 @@ public class Room : Building
                     Color customColor = new Color();
                     if (tileData.color.StartsWith("@"))
                     {
-                        foreach (ReadFromJson.SColor color in customColors)
+                        foreach (SColor color in customColors)
                         {
                             if (color.name == tileData.color.Substring(1))
                                 ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
@@ -354,17 +354,17 @@ public class Room : Building
     ///<param name="_dim">The dimensions of the reduction</param>
     private void ReduceZone(Transform _zone, SMargin _dim)
     {
-        _zone.localScale -= new Vector3(0, 0, _dim.top) * GameManager.gm.tileSize / 10;
-        _zone.localPosition -= new Vector3(0, 0, _dim.top) * GameManager.gm.tileSize / 2;
+        _zone.localScale -= new Vector3(0, 0, _dim.top) * GameManager.instance.tileSize / 10;
+        _zone.localPosition -= new Vector3(0, 0, _dim.top) * GameManager.instance.tileSize / 2;
 
-        _zone.localScale -= new Vector3(0, 0, _dim.bottom) * GameManager.gm.tileSize / 10;
-        _zone.localPosition += new Vector3(0, 0, _dim.bottom) * GameManager.gm.tileSize / 2;
+        _zone.localScale -= new Vector3(0, 0, _dim.bottom) * GameManager.instance.tileSize / 10;
+        _zone.localPosition += new Vector3(0, 0, _dim.bottom) * GameManager.instance.tileSize / 2;
 
-        _zone.localScale -= new Vector3(_dim.right, 0, 0) * GameManager.gm.tileSize / 10;
-        _zone.localPosition -= new Vector3(_dim.right, 0, 0) * GameManager.gm.tileSize / 2;
+        _zone.localScale -= new Vector3(_dim.right, 0, 0) * GameManager.instance.tileSize / 10;
+        _zone.localPosition -= new Vector3(_dim.right, 0, 0) * GameManager.instance.tileSize / 2;
 
-        _zone.localScale -= new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 10;
-        _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.gm.tileSize / 2;
+        _zone.localScale -= new Vector3(_dim.left, 0, 0) * GameManager.instance.tileSize / 10;
+        _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.instance.tileSize / 2;
     }
 
     ///<summary>
@@ -433,17 +433,17 @@ public class Room : Building
         if (site && site.attributes.ContainsKey("usableColor"))
             usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
         else
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("usableZone"));
+            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("usableZone"));
 
         if (site && site.attributes.ContainsKey("reservedColor"))
             reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["reservedColor"]}");
         else
-            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("reservedZone"));
+            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("reservedZone"));
 
         if (site && site.attributes.ContainsKey("technicalColor"))
             technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["technicalColor"]}");
         else
-            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.gm.configLoader.GetColor("technicalZone"));
+            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("technicalZone"));
     }
 
     ///<summary>
@@ -464,7 +464,7 @@ public class Room : Building
             SetAreas(resDim, techDim);
         }
         else
-            GameManager.gm.AppendLogLine("Syntax error", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
     }
 
     ///<summary>
@@ -475,7 +475,7 @@ public class Room : Building
     {
         if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
         {
-            GameManager.gm.AppendLogLine("Syntax error", true, eLogtype.error);
+            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
             return;
         }
 
@@ -483,7 +483,7 @@ public class Room : Building
         Vector2 startPos = Utils.ParseVector2(data[0]);
         Vector2 endPos = Utils.ParseVector2(data[1]);
 
-        ReadFromJson.SSeparator separator = new ReadFromJson.SSeparator
+        SSeparator separator = new SSeparator
         {
             startPosXYm = new float[] { startPos.x, startPos.y },
             endPosXYm = new float[] { endPos.x, endPos.y }
@@ -495,13 +495,13 @@ public class Room : Building
     /// Add a separator to attributes["separators"] and instantiate it.
     ///</summary>
     ///<param name="_input">The separator data to add</param>
-    public void AddSeparator(ReadFromJson.SSeparator _sep)
+    public void AddSeparator(SSeparator _sep)
     {
-        List<ReadFromJson.SSeparator> separators;
+        List<SSeparator> separators;
         if (attributes.ContainsKey("separators"))
-            separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(attributes["separators"]);
+            separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
         else
-            separators = new List<ReadFromJson.SSeparator>();
+            separators = new List<SSeparator>();
         separators.Add(_sep);
         attributes["separators"] = JsonConvert.SerializeObject(separators);
         BuildSeparator(_sep);
@@ -511,7 +511,7 @@ public class Room : Building
     /// Place the given separator in the room.
     ///</summary>
     ///<param name="_sep">The separator to draw</param>
-    public void BuildSeparator(ReadFromJson.SSeparator _sep)
+    public void BuildSeparator(SSeparator _sep)
     {
         Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
         Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
@@ -520,7 +520,7 @@ public class Room : Building
         float height = Utils.ParseDecFrac(attributes["height"]);
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
-        GameObject separator = Instantiate(GameManager.gm.separatorModel);
+        GameObject separator = Instantiate(GameManager.instance.separatorModel);
         separator.transform.parent = walls;
 
         // Set textured box
@@ -530,7 +530,7 @@ public class Room : Building
         if (_sep.type == "wireframe")
             rend.material.mainTextureScale = new Vector2(length, height) * 1.5f;
         else
-            rend.material = GameManager.gm.defaultMat;
+            rend.material = GameManager.instance.defaultMat;
 
         // Place the separator in the right place
         if (technicalZone)

@@ -19,9 +19,9 @@ public class BuildingGenerator
             hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
         else
             hierarchyName = _bd.name;
-        if (GameManager.gm.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -30,7 +30,7 @@ public class BuildingGenerator
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
-        GameObject newBD = Object.Instantiate(GameManager.gm.buildingModel);
+        GameObject newBD = Object.Instantiate(GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
         newBD.transform.localEulerAngles = Vector3.zero;
@@ -49,8 +49,7 @@ public class BuildingGenerator
 
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
-        GameManager.gm.allItems.Add(hierarchyName, newBD);
-
+        GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;
     }
 
@@ -67,20 +66,20 @@ public class BuildingGenerator
             hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
         else
             hierarchyName = _ro.name;
-        if (GameManager.gm.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.gm.AppendLogLine($"{hierarchyName} already exists.", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
-        ReadFromJson.SRoomFromJson template = new ReadFromJson.SRoomFromJson();
+        SRoomFromJson template = new SRoomFromJson();
         if (!string.IsNullOrEmpty(_ro.attributes["template"]))
         {
-            if (GameManager.gm.roomTemplates.ContainsKey(_ro.attributes["template"]))
-                template = GameManager.gm.roomTemplates[_ro.attributes["template"]];
+            if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
+                template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.gm.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, eLogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, ELogtype.error);
                 return null;
             }
         }
@@ -92,9 +91,9 @@ public class BuildingGenerator
 
         GameObject newRoom;
         if (template.vertices != null)
-            newRoom = Object.Instantiate(GameManager.gm.nonConvexRoomModel);
+            newRoom = Object.Instantiate(GameManager.instance.nonConvexRoomModel);
         else
-            newRoom = Object.Instantiate(GameManager.gm.roomModel);
+            newRoom = Object.Instantiate(GameManager.instance.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = _parent;
 
@@ -105,29 +104,15 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             NonSquareRoomGenerator.CreateShape(newRoom, template);
-
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
-
             if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-                // newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-                // newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-                // newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-            }
             else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
-            {
                 newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-                // newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-            }
         }
         else
         {
@@ -178,7 +163,7 @@ public class BuildingGenerator
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-        GameManager.gm.allItems.Add(hierarchyName, newRoom);
+        GameManager.instance.allItems.Add(hierarchyName, newRoom);
 
         if (template.vertices == null)
         {
@@ -198,30 +183,30 @@ public class BuildingGenerator
 
             if (template.separators != null && !room.attributes.ContainsKey("separators"))
             {
-                foreach (ReadFromJson.SSeparator sep in template.separators)
-                    room.AddSeparator(sep); // Will be updated to works with non convex walls
+                foreach (SSeparator sep in template.separators)
+                    room.AddSeparator(sep);
             }
 
             if (template.tiles != null)
             {
-                List<ReadFromJson.STile> tiles = new List<ReadFromJson.STile>();
-                foreach (ReadFromJson.STile t in template.tiles)
+                List<STile> tiles = new List<STile>();
+                foreach (STile t in template.tiles)
                     tiles.Add(t);
                 room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
             }
 
             if (template.rows != null)
             {
-                List<ReadFromJson.SRow> rows = new List<ReadFromJson.SRow>();
-                foreach (ReadFromJson.SRow r in template.rows)
+                List<SRow> rows = new List<SRow>();
+                foreach (SRow r in template.rows)
                     rows.Add(r);
                 room.attributes["rows"] = JsonConvert.SerializeObject(rows);
             }
 
             if (template.colors != null)
             {
-                List<ReadFromJson.SColor> colors = new List<ReadFromJson.SColor>();
-                foreach (ReadFromJson.SColor c in template.colors)
+                List<SColor> colors = new List<SColor>();
+                foreach (SColor c in template.colors)
                     colors.Add(c);
                 room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
@@ -229,8 +214,8 @@ public class BuildingGenerator
 
         if (room.attributes.ContainsKey("separators"))
         {
-            List<ReadFromJson.SSeparator> separators = JsonConvert.DeserializeObject<List<ReadFromJson.SSeparator>>(room.attributes["separators"]);
-            foreach (ReadFromJson.SSeparator sep in separators)
+            List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(room.attributes["separators"]);
+            foreach (SSeparator sep in separators)
                 room.BuildSeparator(sep);
         }
 

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    static public GameManager gm;
+    static public GameManager instance;
     public ConsoleController consoleController;
     public Server server;
     public ConfigLoader configLoader = new ConfigLoader();
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
-    public Dictionary<string, ReadFromJson.SRoomFromJson> roomTemplates = new Dictionary<string, ReadFromJson.SRoomFromJson>();
+    public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
@@ -64,11 +64,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (!gm)
-            gm = this;
+        if (!instance)
+            instance = this;
         else
             Destroy(this);
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         server.StartServer();
         StartCoroutine(configLoader.LoadTextures());
@@ -77,18 +77,11 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
-#if API_DEBUG
-        configLoader.ConnectToApi();
-#endif
-
-#if !PROD
-        // consoleController.RunCommandString(".cmds:K:/_Orness/Nextcloud/Ogree/4_customers/__DEMO__/testCmds.txt");
-#endif
     }
 
     private void OnDestroy()
     {
-        AppendLogLine("--- Client closed ---\n\n", true, eLogtype.info);
+        AppendLogLine("--- Client closed ---\n\n", true, ELogtype.info);
     }
 
     #endregion
@@ -123,7 +116,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
-                AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
+                AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
                 OObject currentSelected = _obj.GetComponent<OObject>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in currentItems)
@@ -148,11 +141,12 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-
+                if (_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                    await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             }
             else // deselection => unload children if level of details is <=1
             {
-                AppendLogLine("Empty selection.", true, eLogtype.success);
+                AppendLogLine("Empty selection.", true, ELogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
@@ -165,9 +159,9 @@ public class GameManager : MonoBehaviour
             if (_obj)
                 currentItems.Add(_obj);
 
-            EventManager.Instance.Raise(new OnSelectItemEvent());
+            EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        catch (System.Exception _e)
+        catch (Exception _e)
         {
             Debug.LogError(_e);
         }
@@ -176,18 +170,19 @@ public class GameManager : MonoBehaviour
     ///<summary>
     /// Add selected object to currentItems if not in it, else remove it.
     ///</summary>
+    ///<param name="_obj">The object to be added or removed from the selection</param>
     public async Task UpdateCurrentItems(GameObject _obj)
     {
         previousItems = currentItems.GetRange(0, currentItems.Count);
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
             || currentItems[0].transform.parent != _obj.transform.parent)
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, eLogtype.warning);
+            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, ELogtype.warning);
             return;
         }
         if (currentItems.Contains(_obj))
         {
-            AppendLogLine($"Remove {_obj.name} from selection.", true, eLogtype.success);
+            AppendLogLine($"Remove {_obj.name} from selection.", true, ELogtype.success);
             currentItems.Remove(_obj);
             if (currentItems.Count == 0)
             {
@@ -208,21 +203,18 @@ public class GameManager : MonoBehaviour
                     //Are the previous and current selection both a rack or smaller and part of the same rack ?
                     if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
                         unloadChildren = false;
-
                 }
                 //if no to the previous question and previousSelected is a rack or smaller, unload its children
                 if (unloadChildren)
-                {
                     await currentDeselected.LoadChildren("0");
-                }
             }
         }
         else
         {
-            AppendLogLine($"Select {_obj.name}.", true, eLogtype.success);
+            AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
             currentItems.Add(_obj);
         }
-        EventManager.Instance.Raise(new OnSelectItemEvent());
+        EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
@@ -231,13 +223,13 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj.GetComponent<OgreeObject>().category == "corridor")
+        if (_obj && _obj.GetComponent<OgreeObject>().category == "corridor")
             return;
 
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, eLogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, ELogtype.warning);
             return;
         }
 
@@ -251,7 +243,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
-            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
             await UnfocusItem();
@@ -265,10 +257,10 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
 
-        EventManager.Instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
         {
-            EventManager.Instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
             await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
@@ -342,7 +334,6 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < tnToDel.Count; i++)
             Destroy(tnToDel[i]);
-
     }
 
     ///<summary>
@@ -365,20 +356,20 @@ public class GameManager : MonoBehaviour
     ///<param name="_line">The text to display</param>
     ///<param name="_writeInCli">Should the message be send to the CLI ?</param>
     ///<param name="_type">The type of message. Default is info</param>
-    public void AppendLogLine(string _line, bool _writeInCli, eLogtype _type = eLogtype.info)
+    public void AppendLogLine(string _line, bool _writeInCli, ELogtype _type = ELogtype.info)
     {
         if (!writeLogs)
             return;
 
         // Legacy build-in CLI
         string color = "";
-        if (_type == eLogtype.info || _type == eLogtype.infoCli || _type == eLogtype.infoApi)
+        if (_type == ELogtype.info || _type == ELogtype.infoCli || _type == ELogtype.infoApi)
             color = "white";
-        else if (_type == eLogtype.success || _type == eLogtype.successCli || _type == eLogtype.successApi)
+        else if (_type == ELogtype.success || _type == ELogtype.successCli || _type == ELogtype.successApi)
             color = "green";
-        else if (_type == eLogtype.warning || _type == eLogtype.warningCli || _type == eLogtype.warningApi)
+        else if (_type == ELogtype.warning || _type == ELogtype.warningCli || _type == ELogtype.warningApi)
             color = "yellow";
-        else if (_type == eLogtype.error || _type == eLogtype.errorCli || _type == eLogtype.errorApi)
+        else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
             color = "red";
         if (_writeInCli)
             consoleController.AppendLogLine(_line, color);
@@ -399,10 +390,10 @@ public class GameManager : MonoBehaviour
         WriteLogFile(_line, _type);
         switch (_type)
         {
-            case eLogtype.warning:
+            case ELogtype.warning:
                 Debug.LogWarning(_line);
                 break;
-            case eLogtype.error:
+            case ELogtype.error:
                 Debug.LogError(_line);
                 break;
             default:
@@ -416,7 +407,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_str">The message to write</param>
     ///<param name="_type">The type of message</param>
-    private void WriteLogFile(string _str, eLogtype _type)
+    private void WriteLogFile(string _str, ELogtype _type)
     {
         if (string.IsNullOrEmpty(startDateTime))
         {
@@ -428,40 +419,40 @@ public class GameManager : MonoBehaviour
         string type = "";
         switch (_type)
         {
-            case eLogtype.info:
+            case ELogtype.info:
                 type = "INFO";
                 break;
-            case eLogtype.infoCli:
+            case ELogtype.infoCli:
                 type = "INFO [CLI]";
                 break;
-            case eLogtype.infoApi:
+            case ELogtype.infoApi:
                 type = "INFO [API]";
                 break;
-            case eLogtype.success:
+            case ELogtype.success:
                 type = "SUCCESS";
                 break;
-            case eLogtype.successCli:
+            case ELogtype.successCli:
                 type = "SUCCESS [CLI]";
                 break;
-            case eLogtype.successApi:
+            case ELogtype.successApi:
                 type = "SUCCESS [API]";
                 break;
-            case eLogtype.warning:
+            case ELogtype.warning:
                 type = "WARNING";
                 break;
-            case eLogtype.warningCli:
+            case ELogtype.warningCli:
                 type = "WARNING [CLI]";
                 break;
-            case eLogtype.warningApi:
+            case ELogtype.warningApi:
                 type = "WARNING [API]";
                 break;
-            case eLogtype.error:
+            case ELogtype.error:
                 type = "ERROR";
                 break;
-            case eLogtype.errorCli:
+            case ELogtype.errorCli:
                 type = "ERROR [CLI]";
                 break;
-            case eLogtype.errorApi:
+            case ELogtype.errorApi:
                 type = "ERROR [API]";
                 break;
         }
@@ -473,10 +464,8 @@ public class GameManager : MonoBehaviour
         try
         {
             fs = new FileStream(fileName, FileMode.Append);
-            using (StreamWriter writer = new StreamWriter(fs))
-            {
-                writer.Write($"{dateTime} | {type} : {_str}");
-            }
+            using StreamWriter writer = new StreamWriter(fs);
+            writer.Write($"{dateTime} | {type} : {_str}");
         }
         catch (Exception _e)
         {
@@ -487,12 +476,12 @@ public class GameManager : MonoBehaviour
             if (fs != null)
                 fs.Dispose();
         }
-
     }
 
     ///<summary>
     /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
     ///</summary>
+    ///<param name="_value">If the button should be interatable</param>
     ///<param name="_lastPath">The command file path to store</param>
     public void SetReloadBtn(bool _value, string _lastPath = null)
     {
@@ -501,16 +490,7 @@ public class GameManager : MonoBehaviour
         if (!string.IsNullOrEmpty(lastCmdFilePath))
         {
             UiManager.instance.SetReloadBtn(_value);
-            EventManager.Instance.Raise(new ImportFinishedEvent());
+            EventManager.instance.Raise(new ImportFinishedEvent());
         }
     }
-
-    ///<summary>
-    /// Quit the application.
-    ///</summary>
-    public void QuitApp()
-    {
-        Application.Quit();
-    }
-
 }

@@ -5100,7 +5100,6 @@ GameObject:
   - component: {fileID: 670787559}
   - component: {fileID: 670787558}
   - component: {fileID: 670787557}
-  - component: {fileID: 670787556}
   m_Layer: 5
   m_Name: PanelDebug
   m_TagString: Untagged
@@ -5140,21 +5139,6 @@ RectTransform:
   m_AnchoredPosition: {x: 200, y: 87.4}
   m_SizeDelta: {x: 400, y: 175}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &670787556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 670787554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07f0474cca101f84988b91c3a3bb8778, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  consoleController: {fileID: 773900188}
-  slider: {fileID: 1157218563}
-  value: {fileID: 1629995874}
 --- !u!95 &670787557
 Animator:
   serializedVersion: 3
@@ -6091,7 +6075,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2022-12-08 #757000d'
+  m_text: "B: 2022-12-16 #1f7a329\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8176,8 +8160,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 670787556}
-        m_TargetAssemblyTypeName: TimerControl, Assembly-CSharp
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: UpdateTimerValue
         m_Mode: 0
         m_Arguments:
@@ -9067,7 +9051,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.1}
+  m_AnchoredPosition: {x: 0, y: 217.10005}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -9703,7 +9687,7 @@ MonoBehaviour:
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
   walls: {fileID: 0}
-  isConvex: 1
+  isSquare: 1
   reserved:
     left: 0
     right: 0
@@ -12066,7 +12050,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  savedObjectThatWeHover: {fileID: 0}
 --- !u!114 &1595579784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12079,7 +12062,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be465ddcfda8bd34c81824b5ede9b285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wasEdited: 0
 --- !u!114 &1595579785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12104,7 +12086,6 @@ MonoBehaviour:
   heatMapGradient: {fileID: 0}
   heatMapGradientDefault: {fileID: 2800000, guid: c9c6cb4c6d0a4c947a775fa01f1eb500,
     type: 3}
-  heatMapGradientCustom: {fileID: 0}
   heatMapMat: {fileID: 2100000, guid: 83ce5bec56df1834da3e5847d9accc96, type: 2}
 --- !u!114 &1595579787
 MonoBehaviour:
@@ -12176,6 +12157,9 @@ MonoBehaviour:
   toggleTilesColorBtn: {fileID: 1719855463}
   toggleUHelpersBtn: {fileID: 314828351}
   toggleLocalCSBtn: {fileID: 577279989}
+  consoleController: {fileID: 773900188}
+  slider: {fileID: 1157218563}
+  value: {fileID: 1629995874}
   infosPanel: {fileID: 879283137}
   objInfos: {fileID: 879283141}
   detailsInputField: {fileID: 791282066}
@@ -14017,7 +14001,6 @@ GameObject:
   - component: {fileID: 1824023892}
   - component: {fileID: 1824023891}
   - component: {fileID: 1824023890}
-  - component: {fileID: 1824023889}
   m_Layer: 5
   m_Name: ButtonActivateFocusHandlersUpdateArray
   m_TagString: Untagged
@@ -14045,18 +14028,6 @@ RectTransform:
   m_AnchoredPosition: {x: -307.7, y: -81.1}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1824023889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1824023887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db953d538156e4f4cb68aa5975327f27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1824023890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14101,8 +14072,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1824023889}
-        m_TargetAssemblyTypeName: FocusHandlerEventRaiser, Assembly-CSharp
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: FocusHandlerUpdateArrayButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -16174,8 +16145,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1595579781}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: QuitApp
         m_Mode: 1
         m_Arguments:
@@ -16699,7 +16670,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5648172
+  m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

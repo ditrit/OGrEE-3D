@@ -38,19 +38,19 @@ public class ApiManager : MonoBehaviour
     {
         public string message;
         public string status;
-        public ReadFromJson.STemplate data;
+        public STemplate data;
     }
 
     private struct SRoomResp
     {
         public string message;
         public string status;
-        public ReadFromJson.SRoomFromJson data;
+        public SRoomFromJson data;
     }
 
     public static ApiManager instance;
 
-    private HttpClient httpClient = new HttpClient();
+    private readonly HttpClient httpClient = new HttpClient();
 
     public bool isInit = false;
 
@@ -59,7 +59,10 @@ public class ApiManager : MonoBehaviour
 
     [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
 
-    private ReadFromJson rfJson = new ReadFromJson();
+    private readonly ReadFromJson rfJson = new ReadFromJson();
+
+    private string url;
+    private string token;
 
     private void Awake()
     {
@@ -81,33 +84,51 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Save API url and token.
+    ///</summary>
+    ///<param name="_url">URL of the API to connect</param>
+    ///<param name="_token">Corresponding authorisation token</param>
+    public void RegisterApi(string _url, string _token)
+    {
+        url = _url;
+        token = _token;
+    }
+
+    ///<summary>
+    /// Get registered API url.
+    ///</summary>
+    ///<returns>The registered url</returns>
+    public string GetApiUrl()
+    {
+        return url;
+    }
+
+    ///<summary>
     /// Initialize the manager with url and token. 
     ///</summary>
-    ///<param name="_serverUrl">The base url of the API to use</param>
-    ///<param name="_token">The auth token of the API to use</param>
-    public async Task Initialize(string _serverUrl, string _token)
+    public async Task Initialize()
     {
-        if (string.IsNullOrEmpty(_serverUrl))
-            GameManager.gm.AppendLogLine("Failed to connect with API: no url", true, eLogtype.errorApi);
-        else if (string.IsNullOrEmpty(_token))
-            GameManager.gm.AppendLogLine("Failed to connect with API: no token", true, eLogtype.errorApi);
+        if (string.IsNullOrEmpty(url))
+            GameManager.instance.AppendLogLine("Failed to connect with API: no url", true, ELogtype.errorApi);
+        else if (string.IsNullOrEmpty(token))
+            GameManager.instance.AppendLogLine("Failed to connect with API: no token", true, ELogtype.errorApi);
         else
         {
-            server = _serverUrl + "/api";
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _token);
+            server = url + "/api";
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                string response = await httpClient.GetStringAsync($"{_serverUrl}/api/token/valid");
+                string response = await httpClient.GetStringAsync($"{url}/api/token/valid");
                 isReady = true;
                 isInit = true;
-                GameManager.gm.AppendLogLine("Connected to API", true, eLogtype.successApi);
+                GameManager.instance.AppendLogLine("Connected to API", true, ELogtype.successApi);
             }
             catch (HttpRequestException e)
             {
-                GameManager.gm.AppendLogLine($"Error while connecting to API: {e.Message}", true, eLogtype.errorApi);
+                GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", true, ELogtype.errorApi);
             }
         }
-        EventManager.Instance.Raise(new ConnectApiEvent());
+        EventManager.instance.Raise(new ConnectApiEvent());
     }
 
     ///<summary>
@@ -116,12 +137,13 @@ public class ApiManager : MonoBehaviour
     ///<param name="_obj">The OgreeObject to put</param>
     public void CreatePutRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest();
-        request.type = "put";
-
         SApiObject apiObj = new SApiObject(_obj);
-        request.path = $"/{apiObj.category}s/{apiObj.id}";
-        request.json = JsonConvert.SerializeObject(apiObj);
+        SRequest request = new SRequest
+        {
+            type = "put",
+            path = $"/{apiObj.category}s/{apiObj.id}",
+            json = JsonConvert.SerializeObject(apiObj)
+        };
         requestsToSend.Enqueue(request);
     }
 
@@ -131,9 +153,11 @@ public class ApiManager : MonoBehaviour
     ///<param name="_obj">The OgreeObject to delete</param>
     public void CreateDeleteRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest();
-        request.type = "delete";
-        request.path = $"/{_obj.category}s/{_obj.id}";
+        SRequest request = new SRequest
+        {
+            type = "delete",
+            path = $"/{_obj.category}s/{_obj.id}"
+        };
         requestsToSend.Enqueue(request);
     }
 
@@ -151,11 +175,11 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PutAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine(responseStr, false, ELogtype.infoApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
         }
 
         isReady = true;
@@ -174,11 +198,11 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.DeleteAsync(fullPath);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine(responseStr, false, ELogtype.infoApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
         }
 
         isReady = true;
@@ -194,22 +218,22 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warning);
+            GameManager.instance.AppendLogLine("Not connected to API", true, ELogtype.warning);
             return;
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
 
         string fullPath = $"{server}/{_input}";
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.gm.AppendLogLine($"{response}", false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine($"{response}", false, ELogtype.infoApi);
             await _callback(response);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
+            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         }
     }
 
@@ -223,22 +247,22 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
+            GameManager.instance.AppendLogLine("Not connected to API", true, ELogtype.warningApi);
             return default;
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
 
         string fullPath = $"{server}/{_input}";
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.gm.AppendLogLine($"From API: {response}", false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine($"From API: {response}", false, ELogtype.infoApi);
             return await _callback(response);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
+            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
             return default;
         }
     }
@@ -252,7 +276,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
+            GameManager.instance.AppendLogLine("Not connected to API", true, ELogtype.warningApi);
             return;
         }
         string json = JsonConvert.SerializeObject(_obj);
@@ -264,16 +288,16 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine(responseStr, false, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
                 await CreateItemFromJson(responseStr);
             else
-                GameManager.gm.AppendLogLine($"Fail to post on server", false, eLogtype.errorApi);
+                GameManager.instance.AppendLogLine($"Fail to post on server", false, ELogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
         }
     }
 
@@ -287,7 +311,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.gm.AppendLogLine("Not connected to API", true, eLogtype.warningApi);
+            GameManager.instance.AppendLogLine("Not connected to API", true, ELogtype.warningApi);
             return;
         }
         Debug.Log(_json);
@@ -298,16 +322,16 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.gm.AppendLogLine(responseStr, false, eLogtype.infoApi);
+            GameManager.instance.AppendLogLine(responseStr, false, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
                 await CreateTemplateFromJson(responseStr, _type);
             else
-                GameManager.gm.AppendLogLine($"Fail to post on server", false, eLogtype.errorApi);
+                GameManager.instance.AppendLogLine($"Fail to post on server", false, ELogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
-            GameManager.gm.AppendLogLine(e.Message, false, eLogtype.errorApi);
+            GameManager.instance.AppendLogLine(e.Message, false, ELogtype.errorApi);
         }
     }
 
@@ -325,8 +349,8 @@ public class ApiManager : MonoBehaviour
             await CreateTemplateFromJson(_input, "room");
         else
         {
-            GameManager.gm.AppendLogLine("Unknown object received", true, eLogtype.errorApi);
-            EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+            GameManager.instance.AppendLogLine("Unknown object received", true, ELogtype.errorApi);
+            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         }
     }
 
@@ -358,7 +382,7 @@ public class ApiManager : MonoBehaviour
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
-        GameManager.gm.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", false, eLogtype.successApi);
+        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", false, ELogtype.successApi);
     }
 
     ///<summary>
@@ -377,6 +401,6 @@ public class ApiManager : MonoBehaviour
             SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
             rfJson.CreateRoomTemplate(resp.data);
         }
-        EventManager.Instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 }

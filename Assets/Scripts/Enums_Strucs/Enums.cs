@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum eLogtype
+public enum ELogtype
 {
     info,
     infoCli,
@@ -23,4 +23,10 @@ public enum EPromptStatus
     wait,
     accept,
     refuse
+}
+public enum ELabelMode
+{
+    FrontAndRear,
+    FloatingOnTop,
+    Hidden
 }
