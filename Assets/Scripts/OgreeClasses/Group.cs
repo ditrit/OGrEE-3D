@@ -78,7 +78,7 @@ public class Group : OObject
             UpdateAlpha("true");
             DisplayContent(true);
             transform.GetChild(0).GetComponent<Collider>().enabled = false;
-            StartCoroutine(ImportFinished());
+            StartCoroutine(Utils.ImportFinished());
         }
         else
         {
@@ -117,14 +117,5 @@ public class Group : OObject
                 content.Add(go);
         }
         return content;
-    }
-
-    ///<summary>
-    /// Wait end of frame to raise a ImportFinishedEvent in order to fill FocusHandler lists for the group content.
-    ///</summary>
-    private IEnumerator ImportFinished()
-    {
-        yield return new WaitForEndOfFrame();
-        EventManager.instance.Raise(new ImportFinishedEvent());
     }
 }

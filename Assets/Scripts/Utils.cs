@@ -287,4 +287,13 @@ public static class Utils
             return null;
         }
     }
+
+    ///<summary>
+    /// Wait end of frame to raise a ImportFinishedEvent in order to fill FocusHandler lists for the group content.
+    ///</summary>
+    public static IEnumerator ImportFinished()
+    {
+        yield return new WaitForEndOfFrame();
+        EventManager.instance.Raise(new ImportFinishedEvent());
+    }
 }
