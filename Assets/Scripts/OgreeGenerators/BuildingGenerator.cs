@@ -47,6 +47,10 @@ public class BuildingGenerator
         building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
+        building.nameText.text = _bd.name;
+        building.nameText.rectTransform.sizeDelta = size;
+        building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
+
         BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
 
         GameManager.instance.allItems.Add(hierarchyName, newBD);

@@ -316,6 +316,7 @@ public class GameManager : MonoBehaviour
             }
         }
         Destroy(_toDel);
+        StartCoroutine(Utils.ImportFinished());
     }
 
     ///<summary>

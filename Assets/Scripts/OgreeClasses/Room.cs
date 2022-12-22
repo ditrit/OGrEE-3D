@@ -16,7 +16,6 @@ public class Room : Building
     public Transform reservedZone;
     public Transform technicalZone;
     public Transform tilesEdges;
-    public TextMeshPro nameText;
 
     ///<summary>
     /// Set usable/reserved/technical areas.
