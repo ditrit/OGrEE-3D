@@ -141,7 +141,8 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
-                if (_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                    && _obj.GetComponent<OgreeObject>().currentLod == 0)
                     await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             }
             else // deselection => unload children if level of details is <=1
@@ -184,6 +185,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Remove {_obj.name} from selection.", true, ELogtype.success);
             currentItems.Remove(_obj);
+            // _obj was the last item in selection
             if (currentItems.Count == 0)
             {
                 OObject oObject = _obj.GetComponent<OObject>();
@@ -203,6 +205,19 @@ public class GameManager : MonoBehaviour
                     //Are the previous and current selection both a rack or smaller and part of the same rack ?
                     if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
                         unloadChildren = false;
+
+                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
+                    if (unloadChildren && previousSelected != null)
+                    {
+                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
+                            await previousSelected.referent.LoadChildren("0");
+                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
+                        {
+                            previousItems.Remove(previousObj);
+                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                                previousItems.Add(previousSelected.referent.gameObject);
+                        }
+                    }
                 }
                 //if no to the previous question and previousSelected is a rack or smaller, unload its children
                 if (unloadChildren)
@@ -211,6 +226,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                && _obj.GetComponent<OgreeObject>().currentLod == 0)
+                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
             currentItems.Add(_obj);
         }
@@ -223,8 +241,11 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && _obj.GetComponent<OgreeObject>().category == "corridor")
+        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == "corridor"))
+        {
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName} should be a rack or a device.", true, ELogtype.warning);
             return;
+        }
 
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
