@@ -69,27 +69,32 @@ public enum State
     RackSelect = 17, // Select, b1_0000 <=> b1_0001
 
     /// <summary>
+    /// A rack is selected and focused
+    /// </summary>
+    RackFocus = Focus | RackSelect,
+
+    /// <summary>
+    /// A rack is selected, focused and edited
+    /// </summary>
+    RackEdit = Edit | RackSelect,
+
+    /// <summary>
     /// A device is selected
     /// </summary>
     DeviceSelect = 33, // Select, b10_0000 <=> b10_0001
 
     /// <summary>
-    /// A rack is selected and focused
-    /// </summary>
-    RackFocus = 83, // Select, Focus, RackSelect, b100_0000 <=> b101_0011
-
-    /// <summary>
     /// A device is selected and focused
     /// </summary>
-    DeviceFocus = 163, // Select, Focus, DeviceSelect, b1000_0000 <=> b1010_0011
-
-    /// <summary>
-    /// A rack is selected, focused and edited
-    /// </summary>
-    RackEdit = 343, // Select, Focus, Edit, RackSelect, RackFocus, b1_0000_0000 <=> b1_0101_0111
+    DeviceFocus = Focus | DeviceSelect,
 
     /// <summary>
     /// A device is selected, focused and edited
     /// </summary>
-    DeviceEdit = 679 // Select, Focus, Edit, DeviceSelect, DeviceFocus, DeviceEdit, b10_0000_0000 <=> b10_1010_0111
+    DeviceEdit = Edit | DeviceSelect,
+
+    /// <summary>
+    /// Racks and devices' color matches their temperature
+    /// </summary>
+    TempColor = 64, // b100_0000
 }
