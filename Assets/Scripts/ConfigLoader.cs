@@ -41,9 +41,9 @@ public class ConfigLoader
         ApplyConfig();
         GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
 
-        string startFile = GetArg("--file");
-        if (!string.IsNullOrEmpty(startFile))
-            GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
+        // string startFile = GetArg("--file");
+        // if (!string.IsNullOrEmpty(startFile))
+        //     GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
     }
 
     ///<summary>

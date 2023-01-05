@@ -765,31 +765,31 @@ public class UiManager : MonoBehaviour
         GameManager.instance.PurgeTemplates();
     }
 
-    ///<summary>
-    /// Called by GUI button: Delete all Tenants and reload last loaded file.
-    ///</summary>
-    public async void ReloadFile()
-    {
-        await GameManager.instance.SetCurrentItem(null);
-        GameManager.instance.focus.Clear();
-        UpdateFocusText();
+    // ///<summary>
+    // /// Called by GUI button: Delete all Tenants and reload last loaded file.
+    // ///</summary>
+    // public async void ReloadFile()
+    // {
+    //     await GameManager.instance.SetCurrentItem(null);
+    //     GameManager.instance.focus.Clear();
+    //     UpdateFocusText();
 
-        await GameManager.instance.PurgeTenants();
-        GameManager.instance.allItems.Clear();
-        GameManager.instance.PurgeTemplates();
-        GameManager.instance.consoleController.variables.Clear();
-        GameManager.instance.consoleController.ResetCounts();
-        StartCoroutine(LoadFile());
-    }
+    //     await GameManager.instance.PurgeTenants();
+    //     GameManager.instance.allItems.Clear();
+    //     GameManager.instance.PurgeTemplates();
+    //     GameManager.instance.consoleController.variables.Clear();
+    //     GameManager.instance.consoleController.ResetCounts();
+    //     StartCoroutine(LoadFile());
+    // }
 
-    ///<summary>
-    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
-    ///</summary>
-    private IEnumerator LoadFile()
-    {
-        yield return new WaitForEndOfFrame();
-        GameManager.instance.consoleController.RunCommandString($".cmds:{GameManager.instance.lastCmdFilePath}");
-    }
+    // ///<summary>
+    // /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
+    // ///</summary>
+    // private IEnumerator LoadFile()
+    // {
+    //     yield return new WaitForEndOfFrame();
+    //     GameManager.instance.consoleController.RunCommandString($".cmds:{GameManager.instance.lastCmdFilePath}");
+    // }
 
     ///<summary>
     /// Called by GUI button: if one and only one room if selected, toggle its bar chart.
@@ -859,7 +859,7 @@ public class UiManager : MonoBehaviour
     public void UpdateTimerValue(float _value)
     {
         slider.value = _value;
-        consoleController.timerValue = _value;
+        // consoleController.timerValue = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
     }

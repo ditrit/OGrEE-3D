@@ -57,7 +57,7 @@ public class ConsoleView : MonoBehaviour
     ///</summary>
     public void RunCommand()
     {
-        console.RunCommandString(inputField.text);
+        // console.RunCommandString(inputField.text);
         inputField.text = "";
     }
 
