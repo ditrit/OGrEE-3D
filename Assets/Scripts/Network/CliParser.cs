@@ -215,7 +215,22 @@ public class CliParser
                     }
                     List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(newData.attributes["separators"]);
                     foreach (SSeparator sep in separators)
-                        room.AddSeparator(sep);
+                        room.BuildSeparator(sep);
+                }
+            }
+            if (newData.attributes.ContainsKey("pillars"))
+            {
+                if ((room.attributes.ContainsKey("pillars") && room.attributes["pillars"] != newData.attributes["pillars"])
+                    || !room.attributes.ContainsKey("pillars"))
+                {
+                    foreach (Transform wall in room.walls)
+                    {
+                        if (wall.name.Contains("Pillar"))
+                            Object.Destroy(wall.gameObject);
+                    }
+                    List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(newData.attributes["pillars"]);
+                    foreach (SPillar pillar in pillars)
+                        room.BuildPillar(pillar);
                 }
             }
             if (newData.attributes.ContainsKey("reserved"))

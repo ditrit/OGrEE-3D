@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
     public GameObject uLocationModel;
     public GameObject coordinateSystemModel;
     public GameObject separatorModel;
+    public GameObject pillarModel;
     public GameObject sensorExtModel;
     public GameObject sensorIntModel;
     public GameObject sensorBarModel;
