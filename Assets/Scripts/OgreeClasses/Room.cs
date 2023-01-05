@@ -493,7 +493,7 @@ public class Room : Building
     ///<summary>
     /// Add a separator to attributes["separators"] and instantiate it.
     ///</summary>
-    ///<param name="_input">The separator data to add</param>
+    ///<param name="_sep">The separator data to add</param>
     public void AddSeparator(SSeparator _sep)
     {
         List<SSeparator> separators;
@@ -543,5 +543,47 @@ public class Room : Building
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+    }
+
+    ///<summary>
+    /// Add a pillar to attributes["pillars"] and instantiate it.
+    ///</summary>
+    ///<param name="_pil">The pillar data to add</param>
+    public void AddPillar(SPillar _pil)
+    {
+        List<SPillar> pillars;
+        if (attributes.ContainsKey("pillars"))
+            pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
+        else
+            pillars = new List<SPillar>();
+        pillars.Add(_pil);
+        attributes["pillars"] = JsonConvert.SerializeObject(pillars);
+        BuildPillar(_pil);
+    }
+
+    ///<summary>
+    /// Place the given pillar in the room.
+    ///</summary>
+    ///<param name="_pil">The pillar to draw</param>
+    public void BuildPillar(SPillar _pil)
+    {
+        float height = Utils.ParseDecFrac(attributes["height"]);
+
+        GameObject pillar = Instantiate(GameManager.instance.pillarModel);
+        pillar.transform.parent = walls;
+
+        pillar.transform.localScale = new Vector3(_pil.sizeXY[0], height, _pil.sizeXY[1]);
+
+        // Place the pillar in the right place
+        if (technicalZone)
+        {
+            Vector3 roomScale = technicalZone.localScale * -5;
+            pillar.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        }
+        else
+            pillar.transform.localPosition = Vector3.zero;
+
+        pillar.transform.localPosition += new Vector3(_pil.centerXY[0], height / 2, _pil.centerXY[1]);
+        pillar.transform.localEulerAngles = new Vector3(0, _pil.rotation, 0);
     }
 }

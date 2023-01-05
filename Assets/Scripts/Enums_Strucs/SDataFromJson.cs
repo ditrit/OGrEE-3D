@@ -42,6 +42,7 @@ public struct SRoomFromJson
     public int[] technicalArea;
     public int[] reservedArea;
     public SSeparator[] separators;
+    public SPillar[] pillars;
     public SColor[] colors;
     public STile[] tiles;
     public SRow[] rows;
@@ -54,6 +55,14 @@ public struct SSeparator
     public float[] startPosXYm;
     public float[] endPosXYm;
     public string type;
+}
+
+[System.Serializable]
+public struct SPillar
+{
+    public float[] centerXY;
+    public float[] sizeXY;
+    public float rotation;
 }
 
 [System.Serializable]
