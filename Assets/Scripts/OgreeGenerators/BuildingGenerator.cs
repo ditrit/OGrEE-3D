@@ -107,6 +107,7 @@ public class BuildingGenerator
 
         if (template.vertices != null)
         {
+            room.isSquare = false;
             NonSquareRoomGenerator.CreateShape(newRoom, template);
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
             if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
@@ -221,13 +222,6 @@ public class BuildingGenerator
             List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(room.attributes["separators"]);
             foreach (SSeparator sep in separators)
                 room.BuildSeparator(sep);
-        }
-
-        if (room.attributes.ContainsKey("pillars"))
-        {
-            List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(room.attributes["pillars"]);
-            foreach (SPillar pillar in pillars)
-                room.BuildPillar(pillar);
         }
 
         return room;
