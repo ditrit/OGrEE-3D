@@ -180,41 +180,41 @@ public class BuildingGenerator
             }
         }
 
-        if (!string.IsNullOrEmpty(template.slug))
-        {
-            if (template.vertices == null)
-                room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
+        // if (!string.IsNullOrEmpty(template.slug))
+        // {
+        //     if (template.vertices == null)
+        //         room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
 
-            if (template.separators != null && !room.attributes.ContainsKey("separators"))
-            {
-                foreach (SSeparator sep in template.separators)
-                    room.AddSeparator(sep);
-            }
+        //     if (template.separators != null && !room.attributes.ContainsKey("separators"))
+        //     {
+        //         foreach (SSeparator sep in template.separators)
+        //             room.AddSeparator(sep);
+        //     }
 
-            if (template.tiles != null)
-            {
-                List<STile> tiles = new List<STile>();
-                foreach (STile t in template.tiles)
-                    tiles.Add(t);
-                room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
-            }
+        //     if (template.tiles != null)
+        //     {
+        //         List<STile> tiles = new List<STile>();
+        //         foreach (STile t in template.tiles)
+        //             tiles.Add(t);
+        //         room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
+        //     }
 
-            if (template.rows != null)
-            {
-                List<SRow> rows = new List<SRow>();
-                foreach (SRow r in template.rows)
-                    rows.Add(r);
-                room.attributes["rows"] = JsonConvert.SerializeObject(rows);
-            }
+        //     if (template.rows != null)
+        //     {
+        //         List<SRow> rows = new List<SRow>();
+        //         foreach (SRow r in template.rows)
+        //             rows.Add(r);
+        //         room.attributes["rows"] = JsonConvert.SerializeObject(rows);
+        //     }
 
-            if (template.colors != null)
-            {
-                List<SColor> colors = new List<SColor>();
-                foreach (SColor c in template.colors)
-                    colors.Add(c);
-                room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
-            }
-        }
+        //     if (template.colors != null)
+        //     {
+        //         List<SColor> colors = new List<SColor>();
+        //         foreach (SColor c in template.colors)
+        //             colors.Add(c);
+        //         room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
+        //     }
+        // }
 
         if (room.attributes.ContainsKey("separators"))
         {

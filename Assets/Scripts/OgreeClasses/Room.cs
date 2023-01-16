@@ -397,10 +397,10 @@ public class Room : Building
                     ParseAreas(_value);
                     updateAttr = true;
                     break;
-                case "separator":
-                    AddSeparator(_value);
-                    updateAttr = true;
-                    break;
+                // case "separator":
+                //     AddSeparator(_value);
+                //     updateAttr = true;
+                //     break;
                 case "tilesName":
                     ToggleTilesName(_value);
                     break;
@@ -466,45 +466,45 @@ public class Room : Building
             GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
     }
 
-    ///<summary>
-    /// Parse and add a separator to attributes["separators"] and instantiate it.
-    ///</summary>
-    ///<param name="_input">The startPos and endPos of the new separator</param>
-    public void AddSeparator(string _input)
-    {
-        if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
-        {
-            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
-            return;
-        }
+    // ///<summary>
+    // /// Parse and add a separator to attributes["separators"] and instantiate it.
+    // ///</summary>
+    // ///<param name="_input">The startPos and endPos of the new separator</param>
+    // public void AddSeparator(string _input)
+    // {
+    //     if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
+    //     {
+    //         GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
+    //         return;
+    //     }
 
-        string[] data = _input.Split('@');
-        Vector2 startPos = Utils.ParseVector2(data[0]);
-        Vector2 endPos = Utils.ParseVector2(data[1]);
+    //     string[] data = _input.Split('@');
+    //     Vector2 startPos = Utils.ParseVector2(data[0]);
+    //     Vector2 endPos = Utils.ParseVector2(data[1]);
 
-        SSeparator separator = new SSeparator
-        {
-            startPosXYm = new float[] { startPos.x, startPos.y },
-            endPosXYm = new float[] { endPos.x, endPos.y }
-        };
-        AddSeparator(separator);
-    }
+    //     SSeparator separator = new SSeparator
+    //     {
+    //         startPosXYm = new float[] { startPos.x, startPos.y },
+    //         endPosXYm = new float[] { endPos.x, endPos.y }
+    //     };
+    //     AddSeparator(separator);
+    // }
 
-    ///<summary>
-    /// Add a separator to attributes["separators"] and instantiate it.
-    ///</summary>
-    ///<param name="_sep">The separator data to add</param>
-    public void AddSeparator(SSeparator _sep)
-    {
-        List<SSeparator> separators;
-        if (attributes.ContainsKey("separators"))
-            separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
-        else
-            separators = new List<SSeparator>();
-        separators.Add(_sep);
-        attributes["separators"] = JsonConvert.SerializeObject(separators);
-        BuildSeparator(_sep);
-    }
+    // ///<summary>
+    // /// Add a separator to attributes["separators"] and instantiate it.
+    // ///</summary>
+    // ///<param name="_sep">The separator data to add</param>
+    // public void AddSeparator(SSeparator _sep)
+    // {
+    //     List<SSeparator> separators;
+    //     if (attributes.ContainsKey("separators"))
+    //         separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
+    //     else
+    //         separators = new List<SSeparator>();
+    //     separators.Add(_sep);
+    //     attributes["separators"] = JsonConvert.SerializeObject(separators);
+    //     BuildSeparator(_sep);
+    // }
 
     ///<summary>
     /// Place the given separator in the room.
@@ -545,21 +545,21 @@ public class Room : Building
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
     }
 
-    ///<summary>
-    /// Add a pillar to attributes["pillars"] and instantiate it.
-    ///</summary>
-    ///<param name="_pil">The pillar data to add</param>
-    public void AddPillar(SPillar _pil)
-    {
-        List<SPillar> pillars;
-        if (attributes.ContainsKey("pillars"))
-            pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
-        else
-            pillars = new List<SPillar>();
-        pillars.Add(_pil);
-        attributes["pillars"] = JsonConvert.SerializeObject(pillars);
-        BuildPillar(_pil);
-    }
+    // ///<summary>
+    // /// Add a pillar to attributes["pillars"] and instantiate it.
+    // ///</summary>
+    // ///<param name="_pil">The pillar data to add</param>
+    // public void AddPillar(SPillar _pil)
+    // {
+    //     List<SPillar> pillars;
+    //     if (attributes.ContainsKey("pillars"))
+    //         pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
+    //     else
+    //         pillars = new List<SPillar>();
+    //     pillars.Add(_pil);
+    //     attributes["pillars"] = JsonConvert.SerializeObject(pillars);
+    //     BuildPillar(_pil);
+    // }
 
     ///<summary>
     /// Place the given pillar in the room.
