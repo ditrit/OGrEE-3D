@@ -224,6 +224,13 @@ public class BuildingGenerator
                 room.BuildSeparator(sep);
         }
 
+        if (room.attributes.ContainsKey("pillars"))
+        {
+            List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(room.attributes["pillars"]);
+            foreach (SPillar pillar in pillars)
+                room.BuildPillar(pillar);
+        }
+
         return room;
     }
 
