@@ -5,7 +5,7 @@ using UnityEngine;
 public class Sensor : MonoBehaviour
 {
     public float temperature = 0f;
-    public string temperatureUnit = "°C";
+    public string temperatureUnit = "";
     public Color color;
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
@@ -26,23 +26,14 @@ public class Sensor : MonoBehaviour
     /// Set this sensor's temperature to _value (converted to float)
     ///</summary>
     ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
+    public async void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);
-        OgreeObject site;
-        if (transform.parent.GetComponent<OObject>())
+        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        if (string.IsNullOrEmpty(temperatureUnit))
         {
-            if (transform.parent.GetComponent<OObject>().referent)
-                site = transform.parent.GetComponent<OObject>().referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-            else if (transform.parent.parent && transform.parent.parent.GetComponent<OgreeObject>().category == "room")
-                site = transform.parent.parent.parent?.parent?.GetComponent<OgreeObject>();
-            else
-                site = transform.parent.parent?.GetComponent<OObject>().referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
+            temperatureUnit = await ApiManager.instance.GetObject($"tempUnit/{transform.parent.GetComponent<OObject>().id}", ApiManager.instance.TempUnitFromAPI);
         }
-        else
-            site = transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-        if (site && site.attributes.ContainsKey("temperatureUnit"))
-            temperatureUnit = site.attributes["temperatureUnit"];
         UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
