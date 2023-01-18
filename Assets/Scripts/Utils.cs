@@ -115,7 +115,7 @@ public static class Utils
             foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
                 GameObject obj = (GameObject)de.Value;
-                if (obj.GetComponent<OgreeObject>().id == _id)
+                if (obj && obj.GetComponent<OgreeObject>().id == _id)
                     return obj;
             }
         }
