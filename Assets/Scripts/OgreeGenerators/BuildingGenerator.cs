@@ -25,33 +25,42 @@ public class BuildingGenerator
             return null;
         }
 
-        // Position and size data from _bd.attributes
+        // Get data from _bd.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
+        float rotation = Utils.ParseDecFrac(_bd.attributes["rotation"]);
 
         GameObject newBD = Object.Instantiate(GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
-        newBD.transform.localEulerAngles = Vector3.zero;
 
-        // originalSize
-        Vector3 originalSize = newBD.transform.GetChild(0).localScale;
-        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+        // Apply rotation
+        newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
 
-        Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
-        newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
+        // Apply size & move the floor to have the container at the lower left corner of it
+        Transform floor = newBD.transform.GetChild(0);
+        Vector3 originalSize = floor.localScale;
+        floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+        floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
+
+        // Apply posXY
+        newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
 
         Building building = newBD.GetComponent<Building>();
         building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
+        // Align walls & nameText to the floor & setup nameText
+        building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
+        building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+        
+        // Setup nameText
         building.nameText.text = _bd.name;
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
 
-        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
+        BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
 
         GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;
