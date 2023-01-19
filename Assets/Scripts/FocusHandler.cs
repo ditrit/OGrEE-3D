@@ -255,7 +255,6 @@ public class FocusHandler : MonoBehaviour
             if (!group || (group && group.isDisplayed))
                 UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
             UpdateChildMeshRenderers(false);
-
         }
         else if (_e.obj == gameObject)
         {
