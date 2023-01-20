@@ -16,6 +16,7 @@ public class Room : Building
     public Transform reservedZone;
     public Transform technicalZone;
     public Transform tilesEdges;
+    public string temperatureUnit;
 
     ///<summary>
     /// Set usable/reserved/technical areas.

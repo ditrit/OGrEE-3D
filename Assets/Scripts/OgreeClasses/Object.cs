@@ -13,6 +13,7 @@ public class OObject : OgreeObject
     /// </summary>
     public OObject referent;
     public GameObject tempBar;
+    public string temperatureUnit;
 
     private void Awake()
     {
@@ -366,7 +367,6 @@ public class OObject : OgreeObject
         float min = float.NaN;
         float max = float.NaN;
         string hottestChild = "";
-        string temperatureUnit = "";
 
         List<(float temp, float volume, string childName)> tempsNoNaN = temps.Where(v => !(v.temp is float.NaN)).ToList();
         float totalEffectiveVolume = tempsNoNaN.Sum(v => v.volume);
@@ -385,9 +385,6 @@ public class OObject : OgreeObject
             max = tempsNoNaN.Max(v => v.temp);
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
-        OgreeObject site = referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-        if (site && site.attributes.ContainsKey("temperatureUnit"))
-            temperatureUnit = site.attributes["temperatureUnit"];
         return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
     }
 

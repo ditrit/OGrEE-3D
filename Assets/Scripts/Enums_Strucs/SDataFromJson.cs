@@ -128,4 +128,10 @@ public struct SColor
     public string value;
 }
 
+[System.Serializable]
+public struct STempUnit
+{
+    public string temperatureUnit;
+}
+
 #endregion

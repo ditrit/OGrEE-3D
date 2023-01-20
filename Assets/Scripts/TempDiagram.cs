@@ -90,11 +90,6 @@ public class TempDiagram : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, ELogtype.warning); break;
         }
 
-        string tempUnit = "";
-        OgreeObject site = _room.transform.parent?.parent?.GetComponent<OgreeObject>();
-        if (site && site.attributes.ContainsKey("temperatureUnit"))
-            tempUnit = site.attributes["temperatureUnit"];
-
         EventManager.instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
 
         if (!isDiagramShown)
@@ -103,7 +98,7 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject && !childTransform.GetComponent<Group>())
-                    ComputeTempBar(childOgreeObject, tempUnit, roomHeight);
+                    ComputeTempBar(childOgreeObject, _room.temperatureUnit, roomHeight);
             }
             lastRoom = _room;
         }

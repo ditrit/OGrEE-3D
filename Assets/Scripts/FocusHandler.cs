@@ -251,7 +251,9 @@ public class FocusHandler : MonoBehaviour
     {
         if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
         {
-            UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
+            Group group = GetComponent<Group>();
+            if (!group || (group && group.isDisplayed))
+                UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
             UpdateChildMeshRenderers(false);
         }
         else if (_e.obj == gameObject)
