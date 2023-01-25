@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TMPro;
@@ -11,7 +10,7 @@ public class Room : Building
     public SMargin reserved;
     public SMargin technical;
 
-    [Header("RO References")]
+    [Header("Floor layers")]
     public Transform usableZone;
     public Transform reservedZone;
     public Transform technicalZone;
@@ -367,60 +366,6 @@ public class Room : Building
     }
 
     ///<summary>
-    /// Check for a _param attribute and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
-    {
-        bool updateAttr = false;
-        if (_param.StartsWith("description"))
-        {
-            SetDescription(_param.Substring(11), _value);
-            updateAttr = true;
-        }
-        else
-        {
-            switch (_param)
-            {
-                case "domain":
-                    if (_value.EndsWith("@recursive"))
-                    {
-                        string[] data = _value.Split('@');
-                        SetAllDomains(data[0]);
-                    }
-                    else
-                        SetDomain(_value);
-                    updateAttr = true;
-                    break;
-                case "areas":
-                    ParseAreas(_value);
-                    updateAttr = true;
-                    break;
-                // case "separator":
-                //     AddSeparator(_value);
-                //     updateAttr = true;
-                //     break;
-                case "tilesName":
-                    ToggleTilesName(_value);
-                    break;
-                case "tilesColor":
-                    ToggleTilesColor(_value);
-                    break;
-                default:
-                    if (attributes.ContainsKey(_param))
-                        attributes[_param] = _value;
-                    else
-                        attributes.Add(_param, _value);
-                    updateAttr = true;
-                    break;
-            }
-        }
-        if (updateAttr && ApiManager.instance.isInit)
-            PutData();
-    }
-
-    ///<summary>
     /// Set usable/reserved/technical zones color according to parented Site
     ///</summary>
     public void UpdateZonesColor()
@@ -444,67 +389,6 @@ public class Room : Building
         else
             technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("technicalZone"));
     }
-
-    ///<summary>
-    /// Parse a "areas" command and call SetZones().
-    ///</summary>
-    ///<param name="_input">String with zones data to parse</param>
-    private void ParseAreas(string _input)
-    {
-        string patern = "^\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, patern))
-        {
-            _input = _input.Replace("[", "");
-            _input = _input.Replace("]", "");
-            string[] data = _input.Split('@', ',');
-
-            SMargin resDim = new SMargin(data[0], data[1], data[2], data[3]);
-            SMargin techDim = new SMargin(data[4], data[5], data[6], data[7]);
-            SetAreas(resDim, techDim);
-        }
-        else
-            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
-    }
-
-    // ///<summary>
-    // /// Parse and add a separator to attributes["separators"] and instantiate it.
-    // ///</summary>
-    // ///<param name="_input">The startPos and endPos of the new separator</param>
-    // public void AddSeparator(string _input)
-    // {
-    //     if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
-    //     {
-    //         GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
-    //         return;
-    //     }
-
-    //     string[] data = _input.Split('@');
-    //     Vector2 startPos = Utils.ParseVector2(data[0]);
-    //     Vector2 endPos = Utils.ParseVector2(data[1]);
-
-    //     SSeparator separator = new SSeparator
-    //     {
-    //         startPosXYm = new float[] { startPos.x, startPos.y },
-    //         endPosXYm = new float[] { endPos.x, endPos.y }
-    //     };
-    //     AddSeparator(separator);
-    // }
-
-    // ///<summary>
-    // /// Add a separator to attributes["separators"] and instantiate it.
-    // ///</summary>
-    // ///<param name="_sep">The separator data to add</param>
-    // public void AddSeparator(SSeparator _sep)
-    // {
-    //     List<SSeparator> separators;
-    //     if (attributes.ContainsKey("separators"))
-    //         separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
-    //     else
-    //         separators = new List<SSeparator>();
-    //     separators.Add(_sep);
-    //     attributes["separators"] = JsonConvert.SerializeObject(separators);
-    //     BuildSeparator(_sep);
-    // }
 
     ///<summary>
     /// Place the given separator in the room.
@@ -544,22 +428,6 @@ public class Room : Building
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
     }
-
-    // ///<summary>
-    // /// Add a pillar to attributes["pillars"] and instantiate it.
-    // ///</summary>
-    // ///<param name="_pil">The pillar data to add</param>
-    // public void AddPillar(SPillar _pil)
-    // {
-    //     List<SPillar> pillars;
-    //     if (attributes.ContainsKey("pillars"))
-    //         pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
-    //     else
-    //         pillars = new List<SPillar>();
-    //     pillars.Add(_pil);
-    //     attributes["pillars"] = JsonConvert.SerializeObject(pillars);
-    //     BuildPillar(_pil);
-    // }
 
     ///<summary>
     /// Place the given pillar in the room.

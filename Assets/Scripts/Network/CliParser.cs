@@ -199,7 +199,7 @@ public class CliParser
                     item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
 
-        // Case of a separator/areas modification in a room
+        // Case of a separators/pillars/areas modification in a room
         if (newData.category == "room")
         {
             Room room = (Room)obj;
@@ -256,42 +256,105 @@ public class CliParser
     ///<param name="_data">The serialized command to execute</param>
     private void InteractWithObject(string _data)
     {
-        List<string> usableParams;
         SInteract command = JsonConvert.DeserializeObject<SInteract>(_data);
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
         switch (obj.category)
         {
             case "room":
                 Room room = (Room)obj;
-                usableParams = new List<string>() { "tilesName", "tilesColor" };
-                if (usableParams.Contains(command.param))
-                    room.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect room interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "tilesName":
+                        room.ToggleTilesName(command.value);
+                        break;
+                    case "tilesColor":
+                        room.ToggleTilesColor(command.value);
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect room interaction", true, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "rack":
                 Rack rack = (Rack)obj;
-                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS", "U" };
-                if (usableParams.Contains(command.param))
-                    rack.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect rack interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        rack.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        rack.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        rack.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        break;
+                    case "alpha":
+                        rack.UpdateAlpha(command.value);
+                        break;
+                    case "slots":
+                        rack.ToggleSlots(command.value);
+                        break;
+                    case "localCS":
+                        rack.ToggleCS(command.value);
+                        break;
+                    case "U":
+                        if (command.value == "true")
+                            UHelpersManager.instance.ToggleU(rack.transform, true);
+                        else if (command.value == "false")
+                            UHelpersManager.instance.ToggleU(rack.transform, false);
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect rack interaction", true, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "device":
                 OObject device = (OObject)obj;
-                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS" };
-                if (usableParams.Contains(command.param))
-                    device.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect device interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        device.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        device.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        device.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        break;
+                    case "alpha":
+                        device.UpdateAlpha(command.value);
+                        break;
+                    case "slots":
+                        device.ToggleSlots(command.value);
+                        break;
+                    case "localCS":
+                        device.ToggleCS(command.value);
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect device interaction", true, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "group":
                 Group group = (Group)obj;
-                usableParams = new List<string>() { "label", "labelFont", "content" };
-                if (usableParams.Contains(command.param))
-                    group.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect group interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        group.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        group.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        group.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        break;
+                    case "content":
+                        group.ToggleContent(command.value);
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect group interaction", true, ELogtype.warningCli);
+                        break;
+                }
                 break;
             default:
                 GameManager.instance.AppendLogLine("Unknown category to interact with", true, ELogtype.warningCli);

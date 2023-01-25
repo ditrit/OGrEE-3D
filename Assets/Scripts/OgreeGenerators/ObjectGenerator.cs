@@ -645,9 +645,9 @@ public class ObjectGenerator
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
         mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
-            co.SetAttribute("color", "000099");
+            co.SetColor("000099");
         else
-            co.SetAttribute("color", "990000");
+            co.SetColor("990000");
 
         newCo.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
         newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");

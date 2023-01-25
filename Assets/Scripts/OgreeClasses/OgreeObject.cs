@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Threading.Tasks;
 
-public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbackReceiver
+public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
 {
     [Header("Standard attributes")]
     public new string name;
@@ -58,103 +57,6 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
     }
 
     ///<summary>
-    /// Check for a _param attribute and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public virtual void SetAttribute(string _param, string _value)
-    {
-        bool updateAttr = false;
-        if (_param.StartsWith("description"))
-        {
-            SetDescription(_param.Substring(11), _value);
-            updateAttr = true;
-        }
-        else
-        {
-            switch (_param)
-            {
-                case "label":
-                    GetComponent<DisplayObjectData>().SetLabel(_value);
-                    break;
-                case "labelFont":
-                    GetComponent<DisplayObjectData>().SetLabelFont(_value);
-                    break;
-                case "domain":
-                    if (_value.EndsWith("@recursive"))
-                    {
-                        string[] data = _value.Split('@');
-                        SetAllDomains(data[0]);
-                    }
-                    else
-                        SetDomain(_value);
-                    updateAttr = true;
-                    break;
-                default:
-                    if (attributes.ContainsKey(_param))
-                        attributes[_param] = _value;
-                    else
-                        attributes.Add(_param, _value);
-                    updateAttr = true;
-                    break;
-            }
-        }
-        if (updateAttr && ApiManager.instance.isInit)
-            PutData();
-        GetComponent<DisplayObjectData>()?.UpdateLabels();
-    }
-
-    ///<summary>
-    /// Set a description at the correct index.
-    ///</summary>
-    ///<param name="_index">The index to set the description</param>
-    ///<param name="_value">The value of the description</param>
-    protected void SetDescription(string _index, string _value)
-    {
-        string pattern = "^[0-9]+$";
-        if (_index != "0" && Regex.IsMatch(_index, pattern))
-        {
-            int index = int.Parse(_index);
-            if (index > description.Count)
-            {
-                if (index != description.Count + 1)
-                    GameManager.instance.AppendLogLine($"Description set at index {description.Count + 1}.", true, ELogtype.info);
-                description.Add(_value);
-            }
-            else
-                description[index - 1] = _value;
-        }
-        else
-            GameManager.instance.AppendLogLine("Wrong description index.", true, ELogtype.error);
-    }
-
-    ///<summary>
-    /// Change the OgreeObject's domain
-    ///</summary>
-    ///<param name="_newDomain">The domain name to assign</param>
-    protected void SetDomain(string _newDomain)
-    {
-        if (GameManager.instance.allItems.ContainsKey(_newDomain))
-            domain = _newDomain;
-        else
-            GameManager.instance.AppendLogLine($"Tenant \"{_newDomain}\" doesn't exist. Please create it before assign it.", false, ELogtype.warning);
-    }
-
-    ///<summary>
-    /// Change the domain for the OgreeObject and all its children
-    ///</summary>
-    ///<param name="_newDomain">The domain name to assign</param>
-    protected void SetAllDomains(string _newDomain)
-    {
-        SetAttribute("domain", _newDomain);
-        foreach (Transform child in transform)
-        {
-            if (child.GetComponent<OgreeObject>())
-                child.GetComponent<OgreeObject>().SetAttribute("domain", _newDomain);
-        }
-    }
-
-    ///<summary>
     /// Update the OgreeObject's hierarchyName with it's parent's one.
     ///</summary>
     ///<returns>The updated hierarchyName of the object</returns>
@@ -181,6 +83,8 @@ public class OgreeObject : MonoBehaviour, IAttributeModif, ISerializationCallbac
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
+
+        GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
 
     ///<summary>
