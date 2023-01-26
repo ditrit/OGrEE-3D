@@ -172,10 +172,14 @@ public class CliParser
     /// Deserialize given SApiObject and apply modification to corresponding object.
     ///</summary>
     ///<param name="_input">The SApiObject to deserialize</param>
-    private void ModifyObject(string _input)
+    private async void ModifyObject(string _input)
     {
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
         OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
+
+        // Get tenant from API if new domain isn't loaded
+        if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
+            await ApiManager.instance.GetObject($"tenants?name={newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
         bool tenantColorChanged = false;
