@@ -152,17 +152,26 @@ public class CliParser
         {
             GameManager.instance.AppendLogLine(e.Message, true, ELogtype.errorCli);
         }
+
+        List<string> leafIds = new List<string>();
         if (!string.IsNullOrEmpty(src.category))
         {
             List<SApiObject> physicalObjects = new List<SApiObject>();
             List<SApiObject> logicalObjects = new List<SApiObject>();
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
             foreach (SApiObject obj in logicalObjects)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+            foreach (string id in leafIds)
+            {
+                Transform leaf = Utils.GetObjectById(id)?.transform;
+                if (leaf)
+                    Utils.RebuildLods(leaf);
+            }
 
             GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
         }
