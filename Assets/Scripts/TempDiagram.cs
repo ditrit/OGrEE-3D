@@ -125,7 +125,7 @@ public class TempDiagram : MonoBehaviour
         float pixelX;
         GameObject sensorBar;
         STemp tempInfos = _oobject.GetTemperatureInfos();
-        if (!(tempInfos.mean is float.NaN))
+        if (!float.IsNaN(tempInfos.mean))
         {
             (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(_tempUnit);
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);

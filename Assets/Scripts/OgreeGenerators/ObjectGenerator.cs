@@ -740,7 +740,6 @@ public class ObjectGenerator
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.UpdateSensorColor();
         sensor.fromTemplate = false;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");

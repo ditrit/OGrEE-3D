@@ -276,7 +276,7 @@ public class CustomRendererOutline : MonoBehaviour
 
         STemp temp = GetComponent<OObject>().GetTemperatureInfos();
         Material mat = Instantiate(GameManager.instance.defaultMat);
-        if (temp.mean is float.NaN)
+        if  (float.IsNaN(temp.mean))
         {
             mat.color = Color.gray;
         }
