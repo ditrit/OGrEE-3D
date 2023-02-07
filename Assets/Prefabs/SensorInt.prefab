@@ -1005,7 +1005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   temperature: 0
-  temperatureUnit: "\xB0C"
+  temperatureUnit: 
   color: {r: 0, g: 0, b: 0, a: 0}
   fromTemplate: 0
   sensorTempDiagram: {fileID: 0}
@@ -1067,7 +1067,6 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
-  isDeleted: 0
   isSelected: 0
   isFocused: 0
 --- !u!205 &530606338633814678
