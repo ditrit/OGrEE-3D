@@ -107,6 +107,7 @@ public class BuildingGenerator
 
         if (template.vertices != null)
         {
+            room.isSquare = false;
             NonSquareRoomGenerator.CreateShape(newRoom, template);
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
             if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))

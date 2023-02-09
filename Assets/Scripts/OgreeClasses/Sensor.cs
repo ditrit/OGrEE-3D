@@ -4,23 +4,17 @@ using UnityEngine;
 
 public class Sensor : MonoBehaviour
 {
-    public float temperature = 0f;
-    public string temperatureUnit = "°C";
+    public float temperature;
+    public string temperatureUnit = "";
     public Color color;
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
 
     private void Start()
     {
-        if (!fromTemplate)
-            EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
-    private void OnDestroy()
-    {
-        if (!fromTemplate)
-            EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
-    }
     ///<summary>
     /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
     /// Set this sensor's temperature to _value (converted to float)
@@ -29,21 +23,23 @@ public class Sensor : MonoBehaviour
     public void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);
-        OgreeObject site;
-        if (transform.parent.GetComponent<OObject>())
-        {
-            if (transform.parent.GetComponent<OObject>().referent)
-                site = transform.parent.GetComponent<OObject>().referent.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-            else if (transform.parent.parent && transform.parent.parent.GetComponent<OgreeObject>().category == "room")
-                site = transform.parent.parent.parent?.parent?.GetComponent<OgreeObject>();
-            else
-                site = transform.parent.parent?.GetComponent<OObject>().referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-        }
-        else
-            site = transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-        if (site && site.attributes.ContainsKey("temperatureUnit"))
-            temperatureUnit = site.attributes["temperatureUnit"];
-        UpdateSensorColor();
+        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        if (!string.IsNullOrEmpty(temperatureUnit))
+            UpdateSensorColor();
+        GetComponent<DisplayObjectData>().UpdateLabels();
+    }
+
+    ///<summary>
+    /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
+    /// Set this sensor's temperature to _value (converted to float)
+    ///</summary>
+    ///<param name="_value">The temperature value</param>
+    public void SetTemperature(float _value)
+    {
+        temperature = _value;
+        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        if (!string.IsNullOrEmpty(temperatureUnit))
+            UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
     }
 
@@ -69,6 +65,12 @@ public class Sensor : MonoBehaviour
     {
         OObject parent = transform.parent.GetComponent<OObject>();
         if (parent)
-            SetTemperature(parent.GetTemperatureInfos().mean.ToString());
+            if (!fromTemplate)
+                SetTemperature(parent.GetTemperatureInfos().mean.ToString());
+            else if (parent.attributes.ContainsKey($"temperature_{name}"))
+                SetTemperature(parent.attributes[$"temperature_{name}"]);
+            else
+                SetTemperature(float.NaN);
+        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 }

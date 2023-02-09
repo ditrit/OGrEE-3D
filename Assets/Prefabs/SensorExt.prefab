@@ -1005,10 +1005,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   temperature: 0
-  temperatureUnit: "\xB0C"
+  temperatureUnit: 
   color: {r: 0, g: 0, b: 0, a: 0}
-  baseScale: {x: 0, y: 0, z: 0}
-  basePosition: {x: 0, y: 0, z: 0}
+  fromTemplate: 0
+  sensorTempDiagram: {fileID: 0}
 --- !u!114 &226685182499933010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,8 +1027,11 @@ MonoBehaviour:
   labelBottom: {fileID: 7045867512332830116}
   labelLeft: {fileID: 4991055209020205873}
   labelRight: {fileID: 3970544498558124524}
+  floatingLabel: {fileID: 0}
+  hasFloatingLabel: 0
   usedLabels: []
   attrToDisplay: 
+  cc: {fileID: 0}
 --- !u!114 &-7375449237141215194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1064,7 +1067,6 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
-  isDeleted: 0
   isSelected: 0
   isFocused: 0
 --- !u!205 &530606338633814678

@@ -125,9 +125,23 @@ public class OgreeGenerator : MonoBehaviour
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;
-                GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
+                FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
             }
-
+            if (newItem is OObject newItemOObject)
+            {
+                if (parent)
+                {
+                    newItemOObject.temperatureUnit = parent.GetComponent<Room>()?.temperatureUnit;
+                    if (string.IsNullOrEmpty(newItemOObject.temperatureUnit))
+                        newItemOObject.temperatureUnit = parent.GetComponent<OObject>()?.temperatureUnit;
+                }
+                else
+                    newItemOObject.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
+            }
+            if (newItem is Room newItemRoom)
+            {
+                newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
+            }
         }
         ResetCoroutine();
         return newItem;

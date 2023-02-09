@@ -271,9 +271,12 @@ public class CustomRendererOutline : MonoBehaviour
     /// <returns>the temperature material</returns>
     private Material GetTemperatureMaterial()
     {
+        if (!transform.GetChild(0).GetComponent<MeshRenderer>().enabled) //templace placeholder
+            return GameManager.instance.defaultMat;
+
         STemp temp = GetComponent<OObject>().GetTemperatureInfos();
         Material mat = Instantiate(GameManager.instance.defaultMat);
-        if (temp.mean is float.NaN)
+        if  (float.IsNaN(temp.mean))
         {
             mat.color = Color.gray;
         }

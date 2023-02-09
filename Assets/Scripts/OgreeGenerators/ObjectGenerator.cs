@@ -740,7 +740,6 @@ public class ObjectGenerator
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.UpdateSensorColor();
         sensor.fromTemplate = false;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
@@ -758,7 +757,6 @@ public class ObjectGenerator
     {
         float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
 
-        Vector2 pos = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
@@ -795,7 +793,16 @@ public class ObjectGenerator
         // Go to the right corner of the room & apply pos
         if (_obj.parent.GetComponent<Room>().isSquare)
             _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
-        _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
+
+        Vector3 pos;
+        if (_apiObj.category == "rack" && _apiObj.attributes.ContainsKey("posXYZ"))
+            pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]);
+        else
+        {
+            Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+            pos = new Vector3(tmp.x, tmp.y, 0);
+        }
+        _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
     }
 
     ///<summary>
