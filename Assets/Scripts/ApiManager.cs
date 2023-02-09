@@ -48,6 +48,13 @@ public class ApiManager : MonoBehaviour
         public SRoomFromJson data;
     }
 
+    private struct STempUnitResp
+    {
+        public string message;
+        public string status;
+        public STempUnit data;
+    }
+
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new HttpClient();
@@ -363,6 +370,7 @@ public class ApiManager : MonoBehaviour
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
         List<SApiObject> logicalObjects = new List<SApiObject>();
+        List<string> leafIds = new List<string>();
 
         if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
@@ -373,7 +381,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data, leafIds);
         }
 
         foreach (SApiObject obj in physicalObjects)
@@ -381,6 +389,13 @@ public class ApiManager : MonoBehaviour
 
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+        foreach (string id in leafIds)
+        {
+            Transform leaf = Utils.GetObjectById(id)?.transform;
+            if (leaf)
+                Utils.RebuildLods(leaf);
+        }
 
         GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", false, ELogtype.successApi);
     }
@@ -402,5 +417,16 @@ public class ApiManager : MonoBehaviour
             rfJson.CreateRoomTemplate(resp.data);
         }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+    }
+
+    public Task<string> TempUnitFromAPI(string _input)
+    {
+        if (_input.Contains("successfully got temperatureUnit from object's parent site"))
+        {
+            STempUnitResp resp = JsonConvert.DeserializeObject<STempUnitResp>(_input);
+            return Task.FromResult(resp.data.temperatureUnit);
+        }
+        GameManager.instance.AppendLogLine("Unknown object received while retrieving temperature unit", true, ELogtype.errorApi);
+        return Task.FromResult("");
     }
 }
