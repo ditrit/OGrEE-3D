@@ -238,8 +238,8 @@ public class Room : Building
             foreach (STile tile in tiles)
             {
                 string[] splittedLoc = tile.location.Split('/');
-                int tileX = int.Parse(splittedLoc[0]);
-                int tileY = int.Parse(splittedLoc[1]);
+                float tileX = Utils.ParseDecFrac(splittedLoc[0]);
+                float tileY = Utils.ParseDecFrac(splittedLoc[1]);
                 Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.instance.tileSize;
                 if (_mode == "name")
                     GenerateTileName(_root, pos, tile.location);
