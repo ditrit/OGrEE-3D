@@ -25,33 +25,45 @@ public class BuildingGenerator
             return null;
         }
 
-        // Position and size data from _bd.attributes
+        // Get data from _bd.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
+        float rotation = Utils.ParseDecFrac(_bd.attributes["rotation"]);
 
         GameObject newBD = Object.Instantiate(GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
-        newBD.transform.localEulerAngles = Vector3.zero;
 
-        // originalSize
-        Vector3 originalSize = newBD.transform.GetChild(0).localScale;
-        newBD.transform.GetChild(0).localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+        // Apply rotation
+        newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
 
-        Vector3 origin = newBD.transform.GetChild(0).localScale / 0.2f;
-        newBD.transform.localPosition = new Vector3(origin.x, 0, origin.z);
-        newBD.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
+        // Apply size & move the floor to have the container at the lower left corner of it
+        Transform floor = newBD.transform.GetChild(0);
+        Vector3 originalSize = floor.localScale;
+        floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+        floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
+
+        // Apply posXY
+        if (_parent)
+            newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+        else
+            newBD.transform.localPosition = Vector3.zero;
 
         Building building = newBD.GetComponent<Building>();
         building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
+        // Align walls & nameText to the floor & setup nameText
+        building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
+        building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+
+        // Setup nameText
         building.nameText.text = _bd.name;
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
 
-        BuildWalls(building.walls, new Vector3(newBD.transform.GetChild(0).localScale.x * 10, height, newBD.transform.GetChild(0).localScale.z * 10), 0);
+        BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
 
         GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;
@@ -88,11 +100,13 @@ public class BuildingGenerator
             }
         }
 
-        // Position and size data from _ro.attributes
+        // Get data from _ro.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_ro.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_ro.attributes["size"]);
         float height = Utils.ParseDecFrac(_ro.attributes["height"]);
+        float rotation = Utils.ParseDecFrac(_ro.attributes["rotation"]);
 
+        // Instantiate the good prefab and setup the Room component
         GameObject newRoom;
         if (template.vertices != null)
             newRoom = Object.Instantiate(GameManager.instance.nonConvexRoomModel);
@@ -105,22 +119,18 @@ public class BuildingGenerator
         room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
+        // Apply rotation
+        newRoom.transform.localEulerAngles = new Vector3(0, rotation, 0);
+
         if (template.vertices != null)
         {
             room.isSquare = false;
             NonSquareRoomGenerator.CreateShape(newRoom, template);
             newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
-            if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
-                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
-                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
-                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
-                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
         }
         else
         {
+            // Apply size...
             Vector3 originalSize = room.usableZone.localScale;
             room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             room.reservedZone.localScale = room.usableZone.localScale;
@@ -128,39 +138,22 @@ public class BuildingGenerator
             room.tilesEdges.localScale = room.usableZone.localScale;
             room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
             room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+
+            // ...and move the floors layer, wall & text to have the container at the lower left corner of them
+            room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.reservedZone.localPosition = new Vector3(room.usableZone.localScale.x, room.reservedZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.technicalZone.localPosition = new Vector3(room.usableZone.localScale.x, room.technicalZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.tilesEdges.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesEdges.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+
+            room.walls.localPosition = new Vector3(room.usableZone.localScale.x, room.walls.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.nameText.transform.localPosition = new Vector3(room.usableZone.localScale.x, room.nameText.transform.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-            Vector3 bdOrigin = Vector3.zero;
             if (_parent)
-                bdOrigin = _parent.GetChild(0).localScale / -0.2f;
-            Vector3 roOrigin = room.usableZone.localScale / 0.2f;
-            if (_parent)
-                newRoom.transform.position = _parent.position;
+                newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
             else
-                newRoom.transform.position = Vector3.zero;
-            newRoom.transform.localPosition += new Vector3(bdOrigin.x, 0, bdOrigin.z);
-            newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
-
-            if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)E(\\+|\\-)N"))
-            {
-                newRoom.transform.eulerAngles = new Vector3(0, 0, 0);
-                newRoom.transform.position += new Vector3(roOrigin.x, 0, roOrigin.z);
-            }
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)W(\\+|\\-)S"))
-            {
-                newRoom.transform.eulerAngles = new Vector3(0, 180, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.x, 0, -roOrigin.z);
-            }
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)N(\\+|\\-)W"))
-            {
-                newRoom.transform.eulerAngles = new Vector3(0, -90, 0);
-                newRoom.transform.position += new Vector3(-roOrigin.z, 0, roOrigin.x);
-            }
-            else if (Regex.IsMatch(room.attributes["orientation"], "(\\+|\\-)S(\\+|\\-)E"))
-            {
-                newRoom.transform.eulerAngles = new Vector3(0, 90, 0);
-                newRoom.transform.position += new Vector3(roOrigin.z, 0, -roOrigin.x);
-            }
+                newRoom.transform.localPosition = Vector3.zero;
 
             room.UpdateZonesColor();
         }

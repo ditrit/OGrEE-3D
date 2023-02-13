@@ -178,14 +178,14 @@ public class Room : Building
         Vector2 orient = Vector2.one;
         int offsetX = 0;
         int offsetY = 0;
-        if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+        if (attributes["axisOrientation"] == "+x+y")
         {
             // Lower Left   
             orient = new Vector2(1, 1);
             offsetX = (int)-reserved.left;
             offsetY = (int)-reserved.bottom;
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "-x+y")
         {
             // Lower Right
             orient = new Vector2(-1, 1);
@@ -193,7 +193,7 @@ public class Room : Building
             offsetY = (int)-reserved.bottom;
             _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "-x-y")
         {
             // Upper Right
             orient = new Vector2(-1, -1);
@@ -201,7 +201,7 @@ public class Room : Building
             offsetY = (int)-reserved.top;
             _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "+x-y")
         {
             // Upper Left
             orient = new Vector2(1, -1);
@@ -238,8 +238,8 @@ public class Room : Building
             foreach (STile tile in tiles)
             {
                 string[] splittedLoc = tile.location.Split('/');
-                int tileX = int.Parse(splittedLoc[0]);
-                int tileY = int.Parse(splittedLoc[1]);
+                float tileX = Utils.ParseDecFrac(splittedLoc[0]);
+                float tileY = Utils.ParseDecFrac(splittedLoc[1]);
                 Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.instance.tileSize;
                 if (_mode == "name")
                     GenerateTileName(_root, pos, tile.location);

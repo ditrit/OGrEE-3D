@@ -52,22 +52,6 @@ public class CustomerGenerator
         site.hierarchyName = hierarchyName;
         site.UpdateFromSApiObject(_si);
 
-        switch (site.attributes["orientation"])
-        {
-            case "EN":
-                newSite.transform.localEulerAngles = new Vector3(0, 0, 0);
-                break;
-            case "WS":
-                newSite.transform.localEulerAngles = new Vector3(0, 180, 0);
-                break;
-            case "NW":
-                newSite.transform.localEulerAngles = new Vector3(0, -90, 0);
-                break;
-            case "SE":
-                newSite.transform.localEulerAngles = new Vector3(0, 90, 0);
-                break;
-        }
-
         GameManager.instance.allItems.Add(hierarchyName, newSite);
         return site;
     }

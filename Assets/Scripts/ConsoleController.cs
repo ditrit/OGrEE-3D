@@ -734,7 +734,7 @@ public class ConsoleController : MonoBehaviour
 
                 if (!string.IsNullOrEmpty(template.slug))
                 {
-                    ro.attributes["orientation"] = template.orientation;
+                    ro.attributes["axisOrientation"] = template.axisOrientation;
                     ro.attributes["floorUnit"] = template.floorUnit;
                     size = new Vector3(template.sizeWDHm[0], template.sizeWDHm[2], template.sizeWDHm[1]);
                 }
