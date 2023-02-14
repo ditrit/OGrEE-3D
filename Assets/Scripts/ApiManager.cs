@@ -41,6 +41,13 @@ public class ApiManager : MonoBehaviour
         public STemplate data;
     }
 
+    private struct SBuildingResp
+    {
+        public string message;
+        public string status;
+        public SBuildingFromJson data;
+    }
+
     private struct SRoomResp
     {
         public string message;
@@ -352,6 +359,8 @@ public class ApiManager : MonoBehaviour
             await CreateItemFromJson(_input);
         else if (_input.Contains("successfully got obj_template"))
             await CreateTemplateFromJson(_input, "obj");
+        else if (_input.Contains("successfully got building_template"))
+            await CreateTemplateFromJson(_input, "building");
         else if (_input.Contains("successfully got room_template"))
             await CreateTemplateFromJson(_input, "room");
         else
@@ -411,6 +420,11 @@ public class ApiManager : MonoBehaviour
             STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
             await rfJson.CreateObjectTemplate(resp.data);
         }
+        else if (_type == "building")
+        {
+            SBuildingResp resp = JsonConvert.DeserializeObject<SBuildingResp>(_json);
+            rfJson.CreateBuildingTemplate(resp.data);
+        }
         else if (_type == "room")
         {
             SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
@@ -419,6 +433,7 @@ public class ApiManager : MonoBehaviour
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 
+    ///
     public Task<string> TempUnitFromAPI(string _input)
     {
         if (_input.Contains("successfully got temperatureUnit from object's parent site"))

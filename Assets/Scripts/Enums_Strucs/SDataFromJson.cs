@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,6 +27,15 @@ public struct SApiObject
         attributes = _src.attributes;
         children = null;
     }
+}
+
+[System.Serializable]
+public struct SBuildingFromJson
+{
+    public string slug;
+    public string category;
+    public float[] sizeWDHm;
+    public List<List<int>> vertices;
 }
 
 #region Room
