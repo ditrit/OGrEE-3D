@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class BuildingGenerator
@@ -25,45 +24,68 @@ public class BuildingGenerator
             return null;
         }
 
+        SBuildingFromJson template = new SBuildingFromJson();
+        if (!string.IsNullOrEmpty(_bd.attributes["template"]))
+        {
+            if (GameManager.instance.buildingTemplates.ContainsKey(_bd.attributes["template"]))
+                template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
+            else
+            {
+                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", true, ELogtype.error);
+                return null;
+            }
+        }
+
         // Get data from _bd.attributes
         Vector2 posXY = JsonUtility.FromJson<Vector2>(_bd.attributes["posXY"]);
         Vector2 size = JsonUtility.FromJson<Vector2>(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
         float rotation = Utils.ParseDecFrac(_bd.attributes["rotation"]);
 
-        GameObject newBD = Object.Instantiate(GameManager.instance.buildingModel);
+        // Instantiate the good prefab and setup the Buiding component
+        GameObject newBD;
+        if (template.vertices != null)
+            newBD = Object.Instantiate(GameManager.instance.nonConvexBuildingModel);
+        else
+            newBD = Object.Instantiate(GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
-
-        // Apply rotation
-        newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
-
-        // Apply size & move the floor to have the container at the lower left corner of it
-        Transform floor = newBD.transform.GetChild(0);
-        Vector3 originalSize = floor.localScale;
-        floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
-        floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
-
-        // Apply posXY
-        if (_parent)
-            newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
-        else
-            newBD.transform.localPosition = Vector3.zero;
 
         Building building = newBD.GetComponent<Building>();
         building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
-        // Align walls & nameText to the floor & setup nameText
-        building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
-        building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+        // Apply rotation
+        newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
+
+        if (template.vertices != null)
+        {
+            building.isSquare = false;
+            NonSquareRoomGenerator.CreateShape(newBD.transform, template);
+        }
+        else
+        {
+            // Apply size & move the floor to have the container at the lower left corner of it
+            Transform floor = newBD.transform.GetChild(0);
+            Vector3 originalSize = floor.localScale;
+            floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+            floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
+
+            // Align walls & nameText to the floor & setup nameText
+            building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
+            building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+            BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
+        }
+            // Apply posXY
+            if (_parent)
+                newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+            else
+                newBD.transform.localPosition = Vector3.zero;
 
         // Setup nameText
         building.nameText.text = _bd.name;
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
-
-        BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
 
         GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;
@@ -125,8 +147,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             room.isSquare = false;
-            NonSquareRoomGenerator.CreateShape(newRoom, template);
-            newRoom.transform.localPosition += new Vector3(posXY.x, 0, posXY.y);
+            NonSquareRoomGenerator.CreateShape(newRoom.transform, template);
         }
         else
         {
@@ -150,13 +171,14 @@ public class BuildingGenerator
 
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
+            room.UpdateZonesColor();
+        }
+        // Apply posXY
             if (_parent)
                 newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
             else
                 newRoom.transform.localPosition = Vector3.zero;
 
-            room.UpdateZonesColor();
-        }
         // Set UI room's name
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;

@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Models")]
     public GameObject buildingModel;
+    public GameObject nonConvexBuildingModel;
     public GameObject roomModel;
     public GameObject nonConvexRoomModel;
     public GameObject rackModel;

@@ -42,24 +42,78 @@ public static class CircularListExtension
 
 public static class NonSquareRoomGenerator
 {
+    private struct SCommonTemplate
+    {
+        public string slug;
+        public float[] sizeWDHm;
+        public List<int> center;
+        public List<List<int>> vertices;
+        public STile[] tiles;
+        public float tileAngle;
+
+        public SCommonTemplate(SBuildingFromJson _src)
+        {
+            slug = _src.slug;
+            sizeWDHm = _src.sizeWDHm;
+            center = _src.center;
+            vertices = _src.vertices;
+            tiles = null;
+            tileAngle = float.NaN;
+        }
+
+        public SCommonTemplate(SRoomFromJson _src)
+        {
+            slug = _src.slug;
+            sizeWDHm = _src.sizeWDHm;
+            center = _src.center;
+            vertices = _src.vertices;
+            tiles = _src.tiles;
+            tileAngle = _src.tileAngle;
+        }
+    }
+
     /// <summary>
-    /// Build the walls and floor of a non convex room then place it
+    /// Build the walls and floor of a non convex building
     /// </summary>
-    /// <param name="_root">the transform of the room's flooe</param>
-    /// <param name="_template">the template of the non convex room</param>
-    public static void CreateShape(GameObject _room, SRoomFromJson _template)
+    /// <param name="_building">The transform of the building's floor</param>
+    /// <param name="_template">The template of the non convex building</param>
+    public static void CreateShape(Transform _building, SBuildingFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
+        SCommonTemplate data = new SCommonTemplate(_template);
 
-        List<int> offset = new List<int>(_template.vertices[0]);
-        foreach (List<int> vertice in _template.vertices)
+        List<int> offset = new List<int>(data.vertices[0]);
+        foreach (List<int> vertice in data.vertices)
         {
             vertice[0] -= offset[0];
             vertice[1] -= offset[1];
         }
 
-        BuildFloor(_room.transform, _template, offset, (_template.floorUnit == "t"));
-        BuildWalls(_room.transform, _template);
+        BuildFloor(_building, data, null, false);
+        BuildWalls(_building, data);
+
+        _building.GetComponent<Building>().nameText.transform.localPosition = 0.01f * new Vector3(_template.center[0] - offset[0], 0.3f, _template.center[1] - offset[1]);
+    }
+
+    /// <summary>
+    /// Build the walls and floor of a non convex room then place it
+    /// </summary>
+    /// <param name="_room">The transform of the room's floor</param>
+    /// <param name="_template">The template of the non convex room</param>
+    public static void CreateShape(Transform _room, SRoomFromJson _template)
+    {
+        Debug.Log($"Create shape of {_template.slug}");
+        SCommonTemplate data = new SCommonTemplate(_template);
+
+        List<int> offset = new List<int>(data.vertices[0]);
+        foreach (List<int> vertice in data.vertices)
+        {
+            vertice[0] -= offset[0];
+            vertice[1] -= offset[1];
+        }
+
+        BuildFloor(_room, data, offset, (_template.floorUnit == "t"));
+        BuildWalls(_room, data);
 
         _room.GetComponent<Room>().nameText.transform.localPosition = 0.01f * new Vector3(_template.center[0] - offset[0], 0.3f, _template.center[1] - offset[1]);
     }
@@ -69,7 +123,7 @@ public static class NonSquareRoomGenerator
     /// </summary>
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
-    private static void BuildWalls(Transform _root, SRoomFromJson _template)
+    private static void BuildWalls(Transform _root, SCommonTemplate _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -78,7 +132,7 @@ public static class NonSquareRoomGenerator
         float[] xWalls = new float[vCount];
         float[] zWalls = new float[vCount];
 
-        Transform walls = _root.GetComponent<Room>().walls;
+        Transform walls = _root.GetChild(0);
         Mesh meshWalls = new Mesh { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
 
@@ -122,7 +176,7 @@ public static class NonSquareRoomGenerator
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
-    private static void BuildFloor(Transform _root, SRoomFromJson _template, List<int> _offset, bool _tiles)
+    private static void BuildFloor(Transform _root, SCommonTemplate _template, List<int> _offset, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
 
@@ -130,7 +184,7 @@ public static class NonSquareRoomGenerator
         if (!MostlyClockWise(walls))
             walls.Reverse();
         List<Vector3> shrinkingWalls = new List<Vector3>(walls);
-        Transform floor = _root.GetComponent<Room>().usableZone;
+        Transform floor = _root.GetChild(1);
         Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;

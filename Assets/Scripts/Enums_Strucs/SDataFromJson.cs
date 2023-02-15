@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,6 +35,7 @@ public struct SBuildingFromJson
     public string slug;
     public string category;
     public float[] sizeWDHm;
+    public List<int> center;
     public List<List<int>> vertices;
 }
 
