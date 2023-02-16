@@ -755,34 +755,35 @@ public class ObjectGenerator
     ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
     private void PlaceInRoom(Transform _obj, SApiObject _apiObj, out Vector2 _orient)
     {
-        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
+        Room parentRoom = _obj.parent.GetComponent<Room>();
+        float floorUnit = GetUnitFromRoom(parentRoom);
 
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
         _orient = new Vector2();
-        if (_obj.parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        if (parentRoom.attributes.ContainsKey("axisOrientation"))
         {
-            if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            if (parentRoom.attributes["axisOrientation"] == "+x+y")
             {
                 // Lower Left corner of the room
                 _orient = new Vector2(1, 1);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "-x+y")
             {
                 // Lower Right corner of the room
                 _orient = new Vector2(-1, 1);
                 if (_apiObj.category == "rack")
                     _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "-x-y")
             {
                 // Upper Right corner of the room
                 _orient = new Vector2(-1, -1);
                 if (_apiObj.category == "rack")
                     _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "+x-y")
             {
                 // Upper Left corner of the room
                 _orient = new Vector2(1, -1);
@@ -791,7 +792,7 @@ public class ObjectGenerator
             }
         }
         // Go to the right corner of the room & apply pos
-        if (_obj.parent.GetComponent<Room>().isSquare)
+        if (parentRoom.isSquare)
             _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
 
         Vector3 pos;

@@ -34,7 +34,7 @@ public struct SApiObject
 public struct SRoomFromJson
 {
     public string slug;
-    public string orientation;
+    public string axisOrientation;
     public float[] sizeWDHm;
     public string floorUnit;
     public List<int> center;

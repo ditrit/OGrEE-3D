@@ -51,14 +51,17 @@ public static class NonSquareRoomGenerator
     {
         Debug.Log($"Create shape of {_template.slug}");
 
-        if (_template.floorUnit == "t")
-            BuildFloor(_room.transform, _template, true);
-        else
-            BuildFloor(_room.transform, _template, false);
+        List<int> offset = new List<int>(_template.vertices[0]);
+        foreach (List<int> vertice in _template.vertices)
+        {
+            vertice[0] -= offset[0];
+            vertice[1] -= offset[1];
+        }
+
+        BuildFloor(_room.transform, _template, offset, (_template.floorUnit == "t"));
         BuildWalls(_room.transform, _template);
 
-        Vector3 center = new Vector3(_template.center[0], _template.center[1], _template.center[2]);
-        _room.GetComponent<Room>().nameText.transform.localPosition = center + new Vector3(0, 0.003f, 0);
+        _room.GetComponent<Room>().nameText.transform.localPosition = 0.01f * new Vector3(_template.center[0] - offset[0], 0.3f, _template.center[1] - offset[1]);
     }
 
     /// <summary>
@@ -119,7 +122,7 @@ public static class NonSquareRoomGenerator
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
-    private static void BuildFloor(Transform _root, SRoomFromJson _template, bool _tiles)
+    private static void BuildFloor(Transform _root, SRoomFromJson _template, List<int> _offset, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
 
@@ -169,7 +172,7 @@ public static class NonSquareRoomGenerator
                 // Tiles           
                 GameObject tile = Object.Instantiate(GameManager.instance.tileModel, floor);
                 tile.name = $"Tile_{_template.tiles[i].location}";
-                tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
+                tile.transform.localPosition = (new Vector3((x - _offset[0]) / 100f, 0.001f, (z - _offset[1]) / 100f));
                 tile.transform.Rotate(Vector3.up, _template.tileAngle);
             }
         }
