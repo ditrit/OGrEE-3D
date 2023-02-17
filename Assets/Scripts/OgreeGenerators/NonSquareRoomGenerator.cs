@@ -117,6 +117,7 @@ public static class NonSquareRoomGenerator
         }
 
         BuildFloor(_room, data, offset, (_template.floorUnit == "t"));
+        _room.GetChild(1).localPosition += new Vector3(0, 0.001f, 0);
         BuildWalls(_room, data);
 
         _room.GetComponent<Room>().nameText.transform.localPosition = 0.01f * new Vector3(_template.center[0] - offset[0], 0.3f, _template.center[1] - offset[1]);
