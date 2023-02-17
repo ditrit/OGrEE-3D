@@ -56,7 +56,9 @@ public static class NonSquareRoomGenerator
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
             center = _src.center;
-            vertices = _src.vertices;
+            vertices = new List<List<int>>();
+            foreach (List<int> vertex in _src.vertices)
+                vertices.Add(vertex.GetRange(0, vertex.Count));
             tiles = null;
             tileAngle = float.NaN;
         }
@@ -66,7 +68,9 @@ public static class NonSquareRoomGenerator
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
             center = _src.center;
-            vertices = _src.vertices;
+            vertices = new List<List<int>>();
+            foreach (List<int> vertex in _src.vertices)
+                vertices.Add(vertex.GetRange(0, vertex.Count));
             tiles = _src.tiles;
             tileAngle = _src.tileAngle;
         }
