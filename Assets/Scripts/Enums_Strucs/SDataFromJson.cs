@@ -29,6 +29,16 @@ public struct SApiObject
     }
 }
 
+[System.Serializable]
+public struct SBuildingFromJson
+{
+    public string slug;
+    public string category;
+    public float[] sizeWDHm;
+    public List<int> center;
+    public List<List<int>> vertices;
+}
+
 #region Room
 [System.Serializable]
 public struct SRoomFromJson
