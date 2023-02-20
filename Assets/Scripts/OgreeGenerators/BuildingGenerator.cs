@@ -61,7 +61,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             building.isSquare = false;
-            NonSquareRoomGenerator.CreateShape(newBD.transform, template);
+            NonSquareBuildingGenerator.CreateShape(newBD.transform, template);
         }
         else
         {
@@ -147,7 +147,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             room.isSquare = false;
-            NonSquareRoomGenerator.CreateShape(newRoom.transform, template);
+            NonSquareBuildingGenerator.CreateShape(newRoom.transform, template);
         }
         else
         {

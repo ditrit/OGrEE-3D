@@ -40,7 +40,7 @@ public static class CircularListExtension
 
 }
 
-public static class NonSquareRoomGenerator
+public static class NonSquareBuildingGenerator
 {
     private struct SCommonTemplate
     {
