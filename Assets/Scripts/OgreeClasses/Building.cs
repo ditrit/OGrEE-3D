@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Building : OgreeObject
 {
+    public bool isSquare = true;
+
     [Header("BD References")]
     public Transform walls;
     public TextMeshPro nameText;
