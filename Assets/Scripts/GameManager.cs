@@ -385,23 +385,11 @@ public class GameManager : MonoBehaviour
         if (!writeLogs)
             return;
 
-        // Legacy build-in CLI
-        string color = "";
-        if (_type == ELogtype.info || _type == ELogtype.infoCli || _type == ELogtype.infoApi)
-            color = "white";
-        else if (_type == ELogtype.success || _type == ELogtype.successCli || _type == ELogtype.successApi)
-            color = "green";
-        else if (_type == ELogtype.warning || _type == ELogtype.warningCli || _type == ELogtype.warningApi)
-            color = "yellow";
-        else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
-            color = "red";
-
-        // Remote CLI
         if (_writeInCli)
         {
             try
             {
-                UiManager.instance.AppendLogLine(_line, color);
+                UiManager.instance.AppendLogLine(_line, _type);
                 server.Send(_line);
             }
             catch (System.Exception e)

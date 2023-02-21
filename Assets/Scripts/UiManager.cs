@@ -491,23 +491,30 @@ public class UiManager : MonoBehaviour
 
     #endregion
 
-    ///
-    public void AppendLogLine(string _line, string _color = "white")
+    ///<summary>
+    /// Write the given line in the logger with asked color.
+    ///</summary>
+    ///<param name="_line">The line to write</param>
+    ///<param name="_type">The type of message, it will change the message's color</param>
+    public void AppendLogLine(string _line, ELogtype _type)
     {
-        try
-        {
-            _line = $"<color={_color}>{_line}</color>";
-            Debug.Log(_line);
-            if (loggerQueue.Count >= loggerSize)
-                loggerQueue.Dequeue();
-            loggerQueue.Enqueue(_line);
+        string color = "";
+        if (_type == ELogtype.info || _type == ELogtype.infoCli || _type == ELogtype.infoApi)
+            color = "white";
+        else if (_type == ELogtype.success || _type == ELogtype.successCli || _type == ELogtype.successApi)
+            color = "green";
+        else if (_type == ELogtype.warning || _type == ELogtype.warningCli || _type == ELogtype.warningApi)
+            color = "yellow";
+        else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
+            color = "red";
+        
+        _line = $"<color={color}>{_line}</color>";
 
-            loggerText.SetTextWithoutNotify(string.Join("\n", loggerQueue.ToArray()));
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError(e.Message);
-        }
+        if (loggerQueue.Count >= loggerSize)
+            loggerQueue.Dequeue();
+        loggerQueue.Enqueue(_line);
+
+        loggerText.SetTextWithoutNotify(string.Join("\n", loggerQueue.ToArray()));
     }
 
     #region CalledByGUI
