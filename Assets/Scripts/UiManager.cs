@@ -44,7 +44,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Button toggleLocalCSBtn;
 
     [Header("Delay Slider")]
-    [SerializeField] private ConsoleController consoleController;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI value;
 
@@ -358,13 +357,11 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            ChangeApiButton("Connected to Api", Color.green);
             apiUrl.text = "Connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.green;
         }
         else
         {
-            ChangeApiButton("Fail to connected to Api", Color.red);
             apiUrl.text = "Fail to connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.red;
         }
@@ -448,17 +445,6 @@ public class UiManager : MonoBehaviour
     {
         _prompt.gameObject.SetActive(false);
         Destroy(_prompt.gameObject);
-    }
-
-    ///<summary>
-    /// Change text and color of apiBtn.
-    ///</summary>
-    ///<param name="_str">The new text of the button</param>
-    ///<param name="_color">The new color of the button</param>
-    public void ChangeApiButton(string _str, Color _color)
-    {
-        apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
-        apiBtn.GetComponent<Image>().color = _color;
     }
 
     ///<summary>
@@ -651,22 +637,6 @@ public class UiManager : MonoBehaviour
             cb.selectedColor = Color.white;
         }
         toggleLocalCSBtn.colors = cb;
-    }
-
-    ///<summary>
-    /// Called by GUI button: Connect or disconnect to API using ApiManager.Initialize().
-    ///</summary>
-    public async void ToggleApi()
-    {
-        if (ApiManager.instance.isInit)
-        {
-            ApiManager.instance.isInit = false;
-            ChangeApiButton("Connect to Api", Color.white);
-            apiUrl.text = "";
-            GameManager.instance.AppendLogLine("Disconnected from API", true, ELogtype.success);
-        }
-        else
-            await ApiManager.instance.Initialize();
     }
 
     ///<summary>

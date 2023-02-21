@@ -8,7 +8,6 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     static public GameManager instance;
-    public ConsoleController consoleController;
     public Server server;
     public ConfigLoader configLoader = new ConfigLoader();
 
@@ -72,13 +71,13 @@ public class GameManager : MonoBehaviour
         else
             Destroy(this);
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-        configLoader.LoadConfig();
-        server.StartServer();
-        StartCoroutine(configLoader.LoadTextures());
     }
 
     private void Start()
     {
+        configLoader.LoadConfig();
+        server.StartServer();
+        StartCoroutine(configLoader.LoadTextures());
         TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
     }
 
@@ -396,8 +395,6 @@ public class GameManager : MonoBehaviour
             color = "yellow";
         else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
             color = "red";
-        // if (_writeInCli)
-        //     consoleController.AppendLogLine(_line, color);
 
         // Remote CLI
         if (_writeInCli)

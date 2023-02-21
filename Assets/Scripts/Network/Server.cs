@@ -62,7 +62,6 @@ public class Server : MonoBehaviour
     /// Set values for listenPort and sendPort.
     ///</summary>
     ///<param name="_cliPort">The value to set for listenPort</param>
-    ///<param name="_sendPort">The value to set for sendPort</param>
     public void SetupPorts(int _cliPort)
     {
         cliPort = _cliPort;
