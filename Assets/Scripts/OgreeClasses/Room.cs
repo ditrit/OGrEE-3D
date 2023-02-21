@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class Room : Building
 {
-    public bool isSquare = true;
     public SMargin reserved;
     public SMargin technical;
 

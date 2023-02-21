@@ -38,6 +38,13 @@ public class OgreeGenerator : MonoBehaviour
             && !GameManager.instance.allItems.Contains(_obj.domain))
             await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
 
+        if (_obj.category == "building" && !string.IsNullOrEmpty(_obj.attributes["template"])
+            && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
+        {
+            Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
+            await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+        }
+
         if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {

@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Models")]
     public GameObject buildingModel;
+    public GameObject nonConvexBuildingModel;
     public GameObject roomModel;
     public GameObject nonConvexRoomModel;
     public GameObject rackModel;
@@ -51,6 +52,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> currentItems = new List<GameObject>();
     public List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
+    public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();
     public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     public List<GameObject> focus = new List<GameObject>();
