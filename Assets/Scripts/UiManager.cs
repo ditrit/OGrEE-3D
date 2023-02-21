@@ -53,7 +53,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos;
     public DetailsInputField detailsInputField;
 
-    public GameObject test;
+    [Header("Logger")]
+    [SerializeField] private TMP_InputField loggerText;
+    private const int loggerSize = 100;
+    private Queue<string> loggerQueue = new Queue<string>(loggerSize);
 
     private void Awake()
     {
@@ -61,6 +64,7 @@ public class UiManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
+        loggerText.lineLimit = loggerSize;
     }
 
     private void Start()
@@ -500,6 +504,25 @@ public class UiManager : MonoBehaviour
     }
 
     #endregion
+
+    ///
+    public void AppendLogLine(string _line, string _color = "white")
+    {
+        try
+        {
+            _line = $"<color={_color}>{_line}</color>";
+            Debug.Log(_line);
+            if (loggerQueue.Count >= loggerSize)
+                loggerQueue.Dequeue();
+            loggerQueue.Enqueue(_line);
+
+            loggerText.SetTextWithoutNotify(string.Join("\n", loggerQueue.ToArray()));
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e.Message);
+        }
+    }
 
     #region CalledByGUI
 
