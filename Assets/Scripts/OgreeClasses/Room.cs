@@ -65,10 +65,50 @@ public class Room : Building
         }
 
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-        if (_value == "true")
+        if (isSquare)
         {
-            if (!root)
+            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+            if (_value == "true")
+            {
+                if (!root)
+                {
+                    root = new GameObject("tilesNameRoot");
+                    root.transform.parent = transform;
+                    root.transform.localPosition = usableZone.localPosition;
+                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+                    root.transform.localEulerAngles = Vector3.zero;
+                    LoopThroughTiles("name", root.transform);
+                }
+            }
+            else
+            {
+                if (root)
+                    Destroy(root);
+            }
+        }
+        else
+        {
+            Transform root = transform.Find("Floor");
+            if (root)
+                foreach (Transform tile in root)
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value == "true";
+
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+
+    public void ToggleTilesName()
+    {
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        if (isSquare)
+        {
+            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+            if (root)
+            {
+                root.SetActive(false); //for UI
+                Destroy(root);
+            }
+            else
             {
                 root = new GameObject("tilesNameRoot");
                 root.transform.parent = transform;
@@ -80,30 +120,12 @@ public class Room : Building
         }
         else
         {
+            Transform root = transform.Find("Floor");
             if (root)
-                Destroy(root);
+                foreach (Transform tile in root)
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled ^= true; //toggle bool            
         }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-    }
 
-    public void ToggleTilesName()
-    {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-        if (root)
-        {
-            root.SetActive(false); //for UI
-            Destroy(root);
-        }
-        else
-        {
-            root = new GameObject("tilesNameRoot");
-            root.transform.parent = transform;
-            root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-            root.transform.localEulerAngles = Vector3.zero;
-            LoopThroughTiles("name", root.transform);
-        }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 

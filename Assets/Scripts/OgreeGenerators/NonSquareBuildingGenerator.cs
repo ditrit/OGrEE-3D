@@ -230,9 +230,9 @@ public static class NonSquareBuildingGenerator
 
                 // Tiles           
                 GameObject tile = Object.Instantiate(GameManager.instance.tileModel, floor);
-                tile.name = $"Tile_{_template.tiles[i].location}";
-                tile.transform.localPosition = (new Vector3((x - _offset[0]) / 100f, 0.001f, (z - _offset[1]) / 100f));
-                tile.transform.Rotate(Vector3.up, _template.tileAngle);
+                tile.name = $"Tile_{_template.tiles[i].name}";
+                tile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].name;
+                tile.transform.localPosition = (new Vector3(x - _offset[0] / 100f, 0.001f, z - _offset[1] / 100f));
             }
         }
     }
