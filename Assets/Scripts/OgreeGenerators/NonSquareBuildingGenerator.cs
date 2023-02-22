@@ -229,10 +229,14 @@ public static class NonSquareBuildingGenerator
                 float z = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
-                GameObject tile = Object.Instantiate(GameManager.instance.tileModel, floor);
-                tile.name = $"Tile_{_template.tiles[i].name}";
-                tile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].name;
-                tile.transform.localPosition = (new Vector3(x - _offset[0] / 100f, 0.001f, z - _offset[1] / 100f));
+                GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
+                newTile.name = $"Tile_{_template.tiles[i].name}";
+                newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].name;
+                newTile.transform.localPosition = (new Vector3(x - _offset[0] / 100f, 0.001f, z - _offset[1] / 100f));
+
+                Tile tile = newTile.GetComponent<Tile>();
+                tile.color = _template.tiles[i].color;
+                tile.texture = _template.tiles[i].texture;
             }
         }
     }
