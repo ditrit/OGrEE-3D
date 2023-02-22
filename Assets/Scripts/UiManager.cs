@@ -29,11 +29,9 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Button tempDiagramBBtn;
     [SerializeField] private Button tempScatterPlotBtn;
     [SerializeField] private Button heatMapBtn;
+    [SerializeField] private TMP_Text apiUrl;
 
     [Header("Panel Bottom")]
-    [SerializeField] private Button reloadBtn;
-    [SerializeField] private Button apiBtn;
-    [SerializeField] private TMP_Text apiUrl;
     [SerializeField] private TMP_Text currentItemText;
 
     [Header("Panel Debug")]
@@ -478,15 +476,6 @@ public class UiManager : MonoBehaviour
             currentItemText.text = ("Selection");
         else
             currentItemText.text = ("OGrEE-3D");
-    }
-
-    ///<summary>
-    /// Make the reload button interatable or not.
-    ///</summary>
-    ///<param name="_value">If the button should be interatable</param>
-    public void SetReloadBtn(bool _value)
-    {
-        reloadBtn.interactable = _value;
     }
 
     #endregion

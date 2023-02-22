@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
     public GameObject sensorBarStdModel;
 
     [Header("Runtime data")]
-    public string lastCmdFilePath;
     public Transform templatePlaceholder;
     public List<GameObject> currentItems = new List<GameObject>();
     public List<GameObject> previousItems = new List<GameObject>();
@@ -486,22 +485,6 @@ public class GameManager : MonoBehaviour
         {
             if (fs != null)
                 fs.Dispose();
-        }
-    }
-
-    ///<summary>
-    /// Store a path to a command file. Turn on or off the reload button if there is a path or not.
-    ///</summary>
-    ///<param name="_value">If the button should be interatable</param>
-    ///<param name="_lastPath">The command file path to store</param>
-    public void SetReloadBtn(bool _value, string _lastPath = null)
-    {
-        if (_lastPath != null)
-            lastCmdFilePath = _lastPath;
-        if (!string.IsNullOrEmpty(lastCmdFilePath))
-        {
-            UiManager.instance.SetReloadBtn(_value);
-            EventManager.instance.Raise(new ImportFinishedEvent());
         }
     }
 }
