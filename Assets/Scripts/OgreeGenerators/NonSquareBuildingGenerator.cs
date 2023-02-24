@@ -222,11 +222,13 @@ public static class NonSquareBuildingGenerator
         {
             for (int i = 0; i < _template.tiles.Length; i++)
             {
-                string element = _template.tiles[i].location;
-                string[] separated = element.Split('/');
-
+                string[] separated = _template.tiles[i].location.Split('/');
                 float x = Utils.ParseDecFrac(separated[0]);
                 float z = Utils.ParseDecFrac(separated[1]);
+
+                separated = _template.tiles[i].name.Split('/');
+                float xCoord = Utils.ParseDecFrac(separated[0]);
+                float zCoord = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
                 GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
@@ -237,6 +239,7 @@ public static class NonSquareBuildingGenerator
                 Tile tile = newTile.GetComponent<Tile>();
                 tile.color = _template.tiles[i].color;
                 tile.texture = _template.tiles[i].texture;
+                tile.coord = new Vector2(xCoord, zCoord);
             }
         }
     }

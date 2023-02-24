@@ -8,4 +8,5 @@ public class Tile : MonoBehaviour
     public string color;
     public string texture;
     public bool modified = false;
+    public Vector2 coord;
 }
