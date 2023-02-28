@@ -372,6 +372,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < templatesToDel.Count; i++)
             Destroy(templatesToDel[i]);
         objectTemplates.Clear();
+        buildingTemplates.Clear();
         roomTemplates.Clear();
     }
 
