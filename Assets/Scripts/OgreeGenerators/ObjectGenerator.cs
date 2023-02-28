@@ -757,7 +757,6 @@ public class ObjectGenerator
     {
         Room parentRoom = _obj.parent.GetComponent<Room>();
         float floorUnit = GetUnitFromRoom(parentRoom);
-
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
@@ -791,9 +790,6 @@ public class ObjectGenerator
                     _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
             }
         }
-        // Go to the right corner of the room & apply pos
-        if (parentRoom.isSquare)
-            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
 
         Vector3 pos;
         if (_apiObj.category == "rack" && _apiObj.attributes.ContainsKey("posXYZ"))
@@ -803,6 +799,25 @@ public class ObjectGenerator
             Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
             pos = new Vector3(tmp.x, tmp.y, 0);
         }
+
+        Transform floor = _obj.parent.Find("Floor");
+        if (!parentRoom.isSquare && _apiObj.category == "rack" && parentRoom.attributes["floorUnit"] == "t" && floor)
+        {
+            foreach (Transform tileObj in floor)
+            {
+                Tile tile = tileObj.GetComponent<Tile>();
+                if (tile.coord.x == pos.x && tile.coord.y == pos.y)
+                {
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, 0, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    return;
+                }
+            }
+        }
+
+        // Go to the right corner of the room & apply pos
+        if (parentRoom.isSquare)
+            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+
         _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
     }
 
