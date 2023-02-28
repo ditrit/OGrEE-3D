@@ -209,7 +209,7 @@ public class Room : Building
                         else
                             GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
                     }
-                    else if (!string.IsNullOrEmpty(tile.color))
+                    if (!string.IsNullOrEmpty(tile.color))
                     {
                         Material mat = tile.GetComponent<Renderer>().material;
                         Color customColor = new Color();
@@ -284,7 +284,7 @@ public class Room : Building
                         else
                             GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
                     }
-                    else if (!string.IsNullOrEmpty(tile.color))
+                    if (!string.IsNullOrEmpty(tile.color))
                     {
                         Material mat = tile.GetComponent<Renderer>().material;
                         Color customColor = new Color();

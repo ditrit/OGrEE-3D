@@ -178,7 +178,7 @@ public static class NonSquareBuildingGenerator
     /// <summary>
     /// Build the floor of a non convex room, optionnaly with its tiles
     /// </summary>
-    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_root">the transform of the room's floor</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
     private static void BuildFloor(Transform _root, SCommonTemplate _template, List<int> _offset, bool _tiles)
@@ -216,31 +216,40 @@ public static class NonSquareBuildingGenerator
         meshFloor.RecalculateNormals();
 
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
-        floor.GetComponent<MeshCollider>().convex = false;
 
+        floor.GetComponent<MeshCollider>().convex = false;
         if (_tiles)
         {
+            OgreeObject site = null;
+            if (_root.transform.parent && _root.transform.parent.parent)
+                site = _root.transform.parent.parent.GetComponentInParent<OgreeObject>();
             for (int i = 0; i < _template.tiles.Length; i++)
             {
                 string[] separated = _template.tiles[i].location.Split('/');
                 float x = Utils.ParseDecFrac(separated[0]);
                 float z = Utils.ParseDecFrac(separated[1]);
 
-                separated = _template.tiles[i].name.Split('/');
+                separated = _template.tiles[i].label.Split('/');
                 float xCoord = Utils.ParseDecFrac(separated[0]);
                 float zCoord = Utils.ParseDecFrac(separated[1]);
 
                 // Tiles           
                 GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
-                newTile.name = $"Tile_{_template.tiles[i].name}";
-                newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].name;
+                newTile.name = $"Tile_{_template.tiles[i].label}";
+                newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].label;
                 newTile.transform.localPosition = (new Vector3(x - _offset[0] / 100f, 0.001f, z - _offset[1] / 100f));
 
                 Tile tile = newTile.GetComponent<Tile>();
                 tile.color = _template.tiles[i].color;
                 tile.texture = _template.tiles[i].texture;
                 tile.coord = new Vector2(xCoord, zCoord);
+                if (site && site.attributes.ContainsKey("usableColor"))
+                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
+                else
+                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("usableZone"));
+                tile.defaultMat = new Material(newTile.GetComponent<Renderer>().material);
             }
+
         }
     }
 

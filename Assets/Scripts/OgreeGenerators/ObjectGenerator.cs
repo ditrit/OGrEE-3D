@@ -808,7 +808,7 @@ public class ObjectGenerator
                 Tile tile = tileObj.GetComponent<Tile>();
                 if (tile.coord.x == pos.x && tile.coord.y == pos.y)
                 {
-                    _obj.localPosition +=new Vector3(tileObj.localPosition.x - 5* tileObj.localScale.x,0, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, 0, tileObj.localPosition.z - 5 * tileObj.localScale.z);
                     return;
                 }
             }
