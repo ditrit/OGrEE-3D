@@ -803,12 +803,15 @@ public class ObjectGenerator
         Transform floor = _obj.parent.Find("Floor");
         if (!parentRoom.isSquare && _apiObj.category == "rack" && parentRoom.attributes["floorUnit"] == "t" && floor)
         {
+            int trunkedX = (int)pos.x;
+            int trunkedY = (int)pos.y;
             foreach (Transform tileObj in floor)
             {
                 Tile tile = tileObj.GetComponent<Tile>();
-                if (tile.coord.x == pos.x && tile.coord.y == pos.y)
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
-                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, 0, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
                     return;
                 }
             }

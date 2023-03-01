@@ -344,6 +344,9 @@ public class CliParser
                 else
                     GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
                 break;
+            case "clearcache":
+                UiManager.instance.ClearCache();
+                break;
             default:
                 GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
                 break;
