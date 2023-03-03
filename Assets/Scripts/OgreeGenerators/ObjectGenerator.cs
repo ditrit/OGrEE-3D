@@ -811,7 +811,7 @@ public class ObjectGenerator
                 if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
                     _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
+                    _obj.localPosition += GameManager.instance.tileSize * new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
                     return;
                 }
             }
