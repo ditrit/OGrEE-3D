@@ -316,7 +316,7 @@ public class CliParser
     /// Parse a UI command and execute it.
     ///</summary>
     ///<param name="_input">The SUiManip to deserialize</param>
-    private void ManipulateUi(string _input)
+    private async void ManipulateUi(string _input)
     {
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
@@ -345,7 +345,23 @@ public class CliParser
                     GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
                 break;
             case "clearcache":
-                UiManager.instance.ClearCache();
+                if (GameManager.instance.objectRoot)
+                {
+                    Prompt prompt = UiManager.instance.GeneratePrompt("Clearing cache will erase current scene", "Continue", "Cancel");
+                    while (prompt.state == EPromptStatus.wait)
+                        await Task.Delay(10);
+                    if (prompt.state == EPromptStatus.accept)
+                    {
+                        await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
+                        await GameManager.instance.PurgeTenants();
+                        UiManager.instance.ClearCache();
+                        UiManager.instance.DeletePrompt(prompt);
+                    }
+                    else
+                        UiManager.instance.DeletePrompt(prompt);
+                }
+                else
+                    UiManager.instance.ClearCache();
                 break;
             default:
                 GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
