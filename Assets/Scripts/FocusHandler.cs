@@ -381,6 +381,7 @@ public class FocusHandler : MonoBehaviour
                     case "building":
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
+                        bd.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in bd.walls)
                         {
                             wall.GetComponent<Renderer>().enabled = _value;
