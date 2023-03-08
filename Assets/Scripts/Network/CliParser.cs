@@ -115,7 +115,7 @@ public class CliParser
                 InteractWithObject(command["data"].ToString());
                 break;
             case "ui":
-                ManipulateUi(command["data"].ToString());
+                await ManipulateUi(command["data"].ToString());
                 break;
             case "camera":
                 ManipulateCamera(command["data"].ToString());
@@ -316,7 +316,7 @@ public class CliParser
     /// Parse a UI command and execute it.
     ///</summary>
     ///<param name="_input">The SUiManip to deserialize</param>
-    private async void ManipulateUi(string _input)
+    private async Task ManipulateUi(string _input)
     {
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
