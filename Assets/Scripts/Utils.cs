@@ -115,7 +115,7 @@ public static class Utils
             foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
                 GameObject obj = (GameObject)de.Value;
-                if (obj.GetComponent<OgreeObject>().id == _id)
+                if (obj && obj.GetComponent<OgreeObject>().id == _id)
                     return obj;
             }
         }
@@ -170,7 +170,8 @@ public static class Utils
     ///<param name="_physicalList">The list of physical objects to complete</param>
     ///<param name="_logicalList">The list of logical objects to complete</param>
     ///<param name="_src">The head of nested SApiObjects</param>
-    public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src)
+    ///<param name="_leafIds">The list of leaf IDs to complete</param>
+    public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src, List<string> _leafIds)
     {
         if (_src.category == "group")
             _logicalList.Add(_src);
@@ -179,8 +180,10 @@ public static class Utils
         if (_src.children != null)
         {
             foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_physicalList, _logicalList, obj);
+                ParseNestedObjects(_physicalList, _logicalList, obj, _leafIds);
         }
+        else
+            _leafIds.Add(_src.id);
     }
 
     ///<summary>
@@ -188,14 +191,17 @@ public static class Utils
     ///</summary>
     ///<param name="_list">The list of objects to complete</param>
     ///<param name="_src">The head of nested SApiObjects</param>
-    public static void ParseNestedObjects(List<SApiObject> _list, SApiObject _src)
+    ///<param name="_leafIds">The list of leaf IDs to complete</param>
+    public static void ParseNestedObjects(List<SApiObject> _list, SApiObject _src, List<string> _leafIds)
     {
         _list.Add(_src);
         if (_src.children != null)
         {
             foreach (SApiObject obj in _src.children)
-                ParseNestedObjects(_list, obj);
+                ParseNestedObjects(_list, obj, _leafIds);
         }
+        else
+            _leafIds.Add(_src.id);
     }
 
     ///<summary>
@@ -295,5 +301,25 @@ public static class Utils
     {
         yield return new WaitForEndOfFrame();
         EventManager.instance.Raise(new ImportFinishedEvent());
+    }
+
+    ///<summary>
+    /// Loop through parents of given object and set their currentLod.
+    ///</summary>
+    ///<param name="_leaf">The object to start the loop</param>
+    public static void RebuildLods(Transform _leaf)
+    {
+        Transform parent = _leaf.parent;
+        while (parent)
+        {
+            OgreeObject leafObj = _leaf.GetComponent<OgreeObject>();
+            OgreeObject parentObj = parent.GetComponent<OgreeObject>();
+
+            if (leafObj.currentLod >= parentObj.currentLod)
+                parentObj.currentLod = leafObj.currentLod + 1;
+
+            _leaf = parent;
+            parent = _leaf.parent;
+        }
     }
 }

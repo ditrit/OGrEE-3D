@@ -29,19 +29,30 @@ public struct SApiObject
     }
 }
 
+[System.Serializable]
+public struct SBuildingFromJson
+{
+    public string slug;
+    public string category;
+    public float[] sizeWDHm;
+    public List<float> center;
+    public List<List<float>> vertices;
+}
+
 #region Room
 [System.Serializable]
 public struct SRoomFromJson
 {
     public string slug;
-    public string orientation;
+    public string axisOrientation;
     public float[] sizeWDHm;
     public string floorUnit;
-    public List<int> center;
-    public List<List<int>> vertices;
+    public List<float> center;
+    public List<List<float>> vertices;
     public int[] technicalArea;
     public int[] reservedArea;
     public SSeparator[] separators;
+    public SPillar[] pillars;
     public SColor[] colors;
     public STile[] tiles;
     public SRow[] rows;
@@ -54,6 +65,14 @@ public struct SSeparator
     public float[] startPosXYm;
     public float[] endPosXYm;
     public string type;
+}
+
+[System.Serializable]
+public struct SPillar
+{
+    public float[] centerXY;
+    public float[] sizeXY;
+    public float rotation;
 }
 
 [System.Serializable]
@@ -117,6 +136,12 @@ public struct SColor
 {
     public string name;
     public string value;
+}
+
+[System.Serializable]
+public struct STempUnit
+{
+    public string temperatureUnit;
 }
 
 #endregion

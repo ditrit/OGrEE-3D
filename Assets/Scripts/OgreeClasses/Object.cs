@@ -13,6 +13,7 @@ public class OObject : OgreeObject
     /// </summary>
     public OObject referent;
     public GameObject tempBar;
+    public string temperatureUnit;
 
     private void Awake()
     {
@@ -353,12 +354,17 @@ public class OObject : OgreeObject
         List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OObject>())
+            OObject childOO = child.GetComponent<OObject>();
+            if (childOO)
             {
-                temps.Add((child.GetComponent<OObject>().GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), child.GetComponent<OObject>().name));
+                temps.Add((childOO.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childOO.name));
             }
-            else if (child.GetComponent<Sensor>() && child.GetComponent<Sensor>().fromTemplate)
-                sensorsTemps.Add((child.GetComponent<Sensor>().temperature, child.GetComponent<Sensor>().name));
+            else
+            {
+                Sensor childSensor = child.GetComponent<Sensor>();
+                if (childSensor && childSensor.fromTemplate && !float.IsNaN(childSensor.temperature))
+                    sensorsTemps.Add((childSensor.temperature, childSensor.name));
+            }
         }
 
         float mean = float.NaN;
@@ -366,13 +372,12 @@ public class OObject : OgreeObject
         float min = float.NaN;
         float max = float.NaN;
         string hottestChild = "";
-        string temperatureUnit = "";
 
-        List<(float temp, float volume, string childName)> tempsNoNaN = temps.Where(v => !(v.temp is float.NaN)).ToList();
+        List<(float temp, float volume, string childName)> tempsNoNaN = temps.Where(v => !float.IsNaN(v.temp)).ToList();
         float totalEffectiveVolume = tempsNoNaN.Sum(v => v.volume);
         if (sensorsTemps.Count() > 0)
         {
-            totalEffectiveVolume = Utils.VolumeOfMesh(transform.GetChild(0).GetComponent<MeshFilter>()) - temps.Where(v => v.temp is float.NaN).Sum(v => v.volume);
+            totalEffectiveVolume = Utils.VolumeOfMesh(transform.GetChild(0).GetComponent<MeshFilter>()) - temps.Where(v => float.IsNaN(v.temp)).Sum(v => v.volume);
             float sensorVolume = (totalEffectiveVolume - tempsNoNaN.Sum(v => v.volume)) / sensorsTemps.Count();
 
             sensorsTemps.ForEach(sensor => tempsNoNaN.Add((sensor.temp, sensorVolume, sensor.sensorName)));
@@ -385,9 +390,6 @@ public class OObject : OgreeObject
             max = tempsNoNaN.Max(v => v.temp);
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
-        OgreeObject site = referent?.transform.parent?.parent?.parent?.GetComponent<OgreeObject>();
-        if (site && site.attributes.ContainsKey("temperatureUnit"))
-            temperatureUnit = site.attributes["temperatureUnit"];
         return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
     }
 

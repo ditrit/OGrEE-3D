@@ -740,7 +740,6 @@ public class ObjectGenerator
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.UpdateSensorColor();
         sensor.fromTemplate = false;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
@@ -756,35 +755,34 @@ public class ObjectGenerator
     ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
     private void PlaceInRoom(Transform _obj, SApiObject _apiObj, out Vector2 _orient)
     {
-        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
-
-        Vector2 pos = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+        Room parentRoom = _obj.parent.GetComponent<Room>();
+        float floorUnit = GetUnitFromRoom(parentRoom);
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
         _orient = new Vector2();
-        if (_obj.parent.GetComponent<Room>().attributes.ContainsKey("orientation"))
+        if (parentRoom.attributes.ContainsKey("axisOrientation"))
         {
-            if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+            if (parentRoom.attributes["axisOrientation"] == "+x+y")
             {
                 // Lower Left corner of the room
                 _orient = new Vector2(1, 1);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "-x+y")
             {
                 // Lower Right corner of the room
                 _orient = new Vector2(-1, 1);
                 if (_apiObj.category == "rack")
                     _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "-x-y")
             {
                 // Upper Right corner of the room
                 _orient = new Vector2(-1, -1);
                 if (_apiObj.category == "rack")
                     _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
             }
-            else if (Regex.IsMatch(_obj.parent.GetComponent<Room>().attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+            else if (parentRoom.attributes["axisOrientation"] == "+x-y")
             {
                 // Upper Left corner of the room
                 _orient = new Vector2(1, -1);
@@ -792,10 +790,38 @@ public class ObjectGenerator
                     _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
             }
         }
+
+        Vector3 pos;
+        if (_apiObj.category == "rack" && _apiObj.attributes.ContainsKey("posXYZ"))
+            pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]);
+        else
+        {
+            Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+            pos = new Vector3(tmp.x, tmp.y, 0);
+        }
+
+        Transform floor = _obj.parent.Find("Floor");
+        if (!parentRoom.isSquare && _apiObj.category == "rack" && parentRoom.attributes["floorUnit"] == "t" && floor)
+        {
+            int trunkedX = (int)pos.x;
+            int trunkedY = (int)pos.y;
+            foreach (Transform tileObj in floor)
+            {
+                Tile tile = tileObj.GetComponent<Tile>();
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
+                {
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += GameManager.instance.tileSize * new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
+                    return;
+                }
+            }
+        }
+
         // Go to the right corner of the room & apply pos
-        if (_obj.parent.GetComponent<Room>().isSquare)
+        if (parentRoom.isSquare)
             _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
-        _obj.localPosition += new Vector3(pos.x * _orient.x, 0, pos.y * _orient.y) * floorUnit;
+
+        _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
     }
 
     ///<summary>

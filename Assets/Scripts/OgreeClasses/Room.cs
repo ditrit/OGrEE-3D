@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class Room : Building
 {
-    public bool isSquare = true;
     public SMargin reserved;
     public SMargin technical;
 
@@ -16,6 +15,7 @@ public class Room : Building
     public Transform reservedZone;
     public Transform technicalZone;
     public Transform tilesEdges;
+    public string temperatureUnit;
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -65,10 +65,53 @@ public class Room : Building
         }
 
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-        if (_value == "true")
+        if (isSquare)
         {
-            if (!root)
+            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+            if (_value == "true")
+            {
+                if (!root)
+                {
+                    root = new GameObject("tilesNameRoot");
+                    root.transform.parent = transform;
+                    root.transform.localPosition = usableZone.localPosition;
+                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+                    root.transform.localEulerAngles = Vector3.zero;
+                    LoopThroughTiles("name", root.transform);
+                }
+            }
+            else
+            {
+                if (root)
+                    Destroy(root);
+            }
+        }
+        else
+        {
+            Transform root = transform.Find("Floor");
+            if (root)
+            {
+                foreach (Transform tile in root)
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value == "true";
+                nameText.enabled = _value == "false";
+            }
+
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+
+    public void ToggleTilesName()
+    {
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        if (isSquare)
+        {
+            GameObject root = transform.Find("tilesNameRoot")?.gameObject;
+            if (root)
+            {
+                root.SetActive(false); //for UI
+                Destroy(root);
+            }
+            else
             {
                 root = new GameObject("tilesNameRoot");
                 root.transform.parent = transform;
@@ -80,30 +123,15 @@ public class Room : Building
         }
         else
         {
+            Transform root = transform.Find("Floor");
             if (root)
-                Destroy(root);
+            {
+                foreach (Transform tile in root)
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled ^= true; //toggle bool : bool1 ^= true <=> bool1 = !bool1           
+                nameText.enabled = !nameText.enabled;
+            }
         }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-    }
 
-    public void ToggleTilesName()
-    {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-        if (root)
-        {
-            root.SetActive(false); //for UI
-            Destroy(root);
-        }
-        else
-        {
-            root = new GameObject("tilesNameRoot");
-            root.transform.parent = transform;
-            root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-            root.transform.localEulerAngles = Vector3.zero;
-            LoopThroughTiles("name", root.transform);
-        }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
@@ -126,10 +154,96 @@ public class Room : Building
         }
 
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesColorRoot")?.gameObject;
-        if (_value == "true")
+        if (isSquare)
         {
-            if (!root)
+            GameObject root = transform.Find("tilesColorRoot")?.gameObject;
+            if (_value == "true")
+            {
+                if (!root)
+                {
+                    root = new GameObject("tilesColorRoot");
+                    root.transform.parent = transform;
+                    root.transform.localPosition = usableZone.localPosition;
+                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
+                    root.transform.localEulerAngles = Vector3.zero;
+                    LoopThroughTiles("color", root.transform);
+                }
+            }
+            else
+            {
+                if (root)
+                    Destroy(root);
+            }
+        }
+        else
+        {
+            Transform root = transform.Find("Floor");
+            if (root)
+            {
+                List<SColor> customColors = new List<SColor>();
+                if (attributes.ContainsKey("customColors"))
+                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
+                foreach (Transform tileObj in root)
+                {
+                    Tile tile = tileObj.GetComponent<Tile>();
+                    if ((_value == "true" && tile.modified) || (_value == "false" && !tile.modified))
+                        continue;
+
+                    if (_value == "false")
+                    {
+                        tile.GetComponent<Renderer>().material = new Material(tile.defaultMat);
+                        tile.modified = false;
+                        continue;
+                    }
+
+                    if (!string.IsNullOrEmpty(tile.texture))
+                    {
+                        if (GameManager.instance.textures.ContainsKey(tile.texture))
+                        {
+                            Renderer rend = tile.GetComponent<Renderer>();
+                            rend.material = new Material(tile.defaultMat)
+                            {
+                                mainTexture = GameManager.instance.textures[tile.texture]
+                            };
+                        }
+                        else
+                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
+                    }
+                    if (!string.IsNullOrEmpty(tile.color))
+                    {
+                        Material mat = tile.GetComponent<Renderer>().material;
+                        Color customColor = new Color();
+                        if (tile.color.StartsWith("@"))
+                        {
+                            foreach (SColor color in customColors)
+                            {
+                                if (color.name == tile.color.Substring(1))
+                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
+                            }
+                        }
+                        else
+                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
+                        mat.color = customColor;
+                    }
+
+                    tile.modified = true;
+                }
+            }
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+    public void ToggleTilesColor()
+    {
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        if (isSquare)
+        {
+            GameObject root = transform.Find("tilesColorRoot")?.gameObject;
+            if (root)
+            {
+                root.SetActive(false); // for UI
+                Destroy(root);
+            }
+            else
             {
                 root = new GameObject("tilesColorRoot");
                 root.transform.parent = transform;
@@ -141,28 +255,55 @@ public class Room : Building
         }
         else
         {
+            Transform root = transform.Find("Floor");
             if (root)
-                Destroy(root);
-        }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
-    }
-    public void ToggleTilesColor()
-    {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
-        GameObject root = transform.Find("tilesColorRoot")?.gameObject;
-        if (root)
-        {
-            root.SetActive(false); // for UI
-            Destroy(root);
-        }
-        else
-        {
-            root = new GameObject("tilesColorRoot");
-            root.transform.parent = transform;
-            root.transform.localPosition = usableZone.localPosition;
-            root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-            root.transform.localEulerAngles = Vector3.zero;
-            LoopThroughTiles("color", root.transform);
+            {
+                List<SColor> customColors = new List<SColor>();
+                if (attributes.ContainsKey("customColors"))
+                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
+                foreach (Transform tileObj in root)
+                {
+                    Tile tile = tileObj.GetComponent<Tile>();
+                    if (tile.modified)
+                    {
+                        tile.GetComponent<Renderer>().material = new Material(tile.defaultMat);
+                        tile.modified = false;
+                        continue;
+                    }
+
+                    if (!string.IsNullOrEmpty(tile.texture))
+                    {
+                        if (GameManager.instance.textures.ContainsKey(tile.texture))
+                        {
+                            Renderer rend = tile.GetComponent<Renderer>();
+                            rend.material = new Material(tile.defaultMat)
+                            {
+                                mainTexture = GameManager.instance.textures[tile.texture]
+                            };
+                        }
+                        else
+                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
+                    }
+                    if (!string.IsNullOrEmpty(tile.color))
+                    {
+                        Material mat = tile.GetComponent<Renderer>().material;
+                        Color customColor = new Color();
+                        if (tile.color.StartsWith("@"))
+                        {
+                            foreach (SColor color in customColors)
+                            {
+                                if (color.name == tile.color.Substring(1))
+                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
+                            }
+                        }
+                        else
+                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
+                        mat.color = customColor;
+                    }
+
+                    tile.modified = true;
+                }
+            }
         }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
@@ -177,14 +318,14 @@ public class Room : Building
         Vector2 orient = Vector2.one;
         int offsetX = 0;
         int offsetY = 0;
-        if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\+[ENSW]{1}$"))
+        if (attributes["axisOrientation"] == "+x+y")
         {
             // Lower Left   
             orient = new Vector2(1, 1);
             offsetX = (int)-reserved.left;
             offsetY = (int)-reserved.bottom;
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\+[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "-x+y")
         {
             // Lower Right
             orient = new Vector2(-1, 1);
@@ -192,7 +333,7 @@ public class Room : Building
             offsetY = (int)-reserved.bottom;
             _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\-[ENSW]{1}\\-[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "-x-y")
         {
             // Upper Right
             orient = new Vector2(-1, -1);
@@ -200,7 +341,7 @@ public class Room : Building
             offsetY = (int)-reserved.top;
             _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
         }
-        else if (Regex.IsMatch(attributes["orientation"], "\\+[ENSW]{1}\\-[ENSW]{1}$"))
+        else if (attributes["axisOrientation"] == "+x-y")
         {
             // Upper Left
             orient = new Vector2(1, -1);
@@ -209,43 +350,26 @@ public class Room : Building
             _root.transform.localPosition -= new Vector3(0, 0, GameManager.instance.tileSize);
         }
 
-        if (isSquare)
-        {
-            Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
-            float x = size.x / GameManager.instance.tileSize - technical.right - technical.left + offsetX;
-            float y = size.y / GameManager.instance.tileSize - technical.top - technical.bottom + offsetY;
-            Vector3 origin = usableZone.localScale / 0.2f;
-            _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
+        float x = size.x / GameManager.instance.tileSize - technical.right - technical.left + offsetX;
+        float y = size.y / GameManager.instance.tileSize - technical.top - technical.bottom + offsetY;
+        Vector3 origin = usableZone.localScale / 0.2f;
+        _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
-            for (int j = offsetY; j < y; j++)
-            {
-                for (int i = offsetX; i < x; i++)
-                {
-                    Vector2 pos = new Vector2(i, j) * orient * GameManager.instance.tileSize;
-
-                    string tileID = $"{i}/{j}";
-                    if (_mode == "name")
-                        GenerateTileName(_root, pos, tileID);
-                    else if (_mode == "color")
-                        GenerateTileColor(_root, pos, tileID);
-                }
-            }
-        }
-        else
+        for (int j = offsetY; j < y; j++)
         {
-            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
-            foreach (STile tile in tiles)
+            for (int i = offsetX; i < x; i++)
             {
-                string[] splittedLoc = tile.location.Split('/');
-                int tileX = int.Parse(splittedLoc[0]);
-                int tileY = int.Parse(splittedLoc[1]);
-                Vector2 pos = new Vector2(tileX, tileY) * orient * GameManager.instance.tileSize;
+                Vector2 pos = new Vector2(i, j) * orient * GameManager.instance.tileSize;
+
+                string tileID = $"{i}/{j}";
                 if (_mode == "name")
-                    GenerateTileName(_root, pos, tile.location);
+                    GenerateTileName(_root, pos, tileID);
                 else if (_mode == "color")
-                    GenerateTileColor(_root, pos, tile.location);
+                    GenerateTileColor(_root, pos, tileID);
             }
         }
+
     }
 
     ///<summary>
@@ -493,7 +617,7 @@ public class Room : Building
     ///<summary>
     /// Add a separator to attributes["separators"] and instantiate it.
     ///</summary>
-    ///<param name="_input">The separator data to add</param>
+    ///<param name="_sep">The separator data to add</param>
     public void AddSeparator(SSeparator _sep)
     {
         List<SSeparator> separators;
@@ -543,5 +667,47 @@ public class Room : Building
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+    }
+
+    ///<summary>
+    /// Add a pillar to attributes["pillars"] and instantiate it.
+    ///</summary>
+    ///<param name="_pil">The pillar data to add</param>
+    public void AddPillar(SPillar _pil)
+    {
+        List<SPillar> pillars;
+        if (attributes.ContainsKey("pillars"))
+            pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
+        else
+            pillars = new List<SPillar>();
+        pillars.Add(_pil);
+        attributes["pillars"] = JsonConvert.SerializeObject(pillars);
+        BuildPillar(_pil);
+    }
+
+    ///<summary>
+    /// Place the given pillar in the room.
+    ///</summary>
+    ///<param name="_pil">The pillar to draw</param>
+    public void BuildPillar(SPillar _pil)
+    {
+        float height = Utils.ParseDecFrac(attributes["height"]);
+
+        GameObject pillar = Instantiate(GameManager.instance.pillarModel);
+        pillar.transform.parent = walls;
+
+        pillar.transform.localScale = new Vector3(_pil.sizeXY[0], height, _pil.sizeXY[1]);
+
+        // Place the pillar in the right place
+        if (technicalZone)
+        {
+            Vector3 roomScale = technicalZone.localScale * -5;
+            pillar.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+        }
+        else
+            pillar.transform.localPosition = Vector3.zero;
+
+        pillar.transform.localPosition += new Vector3(_pil.centerXY[0], height / 2, _pil.centerXY[1]);
+        pillar.transform.localEulerAngles = new Vector3(0, _pil.rotation, 0);
     }
 }

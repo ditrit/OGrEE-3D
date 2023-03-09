@@ -115,7 +115,7 @@ public class CliParser
                 InteractWithObject(command["data"].ToString());
                 break;
             case "ui":
-                ManipulateUi(command["data"].ToString());
+                await ManipulateUi(command["data"].ToString());
                 break;
             case "camera":
                 ManipulateCamera(command["data"].ToString());
@@ -152,17 +152,26 @@ public class CliParser
         {
             GameManager.instance.AppendLogLine(e.Message, true, ELogtype.errorCli);
         }
+
+        List<string> leafIds = new List<string>();
         if (!string.IsNullOrEmpty(src.category))
         {
             List<SApiObject> physicalObjects = new List<SApiObject>();
             List<SApiObject> logicalObjects = new List<SApiObject>();
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
 
             foreach (SApiObject obj in logicalObjects)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+            foreach (string id in leafIds)
+            {
+                Transform leaf = Utils.GetObjectById(id)?.transform;
+                if (leaf)
+                    Utils.RebuildLods(leaf);
+            }
 
             GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
         }
@@ -172,10 +181,14 @@ public class CliParser
     /// Deserialize given SApiObject and apply modification to corresponding object.
     ///</summary>
     ///<param name="_input">The SApiObject to deserialize</param>
-    private void ModifyObject(string _input)
+    private async void ModifyObject(string _input)
     {
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
         OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
+
+        // Get tenant from API if new domain isn't loaded
+        if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
+            await ApiManager.instance.GetObject($"tenants?name={newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
         bool tenantColorChanged = false;
@@ -215,7 +228,22 @@ public class CliParser
                     }
                     List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(newData.attributes["separators"]);
                     foreach (SSeparator sep in separators)
-                        room.AddSeparator(sep);
+                        room.BuildSeparator(sep);
+                }
+            }
+            if (newData.attributes.ContainsKey("pillars"))
+            {
+                if ((room.attributes.ContainsKey("pillars") && room.attributes["pillars"] != newData.attributes["pillars"])
+                    || !room.attributes.ContainsKey("pillars"))
+                {
+                    foreach (Transform wall in room.walls)
+                    {
+                        if (wall.name.Contains("Pillar"))
+                            Object.Destroy(wall.gameObject);
+                    }
+                    List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(newData.attributes["pillars"]);
+                    foreach (SPillar pillar in pillars)
+                        room.BuildPillar(pillar);
                 }
             }
             if (newData.attributes.ContainsKey("reserved"))
@@ -288,7 +316,7 @@ public class CliParser
     /// Parse a UI command and execute it.
     ///</summary>
     ///<param name="_input">The SUiManip to deserialize</param>
-    private void ManipulateUi(string _input)
+    private async Task ManipulateUi(string _input)
     {
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
@@ -315,6 +343,25 @@ public class CliParser
                     EventManager.instance.Raise(new HighlightEvent { obj = obj });
                 else
                     GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
+                break;
+            case "clearcache":
+                if (GameManager.instance.objectRoot)
+                {
+                    Prompt prompt = UiManager.instance.GeneratePrompt("Clearing cache will erase current scene", "Continue", "Cancel");
+                    while (prompt.state == EPromptStatus.wait)
+                        await Task.Delay(10);
+                    if (prompt.state == EPromptStatus.accept)
+                    {
+                        await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
+                        await GameManager.instance.PurgeTenants();
+                        UiManager.instance.ClearCache();
+                        UiManager.instance.DeletePrompt(prompt);
+                    }
+                    else
+                        UiManager.instance.DeletePrompt(prompt);
+                }
+                else
+                    UiManager.instance.ClearCache();
                 break;
             default:
                 GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);

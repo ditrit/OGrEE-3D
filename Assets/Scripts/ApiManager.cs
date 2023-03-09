@@ -41,11 +41,25 @@ public class ApiManager : MonoBehaviour
         public STemplate data;
     }
 
+    private struct SBuildingResp
+    {
+        public string message;
+        public string status;
+        public SBuildingFromJson data;
+    }
+
     private struct SRoomResp
     {
         public string message;
         public string status;
         public SRoomFromJson data;
+    }
+
+    private struct STempUnitResp
+    {
+        public string message;
+        public string status;
+        public STempUnit data;
     }
 
     public static ApiManager instance;
@@ -345,6 +359,8 @@ public class ApiManager : MonoBehaviour
             await CreateItemFromJson(_input);
         else if (_input.Contains("successfully got obj_template"))
             await CreateTemplateFromJson(_input, "obj");
+        else if (_input.Contains("successfully got building_template"))
+            await CreateTemplateFromJson(_input, "building");
         else if (_input.Contains("successfully got room_template"))
             await CreateTemplateFromJson(_input, "room");
         else
@@ -363,6 +379,7 @@ public class ApiManager : MonoBehaviour
     {
         List<SApiObject> physicalObjects = new List<SApiObject>();
         List<SApiObject> logicalObjects = new List<SApiObject>();
+        List<string> leafIds = new List<string>();
 
         if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
@@ -373,7 +390,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data);
+            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data, leafIds);
         }
 
         foreach (SApiObject obj in physicalObjects)
@@ -381,6 +398,13 @@ public class ApiManager : MonoBehaviour
 
         foreach (SApiObject obj in logicalObjects)
             await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+
+        foreach (string id in leafIds)
+        {
+            Transform leaf = Utils.GetObjectById(id)?.transform;
+            if (leaf)
+                Utils.RebuildLods(leaf);
+        }
 
         GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", false, ELogtype.successApi);
     }
@@ -396,11 +420,28 @@ public class ApiManager : MonoBehaviour
             STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
             await rfJson.CreateObjectTemplate(resp.data);
         }
+        else if (_type == "building")
+        {
+            SBuildingResp resp = JsonConvert.DeserializeObject<SBuildingResp>(_json);
+            rfJson.CreateBuildingTemplate(resp.data);
+        }
         else if (_type == "room")
         {
             SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
             rfJson.CreateRoomTemplate(resp.data);
         }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+    }
+
+    ///
+    public Task<string> TempUnitFromAPI(string _input)
+    {
+        if (_input.Contains("successfully got temperatureUnit from object's parent site"))
+        {
+            STempUnitResp resp = JsonConvert.DeserializeObject<STempUnitResp>(_input);
+            return Task.FromResult(resp.data.temperatureUnit);
+        }
+        GameManager.instance.AppendLogLine("Unknown object received while retrieving temperature unit", true, ELogtype.errorApi);
+        return Task.FromResult("");
     }
 }

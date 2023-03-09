@@ -40,25 +40,87 @@ public static class CircularListExtension
 
 }
 
-public static class NonSquareRoomGenerator
+public static class NonSquareBuildingGenerator
 {
+    private struct SCommonTemplate
+    {
+        public string slug;
+        public float[] sizeWDHm;
+        public List<float> center;
+        public List<List<float>> vertices;
+        public STile[] tiles;
+        public float tileAngle;
+
+        public SCommonTemplate(SBuildingFromJson _src)
+        {
+            slug = _src.slug;
+            sizeWDHm = _src.sizeWDHm;
+            center = _src.center;
+            vertices = new List<List<float>>();
+            foreach (List<float> vertex in _src.vertices)
+                vertices.Add(vertex.GetRange(0, vertex.Count));
+            tiles = null;
+            tileAngle = float.NaN;
+        }
+
+        public SCommonTemplate(SRoomFromJson _src)
+        {
+            slug = _src.slug;
+            sizeWDHm = _src.sizeWDHm;
+            center = _src.center;
+            vertices = new List<List<float>>();
+            foreach (List<float> vertex in _src.vertices)
+                vertices.Add(vertex.GetRange(0, vertex.Count));
+            tiles = _src.tiles;
+            tileAngle = _src.tileAngle;
+        }
+    }
+
+    /// <summary>
+    /// Build the walls and floor of a non convex building
+    /// </summary>
+    /// <param name="_building">The transform of the building's floor</param>
+    /// <param name="_template">The template of the non convex building</param>
+    public static void CreateShape(Transform _building, SBuildingFromJson _template)
+    {
+        Debug.Log($"Create shape of {_template.slug}");
+        SCommonTemplate data = new SCommonTemplate(_template);
+
+        List<float> offset = new List<float>(data.vertices[0]);
+        foreach (List<float> vertice in data.vertices)
+        {
+            vertice[0] -= offset[0];
+            vertice[1] -= offset[1];
+        }
+
+        BuildFloor(_building, data, null, false);
+        BuildWalls(_building, data);
+
+        _building.GetComponent<Building>().nameText.transform.localPosition = new Vector3(_template.center[0] - offset[0], 0.003f, _template.center[1] - offset[1]);
+    }
+
     /// <summary>
     /// Build the walls and floor of a non convex room then place it
     /// </summary>
-    /// <param name="_root">the transform of the room's flooe</param>
-    /// <param name="_template">the template of the non convex room</param>
-    public static void CreateShape(GameObject _room, SRoomFromJson _template)
+    /// <param name="_room">The transform of the room's floor</param>
+    /// <param name="_template">The template of the non convex room</param>
+    public static void CreateShape(Transform _room, SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
+        SCommonTemplate data = new SCommonTemplate(_template);
 
-        if (_template.floorUnit == "t")
-            BuildFloor(_room.transform, _template, true);
-        else
-            BuildFloor(_room.transform, _template, false);
-        BuildWalls(_room.transform, _template);
+        List<float> offset = new List<float>(data.vertices[0]);
+        foreach (List<float> vertice in data.vertices)
+        {
+            vertice[0] -= offset[0];
+            vertice[1] -= offset[1];
+        }
 
-        Vector3 center = new Vector3(_template.center[0], _template.center[1], _template.center[2]);
-        _room.GetComponent<Room>().nameText.transform.localPosition = center + new Vector3(0, 0.003f, 0);
+        BuildFloor(_room, data, offset, (_template.floorUnit == "t"));
+        _room.GetChild(0).localPosition += new Vector3(0, 0.001f, 0);
+        BuildWalls(_room, data);
+
+        _room.GetComponent<Room>().nameText.transform.localPosition = new Vector3(_template.center[0] - offset[0], 0.003f, _template.center[1] - offset[1]);
     }
 
     /// <summary>
@@ -66,7 +128,7 @@ public static class NonSquareRoomGenerator
     /// </summary>
     /// <param name="_root">the transform of the room's flooe</param>
     /// <param name="_template">the template of the non convex room</param>
-    private static void BuildWalls(Transform _root, SRoomFromJson _template)
+    private static void BuildWalls(Transform _root, SCommonTemplate _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -75,14 +137,14 @@ public static class NonSquareRoomGenerator
         float[] xWalls = new float[vCount];
         float[] zWalls = new float[vCount];
 
-        Transform walls = _root.GetComponent<Room>().walls;
+        Transform walls = _root.GetChild(1);
         Mesh meshWalls = new Mesh { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
 
         for (int i = 0; i < vCount; i++)
         {
-            xWalls[i] = _template.vertices[i][0] / 100f;
-            zWalls[i] = _template.vertices[i][1] / 100f;
+            xWalls[i] = _template.vertices[i][0];
+            zWalls[i] = _template.vertices[i][1];
         }
 
         for (int i = 0; i < vCount - 1; i++)
@@ -116,18 +178,18 @@ public static class NonSquareRoomGenerator
     /// <summary>
     /// Build the floor of a non convex room, optionnaly with its tiles
     /// </summary>
-    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_root">the transform of the room's floor</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
-    private static void BuildFloor(Transform _root, SRoomFromJson _template, bool _tiles)
+    private static void BuildFloor(Transform _root, SCommonTemplate _template, List<float> _offset, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
 
-        List<Vector3> walls = _template.vertices.Select(w => new Vector3(w[0] / 100f, 0, w[1] / 100f)).ToList();
+        List<Vector3> walls = _template.vertices.Select(w => new Vector3(w[0], 0, w[1])).ToList();
         if (!MostlyClockWise(walls))
             walls.Reverse();
         List<Vector3> shrinkingWalls = new List<Vector3>(walls);
-        Transform floor = _root.GetComponent<Room>().usableZone;
+        Transform floor = _root.GetChild(0);
         Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;
@@ -154,30 +216,56 @@ public static class NonSquareRoomGenerator
         meshFloor.RecalculateNormals();
 
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
+
         floor.GetComponent<MeshCollider>().convex = false;
+
+        //For building only : roof
+        Transform roof = _root.Find("Roof");
+        if (roof)
+        {
+            roof.GetComponent<MeshFilter>().mesh = meshFloor;
+            roof.GetComponent<MeshCollider>().sharedMesh = meshFloor;
+            roof.GetComponent<MeshCollider>().convex = false;
+        }
 
         if (_tiles)
         {
+            OgreeObject site = null;
+            if (_root.transform.parent && _root.transform.parent.parent)
+                site = _root.transform.parent.parent.GetComponentInParent<OgreeObject>();
             for (int i = 0; i < _template.tiles.Length; i++)
             {
-                string element = _template.tiles[i].location;
-                string[] separated = element.Split('/');
-
+                string[] separated = _template.tiles[i].location.Split('/');
                 float x = Utils.ParseDecFrac(separated[0]);
                 float z = Utils.ParseDecFrac(separated[1]);
 
+                separated = _template.tiles[i].label.Split('/');
+                float xCoord = Utils.ParseDecFrac(separated[0]);
+                float zCoord = Utils.ParseDecFrac(separated[1]);
+
                 // Tiles           
-                GameObject tile = Object.Instantiate(GameManager.instance.tileModel, floor);
-                tile.name = $"Tile_{_template.tiles[i].location}";
-                tile.transform.localPosition = (new Vector3(x / 100f, 0.001f, z / 100f));
-                tile.transform.Rotate(Vector3.up, _template.tileAngle);
+                GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
+                newTile.name = $"Tile_{_template.tiles[i].label}";
+                newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].label;
+                newTile.transform.localPosition = (new Vector3(x - _offset[0], 0.001f, z - _offset[1]));
+
+                Tile tile = newTile.GetComponent<Tile>();
+                tile.color = _template.tiles[i].color;
+                tile.texture = _template.tiles[i].texture;
+                tile.coord = new Vector2(xCoord, zCoord);
+                if (site && site.attributes.ContainsKey("usableColor"))
+                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
+                else
+                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("usableZone"));
+                tile.defaultMat = new Material(newTile.GetComponent<Renderer>().material);
             }
+
         }
     }
 
     /// <summary>
     /// Check if a list vertices defining a polygon is listed <i>mostly</i> clockwise
-    /// <br/> Mostly because, if the polygon is non-convex, it can no be just clockwise or non-clockwise
+    /// <br/> Mostly because, if the polygon is non-convex, it can be not just clockwise or non-clockwise
     /// <br/><see href="https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order"/>
     /// </summary>
     /// <param name="_points">the list vertices defining a polygon</param>
@@ -197,13 +285,13 @@ public static class NonSquareRoomGenerator
     /// <br/><b>IGNORE VERTICAL COMPONENT</b>
     /// <br/><see href="https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/"/>
     /// </summary>
-    /// <param name="A">the first point</param>
-    /// <param name="B">the second point</param>
-    /// <param name="C">the third point</param>
-    /// <returns>true if <paramref name="A"/>, <paramref name="B"/> and <paramref name="C"/> are in a clockwise order</returns>
-    private static bool ClockWise(Vector3 A, Vector3 B, Vector3 C)
+    /// <param name="_a">the first point</param>
+    /// <param name="_b">the second point</param>
+    /// <param name="_c">the third point</param>
+    /// <returns>true if <paramref name="_a"/>, <paramref name="_b"/> and <paramref name="_c"/> are in a clockwise order</returns>
+    private static bool ClockWise(Vector3 _a, Vector3 _b, Vector3 _c)
     {
-        return (C.z - A.z) * (B.x - A.x) < (B.z - A.z) * (C.x - A.x);
+        return (_c.z - _a.z) * (_b.x - _a.x) < (_b.z - _a.z) * (_c.x - _a.x);
     }
 
     /// <summary>

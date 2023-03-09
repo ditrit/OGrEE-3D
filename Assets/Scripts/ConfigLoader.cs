@@ -296,6 +296,11 @@ public class ConfigLoader
     ///<returns>The extremum for the temperature unit</returns>
     public (int min, int max) GetTemperatureLimit(string _unit)
     {
+        if (_unit is null)
+        {
+            GameManager.instance.AppendLogLine("Null temperature unit", false, ELogtype.error);
+            return (0, 0);
+        }
         _unit = _unit.ToLower();
         if (_unit == "°c")
             return (config.temperatureMinC, config.temperatureMaxC);

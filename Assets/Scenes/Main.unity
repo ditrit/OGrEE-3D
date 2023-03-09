@@ -6103,7 +6103,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B: 2022-12-22 #baa9f1b\r"
+  m_text: "B: 2023-03-07 #b6e41ff"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8589,7 +8589,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.8
+  m_fontSize: 12.9
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -8889,7 +8889,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.1
+  m_fontSize: 11.2
   m_fontSizeBase: 13
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9192,8 +9192,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2071767878}
   m_HandleRect: {fileID: 2071767877}
   m_Direction: 2
-  m_Value: 0.00000009884237
-  m_Size: 0.013972057
+  m_Value: 0.00000009884236
+  m_Size: 0.013972056
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9269,7 +9269,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10039}
+  m_AnchoredPosition: {x: 0, y: 217.1001}
+
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -9904,8 +9905,9 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
-  walls: {fileID: 0}
   isSquare: 1
+  walls: {fileID: 0}
+  nameText: {fileID: 0}
   reserved:
     left: 0
     right: 0
@@ -9920,7 +9922,7 @@ MonoBehaviour:
   reservedZone: {fileID: 0}
   technicalZone: {fileID: 0}
   tilesEdges: {fileID: 0}
-  nameText: {fileID: 0}
+  temperatureUnit: 
 --- !u!1 &1332719423
 GameObject:
   m_ObjectHideFlags: 0
@@ -11843,6 +11845,7 @@ MonoBehaviour:
   isHidden: 0
   referent: {fileID: 0}
   tempBar: {fileID: 0}
+  temperatureUnit: 
   uRoot: {fileID: 0}
   gridForULocation: {fileID: 0}
 --- !u!1 &1571389548
@@ -12065,7 +12068,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.6
+  m_fontSize: 13.75
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12165,6 +12168,8 @@ MonoBehaviour:
   ouSize: 0.048
   buildingModel: {fileID: 405515581002141253, guid: 8fa8fbf8aabdd8e4eb025a0613eca6e6,
     type: 3}
+  nonConvexBuildingModel: {fileID: 405515581002141253, guid: beac4c3ec27fa884b84387e16d84be31,
+    type: 3}
   roomModel: {fileID: 405515581002141253, guid: 5c330afaa8095c64882bca4febdda99d,
     type: 3}
   nonConvexRoomModel: {fileID: 405515581002141253, guid: af9a010197c01b342909d9cba4c0c464,
@@ -12182,6 +12187,8 @@ MonoBehaviour:
   coordinateSystemModel: {fileID: 4803223096728100942, guid: 0701ceca210faed459f1958237ca986e,
     type: 3}
   separatorModel: {fileID: 6439851413883331907, guid: 2fec6d44e3c98f84f8a75b9cf071fd4e,
+    type: 3}
+  pillarModel: {fileID: 4685940642527580937, guid: 48606e39717234940a72d4601d65bcc7,
     type: 3}
   sensorExtModel: {fileID: 6010235731161253863, guid: d5f1dea437b4d8247b0a6e981b274a4f,
     type: 3}
@@ -13025,9 +13032,9 @@ MonoBehaviour:
   m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 5
+  m_fontSizeMax: 14
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -13897,7 +13904,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.55
+  m_fontSize: 12.7
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -14033,7 +14040,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.25
+  m_fontSize: 13.4
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15062,8 +15069,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.99999976
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -15741,7 +15748,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.95
+  m_fontSize: 12.1
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -16778,7 +16785,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000016868306
+  m_Value: -0.00000014056921
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:

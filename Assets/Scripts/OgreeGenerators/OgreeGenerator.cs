@@ -38,6 +38,13 @@ public class OgreeGenerator : MonoBehaviour
             && !GameManager.instance.allItems.Contains(_obj.domain))
             await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
 
+        if (_obj.category == "building" && !string.IsNullOrEmpty(_obj.attributes["template"])
+            && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
+        {
+            Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
+            await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+        }
+
         if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
@@ -125,9 +132,23 @@ public class OgreeGenerator : MonoBehaviour
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;
-                GameObject.FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
+                FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
             }
-
+            if (newItem is OObject newItemOObject)
+            {
+                if (parent)
+                {
+                    newItemOObject.temperatureUnit = parent.GetComponent<Room>()?.temperatureUnit;
+                    if (string.IsNullOrEmpty(newItemOObject.temperatureUnit))
+                        newItemOObject.temperatureUnit = parent.GetComponent<OObject>()?.temperatureUnit;
+                }
+                else
+                    newItemOObject.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
+            }
+            if (newItem is Room newItemRoom)
+            {
+                newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
+            }
         }
         ResetCoroutine();
         return newItem;

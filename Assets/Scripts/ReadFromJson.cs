@@ -6,6 +6,18 @@ using System;
 
 public class ReadFromJson
 {
+    ///<summary>
+    /// Store <paramref name="_data"/> in <see cref="GameManager.buildingTemplates"/>.
+    ///</summary>
+    ///<param name="_data">Building data to store</param>
+    public void CreateBuildingTemplate(SBuildingFromJson _data)
+    {
+        if (GameManager.instance.buildingTemplates.ContainsKey(_data.slug))
+            return;
+
+        GameManager.instance.buildingTemplates.Add(_data.slug, _data);
+    }
+
     /// <summary>
     /// Check if given JSON is a room template and call <see cref="CreateRoomTemplate(SRoomFromJson)"/> if the JSON is valid
     /// </summary>
@@ -377,7 +389,6 @@ public class ReadFromJson
         }
         Sensor sensor = newSensor.GetComponent<Sensor>();
 
-        sensor.UpdateSensorColor();
         sensor.fromTemplate = true;
         newSensor.GetComponent<DisplayObjectData>().PlaceTexts(_sensor.elemPos[1]);
         newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
