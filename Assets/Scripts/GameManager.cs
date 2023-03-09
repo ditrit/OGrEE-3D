@@ -62,6 +62,9 @@ public class GameManager : MonoBehaviour
     private string startDateTime;
 
     public GameObject objectRoot;
+#pragma warning disable IDE1006 // Name assignment styles
+    public State appState { get; private set; }
+#pragma warning restore IDE1006 // Name assignment styles
 
     #region UnityMethods
 
@@ -517,6 +520,45 @@ public class GameManager : MonoBehaviour
         {
             UiManager.instance.SetReloadBtn(_value);
             EventManager.instance.Raise(new ImportFinishedEvent());
+        }
+    }
+
+    /// <summary>
+    /// Add a State to the application's current state.
+    /// </summary>
+    /// <param name="_state">The state to add</param>
+    public void AddState(State _state)
+    {
+        appState |= _state;
+    }
+
+    /// <summary>
+    /// Replace the application's current state with a new State.
+    /// </summary>
+    /// <param name="_state">The new state</param>
+    public void ChangeState(State _state)
+    {
+        appState = _state;
+    }
+
+    /// <summary>
+    /// Remove a State from the application's current state if it is part of already
+    /// </summary>
+    /// <param name="_state">The State to remove</param>
+    public void RemoveState(State _state)
+    {
+        if (_state == appState)
+            appState = State.None;
+        else
+        {
+            State a = appState;
+            foreach (State s in Enum.GetValues(typeof(State)))
+            {
+                if ((_state | s) == a && s != a)
+                {
+                    appState = s;
+                }
+            }
         }
     }
 }
