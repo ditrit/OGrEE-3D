@@ -28,8 +28,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4793989651670365291}
   - {fileID: 2905012525784032634}
+  - {fileID: 4793989651670365291}
   - {fileID: 4004042035225332991}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -59,8 +59,9 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
+  isSquare: 1
   walls: {fileID: 4793989651670365291}
-  isConvex: 0
+  nameText: {fileID: 1070277913875691498}
   reserved:
     left: 0
     right: 0
@@ -75,7 +76,7 @@ MonoBehaviour:
   reservedZone: {fileID: 0}
   technicalZone: {fileID: 0}
   tilesEdges: {fileID: 0}
-  nameText: {fileID: 1070277913875691498}
+  temperatureUnit: 
 --- !u!1 &1744753523067553287
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,7 +277,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4174214755756367569}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5866422444392055229
 MeshFilter:
@@ -358,7 +359,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4174214755756367569}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9144694817559137391
 MeshFilter:
