@@ -117,7 +117,7 @@ public static class NonSquareBuildingGenerator
         }
 
         BuildFloor(_room, data, offset, (_template.floorUnit == "t"));
-        _room.GetChild(1).localPosition += new Vector3(0, 0.001f, 0);
+        _room.GetChild(0).localPosition += new Vector3(0, 0.001f, 0);
         BuildWalls(_room, data);
 
         _room.GetComponent<Room>().nameText.transform.localPosition = new Vector3(_template.center[0] - offset[0], 0.003f, _template.center[1] - offset[1]);
@@ -137,7 +137,7 @@ public static class NonSquareBuildingGenerator
         float[] xWalls = new float[vCount];
         float[] zWalls = new float[vCount];
 
-        Transform walls = _root.GetChild(0);
+        Transform walls = _root.GetChild(1);
         Mesh meshWalls = new Mesh { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
 
@@ -189,7 +189,7 @@ public static class NonSquareBuildingGenerator
         if (!MostlyClockWise(walls))
             walls.Reverse();
         List<Vector3> shrinkingWalls = new List<Vector3>(walls);
-        Transform floor = _root.GetChild(1);
+        Transform floor = _root.GetChild(0);
         Mesh meshFloor = new Mesh { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;
@@ -218,6 +218,16 @@ public static class NonSquareBuildingGenerator
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
 
         floor.GetComponent<MeshCollider>().convex = false;
+
+        //For building only : roof
+        Transform roof = _root.Find("Roof");
+        if (roof)
+        {
+            roof.GetComponent<MeshFilter>().mesh = meshFloor;
+            roof.GetComponent<MeshCollider>().sharedMesh = meshFloor;
+            roof.GetComponent<MeshCollider>().convex = false;
+        }
+
         if (_tiles)
         {
             OgreeObject site = null;
