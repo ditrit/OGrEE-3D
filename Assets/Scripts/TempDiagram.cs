@@ -240,10 +240,10 @@ public class TempDiagram : MonoBehaviour
     /// </summary>
     /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position of the gradient (0-100)
     /// <br/><b>8 colors max, colors after the 8th one will not be used</b></param>
-    public void MakeCustomGradient(List<int[]> _colors)
+    public void MakeCustomGradient(List<List<int>> _colors)
     {
         GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count, 8)]; //Unity gradients can only take 8 colors max
-        foreach (int[] color in _colors)
+        foreach (List<int> color in _colors)
             colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3] / 100.0f };
 
         gradient = new Gradient();
@@ -271,7 +271,7 @@ public class TempDiagram : MonoBehaviour
     /// </summary>
     /// <param name="_colors">The colors in the gradient, a list of int array of 4 elements : first 3 are rgb values, last is the position on the gradient (0-100)</param>
     /// <param name="_useCustomGradient">if true, temperature colors will use the gradient created with <paramref name="_colors"/>, otherwise they will use the default gradient </param>
-    public void SetGradient(List<int[]> _colors, bool _useCustomGradient)
+    public void SetGradient(List<List<int>> _colors, bool _useCustomGradient)
     {
         MakeCustomGradient(_colors);
         heatMapGradient = _useCustomGradient ? heatMapGradientCustom : heatMapGradientDefault;

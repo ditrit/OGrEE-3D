@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using Tomlyn;
+using Tomlyn.Model;
+using System;
 
 public class ConfigLoader
 {
@@ -23,7 +26,7 @@ public class ConfigLoader
         public int temperatureMaxC;
         public int temperatureMinF;
         public int temperatureMaxF;
-        public int[][] customTemperatureGradient;
+        public List<List<int>> customTemperatureGradient;
         public bool useCustomGradient;
     }
 
@@ -97,15 +100,76 @@ public class ConfigLoader
         config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         try
         {
-            StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
-            ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
+            // StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
+            // ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
+            StreamReader jsonConfig = File.OpenText("Assets/Resources/config.toml");
+            TomlTable tomlConfig = Toml.ToModel(jsonConfig.ReadToEnd());
+            ModifyConfig(tomlConfig);
             return "custom";
         }
         catch (System.Exception _e)
         {
+            Debug.LogWarning(_e);
             GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
             return "default";
         }
+    }
+
+    ///
+    private void ModifyConfig(TomlTable _custom)
+    {
+        Debug.Log("toml");
+        TomlTable table = (TomlTable)_custom["Viewer"];
+
+        config.verbose = (bool)table["verbose"];
+        config.fullscreen = (bool)table["fullscreen"];
+        config.cachePath = (string)table["cachePath"];
+        config.cacheLimitMo = Convert.ToInt32((long)(table["cacheLimitMo"]));
+        config.cliPort = Convert.ToInt32(table["cliPort"]);
+        config.alphaOnInteract = Convert.ToInt32(table["alphaOnInteract"]);
+
+        foreach (var kvp in (TomlTable)table["textures"])
+        {
+            if (!string.IsNullOrEmpty((string)kvp.Value))
+                config.textures[kvp.Key] = (string)kvp.Value;
+        }
+        // foreach (var kvp in config.textures)
+        //     Debug.Log($"{kvp.Key}: {kvp.Value}");
+
+        foreach (var kvp in (TomlTable)table["colors"])
+        {
+            if (!string.IsNullOrEmpty((string)kvp.Value))
+                config.colors[kvp.Key] = (string)kvp.Value;
+        }
+        // foreach (var kvp in config.colors)
+        //     Debug.Log($"{kvp.Key}: {kvp.Value}");
+
+        TomlTable temperatureTable = (TomlTable)table["temperature"];
+        config.temperatureMinC = Convert.ToInt32(temperatureTable["minC"]);
+        config.temperatureMaxC = Convert.ToInt32(temperatureTable["maxC"]);
+        config.temperatureMinF = Convert.ToInt32(temperatureTable["minF"]);
+        config.temperatureMaxF = Convert.ToInt32(temperatureTable["maxF"]);
+
+        config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
+        List<List<int>> tempGradient = new List<List<int>>();
+        foreach (var colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
+        {
+            List<int> tmp = new List<int>();
+            foreach (var i in (TomlArray)colorDef)
+                tmp.Add(Convert.ToInt32((long)i));
+            tempGradient.Add(tmp);
+        }
+        config.customTemperatureGradient = tempGradient;
+
+        foreach (var x in config.customTemperatureGradient)
+        {
+            string str = "";
+            foreach (var i in x)
+                str += $"{i}/";
+            Debug.Log(str);
+        }
+
+
     }
 
     ///
@@ -146,11 +210,11 @@ public class ConfigLoader
         config.temperatureMinF = _custom.temperatureMinF;
         config.temperatureMaxF = _custom.temperatureMaxF;
         bool canUpdateTempGradient = true;
-        if (_custom.customTemperatureGradient.Length >= 2 && _custom.customTemperatureGradient.Length <= 8)
+        if (_custom.customTemperatureGradient.Count >= 2 && _custom.customTemperatureGradient.Count <= 8)
         {
-            foreach (int[] tab in _custom.customTemperatureGradient)
+            foreach (List<int> tab in _custom.customTemperatureGradient)
             {
-                if (tab.Length != 4)
+                if (tab.Count != 4)
                     canUpdateTempGradient = false;
             }
         }
@@ -314,9 +378,9 @@ public class ConfigLoader
     /// Get custom gradient colors to be used to represent temperatures
     /// </summary>
     /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
-    public List<int[]> GetCustomGradientColors()
+    public List<List<int>> GetCustomGradientColors()
     {
-        return config.customTemperatureGradient.ToList();
+        return config.customTemperatureGradient;
     }
 
     /// <summary>
