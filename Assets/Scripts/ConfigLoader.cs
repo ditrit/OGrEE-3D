@@ -39,11 +39,25 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        string fileType = LoadConfigFile();
+        // Load default config file
+        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
+        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
+
+        // Load toml config from given path
+        string configPath = GetArg("-c");
+        if (string.IsNullOrEmpty(configPath))
+            configPath = GetArg("--config-file");
+
+        string fileType = LoadConfigFile(configPath);
+
+        // Override with args
         OverrideConfig();
+
+        // Do things with completed config
         ApplyConfig();
         GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
 
+        // OUTDATED: Build-in CLI dependant
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
             GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
@@ -54,6 +68,7 @@ public class ConfigLoader
     /// From https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
     ///</summary>
     ///<param name="_name">Name of the wanted argument</param>
+    ///<returns>The value of the asked argument</returns>
     private string GetArg(string _name)
     {
         var args = System.Environment.GetCommandLineArgs();
@@ -72,7 +87,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen" };
+        string[] args = new string[] { "-v", "--verbose", "-fs", "--fullscreen" };
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -84,6 +99,12 @@ public class ConfigLoader
                         config.verbose = bool.Parse(str);
                         break;
                     case 1:
+                        config.verbose = bool.Parse(str);
+                        break;
+                    case 2:
+                        config.fullscreen = bool.Parse(str);
+                        break;
+                    case 3:
                         config.fullscreen = bool.Parse(str);
                         break;
                 }
@@ -94,15 +115,16 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private string LoadConfigFile()
+    ///<returns>The type of loaded config : "custom" or "default"</returns>
+    private string LoadConfigFile(string _path = null)
     {
-        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
-        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         try
         {
-            // StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
-            // ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
+#if UNITY_EDITOR
             StreamReader jsonConfig = File.OpenText("Assets/Resources/config.toml");
+#else
+            StreamReader jsonConfig = File.OpenText(_path);
+#endif
             TomlTable tomlConfig = Toml.ToModel(jsonConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
             return "custom";
