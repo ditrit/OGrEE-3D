@@ -194,13 +194,16 @@ public static class NonSquareBuildingGenerator
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;
         Vector3 A, B, C;
+        int failSafe = shrinkingWalls.Count;
         while (shrinkingWalls.Count >= 3)
         {
             A = shrinkingWalls.NextIndex(index, 0);
             B = shrinkingWalls.NextIndex(index, 1);
             C = shrinkingWalls.NextIndex(index, 2);
-            string s = "";
-            shrinkingWalls.ForEach(t => s += t.ToString() + ", ");
+
+            //For debugging purposes
+            //string s = "";
+            //shrinkingWalls.ForEach(t => s += t.ToString() + ", ");
             if (ClockWise(A, B, C) && !TriangleIntersectWalls(A, B, C, walls))
             {
                 trianglesRoom.Add(walls.IndexOf(A));
@@ -208,7 +211,15 @@ public static class NonSquareBuildingGenerator
                 trianglesRoom.Add(walls.IndexOf(C));
 
                 shrinkingWalls.Remove(B);
+                failSafe = shrinkingWalls.Count;
             }
+            if (failSafe == 0)
+            {
+                GameManager.instance.AppendLogLine($"Invalid vertex array  in template {_template.slug}", true, ELogtype.error);
+                break;
+            }
+
+            failSafe--;
             index++;
         }
         meshFloor.vertices = walls.ToArray();
