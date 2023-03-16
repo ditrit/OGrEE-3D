@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -121,11 +121,11 @@ public class ConfigLoader
         try
         {
 #if UNITY_EDITOR
-            StreamReader jsonConfig = File.OpenText("Assets/Resources/config.toml");
+            StreamReader loadedConfig = File.OpenText("Assets/Resources/config.toml");
 #else
-            StreamReader jsonConfig = File.OpenText(_path);
+            StreamReader loadedConfig = File.OpenText(_path);
 #endif
-            TomlTable tomlConfig = Toml.ToModel(jsonConfig.ReadToEnd());
+            TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
             return "custom";
         }
@@ -137,18 +137,21 @@ public class ConfigLoader
         }
     }
 
-    ///
-    private void ModifyConfig(TomlTable _custom)
+    ///<summary>
+    /// Apply given toml config to config
+    ///</summary>
+    ///<param name="_customConfig">The loaded config.toml file</param>
+    private void ModifyConfig(TomlTable _customConfig)
     {
-        Debug.Log("toml");
-        TomlTable table = (TomlTable)_custom["Viewer"];
+        Debug.Log("Parse config.toml");
+        TomlTable table = (TomlTable)_customConfig["OGrEE-3D"];
 
         config.verbose = (bool)table["verbose"];
         config.fullscreen = (bool)table["fullscreen"];
         config.cachePath = (string)table["cachePath"];
         config.cacheLimitMo = Convert.ToInt32((long)(table["cacheLimitMo"]));
         config.cliPort = Convert.ToInt32(table["cliPort"]);
-        config.alphaOnInteract = Convert.ToInt32(table["alphaOnInteract"]);
+        config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
         foreach (var kvp in (TomlTable)table["textures"])
         {
@@ -179,22 +182,23 @@ public class ConfigLoader
             List<int> tmp = new List<int>();
             foreach (var i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32((long)i));
-            tempGradient.Add(tmp);
+            if (tmp.Count == 4)
+                tempGradient.Add(tmp);
         }
         config.customTemperatureGradient = tempGradient;
-
-        foreach (var x in config.customTemperatureGradient)
-        {
-            string str = "";
-            foreach (var i in x)
-                str += $"{i}/";
-            Debug.Log(str);
-        }
-
-
+        // foreach (var x in config.customTemperatureGradient)
+        // {
+        //     string str = "";
+        //     foreach (var i in x)
+        //         str += $"{i}/";
+        //     Debug.Log(str);
+        // }
     }
 
-    ///
+    ///<summary>
+    /// Apply given config.json to config
+    ///</summary>
+    ///<param name="_custom">The loaded config.json</param>
     private void ModifyConfig(SConfig _custom)
     {
         config.verbose = _custom.verbose;

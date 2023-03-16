@@ -1,4 +1,4 @@
-[Viewer]
+[OGrEE-3D]
 verbose = true
 fullscreen = false
 cachePath = "C:/"
@@ -6,12 +6,12 @@ cacheLimitMo = 100
 cliPort = 5500
 alphaOnInteract = 50
 
-[Viewer.textures]
+[OGrEE-3D.textures]
 perf22 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png"
 perf29 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
 elesh  = "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/1/13/Elesh_Norn.jpg/revision/latest?cb=20210216024711"
 
-[Viewer.colors]
+[OGrEE-3D.colors]
 selection = "#21FF00"
 edit = "#C900FF"
 focus = "#FF9F00"
@@ -21,7 +21,7 @@ usableZone = "#DBEDF2"
 reservedZone = "#F2F2F2"
 technicalZone = "#EBF2DE"
 
-[Viewer.temperature]
+[OGrEE-3D.temperature]
 minC = 0
 maxC = 100
 minF = 32
