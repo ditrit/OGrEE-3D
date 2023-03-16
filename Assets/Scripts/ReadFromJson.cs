@@ -213,7 +213,7 @@ public class ReadFromJson
         GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
-        Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
+        Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
         if (_parent.attributes["sizeUnit"] == "mm")
             parentSize /= 1000;
         else if (_parent.attributes["sizeUnit"] == "cm")
