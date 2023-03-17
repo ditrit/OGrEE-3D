@@ -182,10 +182,11 @@ public class ConfigLoader
             List<int> tmp = new List<int>();
             foreach (var i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32((long)i));
-            if (tmp.Count == 4)
+            if (tmp.Count == 4 && tempGradient.Count < 8)
                 tempGradient.Add(tmp);
         }
-        config.customTemperatureGradient = tempGradient;
+        if (tempGradient.Count >= 2)
+            config.customTemperatureGradient = tempGradient;
         // foreach (var x in config.customTemperatureGradient)
         // {
         //     string str = "";
