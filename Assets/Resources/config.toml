@@ -12,7 +12,6 @@ alphaOnInteract = 50
 # Textures loaded in the 3D client at startup, in "name = url" format
 perf22 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png"
 perf29 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png"
-elesh  = "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/1/13/Elesh_Norn.jpg/revision/latest?cb=20210216024711"
 
 [OGrEE-3D.colors]
 # Colors can be defines with hexadecimal codes or html colors
