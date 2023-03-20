@@ -130,6 +130,12 @@ public class OObject : OgreeObject
         if (string.IsNullOrEmpty(domain))
             return;
 
+        if (!GameManager.instance.allItems.Contains(domain))
+        {
+            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", false, ELogtype.error);
+            return;
+        }
+
         OgreeObject tenant = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;

@@ -58,6 +58,7 @@ public class BuildingGenerator
         // Apply rotation
         newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
 
+        Transform roof = newBD.transform.Find("Roof");
         if (template.vertices != null)
         {
             building.isSquare = false;
@@ -70,7 +71,8 @@ public class BuildingGenerator
             Vector3 originalSize = floor.localScale;
             floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
-
+            roof.localScale = floor.localScale;
+            roof.localPosition = floor.localPosition;
             // Align walls & nameText to the floor & setup nameText
             building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
             building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
@@ -86,6 +88,8 @@ public class BuildingGenerator
         building.nameText.text = _bd.name;
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
+
+        roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
 
         GameManager.instance.allItems.Add(hierarchyName, newBD);
         return building;

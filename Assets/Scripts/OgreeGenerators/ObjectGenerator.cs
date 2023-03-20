@@ -48,7 +48,7 @@ public class ObjectGenerator
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
-            float height = float.Parse(_rk.attributes["height"]);
+            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
             if (_rk.attributes["heightUnit"] == "U")
                 height *= GameManager.instance.uSize;
             else if (_rk.attributes["heightUnit"] == "cm")
@@ -283,7 +283,7 @@ public class ObjectGenerator
                 newDevice.transform.localEulerAngles = Vector3.zero;
                 newDevice.transform.localPosition = new Vector3(0, (-_parent.GetChild(0).localScale.y + height) / 2, 0);
                 if (_dv.attributes.ContainsKey("posU"))
-                    newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
+                    newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
 
                 float deltaZ = _parent.GetChild(0).localScale.z - size.y;
                 newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
@@ -757,7 +757,6 @@ public class ObjectGenerator
     {
         Room parentRoom = _obj.parent.GetComponent<Room>();
         float floorUnit = GetUnitFromRoom(parentRoom);
-
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
@@ -791,9 +790,6 @@ public class ObjectGenerator
                     _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
             }
         }
-        // Go to the right corner of the room & apply pos
-        if (parentRoom.isSquare)
-            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
 
         Vector3 pos;
         if (_apiObj.category == "rack" && _apiObj.attributes.ContainsKey("posXYZ"))
@@ -803,6 +799,28 @@ public class ObjectGenerator
             Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
             pos = new Vector3(tmp.x, tmp.y, 0);
         }
+
+        Transform floor = _obj.parent.Find("Floor");
+        if (!parentRoom.isSquare && _apiObj.category == "rack" && parentRoom.attributes["floorUnit"] == "t" && floor)
+        {
+            int trunkedX = (int)pos.x;
+            int trunkedY = (int)pos.y;
+            foreach (Transform tileObj in floor)
+            {
+                Tile tile = tileObj.GetComponent<Tile>();
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
+                {
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += GameManager.instance.tileSize * new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
+                    return;
+                }
+            }
+        }
+
+        // Go to the right corner of the room & apply pos
+        if (parentRoom.isSquare)
+            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+
         _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
     }
 

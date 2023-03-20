@@ -29,10 +29,10 @@ public struct SMargin
 
     public SMargin(string _N, string _S, string _E, string _W)
     {
-        top = float.Parse(_N, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-        bottom = float.Parse(_S, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-        right = float.Parse(_E, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-        left = float.Parse(_W, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+        top = Utils.ParseDecFrac(_N);
+        bottom = Utils.ParseDecFrac(_S);
+        right = Utils.ParseDecFrac(_E);
+        left = Utils.ParseDecFrac(_W);
     }
 
     public SMargin(int[] _data)
