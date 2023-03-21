@@ -48,14 +48,13 @@ public class ConfigLoader
         if (string.IsNullOrEmpty(configPath))
             configPath = GetArg("--config-file");
 
-        string fileType = LoadConfigFile(configPath);
+        LoadConfigFile(configPath);
 
         // Override with args
         OverrideConfig();
 
         // Do things with completed config
         ApplyConfig();
-        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
 
         // OUTDATED: Build-in CLI dependant
         string startFile = GetArg("--file");
@@ -116,24 +115,26 @@ public class ConfigLoader
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
     ///<returns>The type of loaded config : "custom" or "default"</returns>
-    private string LoadConfigFile(string _path = null)
+    private void LoadConfigFile(string _path = null)
     {
         try
         {
 #if UNITY_EDITOR
             StreamReader loadedConfig = File.OpenText("Assets/Resources/config.toml");
 #else
+            if (string.IsNullOrEmpty(_path))
+                _path = "./config.toml";
             StreamReader loadedConfig = File.OpenText(_path);
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
-            return "custom";
+            GameManager.instance.AppendLogLine($"Load custom config file ({_path})", false, ELogtype.success);
         }
         catch (System.Exception _e)
         {
             Debug.LogWarning(_e);
             GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
-            return "default";
+            GameManager.instance.AppendLogLine($"Load default config file", false, ELogtype.success);
         }
     }
 
