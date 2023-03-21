@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +5,23 @@ using UnityEngine.UI;
 public class ButtonHandler
 {
     public delegate bool Condition();
+    
+    /// <summary>
+    /// when this is true, the button is interactable
+    /// </summary>
     public Condition interactCondition;
     public Button button;
+
+    /// <summary>
+    /// When this is true, the button is in an "activated" state
+    /// </summary>
     public Condition toggledCondition;
 
+    /// <summary>
+    /// if the button doesn't need to be toggled in an activated state,
+    /// leave toggledCondition to null
+    /// </summary>
+    /// <param name="_button">the <see cref="Unity"/> <see cref="Button"/> to be handled </param>
     public ButtonHandler(Button _button)
     {
         button = _button;
@@ -22,6 +33,9 @@ public class ButtonHandler
         EventManager.instance.AddListener<ImportFinishedEvent>(CheckImportFinished);
     }
 
+    /// <summary>
+    /// Check for interaction and toggling condition, then activate/deactivate and toggle the button according to them
+    /// </summary>
     public void Check()
     {
         button.interactable = interactCondition();
@@ -42,30 +56,55 @@ public class ButtonHandler
         button.colors = cb;
     }
 
+    /// <summary>
+    /// Check executed when selecting
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckSelect(OnSelectItemEvent _e)
     {
         Check();
     }
 
+    /// <summary>
+    /// Check executed when focusing
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckFocus(OnFocusEvent _e)
     {
         Check();
     }
 
+    /// <summary>
+    /// Check executed when unfocusing
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckUnfocus(OnUnFocusEvent _e)
     {
         Check();
     }
 
+    /// <summary>
+    /// Check executed when entering edit mode
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckEditIn(EditModeInEvent _e)
     {
         Check();
     }
 
+    /// <summary>
+    /// Check executed when exiting edit mode
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckEditOut(EditModeOutEvent _e)
     {
         Check();
     }
+
+    /// <summary>
+    /// Check executed when importing
+    /// </summary>
+    /// <param name="_e">the event's instance</param>
     private void CheckImportFinished(ImportFinishedEvent _e)
     {
         Check();

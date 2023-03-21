@@ -525,10 +525,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// True if edit mode is on
+    /// </summary>
     public bool editMode = false;
+
+    /// <summary>
+    /// True if  select mode is on
+    /// </summary>
     public bool selectMode = false;
+
+    /// <summary>
+    /// True if focus mode is on
+    /// </summary>
     public bool focusMode = false;
 
+    /// <summary>
+    /// Check if there is a object of the current type <typeparamref name="T"/> and category <paramref name="_category"/> selected
+    /// </summary>
+    /// <typeparam name="T">The type of OObject you want to check</typeparam>
+    /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
+    /// <returns>False if the select list is empty or if no object of right type and category is found</returns>
     public bool SelectIs<T>(string _category = "") where T : OgreeObject
     {
         if (currentItems.Count == 0)
@@ -538,6 +555,13 @@ public class GameManager : MonoBehaviour
             return true;
         return false;
     }
+
+    /// <summary>
+    /// Check if there is a object of the current type <typeparamref name="T"/> and category <paramref name="_category"/> focused
+    /// </summary>
+    /// <typeparam name="T">The type of OObject you want to check</typeparam>
+    /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
+    /// <returns>False if the focus list is empty or if no object of right type and category is found</returns>
     public bool FocusIs<T>(string _category = "") where T : OObject
     {
         if (focus.Count == 0)
@@ -548,15 +572,28 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
     public List<GameObject> GetSelected()
     {
         return currentItems.GetRange(0, currentItems.Count);
     }
+
+    /// <summary>
+    /// Create a copy of the previously selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of previously selected objects</returns>
     public List<GameObject> GetPrevious()
     {
         return previousItems.GetRange(0, previousItems.Count);
     }
 
+    /// <summary>
+    /// Create a copy of the focused objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently focused objects</returns>
     public List<GameObject> GetFocused()
     {
         return focus.GetRange(0, focus.Count);

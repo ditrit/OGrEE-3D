@@ -61,6 +61,9 @@ public class UiManager : MonoBehaviour
             Destroy(this);
     }
 
+    /// <summary>
+    /// Set up all UI buttons via ButtonHandler and add events' listeners
+    /// </summary>
     private void Start()
     {
         focusBtn = new ButtonHandler(focusBtn.button)
@@ -216,9 +219,6 @@ public class UiManager : MonoBehaviour
         EventManager.instance.AddListener<OnFocusEvent>(OnFocusItem);
         EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
 
-        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOut);
-
         EventManager.instance.AddListener<ConnectApiEvent>(OnApiConnected);
         EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
@@ -241,9 +241,6 @@ public class UiManager : MonoBehaviour
 
         EventManager.instance.RemoveListener<OnFocusEvent>(OnFocusItem);
         EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
-
-        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
 
         EventManager.instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
         EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
@@ -275,23 +272,6 @@ public class UiManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
-    }
-
-    ///<summary>
-    /// When called, change buttons behavior.
-    ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnEditModeIn(EditModeInEvent _e)
-    {
-        //editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"));
-    }
-
-    ///<summary>
-    /// When called, change buttons behavior.
-    ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnEditModeOut(EditModeOutEvent _e)
-    {
     }
 
     ///<summary>
