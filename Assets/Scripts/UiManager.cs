@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class UiManager : MonoBehaviour
 {
     static public UiManager instance;
@@ -19,29 +20,28 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_Text mouseName;
 
     [Header("Panel Top")]
-    [SerializeField] private Button focusBtn;
-    [SerializeField] private Button unfocusBtn;
-    [SerializeField] private Button selectParentBtn;
+    [SerializeField] private ButtonHandler focusBtn;
+    [SerializeField] private ButtonHandler unfocusBtn;
+    [SerializeField] private ButtonHandler selectParentBtn;
     [SerializeField] private TMP_Text focusText;
-    [SerializeField] private Button editBtn;
-    [SerializeField] private Button resetTransBtn;
-    [SerializeField] private Button resetChildrenBtn;
-    [SerializeField] private Button tempDiagramBBtn;
-    [SerializeField] private Button tempScatterPlotBtn;
-    [SerializeField] private Button heatMapBtn;
+    [SerializeField] private ButtonHandler editBtn;
+    [SerializeField] private ButtonHandler resetTransBtn;
+    [SerializeField] private ButtonHandler resetChildrenBtn;
+    [SerializeField] private ButtonHandler barChartBtn;
+    [SerializeField] private ButtonHandler scatterPlotBtn;
+    [SerializeField] private ButtonHandler heatMapBtn;
 
     [Header("Panel Bottom")]
-    [SerializeField] private Button reloadBtn;
-    [SerializeField] private Button apiBtn;
+    [SerializeField] private ButtonHandler apiBtn;
     [SerializeField] private TMP_Text apiUrl;
     [SerializeField] private TMP_Text currentItemText;
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
-    [SerializeField] private Button toggleTilesNameBtn;
-    [SerializeField] private Button toggleTilesColorBtn;
-    [SerializeField] private Button toggleUHelpersBtn;
-    [SerializeField] private Button toggleLocalCSBtn;
+    [SerializeField] private ButtonHandler toggleTilesNameBtn;
+    [SerializeField] private ButtonHandler toggleTilesColorBtn;
+    [SerializeField] private ButtonHandler toggleUHelpersBtn;
+    [SerializeField] private ButtonHandler toggleLocalCSBtn;
 
     [Header("Delay Slider")]
     [SerializeField] private ConsoleController consoleController;
@@ -53,8 +53,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos;
     public DetailsInputField detailsInputField;
 
-    public GameObject test;
-
     private void Awake()
     {
         if (!instance)
@@ -65,17 +63,152 @@ public class UiManager : MonoBehaviour
 
     private void Start()
     {
+        focusBtn = new ButtonHandler(focusBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<OObject>()
+            &&
+            !GameManager.instance.editMode
+            &&
+            !GameManager.instance.GetFocused().Contains(GameManager.instance.GetSelected()[GameManager.instance.GetSelected().Count - 1])
+        };
+        focusBtn.Check();
+
+        unfocusBtn = new ButtonHandler(unfocusBtn.button)
+        {
+            interactCondition = () => GameManager.instance.focusMode
+            &&
+            !GameManager.instance.editMode
+        };
+        unfocusBtn.Check();
+
+        selectParentBtn = new ButtonHandler(selectParentBtn.button)
+        {
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            (
+            !GameManager.instance.focusMode
+            ||
+            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
+            )
+        };
+        selectParentBtn.Check();
+
+        editBtn = new ButtonHandler(editBtn.button)
+        {
+            interactCondition = () => GameManager.instance.focusMode
+            &&
+            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == GameManager.instance.GetSelected()[0],
+
+            toggledCondition = () => GameManager.instance.editMode
+        };
+        editBtn.Check();
+
+        resetTransBtn = new ButtonHandler(resetTransBtn.button)
+        {
+            interactCondition = () => GameManager.instance.editMode
+        };
+        resetTransBtn.Check();
+
+        resetChildrenBtn = new ButtonHandler(resetChildrenBtn.button)
+        {
+            interactCondition = () => GameManager.instance.focusMode
+        };
+        resetChildrenBtn.Check();
+
+        barChartBtn = new ButtonHandler(barChartBtn.button)
+        {
+            interactCondition = () => 
+            (
+                GameManager.instance.SelectIs<Room>()
+                &&
+                GameManager.instance.GetSelected().Count == 1
+            ) 
+            ||
+            GameManager.instance.SelectIs<OgreeObject>("tempBar"),
+            toggledCondition = () => TempDiagram.instance.isDiagramShown
+        };
+        barChartBtn.Check();
+
+        scatterPlotBtn = new ButtonHandler(scatterPlotBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
+            &&
+            GameManager.instance.GetSelected().Count == 1,
+            toggledCondition = () => TempDiagram.instance.isScatterPlotShown
+        };
+        scatterPlotBtn.Check();
+
+        heatMapBtn = new ButtonHandler(heatMapBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<OObject>("device")
+            &&
+            GameManager.instance.GetSelected().Count == 1
+            &&
+            DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1,
+            toggledCondition = () => GameManager.instance.SelectIs<OObject>("device")
+            &&
+            GameManager.instance.GetSelected().Count == 1
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<OObject>().heatMap
+
+        };
+        heatMapBtn.Check();
+
+        apiBtn = new ButtonHandler(apiBtn.button)
+        {
+            interactCondition = () => true
+        };
+        apiBtn.Check();
+
+        toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<Room>(),
+
+            toggledCondition = () => GameManager.instance.SelectIs<Room>()
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Room>().tileName
+        };
+        toggleTilesNameBtn.Check();
+
+        toggleTilesColorBtn = new ButtonHandler(toggleTilesColorBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<Room>(),
+
+            toggledCondition = () => GameManager.instance.SelectIs<Room>()
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Room>().tileColor
+        };
+        toggleTilesColorBtn.Check();
+
+        toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button)
+        {
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()),
+
+            toggledCondition = () => GameManager.instance.selectMode
+            &&
+            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>())
+            &&
+            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()).uRoot
+            &&
+            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()).uRoot.gameObject.activeSelf
+        };
+        toggleUHelpersBtn.Check();
+
+        toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button)
+        {
+            interactCondition = () => GameManager.instance.SelectIs<OObject>(),
+
+            toggledCondition = () => GameManager.instance.selectMode
+            &&
+            GameManager.instance.GetSelected()[0].transform.Find("localCS")
+            &&
+            GameManager.instance.GetSelected()[0].transform.Find("localCS").gameObject.activeSelf
+        };
+        toggleLocalCSBtn.Check();
+
         menuPanel.SetActive(false);
-        focusBtn.interactable = false;
-        unfocusBtn.interactable = false;
-        editBtn.interactable = false;
-        selectParentBtn.interactable = false;
-        resetTransBtn.interactable = false;
-        resetChildrenBtn.interactable = false;
-        mouseName.gameObject.SetActive(false);
-        tempDiagramBBtn.interactable = false;
-        tempScatterPlotBtn.interactable = false;
-        heatMapBtn.interactable = false;
         UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -122,172 +255,8 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.currentItems.Count == 0)
-        {
-            focusBtn.interactable = false;
-            selectParentBtn.interactable = false;
-            resetTransBtn.interactable = false;
-
-            tempDiagramBBtn.interactable = false;
-            tempScatterPlotBtn.interactable = false;
-            heatMapBtn.interactable = false;
-
-        }
-        else if (GameManager.instance.focus.Contains(GameManager.instance.currentItems[GameManager.instance.currentItems.Count - 1]))
-        {
-            focusBtn.interactable = false;
-            selectParentBtn.interactable = true;
-
-            tempDiagramBBtn.interactable = true;
-            tempScatterPlotBtn.interactable = true;
-            heatMapBtn.interactable = true;
-        }
-        else
-        {
-            focusBtn.interactable = true;
-            selectParentBtn.interactable = true;
-
-            tempDiagramBBtn.interactable = true;
-            tempScatterPlotBtn.interactable = true;
-            heatMapBtn.interactable = true;
-        }
-        if (GameManager.instance.focus.Count > 0 && GameManager.instance.focus[GameManager.instance.focus.Count - 1] == GameManager.instance.currentItems[0])
-        {
-            selectParentBtn.interactable = false;
-            editBtn.interactable = true;
-        }
-        else
-            editBtn.interactable = false;
-
         SetCurrentItemText();
         UpdateGuiInfos();
-
-        //ugly part : checking toggling buttons status
-        ColorBlock cb;
-        if (GameManager.instance.currentItems.Count > 0)
-        {
-            Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
-            if (currentRoom)
-            {
-                //Toggle tiles name
-                cb = toggleTilesNameBtn.colors;
-                if (currentRoom.transform.Find("tilesNameRoot"))
-                {
-                    cb.normalColor = Color.gray;
-                    cb.selectedColor = Color.gray;
-                }
-                else
-                {
-                    cb.normalColor = Color.white;
-                    cb.selectedColor = Color.white;
-                }
-                toggleTilesNameBtn.colors = cb;
-
-                //Toggle tiles color
-                cb = toggleTilesColorBtn.colors;
-                if (currentRoom.transform.Find("tilesColorRoot"))
-                {
-                    cb.normalColor = Color.gray;
-                    cb.selectedColor = Color.gray;
-                }
-                else
-                {
-                    cb.normalColor = Color.white;
-                    cb.selectedColor = Color.white;
-                }
-                toggleTilesColorBtn.colors = cb;
-            }
-            else
-            {
-                cb = toggleTilesColorBtn.colors;
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-                toggleTilesNameBtn.colors = cb;
-                cb = toggleTilesNameBtn.colors;
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-                toggleTilesColorBtn.colors = cb;
-            }
-
-            //Toggle U helpers
-            Transform _transform = GameManager.instance.currentItems[0].transform;
-            while (_transform != null)
-            {
-                if (_transform.GetComponent<Rack>())
-                {
-                    cb = toggleUHelpersBtn.colors;
-                    Transform uRoot = _transform.GetComponent<Rack>().uRoot;
-                    if (!uRoot || !uRoot.gameObject.activeSelf)
-                    {
-                        cb.normalColor = Color.white;
-                        cb.selectedColor = Color.white;
-                    }
-                    else
-                    {
-                        cb.normalColor = Color.gray;
-                        cb.selectedColor = Color.gray;
-                    }
-                    toggleUHelpersBtn.colors = cb;
-                    break;
-                }
-                _transform = _transform.parent;
-            }
-            if (_transform == null)
-            {
-                cb = toggleUHelpersBtn.colors;
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-                toggleUHelpersBtn.colors = cb;
-            }
-
-            //Toggle local CS
-            if (GameManager.instance.currentItems[0].GetComponent<OObject>())
-            {
-                cb = toggleLocalCSBtn.colors;
-                if (GameManager.instance.currentItems[0].transform.Find("localCS"))
-                {
-                    cb.normalColor = Color.gray;
-                    cb.selectedColor = Color.gray;
-                }
-                else
-                {
-                    cb.normalColor = Color.white;
-                    cb.selectedColor = Color.white;
-                }
-                toggleLocalCSBtn.colors = cb;
-            }
-            else
-            {
-                cb = toggleLocalCSBtn.colors;
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-                toggleLocalCSBtn.colors = cb;
-            }
-        }
-        else
-        {
-            cb = toggleTilesColorBtn.colors;
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
-            toggleTilesNameBtn.colors = cb;
-
-            cb = toggleTilesNameBtn.colors;
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
-            toggleTilesColorBtn.colors = cb;
-
-            cb = toggleUHelpersBtn.colors;
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
-            toggleUHelpersBtn.colors = cb;
-
-            cb = toggleLocalCSBtn.colors;
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
-            toggleLocalCSBtn.colors = cb;
-
-        }
-
     }
 
     ///<summary>
@@ -297,15 +266,6 @@ public class UiManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent _e)
     {
         UpdateFocusText();
-        unfocusBtn.interactable = true;
-        resetChildrenBtn.interactable = true;
-        if (_e.obj == GameManager.instance.currentItems[0])
-        {
-            selectParentBtn.interactable = false;
-            editBtn.interactable = true;
-        }
-        if (GameManager.instance.currentItems.Contains(_e.obj))
-            focusBtn.interactable = false;
     }
 
     ///<summary>
@@ -315,11 +275,6 @@ public class UiManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         UpdateFocusText();
-        resetChildrenBtn.interactable = false;
-        if (GameManager.instance.focus.Count == 0)
-            unfocusBtn.interactable = false;
-        if (GameManager.instance.currentItems.Contains(_e.obj))
-            focusBtn.interactable = false;
     }
 
     ///<summary>
@@ -328,10 +283,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnEditModeIn(EditModeInEvent _e)
     {
-        focusBtn.interactable = false;
-        selectParentBtn.interactable = false;
-        resetTransBtn.interactable = true;
-        editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"));
+        //editBtn.GetComponent<Image>().color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"));
     }
 
     ///<summary>
@@ -340,10 +292,6 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnEditModeOut(EditModeOutEvent _e)
     {
-        focusBtn.interactable = true;
-        selectParentBtn.interactable = true;
-        resetTransBtn.interactable = false;
-        editBtn.GetComponent<Image>().color = Color.white;
     }
 
     ///<summary>
@@ -372,9 +320,9 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
-        if (GameManager.instance.currentItems.Count > 0)
+        if (GameManager.instance.selectMode)
         {
-            string value = GameManager.instance.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString();
+            string value = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().currentLod.ToString();
             detailsInputField.UpdateInputField(value);
         }
         else
@@ -398,12 +346,12 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void UpdateGuiInfos()
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
             objInfos.UpdateSingleFields(null);
-        else if (GameManager.instance.currentItems.Count == 1)
-            objInfos.UpdateSingleFields(GameManager.instance.currentItems[0]);
+        else if (GameManager.instance.GetSelected().Count == 1)
+            objInfos.UpdateSingleFields(GameManager.instance.GetSelected()[0]);
         else
-            objInfos.UpdateMultiFields(GameManager.instance.currentItems);
+            objInfos.UpdateMultiFields(GameManager.instance.GetSelected());
     }
 
     ///<summary>
@@ -411,9 +359,9 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void UpdateFocusText()
     {
-        if (GameManager.instance.focus.Count > 0)
+        if (GameManager.instance.focusMode)
         {
-            string objName = GameManager.instance.focus[GameManager.instance.focus.Count - 1].GetComponent<OgreeObject>().hierarchyName;
+            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName;
             focusText.text = $"Focus on {objName}";
         }
         else
@@ -453,8 +401,6 @@ public class UiManager : MonoBehaviour
     ///<param name="_color">The new color of the button</param>
     public void ChangeApiButton(string _str, Color _color)
     {
-        apiBtn.GetComponentInChildren<TextMeshProUGUI>().text = _str;
-        apiBtn.GetComponent<Image>().color = _color;
     }
 
     ///<summary>
@@ -482,9 +428,9 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void SetCurrentItemText()
     {
-        if (GameManager.instance.currentItems.Count == 1)
-            currentItemText.text = (GameManager.instance.currentItems[0].GetComponent<OgreeObject>().hierarchyName);
-        else if (GameManager.instance.currentItems.Count > 1)
+        if (GameManager.instance.GetSelected().Count == 1)
+            currentItemText.text = (GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName);
+        else if (GameManager.instance.GetSelected().Count > 1)
             currentItemText.text = ("Selection");
         else
             currentItemText.text = ("OGrEE-3D");
@@ -496,7 +442,6 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">If the button should be interatable</param>
     public void SetReloadBtn(bool _value)
     {
-        reloadBtn.interactable = _value;
     }
 
     #endregion
@@ -508,32 +453,21 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTilesName()
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
         {
             GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
-        Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
+        Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         if (currentRoom)
         {
             currentRoom.ToggleTilesName();
-            ColorBlock cb = toggleTilesNameBtn.colors;
-            if (GameManager.instance.currentItems[0].transform.Find("tilesNameRoot") && GameManager.instance.currentItems[0].transform.Find("tilesNameRoot").gameObject.activeSelf)
-            {
-                cb.normalColor = Color.gray;
-                cb.selectedColor = Color.gray;
-            }
-            else
-            {
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-            }
-            toggleTilesNameBtn.colors = cb;
-            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.currentItems[0].name}.", false, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.GetSelected()[0].name}.", false, ELogtype.success);
         }
         else
             GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
+        toggleTilesNameBtn.Check();
     }
 
     ///<summary>
@@ -541,13 +475,13 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTilesColor()
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
         {
             GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
-        Room currentRoom = GameManager.instance.currentItems[0].GetComponent<Room>();
+        Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         if (currentRoom)
         {
             if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
@@ -556,22 +490,11 @@ public class UiManager : MonoBehaviour
                 return;
             }
             currentRoom.ToggleTilesColor();
-            ColorBlock cb = toggleTilesColorBtn.colors;
-            if (currentRoom.transform.Find("tilesColorRoot") && GameManager.instance.currentItems[0].transform.Find("tilesColorRoot").gameObject.activeSelf)
-            {
-                cb.normalColor = Color.gray;
-                cb.selectedColor = Color.gray;
-            }
-            else
-            {
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-            }
-            toggleTilesColorBtn.colors = cb;
-            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.currentItems[0].name}.", false, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.GetSelected()[0].name}.", false, ELogtype.success);
         }
         else
             GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
+        toggleTilesColorBtn.Check();
     }
 
     ///<summary>
@@ -579,27 +502,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.instance.currentItems.Count > 0)
+        if (GameManager.instance.selectMode)
         {
-            Rack rack = Utils.GetRackReferent(GameManager.instance.currentItems[0].GetComponent<OObject>());
+            Rack rack = Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>());
             if (!rack)
                 return;
 
-            UHelpersManager.instance.ToggleU(GameManager.instance.currentItems[0].transform);
-            ColorBlock cb = toggleUHelpersBtn.colors;
-            Transform uRoot = rack.uRoot;
-            if (!uRoot || !uRoot.gameObject.activeSelf)
-            {
-                cb.normalColor = Color.white;
-                cb.selectedColor = Color.white;
-            }
-            else
-            {
-                cb.normalColor = Color.gray;
-                cb.selectedColor = Color.gray;
-            }
-            toggleUHelpersBtn.colors = cb;
+            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected()[0].transform);
         }
+        toggleUHelpersBtn.Check();
     }
 
     ///<summary>
@@ -607,27 +518,15 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void GuiToggleCS()
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
         {
             GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
             return;
         }
 
-        foreach (GameObject obj in GameManager.instance.currentItems)
+        foreach (GameObject obj in GameManager.instance.GetSelected())
             obj.GetComponent<OObject>()?.ToggleCS();
-
-        ColorBlock cb = toggleLocalCSBtn.colors;
-        if (GameManager.instance.currentItems[0].transform.Find("localCS") && GameManager.instance.currentItems[0].transform.Find("localCS").gameObject.activeSelf)
-        {
-            cb.normalColor = Color.gray;
-            cb.selectedColor = Color.gray;
-        }
-        else
-        {
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
-        }
-        toggleLocalCSBtn.colors = cb;
+        toggleLocalCSBtn.Check();
     }
 
     ///<summary>
@@ -651,8 +550,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void FocusSelected()
     {
-        if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OObject>())
-            await GameManager.instance.FocusItem(GameManager.instance.currentItems[0]);
+        if (GameManager.instance.SelectIs<OObject>())
+            await GameManager.instance.FocusItem(GameManager.instance.GetSelected()[0]);
     }
 
     ///<summary>
@@ -662,7 +561,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.editMode)
             EditFocused();
-        if (GameManager.instance.focus.Count > 0)
+        if (GameManager.instance.focusMode)
             await GameManager.instance.UnfocusItem();
     }
 
@@ -674,14 +573,14 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.editMode)
         {
             GameManager.instance.editMode = false;
-            EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.currentItems[0] });
-            Debug.Log($"Edit out: {GameManager.instance.currentItems[0]}");
+            EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.GetSelected()[0] });
+            Debug.Log($"Edit out: {GameManager.instance.GetSelected()[0]}");
         }
         else
         {
             GameManager.instance.editMode = true;
-            EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.currentItems[0] });
-            Debug.Log($"Edit in: {GameManager.instance.currentItems[0]}");
+            EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.GetSelected()[0] });
+            Debug.Log($"Edit in: {GameManager.instance.GetSelected()[0]}");
         }
     }
 
@@ -690,7 +589,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        GameObject obj = GameManager.instance.currentItems[0];
+        GameObject obj = GameManager.instance.GetSelected()[0];
         if (obj)
             obj.GetComponent<OgreeObject>().ResetTransform();
     }
@@ -700,7 +599,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetChildrenTransforms()
     {
-        GameObject obj = GameManager.instance.currentItems[0];
+        GameObject obj = GameManager.instance.GetSelected()[0];
         if (obj)
         {
             foreach (Transform child in obj.transform)
@@ -716,10 +615,10 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void SelectParentItem()
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
             return;
 
-        await GameManager.instance.SetCurrentItem(GameManager.instance.currentItems[0].transform.parent?.gameObject);
+        await GameManager.instance.SetCurrentItem(GameManager.instance.GetSelected()[0].transform.parent?.gameObject);
     }
 
     ///<summary>
@@ -771,7 +670,7 @@ public class UiManager : MonoBehaviour
     public async void ReloadFile()
     {
         await GameManager.instance.SetCurrentItem(null);
-        GameManager.instance.focus.Clear();
+        //GameManager.instance.focus.Clear();
         UpdateFocusText();
 
         await GameManager.instance.PurgeTenants();
@@ -796,15 +695,16 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void ToggleTempBarChart()
     {
-        if (GameManager.instance.currentItems.Count == 1 && GameManager.instance.currentItems[0].GetComponent<Room>())
-            TempDiagram.instance.HandleTempBarChart(GameManager.instance.currentItems[0].GetComponent<Room>());
-        else if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "tempBar")
+        if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Room>())
+            TempDiagram.instance.HandleTempBarChart(GameManager.instance.GetSelected()[0].GetComponent<Room>());
+        else if (GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
             TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
             await GameManager.instance.SetCurrentItem(null);
         }
         else
             GameManager.instance.AppendLogLine("You have to select one and only one room", true, ELogtype.warning);
+        barChartBtn.Check();
     }
 
     ///<summary>
@@ -823,10 +723,11 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTempScatterPlot()
     {
-        if (GameManager.instance.currentItems.Count == 1 && (GameManager.instance.currentItems[0].GetComponent<OObject>() || GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "room"))
-            TempDiagram.instance.HandleScatterPlot(GameManager.instance.currentItems[0].GetComponent<OgreeObject>());
+        if (GameManager.instance.GetSelected().Count == 1 && (GameManager.instance.SelectIs<OObject>() || GameManager.instance.SelectIs<Room>()))
+            TempDiagram.instance.HandleScatterPlot(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>());
         else
             GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", true, ELogtype.warning);
+        scatterPlotBtn.Check();
     }
 
 
@@ -835,21 +736,28 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleHeatMap()
     {
-        if (GameManager.instance.currentItems.Count == 1)
+        try
         {
-            OObject oObject = GameManager.instance.currentItems[0].GetComponent<OObject>();
-            if (oObject && oObject.category == "device")
+            if (GameManager.instance.GetSelected().Count == 1)
             {
-                if (DepthCheck(GameManager.instance.currentItems[0].GetComponent<OgreeObject>()) <= 1)
-                    TempDiagram.instance.HandleHeatMap(GameManager.instance.currentItems[0].GetComponent<OObject>());
+                OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
+                if (oObject && oObject.category == "device")
+                {
+                    if (DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1)
+                        TempDiagram.instance.HandleHeatMap(GameManager.instance.GetSelected()[0].GetComponent<OObject>());
+                    else
+                        GameManager.instance.AppendLogLine("This device has too many nested children levels", true, ELogtype.warning);
+                }
                 else
-                    GameManager.instance.AppendLogLine("This device has too many nested children levels", true, ELogtype.warning);
+                    GameManager.instance.AppendLogLine("You have to select a device", true, ELogtype.warning);
             }
             else
-                GameManager.instance.AppendLogLine("You have to select a device", true, ELogtype.warning);
+                GameManager.instance.AppendLogLine("You have to select one device", true, ELogtype.warning);
+            heatMapBtn.Check();
+        } catch (System.Exception e)
+        {
+            Debug.Log(e.ToString());
         }
-        else
-            GameManager.instance.AppendLogLine("You have to select one device", true, ELogtype.warning);
     }
 
     ///<summary>
