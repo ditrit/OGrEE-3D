@@ -92,6 +92,7 @@ public class ReadFromJson
             attributes = new Dictionary<string, string>(),
 
             name = _data.slug,
+            hierarchyName = _data.slug,
             category = _data.category
         };
         obj.description.Add(_data.description);

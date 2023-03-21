@@ -13,14 +13,9 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
-        else
-            hierarchyName = _bd.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_bd.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_bd.hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -52,7 +47,6 @@ public class BuildingGenerator
         newBD.transform.parent = _parent;
 
         Building building = newBD.GetComponent<Building>();
-        building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
         // Apply rotation
@@ -78,11 +72,11 @@ public class BuildingGenerator
             building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
             BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
-            // Apply posXY
-            if (_parent)
-                newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
-            else
-                newBD.transform.localPosition = Vector3.zero;
+        // Apply posXY
+        if (_parent)
+            newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+        else
+            newBD.transform.localPosition = Vector3.zero;
 
         // Setup nameText
         building.nameText.text = _bd.name;
@@ -91,7 +85,7 @@ public class BuildingGenerator
 
         roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
 
-        GameManager.instance.allItems.Add(hierarchyName, newBD);
+        GameManager.instance.allItems.Add(building.hierarchyName, newBD);
         return building;
     }
 
@@ -103,14 +97,9 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
-        else
-            hierarchyName = _ro.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_ro.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_ro.hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -142,7 +131,6 @@ public class BuildingGenerator
         newRoom.transform.parent = _parent;
 
         Room room = newRoom.GetComponent<Room>();
-        room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
         // Apply rotation
@@ -178,16 +166,16 @@ public class BuildingGenerator
             room.UpdateZonesColor();
         }
         // Apply posXY
-            if (_parent)
-                newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
-            else
-                newRoom.transform.localPosition = Vector3.zero;
+        if (_parent)
+            newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+        else
+            newRoom.transform.localPosition = Vector3.zero;
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-        GameManager.instance.allItems.Add(hierarchyName, newRoom);
+        GameManager.instance.allItems.Add(room.hierarchyName, newRoom);
 
         if (template.vertices == null)
         {

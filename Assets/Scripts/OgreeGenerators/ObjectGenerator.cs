@@ -13,14 +13,9 @@ public class ObjectGenerator
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
-        else
-            hierarchyName = _rk.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_rk.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_rk.hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -57,7 +52,6 @@ public class ObjectGenerator
         }
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.hierarchyName = hierarchyName;
         rack.UpdateFromSApiObject(_rk);
 
         if (_parent)
@@ -115,7 +109,7 @@ public class ObjectGenerator
 
         rack.UpdateColorByTenant();
 
-        GameManager.instance.allItems.Add(hierarchyName, newRack);
+        GameManager.instance.allItems.Add(rack.hierarchyName, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
@@ -167,14 +161,9 @@ public class ObjectGenerator
         }
 
         // Check if unique hierarchyName
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
-        else
-            hierarchyName = _dv.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_dv.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_dv.hierarchyName} already exists.", true, ELogtype.warning);
             return null;
         }
 
@@ -300,7 +289,6 @@ public class ObjectGenerator
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
-        dv.hierarchyName = hierarchyName;
         dv.UpdateFromSApiObject(_dv);
 
         // Set labels
@@ -310,7 +298,7 @@ public class ObjectGenerator
             newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
         newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
 
-        GameManager.instance.allItems.Add(hierarchyName, newDevice);
+        GameManager.instance.allItems.Add(dv.hierarchyName, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
