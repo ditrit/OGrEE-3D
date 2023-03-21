@@ -49,22 +49,18 @@ public class GameManager : MonoBehaviour
     [Header("Runtime data")]
     public string lastCmdFilePath;
     public Transform templatePlaceholder;
-    public List<GameObject> currentItems = new List<GameObject>();
-    public List<GameObject> previousItems = new List<GameObject>();
+    private readonly List<GameObject> currentItems = new List<GameObject>();
+    private List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();
     public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    public List<GameObject> focus = new List<GameObject>();
+    private readonly List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
-    public bool editMode = false;
     public bool tempMode = false;
     private string startDateTime;
 
     public GameObject objectRoot;
-#pragma warning disable IDE1006 // Name assignment styles
-    public State appState { get; private set; }
-#pragma warning restore IDE1006 // Name assignment styles
 
     #region UnityMethods
 
@@ -166,6 +162,7 @@ public class GameManager : MonoBehaviour
             if (_obj)
                 currentItems.Add(_obj);
 
+            selectMode = currentItems.Count != 0;
             EventManager.instance.Raise(new OnSelectItemEvent());
         }
         catch (Exception _e)
@@ -238,6 +235,8 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
             currentItems.Add(_obj);
         }
+
+        selectMode = currentItems.Count != 0;
         EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
@@ -270,6 +269,8 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+
+            focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
@@ -284,6 +285,7 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
 
+        focusMode = focus.Count != 0;
         EventManager.instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
         {
@@ -523,42 +525,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Add a State to the application's current state.
-    /// </summary>
-    /// <param name="_state">The state to add</param>
-    public void AddState(State _state)
+    public bool editMode = false;
+    public bool selectMode = false;
+    public bool focusMode = false;
+
+    public bool SelectIs<T>(string _category = "") where T : OgreeObject
     {
-        appState |= _state;
+        if (currentItems.Count == 0)
+            return false;
+
+        if (currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category))
+            return true;
+        return false;
+    }
+    public bool FocusIs<T>(string _category = "") where T : OObject
+    {
+        if (focus.Count == 0)
+            return false;
+
+        if (focus[0].GetComponent<T>() && (_category == "" || _category == focus[0].GetComponent<OgreeObject>().category))
+            return true;
+        return false;
     }
 
-    /// <summary>
-    /// Replace the application's current state with a new State.
-    /// </summary>
-    /// <param name="_state">The new state</param>
-    public void ChangeState(State _state)
+    public List<GameObject> GetSelected()
     {
-        appState = _state;
+        return currentItems.GetRange(0, currentItems.Count);
+    }
+    public List<GameObject> GetPrevious()
+    {
+        return previousItems.GetRange(0, previousItems.Count);
     }
 
-    /// <summary>
-    /// Remove a State from the application's current state if it is part of already
-    /// </summary>
-    /// <param name="_state">The State to remove</param>
-    public void RemoveState(State _state)
+    public List<GameObject> GetFocused()
     {
-        if (_state == appState)
-            appState = State.None;
-        else
-        {
-            State a = appState;
-            foreach (State s in Enum.GetValues(typeof(State)))
-            {
-                if ((_state | s) == a && s != a)
-                {
-                    appState = s;
-                }
-            }
-        }
+        return focus.GetRange(0, focus.Count);
     }
 }

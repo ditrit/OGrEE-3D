@@ -44,7 +44,7 @@ public class TempDiagram : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isDiagramShown && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
+        if (isDiagramShown && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
             HandleTempBarChart(lastRoom);
         if (isScatterPlotShown)
             HandleScatterPlot(lastScatterPlot);
@@ -197,8 +197,9 @@ public class TempDiagram : MonoBehaviour
     public void HandleHeatMap(OObject _oObject)
     {
         Transform objTransform = _oObject.transform.GetChild(0);
-        if (objTransform.childCount > 0)
+        if (_oObject.heatMap)
         {
+            _oObject.heatMap = false;
             Destroy(objTransform.GetChild(0).gameObject);
             return;
         }
@@ -232,6 +233,7 @@ public class TempDiagram : MonoBehaviour
         }
         heatmap.GetComponent<Heatmap>().SetPositionsAndProperties(sensorPositions, sensorProperties);
         objTransform.hasChanged = true;
+        _oObject.heatMap = true;
     }
 
     /// <summary>

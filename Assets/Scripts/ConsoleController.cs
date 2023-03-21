@@ -190,16 +190,16 @@ public class ConsoleController : MonoBehaviour
     ///</summary>
     private async Task SelectParent()
     {
-        if (!GameManager.instance.currentItems[0])
+        if (!GameManager.instance.selectMode)
         {
             UnlockController();
             return;
         }
-        else if (GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category == "tenant")
+        else if (GameManager.instance.SelectIs<OgreeObject>("tenant"))
             await GameManager.instance.SetCurrentItem(null);
         else
         {
-            GameObject parent = GameManager.instance.currentItems[0].transform.parent.gameObject;
+            GameObject parent = GameManager.instance.GetSelected()[0].transform.parent.gameObject;
             if (parent)
                 await GameManager.instance.SetCurrentItem(parent);
         }
@@ -223,12 +223,12 @@ public class ConsoleController : MonoBehaviour
         }
         if (_input.StartsWith("{") && _input.EndsWith("}"))
         {
-            if (GameManager.instance.currentItems.Count == 0)
+            if (!GameManager.instance.selectMode)
             {
                 UnlockController();
                 yield break;
             }
-            Transform root = GameManager.instance.currentItems[0].transform;
+            Transform root = GameManager.instance.GetSelected()[0].transform;
             task = GameManager.instance.SetCurrentItem(null);
             yield return new WaitUntil(() => task.IsCompleted);
             _input = _input.Trim('{', '}');
@@ -242,7 +242,7 @@ public class ConsoleController : MonoBehaviour
                 {
                     if (child.hierarchyName == items[i])
                     {
-                        if (GameManager.instance.currentItems.Count == 0)
+                        if (!!GameManager.instance.selectMode)
                         {
                             task = GameManager.instance.SetCurrentItem(child.gameObject);
                             yield return new WaitUntil(() => task.IsCompleted);
@@ -285,7 +285,7 @@ public class ConsoleController : MonoBehaviour
             if (_input.StartsWith("selection"))
             {
                 List<string> itemsToDel = new List<string>();
-                foreach (GameObject item in GameManager.instance.currentItems)
+                foreach (GameObject item in GameManager.instance.GetSelected())
                     itemsToDel.Add(item.GetComponent<OgreeObject>().hierarchyName);
                 foreach (string item in itemsToDel)
                 {
@@ -335,7 +335,7 @@ public class ConsoleController : MonoBehaviour
         if (string.IsNullOrEmpty(_input))
         {
             // unfocus all items
-            int count = GameManager.instance.focus.Count;
+            int count = GameManager.instance.GetFocused().Count;
             for (int i = 0; i < count; i++)
                 await GameManager.instance.UnfocusItem();
         }
@@ -1127,7 +1127,7 @@ public class ConsoleController : MonoBehaviour
     ///<param name="_value">The value to assign</param>
     private async Task SetMultiAttribute(string _attr, string _value)
     {
-        foreach (GameObject obj in GameManager.instance.currentItems)
+        foreach (GameObject obj in GameManager.instance.GetSelected())
         {
             if (obj.GetComponent<OgreeObject>() != null)
             {

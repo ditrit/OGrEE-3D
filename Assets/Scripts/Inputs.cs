@@ -77,7 +77,7 @@ public class Inputs : MonoBehaviour
 
             if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
             {
-                if (GameManager.instance.focus.Count > 0 && GameManager.instance.focus[GameManager.instance.focus.Count - 1] == target.parent.gameObject)
+                if (GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
                 {
                     isDragging = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
@@ -136,19 +136,19 @@ public class Inputs : MonoBehaviour
         if (_target && _target.CompareTag("Selectable"))
         {
             bool canSelect = true;
-            if (GameManager.instance.focus.Count > 0)
+            if (GameManager.instance.focusMode)
                 canSelect = GameManager.instance.IsInFocus(_target.gameObject);
 
             if (canSelect)
             {
-                if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.currentItems.Count > 0)
+                if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.selectMode)
                     await GameManager.instance.UpdateCurrentItems(_target.gameObject);
                 else
                     await GameManager.instance.SetCurrentItem(_target.gameObject);
             }
         }
-        else if (GameManager.instance.focus.Count > 0)
-            await GameManager.instance.SetCurrentItem(GameManager.instance.focus[GameManager.instance.focus.Count - 1]);
+        else if (GameManager.instance.GetFocused().Count > 0)
+            await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1]);
         else
             await GameManager.instance.SetCurrentItem(null);
     }
@@ -168,7 +168,7 @@ public class Inputs : MonoBehaviour
                 await GameManager.instance.FocusItem(target.gameObject);
             }
         }
-        else if (GameManager.instance.focus.Count > 0)
+        else if (GameManager.instance.focusMode)
             await GameManager.instance.UnfocusItem();
     }
 
