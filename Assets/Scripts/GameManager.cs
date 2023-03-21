@@ -541,11 +541,11 @@ public class GameManager : MonoBehaviour
     public bool focusMode = false;
 
     /// <summary>
-    /// Check if there is a object of the current type <typeparamref name="T"/> and category <paramref name="_category"/> selected
+    /// Check if the first object of the selected objects is of the current type <typeparamref name="T"/> and category <paramref name="_category"/>
     /// </summary>
     /// <typeparam name="T">The type of OObject you want to check</typeparam>
     /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
-    /// <returns>False if the select list is empty or if no object of right type and category is found</returns>
+    /// <returns>False if the select list is empty or if the first object is not of right type and category </returns>
     public bool SelectIs<T>(string _category = "") where T : OgreeObject
     {
         if (currentItems.Count == 0)
@@ -557,17 +557,17 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Check if there is a object of the current type <typeparamref name="T"/> and category <paramref name="_category"/> focused
+    /// Check if the last focused object is of the current type <typeparamref name="T"/> and category <paramref name="_category"/>
     /// </summary>
     /// <typeparam name="T">The type of OObject you want to check</typeparam>
     /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
-    /// <returns>False if the focus list is empty or if no object of right type and category is found</returns>
+    /// <returns>False if the select list is empty or if the last focused object is not of right type and category </returns>
     public bool FocusIs<T>(string _category = "") where T : OObject
     {
         if (focus.Count == 0)
             return false;
 
-        if (focus[0].GetComponent<T>() && (_category == "" || _category == focus[0].GetComponent<OgreeObject>().category))
+        if (focus[focus.Count-1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
             return true;
         return false;
     }
