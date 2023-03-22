@@ -10,6 +10,7 @@ public class ButtonHandler
     /// when this is true, the button is interactable
     /// </summary>
     public Condition interactCondition;
+    
     public Button button;
 
     /// <summary>
@@ -17,14 +18,19 @@ public class ButtonHandler
     /// </summary>
     public Condition toggledCondition;
 
+    public Color toggledColor = Color.green;
+
+    private ColorBlock defaultCB;
+
     /// <summary>
     /// if the button doesn't need to be toggled in an activated state,
     /// leave toggledCondition to null
     /// </summary>
-    /// <param name="_button">the <see cref="Unity"/> <see cref="Button"/> to be handled </param>
+    /// <param name="_button">the button to be handled </param>
     public ButtonHandler(Button _button)
     {
         button = _button;
+        defaultCB = button.colors;
         EventManager.instance.AddListener<OnSelectItemEvent>(CheckSelect);
         EventManager.instance.AddListener<OnFocusEvent>(CheckFocus);
         EventManager.instance.AddListener<OnUnFocusEvent>(CheckUnfocus);
@@ -39,19 +45,19 @@ public class ButtonHandler
     public void Check()
     {
         button.interactable = interactCondition();
-        ColorBlock cb = button.colors;
         if (toggledCondition is null)
             return;
-        Debug.Log(toggledCondition());
+
+        ColorBlock cb = button.colors;
         if (toggledCondition())
         {
-            cb.normalColor = Color.green;
-            cb.selectedColor = Color.green;
+            cb.normalColor = toggledColor;
+            cb.selectedColor = toggledColor;
+            cb.highlightedColor = toggledColor;
         }
         else
         {
-            cb.normalColor = Color.white;
-            cb.selectedColor = Color.white;
+            cb = defaultCB;
         }
         button.colors = cb;
     }

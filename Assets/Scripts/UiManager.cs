@@ -102,7 +102,8 @@ public class UiManager : MonoBehaviour
             &&
             GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == GameManager.instance.GetSelected()[0],
 
-            toggledCondition = () => GameManager.instance.editMode
+            toggledCondition = () => GameManager.instance.editMode,
+            toggledColor = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"))
         };
         editBtn.Check();
 
