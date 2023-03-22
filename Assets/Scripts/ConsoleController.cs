@@ -242,7 +242,7 @@ public class ConsoleController : MonoBehaviour
                 {
                     if (child.hierarchyName == items[i])
                     {
-                        if (!!GameManager.instance.selectMode)
+                        if (!GameManager.instance.selectMode)
                         {
                             task = GameManager.instance.SetCurrentItem(child.gameObject);
                             yield return new WaitUntil(() => task.IsCompleted);

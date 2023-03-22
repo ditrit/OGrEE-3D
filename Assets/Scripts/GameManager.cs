@@ -62,6 +62,21 @@ public class GameManager : MonoBehaviour
 
     public GameObject objectRoot;
 
+    /// <summary>
+    /// True if edit mode is on
+    /// </summary>
+    public bool editMode = false;
+
+    /// <summary>
+    /// True if  select mode is on
+    /// </summary>
+    public bool selectMode = false;
+
+    /// <summary>
+    /// True if focus mode is on
+    /// </summary>
+    public bool focusMode = false;
+
     #region UnityMethods
 
     private void Awake()
@@ -524,21 +539,6 @@ public class GameManager : MonoBehaviour
             EventManager.instance.Raise(new ImportFinishedEvent());
         }
     }
-
-    /// <summary>
-    /// True if edit mode is on
-    /// </summary>
-    public bool editMode = false;
-
-    /// <summary>
-    /// True if  select mode is on
-    /// </summary>
-    public bool selectMode = false;
-
-    /// <summary>
-    /// True if focus mode is on
-    /// </summary>
-    public bool focusMode = false;
 
     /// <summary>
     /// Check if the first object of the selected objects is of the current type <typeparamref name="T"/> and category <paramref name="_category"/>
