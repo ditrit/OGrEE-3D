@@ -48,7 +48,7 @@ public class ObjectGenerator
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
-            float height = float.Parse(_rk.attributes["height"]);
+            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
             if (_rk.attributes["heightUnit"] == "U")
                 height *= GameManager.instance.uSize;
             else if (_rk.attributes["heightUnit"] == "cm")
@@ -283,7 +283,7 @@ public class ObjectGenerator
                 newDevice.transform.localEulerAngles = Vector3.zero;
                 newDevice.transform.localPosition = new Vector3(0, (-_parent.GetChild(0).localScale.y + height) / 2, 0);
                 if (_dv.attributes.ContainsKey("posU"))
-                    newDevice.transform.localPosition += new Vector3(0, (float.Parse(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
+                    newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
 
                 float deltaZ = _parent.GetChild(0).localScale.z - size.y;
                 newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);

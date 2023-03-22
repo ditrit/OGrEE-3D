@@ -139,9 +139,8 @@ public class ReadFromJson
         else// if (obj.category == "device")
         {
             newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
-            if (string.IsNullOrEmpty(_data.fbxModel))
-                newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
-            else
+            newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
+            if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
@@ -214,7 +213,7 @@ public class ReadFromJson
         GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
-        Vector3 parentSize = new Vector3(parentSizeXZ.x, float.Parse(_parent.attributes["height"]), parentSizeXZ.y);
+        Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
         if (_parent.attributes["sizeUnit"] == "mm")
             parentSize /= 1000;
         else if (_parent.attributes["sizeUnit"] == "cm")

@@ -81,13 +81,20 @@ public class GUIObjectInfos : MonoBehaviour
     {
         int i = 1;
         tmpName.text = _obj.hierarchyName;
-        if (!string.IsNullOrEmpty(_obj.domain))
+        if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpTenantName.text = domain.name;
             tmpTenantContact.text = IfInDictionary(domain.attributes, "mainContact");
             tmpTenantPhone.text = IfInDictionary(domain.attributes, "mainPhone");
             tmpTenantEmail.text = IfInDictionary(domain.attributes, "mainEmail");
+        }
+        else
+        {
+            tmpTenantName.text = "-";
+            tmpTenantContact.text = "";
+            tmpTenantPhone.text = "";
+            tmpTenantEmail.text = "";
         }
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";

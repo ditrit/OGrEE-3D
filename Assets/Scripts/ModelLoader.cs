@@ -70,7 +70,7 @@ public class ModelLoader : MonoBehaviour
 
         if (sizeMo > GameManager.instance.configLoader.GetCacheLimit())
         {
-            GameManager.instance.AppendLogLine($"Local cache is full ({sizeMo}Mo)", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"Local cache limit reached ({sizeMo}Mo)", true, ELogtype.warning);
             return;
         }
 
@@ -83,7 +83,7 @@ public class ModelLoader : MonoBehaviour
             }
             catch (Exception _e)
             {
-                GameManager.instance.AppendLogLine($"Error while downloading file: {_e.Message}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Error while downloading file at \"{_url}\": {_e.Message}", true, ELogtype.error);
                 File.Delete(_filePath);
             }
         }
@@ -105,6 +105,7 @@ public class ModelLoader : MonoBehaviour
     private void OnError(IContextualizedError contextualizedError)
     {
         Debug.LogError("TriLib Error: " + contextualizedError);
+        isLocked = false;
     }
 
     // This event is called when all model GameObjects and Meshes have been loaded.
