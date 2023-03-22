@@ -1894,7 +1894,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &239753153
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9192,7 +9192,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2071767878}
   m_HandleRect: {fileID: 2071767877}
   m_Direction: 2
-  m_Value: 0.00000009884236
+  m_Value: 0.00000014826354
   m_Size: 0.013972056
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -9922,6 +9922,8 @@ MonoBehaviour:
   technicalZone: {fileID: 0}
   tilesEdges: {fileID: 0}
   temperatureUnit: 
+  tileName: 0
+  tileColor: 0
 --- !u!1 &1332719423
 GameObject:
   m_ObjectHideFlags: 0
@@ -12199,13 +12201,23 @@ MonoBehaviour:
     type: 3}
   lastCmdFilePath: 
   templatePlaceholder: {fileID: 1332629501}
-  currentItems: []
-  previousItems: []
-  focus: []
   writeLogs: 1
-  editMode: 0
   tempMode: 0
   objectRoot: {fileID: 0}
+  editMode: 0
+  selectMode: 0
+  focusMode: 0
+  SOgreeObject: 0
+  SOObject: 0
+  STenant: 0
+  SSite: 0
+  SBuilding: 0
+  SRoom: 0
+  SRack: 0
+  SDevice: 0
+  FOObject: 0
+  FRack: 0
+  FDevice: 0
 --- !u!4 &1595579782
 Transform:
   m_ObjectHideFlags: 0
@@ -12323,32 +12335,44 @@ MonoBehaviour:
     type: 3}
   menuPanel: {fileID: 1389592958}
   mouseName: {fileID: 239753154}
-  focusBtn: {fileID: 215373942}
-  unfocusBtn: {fileID: 25034917}
-  selectParentBtn: {fileID: 284250941}
+  focusBtn:
+    button: {fileID: 215373942}
+  unfocusBtn:
+    button: {fileID: 25034917}
+  selectParentBtn:
+    button: {fileID: 284250941}
   focusText: {fileID: 1346455887}
-  editBtn: {fileID: 1731992678}
-  resetTransBtn: {fileID: 1012792178}
-  resetChildrenBtn: {fileID: 1205504873}
-  tempDiagramBBtn: {fileID: 75145215}
-  tempScatterPlotBtn: {fileID: 1407650635}
-  heatMapBtn: {fileID: 565046244}
-  reloadBtn: {fileID: 0}
-  apiBtn: {fileID: 184299213}
+  editBtn:
+    button: {fileID: 1731992678}
+  resetTransBtn:
+    button: {fileID: 1012792178}
+  resetChildrenBtn:
+    button: {fileID: 1205504873}
+  barChartBtn:
+    button: {fileID: 75145215}
+  scatterPlotBtn:
+    button: {fileID: 1407650635}
+  heatMapBtn:
+    button: {fileID: 565046244}
+  apiBtn:
+    button: {fileID: 184299213}
   apiUrl: {fileID: 39982717}
   currentItemText: {fileID: 1510264671}
   debugPanel: {fileID: 670787554}
-  toggleTilesNameBtn: {fileID: 2113158546}
-  toggleTilesColorBtn: {fileID: 1719855463}
-  toggleUHelpersBtn: {fileID: 314828351}
-  toggleLocalCSBtn: {fileID: 577279989}
+  toggleTilesNameBtn:
+    button: {fileID: 2113158546}
+  toggleTilesColorBtn:
+    button: {fileID: 1719855463}
+  toggleUHelpersBtn:
+    button: {fileID: 314828351}
+  toggleLocalCSBtn:
+    button: {fileID: 577279989}
   consoleController: {fileID: 773900188}
   slider: {fileID: 1157218563}
   value: {fileID: 1629995874}
   infosPanel: {fileID: 879283137}
   objInfos: {fileID: 879283141}
   detailsInputField: {fileID: 791282066}
-  test: {fileID: 0}
 --- !u!1 &1605645519
 GameObject:
   m_ObjectHideFlags: 0

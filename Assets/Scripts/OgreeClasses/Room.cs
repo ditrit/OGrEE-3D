@@ -16,7 +16,8 @@ public class Room : Building
     public Transform technicalZone;
     public Transform tilesEdges;
     public string temperatureUnit;
-
+    public bool tileName = false;
+    public bool tileColor = false;
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
@@ -79,11 +80,13 @@ public class Room : Building
                     root.transform.localEulerAngles = Vector3.zero;
                     LoopThroughTiles("name", root.transform);
                 }
+                tileName = true;
             }
             else
             {
                 if (root)
                     Destroy(root);
+                tileName = false;
             }
         }
         else
@@ -95,6 +98,7 @@ public class Room : Building
                     tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value == "true";
                 nameText.enabled = _value == "false";
             }
+            tileName = _value == "true";
 
         }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
@@ -131,7 +135,7 @@ public class Room : Building
                 nameText.enabled = !nameText.enabled;
             }
         }
-
+        tileName = !tileName;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
@@ -168,11 +172,13 @@ public class Room : Building
                     root.transform.localEulerAngles = Vector3.zero;
                     LoopThroughTiles("color", root.transform);
                 }
+                tileColor = true;
             }
             else
             {
                 if (root)
                     Destroy(root);
+                tileColor = false;
             }
         }
         else
@@ -229,6 +235,7 @@ public class Room : Building
                     tile.modified = true;
                 }
             }
+            tileColor = _value == "true";
         }
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
@@ -305,6 +312,7 @@ public class Room : Building
                 }
             }
         }
+        tileColor = !tileColor;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 

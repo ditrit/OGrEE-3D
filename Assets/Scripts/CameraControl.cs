@@ -153,10 +153,10 @@ public class CameraControl : MonoBehaviour
     private void FreeModeControls()
     {
         float moveSpeed;
-        if (GameManager.instance.focus.Count > 0)
+        if (GameManager.instance.focusMode)
         {
             moveSpeed = Vector3.Distance(Camera.main.transform.position,
-                                                GameManager.instance.focus[GameManager.instance.focus.Count - 1].transform.position);
+                                                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].transform.position);
         }
         else
             moveSpeed = defaultMoveSpeed;
@@ -272,7 +272,7 @@ public class CameraControl : MonoBehaviour
     ///<param name="_e">The raised event</param>
     private void OnUnFocus(OnUnFocusEvent _e)
     {
-        if (GameManager.instance.focus.Count == 0)
+        if (!GameManager.instance.focusMode)
         {
             transform.position = labeledTransforms[0].pos;
             transform.eulerAngles = labeledTransforms[0].rot;
@@ -295,7 +295,7 @@ public class CameraControl : MonoBehaviour
         }
         else
         {
-            newTrans.label = GameManager.instance.focus[GameManager.instance.focus.Count - 2].name;
+            newTrans.label = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 2].name;
             newTrans.pos = transform.position;
             newTrans.rot = transform.eulerAngles;
         }

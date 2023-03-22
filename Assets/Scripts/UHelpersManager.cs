@@ -41,7 +41,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;
-        ToggleU(GameManager.instance.currentItems[0].transform, false);
+        ToggleU(GameManager.instance.GetSelected()[0].transform, false);
     }
 
     ///<summary>
@@ -51,7 +51,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeOut(EditModeOutEvent _e)
     {
         wasEdited = false;
-        ToggleU(GameManager.instance.currentItems[0].transform, true);
+        ToggleU(GameManager.instance.GetSelected()[0].transform, true);
     }
 
     ///<summary>
@@ -60,9 +60,9 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.currentItems.Count > 0 && GameManager.instance.currentItems[0].GetComponent<OgreeObject>().category != "tempBar")
+        if (GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            ToggleU(GameManager.instance.currentItems[0].transform, true);
+            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
             HighlightULocation();
         }
     }
@@ -73,7 +73,7 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_obj">The object to save. If null, set default text</param>
     private void HighlightULocation()
     {
-        OObject oObject = GameManager.instance.currentItems[0].GetComponent<OObject>();
+        OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
         Rack rack = Utils.GetRackReferent(oObject);
         if (!rack)
             return;
@@ -92,7 +92,7 @@ public class UHelpersManager : MonoBehaviour
                 return;
 
             float difference;
-            Transform t = GameManager.instance.currentItems[0].transform.GetChild(0);
+            Transform t = GameManager.instance.GetSelected()[0].transform.GetChild(0);
             float center = t.position.y;
 
             if (t.GetComponent<BoxCollider>().enabled)
@@ -104,7 +104,7 @@ public class UHelpersManager : MonoBehaviour
                 t.GetComponent<BoxCollider>().enabled = false;
             }
 
-            t = GameManager.instance.currentItems[0].transform;
+            t = GameManager.instance.GetSelected()[0].transform;
             float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
             float lowerBound = center - difference - delta;
             float upperBound = center + difference - delta;
@@ -309,10 +309,10 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.editMode)
             return;
-        if (!Utils.IsObjectMoved(GameManager.instance.focus[GameManager.instance.focus.Count - 1].GetComponent<OgreeObject>()))
+        if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
-            ToggleU(GameManager.instance.currentItems[0].transform, true);
+            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
         }
     }
 

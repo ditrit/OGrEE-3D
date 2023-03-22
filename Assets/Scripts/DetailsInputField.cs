@@ -30,7 +30,7 @@ public class DetailsInputField : MonoBehaviour
             _value = "0";
 
         List<OgreeObject> objsToUpdate = new List<OgreeObject>();
-        foreach (GameObject go in GameManager.instance.currentItems)
+        foreach (GameObject go in GameManager.instance.GetSelected())
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
             await obj.LoadChildren(_value);
@@ -39,7 +39,7 @@ public class DetailsInputField : MonoBehaviour
     ///
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.currentItems.Count == 0)
+        if (!GameManager.instance.selectMode)
         {
             ActiveInputField(false);
             UpdateInputField("0");
@@ -47,7 +47,7 @@ public class DetailsInputField : MonoBehaviour
         else
         {
             ActiveInputField(true);
-            UpdateInputField(GameManager.instance.currentItems[0].GetComponent<OgreeObject>().currentLod.ToString());
+            UpdateInputField(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().currentLod.ToString());
         }
     }
 
