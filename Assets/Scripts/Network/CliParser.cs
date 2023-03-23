@@ -204,12 +204,25 @@ public class CliParser
                     || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                 item.SetColor(newData.attributes["color"]);
 
-
             foreach (string attribute in newData.attributes.Keys)
                 if (attribute.StartsWith("temperature_")
                     && (!item.attributes.ContainsKey(attribute)
                         || item.attributes[attribute] != newData.attributes[attribute]))
                     item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
+        }
+        // Case temperature for corridors
+        else if (newData.category == "corridor")
+        {
+            OObject item = (OObject)obj;
+            if (newData.attributes.ContainsKey("temperature")
+                && (!item.attributes.ContainsKey("temperature")
+                    || item.attributes.ContainsKey("temperature") && item.attributes["temperature"] != newData.attributes["temperature"]))
+            {
+                if (newData.attributes["temperature"] == "cold")
+                    item.SetColor("000099");
+                else
+                    item.SetColor("990000");
+            }
         }
 
         // Case of a separators/pillars/areas modification in a room

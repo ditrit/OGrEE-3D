@@ -239,17 +239,6 @@ public class OObject : OgreeObject
     ///<param name="_sensorName">The sensor to modify</param>
     public void SetTemperature(string _value, string _sensorName)
     {
-        if (category == "corridor")
-        {
-            if (_sensorName != "")
-                GameManager.instance.AppendLogLine("Corridors can not have sensors", true, ELogtype.warning);
-            else if (Regex.IsMatch(_value, "^(cold|warm)$"))
-                attributes["temperature"] = _value;
-            else
-                GameManager.instance.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, ELogtype.warning);
-        }
-        else
-        {
             if (Regex.IsMatch(_value, "^[0-9.]+$"))
             {
                 Transform sensorTransform = transform.Find("sensor");
@@ -281,7 +270,6 @@ public class OObject : OgreeObject
             }
             else
                 GameManager.instance.AppendLogLine("Temperature must be a numerical value", true, ELogtype.warning);
-        }
     }
 
     /// <summary>
