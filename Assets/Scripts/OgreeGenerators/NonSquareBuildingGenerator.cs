@@ -124,9 +124,9 @@ public static class NonSquareBuildingGenerator
     }
 
     /// <summary>
-    /// Build the walls of a non convex room
+    /// Build the walls of a non convex building or room
     /// </summary>
-    /// <param name="_root">the transform of the room's flooe</param>
+    /// <param name="_root">the transform of the building's / room's floor</param>
     /// <param name="_template">the template of the non convex room</param>
     private static void BuildWalls(Transform _root, SCommonTemplate _template)
     {
@@ -137,9 +137,10 @@ public static class NonSquareBuildingGenerator
         float[] xWalls = new float[vCount];
         float[] zWalls = new float[vCount];
 
-        Transform walls = _root.GetChild(1);
+        Transform walls = _root.GetComponent<Building>().walls.GetChild(0);
         Mesh meshWalls = new Mesh { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
+        walls.GetComponent<MeshCollider>().sharedMesh = meshWalls;
 
         for (int i = 0; i < vCount; i++)
         {
