@@ -77,7 +77,7 @@ public class FocusHandler : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.currentItems.Contains(gameObject))
+        if (GameManager.instance.GetSelected().Contains(gameObject))
         {
             // We manage all collider and renderer changes due to the selection
             isSelected = true;
@@ -92,12 +92,12 @@ public class FocusHandler : MonoBehaviour
         }
 
         // If this one is part of it and is in a rack which is not the parent of a selected object we display it again
-        if (GameManager.instance.previousItems.Contains(gameObject))
+        if (GameManager.instance.GetPrevious().Contains(gameObject))
         {
             isSelected = false;
 
             // Parent racks of previously selected objects
-            OObject selectionParentRack = GameManager.instance.currentItems.Count > 0 ? GameManager.instance.currentItems[0].GetComponent<OObject>()?.referent : null;
+            OObject selectionParentRack = GameManager.instance.selectMode ? GameManager.instance.GetSelected()[0].GetComponent<OObject>()?.referent : null;
             OObject parentRack = GetComponent<OObject>().referent;
 
             if (selectionParentRack != parentRack)
@@ -107,7 +107,7 @@ public class FocusHandler : MonoBehaviour
             }
             else
             {
-                if (!GameManager.instance.currentItems.Contains(transform.parent?.gameObject))
+                if (!GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
                 {
                     UpdateOwnMeshRenderers(false);
                     UpdateChildMeshRenderers(false);
@@ -199,26 +199,26 @@ public class FocusHandler : MonoBehaviour
     private void OnImportFinished(ImportFinishedEvent _e)
     {
         InitHandler();
-        if (GameManager.instance.currentItems.Contains(gameObject))
+        if (GameManager.instance.GetSelected().Contains(gameObject))
         {
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             return;
         }
 
-        OObject selectionReferent = GameManager.instance.currentItems.Count > 0 ? GameManager.instance.currentItems[0].GetComponent<OObject>()?.referent : null;
+        OObject selectionReferent = GameManager.instance.selectMode ? GameManager.instance.GetSelected()[0].GetComponent<OObject>()?.referent : null;
 
         if (!GetComponent<OObject>().referent || (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent))
             UpdateChildMeshRenderersRec(false);
         else if (selectionReferent == GetComponent<OObject>().referent)
         {
-            if (!GameManager.instance.currentItems.Contains(gameObject) && (!transform.parent || !GameManager.instance.currentItems.Contains(transform.parent.gameObject)))
+            if (!GameManager.instance.GetSelected().Contains(gameObject) && (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject)))
             {
                 ToggleCollider(gameObject, false);
                 UpdateOwnMeshRenderers(false);
                 UpdateChildMeshRenderers(false);
             }
-            if (GameManager.instance.currentItems.Contains(transform.parent?.gameObject))
+            if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
                 UpdateChildMeshRenderers(false);
         }
     }
@@ -236,7 +236,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.instance.isDiagramShown && GameManager.instance.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isDiagramShown && GameManager.instance.GetSelected().Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
             if (!TempDiagram.instance.isDiagramShown)
                 UpdateChildMeshRenderers(false, false);
@@ -258,7 +258,7 @@ public class FocusHandler : MonoBehaviour
         }
         else if (_e.obj == gameObject)
         {
-            if (TempDiagram.instance.isScatterPlotShown && GameManager.instance.currentItems.Contains(gameObject))
+            if (TempDiagram.instance.isScatterPlotShown && GameManager.instance.GetSelected().Contains(gameObject))
                 UpdateChildMeshRenderers(true, true);
             if (!TempDiagram.instance.isScatterPlotShown)
                 UpdateChildMeshRenderers(false, false);
@@ -421,6 +421,7 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "rack":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
+                        go.GetComponent<OObject>()?.ToggleSlots("false");
                         break;
                     case "device":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);

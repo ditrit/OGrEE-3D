@@ -47,19 +47,33 @@ public class GameManager : MonoBehaviour
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
-    public List<GameObject> currentItems = new List<GameObject>();
-    public List<GameObject> previousItems = new List<GameObject>();
+    private readonly List<GameObject> currentItems = new List<GameObject>();
+    private List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();
     public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    public List<GameObject> focus = new List<GameObject>();
+    private readonly List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
-    public bool editMode = false;
     public bool tempMode = false;
     private string startDateTime;
 
     public GameObject objectRoot;
+
+    /// <summary>
+    /// True if edit mode is on
+    /// </summary>
+    public bool editMode = false;
+
+    /// <summary>
+    /// True if  select mode is on
+    /// </summary>
+    public bool selectMode = false;
+
+    /// <summary>
+    /// True if focus mode is on
+    /// </summary>
+    public bool focusMode = false;
 
     #region UnityMethods
 
@@ -161,6 +175,7 @@ public class GameManager : MonoBehaviour
             if (_obj)
                 currentItems.Add(_obj);
 
+            selectMode = currentItems.Count != 0;
             EventManager.instance.Raise(new OnSelectItemEvent());
         }
         catch (Exception _e)
@@ -233,6 +248,8 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
             currentItems.Add(_obj);
         }
+
+        selectMode = currentItems.Count != 0;
         EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
@@ -265,6 +282,8 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+
+            focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
         }
         else
@@ -279,6 +298,7 @@ public class GameManager : MonoBehaviour
         GameObject obj = focus[focus.Count - 1];
         focus.Remove(obj);
 
+        focusMode = focus.Count != 0;
         EventManager.instance.Raise(new OnUnFocusEvent() { obj = obj });
         if (focus.Count > 0)
         {
@@ -487,5 +507,64 @@ public class GameManager : MonoBehaviour
             if (fs != null)
                 fs.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Check if the first object of the selected objects is of the current type <typeparamref name="T"/> and category <paramref name="_category"/>
+    /// </summary>
+    /// <typeparam name="T">The type of OObject you want to check</typeparam>
+    /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
+    /// <returns>False if the select list is empty or if the first object is not of right type and category </returns>
+    public bool SelectIs<T>(string _category = "") where T : OgreeObject
+    {
+        if (currentItems.Count == 0)
+            return false;
+
+        if (currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category))
+            return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Check if the last focused object is of the current type <typeparamref name="T"/> and category <paramref name="_category"/>
+    /// </summary>
+    /// <typeparam name="T">The type of OObject you want to check</typeparam>
+    /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
+    /// <returns>False if the select list is empty or if the last focused object is not of right type and category </returns>
+    public bool FocusIs<T>(string _category = "") where T : OObject
+    {
+        if (focus.Count == 0)
+            return false;
+
+        if (focus[focus.Count-1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
+            return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
+    public List<GameObject> GetSelected()
+    {
+        return currentItems.GetRange(0, currentItems.Count);
+    }
+
+    /// <summary>
+    /// Create a copy of the previously selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of previously selected objects</returns>
+    public List<GameObject> GetPrevious()
+    {
+        return previousItems.GetRange(0, previousItems.Count);
+    }
+
+    /// <summary>
+    /// Create a copy of the focused objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently focused objects</returns>
+    public List<GameObject> GetFocused()
+    {
+        return focus.GetRange(0, focus.Count);
     }
 }

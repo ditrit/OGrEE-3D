@@ -27,7 +27,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public Vector3 originalLocalPosition = Vector3.negativeInfinity;
     public Quaternion originalLocalRotation = Quaternion.identity;
     public Vector3 originalLocalScale = Vector3.one;
-
+    public bool heatMap = false;
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();

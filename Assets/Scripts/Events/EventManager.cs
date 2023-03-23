@@ -60,7 +60,7 @@ public class EventManager
 
         // Create a new non-generic delegate which calls our generic one.
         // This is the delegate we actually invoke.
-        EventDelegate internalDelegate = (e) => del((T)e);
+        void internalDelegate(CustomEvent e) => del((T)e);
         delegateLookup[del] = internalDelegate;
 
         if (delegates.TryGetValue(typeof(T), out EventDelegate tempDel))

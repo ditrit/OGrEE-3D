@@ -100,7 +100,7 @@ public class CliParser
                 }
                 else
                 {
-                    int count = GameManager.instance.focus.Count;
+                    int count = GameManager.instance.GetFocused().Count;
                     for (int i = 0; i < count; i++)
                         await GameManager.instance.UnfocusItem();
                 }

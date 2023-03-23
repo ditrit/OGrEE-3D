@@ -283,8 +283,8 @@ public class DisplayObjectData : MonoBehaviour
         if (GetComponent<Slot>())
             return;
 
-        if (GameManager.instance.focus.Count == 0 || GameManager.instance.focus.Contains(gameObject)
-            || GameManager.instance.focus.Contains(transform.parent.gameObject))
+        if (!GameManager.instance.focusMode || GameManager.instance.GetFocused().Contains(gameObject)
+            || GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
             ToggleLabel(_e.value);
     }
 

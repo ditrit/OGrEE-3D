@@ -1401,7 +1401,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &239753153
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8881,6 +8881,132 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1241685798}
   m_CullTransparentMesh: 0
+--- !u!1 &1259512336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1259512337}
+  - component: {fileID: 1259512340}
+  - component: {fileID: 1259512339}
+  - component: {fileID: 1259512338}
+  m_Layer: 5
+  m_Name: Scrollbar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1259512337
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259512336}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 265437890}
+  m_Father: {fileID: 1089484605}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 591.1998, y: 14.999996}
+  m_SizeDelta: {x: 17.599976, y: -30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1259512338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259512336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4db7a114972834c8e4117be1d82ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 2071767878}
+  m_HandleRect: {fileID: 2071767877}
+  m_Direction: 2
+  m_Value: 0.00000014826354
+  m_Size: 0.013972056
+  m_NumberOfSteps: 0
+  m_OnValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1259512339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259512336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1259512340
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1259512336}
+  m_CullTransparentMesh: 0
 --- !u!1 &1270863615
 GameObject:
   m_ObjectHideFlags: 0
@@ -9567,6 +9693,8 @@ MonoBehaviour:
   technicalZone: {fileID: 0}
   tilesEdges: {fileID: 0}
   temperatureUnit: 
+  tileName: 0
+  tileColor: 0
 --- !u!1 &1332719423
 GameObject:
   m_ObjectHideFlags: 0
@@ -11783,13 +11911,23 @@ MonoBehaviour:
   sensorBarStdModel: {fileID: 6010235731161253863, guid: d51715e26f98a7f4282097484c0dc95d,
     type: 3}
   templatePlaceholder: {fileID: 1332629501}
-  currentItems: []
-  previousItems: []
-  focus: []
   writeLogs: 1
-  editMode: 0
   tempMode: 0
   objectRoot: {fileID: 0}
+  editMode: 0
+  selectMode: 0
+  focusMode: 0
+  SOgreeObject: 0
+  SOObject: 0
+  STenant: 0
+  SSite: 0
+  SBuilding: 0
+  SRoom: 0
+  SRack: 0
+  SDevice: 0
+  FOObject: 0
+  FRack: 0
+  FDevice: 0
 --- !u!4 &1595579782
 Transform:
   m_ObjectHideFlags: 0
@@ -11907,23 +12045,39 @@ MonoBehaviour:
     type: 3}
   menuPanel: {fileID: 1389592958}
   mouseName: {fileID: 239753154}
-  focusBtn: {fileID: 215373942}
-  unfocusBtn: {fileID: 25034917}
-  selectParentBtn: {fileID: 284250941}
+  focusBtn:
+    button: {fileID: 215373942}
+  unfocusBtn:
+    button: {fileID: 25034917}
+  selectParentBtn:
+    button: {fileID: 284250941}
   focusText: {fileID: 1346455887}
-  editBtn: {fileID: 1731992678}
-  resetTransBtn: {fileID: 1012792178}
-  resetChildrenBtn: {fileID: 1205504873}
-  tempDiagramBBtn: {fileID: 75145215}
-  tempScatterPlotBtn: {fileID: 1407650635}
-  heatMapBtn: {fileID: 565046244}
+  editBtn:
+    button: {fileID: 1731992678}
+  resetTransBtn:
+    button: {fileID: 1012792178}
+  resetChildrenBtn:
+    button: {fileID: 1205504873}
+  barChartBtn:
+    button: {fileID: 75145215}
+  scatterPlotBtn:
+    button: {fileID: 1407650635}
+  heatMapBtn:
+    button: {fileID: 565046244}
+  apiBtn:
+    button: {fileID: 184299213}
   apiUrl: {fileID: 39982717}
   currentItemText: {fileID: 1516618201}
   debugPanel: {fileID: 670787554}
-  toggleTilesNameBtn: {fileID: 2113158546}
-  toggleTilesColorBtn: {fileID: 1719855463}
-  toggleUHelpersBtn: {fileID: 314828351}
-  toggleLocalCSBtn: {fileID: 577279989}
+  toggleTilesNameBtn:
+    button: {fileID: 2113158546}
+  toggleTilesColorBtn:
+    button: {fileID: 1719855463}
+  toggleUHelpersBtn:
+    button: {fileID: 314828351}
+  toggleLocalCSBtn:
+    button: {fileID: 577279989}
+  consoleController: {fileID: 773900188}
   slider: {fileID: 1157218563}
   value: {fileID: 1629995874}
   infosPanel: {fileID: 879283137}

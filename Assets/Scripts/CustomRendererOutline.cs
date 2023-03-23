@@ -77,14 +77,14 @@ public class CustomRendererOutline : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.currentItems.Contains(gameObject))
+        if (GameManager.instance.GetSelected().Contains(gameObject))
         {
             if (!isFocused)
                 SetMaterial(GameManager.instance.selectMat);
             isSelected = true;
             return;
         }
-        if (GameManager.instance.previousItems.Contains(gameObject))
+        if (GameManager.instance.GetPrevious().Contains(gameObject))
         {
             if (isHighlighted)
                 SetMaterial(GameManager.instance.highlightMat);
@@ -143,9 +143,9 @@ public class CustomRendererOutline : MonoBehaviour
             }
             isFocused = false;
 
-            if (GameManager.instance.focus.Count > 0)
+            if (GameManager.instance.focusMode)
             {
-                GameObject newFocus = GameManager.instance.focus[GameManager.instance.focus.Count - 1];
+                GameObject newFocus = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1];
                 newFocus.GetComponent<CustomRendererOutline>().SetMaterial(GameManager.instance.focusMat);
             }
         }
@@ -177,8 +177,8 @@ public class CustomRendererOutline : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnMouseHover(OnMouseHoverEvent _e)
     {
-        if (GameManager.instance.focus.Count > 0
-            && (!transform.parent || GameManager.instance.focus[GameManager.instance.focus.Count - 1] != transform.parent.gameObject))
+        if (GameManager.instance.focusMode
+            && (!transform.parent || GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != transform.parent.gameObject))
             return;
 
         if (_e.obj.Equals(gameObject) && !isSelected && !isFocused)
