@@ -107,7 +107,10 @@ public class ObjectGenerator
         newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
         newRack.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
 
-        rack.UpdateColorByTenant();
+        if (rack.attributes.ContainsKey("color"))
+            rack.SetColor(rack.attributes["color"]);
+        else
+            rack.UpdateColorByTenant();
 
         GameManager.instance.allItems.Add(rack.hierarchyName, newRack);
 

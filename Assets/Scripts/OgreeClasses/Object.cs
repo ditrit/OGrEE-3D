@@ -106,17 +106,18 @@ public class OObject : OgreeObject
             CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
             if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
                 mat.color = color;
-            attributes["color"] = _hex;
         }
         else
         {
             UpdateColorByTenant();
-            attributes.Remove("color");
-            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color to display", true, ELogtype.warning);
         }
     }
 
-    ///
+    ///<summary>
+    /// On an UpdateTenantEvent, update the ocject's color if its the right tenant
+    ///</summary>
+    ///<param name="_event">The event to catch</param>
     private void UpdateColorByTenant(UpdateTenantEvent _event)
     {
         if (_event.name == domain)
@@ -239,37 +240,37 @@ public class OObject : OgreeObject
     ///<param name="_sensorName">The sensor to modify</param>
     public void SetTemperature(string _value, string _sensorName)
     {
-            if (Regex.IsMatch(_value, "^[0-9.]+$"))
-            {
-                Transform sensorTransform = transform.Find("sensor");
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
-                else
-                {
-                    SApiObject se = new SApiObject
-                    {
-                        description = new List<string>(),
-                        attributes = new Dictionary<string, string>(),
-
-                        name = "sensor", // ?
-                        category = "sensor",
-                        parentId = id,
-                        domain = domain
-                    };
-                    se.attributes["formFactor"] = "ext";
-                    se.attributes["temperature"] = _value;
-
-                    Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                    sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
-                }
-                sensorTransform = transform.Find(_sensorName);
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
-                else
-                    GameManager.instance.AppendLogLine($"Sensor {_sensorName} does not exist", true, ELogtype.warning);
-            }
+        if (Regex.IsMatch(_value, "^[0-9.]+$"))
+        {
+            Transform sensorTransform = transform.Find("sensor");
+            if (sensorTransform)
+                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
             else
-                GameManager.instance.AppendLogLine("Temperature must be a numerical value", true, ELogtype.warning);
+            {
+                SApiObject se = new SApiObject
+                {
+                    description = new List<string>(),
+                    attributes = new Dictionary<string, string>(),
+
+                    name = "sensor", // ?
+                    category = "sensor",
+                    parentId = id,
+                    domain = domain
+                };
+                se.attributes["formFactor"] = "ext";
+                se.attributes["temperature"] = _value;
+
+                Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
+            }
+            sensorTransform = transform.Find(_sensorName);
+            if (sensorTransform)
+                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+            else
+                GameManager.instance.AppendLogLine($"Sensor {_sensorName} does not exist", true, ELogtype.warning);
+        }
+        else
+            GameManager.instance.AppendLogLine("Temperature must be a numerical value", true, ELogtype.warning);
     }
 
     /// <summary>

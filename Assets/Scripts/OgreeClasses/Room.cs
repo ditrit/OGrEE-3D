@@ -46,10 +46,6 @@ public class Room : Building
         ReduceZone(reservedZone, _techDim);
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
-
-        // Save areas in attributes
-        attributes["reserved"] = JsonUtility.ToJson(_resDim);
-        attributes["technical"] = JsonUtility.ToJson(_techDim);
     }
 
     ///<summary>
