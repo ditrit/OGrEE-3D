@@ -150,7 +150,7 @@ public class ConfigLoader
         config.verbose = (bool)table["verbose"];
         config.fullscreen = (bool)table["fullscreen"];
         config.cachePath = (string)table["cachePath"];
-        config.cacheLimitMo = Convert.ToInt32((long)(table["cacheLimitMo"]));
+        config.cacheLimitMo = Convert.ToInt32(table["cacheLimitMo"]);
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
@@ -182,7 +182,7 @@ public class ConfigLoader
         {
             List<int> tmp = new List<int>();
             foreach (var i in (TomlArray)colorDef)
-                tmp.Add(Convert.ToInt32((long)i));
+                tmp.Add(Convert.ToInt32(i));
             if (tmp.Count == 4 && tempGradient.Count < 8)
                 tempGradient.Add(tmp);
         }
@@ -195,60 +195,6 @@ public class ConfigLoader
         //         str += $"{i}/";
         //     Debug.Log(str);
         // }
-    }
-
-    ///<summary>
-    /// Apply given config.json to config
-    ///</summary>
-    ///<param name="_custom">The loaded config.json</param>
-    private void ModifyConfig(SConfig _custom)
-    {
-        config.verbose = _custom.verbose;
-        config.fullscreen = _custom.fullscreen;
-        if (!string.IsNullOrEmpty(_custom.cachePath))
-            config.cachePath = _custom.cachePath;
-        if (_custom.cacheLimitMo > 0)
-            config.cacheLimitMo = _custom.cacheLimitMo;
-        if (_custom.cliPort > 0)
-            config.cliPort = _custom.cliPort;
-        foreach (KeyValuePair<string, string> kvp in _custom.textures)
-        {
-            if (kvp.Key == "perf22" || kvp.Key == "perf29")
-            {
-                if (!string.IsNullOrEmpty(kvp.Value))
-                    config.textures[kvp.Key] = kvp.Value;
-            }
-            else
-                config.textures.Add(kvp.Key, kvp.Value);
-        }
-        List<string> colorsToCheck = new List<string>() { "selection", "edit", "focus", "highlight", "usableZone", "reservedZone", "technicalZone" };
-        foreach (KeyValuePair<string, string> kvp in _custom.colors)
-        {
-            if (colorsToCheck.Contains(kvp.Key))
-            {
-                if (!string.IsNullOrEmpty(kvp.Value))
-                    config.colors[kvp.Key] = kvp.Value;
-            }
-            else
-                config.colors.Add(kvp.Key, kvp.Value);
-        }
-        config.alphaOnInteract = Mathf.Clamp(_custom.alphaOnInteract, 0, 100);
-        config.temperatureMinC = _custom.temperatureMinC;
-        config.temperatureMaxC = _custom.temperatureMaxC;
-        config.temperatureMinF = _custom.temperatureMinF;
-        config.temperatureMaxF = _custom.temperatureMaxF;
-        bool canUpdateTempGradient = true;
-        if (_custom.customTemperatureGradient.Count >= 2 && _custom.customTemperatureGradient.Count <= 8)
-        {
-            foreach (List<int> tab in _custom.customTemperatureGradient)
-            {
-                if (tab.Count != 4)
-                    canUpdateTempGradient = false;
-            }
-        }
-        if (canUpdateTempGradient)
-            config.customTemperatureGradient = _custom.customTemperatureGradient;
-        config.useCustomGradient = _custom.useCustomGradient;
     }
 
     ///<summary>
