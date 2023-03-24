@@ -33,7 +33,7 @@ public class ConfigLoader
     private readonly string cacheDirName = ".ogreeCache";
 
     ///<summary>
-    /// Load a config file, look for CLI overrides and starts with --file if given.
+    /// Load a config file & look for command line overrides.
     ///</summary>
     public void LoadConfig()
     {
