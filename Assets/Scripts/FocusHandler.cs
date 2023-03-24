@@ -390,18 +390,26 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "room":
                         Room ro = go.GetComponent<Room>();
-                        ro.usableZone.GetComponent<Renderer>().enabled = _value;
-                        ro.usableZone.GetComponent<Collider>().enabled = _value;
-
-                        ro.reservedZone.GetComponent<Renderer>().enabled = _value;
-                        ro.reservedZone.GetComponent<Collider>().enabled = _value;
-
-                        ro.technicalZone.GetComponent<Renderer>().enabled = _value;
-                        ro.technicalZone.GetComponent<Collider>().enabled = _value;
-
-                        ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
-                        ro.tilesEdges.GetComponent<Collider>().enabled = _value;
-
+                        if (ro.usableZone)
+                        {
+                            ro.usableZone.GetComponent<Renderer>().enabled = _value;
+                            ro.usableZone.GetComponent<Collider>().enabled = _value;
+                        }
+                        if (ro.reservedZone)
+                        {
+                            ro.reservedZone.GetComponent<Renderer>().enabled = _value;
+                            ro.reservedZone.GetComponent<Collider>().enabled = _value;
+                        }
+                        if (ro.technicalZone)
+                        {
+                            ro.technicalZone.GetComponent<Renderer>().enabled = _value;
+                            ro.technicalZone.GetComponent<Collider>().enabled = _value;
+                        }
+                        if (ro.tilesEdges)
+                        {
+                            ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
+                            ro.tilesEdges.GetComponent<Collider>().enabled = _value;
+                        }
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
                         {
