@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -240,9 +241,19 @@ public class CameraControl : MonoBehaviour
         if (rotY < 0 || rotY > 180)
             rotY -= 360;
 
-        infosTMP.text = $"[{transform.localPosition.x:0.##},{transform.localPosition.z:0.##},{transform.localPosition.y:0.##}]@[{rotX:0},{rotY:0}]";
+        infosTMP.text = $"[{RefineFtoStr(transform.localPosition.x)},{RefineFtoStr(transform.localPosition.z)},{RefineFtoStr(transform.localPosition.y)}]@[{rotX:0},{rotY:0}]";
         if (!isReady)
             infosTMP.text += " (Waiting)";
+    }
+
+    ///<summary>
+    /// Convert a float to a string with "0.##" format
+    ///</summary>
+    ///<param name="_input">The float to convert</param>
+    ///<returns>The converted float</returns>
+    private string RefineFtoStr(float _input)
+    {
+        return _input.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
     ///<summary>
