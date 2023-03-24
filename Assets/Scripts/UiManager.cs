@@ -31,7 +31,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_Text apiUrl;
 
     [Header("Panel Bottom")]
-    [SerializeField] private TMP_Text currentItemText;
+    [SerializeField] private TMP_InputField currentItemText;
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
@@ -395,11 +395,11 @@ public class UiManager : MonoBehaviour
     public void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            currentItemText.text = (GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName);
+            currentItemText.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
-            currentItemText.text = ("Selection");
+            currentItemText.text = ("Multiple selection");
         else
-            currentItemText.text = ("OGrEE-3D");
+            currentItemText.text = ("");
     }
 
     #endregion
