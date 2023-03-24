@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using Tomlyn;
+using Tomlyn.Model;
+using System;
 
 public class ConfigLoader
 {
@@ -23,7 +26,7 @@ public class ConfigLoader
         public int temperatureMaxC;
         public int temperatureMinF;
         public int temperatureMaxF;
-        public int[][] customTemperatureGradient;
+        public List<List<int>> customTemperatureGradient;
         public bool useCustomGradient;
     }
 
@@ -36,11 +39,24 @@ public class ConfigLoader
     ///</summary>
     public void LoadConfig()
     {
-        string fileType = LoadConfigFile();
-        OverrideConfig();
-        ApplyConfig();
-        GameManager.instance.AppendLogLine($"Load {fileType} config file", false, ELogtype.success);
+        // Load default config file
+        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
+        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
 
+        // Load toml config from given path
+        string configPath = GetArg("-c");
+        if (string.IsNullOrEmpty(configPath))
+            configPath = GetArg("--config-file");
+
+        LoadConfigFile(configPath);
+
+        // Override with args
+        OverrideConfig();
+
+        // Do things with completed config
+        ApplyConfig();
+
+        // OUTDATED: Build-in CLI dependant
         string startFile = GetArg("--file");
         if (!string.IsNullOrEmpty(startFile))
             GameManager.instance.consoleController.RunCommandString($".cmds:{startFile}");
@@ -51,6 +67,7 @@ public class ConfigLoader
     /// From https://forum.unity.com/threads/pass-custom-parameters-to-standalone-on-launch.429144/
     ///</summary>
     ///<param name="_name">Name of the wanted argument</param>
+    ///<returns>The value of the asked argument</returns>
     private string GetArg(string _name)
     {
         var args = System.Environment.GetCommandLineArgs();
@@ -69,7 +86,7 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "--verbose", "--fullscreen" };
+        string[] args = new string[] { "-v", "--verbose", "-fs", "--fullscreen" };
         for (int i = 0; i < args.Length; i++)
         {
             string str = GetArg(args[i]);
@@ -81,6 +98,12 @@ public class ConfigLoader
                         config.verbose = bool.Parse(str);
                         break;
                     case 1:
+                        config.verbose = bool.Parse(str);
+                        break;
+                    case 2:
+                        config.fullscreen = bool.Parse(str);
+                        break;
+                    case 3:
                         config.fullscreen = bool.Parse(str);
                         break;
                 }
@@ -91,72 +114,87 @@ public class ConfigLoader
     ///<summary>
     /// Try to load a custom config file. Otherwise, load default config file from Resources folder.
     ///</summary>
-    private string LoadConfigFile()
+    ///<returns>The type of loaded config : "custom" or "default"</returns>
+    private void LoadConfigFile(string _path = null)
     {
-        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
-        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
         try
         {
-            StreamReader jsonConfig = File.OpenText("OGrEE-3D_Data/config.json");
-            ModifyConfig(JsonConvert.DeserializeObject<SConfig>(jsonConfig.ReadToEnd()));
-            return "custom";
+#if UNITY_EDITOR
+            StreamReader loadedConfig = File.OpenText("Assets/Resources/config.toml");
+#else
+            if (string.IsNullOrEmpty(_path))
+                _path = "./config.toml";
+            StreamReader loadedConfig = File.OpenText(_path);
+#endif
+            TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
+            ModifyConfig(tomlConfig);
+            GameManager.instance.AppendLogLine($"Load custom config file ({_path})", false, ELogtype.success);
         }
         catch (System.Exception _e)
         {
+            Debug.LogWarning(_e);
             GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
-            return "default";
+            GameManager.instance.AppendLogLine($"Load default config file", false, ELogtype.success);
         }
     }
 
-    ///
-    private void ModifyConfig(SConfig _custom)
+    ///<summary>
+    /// Apply given toml config to config
+    ///</summary>
+    ///<param name="_customConfig">The loaded config.toml file</param>
+    private void ModifyConfig(TomlTable _customConfig)
     {
-        config.verbose = _custom.verbose;
-        config.fullscreen = _custom.fullscreen;
-        if (!string.IsNullOrEmpty(_custom.cachePath))
-            config.cachePath = _custom.cachePath;
-        if (_custom.cacheLimitMo > 0)
-            config.cacheLimitMo = _custom.cacheLimitMo;
-        if (_custom.cliPort > 0)
-            config.cliPort = _custom.cliPort;
-        foreach (KeyValuePair<string, string> kvp in _custom.textures)
+        Debug.Log("Parse config.toml");
+        TomlTable table = (TomlTable)_customConfig["OGrEE-3D"];
+
+        config.verbose = (bool)table["verbose"];
+        config.fullscreen = (bool)table["fullscreen"];
+        config.cachePath = (string)table["cachePath"];
+        config.cacheLimitMo = Convert.ToInt32(table["cacheLimitMo"]);
+        config.cliPort = Convert.ToInt32(table["cliPort"]);
+        config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
+
+        foreach (var kvp in (TomlTable)table["textures"])
         {
-            if (kvp.Key == "perf22" || kvp.Key == "perf29")
-            {
-                if (!string.IsNullOrEmpty(kvp.Value))
-                    config.textures[kvp.Key] = kvp.Value;
-            }
-            else
-                config.textures.Add(kvp.Key, kvp.Value);
+            if (!string.IsNullOrEmpty((string)kvp.Value))
+                config.textures[kvp.Key] = (string)kvp.Value;
         }
-        List<string> colorsToCheck = new List<string>() { "selection", "edit", "focus", "highlight", "usableZone", "reservedZone", "technicalZone" };
-        foreach (KeyValuePair<string, string> kvp in _custom.colors)
+        // foreach (var kvp in config.textures)
+        //     Debug.Log($"{kvp.Key}: {kvp.Value}");
+
+        foreach (var kvp in (TomlTable)table["colors"])
         {
-            if (colorsToCheck.Contains(kvp.Key))
-            {
-                if (!string.IsNullOrEmpty(kvp.Value))
-                    config.colors[kvp.Key] = kvp.Value;
-            }
-            else
-                config.colors.Add(kvp.Key, kvp.Value);
+            if (!string.IsNullOrEmpty((string)kvp.Value))
+                config.colors[kvp.Key] = (string)kvp.Value;
         }
-        config.alphaOnInteract = Mathf.Clamp(_custom.alphaOnInteract, 0, 100);
-        config.temperatureMinC = _custom.temperatureMinC;
-        config.temperatureMaxC = _custom.temperatureMaxC;
-        config.temperatureMinF = _custom.temperatureMinF;
-        config.temperatureMaxF = _custom.temperatureMaxF;
-        bool canUpdateTempGradient = true;
-        if (_custom.customTemperatureGradient.Length >= 2 && _custom.customTemperatureGradient.Length <= 8)
+        // foreach (var kvp in config.colors)
+        //     Debug.Log($"{kvp.Key}: {kvp.Value}");
+
+        TomlTable temperatureTable = (TomlTable)table["temperature"];
+        config.temperatureMinC = Convert.ToInt32(temperatureTable["minC"]);
+        config.temperatureMaxC = Convert.ToInt32(temperatureTable["maxC"]);
+        config.temperatureMinF = Convert.ToInt32(temperatureTable["minF"]);
+        config.temperatureMaxF = Convert.ToInt32(temperatureTable["maxF"]);
+
+        config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
+        List<List<int>> tempGradient = new List<List<int>>();
+        foreach (var colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
         {
-            foreach (int[] tab in _custom.customTemperatureGradient)
-            {
-                if (tab.Length != 4)
-                    canUpdateTempGradient = false;
-            }
+            List<int> tmp = new List<int>();
+            foreach (var i in (TomlArray)colorDef)
+                tmp.Add(Convert.ToInt32(i));
+            if (tmp.Count == 4 && tempGradient.Count < 8)
+                tempGradient.Add(tmp);
         }
-        if (canUpdateTempGradient)
-            config.customTemperatureGradient = _custom.customTemperatureGradient;
-        config.useCustomGradient = _custom.useCustomGradient;
+        if (tempGradient.Count >= 2)
+            config.customTemperatureGradient = tempGradient;
+        // foreach (var x in config.customTemperatureGradient)
+        // {
+        //     string str = "";
+        //     foreach (var i in x)
+        //         str += $"{i}/";
+        //     Debug.Log(str);
+        // }
     }
 
     ///<summary>
@@ -314,9 +352,9 @@ public class ConfigLoader
     /// Get custom gradient colors to be used to represent temperatures
     /// </summary>
     /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
-    public List<int[]> GetCustomGradientColors()
+    public List<List<int>> GetCustomGradientColors()
     {
-        return config.customTemperatureGradient.ToList();
+        return config.customTemperatureGradient;
     }
 
     /// <summary>
