@@ -31,7 +31,7 @@ maxC = 100
 minF = 32
 maxF = 212
 
-# Define a custom gradient by defining up to 8 colors in rgba format (rgb from 0 to 255, a from 0 to 100)
+# Define a custom gradient by defining up to 8 colors in rgb format with a fourth parameter specifying the position of the color in the gradient (rgb from 0 to 255, position from 0 to 100)
 useCustomGradient = true
 customTemperatureGradient = [
     [0,0,255,0],
