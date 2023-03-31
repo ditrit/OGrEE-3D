@@ -169,13 +169,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.instance.AppendLogLine("Wrong description index", true, ELogtype.warning);
+                        GameManager.instance.AppendLogLine("Wrong description index", ELogTarget.both, ELogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, ELogtype.warning);
+                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", ELogTarget.both, ELogtype.warning);
                     return;
                 }
             }
@@ -192,7 +192,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_str == "#temperature")
                 WriteLabels($"{sensor.temperature} {sensor.temperatureUnit}");
             else
-                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", true, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -308,7 +308,7 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Unknown labelFont attribute", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown labelFont attribute", ELogTarget.both, ELogtype.warning);
     }
 
     ///<summary>
@@ -323,6 +323,6 @@ public class DisplayObjectData : MonoBehaviour
             backgroundColor = _value;
         }
         else
-            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color", ELogTarget.both, ELogtype.warning);
     }
 }

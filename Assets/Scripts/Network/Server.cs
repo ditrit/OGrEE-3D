@@ -28,6 +28,9 @@ public class Server : MonoBehaviour
 
     private void Update()
     {
+        if (connection == null)
+            return;
+
         // Debug from Editor
         if (triggerSend)
         {
@@ -51,7 +54,7 @@ public class Server : MonoBehaviour
     {
         string msg = connection.incomingQueue.Dequeue();
         yield return new WaitForSeconds(timer);
-        GameManager.instance.AppendLogLine(msg, false, ELogtype.infoCli);
+        GameManager.instance.AppendLogLine(msg, ELogTarget.none, ELogtype.infoCli);
         Task parse = parser.DeserializeInput(msg);
         yield return new WaitUntil(() => parse.IsCompleted);
         dequeueCoroutine = null;

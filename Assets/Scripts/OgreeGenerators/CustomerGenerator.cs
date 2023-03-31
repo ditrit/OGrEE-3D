@@ -13,7 +13,7 @@ public class CustomerGenerator
     {
         if (GameManager.instance.allItems.Contains(_tn.name))
         {
-            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -36,7 +36,7 @@ public class CustomerGenerator
     {
         if (GameManager.instance.allItems.Contains(_si.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{_si.hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_si.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 

@@ -26,7 +26,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, ELogtype.error);
+            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
             return;
         }
         tilesEdges.gameObject.SetActive(true);
@@ -56,7 +56,7 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("tilesName value has to be true or false", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("tilesName value has to be true or false", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -143,12 +143,12 @@ public class Room : Building
     {
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", ELogTarget.both, ELogtype.warning);
             return;
         }
         if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"There is no template for {name}", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"There is no template for {name}", ELogTarget.logger, ELogtype.warning);
             return;
         }
 
@@ -208,7 +208,7 @@ public class Room : Building
                             };
                         }
                         else
-                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
+                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", ELogTarget.logger, ELogtype.warning);
                     }
                     if (!string.IsNullOrEmpty(tile.color))
                     {
@@ -284,7 +284,7 @@ public class Room : Building
                             };
                         }
                         else
-                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
+                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", ELogTarget.logger, ELogtype.warning);
                     }
                     if (!string.IsNullOrEmpty(tile.color))
                     {
@@ -451,7 +451,7 @@ public class Room : Building
                         };
                     }
                     else
-                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", false, ELogtype.warning);
+                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", ELogTarget.logger, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {

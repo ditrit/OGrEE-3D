@@ -14,6 +14,14 @@ public enum ELogtype
     errorApi
 }
 
+public enum ELogTarget
+{
+    cli,
+    logger,
+    both,
+    none
+}
+
 public enum EPromptStatus
 {
     wait,

@@ -121,7 +121,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
 
         if (id == "")
         {
-            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", ELogTarget.logger, ELogtype.warning);
             return;
         }
         int.TryParse(_level, out int lvl);
@@ -150,7 +150,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", false, ELogtype.success);
+        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", ELogTarget.logger, ELogtype.success);
 
         if (_level != 0)
         {

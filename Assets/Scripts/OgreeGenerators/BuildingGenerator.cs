@@ -15,7 +15,7 @@ public class BuildingGenerator
     {
         if (GameManager.instance.allItems.Contains(_bd.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{_bd.hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_bd.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -26,7 +26,7 @@ public class BuildingGenerator
                 template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -99,7 +99,7 @@ public class BuildingGenerator
     {
         if (GameManager.instance.allItems.Contains(_ro.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{_ro.hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_ro.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -110,7 +110,7 @@ public class BuildingGenerator
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

@@ -69,7 +69,7 @@ public class Heatmap : MonoBehaviour
         }
         catch (ArgumentException)
         {
-            GameManager.instance.AppendLogLine($"Number of sensors should be equal or less than {count}, {_positions.Length - count} of them have been ignored", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"Number of sensors should be equal or less than {count}, {_positions.Length - count} of them have been ignored", ELogTarget.both, ELogtype.warning);
             Array.Copy(_positions, positions, count);
             Array.Copy(_properties, properties, count);
         }

@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        AppendLogLine("--- Client closed ---\n\n", true, ELogtype.info);
+        AppendLogLine("--- Client closed ---\n\n", ELogTarget.cli, ELogtype.info);
     }
 
     #endregion
@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same rack as the selected object
             if (_obj != null)
             {
-                AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
+                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
                 OObject currentSelected = _obj.GetComponent<OObject>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in currentItems)
@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
             }
             else // deselection => unload children if level of details is <=1
             {
-                AppendLogLine("Empty selection.", true, ELogtype.success);
+                AppendLogLine("Empty selection.", ELogTarget.both, ELogtype.success);
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject oObject = previousObj.GetComponent<OObject>();
@@ -194,12 +194,12 @@ public class GameManager : MonoBehaviour
         if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
             || currentItems[0].transform.parent != _obj.transform.parent)
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", true, ELogtype.warning);
+            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
             return;
         }
         if (currentItems.Contains(_obj))
         {
-            AppendLogLine($"Remove {_obj.name} from selection.", true, ELogtype.success);
+            AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
             currentItems.Remove(_obj);
             // _obj was the last item in selection
             if (currentItems.Count == 0)
@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
             if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
                 && _obj.GetComponent<OgreeObject>().currentLod == 0)
                 await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-            AppendLogLine($"Select {_obj.name}.", true, ELogtype.success);
+            AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             currentItems.Add(_obj);
         }
 
@@ -261,14 +261,14 @@ public class GameManager : MonoBehaviour
     {
         if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == "corridor"))
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName} should be a rack or a device.", true, ELogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", true, ELogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -400,19 +400,30 @@ public class GameManager : MonoBehaviour
     ///<param name="_line">The text to display</param>
     ///<param name="_writeInCli">Should the message be send to the CLI ?</param>
     ///<param name="_type">The type of message. Default is info</param>
-    public void AppendLogLine(string _line, bool _writeInCli, ELogtype _type = ELogtype.info)
+    public void AppendLogLine(string _line, ELogTarget _target, ELogtype _type = ELogtype.info)
     {
         if (!writeLogs)
             return;
 
-        if (_writeInCli)
+        if (_target == ELogTarget.logger || _target == ELogTarget.both)
         {
             try
             {
                 UiManager.instance.AppendLogLine(_line, _type);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.Message);
+            }
+        }
+
+        if (_target == ELogTarget.cli || _target == ELogTarget.both)
+        {
+            try
+            {
                 server.Send(_line);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError(e.Message);
             }
@@ -536,7 +547,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             return false;
 
-        if (focus[focus.Count-1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
+        if (focus[focus.Count - 1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
             return true;
         return false;
     }

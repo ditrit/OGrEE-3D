@@ -121,13 +121,13 @@ public class ConfigLoader
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
-            GameManager.instance.AppendLogLine($"Load custom config file ({_path})", false, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Load custom config file ({_path})", ELogTarget.logger, ELogtype.success);
         }
         catch (System.Exception _e)
         {
             Debug.LogWarning(_e);
-            GameManager.instance.AppendLogLine(_e.Message, false, ELogtype.warning);
-            GameManager.instance.AppendLogLine($"Load default config file", false, ELogtype.success);
+            GameManager.instance.AppendLogLine(_e.Message, ELogTarget.none, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"Load default config file", ELogTarget.logger, ELogtype.success);
         }
     }
 
@@ -213,7 +213,7 @@ public class ConfigLoader
     private void FullScreenMode(bool _value)
     {
         if (verbose)
-            GameManager.instance.AppendLogLine($"Fullscreen: {_value}", false);
+            GameManager.instance.AppendLogLine($"Fullscreen: {_value}", ELogTarget.none);
         Screen.fullScreen = _value;
     }
 
@@ -230,7 +230,7 @@ public class ConfigLoader
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", false, ELogtype.success);
+                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", ELogTarget.logger, ELogtype.success);
             }
         }
         catch (IOException ex)
@@ -288,18 +288,18 @@ public class ConfigLoader
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", false, ELogtype.error);
+                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", ELogTarget.logger, ELogtype.error);
             else
                 GameManager.instance.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
         if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf22", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Load default texture for perf22", ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf29", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Load default texture for perf29", ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
@@ -322,14 +322,13 @@ public class ConfigLoader
     ///<summary>
     /// Get a temperature extremum of a temperature unit
     ///</summary>
-    ///<param name="_extremum">The extremum to get, must be "min" or "max"</param>
     ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
-    ///<returns>The extremum for the temperature unit</returns>
+    ///<returns>The minimum and the maximum for the temperature unit</returns>
     public (int min, int max) GetTemperatureLimit(string _unit)
     {
         if (_unit is null)
         {
-            GameManager.instance.AppendLogLine("Null temperature unit", false, ELogtype.error);
+            GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
         _unit = _unit.ToLower();
@@ -337,7 +336,7 @@ public class ConfigLoader
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == "°f")
             return (config.temperatureMinF, config.temperatureMaxF);
-        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", false, ELogtype.error);
+        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", ELogTarget.logger, ELogtype.error);
         return (0, 0);
     }
 
