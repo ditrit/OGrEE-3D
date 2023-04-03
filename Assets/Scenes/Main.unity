@@ -6051,7 +6051,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B: 2023-03-31 #1b5b350'
+  m_text: 'B: 2023-04-03 #1b5b350'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9524,7 +9524,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10007}
+  m_AnchoredPosition: {x: 0, y: 217.10002}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -12415,6 +12415,7 @@ MonoBehaviour:
     button: {fileID: 565046244}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   apiUrl: {fileID: 39982717}
+  labelsDropdown: {fileID: 2112179632}
   currentItemText: {fileID: 1128443967}
   debugPanel: {fileID: 670787554}
   toggleTilesNameBtn:
@@ -17117,8 +17118,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.00000014056921
-  m_Size: 0.5655883
+  m_Value: 0.00000014056921
+  m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17351,6 +17352,8 @@ MonoBehaviour:
     - m_Text: Floating labels
       m_Image: {fileID: 0}
     - m_Text: Hidden labels
+      m_Image: {fileID: 0}
+    - m_Text: Forced labels
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

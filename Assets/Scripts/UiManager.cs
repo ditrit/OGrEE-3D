@@ -29,6 +29,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
     [SerializeField] private TMP_Text apiUrl;
+    public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Bottom")]
     [SerializeField] private TMP_InputField currentItemText;
@@ -615,8 +616,8 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.instance.Raise(new ToggleLabelEvent() { value = (ELabelMode)_value });
-        mouseName.gameObject.SetActive(_value == 2);
+        EventManager.instance.Raise(new SwitchLabelEvent() { value = (ELabelMode)_value });
+        mouseName.gameObject.SetActive((ELabelMode)_value == ELabelMode.Hidden);
     }
 
     ///<summary>

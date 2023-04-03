@@ -30,7 +30,8 @@ public enum EPromptStatus
 }
 public enum ELabelMode
 {
-    FrontAndRear,
+    Default,
     FloatingOnTop,
-    Hidden
+    Hidden,
+    Forced
 }

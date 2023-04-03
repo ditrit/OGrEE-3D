@@ -102,9 +102,11 @@ public class ObjectGenerator
         else
             newRack.transform.localPosition = Vector3.zero;
 
-        newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
-        newRack.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
+        DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts("frontrear");
+        dod.SetLabel("#name");
+        dod.hasFloatingLabel = true;
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (rack.attributes.ContainsKey("color"))
             rack.SetColor(rack.attributes["color"]);
@@ -294,11 +296,13 @@ public class ObjectGenerator
         dv.UpdateFromSApiObject(_dv);
 
         // Set labels
+        DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
         if (string.IsNullOrEmpty(dv.attributes["slot"]))
-            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+            dod.PlaceTexts("frontrear");
         else
-            newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
-        newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
+            dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         GameManager.instance.allItems.Add(dv.hierarchyName, newDevice);
 
@@ -437,12 +441,16 @@ public class ObjectGenerator
         gr.UpdateColorByTenant();
         gr.DisplayContent(false);
 
-        newGr.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
+        // Setup labels
+        DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();
+        dod.hasFloatingLabel = true;
         if (parentCategory == "room")
-            newGr.GetComponent<DisplayObjectData>().PlaceTexts("top");
+            dod.PlaceTexts("top");
         else if (parentCategory == "rack")
-            newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
+            dod.PlaceTexts("frontrear");
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
         GameManager.instance.allItems.Add(hierarchyName, newGr);
 
         return gr;
@@ -639,9 +647,11 @@ public class ObjectGenerator
         else
             co.SetColor("990000");
 
-        newCo.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
-        newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
+        DisplayObjectData dod = newCo.GetComponent<DisplayObjectData>();
+        dod.hasFloatingLabel = true;
+        dod.PlaceTexts("top");
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         GameManager.instance.allItems.Add(hierarchyName, newCo);
 
@@ -731,8 +741,10 @@ public class ObjectGenerator
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
         sensor.fromTemplate = false;
-        newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
-        newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
+        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts("front");
+        dod.SetLabel("#temperature");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
         newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 
         return sensor;

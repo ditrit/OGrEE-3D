@@ -108,9 +108,12 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
+  heatMap: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
+  tempBar: {fileID: 0}
+  temperatureUnit: 
   uRoot: {fileID: 0}
   gridForULocation: {fileID: 0}
 --- !u!114 &5666233796082005944
@@ -134,6 +137,7 @@ MonoBehaviour:
   floatingLabel: {fileID: 7117011691471533279}
   hasFloatingLabel: 1
   usedLabels: []
+  attrToDisplay: 
   cc: {fileID: 0}
 --- !u!114 &-4847266291842506605
 MonoBehaviour:
@@ -153,7 +157,6 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
-  isDeleted: 0
   isSelected: 0
   isFocused: 0
 --- !u!114 &4507776248461121190

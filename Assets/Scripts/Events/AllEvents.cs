@@ -46,7 +46,7 @@ public class UpdateTenantEvent : CustomEvent
     public string name;
 }
 
-public class ToggleLabelEvent : CustomEvent
+public class SwitchLabelEvent : CustomEvent
 {
     public ELabelMode value;
 }
