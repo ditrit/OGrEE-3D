@@ -335,34 +335,39 @@ public class CameraControl : MonoBehaviour
     ///<param name="_target">The object to look at</param>
     public void MoveToObject(Transform _target)
     {
-        transform.position = _target.position;
         float offset = 3f;
-        OObject obj = _target.GetComponent<OObject>();
-        if (obj && obj.category == "rack")
+        OgreeObject obj = _target.GetComponent<OgreeObject>();
+
+        transform.position = _target.position;
+        transform.eulerAngles = _target.eulerAngles;
+        if (obj.category == "rack")
+        {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
-        else if (obj && obj.category == "device")
+            transform.eulerAngles += new Vector3(0, 180, 0);
+        }
+        else if (obj.category == "device")
+        {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
+            transform.eulerAngles += new Vector3(0, 180, 0);
+        }
+        else
+        {
+            transform.position += new Vector3(0, 25, -10);
+            transform.eulerAngles = new Vector3(45, 0, 0);
+        }
         switch ((int)_target.eulerAngles.y)
         {
             case 0:
-                // Debug.Log("0");
                 transform.position += new Vector3(0, 0, offset);
-                transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
             case 90:
-                // Debug.Log("90");
                 transform.position += new Vector3(offset, 0, 0);
-                transform.eulerAngles = new Vector3(0, 270, 0);
                 break;
             case 180:
-                // Debug.Log("180");
                 transform.position += new Vector3(0, 0, -offset);
-                transform.eulerAngles = new Vector3(0, 0, 0);
                 break;
             case 270:
-                // Debug.Log("270");
                 transform.position += new Vector3(-offset, 0, 0);
-                transform.eulerAngles = new Vector3(0, 90, 0);
                 break;
             default:
                 Debug.Log("default: " + _target.rotation.y);
