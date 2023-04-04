@@ -72,7 +72,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("alpha value has to be true or false", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] alpha value has to be true or false", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -110,7 +110,7 @@ public class OObject : OgreeObject
         else
         {
             UpdateColorByTenant();
-            GameManager.instance.AppendLogLine("Unknown color to display", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknown color to display", ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -157,7 +157,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("slots value has to be true or false", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] slots value has to be true or false", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -203,7 +203,7 @@ public class OObject : OgreeObject
         _value = _value.ToLower();
         if (_value != "true" && _value != "false")
         {
-            GameManager.instance.AppendLogLine("slots value has to be true or false", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Toggle local Coordinate System value has to be true or false", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -267,10 +267,10 @@ public class OObject : OgreeObject
             if (sensorTransform)
                 sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
             else
-                GameManager.instance.AppendLogLine($"Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
         }
         else
-            GameManager.instance.AppendLogLine("Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
     }
 
     /// <summary>
