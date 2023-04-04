@@ -93,9 +93,9 @@ public class UiManager : MonoBehaviour
             interactCondition = () => GameManager.instance.selectMode
             &&
             (
-            !GameManager.instance.focusMode
-            ||
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
+                !GameManager.instance.focusMode
+                ||
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
             )
         };
         selectParentBtn.Check();
@@ -133,6 +133,7 @@ public class UiManager : MonoBehaviour
             )
             ||
             GameManager.instance.SelectIs<OgreeObject>("tempBar"),
+
             toggledCondition = () => TempDiagram.instance.isDiagramShown
         };
         barChartBtn.Check();
@@ -142,6 +143,7 @@ public class UiManager : MonoBehaviour
             interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
             &&
             GameManager.instance.GetSelected().Count == 1,
+
             toggledCondition = () => TempDiagram.instance.isScatterPlotShown
         };
         scatterPlotBtn.Check();
@@ -153,6 +155,7 @@ public class UiManager : MonoBehaviour
             GameManager.instance.GetSelected().Count == 1
             &&
             DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1,
+
             toggledCondition = () => GameManager.instance.SelectIs<OObject>("device")
             &&
             GameManager.instance.GetSelected().Count == 1
@@ -200,7 +203,8 @@ public class UiManager : MonoBehaviour
 
         toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button)
         {
-            interactCondition = () => GameManager.instance.SelectIs<OObject>(),
+            interactCondition = () => GameManager.instance.SelectIs<OObject>()
+            || GameManager.instance.SelectIs<Building>(),
 
             toggledCondition = () => GameManager.instance.selectMode
             &&
@@ -511,8 +515,14 @@ public class UiManager : MonoBehaviour
             return;
         }
 
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            obj.GetComponent<OObject>()?.ToggleCS();
+        foreach (GameObject go in GameManager.instance.GetSelected())
+        {
+            OgreeObject obj = go.GetComponent<OgreeObject>();
+            if (obj.category == "building" || obj.category == "room")
+                ((Building)obj).ToggleCS();
+            else if (obj.category == "rack" || obj.category == "device")
+                ((OObject)obj).ToggleCS();
+        }
         toggleLocalCSBtn.Check();
     }
 

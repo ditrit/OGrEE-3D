@@ -286,6 +286,18 @@ public class CliParser
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
         switch (obj.category)
         {
+            case "building":
+                Building building = (Building)obj;
+                switch (command.param)
+                {
+                    case "localCS":
+                        building.ToggleCS(command.value);
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
+                break;
             case "room":
                 Room room = (Room)obj;
                 switch (command.param)
@@ -295,6 +307,9 @@ public class CliParser
                         break;
                     case "tilesColor":
                         room.ToggleTilesColor(command.value);
+                        break;
+                    case "localCS":
+                        room.ToggleCS(command.value);
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
