@@ -13,6 +13,7 @@ public class Building : OgreeObject
     {
         if (!(this is Room))
             EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinihsed);
+        EventManager.instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
     }
 
     protected override void OnDestroy()
@@ -20,6 +21,7 @@ public class Building : OgreeObject
         base.OnDestroy();
         if (!(this is Room))
             EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinihsed);
+        EventManager.instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
     }
 
     /// <summary>
@@ -41,5 +43,44 @@ public class Building : OgreeObject
             nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
             transform.Find("Roof").gameObject.SetActive(false);
         }
+    }
+
+    ///<summary>
+    /// On an UpdateTenantEvent, update the building's color if it's the right tenant
+    ///</summary>
+    ///<param name="_event">The event to catch</param>
+    private void UpdateColorByTenant(UpdateTenantEvent _event)
+    {
+        if (_event.name == domain)
+            UpdateColorByTenant();
+    }
+
+    ///<summary>
+    /// Update building's color according to its domain.
+    ///</summary>
+    public void UpdateColorByTenant()
+    {
+        if (string.IsNullOrEmpty(domain))
+            return;
+
+        if (!GameManager.instance.allItems.Contains(domain))
+        {
+            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            return;
+        }
+
+        OgreeObject tenant = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<OgreeObject>();
+
+        Color color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
+
+        foreach (Transform child in walls)
+        {
+            Material mat = child.GetComponent<Renderer>()?.material;
+            if (mat)
+                mat.color = color;
+        }
+        Transform roof = transform.Find("Roof");
+        if (roof)
+            roof.GetComponent<Renderer>().material.color = color;
     }
 }

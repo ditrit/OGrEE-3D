@@ -115,7 +115,7 @@ public class OObject : OgreeObject
     }
 
     ///<summary>
-    /// On an UpdateTenantEvent, update the ocject's color if its the right tenant
+    /// On an UpdateTenantEvent, update the object's color if its the right tenant
     ///</summary>
     ///<param name="_event">The event to catch</param>
     private void UpdateColorByTenant(UpdateTenantEvent _event)
