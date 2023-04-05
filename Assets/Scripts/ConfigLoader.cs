@@ -157,8 +157,10 @@ public class ConfigLoader
 
         foreach (var kvp in (TomlTable)table["colors"])
         {
-            if (!string.IsNullOrEmpty((string)kvp.Value))
+            if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
+            else
+                GameManager.instance.AppendLogLine($"\"{kvp.Key}\" value cannot be used as a color", ELogTarget.logger, ELogtype.error);
         }
         // foreach (var kvp in config.colors)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");

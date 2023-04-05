@@ -15,6 +15,8 @@ perf29 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resour
 
 [OGrEE-3D.colors]
 # Colors can be defines with hexadecimal codes or html colors
+# Strings that do not begin with '#' will be parsed as literal colors, with the following supported:
+# red, cyan, blue, darkblue, lightblue, purple, yellow, lime, fuchsia, white, silver, grey, black, orange, brown, maroon, green, olive, navy, teal, aqua, magenta..
 selection = "#21FF00"
 edit = "#C900FF"
 focus = "#FF9F00"

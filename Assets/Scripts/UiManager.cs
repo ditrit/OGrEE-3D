@@ -214,6 +214,7 @@ public class UiManager : MonoBehaviour
         };
         toggleLocalCSBtn.Check();
 
+        SetupColors();
         menuPanel.SetActive(false);
         UpdateTimerValue(slider.value);
 
@@ -308,6 +309,26 @@ public class UiManager : MonoBehaviour
         }
         else
             detailsInputField.UpdateInputField("0");
+    }
+
+    ///<summary>
+    /// Uses colors from config to set select & focus texts color background
+    ///</summary>
+    private void SetupColors()
+    {
+        string selectColorCode = GameManager.instance.configLoader.GetColor("selection");
+        if (!string.IsNullOrEmpty(selectColorCode))
+        {
+            Color c = Utils.ParseHtmlColor(selectColorCode);
+            currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.75f);
+        }
+
+        string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
+        if (!string.IsNullOrEmpty(focusColorCode))
+        {
+            Color c = Utils.ParseHtmlColor(focusColorCode);
+            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.42f);
+        }
     }
 
     ///<summary>
