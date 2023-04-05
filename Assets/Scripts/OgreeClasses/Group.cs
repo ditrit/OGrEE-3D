@@ -8,33 +8,21 @@ public class Group : OObject
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        ToggleContent("true");
+        ToggleContent(true);
     }
 
     ///<summary>
     /// Display or hide the rackGroup and its content.
     ///</summary>
-    ///<param name="_value">"true" or "false" value</param>
-    public void ToggleContent(string _value)
+    ///<param name="_value">true or false value</param>
+    public void ToggleContent(bool _value)
     {
-        if (_value != "true" && _value != "false")
-            return;
-
-        if (_value == "true")
-        {
-            isDisplayed = false;
-            UpdateAlpha("true");
-            DisplayContent(true);
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        isDisplayed = !_value;
+        UpdateAlpha(_value);
+        DisplayContent(_value);
+        transform.GetChild(0).GetComponent<Collider>().enabled = !_value;
+        if (_value)
             StartCoroutine(Utils.ImportFinished());
-        }
-        else
-        {
-            isDisplayed = true;
-            UpdateAlpha("false");
-            DisplayContent(false);
-            transform.GetChild(0).GetComponent<Collider>().enabled = true;
-        }
     }
 
     ///<summary>

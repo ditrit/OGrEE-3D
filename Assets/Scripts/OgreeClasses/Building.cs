@@ -106,23 +106,16 @@ public class Building : OgreeObject
     /// Display or hide the local coordinate system
     ///</summary>
     ///<param name="_value">true of false value</param>
-    public void ToggleCS(string _value)
+    public void ToggleCS(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Toggle local Coordinate System value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
-        if (localCS && _value == "false")
+        if (localCS && !_value)
         {
             Destroy(localCS);
             GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
         }
-        else if (!localCS && _value == "true")
+        else if (!localCS && _value)
             PopLocalCS(csName);
     }
 

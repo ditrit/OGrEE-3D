@@ -67,28 +67,12 @@ public class OObject : OgreeObject
     /// Update object's alpha according to _input, true or false.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
-    public void UpdateAlpha(string _value)
+    public void UpdateAlpha(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] alpha value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-
         DisplayObjectData dod = GetComponent<DisplayObjectData>();
-        if (_value == "true")
-        {
-            transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-            dod?.ToggleLabel(false);
-            isHidden = true;
-        }
-        else
-        {
-            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            dod?.ToggleLabel(true);
-            isHidden = false;
-        }
+        transform.GetChild(0).GetComponent<Renderer>().enabled = !_value;
+        dod?.ToggleLabel(!_value);
+        isHidden = _value;
     }
 
     ///<summary>
@@ -152,15 +136,8 @@ public class OObject : OgreeObject
     /// Display or hide all unused slots of the object.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleSlots(string _value)
+    public void ToggleSlots(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] slots value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-
         Slot[] slots = GetComponentsInChildren<Slot>();
         if (slots.Length == 0)
             return;
@@ -168,12 +145,7 @@ public class OObject : OgreeObject
         foreach (Slot s in slots)
         {
             if (s.transform.parent == transform && s.used == false)
-            {
-                if (_value == "true")
-                    s.Display(true);
-                else
-                    s.Display(false);
-            }
+                s.Display(_value);
         }
     }
 
@@ -198,23 +170,16 @@ public class OObject : OgreeObject
     /// Display or hide the local coordinate system
     ///</summary>
     ///<param name="_value">true of false value</param>
-    public void ToggleCS(string _value)
+    public void ToggleCS(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Toggle local Coordinate System value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
-        if (localCS && _value == "false")
+        if (localCS && !_value)
         {
             Destroy(localCS);
             GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
         }
-        else if (!localCS && _value == "true")
+        else if (!localCS && _value)
             PopLocalCS(csName);
     }
 

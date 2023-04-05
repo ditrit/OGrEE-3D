@@ -291,7 +291,7 @@ public class CliParser
                 switch (command.param)
                 {
                     case "localCS":
-                        building.ToggleCS(command.value);
+                        building.ToggleCS(command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
@@ -303,13 +303,13 @@ public class CliParser
                 switch (command.param)
                 {
                     case "tilesName":
-                        room.ToggleTilesName(command.value);
+                        room.ToggleTilesName(command.value == "true");
                         break;
                     case "tilesColor":
-                        room.ToggleTilesColor(command.value);
+                        room.ToggleTilesColor(command.value == "true");
                         break;
                     case "localCS":
-                        room.ToggleCS(command.value);
+                        room.ToggleCS(command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
@@ -330,19 +330,16 @@ public class CliParser
                         rack.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        rack.UpdateAlpha(command.value);
+                        rack.UpdateAlpha(command.value == "true");
                         break;
                     case "slots":
-                        rack.ToggleSlots(command.value);
+                        rack.ToggleSlots(command.value == "true");
                         break;
                     case "localCS":
-                        rack.ToggleCS(command.value);
+                        rack.ToggleCS(command.value == "true");
                         break;
                     case "U":
-                        if (command.value == "true")
-                            UHelpersManager.instance.ToggleU(rack.transform, true);
-                        else if (command.value == "false")
-                            UHelpersManager.instance.ToggleU(rack.transform, false);
+                        UHelpersManager.instance.ToggleU(rack.transform, command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect rack interaction", ELogTarget.both, ELogtype.warningCli);
@@ -363,13 +360,13 @@ public class CliParser
                         device.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        device.UpdateAlpha(command.value);
+                        device.UpdateAlpha(command.value == "true");
                         break;
                     case "slots":
-                        device.ToggleSlots(command.value);
+                        device.ToggleSlots(command.value == "true");
                         break;
                     case "localCS":
-                        device.ToggleCS(command.value);
+                        device.ToggleCS(command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect device interaction", ELogTarget.both, ELogtype.warningCli);
@@ -390,7 +387,7 @@ public class CliParser
                         group.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
                         break;
                     case "content":
-                        group.ToggleContent(command.value);
+                        group.ToggleContent(command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect group interaction", ELogTarget.both, ELogtype.warningCli);
@@ -417,16 +414,10 @@ public class CliParser
                 UiManager.instance.UpdateTimerValue(time);
                 break;
             case "infos":
-                if (manip.data == "true")
-                    UiManager.instance.MovePanel("infos", true);
-                else
-                    UiManager.instance.MovePanel("infos", false);
+                UiManager.instance.MovePanel("infos", manip.data == "true");
                 break;
             case "debug":
-                if (manip.data == "true")
-                    UiManager.instance.MovePanel("debug", true);
-                else
-                    UiManager.instance.MovePanel("debug", false);
+                UiManager.instance.MovePanel("debug", manip.data == "true");
                 break;
             case "highlight":
                 GameObject obj = Utils.GetObjectById(manip.data);

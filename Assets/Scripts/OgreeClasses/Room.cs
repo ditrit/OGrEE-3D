@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -52,37 +51,23 @@ public class Room : Building
     /// Toggle tiles name.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleTilesName(string _value)
+    public void ToggleTilesName(bool _value)
     {
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] tilesName value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         if (isSquare)
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-            if (_value == "true")
+            if (_value && !root)
             {
-                if (!root)
-                {
-                    root = new GameObject("tilesNameRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("name", root.transform);
-                }
-                tileName = true;
+                root = new GameObject("tilesNameRoot");
+                root.transform.parent = transform;
+                root.transform.localPosition = usableZone.localPosition;
+                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+                root.transform.localEulerAngles = Vector3.zero;
+                LoopThroughTiles("name", root.transform);
             }
-            else
-            {
-                if (root)
-                    Destroy(root);
-                tileName = false;
-            }
+            else if (!_value && root)
+                Destroy(root);
         }
         else
         {
@@ -90,12 +75,11 @@ public class Room : Building
             if (root)
             {
                 foreach (Transform tile in root)
-                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value == "true";
-                nameText.enabled = _value == "false";
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value;
+                nameText.enabled = !_value;
             }
-            tileName = _value == "true";
-
         }
+        tileName = _value;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
@@ -139,13 +123,8 @@ public class Room : Building
     /// Toggle tiles colors and textures.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleTilesColor(string _value)
+    public void ToggleTilesColor(bool _value)
     {
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] tilesColor value has to be true or false", ELogTarget.both, ELogtype.warning);
-            return;
-        }
         if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
             GameManager.instance.AppendLogLine($"There is no template for {name}", ELogTarget.logger, ELogtype.warning);
@@ -156,25 +135,17 @@ public class Room : Building
         if (isSquare)
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
-            if (_value == "true")
+            if (_value && !root)
             {
-                if (!root)
-                {
-                    root = new GameObject("tilesColorRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("color", root.transform);
-                }
-                tileColor = true;
+                root = new GameObject("tilesColorRoot");
+                root.transform.parent = transform;
+                root.transform.localPosition = usableZone.localPosition;
+                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
+                root.transform.localEulerAngles = Vector3.zero;
+                LoopThroughTiles("color", root.transform);
             }
-            else
-            {
-                if (root)
-                    Destroy(root);
-                tileColor = false;
-            }
+            else if (!_value && root)
+                Destroy(root);
         }
         else
         {
@@ -187,10 +158,10 @@ public class Room : Building
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
-                    if ((_value == "true" && tile.modified) || (_value == "false" && !tile.modified))
+                    if ((_value && tile.modified) || (!_value && !tile.modified))
                         continue;
 
-                    if (_value == "false")
+                    if (!_value)
                     {
                         tile.GetComponent<Renderer>().material = new Material(tile.defaultMat);
                         tile.modified = false;
@@ -230,8 +201,8 @@ public class Room : Building
                     tile.modified = true;
                 }
             }
-            tileColor = _value == "true";
         }
+        tileColor = _value;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
     public void ToggleTilesColor()

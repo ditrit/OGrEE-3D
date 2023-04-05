@@ -319,7 +319,7 @@ public class FocusHandler : MonoBehaviour
             foreach (MeshRenderer mr in renderers)
                 mr.enabled = _value;
         }
-        GetComponent<OObject>()?.ToggleSlots(_value.ToString());
+        GetComponent<OObject>()?.ToggleSlots(_value);
         ToggleCollider(gameObject, _value);
 
         if (GetComponent<OObject>() && GetComponent<OObject>().isHidden)
@@ -430,7 +430,7 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "rack":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
-                        go.GetComponent<OObject>()?.ToggleSlots("false");
+                        go.GetComponent<OObject>()?.ToggleSlots(false);
                         break;
                     case "device":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
