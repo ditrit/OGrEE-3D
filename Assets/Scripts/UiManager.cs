@@ -473,10 +473,7 @@ public class UiManager : MonoBehaviour
 
         Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         if (currentRoom)
-        {
             currentRoom.ToggleTilesName();
-            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.GetSelected()[0].name}.", ELogTarget.logger, ELogtype.success);
-        }
         else
             GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);
         toggleTilesNameBtn.Check();
@@ -502,7 +499,6 @@ public class UiManager : MonoBehaviour
                 return;
             }
             currentRoom.ToggleTilesColor();
-            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.GetSelected()[0].name}.", ELogTarget.logger, ELogtype.success);
         }
         else
             GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);

@@ -16,6 +16,7 @@ public class Room : Building
     public string temperatureUnit;
     public bool tileName = false;
     public bool tileColor = false;
+
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
@@ -58,16 +59,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (_value && !root)
-            {
-                root = new GameObject("tilesNameRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("name", root.transform);
-            }
+                PopTilesName();
             else if (!_value && root)
-                Destroy(root);
+                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
         }
         else
         {
@@ -83,6 +77,9 @@ public class Room : Building
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
+    ///<summary>
+    /// Toggle tiles name.
+    ///</summary>
     public void ToggleTilesName()
     {
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
@@ -90,19 +87,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (root)
-            {
-                root.SetActive(false); //for UI
-                Destroy(root);
-            }
+                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
             else
-            {
-                root = new GameObject("tilesNameRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("name", root.transform);
-            }
+                PopTilesName();
         }
         else
         {
@@ -118,6 +105,19 @@ public class Room : Building
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
+    ///<summary>
+    /// Create the root for tiles name, then all tiles name
+    ///</summary>
+    private void PopTilesName()
+    {
+        GameObject root = new GameObject("tilesNameRoot");
+        root.transform.parent = transform;
+        root.transform.localPosition = usableZone.localPosition;
+        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+        root.transform.localEulerAngles = Vector3.zero;
+        LoopThroughTiles("name", root.transform);
+        GameManager.instance.AppendLogLine($"Display tiles name for {name}", ELogTarget.logger, ELogtype.success);
+    }
 
     ///<summary>
     /// Toggle tiles colors and textures.
@@ -136,16 +136,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (_value && !root)
-            {
-                root = new GameObject("tilesColorRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("color", root.transform);
-            }
+                PopTilesColor();
             else if (!_value && root)
-                Destroy(root);
+                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
         }
         else
         {
@@ -212,19 +205,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (root)
-            {
-                root.SetActive(false); // for UI
-                Destroy(root);
-            }
+                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
             else
-            {
-                root = new GameObject("tilesColorRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("color", root.transform);
-            }
+                PopTilesColor();
         }
         else
         {
@@ -280,6 +263,20 @@ public class Room : Building
         }
         tileColor = !tileColor;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+
+    ///<summary>
+    /// Create the root for tiles color, then all tiles color
+    ///</summary>
+    private void PopTilesColor()
+    {
+        GameObject root = new GameObject("tilesColorRoot");
+        root.transform.parent = transform;
+        root.transform.localPosition = usableZone.localPosition;
+        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
+        root.transform.localEulerAngles = Vector3.zero;
+        LoopThroughTiles("color", root.transform);
+        GameManager.instance.AppendLogLine($"Display tiles color for {name}", ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>

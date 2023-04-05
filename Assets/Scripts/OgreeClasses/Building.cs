@@ -93,11 +93,7 @@ public class Building : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS)
-        {
-            localCS.SetActive(false); //for UI
-            Destroy(localCS);
-            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
-        }
+            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
         else
             PopLocalCS(csName);
     }
@@ -111,10 +107,7 @@ public class Building : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS && !_value)
-        {
-            Destroy(localCS);
-            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
-        }
+            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
         else if (!localCS && _value)
             PopLocalCS(csName);
     }
