@@ -28,8 +28,8 @@ public class Inputs : MonoBehaviour
     private void Update()
     {
 #if !PROD
-        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.gm.currentItems.Count > 0)
-            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.gm.currentItems[0].GetComponent<OgreeObject>())));
+        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.currentItems.Count > 0)
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.currentItems[0].GetComponent<OgreeObject>())));
 #endif
         if (!isDragging && !isRotating && !isScaling)
             target = Utils.RaycastFromCameraToMouse()?.transform;

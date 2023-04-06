@@ -59,7 +59,13 @@ MonoBehaviour:
   attributesKeys: []
   attributesValues: []
   currentLod: 0
+  originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
+  originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  originalLocalScale: {x: 1, y: 1, z: 1}
+  heatMap: 0
+  isSquare: 1
   walls: {fileID: 2447770562802736307}
+  nameText: {fileID: 1070277913875691498}
   reserved:
     left: 0
     right: 0
@@ -73,8 +79,10 @@ MonoBehaviour:
   usableZone: {fileID: 1754386266534505231}
   reservedZone: {fileID: 18736379438063463}
   technicalZone: {fileID: 2859817786028861529}
-  tilesEdges: {fileID: 9208373176663619532}
-  nameText: {fileID: 1070277913875691498}
+  tilesGrid: {fileID: 9208373176663619532}
+  temperatureUnit: 
+  tileName: 0
+  tileColor: 0
 --- !u!1 &760801759331240274
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,7 +225,7 @@ GameObject:
   - component: {fileID: 1208652190700097600}
   - component: {fileID: 904376214907747946}
   m_Layer: 0
-  m_Name: Edges
+  m_Name: Grid
   m_TagString: Selectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
