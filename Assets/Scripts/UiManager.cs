@@ -33,6 +33,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Bottom")]
     [SerializeField] private TMP_InputField currentItemText;
+    [SerializeField] private ButtonHandler getCoordsBtn;
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
@@ -213,6 +214,20 @@ public class UiManager : MonoBehaviour
             GameManager.instance.GetSelected()[0].transform.Find("localCS").gameObject.activeSelf
         };
         toggleLocalCSBtn.Check();
+
+        getCoordsBtn = new ButtonHandler(getCoordsBtn.button)
+        {
+            interactCondition = () => GameManager.instance.GetSelected().Count == 1
+            &&
+            GameManager.instance.SelectIs<Building>()
+            &&
+            !GameManager.instance.focusMode
+            &&
+            !GameManager.instance.editMode,
+
+            toggledCondition = () => GameManager.instance.getCoordsMode
+        };
+        getCoordsBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -732,6 +747,16 @@ public class UiManager : MonoBehaviour
         {
             Debug.Log(e.ToString());
         }
+    }
+
+    ///<summary>
+    /// Called by GUI button: if one and only one building or room is selected, toggle the getCoords mode
+    ///</summary>
+    public void ToggleGetCoordsMode()
+    {
+        if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Building>())
+            GameManager.instance.getCoordsMode ^= true;
+        getCoordsBtn.Check();
     }
 
     ///<summary>
