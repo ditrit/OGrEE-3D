@@ -13,14 +13,14 @@ public class CustomerGenerator
     {
         if (GameManager.instance.allItems.Contains(_tn.name))
         {
-            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", ELogTarget.both, ELogtype.error);
             return null;
         }
 
         GameObject newTenant = new GameObject(_tn.name);
         OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
-        tenant.hierarchyName = _tn.name;
         tenant.UpdateFromSApiObject(_tn);
+        tenant.hierarchyName = _tn.name;
 
         GameManager.instance.allItems.Add(_tn.name, newTenant);
         return tenant;
@@ -34,14 +34,9 @@ public class CustomerGenerator
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_si.name}";
-        else
-            hierarchyName = _si.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_si.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_si.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -49,10 +44,9 @@ public class CustomerGenerator
         newSite.transform.parent = _parent;
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
-        site.hierarchyName = hierarchyName;
         site.UpdateFromSApiObject(_si);
 
-        GameManager.instance.allItems.Add(hierarchyName, newSite);
+        GameManager.instance.allItems.Add(site.hierarchyName, newSite);
         return site;
     }
 }

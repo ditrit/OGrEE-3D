@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -10,14 +8,17 @@ public class Room : Building
     public SMargin reserved;
     public SMargin technical;
 
-    [Header("RO References")]
+    [Header("Floor layers")]
     public Transform usableZone;
     public Transform reservedZone;
     public Transform technicalZone;
-    public Transform tilesEdges;
+    public Transform tilesGrid;
+
+    [Header("Room references")]
     public string temperatureUnit;
     public bool tileName = false;
     public bool tileColor = false;
+
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
@@ -27,10 +28,10 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.instance.AppendLogLine("Can't modify areas if room has a rack drawn in it.", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
             return;
         }
-        tilesEdges.gameObject.SetActive(true);
+        tilesGrid.gameObject.SetActive(true);
 
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);
@@ -47,47 +48,22 @@ public class Room : Building
         ReduceZone(reservedZone, _techDim);
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
-
-        // Save areas in attributes
-        attributes["reserved"] = JsonUtility.ToJson(_resDim);
-        attributes["technical"] = JsonUtility.ToJson(_techDim);
     }
 
     ///<summary>
     /// Toggle tiles name.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleTilesName(string _value)
+    public void ToggleTilesName(bool _value)
     {
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine("tilesName value has to be true or false", true, ELogtype.warning);
-            return;
-        }
-
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
         if (isSquare)
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
-            if (_value == "true")
-            {
-                if (!root)
-                {
-                    root = new GameObject("tilesNameRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("name", root.transform);
-                }
-                tileName = true;
-            }
-            else
-            {
-                if (root)
-                    Destroy(root);
-                tileName = false;
-            }
+            if (_value && !root)
+                BuildTilesName();
+            else if (!_value && root)
+                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
         }
         else
         {
@@ -95,15 +71,17 @@ public class Room : Building
             if (root)
             {
                 foreach (Transform tile in root)
-                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value == "true";
-                nameText.enabled = _value == "false";
+                    tile.GetChild(0).GetComponent<MeshRenderer>().enabled = _value;
+                nameText.enabled = !_value;
             }
-            tileName = _value == "true";
-
         }
+        tileName = _value;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
+    ///<summary>
+    /// Toggle tiles name.
+    ///</summary>
     public void ToggleTilesName()
     {
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
@@ -111,19 +89,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (root)
-            {
-                root.SetActive(false); //for UI
-                Destroy(root);
-            }
+                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
             else
-            {
-                root = new GameObject("tilesNameRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("name", root.transform);
-            }
+                BuildTilesName();
         }
         else
         {
@@ -139,21 +107,29 @@ public class Room : Building
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
+    ///<summary>
+    /// Create the root for tiles name, then all tiles name
+    ///</summary>
+    private void BuildTilesName()
+    {
+        GameObject root = new GameObject("tilesNameRoot");
+        root.transform.parent = transform;
+        root.transform.localPosition = usableZone.localPosition;
+        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+        root.transform.localEulerAngles = Vector3.zero;
+        LoopThroughTiles("name", root.transform);
+        GameManager.instance.AppendLogLine($"Display tiles name for {name}", ELogTarget.logger, ELogtype.success);
+    }
 
     ///<summary>
     /// Toggle tiles colors and textures.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleTilesColor(string _value)
+    public void ToggleTilesColor(bool _value)
     {
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine("tilesColor value has to be true or false", true, ELogtype.warning);
-            return;
-        }
         if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"There is no template for {name}", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"There is no template for {name}", ELogTarget.logger, ELogtype.warning);
             return;
         }
 
@@ -161,25 +137,10 @@ public class Room : Building
         if (isSquare)
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
-            if (_value == "true")
-            {
-                if (!root)
-                {
-                    root = new GameObject("tilesColorRoot");
-                    root.transform.parent = transform;
-                    root.transform.localPosition = usableZone.localPosition;
-                    root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-                    root.transform.localEulerAngles = Vector3.zero;
-                    LoopThroughTiles("color", root.transform);
-                }
-                tileColor = true;
-            }
-            else
-            {
-                if (root)
-                    Destroy(root);
-                tileColor = false;
-            }
+            if (_value && !root)
+                BuildTilesColor();
+            else if (!_value && root)
+                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
         }
         else
         {
@@ -192,10 +153,10 @@ public class Room : Building
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
-                    if ((_value == "true" && tile.modified) || (_value == "false" && !tile.modified))
+                    if ((_value && tile.modified) || (!_value && !tile.modified))
                         continue;
 
-                    if (_value == "false")
+                    if (!_value)
                     {
                         tile.GetComponent<Renderer>().material = new Material(tile.defaultMat);
                         tile.modified = false;
@@ -203,42 +164,21 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                    {
-                        if (GameManager.instance.textures.ContainsKey(tile.texture))
-                        {
-                            Renderer rend = tile.GetComponent<Renderer>();
-                            rend.material = new Material(tile.defaultMat)
-                            {
-                                mainTexture = GameManager.instance.textures[tile.texture]
-                            };
-                        }
-                        else
-                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
-                    }
+                        tile.SetTexture(hierarchyName);
                     if (!string.IsNullOrEmpty(tile.color))
-                    {
-                        Material mat = tile.GetComponent<Renderer>().material;
-                        Color customColor = new Color();
-                        if (tile.color.StartsWith("@"))
-                        {
-                            foreach (SColor color in customColors)
-                            {
-                                if (color.name == tile.color.Substring(1))
-                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
-                            }
-                        }
-                        else
-                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
-                        mat.color = customColor;
-                    }
+                        tile.SetColor(customColors);
 
                     tile.modified = true;
                 }
             }
-            tileColor = _value == "true";
         }
+        tileColor = _value;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
+
+    ///<summary>
+    /// Toggle tiles colors and textures.
+    ///</summary>
     public void ToggleTilesColor()
     {
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
@@ -246,19 +186,9 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (root)
-            {
-                root.SetActive(false); // for UI
-                Destroy(root);
-            }
+                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
             else
-            {
-                root = new GameObject("tilesColorRoot");
-                root.transform.parent = transform;
-                root.transform.localPosition = usableZone.localPosition;
-                root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
-                root.transform.localEulerAngles = Vector3.zero;
-                LoopThroughTiles("color", root.transform);
-            }
+                BuildTilesColor();
         }
         else
         {
@@ -279,34 +209,9 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                    {
-                        if (GameManager.instance.textures.ContainsKey(tile.texture))
-                        {
-                            Renderer rend = tile.GetComponent<Renderer>();
-                            rend.material = new Material(tile.defaultMat)
-                            {
-                                mainTexture = GameManager.instance.textures[tile.texture]
-                            };
-                        }
-                        else
-                            GameManager.instance.AppendLogLine($"Unknow texture: {tile.texture}", false, ELogtype.warning);
-                    }
+                        tile.SetTexture(hierarchyName);
                     if (!string.IsNullOrEmpty(tile.color))
-                    {
-                        Material mat = tile.GetComponent<Renderer>().material;
-                        Color customColor = new Color();
-                        if (tile.color.StartsWith("@"))
-                        {
-                            foreach (SColor color in customColors)
-                            {
-                                if (color.name == tile.color.Substring(1))
-                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
-                            }
-                        }
-                        else
-                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
-                        mat.color = customColor;
-                    }
+                        tile.SetColor(customColors);
 
                     tile.modified = true;
                 }
@@ -314,6 +219,20 @@ public class Room : Building
         }
         tileColor = !tileColor;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+    }
+
+    ///<summary>
+    /// Create the root for tiles color, then all tiles color
+    ///</summary>
+    private void BuildTilesColor()
+    {
+        GameObject root = new GameObject("tilesColorRoot");
+        root.transform.parent = transform;
+        root.transform.localPosition = usableZone.localPosition;
+        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
+        root.transform.localEulerAngles = Vector3.zero;
+        LoopThroughTiles("color", root.transform);
+        GameManager.instance.AppendLogLine($"Display tiles color for {name}", ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>
@@ -456,7 +375,7 @@ public class Room : Building
                         };
                     }
                     else
-                        GameManager.instance.AppendLogLine($"Unknow texture: {tileData.texture}", false, ELogtype.warning);
+                        GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknow tile texture: {tileData.texture}", ELogTarget.logger, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
@@ -499,60 +418,6 @@ public class Room : Building
     }
 
     ///<summary>
-    /// Check for a _param attribute and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
-    {
-        bool updateAttr = false;
-        if (_param.StartsWith("description"))
-        {
-            SetDescription(_param.Substring(11), _value);
-            updateAttr = true;
-        }
-        else
-        {
-            switch (_param)
-            {
-                case "domain":
-                    if (_value.EndsWith("@recursive"))
-                    {
-                        string[] data = _value.Split('@');
-                        SetAllDomains(data[0]);
-                    }
-                    else
-                        SetDomain(_value);
-                    updateAttr = true;
-                    break;
-                case "areas":
-                    ParseAreas(_value);
-                    updateAttr = true;
-                    break;
-                case "separator":
-                    AddSeparator(_value);
-                    updateAttr = true;
-                    break;
-                case "tilesName":
-                    ToggleTilesName(_value);
-                    break;
-                case "tilesColor":
-                    ToggleTilesColor(_value);
-                    break;
-                default:
-                    if (attributes.ContainsKey(_param))
-                        attributes[_param] = _value;
-                    else
-                        attributes.Add(_param, _value);
-                    updateAttr = true;
-                    break;
-            }
-        }
-        if (updateAttr && ApiManager.instance.isInit)
-            PutData();
-    }
-
-    ///<summary>
     /// Set usable/reserved/technical zones color according to parented Site
     ///</summary>
     public void UpdateZonesColor()
@@ -575,67 +440,6 @@ public class Room : Building
             technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["technicalColor"]}");
         else
             technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("technicalZone"));
-    }
-
-    ///<summary>
-    /// Parse a "areas" command and call SetZones().
-    ///</summary>
-    ///<param name="_input">String with zones data to parse</param>
-    private void ParseAreas(string _input)
-    {
-        string patern = "^\\[([0-9.]+,){3}[0-9.]+\\]@\\[([0-9.]+,){3}[0-9.]+\\]$";
-        if (Regex.IsMatch(_input, patern))
-        {
-            _input = _input.Replace("[", "");
-            _input = _input.Replace("]", "");
-            string[] data = _input.Split('@', ',');
-
-            SMargin resDim = new SMargin(data[0], data[1], data[2], data[3]);
-            SMargin techDim = new SMargin(data[4], data[5], data[6], data[7]);
-            SetAreas(resDim, techDim);
-        }
-        else
-            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
-    }
-
-    ///<summary>
-    /// Parse and add a separator to attributes["separators"] and instantiate it.
-    ///</summary>
-    ///<param name="_input">The startPos and endPos of the new separator</param>
-    public void AddSeparator(string _input)
-    {
-        if (!Regex.IsMatch(_input, "\\[[0-9.]+,[0-9.]+\\]@\\[[0-9.]+,[0-9.]+\\]"))
-        {
-            GameManager.instance.AppendLogLine("Syntax error", true, ELogtype.error);
-            return;
-        }
-
-        string[] data = _input.Split('@');
-        Vector2 startPos = Utils.ParseVector2(data[0]);
-        Vector2 endPos = Utils.ParseVector2(data[1]);
-
-        SSeparator separator = new SSeparator
-        {
-            startPosXYm = new float[] { startPos.x, startPos.y },
-            endPosXYm = new float[] { endPos.x, endPos.y }
-        };
-        AddSeparator(separator);
-    }
-
-    ///<summary>
-    /// Add a separator to attributes["separators"] and instantiate it.
-    ///</summary>
-    ///<param name="_sep">The separator data to add</param>
-    public void AddSeparator(SSeparator _sep)
-    {
-        List<SSeparator> separators;
-        if (attributes.ContainsKey("separators"))
-            separators = JsonConvert.DeserializeObject<List<SSeparator>>(attributes["separators"]);
-        else
-            separators = new List<SSeparator>();
-        separators.Add(_sep);
-        attributes["separators"] = JsonConvert.SerializeObject(separators);
-        BuildSeparator(_sep);
     }
 
     ///<summary>
@@ -675,22 +479,6 @@ public class Room : Building
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
-    }
-
-    ///<summary>
-    /// Add a pillar to attributes["pillars"] and instantiate it.
-    ///</summary>
-    ///<param name="_pil">The pillar data to add</param>
-    public void AddPillar(SPillar _pil)
-    {
-        List<SPillar> pillars;
-        if (attributes.ContainsKey("pillars"))
-            pillars = JsonConvert.DeserializeObject<List<SPillar>>(attributes["pillars"]);
-        else
-            pillars = new List<SPillar>();
-        pillars.Add(_pil);
-        attributes["pillars"] = JsonConvert.SerializeObject(pillars);
-        BuildPillar(_pil);
     }
 
     ///<summary>

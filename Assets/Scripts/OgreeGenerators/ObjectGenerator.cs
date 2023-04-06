@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -13,14 +12,9 @@ public class ObjectGenerator
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_rk.name}";
-        else
-            hierarchyName = _rk.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_rk.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_rk.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -33,7 +27,7 @@ public class ObjectGenerator
                 newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
                 return null;
             }
             Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
@@ -57,7 +51,6 @@ public class ObjectGenerator
         }
 
         Rack rack = newRack.GetComponent<Rack>();
-        rack.hierarchyName = hierarchyName;
         rack.UpdateFromSApiObject(_rk);
 
         if (_parent)
@@ -109,13 +102,18 @@ public class ObjectGenerator
         else
             newRack.transform.localPosition = Vector3.zero;
 
-        newRack.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newRack.GetComponent<DisplayObjectData>().SetLabel("#name");
-        newRack.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
+        DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts("frontrear");
+        dod.SetLabel("#name");
+        dod.hasFloatingLabel = true;
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        rack.UpdateColorByTenant();
+        if (rack.attributes.ContainsKey("color"))
+            rack.SetColor(rack.attributes["color"]);
+        else
+            rack.UpdateColorByTenant();
 
-        GameManager.instance.allItems.Add(hierarchyName, newRack);
+        GameManager.instance.allItems.Add(rack.hierarchyName, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
@@ -146,7 +144,7 @@ public class ObjectGenerator
         {
             if (_parent.GetComponent<OObject>() == null)
             {
-                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", ELogTarget.both, ELogtype.error);
                 return null;
             }
 
@@ -154,34 +152,29 @@ public class ObjectGenerator
             if (_parent.GetComponent<Rack>() == null
                 && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
             {
-                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", true, ELogtype.error);
+                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", ELogTarget.both, ELogtype.error);
                 return null;
             }
 
             // Check if parent not hidden in a group
             if (_parent.gameObject.activeSelf == false)
             {
-                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", true, ELogtype.error);
+                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
 
         // Check if unique hierarchyName
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_dv.name}";
-        else
-            hierarchyName = _dv.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_dv.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_dv.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
         // Check template
         if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -215,7 +208,7 @@ public class ObjectGenerator
                 }
                 else
                 {
-                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", true, ELogtype.error);
+                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
                     return null;
                 }
             }
@@ -300,17 +293,18 @@ public class ObjectGenerator
         // Fill OObject class
         newDevice.name = _dv.name;
         OObject dv = newDevice.GetComponent<OObject>();
-        dv.hierarchyName = hierarchyName;
         dv.UpdateFromSApiObject(_dv);
 
         // Set labels
+        DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
         if (string.IsNullOrEmpty(dv.attributes["slot"]))
-            newDevice.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
+            dod.PlaceTexts("frontrear");
         else
-            newDevice.GetComponent<DisplayObjectData>().PlaceTexts(slot?.GetComponent<Slot>().labelPos);
-        newDevice.GetComponent<DisplayObjectData>().SetLabel("#name");
+            dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        GameManager.instance.allItems.Add(hierarchyName, newDevice);
+        GameManager.instance.allItems.Add(dv.hierarchyName, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
@@ -370,7 +364,7 @@ public class ObjectGenerator
         }
         else
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
     }
@@ -386,20 +380,20 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _gr.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine("Parent not found", true, ELogtype.error);
+            GameManager.instance.AppendLogLine("Parent not found", ELogTarget.both, ELogtype.error);
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
         if (parentCategory != "room" && parentCategory != "rack")
         {
-            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", true, ELogtype.error);
+            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", ELogTarget.both, ELogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -415,7 +409,7 @@ public class ObjectGenerator
                     content.Add(go.transform);
             }
             else
-                GameManager.instance.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", true, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", ELogTarget.both, ELogtype.warning);
         }
         if (content.Count == 0)
             return null;
@@ -447,12 +441,16 @@ public class ObjectGenerator
         gr.UpdateColorByTenant();
         gr.DisplayContent(false);
 
-        newGr.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
+        // Setup labels
+        DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();
+        dod.hasFloatingLabel = true;
         if (parentCategory == "room")
-            newGr.GetComponent<DisplayObjectData>().PlaceTexts("top");
+            dod.PlaceTexts("top");
         else if (parentCategory == "rack")
-            newGr.GetComponent<DisplayObjectData>().PlaceTexts("frontrear");
-        newGr.GetComponent<DisplayObjectData>().SetLabel("#name");
+            dod.PlaceTexts("frontrear");
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
         GameManager.instance.allItems.Add(hierarchyName, newGr);
 
         return gr;
@@ -568,14 +566,14 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _co.parentId);
         if (!parent || parent.GetComponent<OgreeObject>().category != "room")
         {
-            GameManager.instance.AppendLogLine($"Parent room not found", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Parent room not found", ELogTarget.both, ELogtype.error);
             return null;
         }
 
         string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
         if (GameManager.instance.allItems.Contains(hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -585,7 +583,7 @@ public class ObjectGenerator
         Transform cornerB = GameManager.instance.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
         if (cornerA == null || cornerB == null)
         {
-            GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -645,13 +643,15 @@ public class ObjectGenerator
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
         mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
-            co.SetAttribute("color", "000099");
+            co.SetColor("000099");
         else
-            co.SetAttribute("color", "990000");
+            co.SetColor("990000");
 
-        newCo.GetComponent<DisplayObjectData>().hasFloatingLabel = true;
-        newCo.GetComponent<DisplayObjectData>().PlaceTexts("top");
-        newCo.GetComponent<DisplayObjectData>().SetLabel("#name");
+        DisplayObjectData dod = newCo.GetComponent<DisplayObjectData>();
+        dod.hasFloatingLabel = true;
+        dod.PlaceTexts("top");
+        dod.SetLabel("#name");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         GameManager.instance.allItems.Add(hierarchyName, newCo);
 
@@ -669,7 +669,7 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine($"Parent not found", true, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Parent not found", ELogTarget.both, ELogtype.error);
             return null;
         }
         OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
@@ -677,13 +677,13 @@ public class ObjectGenerator
         if (_se.attributes["formFactor"] == "ext"
             && (parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.instance.AppendLogLine("An external sensor must be child of a rack or a device", true, ELogtype.error);
+            GameManager.instance.AppendLogLine("An external sensor must be child of a rack or a device", ELogTarget.both, ELogtype.error);
             return null;
         }
         if (_se.attributes["formFactor"] == "int"
             && (parentCategory != "room" && parentCategory != "rack" && parentCategory != "device"))
         {
-            GameManager.instance.AppendLogLine("An internal sensor must be child of a room, a rack or a device", true, ELogtype.error);
+            GameManager.instance.AppendLogLine("An internal sensor must be child of a room, a rack or a device", ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -741,8 +741,10 @@ public class ObjectGenerator
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
         sensor.fromTemplate = false;
-        newSensor.GetComponent<DisplayObjectData>().PlaceTexts("front");
-        newSensor.GetComponent<DisplayObjectData>().SetLabel("#temperature");
+        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts("front");
+        dod.SetLabel("#temperature");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
         newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 
         return sensor;

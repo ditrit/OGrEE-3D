@@ -178,17 +178,17 @@ public class UHelpersManager : MonoBehaviour
         if (!uRoot)
         {
             GenerateUHelpers(_transform.GetComponent<Rack>());
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
+            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
         }
         else if (uRoot.gameObject.activeSelf == false)
         {
             uRoot.gameObject.SetActive(true);
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", false, ELogtype.info);
+            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
         }
         else
         {
             uRoot.gameObject.SetActive(false);
-            GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", false, ELogtype.info);
+            GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", ELogTarget.logger, ELogtype.info);
         }
         return;
     }

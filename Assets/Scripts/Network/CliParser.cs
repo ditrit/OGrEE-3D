@@ -50,7 +50,7 @@ public class CliParser
         }
         catch (System.Exception)
         {
-            GameManager.instance.AppendLogLine("Received data with unknow format.", true, ELogtype.errorCli);
+            GameManager.instance.AppendLogLine("Received data with unknow format.", ELogTarget.both, ELogtype.errorCli);
         }
         switch (command["type"])
         {
@@ -88,7 +88,7 @@ public class CliParser
                     if (objToDel)
                         await GameManager.instance.DeleteItem(objToDel, false);
                     else
-                        GameManager.instance.AppendLogLine("Error on delete", true, ELogtype.errorCli);
+                        GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
                 }
                 break;
             case "focus":
@@ -121,7 +121,7 @@ public class CliParser
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown type", true, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine("Command received with unknown type", ELogTarget.both, ELogtype.errorCli);
                 break;
         }
     }
@@ -150,7 +150,7 @@ public class CliParser
         }
         catch (System.Exception e)
         {
-            GameManager.instance.AppendLogLine(e.Message, true, ELogtype.errorCli);
+            GameManager.instance.AppendLogLine(e.Message, ELogTarget.both, ELogtype.errorCli);
         }
 
         List<string> leafIds = new List<string>();
@@ -173,7 +173,7 @@ public class CliParser
                     Utils.RebuildLods(leaf);
             }
 
-            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", true, ELogtype.infoCli);
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
         }
     }
 
@@ -204,15 +204,28 @@ public class CliParser
                     || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                 item.SetColor(newData.attributes["color"]);
 
-
             foreach (string attribute in newData.attributes.Keys)
                 if (attribute.StartsWith("temperature_")
                     && (!item.attributes.ContainsKey(attribute)
                         || item.attributes[attribute] != newData.attributes[attribute]))
                     item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
+        // Case temperature for corridors
+        else if (newData.category == "corridor")
+        {
+            OObject item = (OObject)obj;
+            if (newData.attributes.ContainsKey("temperature")
+                && (!item.attributes.ContainsKey("temperature")
+                    || item.attributes.ContainsKey("temperature") && item.attributes["temperature"] != newData.attributes["temperature"]))
+            {
+                if (newData.attributes["temperature"] == "cold")
+                    item.SetColor("000099");
+                else
+                    item.SetColor("990000");
+            }
+        }
 
-        // Case of a separator/areas modification in a room
+        // Case of a separators/pillars/areas modification in a room
         if (newData.category == "room")
         {
             Room room = (Room)obj;
@@ -269,45 +282,120 @@ public class CliParser
     ///<param name="_data">The serialized command to execute</param>
     private void InteractWithObject(string _data)
     {
-        List<string> usableParams;
         SInteract command = JsonConvert.DeserializeObject<SInteract>(_data);
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
         switch (obj.category)
         {
+            case "building":
+                Building building = (Building)obj;
+                switch (command.param)
+                {
+                    case "localCS":
+                        building.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
+                break;
             case "room":
                 Room room = (Room)obj;
-                usableParams = new List<string>() { "tilesName", "tilesColor" };
-                if (usableParams.Contains(command.param))
-                    room.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect room interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "tilesName":
+                        room.ToggleTilesName(command.value == "true");
+                        break;
+                    case "tilesColor":
+                        room.ToggleTilesColor(command.value == "true");
+                        break;
+                    case "localCS":
+                        room.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "rack":
                 Rack rack = (Rack)obj;
-                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS", "U" };
-                if (usableParams.Contains(command.param))
-                    rack.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect rack interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        rack.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        rack.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        rack.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
+                        break;
+                    case "alpha":
+                        rack.ToggleAlpha(command.value == "true");
+                        break;
+                    case "slots":
+                        rack.ToggleSlots(command.value == "true");
+                        break;
+                    case "localCS":
+                        rack.ToggleCS(command.value == "true");
+                        break;
+                    case "U":
+                        UHelpersManager.instance.ToggleU(rack.transform, command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect rack interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "device":
                 OObject device = (OObject)obj;
-                usableParams = new List<string>() { "label", "labelFont", "alpha", "slots", "localCS" };
-                if (usableParams.Contains(command.param))
-                    device.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect device interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        device.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        device.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        device.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
+                        break;
+                    case "alpha":
+                        device.ToggleAlpha(command.value == "true");
+                        break;
+                    case "slots":
+                        device.ToggleSlots(command.value == "true");
+                        break;
+                    case "localCS":
+                        device.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect device interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
                 break;
             case "group":
                 Group group = (Group)obj;
-                usableParams = new List<string>() { "label", "labelFont", "content" };
-                if (usableParams.Contains(command.param))
-                    group.SetAttribute(command.param, command.value);
-                else
-                    GameManager.instance.AppendLogLine("Incorrect group interaction", true, ELogtype.warningCli);
+                switch (command.param)
+                {
+                    case "label":
+                        group.GetComponent<DisplayObjectData>().SetLabel(command.value);
+                        break;
+                    case "labelFont":
+                        group.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
+                        break;
+                    case "labelBackground":
+                        group.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
+                        break;
+                    case "content":
+                        group.ToggleContent(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect group interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown category to interact with", true, ELogtype.warningCli);
+                GameManager.instance.AppendLogLine("Unknown category to interact with", ELogTarget.both, ELogtype.warningCli);
                 break;
         }
     }
@@ -326,23 +414,17 @@ public class CliParser
                 UiManager.instance.UpdateTimerValue(time);
                 break;
             case "infos":
-                if (manip.data == "true")
-                    UiManager.instance.MovePanel("infos", true);
-                else
-                    UiManager.instance.MovePanel("infos", false);
+                UiManager.instance.MovePanel("infos", manip.data == "true");
                 break;
             case "debug":
-                if (manip.data == "true")
-                    UiManager.instance.MovePanel("debug", true);
-                else
-                    UiManager.instance.MovePanel("debug", false);
+                UiManager.instance.MovePanel("debug", manip.data == "true");
                 break;
             case "highlight":
                 GameObject obj = Utils.GetObjectById(manip.data);
                 if (obj)
                     EventManager.instance.Raise(new HighlightEvent { obj = obj });
                 else
-                    GameManager.instance.AppendLogLine("Error on highlight", true, ELogtype.errorCli);
+                    GameManager.instance.AppendLogLine("Error on highlight", ELogTarget.both, ELogtype.errorCli);
                 break;
             case "clearcache":
                 if (GameManager.instance.objectRoot)
@@ -364,7 +446,7 @@ public class CliParser
                     UiManager.instance.ClearCache();
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown ui command", ELogTarget.both, ELogtype.errorCli);
                 break;
         }
     }
@@ -390,7 +472,7 @@ public class CliParser
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown command", true, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unknown camera command", ELogTarget.both, ELogtype.errorCli);
                 break;
         }
 

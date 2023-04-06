@@ -319,7 +319,7 @@ public class FocusHandler : MonoBehaviour
             foreach (MeshRenderer mr in renderers)
                 mr.enabled = _value;
         }
-        GetComponent<OObject>()?.ToggleSlots(_value.ToString());
+        GetComponent<OObject>()?.ToggleSlots(_value);
         ToggleCollider(gameObject, _value);
 
         if (GetComponent<OObject>() && GetComponent<OObject>().isHidden)
@@ -381,6 +381,7 @@ public class FocusHandler : MonoBehaviour
                     case "building":
                         Building bd = go.GetComponent<Building>();
                         bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
+                        bd.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
                         bd.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in bd.walls)
                         {
@@ -405,10 +406,10 @@ public class FocusHandler : MonoBehaviour
                             ro.technicalZone.GetComponent<Renderer>().enabled = _value;
                             ro.technicalZone.GetComponent<Collider>().enabled = _value;
                         }
-                        if (ro.tilesEdges)
+                        if (ro.tilesGrid)
                         {
-                            ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
-                            ro.tilesEdges.GetComponent<Collider>().enabled = _value;
+                            ro.tilesGrid.GetComponent<Renderer>().enabled = _value;
+                            ro.tilesGrid.GetComponent<Collider>().enabled = _value;
                         }
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)
@@ -429,7 +430,7 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "rack":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
-                        go.GetComponent<OObject>()?.ToggleSlots("false");
+                        go.GetComponent<OObject>()?.ToggleSlots(false);
                         break;
                     case "device":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);

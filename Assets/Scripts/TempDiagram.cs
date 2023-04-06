@@ -87,7 +87,7 @@ public class TempDiagram : MonoBehaviour
             case "mm":
                 roomHeight /= 1000; break;
             default:
-                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", true, ELogtype.warning); break;
+                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning); break;
         }
 
         EventManager.instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });

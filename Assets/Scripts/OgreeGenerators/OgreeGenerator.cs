@@ -27,7 +27,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (Utils.GetObjectById(_obj.id))
         {
-            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", false, ELogtype.info);
+            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", ELogTarget.none, ELogtype.info);
             ResetCoroutine();
             return null;
         }
@@ -65,12 +65,12 @@ public class OgreeGenerator : MonoBehaviour
         {
             if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
             {
-                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", true, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
             if (_obj.category == "corridor" || _obj.category == "group")
             {
-                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", true, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
 
@@ -122,7 +122,7 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             default:
                 newItem = null;
-                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", ELogTarget.both, ELogtype.error);
                 break;
         }
         if (newItem)

@@ -216,7 +216,7 @@ public static class NonSquareBuildingGenerator
             }
             if (failSafe == 0)
             {
-                GameManager.instance.AppendLogLine($"Invalid vertex array  in template {_template.slug}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Invalid vertex array  in template {_template.slug}", ELogTarget.both, ELogtype.error);
                 break;
             }
 

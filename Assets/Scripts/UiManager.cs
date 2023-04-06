@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 
 public class UiManager : MonoBehaviour
 {
@@ -30,11 +28,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
+    [SerializeField] private TMP_Text apiUrl;
+    public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Bottom")]
-    [SerializeField] private ButtonHandler apiBtn;
-    [SerializeField] private TMP_Text apiUrl;
-    [SerializeField] private TMP_Text currentItemText;
+    [SerializeField] private TMP_InputField currentItemText;
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
@@ -44,7 +42,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
 
     [Header("Delay Slider")]
-    [SerializeField] private ConsoleController consoleController;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI value;
 
@@ -53,12 +50,19 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GUIObjectInfos objInfos;
     public DetailsInputField detailsInputField;
 
+    [Header("Logger")]
+    [SerializeField] private TMP_InputField loggerText;
+    [SerializeField] private Scrollbar loggerSB;
+    private const int loggerSize = 100;
+    private Queue<string> loggerQueue = new Queue<string>(loggerSize);
+
     private void Awake()
     {
         if (!instance)
             instance = this;
         else
             Destroy(this);
+        loggerText.lineLimit = loggerSize;
     }
 
     /// <summary>
@@ -89,9 +93,9 @@ public class UiManager : MonoBehaviour
             interactCondition = () => GameManager.instance.selectMode
             &&
             (
-            !GameManager.instance.focusMode
-            ||
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
+                !GameManager.instance.focusMode
+                ||
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
             )
         };
         selectParentBtn.Check();
@@ -121,14 +125,15 @@ public class UiManager : MonoBehaviour
 
         barChartBtn = new ButtonHandler(barChartBtn.button)
         {
-            interactCondition = () => 
+            interactCondition = () =>
             (
                 GameManager.instance.SelectIs<Room>()
                 &&
                 GameManager.instance.GetSelected().Count == 1
-            ) 
+            )
             ||
             GameManager.instance.SelectIs<OgreeObject>("tempBar"),
+
             toggledCondition = () => TempDiagram.instance.isDiagramShown
         };
         barChartBtn.Check();
@@ -138,6 +143,7 @@ public class UiManager : MonoBehaviour
             interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
             &&
             GameManager.instance.GetSelected().Count == 1,
+
             toggledCondition = () => TempDiagram.instance.isScatterPlotShown
         };
         scatterPlotBtn.Check();
@@ -149,6 +155,7 @@ public class UiManager : MonoBehaviour
             GameManager.instance.GetSelected().Count == 1
             &&
             DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1,
+
             toggledCondition = () => GameManager.instance.SelectIs<OObject>("device")
             &&
             GameManager.instance.GetSelected().Count == 1
@@ -157,12 +164,6 @@ public class UiManager : MonoBehaviour
 
         };
         heatMapBtn.Check();
-
-        apiBtn = new ButtonHandler(apiBtn.button)
-        {
-            interactCondition = () => true
-        };
-        apiBtn.Check();
 
         toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button)
         {
@@ -202,7 +203,8 @@ public class UiManager : MonoBehaviour
 
         toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button)
         {
-            interactCondition = () => GameManager.instance.SelectIs<OObject>(),
+            interactCondition = () => GameManager.instance.SelectIs<OObject>()
+            || GameManager.instance.SelectIs<Building>(),
 
             toggledCondition = () => GameManager.instance.selectMode
             &&
@@ -212,6 +214,7 @@ public class UiManager : MonoBehaviour
         };
         toggleLocalCSBtn.Check();
 
+        SetupColors();
         menuPanel.SetActive(false);
         UpdateTimerValue(slider.value);
 
@@ -283,13 +286,11 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            ChangeApiButton("Connected to Api", Color.green);
             apiUrl.text = "Connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.green;
         }
         else
         {
-            ChangeApiButton("Fail to connected to Api", Color.red);
             apiUrl.text = "Fail to connected to " + ApiManager.instance.GetApiUrl();
             apiUrl.color = Color.red;
         }
@@ -308,6 +309,26 @@ public class UiManager : MonoBehaviour
         }
         else
             detailsInputField.UpdateInputField("0");
+    }
+
+    ///<summary>
+    /// Uses colors from config to set select & focus texts color background
+    ///</summary>
+    private void SetupColors()
+    {
+        string selectColorCode = GameManager.instance.configLoader.GetColor("selection");
+        if (!string.IsNullOrEmpty(selectColorCode))
+        {
+            Color c = Utils.ParseHtmlColor(selectColorCode);
+            currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.75f);
+        }
+
+        string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
+        if (!string.IsNullOrEmpty(focusColorCode))
+        {
+            Color c = Utils.ParseHtmlColor(focusColorCode);
+            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.42f);
+        }
     }
 
     ///<summary>
@@ -348,7 +369,7 @@ public class UiManager : MonoBehaviour
         else
             focusText.text = "No focus";
 
-        GameManager.instance.AppendLogLine(focusText.text, true, ELogtype.success);
+        GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -373,15 +394,6 @@ public class UiManager : MonoBehaviour
     {
         _prompt.gameObject.SetActive(false);
         Destroy(_prompt.gameObject);
-    }
-
-    ///<summary>
-    /// Change text and color of apiBtn.
-    ///</summary>
-    ///<param name="_str">The new text of the button</param>
-    ///<param name="_color">The new color of the button</param>
-    public void ChangeApiButton(string _str, Color _color)
-    {
     }
 
     ///<summary>
@@ -410,22 +422,41 @@ public class UiManager : MonoBehaviour
     public void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            currentItemText.text = (GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName);
+            currentItemText.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
-            currentItemText.text = ("Selection");
+            currentItemText.text = ("Multiple selection");
         else
-            currentItemText.text = ("OGrEE-3D");
-    }
-
-    ///<summary>
-    /// Make the reload button interatable or not.
-    ///</summary>
-    ///<param name="_value">If the button should be interatable</param>
-    public void SetReloadBtn(bool _value)
-    {
+            currentItemText.text = ("");
     }
 
     #endregion
+
+    ///<summary>
+    /// Write the given line in the logger with asked color.
+    ///</summary>
+    ///<param name="_line">The line to write</param>
+    ///<param name="_type">The type of message, it will change the message's color</param>
+    public void AppendLogLine(string _line, ELogtype _type)
+    {
+        string color = "";
+        if (_type == ELogtype.info || _type == ELogtype.infoCli || _type == ELogtype.infoApi)
+            color = "white";
+        else if (_type == ELogtype.success || _type == ELogtype.successCli || _type == ELogtype.successApi)
+            color = "green";
+        else if (_type == ELogtype.warning || _type == ELogtype.warningCli || _type == ELogtype.warningApi)
+            color = "yellow";
+        else if (_type == ELogtype.error || _type == ELogtype.errorCli || _type == ELogtype.errorApi)
+            color = "red";
+
+        _line = $"<color={color}>{_line}</color>";
+
+        if (loggerQueue.Count >= loggerSize)
+            loggerQueue.Dequeue();
+        loggerQueue.Enqueue(_line);
+
+        loggerText.SetTextWithoutNotify(string.Join("\n", loggerQueue.ToArray()));
+        loggerSB.value = 1;
+    }
 
     #region CalledByGUI
 
@@ -436,18 +467,15 @@ public class UiManager : MonoBehaviour
     {
         if (!GameManager.instance.selectMode)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
             return;
         }
 
         Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         if (currentRoom)
-        {
             currentRoom.ToggleTilesName();
-            GameManager.instance.AppendLogLine($"Tiles name toggled for {GameManager.instance.GetSelected()[0].name}.", false, ELogtype.success);
-        }
         else
-            GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);
         toggleTilesNameBtn.Check();
     }
 
@@ -458,7 +486,7 @@ public class UiManager : MonoBehaviour
     {
         if (!GameManager.instance.selectMode)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
             return;
         }
 
@@ -467,14 +495,13 @@ public class UiManager : MonoBehaviour
         {
             if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
             {
-                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", false, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", ELogTarget.logger, ELogtype.warning);
                 return;
             }
             currentRoom.ToggleTilesColor();
-            GameManager.instance.AppendLogLine($"Tiles color toggled for {GameManager.instance.GetSelected()[0].name}.", false, ELogtype.success);
         }
         else
-            GameManager.instance.AppendLogLine("Selected item must be a room", false, ELogtype.error);
+            GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);
         toggleTilesColorBtn.Check();
     }
 
@@ -501,29 +528,19 @@ public class UiManager : MonoBehaviour
     {
         if (!GameManager.instance.selectMode)
         {
-            GameManager.instance.AppendLogLine("Empty selection.", false, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
             return;
         }
 
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            obj.GetComponent<OObject>()?.ToggleCS();
-        toggleLocalCSBtn.Check();
-    }
-
-    ///<summary>
-    /// Called by GUI button: Connect or disconnect to API using ApiManager.Initialize().
-    ///</summary>
-    public async void ToggleApi()
-    {
-        if (ApiManager.instance.isInit)
+        foreach (GameObject go in GameManager.instance.GetSelected())
         {
-            ApiManager.instance.isInit = false;
-            ChangeApiButton("Connect to Api", Color.white);
-            apiUrl.text = "";
-            GameManager.instance.AppendLogLine("Disconnected from API", true, ELogtype.success);
+            OgreeObject obj = go.GetComponent<OgreeObject>();
+            if (obj.category == "building" || obj.category == "room")
+                ((Building)obj).ToggleCS();
+            else if (obj.category == "rack" || obj.category == "device")
+                ((OObject)obj).ToggleCS();
         }
-        else
-            await ApiManager.instance.Initialize();
+        toggleLocalCSBtn.Check();
     }
 
     ///<summary>
@@ -611,11 +628,11 @@ public class UiManager : MonoBehaviour
         if (_value)
         {
             GameManager.instance.writeLogs = true;
-            GameManager.instance.AppendLogLine("Enable CLI", false, ELogtype.success);
+            GameManager.instance.AppendLogLine("Enable CLI", ELogTarget.logger, ELogtype.success);
         }
         else
         {
-            GameManager.instance.AppendLogLine("Disable CLI", false, ELogtype.success);
+            GameManager.instance.AppendLogLine("Disable CLI", ELogTarget.logger, ELogtype.success);
             GameManager.instance.writeLogs = false;
         }
     }
@@ -626,8 +643,8 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.instance.Raise(new ToggleLabelEvent() { value = (ELabelMode)_value });
-        mouseName.gameObject.SetActive(_value == 2);
+        EventManager.instance.Raise(new SwitchLabelEvent() { value = (ELabelMode)_value });
+        mouseName.gameObject.SetActive((ELabelMode)_value == ELabelMode.Hidden);
     }
 
     ///<summary>
@@ -641,35 +658,10 @@ public class UiManager : MonoBehaviour
             if (file.Name != "log.txt")
                 file.Delete();
         }
-        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", true, ELogtype.success);
+        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
 
-    ///<summary>
-    /// Called by GUI button: Delete all Tenants and reload last loaded file.
-    ///</summary>
-    public async void ReloadFile()
-    {
-        await GameManager.instance.SetCurrentItem(null);
-        //GameManager.instance.focus.Clear();
-        UpdateFocusText();
-
-        await GameManager.instance.PurgeTenants();
-        GameManager.instance.allItems.Clear();
-        GameManager.instance.PurgeTemplates();
-        GameManager.instance.consoleController.variables.Clear();
-        GameManager.instance.consoleController.ResetCounts();
-        StartCoroutine(LoadFile());
-    }
-
-    ///<summary>
-    /// Coroutine for waiting until end of frame to trigger all OnDestroy() methods before loading file.
-    ///</summary>
-    private IEnumerator LoadFile()
-    {
-        yield return new WaitForEndOfFrame();
-        GameManager.instance.consoleController.RunCommandString($".cmds:{GameManager.instance.lastCmdFilePath}");
-    }
 
     ///<summary>
     /// Called by GUI button: if one and only one room if selected, toggle its bar chart.
@@ -684,7 +676,7 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         }
         else
-            GameManager.instance.AppendLogLine("You have to select one and only one room", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room", ELogTarget.both, ELogtype.warning);
         barChartBtn.Check();
     }
 
@@ -707,7 +699,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.GetSelected().Count == 1 && (GameManager.instance.SelectIs<OObject>() || GameManager.instance.SelectIs<Room>()))
             TempDiagram.instance.HandleScatterPlot(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>());
         else
-            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", ELogTarget.both, ELogtype.warning);
         scatterPlotBtn.Check();
     }
 
@@ -727,15 +719,16 @@ public class UiManager : MonoBehaviour
                     if (DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1)
                         TempDiagram.instance.HandleHeatMap(GameManager.instance.GetSelected()[0].GetComponent<OObject>());
                     else
-                        GameManager.instance.AppendLogLine("This device has too many nested children levels", true, ELogtype.warning);
+                        GameManager.instance.AppendLogLine("This device has too many nested children levels", ELogTarget.both, ELogtype.warning);
                 }
                 else
-                    GameManager.instance.AppendLogLine("You have to select a device", true, ELogtype.warning);
+                    GameManager.instance.AppendLogLine("You have to select a device", ELogTarget.both, ELogtype.warning);
             }
             else
-                GameManager.instance.AppendLogLine("You have to select one device", true, ELogtype.warning);
+                GameManager.instance.AppendLogLine("You have to select one device", ELogTarget.both, ELogtype.warning);
             heatMapBtn.Check();
-        } catch (System.Exception e)
+        }
+        catch (System.Exception e)
         {
             Debug.Log(e.ToString());
         }
@@ -748,7 +741,6 @@ public class UiManager : MonoBehaviour
     public void UpdateTimerValue(float _value)
     {
         slider.value = _value;
-        consoleController.timerValue = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
     }

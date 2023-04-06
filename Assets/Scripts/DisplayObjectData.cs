@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class DisplayObjectData : MonoBehaviour
 {
@@ -21,24 +20,24 @@ public class DisplayObjectData : MonoBehaviour
     private bool isItalic = false;
     private string color = "ffffff";
     private string backgroundColor = "000000";
-    private ELabelMode previousLabelMode;
+    private ELabelMode currentLabelMode;
     private Vector3 boxSize;
     [SerializeField] private CameraControl cc;
     private void Start()
     {
-        EventManager.instance.AddListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
         cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<ToggleLabelEvent>(ToggleLabel);
+        EventManager.instance.RemoveListener<SwitchLabelEvent>(OnSwitchLabelEvent);
     }
 
     private void Update()
     {
 
-        if (hasFloatingLabel && previousLabelMode == ELabelMode.FloatingOnTop)
+        if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(cc.transform);
@@ -169,13 +168,13 @@ public class DisplayObjectData : MonoBehaviour
                     else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
                         WriteLabels(obj.description[i - 1]);
                     else
-                        GameManager.instance.AppendLogLine("Wrong description index", true, ELogtype.warning);
+                        GameManager.instance.AppendLogLine("Wrong description index", ELogTarget.both, ELogtype.warning);
                 }
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else
                 {
-                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", true, ELogtype.warning);
+                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", ELogTarget.both, ELogtype.warning);
                     return;
                 }
             }
@@ -192,7 +191,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_str == "#temperature")
                 WriteLabels($"{sensor.temperature} {sensor.temperatureUnit}");
             else
-                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", true, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -231,7 +230,7 @@ public class DisplayObjectData : MonoBehaviour
                 floatingLabel.text = $"<b>{floatingLabel.text}</b>";
             if (isItalic)
                 floatingLabel.text = $"<i>{floatingLabel.text}</i>";
-            floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor("#"+backgroundColor);
+            floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor("#" + backgroundColor);
         }
     }
 
@@ -239,45 +238,55 @@ public class DisplayObjectData : MonoBehaviour
     /// Display or hide labels.
     ///</summary>
     ///<param name="_value">The value to assign</param>
-    public void ToggleLabel(ELabelMode _value)
+    public void SwitchLabel(ELabelMode _value)
     {
         switch (_value)
         {
-            case ELabelMode.FrontAndRear:
+            case ELabelMode.Default:
+                GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = true;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
-                previousLabelMode = _value;
                 break;
             case ELabelMode.FloatingOnTop:
+                GetComponent<LODGroup>().enabled = true;
                 if (hasFloatingLabel)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
                         tmp.enabled = false;
                     floatingLabel.gameObject.SetActive(true);
-                    previousLabelMode = _value;
                 }
                 break;
             case ELabelMode.Hidden:
+                GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
                     tmp.enabled = false;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
+            case ELabelMode.Forced:
+                GetComponent<LODGroup>().enabled = false;
+                foreach (TextMeshPro tmp in usedLabels)
+                    tmp.enabled = true;
+                if (hasFloatingLabel)
+                    floatingLabel.gameObject.SetActive(false);
+                break;
             default: break;
         }
+        currentLabelMode = _value;
     }
 
     public void ToggleLabel(bool _value)
     {
-        if (previousLabelMode == ELabelMode.FrontAndRear)
+        if (currentLabelMode == ELabelMode.Default)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.enabled = _value;
-        else if (previousLabelMode == ELabelMode.FloatingOnTop)
+        else if (currentLabelMode == ELabelMode.FloatingOnTop)
             floatingLabel.gameObject.SetActive(_value);
     }
-    private void ToggleLabel(ToggleLabelEvent _e)
+
+    private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
         // Ignore slots
         if (GetComponent<Slot>())
@@ -285,7 +294,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if (!GameManager.instance.focusMode || GameManager.instance.GetFocused().Contains(gameObject)
             || GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
-            ToggleLabel(_e.value);
+            SwitchLabel(_e.value);
     }
 
     ///<summary>
@@ -308,14 +317,14 @@ public class DisplayObjectData : MonoBehaviour
             }
         }
         else
-            GameManager.instance.AppendLogLine("Unknown labelFont attribute", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown labelFont attribute", ELogTarget.both, ELogtype.warning);
     }
 
     ///<summary>
     /// Set background color for a box label.
     ///</summary>
     ///<param name="_value">The color to set</param>
-    public void SetBackgroundColor(string _value)
+    public void SetLabelBackgroundColor(string _value)
     {
         string pattern = "[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_value, pattern))
@@ -323,6 +332,6 @@ public class DisplayObjectData : MonoBehaviour
             backgroundColor = _value;
         }
         else
-            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine("Unknown color", ELogTarget.both, ELogtype.warning);
     }
 }

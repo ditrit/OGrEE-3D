@@ -13,14 +13,9 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_bd.name}";
-        else
-            hierarchyName = _bd.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_bd.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_bd.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -31,7 +26,7 @@ public class BuildingGenerator
                 template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -52,7 +47,6 @@ public class BuildingGenerator
         newBD.transform.parent = _parent;
 
         Building building = newBD.GetComponent<Building>();
-        building.hierarchyName = hierarchyName;
         building.UpdateFromSApiObject(_bd);
 
         // Apply rotation
@@ -78,20 +72,22 @@ public class BuildingGenerator
             building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
             BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
-            // Apply posXY
-            if (_parent)
-                newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
-            else
-                newBD.transform.localPosition = Vector3.zero;
+        // Apply posXY
+        if (_parent)
+            newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+        else
+            newBD.transform.localPosition = Vector3.zero;
 
         // Setup nameText
         building.nameText.text = _bd.name;
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
 
+        building.UpdateColorByTenant();
+
         roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
 
-        GameManager.instance.allItems.Add(hierarchyName, newBD);
+        GameManager.instance.allItems.Add(building.hierarchyName, newBD);
         return building;
     }
 
@@ -103,14 +99,9 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        string hierarchyName;
-        if (_parent)
-            hierarchyName = $"{_parent.GetComponent<OgreeObject>().hierarchyName}.{_ro.name}";
-        else
-            hierarchyName = _ro.name;
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_ro.hierarchyName))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_ro.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -121,7 +112,7 @@ public class BuildingGenerator
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", true, ELogtype.error);
+                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -142,7 +133,6 @@ public class BuildingGenerator
         newRoom.transform.parent = _parent;
 
         Room room = newRoom.GetComponent<Room>();
-        room.hierarchyName = hierarchyName;
         room.UpdateFromSApiObject(_ro);
 
         // Apply rotation
@@ -160,15 +150,15 @@ public class BuildingGenerator
             room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             room.reservedZone.localScale = room.usableZone.localScale;
             room.technicalZone.localScale = room.usableZone.localScale;
-            room.tilesEdges.localScale = room.usableZone.localScale;
-            room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
-            room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+            room.tilesGrid.localScale = room.usableZone.localScale;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
 
             // ...and move the floors layer, wall & text to have the container at the lower left corner of them
             room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.reservedZone.localPosition = new Vector3(room.usableZone.localScale.x, room.reservedZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.technicalZone.localPosition = new Vector3(room.usableZone.localScale.x, room.technicalZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
-            room.tilesEdges.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesEdges.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.tilesGrid.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesGrid.localPosition.y, room.usableZone.localScale.z) / 0.2f;
 
             room.walls.localPosition = new Vector3(room.usableZone.localScale.x, room.walls.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.nameText.transform.localPosition = new Vector3(room.usableZone.localScale.x, room.nameText.transform.localPosition.y, room.usableZone.localScale.z) / 0.2f;
@@ -178,16 +168,18 @@ public class BuildingGenerator
             room.UpdateZonesColor();
         }
         // Apply posXY
-            if (_parent)
-                newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
-            else
-                newRoom.transform.localPosition = Vector3.zero;
+        if (_parent)
+            newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+        else
+            newRoom.transform.localPosition = Vector3.zero;
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-        GameManager.instance.allItems.Add(hierarchyName, newRoom);
+        room.UpdateColorByTenant();
+
+        GameManager.instance.allItems.Add(room.hierarchyName, newRoom);
 
         if (template.vertices == null)
         {
@@ -197,42 +189,6 @@ public class BuildingGenerator
                 SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
                 SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
                 room.SetAreas(reserved, technical);
-            }
-        }
-
-        if (!string.IsNullOrEmpty(template.slug))
-        {
-            if (template.vertices == null)
-                room.SetAreas(new SMargin(template.reservedArea), new SMargin(template.technicalArea));
-
-            if (template.separators != null && !room.attributes.ContainsKey("separators"))
-            {
-                foreach (SSeparator sep in template.separators)
-                    room.AddSeparator(sep);
-            }
-
-            if (template.tiles != null)
-            {
-                List<STile> tiles = new List<STile>();
-                foreach (STile t in template.tiles)
-                    tiles.Add(t);
-                room.attributes["tiles"] = JsonConvert.SerializeObject(tiles);
-            }
-
-            if (template.rows != null)
-            {
-                List<SRow> rows = new List<SRow>();
-                foreach (SRow r in template.rows)
-                    rows.Add(r);
-                room.attributes["rows"] = JsonConvert.SerializeObject(rows);
-            }
-
-            if (template.colors != null)
-            {
-                List<SColor> colors = new List<SColor>();
-                foreach (SColor c in template.colors)
-                    colors.Add(c);
-                room.attributes["customColors"] = JsonConvert.SerializeObject(colors);
             }
         }
 

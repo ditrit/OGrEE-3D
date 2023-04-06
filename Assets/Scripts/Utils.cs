@@ -322,4 +322,16 @@ public static class Utils
             parent = _leaf.parent;
         }
     }
+
+    ///<summary>
+    /// Disable _target, destroy it and display given _msg to logger
+    ///</summary>
+    ///<param name="_target">The object to destroy</param>
+    ///<param name="_msg">The message to display (ELogTarget.logger, ELogtype.success)</param>
+    public static void CleanDestroy(GameObject _target, string _msg)
+    {
+        _target.SetActive(false); //for UI
+        Object.Destroy(_target);
+        GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
+    }
 }

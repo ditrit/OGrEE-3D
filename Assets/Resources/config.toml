@@ -15,6 +15,8 @@ perf29 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resour
 
 [OGrEE-3D.colors]
 # Colors can be defines with hexadecimal codes or html colors
+# Strings that do not begin with '#' will be parsed as literal colors, with the following supported:
+# red, cyan, blue, darkblue, lightblue, purple, yellow, lime, fuchsia, white, silver, grey, black, orange, brown, maroon, green, olive, navy, teal, aqua, magenta..
 selection = "#21FF00"
 edit = "#C900FF"
 focus = "#FF9F00"
@@ -31,7 +33,7 @@ maxC = 100
 minF = 32
 maxF = 212
 
-# Define a custom gradient by defining up to 8 colors in rgba format (rgb from 0 to 255, a from 0 to 100)
+# Define a custom gradient by defining up to 8 colors in rgb format with a fourth parameter specifying the position of the color in the gradient (rgb from 0 to 255, position from 0 to 100)
 useCustomGradient = true
 customTemperatureGradient = [
     [0,0,255,0],

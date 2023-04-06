@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,7 +16,7 @@ public class CameraControl : MonoBehaviour
     }
 
     [Header("References")]
-    [SerializeField] private TextMeshProUGUI infosTMP = null;
+    [SerializeField] private TMP_InputField infosTMP = null;
 
     [Header("Parameters")]
     [Range(5, 20)]
@@ -240,9 +241,19 @@ public class CameraControl : MonoBehaviour
         if (rotY < 0 || rotY > 180)
             rotY -= 360;
 
-        infosTMP.text = $"Camera p/a: [{transform.localPosition.x:0.##};{transform.localPosition.z:0.##};{transform.localPosition.y:0.##}] / [{rotX:0};{rotY:0}]";
+        infosTMP.text = $"[{RefineFtoStr(transform.localPosition.x)},{RefineFtoStr(transform.localPosition.z)},{RefineFtoStr(transform.localPosition.y)}]@[{rotX:0},{rotY:0}]";
         if (!isReady)
             infosTMP.text += " (Waiting)";
+    }
+
+    ///<summary>
+    /// Convert a float to a string with "0.##" format
+    ///</summary>
+    ///<param name="_input">The float to convert</param>
+    ///<returns>The converted float</returns>
+    private string RefineFtoStr(float _input)
+    {
+        return _input.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
     ///<summary>
@@ -324,34 +335,39 @@ public class CameraControl : MonoBehaviour
     ///<param name="_target">The object to look at</param>
     public void MoveToObject(Transform _target)
     {
-        transform.position = _target.position;
         float offset = 3f;
-        OObject obj = _target.GetComponent<OObject>();
-        if (obj && obj.category == "rack")
+        OgreeObject obj = _target.GetComponent<OgreeObject>();
+
+        transform.position = _target.position;
+        transform.eulerAngles = _target.eulerAngles;
+        if (obj.category == "rack")
+        {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
-        else if (obj && obj.category == "device")
+            transform.eulerAngles += new Vector3(0, 180, 0);
+        }
+        else if (obj.category == "device")
+        {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
+            transform.eulerAngles += new Vector3(0, 180, 0);
+        }
+        else
+        {
+            transform.position += new Vector3(0, 25, -10);
+            transform.eulerAngles = new Vector3(45, 0, 0);
+        }
         switch ((int)_target.eulerAngles.y)
         {
             case 0:
-                // Debug.Log("0");
                 transform.position += new Vector3(0, 0, offset);
-                transform.eulerAngles = new Vector3(0, 180, 0);
                 break;
             case 90:
-                // Debug.Log("90");
                 transform.position += new Vector3(offset, 0, 0);
-                transform.eulerAngles = new Vector3(0, 270, 0);
                 break;
             case 180:
-                // Debug.Log("180");
                 transform.position += new Vector3(0, 0, -offset);
-                transform.eulerAngles = new Vector3(0, 0, 0);
                 break;
             case 270:
-                // Debug.Log("270");
                 transform.position += new Vector3(-offset, 0, 0);
-                transform.eulerAngles = new Vector3(0, 90, 0);
                 break;
             default:
                 Debug.Log("default: " + _target.rotation.y);

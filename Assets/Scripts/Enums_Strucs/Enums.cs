@@ -14,6 +14,14 @@ public enum ELogtype
     errorApi
 }
 
+public enum ELogTarget
+{
+    cli,
+    logger,
+    both,
+    none
+}
+
 public enum EPromptStatus
 {
     wait,
@@ -22,7 +30,8 @@ public enum EPromptStatus
 }
 public enum ELabelMode
 {
-    FrontAndRear,
+    Default,
     FloatingOnTop,
-    Hidden
+    Hidden,
+    Forced
 }

@@ -27,79 +27,13 @@ public class OObject : OgreeObject
     }
 
     ///<summary>
-    /// Check for a _param attribute and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
-    {
-        bool updateAttr = false;
-        if (_param.StartsWith("description"))
-        {
-            SetDescription(_param.Substring(11), _value);
-            updateAttr = true;
-        }
-        else
-        {
-            switch (_param)
-            {
-                case "label":
-                    GetComponent<DisplayObjectData>().SetLabel(_value);
-                    break;
-                case "labelFont":
-                    GetComponent<DisplayObjectData>().SetLabelFont(_value);
-                    break;
-                case "domain":
-                    if (_value.EndsWith("@recursive"))
-                    {
-                        string[] data = _value.Split('@');
-                        SetAllDomains(data[0]);
-                    }
-                    else
-                    {
-                        SetDomain(_value);
-                        UpdateColorByTenant();
-                    }
-                    updateAttr = true;
-                    break;
-                case "color":
-                    SetColor(_value);
-                    updateAttr = true;
-                    break;
-                case "alpha":
-                    UpdateAlpha(_value);
-                    break;
-                case "slots":
-                    ToggleSlots(_value);
-                    break;
-                case "localCS":
-                    ToggleCS(_value);
-                    break;
-                default:
-                    if (_param.StartsWith("temperature_"))
-                    {
-                        SetTemperature(_value, _param.Substring(12));
-                    }
-                    else if (attributes.ContainsKey(_param))
-                        attributes[_param] = _value;
-                    else
-                        attributes.Add(_param, _value);
-                    updateAttr = true;
-                    break;
-            }
-        }
-        if (updateAttr && ApiManager.instance.isInit)
-            PutData();
-        GetComponent<DisplayObjectData>().UpdateLabels();
-    }
-
-    ///<summary>
     /// Update the OObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
+        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
@@ -133,28 +67,12 @@ public class OObject : OgreeObject
     /// Update object's alpha according to _input, true or false.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
-    public void UpdateAlpha(string _value)
+    public void ToggleAlpha(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine("alpha value has to be true or false", true, ELogtype.warning);
-            return;
-        }
-
         DisplayObjectData dod = GetComponent<DisplayObjectData>();
-        if (_value == "true")
-        {
-            transform.GetChild(0).GetComponent<Renderer>().enabled = false;
-            dod?.ToggleLabel(false);
-            isHidden = true;
-        }
-        else
-        {
-            transform.GetChild(0).GetComponent<Renderer>().enabled = true;
-            dod?.ToggleLabel(true);
-            isHidden = false;
-        }
+        transform.GetChild(0).GetComponent<Renderer>().enabled = !_value;
+        dod?.ToggleLabel(!_value);
+        isHidden = _value;
     }
 
     ///<summary>
@@ -172,17 +90,18 @@ public class OObject : OgreeObject
             CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
             if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
                 mat.color = color;
-            attributes["color"] = _hex;
         }
         else
         {
             UpdateColorByTenant();
-            attributes.Remove("color");
-            GameManager.instance.AppendLogLine("Unknown color", true, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknown color to display", ELogTarget.both, ELogtype.warning);
         }
     }
 
-    ///
+    ///<summary>
+    /// On an UpdateTenantEvent, update the object's color if its the right tenant
+    ///</summary>
+    ///<param name="_event">The event to catch</param>
     private void UpdateColorByTenant(UpdateTenantEvent _event)
     {
         if (_event.name == domain)
@@ -199,7 +118,7 @@ public class OObject : OgreeObject
 
         if (!GameManager.instance.allItems.Contains(domain))
         {
-            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", false, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
             return;
         }
 
@@ -217,15 +136,8 @@ public class OObject : OgreeObject
     /// Display or hide all unused slots of the object.
     ///</summary>
     ///<param name="_value">True or false value</param>
-    public void ToggleSlots(string _value)
+    public void ToggleSlots(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine("slots value has to be true or false", true, ELogtype.warning);
-            return;
-        }
-
         Slot[] slots = GetComponentsInChildren<Slot>();
         if (slots.Length == 0)
             return;
@@ -233,12 +145,7 @@ public class OObject : OgreeObject
         foreach (Slot s in slots)
         {
             if (s.transform.parent == transform && s.used == false)
-            {
-                if (_value == "true")
-                    s.Display(true);
-                else
-                    s.Display(false);
-            }
+                s.Display(_value);
         }
     }
 
@@ -250,44 +157,30 @@ public class OObject : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS)
-        {
-            localCS.SetActive(false); //for UI
-            Destroy(localCS);
-            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", false, ELogtype.success);
-        }
+           Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
         else
-            PopLocalCS(csName);
+            BuildLocalCS(csName);
     }
 
     ///<summary>
     /// Display or hide the local coordinate system
     ///</summary>
     ///<param name="_value">true of false value</param>
-    public void ToggleCS(string _value)
+    public void ToggleCS(bool _value)
     {
-        _value = _value.ToLower();
-        if (_value != "true" && _value != "false")
-        {
-            GameManager.instance.AppendLogLine("slots value has to be true or false", true, ELogtype.warning);
-            return;
-        }
-
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
-        if (localCS && _value == "false")
-        {
-            Destroy(localCS);
-            GameManager.instance.AppendLogLine($"Hide local Coordinate System for {name}", false, ELogtype.success);
-        }
-        else if (!localCS && _value == "true")
-            PopLocalCS(csName);
+        if (localCS && !_value)
+            Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
+        else if (!localCS && _value)
+            BuildLocalCS(csName);
     }
 
     ///<summary>
     /// Create a local Coordinate System for this object.
     ///</summary>
     ///<param name="_name">The name of the local CS</param>
-    private void PopLocalCS(string _name)
+    private void BuildLocalCS(string _name)
     {
         GameObject localCS = Instantiate(GameManager.instance.coordinateSystemModel);
         localCS.name = _name;
@@ -295,7 +188,7 @@ public class OObject : OgreeObject
         localCS.transform.localScale = Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
-        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", false, ELogtype.success);
+        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>
@@ -305,49 +198,37 @@ public class OObject : OgreeObject
     ///<param name="_sensorName">The sensor to modify</param>
     public void SetTemperature(string _value, string _sensorName)
     {
-        if (category == "corridor")
+        if (Regex.IsMatch(_value, "^[0-9.]+$"))
         {
-            if (_sensorName != "")
-                GameManager.instance.AppendLogLine("Corridors can not have sensors", true, ELogtype.warning);
-            else if (Regex.IsMatch(_value, "^(cold|warm)$"))
-                attributes["temperature"] = _value;
+            Transform sensorTransform = transform.Find("sensor");
+            if (sensorTransform)
+                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
             else
-                GameManager.instance.AppendLogLine("Temperature must be \"cold\" or \"warm\"", true, ELogtype.warning);
+            {
+                SApiObject se = new SApiObject
+                {
+                    description = new List<string>(),
+                    attributes = new Dictionary<string, string>(),
+
+                    name = "sensor", // ?
+                    category = "sensor",
+                    parentId = id,
+                    domain = domain
+                };
+                se.attributes["formFactor"] = "ext";
+                se.attributes["temperature"] = _value;
+
+                Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
+                sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
+            }
+            sensorTransform = transform.Find(_sensorName);
+            if (sensorTransform)
+                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+            else
+                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
         }
         else
-        {
-            if (Regex.IsMatch(_value, "^[0-9.]+$"))
-            {
-                Transform sensorTransform = transform.Find("sensor");
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
-                else
-                {
-                    SApiObject se = new SApiObject
-                    {
-                        description = new List<string>(),
-                        attributes = new Dictionary<string, string>(),
-
-                        name = "sensor", // ?
-                        category = "sensor",
-                        parentId = id,
-                        domain = domain
-                    };
-                    se.attributes["formFactor"] = "ext";
-                    se.attributes["temperature"] = _value;
-
-                    Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                    sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
-                }
-                sensorTransform = transform.Find(_sensorName);
-                if (sensorTransform)
-                    sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
-                else
-                    GameManager.instance.AppendLogLine($"Sensor {_sensorName} does not exist", true, ELogtype.warning);
-            }
-            else
-                GameManager.instance.AppendLogLine("Temperature must be a numerical value", true, ELogtype.warning);
-        }
+            GameManager.instance.AppendLogLine($"[{hierarchyName}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
     }
 
     /// <summary>

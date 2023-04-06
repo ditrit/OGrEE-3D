@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Group : OObject
@@ -9,84 +8,21 @@ public class Group : OObject
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        ToggleContent("true");
-    }
-
-    ///<summary>
-    /// Check for a _param attribute and assign _value to it.
-    ///</summary>
-    ///<param name="_param">The attribute to modify</param>
-    ///<param name="_value">The value to assign</param>
-    public override void SetAttribute(string _param, string _value)
-    {
-        bool updateAttr = false;
-        if (_param.StartsWith("description"))
-        {
-            SetDescription(_param.Substring(11), _value);
-            updateAttr = true;
-        }
-        else
-        {
-            switch (_param)
-            {
-                case "label":
-                    GetComponent<DisplayObjectData>().SetLabel(_value);
-                    break;
-                case "labelFont":
-                    GetComponent<DisplayObjectData>().SetLabelFont(_value);
-                    break;
-                case "domain":
-                    SetDomain(_value);
-                    UpdateColorByTenant();
-                    updateAttr = true;
-                    break;
-                case "color":
-                    SetColor(_value);
-                    break;
-                case "alpha":
-                    UpdateAlpha(_value);
-                    break;
-                case "content":
-                    ToggleContent(_value);
-                    break;
-                default:
-                    if (attributes.ContainsKey(_param))
-                        attributes[_param] = _value;
-                    else
-                        attributes.Add(_param, _value);
-                    updateAttr = true;
-                    break;
-            }
-        }
-        if (updateAttr && ApiManager.instance.isInit)
-            PutData();
-        GetComponent<DisplayObjectData>().UpdateLabels();
+        ToggleContent(true);
     }
 
     ///<summary>
     /// Display or hide the rackGroup and its content.
     ///</summary>
-    ///<param name="_value">"true" or "false" value</param>
-    public void ToggleContent(string _value)
+    ///<param name="_value">true or false value</param>
+    public void ToggleContent(bool _value)
     {
-        if (_value != "true" && _value != "false")
-            return;
-
-        if (_value == "true")
-        {
-            isDisplayed = false;
-            UpdateAlpha("true");
-            DisplayContent(true);
-            transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        isDisplayed = !_value;
+        ToggleAlpha(_value);
+        DisplayContent(_value);
+        transform.GetChild(0).GetComponent<Collider>().enabled = !_value;
+        if (_value)
             StartCoroutine(Utils.ImportFinished());
-        }
-        else
-        {
-            isDisplayed = true;
-            UpdateAlpha("false");
-            DisplayContent(false);
-            transform.GetChild(0).GetComponent<Collider>().enabled = true;
-        }
     }
 
     ///<summary>

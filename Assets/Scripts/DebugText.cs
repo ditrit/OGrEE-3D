@@ -80,12 +80,12 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        GameManager.instance.AppendLogLine($"Tenants: {tenantsCount}", true);
-        GameManager.instance.AppendLogLine($"Sites: {sitesCount}", true);
-        GameManager.instance.AppendLogLine($"Buildings: {buildingsCount}", true);
-        GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", true);
-        GameManager.instance.AppendLogLine($"Racks: {racksCount}", true);
-        GameManager.instance.AppendLogLine($"Devices: {devicesCount}", true);
+        GameManager.instance.AppendLogLine($"Tenants: {tenantsCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Sites: {sitesCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Buildings: {buildingsCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Racks: {racksCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Devices: {devicesCount}", ELogTarget.both);
     }
 
     ///<summary>

@@ -161,7 +161,7 @@ public class Inputs : MonoBehaviour
         if (target && target.CompareTag("Selectable") && target.GetComponent<OObject>())
         {
             if (target.GetComponent<Group>())
-                target.GetComponent<Group>().ToggleContent("true");
+                target.GetComponent<Group>().ToggleContent(true);
             else
             {
                 await GameManager.instance.SetCurrentItem(target.gameObject);

@@ -28,6 +28,9 @@ public class Server : MonoBehaviour
 
     private void Update()
     {
+        if (connection == null)
+            return;
+
         // Debug from Editor
         if (triggerSend)
         {
@@ -51,7 +54,7 @@ public class Server : MonoBehaviour
     {
         string msg = connection.incomingQueue.Dequeue();
         yield return new WaitForSeconds(timer);
-        GameManager.instance.AppendLogLine(msg, false, ELogtype.infoCli);
+        GameManager.instance.AppendLogLine(msg, ELogTarget.none, ELogtype.infoCli);
         Task parse = parser.DeserializeInput(msg);
         yield return new WaitUntil(() => parse.IsCompleted);
         dequeueCoroutine = null;
@@ -62,7 +65,6 @@ public class Server : MonoBehaviour
     /// Set values for listenPort and sendPort.
     ///</summary>
     ///<param name="_cliPort">The value to set for listenPort</param>
-    ///<param name="_sendPort">The value to set for sendPort</param>
     public void SetupPorts(int _cliPort)
     {
         cliPort = _cliPort;
