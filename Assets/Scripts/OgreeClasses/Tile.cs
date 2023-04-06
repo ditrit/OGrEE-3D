@@ -34,7 +34,7 @@ public class Tile : MonoBehaviour
     ///<summary>
     /// Set the texture of the tile
     ///</summary>
-    ///<param name="">HierarchyName of the parent room, for error message</param>
+    ///<param name="_hierarchyName">Hierarchy name of the parent room, for error message</param>
     public void SetTexture(string _hierarchyName)
     {
         if (GameManager.instance.textures.ContainsKey(texture))

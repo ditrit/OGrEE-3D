@@ -67,7 +67,7 @@ public class OObject : OgreeObject
     /// Update object's alpha according to _input, true or false.
     ///</summary>
     ///<param name="_value">Alpha wanted for the rack</param>
-    public void UpdateAlpha(bool _value)
+    public void ToggleAlpha(bool _value)
     {
         DisplayObjectData dod = GetComponent<DisplayObjectData>();
         transform.GetChild(0).GetComponent<Renderer>().enabled = !_value;

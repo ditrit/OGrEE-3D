@@ -18,7 +18,7 @@ public class Group : OObject
     public void ToggleContent(bool _value)
     {
         isDisplayed = !_value;
-        UpdateAlpha(_value);
+        ToggleAlpha(_value);
         DisplayContent(_value);
         transform.GetChild(0).GetComponent<Collider>().enabled = !_value;
         if (_value)

@@ -322,7 +322,7 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// Get a temperature extremum of a temperature unit
+    /// Get the minimum and the maximum of a temperature unit
     ///</summary>
     ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
     ///<returns>The minimum and the maximum for the temperature unit</returns>

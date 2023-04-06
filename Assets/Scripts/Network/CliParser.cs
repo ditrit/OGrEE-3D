@@ -327,10 +327,10 @@ public class CliParser
                         rack.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
                     case "labelBackground":
-                        rack.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        rack.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        rack.UpdateAlpha(command.value == "true");
+                        rack.ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         rack.ToggleSlots(command.value == "true");
@@ -357,10 +357,10 @@ public class CliParser
                         device.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
                     case "labelBackground":
-                        device.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        device.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        device.UpdateAlpha(command.value == "true");
+                        device.ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         device.ToggleSlots(command.value == "true");
@@ -384,7 +384,7 @@ public class CliParser
                         group.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
                     case "labelBackground":
-                        group.GetComponent<DisplayObjectData>().SetBackgroundColor(command.value);
+                        group.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "content":
                         group.ToggleContent(command.value == "true");

@@ -150,15 +150,15 @@ public class BuildingGenerator
             room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             room.reservedZone.localScale = room.usableZone.localScale;
             room.technicalZone.localScale = room.usableZone.localScale;
-            room.tilesEdges.localScale = room.usableZone.localScale;
-            room.tilesEdges.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
-            room.tilesEdges.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+            room.tilesGrid.localScale = room.usableZone.localScale;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
 
             // ...and move the floors layer, wall & text to have the container at the lower left corner of them
             room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.reservedZone.localPosition = new Vector3(room.usableZone.localScale.x, room.reservedZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.technicalZone.localPosition = new Vector3(room.usableZone.localScale.x, room.technicalZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
-            room.tilesEdges.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesEdges.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.tilesGrid.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesGrid.localPosition.y, room.usableZone.localScale.z) / 0.2f;
 
             room.walls.localPosition = new Vector3(room.usableZone.localScale.x, room.walls.localPosition.y, room.usableZone.localScale.z) / 0.2f;
             room.nameText.transform.localPosition = new Vector3(room.usableZone.localScale.x, room.nameText.transform.localPosition.y, room.usableZone.localScale.z) / 0.2f;

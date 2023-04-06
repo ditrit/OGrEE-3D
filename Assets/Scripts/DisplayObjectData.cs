@@ -324,7 +324,7 @@ public class DisplayObjectData : MonoBehaviour
     /// Set background color for a box label.
     ///</summary>
     ///<param name="_value">The color to set</param>
-    public void SetBackgroundColor(string _value)
+    public void SetLabelBackgroundColor(string _value)
     {
         string pattern = "[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_value, pattern))

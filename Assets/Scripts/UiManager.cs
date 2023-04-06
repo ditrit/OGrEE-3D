@@ -741,7 +741,6 @@ public class UiManager : MonoBehaviour
     public void UpdateTimerValue(float _value)
     {
         slider.value = _value;
-        // consoleController.timerValue = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
     }

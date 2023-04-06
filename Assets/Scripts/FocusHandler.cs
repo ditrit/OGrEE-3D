@@ -406,10 +406,10 @@ public class FocusHandler : MonoBehaviour
                             ro.technicalZone.GetComponent<Renderer>().enabled = _value;
                             ro.technicalZone.GetComponent<Collider>().enabled = _value;
                         }
-                        if (ro.tilesEdges)
+                        if (ro.tilesGrid)
                         {
-                            ro.tilesEdges.GetComponent<Renderer>().enabled = _value;
-                            ro.tilesEdges.GetComponent<Collider>().enabled = _value;
+                            ro.tilesGrid.GetComponent<Renderer>().enabled = _value;
+                            ro.tilesGrid.GetComponent<Collider>().enabled = _value;
                         }
                         ro.nameText.GetComponent<Renderer>().enabled = _value;
                         foreach (Transform wall in ro.walls)

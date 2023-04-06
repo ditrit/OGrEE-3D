@@ -12,7 +12,9 @@ public class Room : Building
     public Transform usableZone;
     public Transform reservedZone;
     public Transform technicalZone;
-    public Transform tilesEdges;
+    public Transform tilesGrid;
+
+    [Header("Room references")]
     public string temperatureUnit;
     public bool tileName = false;
     public bool tileColor = false;
@@ -29,7 +31,7 @@ public class Room : Building
             GameManager.instance.AppendLogLine($"[{hierarchyName}] Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
             return;
         }
-        tilesEdges.gameObject.SetActive(true);
+        tilesGrid.gameObject.SetActive(true);
 
         reserved = new SMargin(_resDim);
         technical = new SMargin(_techDim);

@@ -75,7 +75,7 @@ public class Building : OgreeObject
 
         foreach (Transform child in walls)
         {
-            Material mat = child.GetComponent<Renderer>()?.material;
+            Material mat = child.GetComponent<Renderer>().material;
             if (mat)
                 mat.color = color;
         }
@@ -91,9 +91,9 @@ public class Building : OgreeObject
     public void ToggleCS()
     {
         string csName = "localCS";
-        GameObject localCS = transform.Find(csName)?.gameObject;
+        Transform localCS = transform.Find(csName);
         if (localCS)
-            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
+            Utils.CleanDestroy(localCS.gameObject, $"Hide local Coordinate System for {name}");
         else
             BuildLocalCS(csName);
     }
@@ -105,9 +105,9 @@ public class Building : OgreeObject
     public void ToggleCS(bool _value)
     {
         string csName = "localCS";
-        GameObject localCS = transform.Find(csName)?.gameObject;
+        Transform localCS = transform.Find(csName);
         if (localCS && !_value)
-            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
+            Utils.CleanDestroy(localCS.gameObject, $"Hide local Coordinate System for {name}");
         else if (!localCS && _value)
             BuildLocalCS(csName);
     }
