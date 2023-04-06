@@ -59,7 +59,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (_value && !root)
-                PopTilesName();
+                BuildTilesName();
             else if (!_value && root)
                 Utils.CleanDestroy(root, $"Hide tiles name for {name}");
         }
@@ -89,7 +89,7 @@ public class Room : Building
             if (root)
                 Utils.CleanDestroy(root, $"Hide tiles name for {name}");
             else
-                PopTilesName();
+                BuildTilesName();
         }
         else
         {
@@ -108,7 +108,7 @@ public class Room : Building
     ///<summary>
     /// Create the root for tiles name, then all tiles name
     ///</summary>
-    private void PopTilesName()
+    private void BuildTilesName()
     {
         GameObject root = new GameObject("tilesNameRoot");
         root.transform.parent = transform;
@@ -136,7 +136,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (_value && !root)
-                PopTilesColor();
+                BuildTilesColor();
             else if (!_value && root)
                 Utils.CleanDestroy(root, $"Hide tiles color for {name}");
         }
@@ -162,34 +162,9 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                    {
-                        if (GameManager.instance.textures.ContainsKey(tile.texture))
-                        {
-                            Renderer rend = tile.GetComponent<Renderer>();
-                            rend.material = new Material(tile.defaultMat)
-                            {
-                                mainTexture = GameManager.instance.textures[tile.texture]
-                            };
-                        }
-                        else
-                            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknow tile texture: {tile.texture}", ELogTarget.logger, ELogtype.warning);
-                    }
+                        tile.SetTexture(hierarchyName);
                     if (!string.IsNullOrEmpty(tile.color))
-                    {
-                        Material mat = tile.GetComponent<Renderer>().material;
-                        Color customColor = new Color();
-                        if (tile.color.StartsWith("@"))
-                        {
-                            foreach (SColor color in customColors)
-                            {
-                                if (color.name == tile.color.Substring(1))
-                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
-                            }
-                        }
-                        else
-                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
-                        mat.color = customColor;
-                    }
+                        tile.SetColor(customColors);
 
                     tile.modified = true;
                 }
@@ -198,6 +173,10 @@ public class Room : Building
         tileColor = _value;
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
+
+    ///<summary>
+    /// Toggle tiles colors and textures.
+    ///</summary>
     public void ToggleTilesColor()
     {
         EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
@@ -207,7 +186,7 @@ public class Room : Building
             if (root)
                 Utils.CleanDestroy(root, $"Hide tiles color for {name}");
             else
-                PopTilesColor();
+                BuildTilesColor();
         }
         else
         {
@@ -228,34 +207,9 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                    {
-                        if (GameManager.instance.textures.ContainsKey(tile.texture))
-                        {
-                            Renderer rend = tile.GetComponent<Renderer>();
-                            rend.material = new Material(tile.defaultMat)
-                            {
-                                mainTexture = GameManager.instance.textures[tile.texture]
-                            };
-                        }
-                        else
-                            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknow tile texture: {tile.texture}", ELogTarget.logger, ELogtype.warning);
-                    }
+                        tile.SetTexture(hierarchyName);
                     if (!string.IsNullOrEmpty(tile.color))
-                    {
-                        Material mat = tile.GetComponent<Renderer>().material;
-                        Color customColor = new Color();
-                        if (tile.color.StartsWith("@"))
-                        {
-                            foreach (SColor color in customColors)
-                            {
-                                if (color.name == tile.color.Substring(1))
-                                    ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
-                            }
-                        }
-                        else
-                            ColorUtility.TryParseHtmlString($"#{tile.color}", out customColor);
-                        mat.color = customColor;
-                    }
+                        tile.SetColor(customColors);
 
                     tile.modified = true;
                 }
@@ -268,7 +222,7 @@ public class Room : Building
     ///<summary>
     /// Create the root for tiles color, then all tiles color
     ///</summary>
-    private void PopTilesColor()
+    private void BuildTilesColor()
     {
         GameObject root = new GameObject("tilesColorRoot");
         root.transform.parent = transform;

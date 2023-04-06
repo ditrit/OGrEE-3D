@@ -159,7 +159,7 @@ public class OObject : OgreeObject
         if (localCS)
            Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
         else
-            PopLocalCS(csName);
+            BuildLocalCS(csName);
     }
 
     ///<summary>
@@ -173,14 +173,14 @@ public class OObject : OgreeObject
         if (localCS && !_value)
             Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
         else if (!localCS && _value)
-            PopLocalCS(csName);
+            BuildLocalCS(csName);
     }
 
     ///<summary>
     /// Create a local Coordinate System for this object.
     ///</summary>
     ///<param name="_name">The name of the local CS</param>
-    private void PopLocalCS(string _name)
+    private void BuildLocalCS(string _name)
     {
         GameObject localCS = Instantiate(GameManager.instance.coordinateSystemModel);
         localCS.name = _name;
