@@ -245,7 +245,7 @@ public class ReadFromJson
             if (_data.attributes != null && _data.attributes.ContainsKey("factor"))
                 s.formFactor = _data.attributes["factor"];
             s.labelPos = _data.labelPos;
-
+            s.isU = _data.type == "u";
             go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
         }
         else
