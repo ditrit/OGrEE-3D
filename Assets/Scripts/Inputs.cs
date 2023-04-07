@@ -38,10 +38,13 @@ public class Inputs : MonoBehaviour
                 Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
                 if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
                 {
+                    UiManager.instance.coordSystem.SetActive(true);
                     UiManager.instance.MoveCSToHit(hit);
                     if (Input.GetMouseButtonDown(0))
                         AppendDistFromClick(hit);
                 }
+                else
+                    UiManager.instance.coordSystem.SetActive(false);
             }
         }
         else
