@@ -16,6 +16,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
+    [SerializeField] private GameObject coordSystem;
 
     [Header("Panel Top")]
     [SerializeField] private ButtonHandler focusBtn;
@@ -231,6 +232,7 @@ public class UiManager : MonoBehaviour
 
         SetupColors();
         menuPanel.SetActive(false);
+        coordSystem.SetActive(false);
         UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -755,8 +757,18 @@ public class UiManager : MonoBehaviour
     public void ToggleGetCoordsMode()
     {
         if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Building>())
+        {
             GameManager.instance.getCoordsMode ^= true;
+            Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
+            if (GameManager.instance.getCoordsMode)
+                GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            else
+                GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            bd.ToggleCS(GameManager.instance.getCoordsMode);
+            coordSystem.SetActive(GameManager.instance.getCoordsMode);
+        }
         getCoordsBtn.Check();
+        toggleLocalCSBtn.Check();
     }
 
     ///<summary>
@@ -785,6 +797,16 @@ public class UiManager : MonoBehaviour
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
         }
         return depth;
+    }
+
+    ///<summary>
+    /// Move the coordSystem plane to the hit point, aligned with the hitted object
+    ///</summary>
+    ///<param name="_hit">The hit data</param>
+    public void MoveCSToHit(RaycastHit _hit)
+    {
+        coordSystem.transform.position = _hit.point + new Vector3(0, 0.001f, 0);
+        coordSystem.transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
     }
 
     ///<summary>

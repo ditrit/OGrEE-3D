@@ -33,11 +33,15 @@ public class Inputs : MonoBehaviour
 #endif
         if (GameManager.instance.getCoordsMode)
         {
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
                 Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
                 if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
-                    AppendDistFromClick(hit.point);
+                {
+                    UiManager.instance.MoveCSToHit(hit);
+                    if (Input.GetMouseButtonDown(0))
+                        AppendDistFromClick(hit);
+                }
             }
         }
         else
@@ -268,11 +272,12 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Display the distance between the origin of the selected objet and the hit point in the logger
     ///</summary>
-    ///<param name="_clickPos">The hit position</param>
-    private void AppendDistFromClick(Vector3 _clickPos)
+    ///<param name="_clickPos">The hit data</param>
+    private void AppendDistFromClick(RaycastHit _hit)
     {
-        string objName = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName;
-        Vector3 dist = _clickPos - GameManager.instance.GetSelected()[0].transform.position;
-        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(dist.x)},{Utils.FloatToRefinedStr(dist.z)}]", ELogTarget.logger, ELogtype.info);
+        Transform hitObject = _hit.collider.transform.parent;
+        string objName = hitObject.GetComponent<OgreeObject>().hierarchyName;
+        Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
+        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
     }
 }
