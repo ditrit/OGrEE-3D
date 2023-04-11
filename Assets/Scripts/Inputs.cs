@@ -31,77 +31,96 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.currentItems.Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.currentItems[0].GetComponent<OgreeObject>())));
 #endif
-        if (!isDragging && !isRotating && !isScaling)
-            target = Utils.RaycastFromCameraToMouse()?.transform;
-
-        if (GameManager.instance.editMode)
+        if (GameManager.instance.getCoordsMode)
         {
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                if (target)
+                Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
+                if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
                 {
-                    if (Input.GetKey(KeyCode.LeftControl))
+                    UiManager.instance.coordSystem.SetActive(true);
+                    UiManager.instance.MoveCSToHit(hit);
+                    if (Input.GetMouseButtonDown(0))
+                        AppendDistFromClick(hit);
+                }
+                else
+                    UiManager.instance.coordSystem.SetActive(false);
+            }
+        }
+        else
+        {
+            if (!isDragging && !isRotating && !isScaling)
+                target = Utils.RaycastFromCameraToMouse()?.transform;
+
+            if (GameManager.instance.editMode)
+            {
+                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+                {
+                    if (target)
                     {
-                        isRotating = true;
-                        mouseRef = Input.mousePosition;
+                        if (Input.GetKey(KeyCode.LeftControl))
+                        {
+                            isRotating = true;
+                            mouseRef = Input.mousePosition;
+                        }
+                        else if (target.GetComponent<OgreeObject>().category == "rack")
+                        {
+                            isDragging = true;
+                            screenSpace = Camera.main.WorldToScreenPoint(target.position);
+                            offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
+                        }
+                        else
+                            isScaling = true;
                     }
-                    else if (target.GetComponent<OgreeObject>().category == "rack")
+                }
+                if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftControl))
+                {
+                    isDragging = false;
+                    isRotating = false;
+                    isScaling = false;
+                }
+            }
+            else
+            {
+                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0) && clickTime == 0)
+                    clickTime = Time.time;
+
+                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
+                {
+                    if (!isDragging)
+                        clickCount++;
+                    isDragging = false;
+                    clickTime = 0;
+                }
+
+                if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
+                {
+                    if (GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
                     {
                         isDragging = true;
                         screenSpace = Camera.main.WorldToScreenPoint(target.position);
                         offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
                     }
-                    else
-                        isScaling = true;
                 }
-            }
-            if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftControl))
-            {
-                isDragging = false;
-                isRotating = false;
-                isScaling = false;
-            }
-        }
-        else
-        {
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0) && clickTime == 0)
-                clickTime = Time.time;
 
-            if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-            {
-                if (!isDragging)
-                    clickCount++;
-                isDragging = false;
-                clickTime = 0;
-            }
-
-            if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
-            {
-                if (GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
+                if (clickCount == 1 && target && target.CompareTag("UHelper"))
                 {
-                    isDragging = true;
-                    screenSpace = Camera.main.WorldToScreenPoint(target.position);
-                    offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
+                    ClickOnU();
+                    clickCount = 0;
                 }
+
+                if (!isDragging && clickCount == 1 && coroutineAllowed)
+                    StartCoroutine(DoubleClickDetection(Time.realtimeSinceStartup));
             }
 
-            if (clickCount == 1 && target && target.CompareTag("UHelper"))
-            {
-                ClickOnU();
-                clickCount = 0;
-            }
-
-            if (!isDragging && clickCount == 1 && coroutineAllowed)
-                StartCoroutine(DoubleClickDetection(Time.realtimeSinceStartup));
+            if (isDragging)
+                DragObject();
+            if (isRotating)
+                RotateObject();
+            if (isScaling)
+                ScaleObject();
+            MouseHover();
         }
-
-        if (isDragging)
-            DragObject();
-        if (isRotating)
-            RotateObject();
-        if (isScaling)
-            ScaleObject();
-        MouseHover();
     }
 
     ///<summary>
@@ -251,5 +270,17 @@ public class Inputs : MonoBehaviour
         scale += Input.GetAxis("Mouse Y") * sensitivity;
         scale = Mathf.Clamp(scale, 0.8f, 2f);
         target.localScale = scale * Vector3.one;
+    }
+
+    ///<summary>
+    /// Display the distance between the origin of the selected objet and the hit point in the logger
+    ///</summary>
+    ///<param name="_clickPos">The hit data</param>
+    private void AppendDistFromClick(RaycastHit _hit)
+    {
+        Transform hitObject = _hit.collider.transform.parent;
+        string objName = hitObject.GetComponent<OgreeObject>().hierarchyName;
+        Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
+        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
     }
 }

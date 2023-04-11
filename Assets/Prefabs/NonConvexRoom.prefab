@@ -76,7 +76,7 @@ MonoBehaviour:
   usableZone: {fileID: 2905012525784032634}
   reservedZone: {fileID: 0}
   technicalZone: {fileID: 0}
-  tilesEdges: {fileID: 0}
+  tilesGrid: {fileID: 0}
   temperatureUnit: 
   tileName: 0
   tileColor: 0
@@ -341,7 +341,7 @@ MeshCollider:
   m_GameObject: {fileID: 5723261598632552266}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
