@@ -17,13 +17,13 @@ public class OObject : OgreeObject
 
     private void Awake()
     {
-        EventManager.instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
     }
 
     ///<summary>
@@ -40,7 +40,7 @@ public class OObject : OgreeObject
         if (domain != _src.domain)
         {
             domain = _src.domain;
-            UpdateColorByTenant();
+            UpdateColorByDomain();
         }
         description = _src.description;
 
@@ -93,39 +93,39 @@ public class OObject : OgreeObject
         }
         else
         {
-            UpdateColorByTenant();
+            UpdateColorByDomain();
             GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknown color to display", ELogTarget.both, ELogtype.warning);
         }
     }
 
     ///<summary>
-    /// On an UpdateTenantEvent, update the object's color if its the right tenant
+    /// On an UpdateDomainEvent, update the object's color if its the right domain
     ///</summary>
     ///<param name="_event">The event to catch</param>
-    private void UpdateColorByTenant(UpdateTenantEvent _event)
+    private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
         if (_event.name == domain)
-            UpdateColorByTenant();
+            UpdateColorByDomain();
     }
 
     ///<summary>
-    /// Update object's color according to its Tenant.
+    /// Update object's color according to its domain.
     ///</summary>
-    public void UpdateColorByTenant()
+    public void UpdateColorByDomain()
     {
-        if (string.IsNullOrEmpty(domain))
+        if (string.IsNullOrEmpty(base.domain))
             return;
 
-        if (!GameManager.instance.allItems.Contains(domain))
+        if (!GameManager.instance.allItems.Contains(base.domain))
         {
-            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Domain \"{base.domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
             return;
         }
 
-        OgreeObject tenant = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<OgreeObject>();
+        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
 
         Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
-        color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
+        color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
 
         CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
         if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)

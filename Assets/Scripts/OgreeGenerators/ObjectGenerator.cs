@@ -111,7 +111,7 @@ public class ObjectGenerator
         if (rack.attributes.ContainsKey("color"))
             rack.SetColor(rack.attributes["color"]);
         else
-            rack.UpdateColorByTenant();
+            rack.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(rack.hierarchyName, newRack);
 
@@ -438,7 +438,7 @@ public class ObjectGenerator
         Group gr = newGr.AddComponent<Group>();
         gr.hierarchyName = hierarchyName;
         gr.UpdateFromSApiObject(_gr);
-        gr.UpdateColorByTenant();
+        gr.UpdateColorByDomain();
         gr.DisplayContent(false);
 
         // Setup labels

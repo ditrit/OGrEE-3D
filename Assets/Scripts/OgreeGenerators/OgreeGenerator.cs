@@ -34,9 +34,9 @@ public class OgreeGenerator : MonoBehaviour
 
         OgreeObject newItem;
         // Get dependencies from API
-        if (_obj.category != "tenant" && !string.IsNullOrEmpty(_obj.domain)
+        if (_obj.category != "domain" && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.instance.allItems.Contains(_obj.domain))
-            await ApiManager.instance.GetObject($"tenants?name={_obj.domain}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.DrawObject);
 
         if (_obj.category == "building" && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
@@ -74,7 +74,7 @@ public class OgreeGenerator : MonoBehaviour
                 return null;
             }
 
-            if (_obj.category != "tenant" && GameManager.instance.objectRoot)
+            if (_obj.category != "domain" && GameManager.instance.objectRoot)
             {
                 Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
                 while (prompt.state == EPromptStatus.wait)
@@ -82,7 +82,7 @@ public class OgreeGenerator : MonoBehaviour
                 if (prompt.state == EPromptStatus.accept)
                 {
                     Destroy(GameManager.instance.objectRoot);
-                    await GameManager.instance.PurgeTenants(_obj.domain);
+                    await GameManager.instance.PurgeSites(_obj.domain);
                     GameManager.instance.objectRoot = null;
                     UiManager.instance.DeletePrompt(prompt);
                 }
@@ -96,8 +96,8 @@ public class OgreeGenerator : MonoBehaviour
         // Call Create function
         switch (_obj.category)
         {
-            case "tenant":
-                newItem = customerGenerator.CreateTenant(_obj);
+            case "domain":
+                newItem = customerGenerator.CreateDomain(_obj);
                 break;
             case "site":
                 newItem = customerGenerator.CreateSite(_obj, parent);
@@ -128,7 +128,7 @@ public class OgreeGenerator : MonoBehaviour
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != "tenant" && !GameManager.instance.objectRoot
+            if (newItem.category != "domain" && !GameManager.instance.objectRoot
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;

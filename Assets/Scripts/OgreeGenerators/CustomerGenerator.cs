@@ -5,25 +5,25 @@ using UnityEngine;
 public class CustomerGenerator
 {
     ///<summary>
-    /// Create OgreeObject of "tenant" category from given data.
+    /// Create OgreeObject of "domain" category from given data.
     ///</summary>
-    ///<param name="_tn">The tenant data to apply</param>
-    ///<returns>The created Tenant</returns>
-    public OgreeObject CreateTenant(SApiObject _tn)
+    ///<param name="_do">The domain data to apply</param>
+    ///<returns>The created domain</returns>
+    public OgreeObject CreateDomain(SApiObject _do)
     {
-        if (GameManager.instance.allItems.Contains(_tn.name))
+        if (GameManager.instance.allItems.Contains(_do.name))
         {
-            GameManager.instance.AppendLogLine($"{_tn.name} already exists.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"{_do.name} already exists.", ELogTarget.both, ELogtype.error);
             return null;
         }
 
-        GameObject newTenant = new GameObject(_tn.name);
-        OgreeObject tenant = newTenant.AddComponent<OgreeObject>();
-        tenant.UpdateFromSApiObject(_tn);
-        tenant.hierarchyName = _tn.name;
+        GameObject newDomain = new GameObject(_do.name);
+        OgreeObject domain = newDomain.AddComponent<OgreeObject>();
+        domain.UpdateFromSApiObject(_do);
+        domain.hierarchyName = _do.name;
 
-        GameManager.instance.allItems.Add(_tn.name, newTenant);
-        return tenant;
+        GameManager.instance.allItems.Add(_do.name, newDomain);
+        return domain;
     }
 
     ///<summary>

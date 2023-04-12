@@ -13,7 +13,7 @@ public class Building : OgreeObject
     {
         if (!(this is Room))
             EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.AddListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
     }
 
     protected override void OnDestroy()
@@ -21,7 +21,7 @@ public class Building : OgreeObject
         base.OnDestroy();
         if (!(this is Room))
             EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.RemoveListener<UpdateTenantEvent>(UpdateColorByTenant);
+        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
     }
 
     /// <summary>
@@ -46,32 +46,32 @@ public class Building : OgreeObject
     }
 
     ///<summary>
-    /// On an UpdateTenantEvent, update the building's color if it's the right tenant
+    /// On an UpdateDomainEvent, update the building's color if it's the right domain
     ///</summary>
     ///<param name="_event">The event to catch</param>
-    private void UpdateColorByTenant(UpdateTenantEvent _event)
+    private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
         if (_event.name == domain)
-            UpdateColorByTenant();
+            UpdateColorByDomain();
     }
 
     ///<summary>
     /// Update building's color according to its domain.
     ///</summary>
-    public void UpdateColorByTenant()
+    public void UpdateColorByDomain()
     {
-        if (string.IsNullOrEmpty(domain))
+        if (string.IsNullOrEmpty(base.domain))
             return;
 
-        if (!GameManager.instance.allItems.Contains(domain))
+        if (!GameManager.instance.allItems.Contains(base.domain))
         {
-            GameManager.instance.AppendLogLine($"Tenant \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Domain \"{base.domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
             return;
         }
 
-        OgreeObject tenant = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<OgreeObject>();
+        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
 
-        Color color = Utils.ParseHtmlColor($"#{tenant.attributes["color"]}");
+        Color color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
 
         foreach (Transform child in walls)
         {

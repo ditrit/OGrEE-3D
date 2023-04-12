@@ -12,7 +12,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public string parentId;
     public string category;
     public List<string> description = new List<string>();
-    public string domain; // = tenant
+    public string domain;
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new List<string>();

@@ -45,7 +45,6 @@ public class DebugText : MonoBehaviour
     ///</summary>
     public void CountObjects()
     {
-        int tenantsCount = 0;
         int sitesCount = 0;
         int buildingsCount = 0;
         int roomsCount = 0;
@@ -60,9 +59,6 @@ public class DebugText : MonoBehaviour
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
             switch (obj.category)
             {
-                case "tenant":
-                    tenantsCount++;
-                    break;
                 case "site":
                     sitesCount++;
                     break;
@@ -80,7 +76,6 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        GameManager.instance.AppendLogLine($"Tenants: {tenantsCount}", ELogTarget.both);
         GameManager.instance.AppendLogLine($"Sites: {sitesCount}", ELogTarget.both);
         GameManager.instance.AppendLogLine($"Buildings: {buildingsCount}", ELogTarget.both);
         GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", ELogTarget.both);

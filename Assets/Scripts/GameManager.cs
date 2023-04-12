@@ -362,17 +362,17 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Delete all tenants unless an _exception is given.
+    /// Delete all sites. If an _exception is given, this domain will not be deleted.
     ///</summary>
-    ///<param name="_exception">The name of the tenant to keep</param>
-    public async Task PurgeTenants(string _exception = null)
+    ///<param name="_exception">The name of the domain to keep</param>
+    public async Task PurgeSites(string _exception = null)
     {
         await SetCurrentItem(null);
         List<GameObject> tnToDel = new List<GameObject>();
         foreach (DictionaryEntry de in allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>().category == "tenant" && go.name != _exception)
+            if (go.GetComponent<OgreeObject>().category == "domain" && go.name != _exception)
                 tnToDel.Add(go);
         }
         for (int i = 0; i < tnToDel.Count; i++)

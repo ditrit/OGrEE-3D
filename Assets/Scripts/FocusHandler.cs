@@ -374,7 +374,7 @@ public class FocusHandler : MonoBehaviour
             {
                 switch (go.GetComponent<OgreeObject>().category)
                 {
-                    case "tenant":
+                    case "domain":
                         break;
                     case "site":
                         break;
