@@ -56,6 +56,26 @@ public class Building : OgreeObject
     }
 
     ///<summary>
+    /// Update the OgreeObject attributes with given SApiObject.
+    ///</summary>
+    ///<param name="_src">The SApiObject used to update attributes</param>
+    public override void UpdateFromSApiObject(SApiObject _src)
+    {
+        name = _src.name;
+        hierarchyName = _src.hierarchyName;
+        id = _src.id;
+        parentId = _src.parentId;
+        category = _src.category;
+        if (domain != _src.domain)
+        {
+            domain = _src.domain;
+            UpdateColorByDomain();
+        }
+        description = _src.description;
+        attributes = _src.attributes;
+    }
+
+    ///<summary>
     /// Update building's color according to its domain.
     ///</summary>
     public void UpdateColorByDomain()
@@ -75,9 +95,9 @@ public class Building : OgreeObject
 
         foreach (Transform child in walls)
         {
-            Material mat = child.GetComponent<Renderer>().material;
-            if (mat)
-                mat.color = color;
+            Renderer rend = child.GetComponent<Renderer>();
+            if (rend)
+                rend.material.color = color;
         }
         Transform roof = transform.Find("Roof");
         if (roof)

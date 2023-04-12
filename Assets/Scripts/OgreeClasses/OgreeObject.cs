@@ -84,8 +84,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
-
-        GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
 
     ///<summary>

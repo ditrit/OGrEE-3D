@@ -61,6 +61,8 @@ public class OObject : OgreeObject
             referent = transform.parent.GetComponent<OObject>().referent;
         else
             referent = null;
+
+        GetComponent<DisplayObjectData>()?.UpdateLabels();
     }
 
     ///<summary>
@@ -157,7 +159,7 @@ public class OObject : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS)
-           Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
+            Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
         else
             BuildLocalCS(csName);
     }
