@@ -80,7 +80,7 @@ public class CliParser
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                    await GameManager.instance.PurgeSites();
+                    await GameManager.instance.PurgeDomains();
                 }
                 else
                 {
@@ -435,7 +435,7 @@ public class CliParser
                     if (prompt.state == EPromptStatus.accept)
                     {
                         await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                        await GameManager.instance.PurgeSites();
+                        await GameManager.instance.PurgeDomains();
                         UiManager.instance.ClearCache();
                         UiManager.instance.DeletePrompt(prompt);
                     }

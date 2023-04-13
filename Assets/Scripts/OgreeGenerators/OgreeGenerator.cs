@@ -82,7 +82,7 @@ public class OgreeGenerator : MonoBehaviour
                 if (prompt.state == EPromptStatus.accept)
                 {
                     Destroy(GameManager.instance.objectRoot);
-                    await GameManager.instance.PurgeSites(_obj.domain);
+                    await GameManager.instance.PurgeDomains(_obj.domain);
                     GameManager.instance.objectRoot = null;
                     UiManager.instance.DeletePrompt(prompt);
                 }
