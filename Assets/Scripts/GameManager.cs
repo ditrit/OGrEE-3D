@@ -75,6 +75,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public bool focusMode = false;
 
+    /// <summary>
+    /// True if getCoords mode is on
+    /// </summary>
+    public bool getCoordsMode = false;
+
     #region UnityMethods
 
     private void Awake()

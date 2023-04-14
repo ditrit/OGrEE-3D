@@ -16,6 +16,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
+    public GameObject coordSystem;
 
     [Header("Panel Top")]
     [SerializeField] private ButtonHandler focusBtn;
@@ -33,6 +34,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Bottom")]
     [SerializeField] private TMP_InputField currentItemText;
+    [SerializeField] private ButtonHandler getCoordsBtn;
 
     [Header("Panel Debug")]
     [SerializeField] private GameObject debugPanel;
@@ -214,8 +216,23 @@ public class UiManager : MonoBehaviour
         };
         toggleLocalCSBtn.Check();
 
+        getCoordsBtn = new ButtonHandler(getCoordsBtn.button)
+        {
+            interactCondition = () => GameManager.instance.GetSelected().Count == 1
+            &&
+            GameManager.instance.SelectIs<Building>()
+            &&
+            !GameManager.instance.focusMode
+            &&
+            !GameManager.instance.editMode,
+
+            toggledCondition = () => GameManager.instance.getCoordsMode
+        };
+        getCoordsBtn.Check();
+
         SetupColors();
         menuPanel.SetActive(false);
+        coordSystem.SetActive(false);
         UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -735,6 +752,26 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Called by GUI button: if one and only one building or room is selected, toggle the getCoords mode
+    ///</summary>
+    public void ToggleGetCoordsMode()
+    {
+        if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Building>())
+        {
+            GameManager.instance.getCoordsMode ^= true;
+            Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
+            if (GameManager.instance.getCoordsMode)
+                GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            else
+                GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            bd.ToggleCS(GameManager.instance.getCoordsMode);
+            // coordSystem.SetActive(GameManager.instance.getCoordsMode);
+        }
+        getCoordsBtn.Check();
+        toggleLocalCSBtn.Check();
+    }
+
+    ///<summary>
     /// Attached to GUI Slider. Change value of ConsoleController.timerValue. Also update text field.
     ///</summary>
     ///<param name="_value">Value given by the slider</param>
@@ -760,6 +797,16 @@ public class UiManager : MonoBehaviour
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
         }
         return depth;
+    }
+
+    ///<summary>
+    /// Move the coordSystem plane to the hit point, aligned with the hitted object
+    ///</summary>
+    ///<param name="_hit">The hit data</param>
+    public void MoveCSToHit(RaycastHit _hit)
+    {
+        coordSystem.transform.position = _hit.point + new Vector3(0, 0.001f, 0);
+        coordSystem.transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
     }
 
     ///<summary>

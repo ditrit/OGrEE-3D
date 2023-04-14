@@ -334,4 +334,14 @@ public static class Utils
         Object.Destroy(_target);
         GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
     }
+
+    ///<summary>
+    /// Convert a float to a string with "0.##" format
+    ///</summary>
+    ///<param name="_input">The float to convert</param>
+    ///<returns>The converted float</returns>
+    public static string FloatToRefinedStr(float _input)
+    {
+        return _input.ToString("0.##", CultureInfo.InvariantCulture);
+    }
 }
