@@ -84,9 +84,9 @@ public class UHelpersManager : MonoBehaviour
         if (oObject.category == "rack")
         {
             GameObject uRoot = rack.uRoot.gameObject;
-            uRoot.SetActive(true);  
+            uRoot.SetActive(true);
             for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
-                ChangeUColor(uRoot, i,true);
+                ChangeUColor(uRoot, i, true);
             wasEdited = false;
         }
         else if (oObject.category == "device")
@@ -202,24 +202,40 @@ public class UHelpersManager : MonoBehaviour
         _rack.uRoot.localPosition = Vector3.zero;
         _rack.uRoot.localEulerAngles = Vector3.zero;
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
-        Transform URearLeft = Instantiate(new GameObject(cornerRearLeft), _rack.uRoot).transform;
+        Transform URearLeft = new GameObject(cornerRearLeft).transform;
+        URearLeft.parent =_rack.uRoot;
         URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
-        Transform URearRight = Instantiate(new GameObject(cornerRearRight), _rack.uRoot).transform;
+        Transform URearRight = new GameObject(cornerRearRight).transform;
+        URearRight.parent = _rack.uRoot;
         URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
-        Transform UFrontLeft = Instantiate(new GameObject(cornerFrontLeft),_rack.uRoot).transform;
+        Transform UFrontLeft =new GameObject(cornerFrontLeft).transform;
+        UFrontLeft.parent = _rack.uRoot;
         UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
-        Transform UFrontRight = Instantiate(new GameObject(cornerFrontRight), _rack.uRoot).transform;
+        Transform UFrontRight = new GameObject(cornerFrontRight).transform;
+        UFrontRight.parent = _rack.uRoot;
         UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
 
         float scale = GameManager.instance.uSize;
         if (_rack.attributes["heightUnit"] == "OU")
             scale = GameManager.instance.ouSize;
 
-        List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t=>t.localPosition.y).Distinct().OrderBy(t => t).ToList();
-        if (Uslotpositions.Count > 0)
+        //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
+        float minY=float.PositiveInfinity;
+        float maxY=float.NegativeInfinity;
+
+        foreach(Transform child in _rack.transform)
         {
-            for (int i = 0; i < Uslotpositions.Count; i++)
-                BuildU(Uslotpositions[i], i + 1, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
+            Slot slot = child.GetComponent<Slot>();
+            if (slot && slot.isU)
+            {
+                minY = Mathf.Min(child.localPosition.y - 0.5f * (child.GetChild(0).localScale.y - scale), minY);
+                maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), minY);
+            }
+        }
+
+        if (minY < float.PositiveInfinity)
+        {
+            BuildU(minY, maxY, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
         }
         else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == "U" || _rack.attributes["heightUnit"] == "OU")
         {
@@ -231,9 +247,8 @@ public class UHelpersManager : MonoBehaviour
             else
                 Unumber = int.Parse(_rack.attributes["height"]);
 
-            float offset = - (Unumber-1) * scale / 2;
-            for (int i = 0; i < Unumber; i++)
-                BuildU((offset + i * scale), i + 1, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
+            float offset = -(Unumber - 1) * scale / 2;
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
         }
     }
 
@@ -261,34 +276,43 @@ public class UHelpersManager : MonoBehaviour
     /// <param name="_URearRight">parent of the rear-right column</param>
     /// <param name="_UFrontLeft">parent of the front-left column</param>
     /// <param name="_UFrontRight">parent of the front-right column</param>
-    private void BuildU(float _positionY, int _number, float _scale, Transform _URearLeft, Transform _URearRight, Transform _UFrontLeft, Transform _UFrontRight)
+    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _URearLeft, Transform _URearRight, Transform _UFrontLeft, Transform _UFrontRight)
     {
-        Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _URearLeft).transform;
-        rearLeft.localPosition = _positionY * Vector3.up;
-        rearLeft.name = $"{cornerRearLeft}_u{_number}";
-        rearLeft.GetComponentInChildren<TextMeshPro>().text = _number.ToString();
-        rearLeft.localScale = Vector3.one * _scale;
-        rearLeft.GetComponent<Renderer>().material.color = Color.red;
+        int floorNumber = 0;
+        for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
+        {
+            floorNumber++;
+            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _URearLeft).transform;
+            rearLeft.localPosition = positionY * Vector3.up;
+            rearLeft.name = $"{cornerRearLeft}_u{floorNumber}";
+            rearLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearLeft.localScale = Vector3.one * _scale;
+            rearLeft.GetComponent<Renderer>().material.color = Color.red;
 
-        Transform rearRight = Instantiate(GameManager.instance.uLocationModel, _URearRight).transform;
-        rearRight.localPosition = _positionY * Vector3.up;
-        rearRight.name = $"{cornerRearRight}_u{_number}";
-        rearRight.GetComponentInChildren<TextMeshPro>().text = _number.ToString();
-        rearRight.localScale = Vector3.one * _scale;
-        rearRight.GetComponent<Renderer>().material.color = Color.yellow;
+            Transform rearRight = Instantiate(GameManager.instance.uLocationModel, _URearRight).transform;
+            rearRight.localPosition = positionY * Vector3.up;
+            rearRight.name = $"{cornerRearRight}_u{floorNumber}";
+            rearRight.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearRight.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearRight.localScale = Vector3.one * _scale;
+            rearRight.GetComponent<Renderer>().material.color = Color.yellow;
 
-        Transform frontLeft = Instantiate(GameManager.instance.uLocationModel,_UFrontLeft).transform;
-        frontLeft.localPosition = _positionY * Vector3.up;
-        frontLeft.name = $"{cornerFrontLeft}_u{_number}";
-        frontLeft.GetComponentInChildren<TextMeshPro>().text = _number.ToString();
-        frontLeft.localScale = Vector3.one * _scale;
-        frontLeft.GetComponent<Renderer>().material.color = Color.blue;
+            Transform frontLeft = Instantiate(GameManager.instance.uLocationModel, _UFrontLeft).transform;
+            frontLeft.localPosition = positionY * Vector3.up;
+            frontLeft.name = $"{cornerFrontLeft}_u{floorNumber}";
+            frontLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            frontLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            frontLeft.localScale = Vector3.one * _scale;
+            frontLeft.GetComponent<Renderer>().material.color = Color.blue;
 
-        Transform frontRight = Instantiate(GameManager.instance.uLocationModel, _UFrontRight).transform;
-        frontRight.localPosition = _positionY * Vector3.up;
-        frontRight.name = $"{cornerFrontRight}_u{_number}";
-        frontRight.GetComponentInChildren<TextMeshPro>().text = _number.ToString();
-        frontRight.localScale = Vector3.one * _scale;
-        frontRight.GetComponent<Renderer>().material.color = Color.green;
+            Transform frontRight = Instantiate(GameManager.instance.uLocationModel, _UFrontRight).transform;
+            frontRight.localPosition = positionY * Vector3.up;
+            frontRight.name = $"{cornerFrontRight}_u{floorNumber}";
+            frontRight.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            frontRight.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            frontRight.localScale = Vector3.one * _scale;
+            frontRight.GetComponent<Renderer>().material.color = Color.green;
+        }
     }
 }
