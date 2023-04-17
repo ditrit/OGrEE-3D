@@ -203,12 +203,12 @@ public class UHelpersManager : MonoBehaviour
         _rack.uRoot.localEulerAngles = Vector3.zero;
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
         Transform URearLeft = new GameObject(cornerRearLeft).transform;
-        URearLeft.parent =_rack.uRoot;
+        URearLeft.parent = _rack.uRoot;
         URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
         Transform URearRight = new GameObject(cornerRearRight).transform;
         URearRight.parent = _rack.uRoot;
         URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
-        Transform UFrontLeft =new GameObject(cornerFrontLeft).transform;
+        Transform UFrontLeft = new GameObject(cornerFrontLeft).transform;
         UFrontLeft.parent = _rack.uRoot;
         UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
         Transform UFrontRight = new GameObject(cornerFrontRight).transform;
@@ -220,10 +220,10 @@ public class UHelpersManager : MonoBehaviour
             scale = GameManager.instance.ouSize;
 
         //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
-        float minY=float.PositiveInfinity;
-        float maxY=float.NegativeInfinity;
+        float minY = float.PositiveInfinity;
+        float maxY = float.NegativeInfinity;
 
-        foreach(Transform child in _rack.transform)
+        foreach (Transform child in _rack.transform)
         {
             Slot slot = child.GetComponent<Slot>();
             if (slot && slot.isU)
