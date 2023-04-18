@@ -159,7 +159,7 @@ public class OObject : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS)
-            Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
+            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
         else
             BuildLocalCS(csName);
     }
@@ -173,7 +173,7 @@ public class OObject : OgreeObject
         string csName = "localCS";
         GameObject localCS = transform.Find(csName)?.gameObject;
         if (localCS && !_value)
-            Utils.CleanDestroy(localCS, $"Display local Coordinate System for {name}");
+            Utils.CleanDestroy(localCS, $"Hide local Coordinate System for {name}");
         else if (!localCS && _value)
             BuildLocalCS(csName);
     }
