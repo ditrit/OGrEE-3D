@@ -1,8 +1,5 @@
 using UnityEngine;
 using TMPro;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 public class UHelpersManager : MonoBehaviour
@@ -205,15 +202,19 @@ public class UHelpersManager : MonoBehaviour
         Transform URearLeft = new GameObject(cornerRearLeft).transform;
         URearLeft.parent = _rack.uRoot;
         URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
+        URearLeft.localEulerAngles = Vector3.zero;
         Transform URearRight = new GameObject(cornerRearRight).transform;
         URearRight.parent = _rack.uRoot;
         URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
+        URearRight.localEulerAngles = Vector3.zero;
         Transform UFrontLeft = new GameObject(cornerFrontLeft).transform;
         UFrontLeft.parent = _rack.uRoot;
         UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontLeft.localEulerAngles = Vector3.zero;
         Transform UFrontRight = new GameObject(cornerFrontRight).transform;
         UFrontRight.parent = _rack.uRoot;
         UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontRight.localEulerAngles = Vector3.zero;
 
         float scale = GameManager.instance.uSize;
         if (_rack.attributes["heightUnit"] == "OU")
