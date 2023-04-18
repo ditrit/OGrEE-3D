@@ -236,7 +236,10 @@ public class UHelpersManager : MonoBehaviour
 
         if (minY < float.PositiveInfinity)
         {
-            BuildU(minY, maxY, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
+            BuildU(minY, maxY, scale, URearLeft, cornerRearLeft, Color.red);
+            BuildU(minY, maxY, scale, URearRight, cornerRearRight, Color.yellow);
+            BuildU(minY, maxY, scale, UFrontLeft, cornerFrontLeft, Color.blue);
+            BuildU(minY, maxY, scale, UFrontRight, cornerFrontRight, Color.green);
         }
         else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == "U" || _rack.attributes["heightUnit"] == "OU")
         {
@@ -249,7 +252,10 @@ public class UHelpersManager : MonoBehaviour
                 Unumber = int.Parse(_rack.attributes["height"]);
 
             float offset = -(Unumber - 1) * scale / 2;
-            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, URearRight, UFrontLeft, UFrontRight);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, cornerRearLeft, Color.red);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearRight, cornerRearRight, Color.yellow);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontRight, cornerFrontRight, Color.green);
         }
     }
 
@@ -268,52 +274,27 @@ public class UHelpersManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Build one floor of the four U-helpers columns
+    /// Build one U-helpers column
     /// </summary>
-    /// <param name="_positionY">(local) vertical position of the floor</param>
-    /// <param name="_number">number of the floor</param>
+    /// <param name="_firstPositionY">(local) vertical position of the first floor</param>
+    /// <param name="_lastPositionY">(local) vertical position of the last floor</param>
     /// <param name="_scale">height of the floor (u size or ou size)</param>
-    /// <param name="_URearLeft">parent of the rear-left column</param>
-    /// <param name="_URearRight">parent of the rear-right column</param>
-    /// <param name="_UFrontLeft">parent of the front-left column</param>
-    /// <param name="_UFrontRight">parent of the front-right column</param>
-    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _URearLeft, Transform _URearRight, Transform _UFrontLeft, Transform _UFrontRight)
+    /// <param name="_URear">parent of thecolumn</param>
+    /// <param name="_cornerName">name of the column</param>
+    /// <param name="_color">color of the column</param>
+    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _URear, string _cornerName, Color _color)
     {
         int floorNumber = 0;
         for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
         {
             floorNumber++;
-            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _URearLeft).transform;
+            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _URear).transform;
             rearLeft.localPosition = positionY * Vector3.up;
-            rearLeft.name = $"{cornerRearLeft}_u{floorNumber}";
+            rearLeft.name = $"{_cornerName}_u{floorNumber}";
             rearLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
             rearLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
             rearLeft.localScale = Vector3.one * _scale;
-            rearLeft.GetComponent<Renderer>().material.color = Color.red;
-
-            Transform rearRight = Instantiate(GameManager.instance.uLocationModel, _URearRight).transform;
-            rearRight.localPosition = positionY * Vector3.up;
-            rearRight.name = $"{cornerRearRight}_u{floorNumber}";
-            rearRight.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            rearRight.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            rearRight.localScale = Vector3.one * _scale;
-            rearRight.GetComponent<Renderer>().material.color = Color.yellow;
-
-            Transform frontLeft = Instantiate(GameManager.instance.uLocationModel, _UFrontLeft).transform;
-            frontLeft.localPosition = positionY * Vector3.up;
-            frontLeft.name = $"{cornerFrontLeft}_u{floorNumber}";
-            frontLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            frontLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            frontLeft.localScale = Vector3.one * _scale;
-            frontLeft.GetComponent<Renderer>().material.color = Color.blue;
-
-            Transform frontRight = Instantiate(GameManager.instance.uLocationModel, _UFrontRight).transform;
-            frontRight.localPosition = positionY * Vector3.up;
-            frontRight.name = $"{cornerFrontRight}_u{floorNumber}";
-            frontRight.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            frontRight.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            frontRight.localScale = Vector3.one * _scale;
-            frontRight.GetComponent<Renderer>().material.color = Color.green;
+            rearLeft.GetComponent<Renderer>().material.color = _color;
         }
     }
 }
