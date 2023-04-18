@@ -279,16 +279,16 @@ public class UHelpersManager : MonoBehaviour
     /// <param name="_firstPositionY">(local) vertical position of the first floor</param>
     /// <param name="_lastPositionY">(local) vertical position of the last floor</param>
     /// <param name="_scale">height of the floor (u size or ou size)</param>
-    /// <param name="_URear">parent of thecolumn</param>
+    /// <param name="_UColumn">parent of the column</param>
     /// <param name="_cornerName">name of the column</param>
     /// <param name="_color">color of the column</param>
-    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _URear, string _cornerName, Color _color)
+    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _UColumn, string _cornerName, Color _color)
     {
         int floorNumber = 0;
         for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
         {
             floorNumber++;
-            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _URear).transform;
+            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _UColumn).transform;
             rearLeft.localPosition = positionY * Vector3.up;
             rearLeft.name = $"{_cornerName}_u{floorNumber}";
             rearLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
