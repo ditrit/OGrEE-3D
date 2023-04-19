@@ -62,8 +62,11 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.selectMode && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
-            HighlightULocation();
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+            {
+                ToggleU(obj.transform, true);
+                HighlightULocation(obj.GetComponent<OObject>());
+            }
         }
     }
 
@@ -71,14 +74,13 @@ public class UHelpersManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    private void HighlightULocation()
+    private void HighlightULocation(OObject _oObject)
     {
-        OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
-        Rack rack = Utils.GetRackReferent(oObject);
+        Rack rack = Utils.GetRackReferent(_oObject);
         if (!rack)
             return;
 
-        if (oObject.category == "rack")
+        if (_oObject.category == "rack")
         {
             GameObject uRoot = rack.uRoot.gameObject;
             uRoot.SetActive(true);
@@ -86,7 +88,7 @@ public class UHelpersManager : MonoBehaviour
                 ChangeUColor(uRoot, i, true);
             wasEdited = false;
         }
-        else if (oObject.category == "device")
+        else if (_oObject.category == "device")
         {
             if (wasEdited)
                 return;
