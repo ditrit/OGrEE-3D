@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 ///<summary>
 /// Class responsible for increasing performance by culling the child's MeshRenderers when the GameObject isnt Focused by the user.
@@ -206,20 +207,24 @@ public class FocusHandler : MonoBehaviour
             return;
         }
 
-        OObject selectionReferent = GameManager.instance.selectMode ? GameManager.instance.GetSelected()[0].GetComponent<OObject>()?.referent : null;
-
-        if (!GetComponent<OObject>().referent || (GetComponent<OObject>().category != "device" && selectionReferent != GetComponent<OObject>().referent))
-            UpdateChildMeshRenderersRec(false);
-        else if (selectionReferent == GetComponent<OObject>().referent)
+        //Get all referents of selected items
+        List<OObject> selectionReferents = GameManager.instance.GetSelected().Select(s => s.GetComponent<OObject>()?.referent).Where(s => s != null).ToList();
+        OObject oobject = GetComponent<OObject>();
+        foreach (OObject selectionReferent in selectionReferents)
         {
-            if (!GameManager.instance.GetSelected().Contains(gameObject) && (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject)))
+            if (!oobject.referent || (oobject.category != "device" && selectionReferent != oobject.referent))
+                UpdateChildMeshRenderersRec(false);
+            else if (selectionReferent == oobject.referent)
             {
-                ToggleCollider(gameObject, false);
-                UpdateOwnMeshRenderers(false);
-                UpdateChildMeshRenderers(false);
+                if (!GameManager.instance.GetSelected().Contains(gameObject) && (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject)))
+                {
+                    ToggleCollider(gameObject, false);
+                    UpdateOwnMeshRenderers(false);
+                    UpdateChildMeshRenderers(false);
+                }
+                if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
+                    UpdateChildMeshRenderers(false);
             }
-            if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
-                UpdateChildMeshRenderers(false);
         }
     }
 

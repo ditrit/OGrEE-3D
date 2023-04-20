@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 public class UHelpersManager : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;
-        ToggleU(GameManager.instance.GetSelected()[0].transform, false);
+        ToggleU(GameManager.instance.GetSelected()[0], false);
     }
 
     ///<summary>
@@ -51,7 +52,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeOut(EditModeOutEvent _e)
     {
         wasEdited = false;
-        ToggleU(GameManager.instance.GetSelected()[0].transform, true);
+        ToggleU(GameManager.instance.GetSelected()[0], true);
     }
 
     ///<summary>
@@ -60,10 +61,14 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
-            HighlightULocation();
+            string str = "";
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+                str += (obj.name) + " ";
+            print(str);
+            ToggleU(GameManager.instance.GetSelected(), true);
+            HighlightULocation(GameManager.instance.GetSelected());
         }
     }
 
@@ -71,48 +76,64 @@ public class UHelpersManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    private void HighlightULocation()
+    private void HighlightULocation(List<GameObject> _selection)
     {
-        OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
-        Rack rack = Utils.GetRackReferent(oObject);
-        if (!rack)
+        if (_selection.Count == 0)
             return;
-
-        if (oObject.category == "rack")
+        switch (_selection[0].GetComponent<OObject>().category)
         {
-            GameObject uRoot = rack.uRoot.gameObject;
-            uRoot.SetActive(true);
-            for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
-                ChangeUColor(uRoot, i, true);
-            wasEdited = false;
-        }
-        else if (oObject.category == "device")
-        {
-            if (wasEdited)
-                return;
+            case "rack":
+                foreach (GameObject obj in _selection)
+                {
+                    GameObject u = obj.GetComponent<Rack>().uRoot.gameObject;
+                    u.SetActive(true);
+                    for (int i = 0; i < u.transform.GetChild(0).childCount; i++)
+                        ChangeUColor(u, i, true);
+                    wasEdited = false;
+                }
+                break;
 
-            float difference;
-            Transform t = GameManager.instance.GetSelected()[0].transform.GetChild(0);
-            float center = t.position.y;
+            case "device":
+                if (wasEdited)
+                    return;
+                Rack rack = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
+                if (!rack)
+                    return;
+                GameObject uRoot = rack.uRoot.gameObject;
+                uRoot.SetActive(true);
 
-            BoxCollider boxCollider = t.GetComponent<BoxCollider>();
-            bool isEnabled = boxCollider.enabled;
-            boxCollider.enabled = true;
-            difference = boxCollider.bounds.extents.y;
-            boxCollider.enabled = isEnabled;
+                for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
+                    ChangeUColor(uRoot, i, false);
 
-            t = GameManager.instance.GetSelected()[0].transform;
-            float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
-            float lowerBound = center - difference - delta;
-            float upperBound = center + difference - delta;
+                foreach (GameObject obj in _selection)
+                {
 
-            GameObject uRoot = rack.GetComponent<Rack>().uRoot.gameObject;
-            uRoot.SetActive(true);
-            for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
-            {
-                Transform u = uRoot.transform.GetChild(0).GetChild(i);
-                ChangeUColor(uRoot, i, lowerBound < u.position.y && u.position.y < upperBound);
-            }
+                    float difference;
+                    Transform t = obj.transform.GetChild(0);
+                    float center = t.position.y;
+
+                    BoxCollider boxCollider = t.GetComponent<BoxCollider>();
+                    bool isEnabled = boxCollider.enabled;
+                    boxCollider.enabled = true;
+                    difference = boxCollider.bounds.extents.y;
+                    boxCollider.enabled = isEnabled;
+
+                    t = obj.transform;
+                    float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
+                    float lowerBound = center - difference - delta;
+                    float upperBound = center + difference - delta;
+
+                    for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
+                    {
+                        Transform u = uRoot.transform.GetChild(0).GetChild(i);
+                        if (lowerBound < u.position.y && u.position.y < upperBound)
+                            ChangeUColor(uRoot, i, true);
+                    }
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -139,50 +160,65 @@ public class UHelpersManager : MonoBehaviour
     ///</summary>
     ///<param name="_transform">The transform of a rack or a device</param>
     ///<param name="_active">Should the U helpers be visible ?</param>
-    public void ToggleU(Transform _transform, bool _active)
+    public void ToggleU(List<GameObject> _selection, bool _active)
     {
-        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
-        if (!rack)
-            return;
-
-        Transform uRoot = rack.uRoot;
-        if (_active)
+        foreach (GameObject obj in _selection)
         {
-            if (!uRoot)
-                GenerateUHelpers(_transform.GetComponent<Rack>());
-            else
-                uRoot.gameObject.SetActive(true);
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            if (!rack)
+                break;
+
+            Transform uRoot = rack.uRoot;
+            if (_active)
+            {
+                if (!uRoot)
+                    GenerateUHelpers(rack);
+                else
+                    uRoot.gameObject.SetActive(true);
+            }
+            else if (uRoot)
+                uRoot.gameObject.SetActive(false);
         }
-        else if (uRoot)
-            uRoot.gameObject.SetActive(false);
     }
 
     ///<summary>
     /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
     ///</summary>
     ///<param name="_transform">The transform of a rack or a device</param>
-    public void ToggleU(Transform _transform)
+    public void ToggleU(List<GameObject> _selection)
     {
-        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
-        if (!rack)
-            return;
+        foreach (GameObject obj in _selection)
+        {
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            if (!rack)
+                break;
 
-        Transform uRoot = rack.uRoot;
-        if (!uRoot)
-        {
-            GenerateUHelpers(_transform.GetComponent<Rack>());
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
+            Transform uRoot = rack.uRoot;
+            if (!uRoot)
+            {
+                GenerateUHelpers(rack);
+                GameManager.instance.AppendLogLine($"U helpers ON for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
+            else if (!uRoot.gameObject.activeSelf)
+            {
+                uRoot.gameObject.SetActive(true);
+                GameManager.instance.AppendLogLine($"U helpers ON for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
+            else
+            {
+                uRoot.gameObject.SetActive(false);
+                GameManager.instance.AppendLogLine($"U helpers OFF for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
         }
-        else if (!uRoot.gameObject.activeSelf)
-        {
-            uRoot.gameObject.SetActive(true);
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
-        }
-        else
-        {
-            uRoot.gameObject.SetActive(false);
-            GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", ELogTarget.logger, ELogtype.info);
-        }
+    }
+
+    public void ToggleU(GameObject _selected)
+    {
+        ToggleU(new List<GameObject> { _selected });
+    }
+    public void ToggleU(GameObject _selected, bool _active)
+    {
+        ToggleU(new List<GameObject> { _selected }, _active);
     }
 
     ///<summary>
@@ -269,7 +305,7 @@ public class UHelpersManager : MonoBehaviour
         if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
-            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
+            ToggleU(GameManager.instance.GetSelected()[0], true);
         }
     }
 

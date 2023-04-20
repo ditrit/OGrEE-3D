@@ -533,7 +533,7 @@ public class UiManager : MonoBehaviour
             if (!rack)
                 return;
 
-            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected()[0].transform);
+            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
         }
         toggleUHelpersBtn.Check();
     }
