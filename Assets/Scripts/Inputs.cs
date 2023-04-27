@@ -8,6 +8,7 @@ public class Inputs : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
+    private CameraControl camControl;
     [SerializeField] Transform target;
 
     // Drag
@@ -24,12 +25,18 @@ public class Inputs : MonoBehaviour
 
     private GameObject savedObjectThatWeHover;
 
+    private void Start()
+    {
+        camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
+    }
+
     private void Update()
     {
 #if !PROD
-        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.currentItems.Count > 0)
-            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.currentItems[0].GetComponent<OgreeObject>())));
+        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
+            Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
+        camControl.InputControls();
         if (GameManager.instance.getCoordsMode)
             GetCoordsModeControls();
         else
