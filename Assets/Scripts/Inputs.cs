@@ -8,20 +8,19 @@ public class Inputs : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
-    private readonly float delayUntilDrag = 0.2f;
     [SerializeField] Transform target;
 
     // Drag
-    private bool isDragging = false;
+    private bool isDraggingObj = false;
     private Vector3 screenSpace;
     private Vector3 offsetPos;
 
     // Rotate
-    private bool isRotating = false;
+    private bool isRotatingObj = false;
     private Vector3 mouseRef;
 
     // Scale
-    private bool isScaling = false;
+    private bool isScalingObj = false;
 
     private GameObject savedObjectThatWeHover;
 
@@ -32,95 +31,110 @@ public class Inputs : MonoBehaviour
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.currentItems[0].GetComponent<OgreeObject>())));
 #endif
         if (GameManager.instance.getCoordsMode)
+            GetCoordsModeControls();
+        else
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            MouseControls();
+            MouseHover();
+        }
+    }
+
+    ///<summary>
+    /// Mouse controls in GetCoordsMode
+    ///</summary>
+    private void GetCoordsModeControls()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
+        if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
+        {
+            UiManager.instance.coordSystem.SetActive(true);
+            UiManager.instance.MoveCSToHit(hit);
+            if (Input.GetMouseButtonDown(0))
+                AppendDistFromClick(hit);
+        }
+        else
+            UiManager.instance.coordSystem.SetActive(false);
+    }
+
+    ///<summary>
+    /// Mouse controls "classic" modes
+    ///</summary>
+    private void MouseControls()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            isDraggingObj = false;
+            isRotatingObj = false;
+            isScalingObj = false;
+            return;
+        }
+
+        if (!isDraggingObj && !isRotatingObj && !isScalingObj)
+            target = Utils.RaycastFromCameraToMouse()?.transform;
+
+        if (GameManager.instance.editMode)
+        {
+            if (Input.GetMouseButtonDown(0) && target)
             {
-                Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
-                if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
+                if (Input.GetKey(KeyCode.LeftControl))
                 {
-                    UiManager.instance.coordSystem.SetActive(true);
-                    UiManager.instance.MoveCSToHit(hit);
-                    if (Input.GetMouseButtonDown(0))
-                        AppendDistFromClick(hit);
+                    isRotatingObj = true;
+                    mouseRef = Input.mousePosition;
+                }
+                else if (target.GetComponent<OgreeObject>().category == "rack")
+                {
+                    isDraggingObj = true;
+                    screenSpace = Camera.main.WorldToScreenPoint(target.position);
+                    offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
                 }
                 else
-                    UiManager.instance.coordSystem.SetActive(false);
+                    isScalingObj = true;
+            }
+            else if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftControl))
+            {
+                isDraggingObj = false;
+                isRotatingObj = false;
+                isScalingObj = false;
             }
         }
         else
         {
-            if (!isDragging && !isRotating && !isScaling)
-                target = Utils.RaycastFromCameraToMouse()?.transform;
+            if (Input.GetMouseButtonDown(0) && clickTime == 0)
+                clickTime = Time.time;
 
-            if (GameManager.instance.editMode)
+            else if (Input.GetMouseButton(0) && target && !isDraggingObj && (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
+                && GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
             {
-                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
-                {
-                    if (target)
-                    {
-                        if (Input.GetKey(KeyCode.LeftControl))
-                        {
-                            isRotating = true;
-                            mouseRef = Input.mousePosition;
-                        }
-                        else if (target.GetComponent<OgreeObject>().category == "rack")
-                        {
-                            isDragging = true;
-                            screenSpace = Camera.main.WorldToScreenPoint(target.position);
-                            offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
-                        }
-                        else
-                            isScaling = true;
-                    }
-                }
-                if (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.LeftControl))
-                {
-                    isDragging = false;
-                    isRotating = false;
-                    isScaling = false;
-                }
+                isDraggingObj = true;
+                screenSpace = Camera.main.WorldToScreenPoint(target.position);
+                offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
             }
-            else
+            else if (Input.GetMouseButtonUp(0))
             {
-                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0) && clickTime == 0)
-                    clickTime = Time.time;
-
-                if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonUp(0))
-                {
-                    if (!isDragging)
-                        clickCount++;
-                    isDragging = false;
-                    clickTime = 0;
-                }
-
-                if (target && !isDragging && clickTime != 0 && Time.time > clickTime + delayUntilDrag)
-                {
-                    if (GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
-                    {
-                        isDragging = true;
-                        screenSpace = Camera.main.WorldToScreenPoint(target.position);
-                        offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
-                    }
-                }
-
-                if (clickCount == 1 && target && target.CompareTag("UHelper"))
-                {
-                    ClickOnU();
-                    clickCount = 0;
-                }
-
-                if (!isDragging && clickCount == 1 && coroutineAllowed)
+                if (!isDraggingObj)
+                    clickCount++;
+                isDraggingObj = false;
+                clickTime = 0;
+                if (clickCount == 1 && coroutineAllowed)
                     StartCoroutine(DoubleClickDetection(Time.realtimeSinceStartup));
             }
 
-            if (isDragging)
-                DragObject();
-            if (isRotating)
-                RotateObject();
-            if (isScaling)
-                ScaleObject();
-            MouseHover();
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0)
+                    Debug.Log("Right clic !");
+            }
         }
+
+        if (isDraggingObj)
+            DragObject();
+        if (isRotatingObj)
+            RotateObject();
+        if (isScalingObj)
+            ScaleObject();
     }
 
     ///<summary>
@@ -135,13 +149,13 @@ public class Inputs : MonoBehaviour
         {
             if (clickCount == 2 && !GameManager.instance.editMode)
             {
-                ClickFocus();
+                DoubleClick();
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
         if (clickCount == 1 && !GameManager.instance.editMode)
-            ClickSelect(savedTarget);
+            SingleClick(savedTarget);
         clickCount = 0;
         coroutineAllowed = true;
     }
@@ -150,21 +164,26 @@ public class Inputs : MonoBehaviour
     /// Method called when single clicking on a gameObject.
     ///</summary>
     ///<param name="_target">the object clicked on</param>
-    private async void ClickSelect(Transform _target)
+    private async void SingleClick(Transform _target)
     {
-        if (_target && _target.CompareTag("Selectable"))
+        if (_target)
         {
-            bool canSelect = true;
-            if (GameManager.instance.focusMode)
-                canSelect = GameManager.instance.IsInFocus(_target.gameObject);
-
-            if (canSelect)
+            if (_target.CompareTag("Selectable"))
             {
-                if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.selectMode)
-                    await GameManager.instance.UpdateCurrentItems(_target.gameObject);
-                else
-                    await GameManager.instance.SetCurrentItem(_target.gameObject);
+                bool canSelect = true;
+                if (GameManager.instance.focusMode)
+                    canSelect = GameManager.instance.IsInFocus(_target.gameObject);
+
+                if (canSelect)
+                {
+                    if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.selectMode)
+                        await GameManager.instance.UpdateCurrentItems(_target.gameObject);
+                    else
+                        await GameManager.instance.SetCurrentItem(_target.gameObject);
+                }
             }
+            else if (_target.CompareTag("UHelper"))
+                ClickOnU(_target);
         }
         else if (GameManager.instance.GetFocused().Count > 0)
             await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1]);
@@ -175,7 +194,7 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when double clicking on a gameObject.
     ///</summary>
-    private async void ClickFocus()
+    private async void DoubleClick()
     {
         if (target && target.CompareTag("Selectable") && target.GetComponent<OObject>())
         {
@@ -194,10 +213,10 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when clicking on a U helper.
     ///</summary>
-    private void ClickOnU()
+    private void ClickOnU(Transform _target)
     {
-        Transform rack = target.parent.parent;
-        rack.GetComponent<GridCell>().ToggleGrid(target.position.y, target.name);
+        Rack rack = _target.GetComponentInParent<Rack>();
+        rack.GetComponent<GridCell>().ToggleGrid(_target.position.y, _target.name);
     }
 
     ///<summary>
