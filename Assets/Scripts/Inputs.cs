@@ -24,6 +24,8 @@ public class Inputs : MonoBehaviour
     private bool isScalingObj = false;
 
     private GameObject savedObjectThatWeHover;
+    private Vector3 savedMousePos;
+    private bool lockMouseInteract = false;
 
     private void Start()
     {
@@ -37,13 +39,18 @@ public class Inputs : MonoBehaviour
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
         camControl.InputControls();
-        if (GameManager.instance.getCoordsMode)
-            GetCoordsModeControls();
-        else
+        if (!lockMouseInteract)
         {
-            MouseControls();
-            MouseHover();
+            if (GameManager.instance.getCoordsMode)
+                GetCoordsModeControls();
+            else
+            {
+                MouseControls();
+                MouseHover();
+            }
         }
+
+        RightClickMenu();
     }
 
     ///<summary>
@@ -128,12 +135,6 @@ public class Inputs : MonoBehaviour
                 if (clickCount == 1 && coroutineAllowed)
                     StartCoroutine(DoubleClickDetection(Time.realtimeSinceStartup));
             }
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                if (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0)
-                    Debug.Log("Right clic !");
-            }
         }
 
         if (isDraggingObj)
@@ -142,6 +143,39 @@ public class Inputs : MonoBehaviour
             RotateObject();
         if (isScalingObj)
             ScaleObject();
+    }
+
+
+    ///<summary>
+    /// Right click handling for display / hide right click menu
+    ///</summary>
+    private void RightClickMenu()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (Input.GetMouseButtonDown(1))
+            savedMousePos = Input.mousePosition;
+        else if (Input.GetMouseButtonUp(1) && savedMousePos == Input.mousePosition)
+        {
+            if (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0)
+            {
+                UiManager.instance.DisplayRightClickMenu();
+                lockMouseInteract = true;
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            UiManager.instance.HideRightClickMenu();
+            StartCoroutine(WaitAndLock(0.1f));
+            Debug.Log($"A {Time.frameCount}");
+        }
+    }
+
+    private IEnumerator WaitAndLock(float _t)
+    {
+        yield return new WaitForSeconds(_t);
+        lockMouseInteract = false;
     }
 
     ///<summary>
@@ -175,6 +209,7 @@ public class Inputs : MonoBehaviour
     {
         if (_target)
         {
+            Debug.Log($"B {Time.frameCount}");
             if (_target.CompareTag("Selectable"))
             {
                 bool canSelect = true;

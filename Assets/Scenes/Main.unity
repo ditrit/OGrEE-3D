@@ -2202,12 +2202,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1372255789}
-  m_Father: {fileID: 670787555}
-  m_RootOrder: 5
+  m_Father: {fileID: 731465983}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -93.7, y: -94.399994}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &314828351
@@ -2257,6 +2257,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1595579791}
         m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleUHelpers
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2768,7 +2780,7 @@ RectTransform:
   - {fileID: 1598957173}
   - {fileID: 522491018}
   m_Father: {fileID: 670787555}
-  m_RootOrder: 11
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3031,7 +3043,7 @@ RectTransform:
   m_Children:
   - {fileID: 713735103}
   m_Father: {fileID: 670787555}
-  m_RootOrder: 8
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4259,12 +4271,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1605645520}
-  m_Father: {fileID: 670787555}
-  m_RootOrder: 6
+  m_Father: {fileID: 731465983}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -93.7, y: -128.4}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &577279989
@@ -4314,6 +4326,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1595579791}
         m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: GuiToggleCS
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5037,6 +5061,7 @@ RectTransform:
   - {fileID: 670787555}
   - {fileID: 879283138}
   - {fileID: 239753153}
+  - {fileID: 731465983}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5114,17 +5139,12 @@ RectTransform:
   - {fileID: 1545468795}
   - {fileID: 2024169830}
   - {fileID: 1157218562}
-  - {fileID: 2113158545}
-  - {fileID: 1719855462}
-  - {fileID: 314828350}
-  - {fileID: 577279988}
   - {fileID: 1824023888}
   - {fileID: 435509967}
   - {fileID: 800786145}
   - {fileID: 1733427921}
   - {fileID: 365050064}
   - {fileID: 1128443966}
-  - {fileID: 1242251207}
   m_Father: {fileID: 636338289}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5558,6 +5578,113 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!224 &731465983
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731465988}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 1242251207}
+  - {fileID: 2113158545}
+  - {fileID: 1719855462}
+  - {fileID: 314828350}
+  - {fileID: 577279988}
+  m_Father: {fileID: 636338289}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -79}
+  m_SizeDelta: {x: 173.7, y: 300}
+  m_Pivot: {x: 0, y: 1}
+--- !u!1 &731465988
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 731465983}
+  - component: {fileID: 731465990}
+  - component: {fileID: 731465989}
+  - component: {fileID: 731465992}
+  m_Layer: 5
+  m_Name: RightClickMenu
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &731465989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731465988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &731465990
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731465988}
+  m_CullTransparentMesh: 1
+--- !u!114 &731465992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 731465988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 7
+    m_Right: 0
+    m_Top: 7
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 2.87
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &741869392
 GameObject:
   m_ObjectHideFlags: 0
@@ -6133,7 +6260,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 670787555}
-  m_RootOrder: 9
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -6160,7 +6287,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "B: 2023-04-27 #3724349\r"
+  m_text: 'B: 2023-04-28 #dad6adf'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8428,7 +8555,7 @@ RectTransform:
   m_Children:
   - {fileID: 1058780977}
   m_Father: {fileID: 670787555}
-  m_RootOrder: 12
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9624,6 +9751,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1242251205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9669,17 +9808,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1242251203}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1681029647}
-  m_Father: {fileID: 670787555}
-  m_RootOrder: 13
+  m_Father: {fileID: 731465983}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 404, y: 101}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1247578027
@@ -9767,7 +9906,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10007}
+  m_AnchoredPosition: {x: 0, y: 217.10022}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -12630,52 +12769,67 @@ MonoBehaviour:
     type: 3}
   menuPanel: {fileID: 1389592958}
   mouseName: {fileID: 239753154}
+  rightClickMenu: {fileID: 731465988}
   coordSystem: {fileID: 1811447191}
   focusBtn:
+    hideWhenUseless: 0
     button: {fileID: 215373942}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   unfocusBtn:
+    hideWhenUseless: 0
     button: {fileID: 25034917}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   selectParentBtn:
+    hideWhenUseless: 0
     button: {fileID: 284250941}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   focusText: {fileID: 1346455887}
   editBtn:
+    hideWhenUseless: 0
     button: {fileID: 1731992678}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   resetTransBtn:
+    hideWhenUseless: 0
     button: {fileID: 1012792178}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   resetChildrenBtn:
+    hideWhenUseless: 0
     button: {fileID: 1205504873}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   barChartBtn:
+    hideWhenUseless: 0
     button: {fileID: 75145215}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   scatterPlotBtn:
+    hideWhenUseless: 0
     button: {fileID: 1407650635}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   heatMapBtn:
+    hideWhenUseless: 0
     button: {fileID: 565046244}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   apiUrl: {fileID: 39982717}
   labelsDropdown: {fileID: 2112179632}
   currentItemText: {fileID: 1128443967}
   getCoordsBtn:
+    hideWhenUseless: 0
     button: {fileID: 1242251204}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   debugPanel: {fileID: 670787554}
   toggleTilesNameBtn:
+    hideWhenUseless: 0
     button: {fileID: 2113158546}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   toggleTilesColorBtn:
+    hideWhenUseless: 0
     button: {fileID: 1719855463}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   toggleUHelpersBtn:
+    hideWhenUseless: 0
     button: {fileID: 314828351}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   toggleLocalCSBtn:
+    hideWhenUseless: 0
     button: {fileID: 577279989}
     toggledColor: {r: 0, g: 0, b: 0, a: 0}
   slider: {fileID: 1157218563}
@@ -13997,12 +14151,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 250098020}
-  m_Father: {fileID: 670787555}
-  m_RootOrder: 4
+  m_Father: {fileID: 731465983}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -93.7, y: -60.4}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1719855463
@@ -14052,6 +14206,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1595579791}
         m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleTilesColor
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14319,7 +14485,7 @@ RectTransform:
   m_Children:
   - {fileID: 251270683}
   m_Father: {fileID: 670787555}
-  m_RootOrder: 10
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -15108,7 +15274,7 @@ RectTransform:
   m_Children:
   - {fileID: 1406083046}
   m_Father: {fileID: 670787555}
-  m_RootOrder: 7
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -15785,7 +15951,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -17581,8 +17747,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.00000028113843
-  m_Size: 0.5658
+  m_Value: -0.0000011245537
+  m_Size: 0.56579596
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17923,12 +18089,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 267635115}
-  m_Father: {fileID: 670787555}
-  m_RootOrder: 3
+  m_Father: {fileID: 731465983}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -93.7, y: -26.399994}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2113158546
@@ -17978,6 +18144,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1595579791}
         m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
         m_MethodName: ToggleTilesName
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

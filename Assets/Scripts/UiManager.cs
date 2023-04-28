@@ -16,6 +16,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
+    public GameObject rightClickMenu;
     public GameObject coordSystem;
 
     [Header("Panel Top")]
@@ -167,7 +168,7 @@ public class UiManager : MonoBehaviour
         };
         heatMapBtn.Check();
 
-        toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button)
+        toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<Room>(),
 
@@ -177,7 +178,7 @@ public class UiManager : MonoBehaviour
         };
         toggleTilesNameBtn.Check();
 
-        toggleTilesColorBtn = new ButtonHandler(toggleTilesColorBtn.button)
+        toggleTilesColorBtn = new ButtonHandler(toggleTilesColorBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<Room>(),
 
@@ -187,7 +188,7 @@ public class UiManager : MonoBehaviour
         };
         toggleTilesColorBtn.Check();
 
-        toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button)
+        toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button, true)
         {
             interactCondition = () => GameManager.instance.selectMode
             &&
@@ -203,7 +204,7 @@ public class UiManager : MonoBehaviour
         };
         toggleUHelpersBtn.Check();
 
-        toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button)
+        toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<OObject>()
             || GameManager.instance.SelectIs<Building>(),
@@ -216,7 +217,7 @@ public class UiManager : MonoBehaviour
         };
         toggleLocalCSBtn.Check();
 
-        getCoordsBtn = new ButtonHandler(getCoordsBtn.button)
+        getCoordsBtn = new ButtonHandler(getCoordsBtn.button, true)
         {
             interactCondition = () => GameManager.instance.GetSelected().Count == 1
             &&
@@ -233,6 +234,7 @@ public class UiManager : MonoBehaviour
         SetupColors();
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
+        rightClickMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -411,6 +413,32 @@ public class UiManager : MonoBehaviour
     {
         _prompt.gameObject.SetActive(false);
         Destroy(_prompt.gameObject);
+    }
+
+    ///<summary>
+    /// If a button is active, display rightClickMenu
+    ///</summary>
+    public void DisplayRightClickMenu()
+    {
+        bool canBeDisplayed = false;
+        foreach (Transform btn in rightClickMenu.transform)
+        {
+            if (btn.gameObject.activeSelf)
+                canBeDisplayed = true;
+        }
+        if (canBeDisplayed)
+        {
+            rightClickMenu.SetActive(true);
+            rightClickMenu.transform.position = Input.mousePosition;
+        }
+    }
+
+    ///<summary>
+    /// Disable the rightClickMenu's GameObject
+    ///</summary>
+    public void HideRightClickMenu()
+    {
+        rightClickMenu.SetActive(false);
     }
 
     ///<summary>
