@@ -218,28 +218,7 @@ public class FocusHandler : MonoBehaviour
         List<OObject> selectionReferents = GameManager.instance.GetSelected().Select(s => s.GetComponent<OObject>()?.referent).Where(s => s != null).ToList();
 
         if (!selectionReferents.Contains(oobject.referent))
-        {
             UpdateChildMeshRenderersRec(false);
-            return;
-        }
-
-
-        //foreach (OObject selectionReferent in selectionReferents)
-        //{
-        //    if (!oobject.referent || (oobject.category != "device" && selectionReferent != oobject.referent))
-        //        UpdateChildMeshRenderersRec(false);
-        //    else if (selectionReferent == oobject.referent)
-        //    {
-        //        if (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
-        //        {
-        //            ToggleCollider(gameObject, false);
-        //            UpdateOwnMeshRenderers(false);
-        //            UpdateChildMeshRenderers(false);
-        //        }
-        //        if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
-        //            UpdateChildMeshRenderers(false);
-        //    }
-        //}
     }
 
     /// <summary>
