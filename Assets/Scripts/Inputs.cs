@@ -64,13 +64,10 @@ public class Inputs : MonoBehaviour
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
         {
-            UiManager.instance.coordSystem.SetActive(true);
             UiManager.instance.MoveCSToHit(hit);
             if (Input.GetMouseButtonDown(0))
                 AppendDistFromClick(hit);
         }
-        else
-            UiManager.instance.coordSystem.SetActive(false);
     }
 
     ///<summary>
@@ -167,12 +164,15 @@ public class Inputs : MonoBehaviour
         else if (Input.GetMouseButtonDown(0))
         {
             UiManager.instance.HideRightClickMenu();
-            StartCoroutine(WaitAndLock(0.1f));
-            Debug.Log($"A {Time.frameCount}");
+            StartCoroutine(WaitAndUnlock(0.1f));
         }
     }
 
-    private IEnumerator WaitAndLock(float _t)
+    ///<summary>
+    /// Wait _t seconds and set the lockMouseInteract to false.
+    ///</summary>
+    ///<param name="_t">The amount of seconds to wait</param>
+    public IEnumerator WaitAndUnlock(float _t)
     {
         yield return new WaitForSeconds(_t);
         lockMouseInteract = false;
@@ -209,7 +209,6 @@ public class Inputs : MonoBehaviour
     {
         if (_target)
         {
-            Debug.Log($"B {Time.frameCount}");
             if (_target.CompareTag("Selectable"))
             {
                 bool canSelect = true;

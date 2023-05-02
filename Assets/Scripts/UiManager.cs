@@ -439,6 +439,7 @@ public class UiManager : MonoBehaviour
     public void HideRightClickMenu()
     {
         rightClickMenu.SetActive(false);
+        StartCoroutine(GetComponent<Inputs>().WaitAndUnlock(0));
     }
 
     ///<summary>
@@ -793,7 +794,7 @@ public class UiManager : MonoBehaviour
             else
                 GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
             bd.ToggleCS(GameManager.instance.getCoordsMode);
-            // coordSystem.SetActive(GameManager.instance.getCoordsMode);
+            coordSystem.SetActive(GameManager.instance.getCoordsMode);
         }
         getCoordsBtn.Check();
         toggleLocalCSBtn.Check();
