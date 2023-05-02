@@ -202,30 +202,44 @@ public class FocusHandler : MonoBehaviour
         InitHandler();
         if (GameManager.instance.GetSelected().Contains(gameObject))
         {
+            UpdateChildMeshRenderersRec(false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             return;
         }
 
+
+        OObject oobject = GetComponent<OObject>();
+        //We focus on racks or root devices
+        if (transform.parent && oobject.category == "device")
+            return;
+
         //Get all referents of selected items
         List<OObject> selectionReferents = GameManager.instance.GetSelected().Select(s => s.GetComponent<OObject>()?.referent).Where(s => s != null).ToList();
-        OObject oobject = GetComponent<OObject>();
-        foreach (OObject selectionReferent in selectionReferents)
+
+        if (!selectionReferents.Contains(oobject.referent))
         {
-            if (!oobject.referent || (oobject.category != "device" && selectionReferent != oobject.referent))
-                UpdateChildMeshRenderersRec(false);
-            else if (selectionReferent == oobject.referent)
-            {
-                if (!GameManager.instance.GetSelected().Contains(gameObject) && (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject)))
-                {
-                    ToggleCollider(gameObject, false);
-                    UpdateOwnMeshRenderers(false);
-                    UpdateChildMeshRenderers(false);
-                }
-                if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
-                    UpdateChildMeshRenderers(false);
-            }
+            UpdateChildMeshRenderersRec(false);
+            return;
         }
+
+
+        //foreach (OObject selectionReferent in selectionReferents)
+        //{
+        //    if (!oobject.referent || (oobject.category != "device" && selectionReferent != oobject.referent))
+        //        UpdateChildMeshRenderersRec(false);
+        //    else if (selectionReferent == oobject.referent)
+        //    {
+        //        if (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
+        //        {
+        //            ToggleCollider(gameObject, false);
+        //            UpdateOwnMeshRenderers(false);
+        //            UpdateChildMeshRenderers(false);
+        //        }
+        //        if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
+        //            UpdateChildMeshRenderers(false);
+        //    }
+        //}
     }
 
     /// <summary>
