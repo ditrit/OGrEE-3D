@@ -195,7 +195,7 @@ public class CliParser
         // Case domain for all OgreeObjects
         bool tenantColorChanged = (newData.category == "tenant" && obj.attributes["color"] != newData.attributes["color"]);
 
-        // Case color/temperature for racks & devices
+        // Case color for racks & devices
         if (newData.category == "rack" || newData.category == "device")
         {
             OObject item = (OObject)obj;
@@ -203,12 +203,6 @@ public class CliParser
                 && (!item.attributes.ContainsKey("color")
                     || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                 item.SetColor(newData.attributes["color"]);
-
-            foreach (string attribute in newData.attributes.Keys)
-                if (attribute.StartsWith("temperature_")
-                    && (!item.attributes.ContainsKey(attribute)
-                        || item.attributes[attribute] != newData.attributes[attribute]))
-                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
         // Case temperature for corridors
         else if (newData.category == "corridor")
@@ -271,7 +265,11 @@ public class CliParser
             }
         }
 
-        obj.UpdateFromSApiObject(newData);
+        if (obj is OObject oobj)
+            oobj.UpdateFromSApiObject(newData);
+        else
+            obj.UpdateFromSApiObject(newData);
+
         if (tenantColorChanged)
             EventManager.instance.Raise(new UpdateTenantEvent { name = newData.name });
     }
