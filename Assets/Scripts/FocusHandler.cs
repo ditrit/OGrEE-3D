@@ -274,12 +274,23 @@ public class FocusHandler : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OgreeObject>() || child.GetComponent<Sensor>())
+            if (child.GetComponent<OgreeObject>())
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "uRoot" && child.name != "GridForULocation")
+            else if (child.name != "uRoot" && child.name != "GridForULocation" && !child.GetComponent<Sensor>())
                 OwnObjectsList.Add(child.gameObject);
+            else
+            {
+                Sensor sensor = child.GetComponent<Sensor>();
+                if (!sensor)
+                    continue;
+                if (sensor.fromTemplate)
+                    child.GetChild(0).GetComponent<Renderer>().enabled = false;
+                else
+                    ogreeChildObjects.Add(child.gameObject);
+
+            }
         }
     }
 
