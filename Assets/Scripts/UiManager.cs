@@ -126,7 +126,7 @@ public class UiManager : MonoBehaviour
         };
         resetChildrenBtn.Check();
 
-        barChartBtn = new ButtonHandler(barChartBtn.button)
+        barChartBtn = new ButtonHandler(barChartBtn.button, true)
         {
             interactCondition = () =>
             (
@@ -141,7 +141,7 @@ public class UiManager : MonoBehaviour
         };
         barChartBtn.Check();
 
-        scatterPlotBtn = new ButtonHandler(scatterPlotBtn.button)
+        scatterPlotBtn = new ButtonHandler(scatterPlotBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
             &&
@@ -151,7 +151,7 @@ public class UiManager : MonoBehaviour
         };
         scatterPlotBtn.Check();
 
-        heatMapBtn = new ButtonHandler(heatMapBtn.button)
+        heatMapBtn = new ButtonHandler(heatMapBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<OObject>("device")
             &&
