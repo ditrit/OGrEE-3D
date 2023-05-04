@@ -10,10 +10,8 @@ public class GUIObjectInfos : MonoBehaviour
     [Header("Single object")]
     [SerializeField] private GameObject singlePanel = null;
     [SerializeField] private TMP_Text tmpName = null;
-    [SerializeField] private TMP_Text tmpTenantName = null;
-    [SerializeField] private TMP_Text tmpTenantContact = null;
-    [SerializeField] private TMP_Text tmpTenantPhone = null;
-    [SerializeField] private TMP_Text tmpTenantEmail = null;
+    [SerializeField] private TMP_Text tmpDomainName = null;
+    [SerializeField] private TMP_Text tmpDomainAttrs = null;
     [SerializeField] private TMP_Text tmpAttributes = null;
 
     [Header("Multi objects")]
@@ -46,10 +44,8 @@ public class GUIObjectInfos : MonoBehaviour
                 tmpName.text = _obj.name;
             else
                 tmpName.text = "";
-            tmpTenantName.text = "";
-            tmpTenantContact.text = "";
-            tmpTenantPhone.text = "";
-            tmpTenantEmail.text = "";
+            tmpDomainName.text = "";
+            tmpDomainAttrs.text = "";
             tmpAttributes.text = "";
         }
     }
@@ -84,17 +80,15 @@ public class GUIObjectInfos : MonoBehaviour
         if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
-            tmpTenantName.text = domain.name;
-            tmpTenantContact.text = IfInDictionary(domain.attributes, "mainContact");
-            tmpTenantPhone.text = IfInDictionary(domain.attributes, "mainPhone");
-            tmpTenantEmail.text = IfInDictionary(domain.attributes, "mainEmail");
+            tmpDomainName.text = domain.name;
+            tmpDomainAttrs.text = "";
+            foreach (KeyValuePair<string, string> kvp in domain.attributes)
+                tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
         }
         else
         {
-            tmpTenantName.text = "-";
-            tmpTenantContact.text = "";
-            tmpTenantPhone.text = "";
-            tmpTenantEmail.text = "";
+            tmpDomainName.text = "-";
+            tmpDomainAttrs.text = "";
         }
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";

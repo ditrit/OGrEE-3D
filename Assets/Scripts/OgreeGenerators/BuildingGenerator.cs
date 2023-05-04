@@ -83,7 +83,7 @@ public class BuildingGenerator
         building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
 
-        building.UpdateColorByTenant();
+        building.UpdateColorByDomain();
 
         roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
 
@@ -177,7 +177,7 @@ public class BuildingGenerator
         room.nameText.text = newRoom.name;
         room.nameText.rectTransform.sizeDelta = size;
 
-        room.UpdateColorByTenant();
+        room.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(room.hierarchyName, newRoom);
 
