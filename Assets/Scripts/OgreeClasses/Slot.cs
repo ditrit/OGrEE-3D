@@ -6,6 +6,7 @@ public class Slot : MonoBehaviour
 {
     public bool used = false;
     public string orient;
+    public bool isU;
     public string formFactor;
     public string labelPos;
 

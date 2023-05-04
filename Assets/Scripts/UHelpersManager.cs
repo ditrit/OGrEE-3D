@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
-using System;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 public class UHelpersManager : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeIn(EditModeInEvent _e)
     {
         wasEdited = true;
-        ToggleU(GameManager.instance.GetSelected()[0].transform, false);
+        ToggleU(GameManager.instance.GetSelected()[0], false);
     }
 
     ///<summary>
@@ -51,7 +52,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnEditModeOut(EditModeOutEvent _e)
     {
         wasEdited = false;
-        ToggleU(GameManager.instance.GetSelected()[0].transform, true);
+        ToggleU(GameManager.instance.GetSelected()[0], true);
     }
 
     ///<summary>
@@ -60,10 +61,14 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
-            HighlightULocation();
+            string str = "";
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+                str += (obj.name) + " ";
+            print(str);
+            ToggleU(GameManager.instance.GetSelected(), true);
+            HighlightULocation(GameManager.instance.GetSelected());
         }
     }
 
@@ -71,54 +76,64 @@ public class UHelpersManager : MonoBehaviour
     /// Highlight the ULocation at the same height than the selected device.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
-    private void HighlightULocation()
+    private void HighlightULocation(List<GameObject> _selection)
     {
-        OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
-        Rack rack = Utils.GetRackReferent(oObject);
-        if (!rack)
+        if (_selection.Count == 0)
             return;
-
-        if (oObject.category == "rack")
+        switch (_selection[0].GetComponent<OObject>().category)
         {
-            GameObject uRoot = rack.uRoot.gameObject;
-            uRoot.SetActive(true);
-            for (int i = 0; i < uRoot.transform.childCount; i++)
-                ChangeUColor(uRoot, i);
-            wasEdited = false;
-        }
-        else if (oObject.category == "device")
-        {
-            if (wasEdited)
-                return;
+            case "rack":
+                foreach (GameObject obj in _selection)
+                {
+                    GameObject u = obj.GetComponent<Rack>().uRoot.gameObject;
+                    u.SetActive(true);
+                    for (int i = 0; i < u.transform.GetChild(0).childCount; i++)
+                        ChangeUColor(u, i, true);
+                    wasEdited = false;
+                }
+                break;
 
-            float difference;
-            Transform t = GameManager.instance.GetSelected()[0].transform.GetChild(0);
-            float center = t.position.y;
+            case "device":
+                if (wasEdited)
+                    return;
+                Rack rack = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
+                if (!rack)
+                    return;
+                GameObject uRoot = rack.uRoot.gameObject;
+                uRoot.SetActive(true);
 
-            if (t.GetComponent<BoxCollider>().enabled)
-                difference = t.GetComponent<BoxCollider>().bounds.extents.y;
-            else
-            {
-                t.GetComponent<BoxCollider>().enabled = true;
-                difference = t.GetComponent<BoxCollider>().bounds.extents.y;
-                t.GetComponent<BoxCollider>().enabled = false;
-            }
+                for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
+                    ChangeUColor(uRoot, i, false);
 
-            t = GameManager.instance.GetSelected()[0].transform;
-            float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
-            float lowerBound = center - difference - delta;
-            float upperBound = center + difference - delta;
+                foreach (GameObject obj in _selection)
+                {
 
-            GameObject uRoot = rack.GetComponent<Rack>().uRoot.gameObject;
-            uRoot.SetActive(true);
-            for (int i = 0; i < uRoot.transform.childCount; i++)
-            {
-                if (lowerBound < uRoot.transform.GetChild(i).position.y && uRoot.transform.GetChild(i).position.y < upperBound)
-                    ChangeUColor(uRoot, i);
-                else
-                    uRoot.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = Color.black;
-            }
-            return;
+                    float difference;
+                    Transform t = obj.transform.GetChild(0);
+                    float center = t.position.y;
+
+                    BoxCollider boxCollider = t.GetComponent<BoxCollider>();
+                    bool isEnabled = boxCollider.enabled;
+                    boxCollider.enabled = true;
+                    difference = boxCollider.bounds.extents.y;
+                    boxCollider.enabled = isEnabled;
+
+                    t = obj.transform;
+                    float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
+                    float lowerBound = center - difference - delta;
+                    float upperBound = center + difference - delta;
+
+                    for (int i = 0; i < uRoot.transform.GetChild(0).childCount; i++)
+                    {
+                        Transform u = uRoot.transform.GetChild(0).GetChild(i);
+                        if (lowerBound < u.position.y && u.position.y < upperBound)
+                            ChangeUColor(uRoot, i, true);
+                    }
+                }
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -127,17 +142,17 @@ public class UHelpersManager : MonoBehaviour
     /// </summary>
     /// <param name="_uRoot">Root transform of U helpers</param>
     /// <param name="_index">U helper index</param>
-    private void ChangeUColor(GameObject _uRoot, int _index)
+    /// <param name="_activated">If the U helper is colored or not</param>
+    private void ChangeUColor(GameObject _uRoot, int _index, bool _activated)
     {
-        GameObject obj = _uRoot.transform.GetChild(_index).gameObject;
-        if (obj.name.StartsWith(cornerRearLeft))
-            obj.GetComponent<Renderer>().material.color = Color.red;
-        if (obj.name.StartsWith(cornerRearRight))
-            obj.GetComponent<Renderer>().material.color = Color.yellow;
-        if (obj.name.StartsWith(cornerFrontLeft))
-            obj.GetComponent<Renderer>().material.color = Color.blue;
-        if (obj.name.StartsWith(cornerFrontRight))
-            obj.GetComponent<Renderer>().material.color = Color.green;
+        GameObject obj = _uRoot.transform.GetChild(0).GetChild(_index).gameObject;
+        obj.GetComponent<Renderer>().material.color = _activated ? Color.red : Color.black;
+        obj = _uRoot.transform.GetChild(1).GetChild(_index).gameObject;
+        obj.GetComponent<Renderer>().material.color = _activated ? Color.yellow : Color.black;
+        obj = _uRoot.transform.GetChild(2).GetChild(_index).gameObject;
+        obj.GetComponent<Renderer>().material.color = _activated ? Color.blue : Color.black;
+        obj = _uRoot.transform.GetChild(3).GetChild(_index).gameObject;
+        obj.GetComponent<Renderer>().material.color = _activated ? Color.green : Color.black;
     }
 
     ///<summary>
@@ -145,160 +160,138 @@ public class UHelpersManager : MonoBehaviour
     ///</summary>
     ///<param name="_transform">The transform of a rack or a device</param>
     ///<param name="_active">Should the U helpers be visible ?</param>
-    public void ToggleU(Transform _transform, bool _active)
+    public void ToggleU(List<GameObject> _selection, bool _active)
     {
-        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
-        if (!rack)
-            return;
-
-        Transform uRoot = rack.uRoot;
-        if (_active)
+        foreach (GameObject obj in _selection)
         {
-            if (!uRoot)
-                GenerateUHelpers(_transform.GetComponent<Rack>());
-            else
-                uRoot.gameObject.SetActive(true);
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            if (!rack)
+                break;
+
+            Transform uRoot = rack.uRoot;
+            if (_active)
+            {
+                if (!uRoot)
+                    GenerateUHelpers(rack);
+                else
+                    uRoot.gameObject.SetActive(true);
+            }
+            else if (uRoot)
+                uRoot.gameObject.SetActive(false);
         }
-        else if (!_active && uRoot)
-            uRoot.gameObject.SetActive(false);
-        return;
     }
 
     ///<summary>
     /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
     ///</summary>
     ///<param name="_transform">The transform of a rack or a device</param>
-    public void ToggleU(Transform _transform)
+    public void ToggleU(List<GameObject> _selection)
     {
-        Rack rack = Utils.GetRackReferent(_transform.GetComponent<OObject>());
-        if (!rack)
-            return;
+        foreach (GameObject obj in _selection)
+        {
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            if (!rack)
+                break;
 
-        Transform uRoot = rack.uRoot;
-        if (!uRoot)
-        {
-            GenerateUHelpers(_transform.GetComponent<Rack>());
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
+            Transform uRoot = rack.uRoot;
+            if (!uRoot)
+            {
+                GenerateUHelpers(rack);
+                GameManager.instance.AppendLogLine($"U helpers ON for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
+            else if (!uRoot.gameObject.activeSelf)
+            {
+                uRoot.gameObject.SetActive(true);
+                GameManager.instance.AppendLogLine($"U helpers ON for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
+            else
+            {
+                uRoot.gameObject.SetActive(false);
+                GameManager.instance.AppendLogLine($"U helpers OFF for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            }
         }
-        else if (uRoot.gameObject.activeSelf == false)
-        {
-            uRoot.gameObject.SetActive(true);
-            GameManager.instance.AppendLogLine($"U helpers ON for {_transform.name}.", ELogTarget.logger, ELogtype.info);
-        }
-        else
-        {
-            uRoot.gameObject.SetActive(false);
-            GameManager.instance.AppendLogLine($"U helpers OFF for {_transform.name}.", ELogTarget.logger, ELogtype.info);
-        }
-        return;
+    }
+
+    public void ToggleU(GameObject _selected)
+    {
+        ToggleU(new List<GameObject> { _selected });
+    }
+    public void ToggleU(GameObject _selected, bool _active)
+    {
+        ToggleU(new List<GameObject> { _selected }, _active);
     }
 
     ///<summary>
-    /// Create uRoot, place it and call <see cref="GenerateUColumn"/> for each corner
+    /// Create uRoot, place it and create U helpers for each corner
     ///</summary>
     ///<param name="_rack">The rack where we create the U helpers</param>
     public void GenerateUHelpers(Rack _rack)
     {
         if (_rack.uRoot)
             return;
-        Vector3 rootPos;
-        Transform box = _rack.transform.GetChild(0);
-        if (box.childCount == 0)
-            rootPos = new Vector3(0, box.localScale.y / -2, 0);
-        else
-            rootPos = new Vector3(0, box.GetComponent<BoxCollider>().size.y / -2, 0);
 
         _rack.uRoot = new GameObject("uRoot").transform;
         _rack.uRoot.parent = _rack.transform;
-        _rack.uRoot.localPosition = rootPos;
+        _rack.uRoot.localPosition = Vector3.zero;
         _rack.uRoot.localEulerAngles = Vector3.zero;
-        GenerateUColumn(_rack, cornerRearLeft);
-        GenerateUColumn(_rack, cornerRearRight);
-        GenerateUColumn(_rack, cornerFrontLeft);
-        GenerateUColumn(_rack, cornerFrontRight);
-    }
-
-    ///<summary>
-    /// Instantiate one <see cref="GameManager.uLocationModel"/> per U in the given column
-    ///</summary>
-    ///<param name="_corner">Corner of the column</param>
-    ///<param name="_rack">The rack where we create the U helpers</param>
-    private void GenerateUColumn(Rack _rack, string _corner)
-    {
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
+        Transform URearLeft = new GameObject(cornerRearLeft).transform;
+        URearLeft.parent = _rack.uRoot;
+        URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
+        URearLeft.localEulerAngles = Vector3.zero;
+        Transform URearRight = new GameObject(cornerRearRight).transform;
+        URearRight.parent = _rack.uRoot;
+        URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
+        URearRight.localEulerAngles = Vector3.zero;
+        Transform UFrontLeft = new GameObject(cornerFrontLeft).transform;
+        UFrontLeft.parent = _rack.uRoot;
+        UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontLeft.localEulerAngles = Vector3.zero;
+        Transform UFrontRight = new GameObject(cornerFrontRight).transform;
+        UFrontRight.parent = _rack.uRoot;
+        UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontRight.localEulerAngles = Vector3.zero;
 
-        // By default, attributes["heightUnit"] == "U"
         float scale = GameManager.instance.uSize;
-        int max = (int)Utils.ParseDecFrac(_rack.attributes["height"]);
         if (_rack.attributes["heightUnit"] == "OU")
             scale = GameManager.instance.ouSize;
-        else if (_rack.attributes["heightUnit"] == "cm")
-            max = Mathf.FloorToInt(Utils.ParseDecFrac(_rack.attributes["height"]) / (GameManager.instance.uSize * 100));
 
-        if (!string.IsNullOrEmpty(_rack.attributes["template"]))
+        //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
+        float minY = float.PositiveInfinity;
+        float maxY = float.NegativeInfinity;
+
+        foreach (Transform child in _rack.transform)
         {
-            Transform firstSlot = null;
-            int minHeight = 0;
-            foreach (Transform child in _rack.transform)
+            Slot slot = child.GetComponent<Slot>();
+            if (slot && slot.isU)
             {
-                if (child.GetComponent<Slot>() && child.GetComponent<Slot>().orient == "horizontal")
-                {
-                    if (firstSlot)
-                    {
-                        // Should use position.y instead of its name
-                        int height = GetUNumberFromName(child.name);
-                        if (height < minHeight)
-                            firstSlot = child;
-                        else if (height > max)
-                            max = height;
-                    }
-                    else
-                    {
-                        firstSlot = child;
-                        minHeight = GetUNumberFromName(child.name);
-                        max = minHeight;
-                    }
-                }
-            }
-            if (firstSlot)
-            {
-                _rack.uRoot.localPosition = new Vector3(_rack.uRoot.localPosition.x, firstSlot.localPosition.y, _rack.uRoot.localPosition.z);
-                _rack.uRoot.localPosition -= new Vector3(0, firstSlot.GetChild(0).localScale.y / 2, 0);
+                minY = Mathf.Min(child.localPosition.y - 0.5f * (child.GetChild(0).localScale.y - scale), minY);
+                maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), minY);
             }
         }
-        for (int i = 1; i <= max; i++)
+
+        if (minY < float.PositiveInfinity)
         {
-            Transform obj = Instantiate(GameManager.instance.uLocationModel).transform;
-            obj.name = $"{_corner}_u{i}";
-            obj.GetComponentInChildren<TextMeshPro>().text = i.ToString();
-            obj.parent = _rack.uRoot;
-            obj.localScale = Vector3.one * scale;
-            if (_corner == cornerRearLeft)
-            {
-                obj.localPosition = new Vector3(-boxSize.x / 2, i * scale - scale / 2, -boxSize.z / 2);
-                obj.localEulerAngles = new Vector3(0, 0, 0);
-                obj.GetComponent<Renderer>().material.color = Color.red;
-            }
-            else if (_corner == cornerRearRight)
-            {
-                obj.localPosition = new Vector3(boxSize.x / 2, i * scale - scale / 2, -boxSize.z / 2);
-                obj.localEulerAngles = new Vector3(0, 0, 0);
-                obj.GetComponent<Renderer>().material.color = Color.yellow;
-            }
-            else if (_corner == cornerFrontLeft)
-            {
-                obj.localPosition = new Vector3(-boxSize.x / 2, i * scale - scale / 2, boxSize.z / 2);
-                obj.localEulerAngles = new Vector3(0, 180, 0);
-                obj.GetComponent<Renderer>().material.color = Color.blue;
-            }
-            else if (_corner == cornerFrontRight)
-            {
-                obj.localPosition = new Vector3(boxSize.x / 2, i * scale - scale / 2, boxSize.z / 2);
-                obj.localEulerAngles = new Vector3(0, 180, 0);
-                obj.GetComponent<Renderer>().material.color = Color.green;
-            }
+            BuildU(minY, maxY, scale, URearLeft, cornerRearLeft, Color.red);
+            BuildU(minY, maxY, scale, URearRight, cornerRearRight, Color.yellow);
+            BuildU(minY, maxY, scale, UFrontLeft, cornerFrontLeft, Color.blue);
+            BuildU(minY, maxY, scale, UFrontRight, cornerFrontRight, Color.green);
+        }
+        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == "U" || _rack.attributes["heightUnit"] == "OU")
+        {
+            int Unumber;
+            if (_rack.attributes.ContainsKey("sizeWDHu"))
+                Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHu"])[2];
+            else if (_rack.attributes.ContainsKey("sizeWDHou"))
+                Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHou"])[2];
             else
-                Debug.LogError("Unkown Corner");
+                Unumber = int.Parse(_rack.attributes["height"]);
+
+            float offset = -(Unumber - 1) * scale / 2;
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, cornerRearLeft, Color.red);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearRight, cornerRearRight, Color.yellow);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
+            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontRight, cornerFrontRight, Color.green);
         }
     }
 
@@ -312,29 +305,32 @@ public class UHelpersManager : MonoBehaviour
         if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
-            ToggleU(GameManager.instance.GetSelected()[0].transform, true);
+            ToggleU(GameManager.instance.GetSelected()[0], true);
         }
     }
 
     /// <summary>
-    /// Get the U number from the name of a U helper cube
+    /// Build one U-helpers column
     /// </summary>
-    /// <param name="_name">the name of the U helper</param>
-    /// <returns>The number of the U helper</returns>
-    private int GetUNumberFromName(string _name)
+    /// <param name="_firstPositionY">(local) vertical position of the first floor</param>
+    /// <param name="_lastPositionY">(local) vertical position of the last floor</param>
+    /// <param name="_scale">height of the floor (u size or ou size)</param>
+    /// <param name="_UColumn">parent of the column</param>
+    /// <param name="_cornerName">name of the column</param>
+    /// <param name="_color">color of the column</param>
+    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _UColumn, string _cornerName, Color _color)
     {
-        string iteratedName = _name;
-        while (iteratedName.Length > 0)
+        int floorNumber = 0;
+        for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
         {
-            try
-            {
-                return (int)Utils.ParseDecFrac(iteratedName);
-            }
-            catch (FormatException)
-            {
-                iteratedName = iteratedName.Substring(1);
-            }
+            floorNumber++;
+            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _UColumn).transform;
+            rearLeft.localPosition = positionY * Vector3.up;
+            rearLeft.name = $"{_cornerName}_u{floorNumber}";
+            rearLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            rearLeft.localScale = Vector3.one * _scale;
+            rearLeft.GetComponent<Renderer>().material.color = _color;
         }
-        return 0;
     }
 }

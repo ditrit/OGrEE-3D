@@ -339,7 +339,7 @@ public class CliParser
                         rack.ToggleCS(command.value == "true");
                         break;
                     case "U":
-                        UHelpersManager.instance.ToggleU(rack.transform, command.value == "true");
+                        UHelpersManager.instance.ToggleU(rack.gameObject, command.value == "true");
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect rack interaction", ELogTarget.both, ELogtype.warningCli);
