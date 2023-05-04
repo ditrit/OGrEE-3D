@@ -80,7 +80,7 @@ public class CliParser
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                    await GameManager.instance.PurgeTenants();
+                    await GameManager.instance.PurgeDomains();
                 }
                 else
                 {
@@ -186,14 +186,14 @@ public class CliParser
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
         OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
 
-        // Get tenant from API if new domain isn't loaded
+        // Get domain from API if new domain isn't loaded
         if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
-            await ApiManager.instance.GetObject($"tenants?name={newData.domain}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool tenantColorChanged = false;
-        if (newData.category == "tenant" && obj.attributes["color"] != newData.attributes["color"])
-            tenantColorChanged = true;
+        bool domainColorChanged = false;
+        if (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"])
+            domainColorChanged = true;
 
         // Case color/temperature for racks & devices
         if (newData.category == "rack" || newData.category == "device")
@@ -272,8 +272,8 @@ public class CliParser
         }
 
         obj.UpdateFromSApiObject(newData);
-        if (tenantColorChanged)
-            EventManager.instance.Raise(new UpdateTenantEvent { name = newData.name });
+        if (domainColorChanged)
+            EventManager.instance.Raise(new UpdateDomainEvent { name = newData.name });
     }
 
     ///<summary>
@@ -435,7 +435,7 @@ public class CliParser
                     if (prompt.state == EPromptStatus.accept)
                     {
                         await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                        await GameManager.instance.PurgeTenants();
+                        await GameManager.instance.PurgeDomains();
                         UiManager.instance.ClearCache();
                         UiManager.instance.DeletePrompt(prompt);
                     }
