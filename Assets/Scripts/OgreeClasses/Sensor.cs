@@ -14,6 +14,11 @@ public class Sensor : MonoBehaviour
         EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+    }
+
     ///<summary>
     /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
     /// Set this sensor's temperature to _value (converted to float)
@@ -65,7 +70,7 @@ public class Sensor : MonoBehaviour
         OObject parent = transform.parent.GetComponent<OObject>();
         if (parent)
             if (!fromTemplate)
-                SetTemperature(parent.GetTemperatureInfos().mean.ToString());
+                SetTemperature(parent.GetTemperatureInfos().mean);
             else if (parent.attributes.ContainsKey($"temperature_{name}"))
                 SetTemperature(parent.attributes[$"temperature_{name}"]);
             else

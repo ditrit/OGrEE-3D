@@ -702,7 +702,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void TempColorMode(bool _value)
     {
-        GameManager.instance.tempMode = _value;
+        GameManager.instance.tempColorMode = _value;
         EventManager.instance.Raise(new TemperatureColorEvent());
         UpdateGuiInfos();
     }

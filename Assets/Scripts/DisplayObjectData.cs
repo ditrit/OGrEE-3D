@@ -189,7 +189,7 @@ public class DisplayObjectData : MonoBehaviour
         if (sensor)
         {
             if (_str == "#temperature")
-                WriteLabels($"{sensor.temperature} {sensor.temperatureUnit}");
+                WriteLabels($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
             else
                 GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", ELogTarget.both, ELogtype.warning);
         }

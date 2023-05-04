@@ -116,10 +116,6 @@ public class FocusHandler : MonoBehaviour
                 else
                     UpdateChildMeshRenderers(false);
             }
-
-            //destroy heatmap if there is one
-            if (transform.GetChild(0).childCount > 0)
-                Destroy(transform.GetChild(0).GetChild(0).gameObject);
         }
     }
 
@@ -202,30 +198,23 @@ public class FocusHandler : MonoBehaviour
         InitHandler();
         if (GameManager.instance.GetSelected().Contains(gameObject))
         {
+            UpdateChildMeshRenderersRec(false);
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
             return;
         }
 
+
+        OObject oobject = GetComponent<OObject>();
+        //We focus on racks or root devices
+        if (transform.parent && oobject.category == "device")
+            return;
+
         //Get all referents of selected items
         List<OObject> selectionReferents = GameManager.instance.GetSelected().Select(s => s.GetComponent<OObject>()?.referent).Where(s => s != null).ToList();
-        OObject oobject = GetComponent<OObject>();
-        foreach (OObject selectionReferent in selectionReferents)
-        {
-            if (!oobject.referent || (oobject.category != "device" && selectionReferent != oobject.referent))
-                UpdateChildMeshRenderersRec(false);
-            else if (selectionReferent == oobject.referent)
-            {
-                if (!GameManager.instance.GetSelected().Contains(gameObject) && (!transform.parent || !GameManager.instance.GetSelected().Contains(transform.parent.gameObject)))
-                {
-                    ToggleCollider(gameObject, false);
-                    UpdateOwnMeshRenderers(false);
-                    UpdateChildMeshRenderers(false);
-                }
-                if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
-                    UpdateChildMeshRenderers(false);
-            }
-        }
+
+        if (!selectionReferents.Contains(oobject.referent))
+            UpdateChildMeshRenderersRec(false);
     }
 
     /// <summary>
@@ -281,12 +270,23 @@ public class FocusHandler : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OgreeObject>() || child.GetComponent<Sensor>())
+            if (child.GetComponent<OgreeObject>())
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
-            else if (child.name != "uRoot" && child.name != "GridForULocation")
+            else if (child.name != "uRoot" && child.name != "GridForULocation" && !child.GetComponent<Sensor>())
                 OwnObjectsList.Add(child.gameObject);
+            else
+            {
+                Sensor sensor = child.GetComponent<Sensor>();
+                if (!sensor)
+                    continue;
+                if (sensor.fromTemplate)
+                    child.GetChild(0).GetComponent<Renderer>().enabled = false;
+                else
+                    ogreeChildObjects.Add(child.gameObject);
+
+            }
         }
     }
 

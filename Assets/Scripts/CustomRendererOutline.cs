@@ -94,11 +94,11 @@ public class CustomRendererOutline : MonoBehaviour
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.instance.alphaMat);
-                else if (GameManager.instance.tempMode)
+                else if (GameManager.instance.tempColorMode)
                     SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.instance.defaultMat);
-                if (!GameManager.instance.tempMode)
+                if (!GameManager.instance.tempColorMode)
                     transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
             isSelected = false;
@@ -134,11 +134,11 @@ public class CustomRendererOutline : MonoBehaviour
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.instance.alphaMat);
-                else if (GameManager.instance.tempMode)
+                else if (GameManager.instance.tempColorMode)
                     SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.instance.defaultMat);
-                if (!GameManager.instance.tempMode)
+                if (!GameManager.instance.tempColorMode)
                     transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
             isFocused = false;
@@ -204,11 +204,11 @@ public class CustomRendererOutline : MonoBehaviour
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.instance.alphaMat);
-                else if (GameManager.instance.tempMode)
+                else if (GameManager.instance.tempColorMode)
                     SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.instance.defaultMat);
-                if (!GameManager.instance.tempMode)
+                if (!GameManager.instance.tempColorMode)
                     transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
 
@@ -232,11 +232,11 @@ public class CustomRendererOutline : MonoBehaviour
             {
                 if (GetComponent<OObject>().category.Equals("corridor"))
                     SetMaterial(GameManager.instance.alphaMat);
-                else if (GameManager.instance.tempMode)
+                else if (GameManager.instance.tempColorMode)
                     SetMaterial(GetTemperatureMaterial());
                 else
                     SetMaterial(GameManager.instance.defaultMat);
-                if (!GameManager.instance.tempMode)
+                if (!GameManager.instance.tempColorMode)
                     transform.GetChild(0).GetComponent<Renderer>().material.color = GetComponent<OObject>().color;
             }
         }
@@ -296,7 +296,7 @@ public class CustomRendererOutline : MonoBehaviour
     /// <param name="_e">the event's instance</param>
     private void OnTemperatureColorEvent(TemperatureColorEvent _e)
     {
-        if (GameManager.instance.tempMode)
+        if (GameManager.instance.tempColorMode)
         {
             if (!isSelected && !isFocused && !isHighlighted)
                 SetMaterial(GetTemperatureMaterial());
@@ -326,7 +326,7 @@ public class CustomRendererOutline : MonoBehaviour
     /// <param name="_e">the event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
-        if (GameManager.instance.tempMode)
+        if (GameManager.instance.tempColorMode)
         {
             if (!isSelected && !isFocused && !isHighlighted)
                 SetMaterial(GetTemperatureMaterial());

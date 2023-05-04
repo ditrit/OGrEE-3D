@@ -162,6 +162,7 @@ public class OgreeGenerator : MonoBehaviour
     ///<returns>The created sensor</returns>
     public Sensor CreateSensorFromSApiObject(SApiObject _obj, Transform _parent = null)
     {
+        ResetCoroutine();
         return objectGenerator.CreateSensor(_obj, _parent);
     }
 
