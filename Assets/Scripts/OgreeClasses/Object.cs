@@ -44,9 +44,6 @@ public class OObject : OgreeObject
         }
         description = _src.description;
 
-        if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
-            Destroy(transform.Find("sensor").gameObject);
-
         foreach (string attribute in _src.attributes.Keys)
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute)
