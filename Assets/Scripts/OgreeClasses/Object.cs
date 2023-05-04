@@ -274,7 +274,7 @@ public class OObject : OgreeObject
         }
         if (tempsNoNaN.Count() > 0)
         {
-            mean = (tempsNoNaN.Sum(v => v.temp * v.volume) / totalEffectiveVolume);
+            mean = tempsNoNaN.Sum(v => v.temp * v.volume) / totalEffectiveVolume;
             std = Mathf.Sqrt(tempsNoNaN.Sum(v => Mathf.Pow(v.temp - mean, 2) * v.volume) / totalEffectiveVolume);
             min = tempsNoNaN.Min(v => v.temp);
             max = tempsNoNaN.Max(v => v.temp);
