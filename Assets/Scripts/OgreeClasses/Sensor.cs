@@ -65,7 +65,7 @@ public class Sensor : MonoBehaviour
         OObject parent = transform.parent.GetComponent<OObject>();
         if (parent)
             if (!fromTemplate)
-                SetTemperature(parent.GetTemperatureInfos().mean.ToString());
+                SetTemperature(parent.GetTemperatureInfos().mean);
             else if (parent.attributes.ContainsKey($"temperature_{name}"))
                 SetTemperature(parent.attributes[$"temperature_{name}"]);
             else

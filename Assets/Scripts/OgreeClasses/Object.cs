@@ -204,7 +204,7 @@ public class OObject : OgreeObject
         {
             Transform sensorTransform = transform.Find("sensor");
             if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
+                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
             else
             {
                 SApiObject se = new SApiObject
@@ -221,7 +221,7 @@ public class OObject : OgreeObject
                 se.attributes["temperature"] = _value;
 
                 Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
+                sensor.SetTemperature(GetTemperatureInfos().mean);
             }
             sensorTransform = transform.Find(_sensorName);
             if (sensorTransform)
@@ -273,7 +273,7 @@ public class OObject : OgreeObject
         }
         if (tempsNoNaN.Count() > 0)
         {
-            mean = tempsNoNaN.Sum(v => v.temp * v.volume) / totalEffectiveVolume;
+            mean = (tempsNoNaN.Sum(v => v.temp * v.volume) / totalEffectiveVolume);
             std = Mathf.Sqrt(tempsNoNaN.Sum(v => Mathf.Pow(v.temp - mean, 2) * v.volume) / totalEffectiveVolume);
             min = tempsNoNaN.Min(v => v.temp);
             max = tempsNoNaN.Max(v => v.temp);
