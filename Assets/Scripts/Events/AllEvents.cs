@@ -41,7 +41,7 @@ public class ChangeCursorEvent : CustomEvent
     public CursorChanger.CursorType type;
 }
 
-public class UpdateTenantEvent : CustomEvent
+public class UpdateDomainEvent : CustomEvent
 {
     public string name;
 }

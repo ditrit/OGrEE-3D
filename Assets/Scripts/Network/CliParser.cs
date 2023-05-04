@@ -80,7 +80,7 @@ public class CliParser
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                    await GameManager.instance.PurgeTenants();
+                    await GameManager.instance.PurgeDomains();
                 }
                 else
                 {
@@ -188,12 +188,12 @@ public class CliParser
         if (!obj)
             return;
 
-        // Get tenant from API if new domain isn't loaded
+        // Get domain from API if new domain isn't loaded
         if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
-            await ApiManager.instance.GetObject($"tenants?name={newData.domain}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool tenantColorChanged = (newData.category == "tenant" && obj.attributes["color"] != newData.attributes["color"]);
+        bool domainColorChanged = (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"]);
 
         // Case color for racks & devices
         if (newData.category == "rack" || newData.category == "device")
@@ -270,8 +270,8 @@ public class CliParser
         else
             obj.UpdateFromSApiObject(newData);
 
-        if (tenantColorChanged)
-            EventManager.instance.Raise(new UpdateTenantEvent { name = newData.name });
+        if (domainColorChanged)
+            EventManager.instance.Raise(new UpdateDomainEvent { name = newData.name });
     }
 
     ///<summary>
@@ -433,7 +433,7 @@ public class CliParser
                     if (prompt.state == EPromptStatus.accept)
                     {
                         await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
-                        await GameManager.instance.PurgeTenants();
+                        await GameManager.instance.PurgeDomains();
                         UiManager.instance.ClearCache();
                         UiManager.instance.DeletePrompt(prompt);
                     }

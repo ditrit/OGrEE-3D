@@ -23,21 +23,20 @@ OGREE 3D is a data-center viewer, using Unity 3D
 # Getting started
 Object hierarchy, each level is mandatory
 ```
-Tenant
-|_ Site
-    |_ Building
-        |_ Room
-            |_ Rack                                 Rack
-                |_ Device                            |_ Chassis
-                |   |_ Device                        |   |_ Blade
-                |   |   |_ Device                    |   |   |_ processor
-                |   |   |_ Device                    |   |   |_ memory
-                |   |_ ...                           |   |   |_ ...
-                |_ Device                            |_ Server
-                |_ Device                            |_ LANswitch
+Site
+ |_ Building
+     |_ Room
+         |_ Rack                                 Rack
+             |_ Device                            |_ Chassis
+             |   |_ Device                        |   |_ Blade
+             |   |   |_ Device                    |   |   |_ processor
+             |   |   |_ Device                    |   |   |_ memory
+             |   |_ ...                           |   |   |_ ...
+             |_ Device                            |_ Server
+             |_ Device                            |_ LANswitch
 ```
 You have to create each object either with the build in CLI or by loading a file containing these commands.  
-You can assign a tenant to an OGrEE object. If so, all children will have the same tenant by default.  
+You can assign a domain to an OGrEE object. If so, all children will have the same domain by default.  
 More levels will come in next releases.
 
 # Command line arguments
