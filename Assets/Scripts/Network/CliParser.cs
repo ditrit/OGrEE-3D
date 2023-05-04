@@ -264,11 +264,7 @@ public class CliParser
                 }
             }
         }
-
-        if (obj is OObject oobj)
-            oobj.UpdateFromSApiObject(newData);
-        else
-            obj.UpdateFromSApiObject(newData);
+        obj.UpdateFromSApiObject(newData);
 
         if (domainColorChanged)
             EventManager.instance.Raise(new UpdateDomainEvent { name = newData.name });
