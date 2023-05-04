@@ -28,7 +28,7 @@ public class ButtonHandler
     /// leave toggledCondition to null
     /// </summary>
     /// <param name="_button">the button to be handled </param>
-    public ButtonHandler(Button _button, bool _hide = false)
+    public ButtonHandler(Button _button, bool _hide)
     {
         button = _button;
         hideWhenUseless = _hide;

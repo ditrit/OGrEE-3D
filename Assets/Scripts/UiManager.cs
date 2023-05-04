@@ -73,7 +73,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        focusBtn = new ButtonHandler(focusBtn.button)
+        focusBtn = new ButtonHandler(focusBtn.button, true)
         {
             interactCondition = () => GameManager.instance.SelectIs<OObject>()
             &&
@@ -83,7 +83,7 @@ public class UiManager : MonoBehaviour
         };
         focusBtn.Check();
 
-        unfocusBtn = new ButtonHandler(unfocusBtn.button)
+        unfocusBtn = new ButtonHandler(unfocusBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
             &&
@@ -91,7 +91,7 @@ public class UiManager : MonoBehaviour
         };
         unfocusBtn.Check();
 
-        selectParentBtn = new ButtonHandler(selectParentBtn.button)
+        selectParentBtn = new ButtonHandler(selectParentBtn.button, true)
         {
             interactCondition = () => GameManager.instance.selectMode
             &&
@@ -103,7 +103,7 @@ public class UiManager : MonoBehaviour
         };
         selectParentBtn.Check();
 
-        editBtn = new ButtonHandler(editBtn.button)
+        editBtn = new ButtonHandler(editBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
             &&
@@ -114,13 +114,13 @@ public class UiManager : MonoBehaviour
         };
         editBtn.Check();
 
-        resetTransBtn = new ButtonHandler(resetTransBtn.button)
+        resetTransBtn = new ButtonHandler(resetTransBtn.button, true)
         {
             interactCondition = () => GameManager.instance.editMode
         };
         resetTransBtn.Check();
 
-        resetChildrenBtn = new ButtonHandler(resetChildrenBtn.button)
+        resetChildrenBtn = new ButtonHandler(resetChildrenBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
         };
@@ -420,16 +420,31 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void DisplayRightClickMenu()
     {
-        bool canBeDisplayed = false;
+        int displayedButtons = 0;
         foreach (Transform btn in rightClickMenu.transform)
         {
             if (btn.gameObject.activeSelf)
-                canBeDisplayed = true;
+                displayedButtons++;
         }
-        if (canBeDisplayed)
+        if (displayedButtons > 0)
         {
+            // Setup the menu
             rightClickMenu.SetActive(true);
+            float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+            float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+            float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
+            
+            float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
+            float menuHeight = padding * 2 + (btnHeight + spacing) * displayedButtons;
+            rightClickMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+            
+            // Move the menu at mouse position and prevent it to be out of the window
             rightClickMenu.transform.position = Input.mousePosition;
+            if (Input.mousePosition.y < menuHeight)
+                rightClickMenu.transform.position += new Vector3(0, menuHeight - Input.mousePosition.y, 0);
+            float deltaX = Screen.width - Input.mousePosition.x;
+            if (deltaX < menuWidth)
+                rightClickMenu.transform.position -= new Vector3(menuWidth - deltaX, 0, 0);
         }
     }
 
