@@ -552,11 +552,11 @@ public class UiManager : MonoBehaviour
         foreach (GameObject go in GameManager.instance.GetSelected())
         {
             OgreeObject obj = go.GetComponent<OgreeObject>();
-            if (obj.category == "building" || obj.category == "room")
-                ((Building)obj).ToggleCS();
-            else if (obj.category == "rack" || obj.category == "device")
-                ((OObject)obj).ToggleCS();
-        }
+            if (obj is Building building)
+                building.ToggleCS();
+            else if (obj is OObject oobj && oobj.category != "corridor")
+                oobj.ToggleCS();
+        }   
         toggleLocalCSBtn.Check();
     }
 
