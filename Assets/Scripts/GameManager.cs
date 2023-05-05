@@ -55,7 +55,11 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     private readonly List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
-    public bool tempMode = false;
+
+    /// <summary>
+    /// True if Temperature Color mode is toggled on
+    /// </summary>
+    public bool tempColorMode = false;
     private string startDateTime;
 
     public GameObject objectRoot;

@@ -44,9 +44,6 @@ public class OObject : OgreeObject
         }
         description = _src.description;
 
-        if (attributes.ContainsKey("temperature") && !_src.attributes.ContainsKey("temperature"))
-            Destroy(transform.Find("sensor").gameObject);
-
         foreach (string attribute in _src.attributes.Keys)
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute)
@@ -202,9 +199,18 @@ public class OObject : OgreeObject
     {
         if (Regex.IsMatch(_value, "^[0-9.]+$"))
         {
-            Transform sensorTransform = transform.Find("sensor");
+            Transform sensorTransform = transform.Find(_sensorName);
             if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean.ToString());
+                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+            else
+            {
+                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
+                return;
+            }
+
+            sensorTransform = transform.Find("sensor");
+            if (sensorTransform)
+                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
             else
             {
                 SApiObject se = new SApiObject
@@ -221,13 +227,8 @@ public class OObject : OgreeObject
                 se.attributes["temperature"] = _value;
 
                 Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                sensor.SetTemperature(GetTemperatureInfos().mean.ToString());
+                sensor.SetTemperature(GetTemperatureInfos().mean);
             }
-            sensorTransform = transform.Find(_sensorName);
-            if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
-            else
-                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
         }
         else
             GameManager.instance.AppendLogLine($"[{hierarchyName}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);

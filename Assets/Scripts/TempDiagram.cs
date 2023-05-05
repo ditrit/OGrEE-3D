@@ -48,6 +48,13 @@ public class TempDiagram : MonoBehaviour
             HandleTempBarChart(lastRoom);
         if (isScatterPlotShown)
             HandleScatterPlot(lastScatterPlot);
+        if (GameManager.instance.GetPrevious().Count == 1)
+        {
+            OObject previous = GameManager.instance.GetPrevious()[0].GetComponent<OObject>();
+            if (previous && previous.heatMap)
+                HandleHeatMap(previous);
+        }
+
     }
 
     /// <summary>

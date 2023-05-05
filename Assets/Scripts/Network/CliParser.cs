@@ -184,18 +184,18 @@ public class CliParser
     private async void ModifyObject(string _input)
     {
         SApiObject newData = JsonConvert.DeserializeObject<SApiObject>(_input);
-        OgreeObject obj = Utils.GetObjectById(newData.id).GetComponent<OgreeObject>();
+        OgreeObject obj = Utils.GetObjectById(newData.id)?.GetComponent<OgreeObject>();
+        if (!obj)
+            return;
 
         // Get domain from API if new domain isn't loaded
         if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
             await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool domainColorChanged = false;
-        if (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"])
-            domainColorChanged = true;
+        bool domainColorChanged = (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"]);
 
-        // Case color/temperature for racks & devices
+        // Case color for racks & devices
         if (newData.category == "rack" || newData.category == "device")
         {
             OObject item = (OObject)obj;
@@ -203,12 +203,6 @@ public class CliParser
                 && (!item.attributes.ContainsKey("color")
                     || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
                 item.SetColor(newData.attributes["color"]);
-
-            foreach (string attribute in newData.attributes.Keys)
-                if (attribute.StartsWith("temperature_")
-                    && (!item.attributes.ContainsKey(attribute)
-                        || item.attributes[attribute] != newData.attributes[attribute]))
-                    item.SetTemperature(newData.attributes[attribute], attribute.Substring(12));
         }
         // Case temperature for corridors
         else if (newData.category == "corridor")
@@ -270,8 +264,8 @@ public class CliParser
                 }
             }
         }
-
         obj.UpdateFromSApiObject(newData);
+
         if (domainColorChanged)
             EventManager.instance.Raise(new UpdateDomainEvent { name = newData.name });
     }

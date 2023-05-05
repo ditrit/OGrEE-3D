@@ -93,13 +93,13 @@ public class GUIObjectInfos : MonoBehaviour
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
-        if (GameManager.instance.tempMode && _obj is OObject @object)
+        if (GameManager.instance.tempColorMode && _obj is OObject @object)
         {
             STemp tempInfos = @object.GetTemperatureInfos();
-            tmpAttributes.text += $"<b>average:</b> {tempInfos.mean} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>standard deviation:</b> {tempInfos.std} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>minimum:</b> {tempInfos.min} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>maximum:</b> {tempInfos.max} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>average:</b> {Utils.FloatToRefinedStr(tempInfos.mean)} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>maximum:</b> {Utils.FloatToRefinedStr(tempInfos.max)} {tempInfos.unit}\n";
             i += 4;
             if (!string.IsNullOrEmpty(tempInfos.hottestChild))
             {
