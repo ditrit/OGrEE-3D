@@ -123,7 +123,7 @@ public class ConfigLoader
             ModifyConfig(tomlConfig);
             GameManager.instance.AppendLogLine($"Load custom config file ({_path})", ELogTarget.logger, ELogtype.success);
         }
-        catch (System.Exception _e)
+        catch (Exception _e)
         {
             Debug.LogWarning(_e);
             GameManager.instance.AppendLogLine(_e.Message, ELogTarget.none, ELogtype.warning);
