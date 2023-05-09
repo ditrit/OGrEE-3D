@@ -40,6 +40,8 @@ public class Server : MonoBehaviour
 
         if (connection.incomingQueue.Count > 0 && dequeueCoroutine == null)
             dequeueCoroutine = StartCoroutine(DequeueAndParse());
+        while (connection.mainThreadQueue.Count > 0)
+            connection.mainThreadQueue.Dequeue().Invoke();
     }
 
     private void OnDestroy()
