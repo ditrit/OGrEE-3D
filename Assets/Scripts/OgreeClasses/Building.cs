@@ -9,7 +9,7 @@ public class Building : OgreeObject
     public Transform walls;
     public TextMeshPro nameText;
 
-    private void Awake()
+    private void Start()
     {
         if (!(this is Room))
             EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinihsed);

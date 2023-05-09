@@ -92,11 +92,11 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
     }
 
     private void Start()
     {
+        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
         configLoader.LoadConfig();
         server.StartServer();
         StartCoroutine(configLoader.LoadTextures());

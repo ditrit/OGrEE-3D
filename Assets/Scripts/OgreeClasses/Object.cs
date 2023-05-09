@@ -15,7 +15,7 @@ public class OObject : OgreeObject
     public GameObject tempBar;
     public string temperatureUnit;
 
-    private void Awake()
+    private void Start()
     {
         EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
     }

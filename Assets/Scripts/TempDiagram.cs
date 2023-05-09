@@ -30,7 +30,11 @@ public class TempDiagram : MonoBehaviour
             instance = this;
         else
             Destroy(this);
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+    }
+
+    private void Start()
+    {
+        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);        
     }
 
     private void OnDestroy()
