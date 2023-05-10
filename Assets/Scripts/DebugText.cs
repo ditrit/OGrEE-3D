@@ -52,7 +52,7 @@ public class DebugText : MonoBehaviour
         int devicesCount = 0;
 
         ooCount = GameManager.instance.allItems.Count;
-        goCount = GameObject.FindObjectsOfType<GameObject>().Length;
+        goCount = FindObjectsOfType<GameObject>().Length;
 
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {

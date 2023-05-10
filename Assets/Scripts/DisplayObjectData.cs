@@ -23,6 +23,7 @@ public class DisplayObjectData : MonoBehaviour
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
     [SerializeField] private CameraControl cc;
+
     private void Start()
     {
         EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
