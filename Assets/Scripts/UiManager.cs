@@ -335,7 +335,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     private void SetupColors()
     {
-        float alpha = 0.75f;
+        float alpha = 0.5f;
         string selectColorCode = GameManager.instance.configLoader.GetColor("selection");
         if (!string.IsNullOrEmpty(selectColorCode))
         {
