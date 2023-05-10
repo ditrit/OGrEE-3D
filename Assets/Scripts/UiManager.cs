@@ -335,18 +335,19 @@ public class UiManager : MonoBehaviour
     ///</summary>
     private void SetupColors()
     {
+        float alpha = 0.75f;
         string selectColorCode = GameManager.instance.configLoader.GetColor("selection");
         if (!string.IsNullOrEmpty(selectColorCode))
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
-            currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.75f);
+            currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
 
         string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
-            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, 0.42f);
+            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
     }
 
@@ -430,21 +431,22 @@ public class UiManager : MonoBehaviour
         {
             // Setup the menu
             rightClickMenu.SetActive(true);
+
+            float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
             float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
             float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
             float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
-            
+
             float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
             float menuHeight = padding * 2 + (btnHeight + spacing) * displayedButtons;
             rightClickMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
-            
+
             // Move the menu at mouse position and prevent it to be out of the window
             rightClickMenu.transform.position = Input.mousePosition;
-            if (Input.mousePosition.y < menuHeight)
-                rightClickMenu.transform.position += new Vector3(0, menuHeight - Input.mousePosition.y, 0);
-            float deltaX = Screen.width - Input.mousePosition.x;
-            if (deltaX < menuWidth)
-                rightClickMenu.transform.position -= new Vector3(menuWidth - deltaX, 0, 0);
+            if (Screen.width - Input.mousePosition.x < menuWidth * canvasScale)
+                rightClickMenu.transform.position -= new Vector3(menuWidth * canvasScale, 0, 0);
+            if (Input.mousePosition.y < menuHeight * canvasScale)
+                rightClickMenu.transform.position += new Vector3(0, menuHeight * canvasScale, 0);
         }
     }
 
