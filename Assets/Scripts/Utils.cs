@@ -328,7 +328,7 @@ public static class Utils
     ///</summary>
     ///<param name="_target">The object to destroy</param>
     ///<param name="_msg">The message to display (ELogTarget.logger, ELogtype.success)</param>
-    public static void CleanDestroy(GameObject _target, string _msg)
+    public static void CleanDestroy(this GameObject _target, string _msg)
     {
         _target.SetActive(false); //for UI
         Object.Destroy(_target);

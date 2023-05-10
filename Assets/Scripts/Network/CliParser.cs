@@ -196,33 +196,33 @@ public class CliParser
         bool domainColorChanged = (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"]);
 
         // Case color for racks & devices
-        if (newData.category == "rack" || newData.category == "device")
+        if (obj is OObject item)
         {
-            OObject item = (OObject)obj;
-            if (newData.attributes.ContainsKey("color")
-                && (!item.attributes.ContainsKey("color")
-                    || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
-                item.SetColor(newData.attributes["color"]);
-        }
-        // Case temperature for corridors
-        else if (newData.category == "corridor")
-        {
-            OObject item = (OObject)obj;
-            if (newData.attributes.ContainsKey("temperature")
-                && (!item.attributes.ContainsKey("temperature")
-                    || item.attributes.ContainsKey("temperature") && item.attributes["temperature"] != newData.attributes["temperature"]))
+            if (newData.category != "corridor")
             {
-                if (newData.attributes["temperature"] == "cold")
-                    item.SetColor("000099");
-                else
-                    item.SetColor("990000");
+                if (newData.attributes.ContainsKey("color")
+                    && (!item.attributes.ContainsKey("color")
+                        || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
+                    item.SetColor(newData.attributes["color"]);
+            }
+            // Case temperature for corridors
+            else
+            {
+                if (newData.attributes.ContainsKey("temperature")
+                    && (!item.attributes.ContainsKey("temperature")
+                        || item.attributes.ContainsKey("temperature") && item.attributes["temperature"] != newData.attributes["temperature"]))
+                {
+                    if (newData.attributes["temperature"] == "cold")
+                        item.SetColor("000099");
+                    else
+                        item.SetColor("990000");
+                }
             }
         }
 
         // Case of a separators/pillars/areas modification in a room
-        if (newData.category == "room")
+        if (obj is Room room)
         {
-            Room room = (Room)obj;
             if (newData.attributes.ContainsKey("separators"))
             {
                 if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
@@ -278,22 +278,9 @@ public class CliParser
     {
         SInteract command = JsonConvert.DeserializeObject<SInteract>(_data);
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
-        switch (obj.category)
+        switch (obj)
         {
-            case "building":
-                Building building = (Building)obj;
-                switch (command.param)
-                {
-                    case "localCS":
-                        building.ToggleCS(command.value == "true");
-                        break;
-                    default:
-                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
-                        break;
-                }
-                break;
-            case "room":
-                Room room = (Room)obj;
+            case Room room:
                 switch (command.param)
                 {
                     case "tilesName":
@@ -310,8 +297,18 @@ public class CliParser
                         break;
                 }
                 break;
-            case "rack":
-                Rack rack = (Rack)obj;
+            case Building building:
+                switch (command.param)
+                {
+                    case "localCS":
+                        building.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
+                break;
+            case Rack rack:
                 switch (command.param)
                 {
                     case "label":
@@ -340,8 +337,7 @@ public class CliParser
                         break;
                 }
                 break;
-            case "device":
-                OObject device = (OObject)obj;
+            case OObject device when device.category == "device":
                 switch (command.param)
                 {
                     case "label":
@@ -367,8 +363,7 @@ public class CliParser
                         break;
                 }
                 break;
-            case "group":
-                Group group = (Group)obj;
+            case Group group:
                 switch (command.param)
                 {
                     case "label":

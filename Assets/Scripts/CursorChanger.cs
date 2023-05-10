@@ -21,7 +21,7 @@ public class CursorChanger : MonoBehaviour, IEventHandler
 
     [SerializeField] private List<CursorData> cursors;
 
-    private void Awake()
+    private void Start()
     {
         SubscribeEvents();
     }

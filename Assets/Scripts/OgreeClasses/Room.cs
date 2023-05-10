@@ -63,7 +63,7 @@ public class Room : Building
             if (_value && !root)
                 BuildTilesName();
             else if (!_value && root)
-                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
+                root.CleanDestroy($"Hide tiles name for {name}");
         }
         else
         {
@@ -89,7 +89,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (root)
-                Utils.CleanDestroy(root, $"Hide tiles name for {name}");
+                root.CleanDestroy($"Hide tiles name for {name}");
             else
                 BuildTilesName();
         }
@@ -140,7 +140,7 @@ public class Room : Building
             if (_value && !root)
                 BuildTilesColor();
             else if (!_value && root)
-                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
+                root.CleanDestroy($"Hide tiles color for {name}");
         }
         else
         {
@@ -186,7 +186,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (root)
-                Utils.CleanDestroy(root, $"Hide tiles color for {name}");
+                root.CleanDestroy($"Hide tiles color for {name}");
             else
                 BuildTilesColor();
         }

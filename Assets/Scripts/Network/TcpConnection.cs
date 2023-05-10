@@ -41,12 +41,12 @@ public class TcpConnection : AConnection
                 netStream = client.GetStream();
                 await ReceiveLoop();
                 client.Close();
-                GameManager.instance.AppendLogLine("Connection with client lost.", ELogTarget.none, ELogtype.errorCli);
+                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine("Connection with client lost.", ELogTarget.logger, ELogtype.errorCli));
             }
         }
         catch (SocketException socketException)
         {
-            GameManager.instance.AppendLogLine("SocketException " + socketException.ToString(), ELogTarget.none, ELogtype.error);
+            mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine("SocketException " + socketException.ToString(), ELogTarget.logger, ELogtype.error));
         }
         catch (Exception e)
         {
