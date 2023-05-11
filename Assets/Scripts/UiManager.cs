@@ -51,7 +51,7 @@ public class UiManager : MonoBehaviour
     [Header("Panel Infos")]
     [SerializeField] private GameObject infosPanel;
     [SerializeField] private GUIObjectInfos objInfos;
-    public DetailsInputField detailsInputField;
+    [SerializeField] private DetailsInputField detailsInputField;
 
     [Header("Logger")]
     [SerializeField] private TMP_InputField loggerText;
@@ -341,6 +341,7 @@ public class UiManager : MonoBehaviour
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
             currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            rightClickMenu.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
 
         string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
@@ -456,7 +457,7 @@ public class UiManager : MonoBehaviour
     public void HideRightClickMenu()
     {
         rightClickMenu.SetActive(false);
-        StartCoroutine(GetComponent<Inputs>().WaitAndUnlock(0));
+        GetComponent<Inputs>().lockMouseInteract = false;
     }
 
     ///<summary>

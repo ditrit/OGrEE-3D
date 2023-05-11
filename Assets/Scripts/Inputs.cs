@@ -9,7 +9,7 @@ public class Inputs : MonoBehaviour
     private int clickCount = 0;
     private float clickTime;
     private CameraControl camControl;
-    [SerializeField] Transform target;
+    [SerializeField] private Transform target;
 
     // Drag
     private bool isDraggingObj = false;
@@ -25,7 +25,7 @@ public class Inputs : MonoBehaviour
 
     private GameObject savedObjectThatWeHover;
     private Vector3 savedMousePos;
-    private bool lockMouseInteract = false;
+    public bool lockMouseInteract = false;
 
     private void Start()
     {
@@ -160,21 +160,11 @@ public class Inputs : MonoBehaviour
                 lockMouseInteract = true;
             }
         }
-        else if (Input.GetMouseButtonDown(0))
+        else if (Input.GetMouseButtonUp(0))
         {
             UiManager.instance.HideRightClickMenu();
-            StartCoroutine(WaitAndUnlock(0.1f));
+            lockMouseInteract = false;
         }
-    }
-
-    ///<summary>
-    /// Wait _t seconds and set the lockMouseInteract to false.
-    ///</summary>
-    ///<param name="_t">The amount of seconds to wait</param>
-    public IEnumerator WaitAndUnlock(float _t)
-    {
-        yield return new WaitForSeconds(_t);
-        lockMouseInteract = false;
     }
 
     ///<summary>
