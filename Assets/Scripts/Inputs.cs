@@ -39,15 +39,17 @@ public class Inputs : MonoBehaviour
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
         camControl.InputControls();
-        if (!lockMouseInteract)
+
+        if (GameManager.instance.getCoordsMode && !lockMouseInteract)
+            GetCoordsModeControls();
+        else if (!GameManager.instance.getCoordsMode)
         {
-            if (GameManager.instance.getCoordsMode)
-                GetCoordsModeControls();
-            else
-            {
+            if (!isDraggingObj && !isRotatingObj && !isScalingObj)
+                target = Utils.RaycastFromCameraToMouse()?.transform;
+
+            if (!lockMouseInteract)
                 MouseControls();
-                MouseHover();
-            }
+            MouseHover();
         }
 
         RightClickMenu();
@@ -82,9 +84,6 @@ public class Inputs : MonoBehaviour
             isScalingObj = false;
             return;
         }
-
-        if (!isDraggingObj && !isRotatingObj && !isScalingObj)
-            target = Utils.RaycastFromCameraToMouse()?.transform;
 
         if (GameManager.instance.editMode)
         {
@@ -190,13 +189,16 @@ public class Inputs : MonoBehaviour
         {
             if (clickCount == 2 && !GameManager.instance.editMode)
             {
-                DoubleClick();
+                if (savedTarget == target)
+                    DoubleClick();
+                else
+                    SingleClick();
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
         if (clickCount == 1 && !GameManager.instance.editMode)
-            SingleClick(savedTarget);
+            SingleClick();
         clickCount = 0;
         coroutineAllowed = true;
     }
@@ -204,27 +206,26 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when single clicking on a gameObject.
     ///</summary>
-    ///<param name="_target">the object clicked on</param>
-    private async void SingleClick(Transform _target)
+    private async void SingleClick()
     {
-        if (_target)
+        if (target)
         {
-            if (_target.CompareTag("Selectable"))
+            if (target.CompareTag("Selectable"))
             {
                 bool canSelect = true;
                 if (GameManager.instance.focusMode)
-                    canSelect = GameManager.instance.IsInFocus(_target.gameObject);
+                    canSelect = GameManager.instance.IsInFocus(target.gameObject);
 
                 if (canSelect)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.selectMode)
-                        await GameManager.instance.UpdateCurrentItems(_target.gameObject);
+                        await GameManager.instance.UpdateCurrentItems(target.gameObject);
                     else
-                        await GameManager.instance.SetCurrentItem(_target.gameObject);
+                        await GameManager.instance.SetCurrentItem(target.gameObject);
                 }
             }
-            else if (_target.CompareTag("UHelper"))
-                ClickOnU(_target);
+            else if (target.CompareTag("UHelper"))
+                ClickOnU(target);
         }
         else if (GameManager.instance.GetFocused().Count > 0)
             await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1]);

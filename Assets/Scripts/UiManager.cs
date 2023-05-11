@@ -16,8 +16,8 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
-    public GameObject rightClickMenu;
-    public GameObject coordSystem;
+    [SerializeField] private GameObject rightClickMenu;
+    [SerializeField] private GameObject coordSystem;
 
     [Header("Panel Top")]
     [SerializeField] private ButtonHandler focusBtn;
