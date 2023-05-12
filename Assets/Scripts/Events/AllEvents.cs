@@ -77,3 +77,8 @@ public class TemperatureScatterPlotEvent : CustomEvent
 {
     public GameObject obj;
 }
+
+public class RightClickEvent : CustomEvent
+{
+
+}

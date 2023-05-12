@@ -16,34 +16,39 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
-    [SerializeField] private GameObject rightClickMenu;
-    [SerializeField] private Color selectColor;
     [SerializeField] private GameObject coordSystem;
 
-    [Header("Panel Top")]
+    [Header("Right Click Menu")]
+    [SerializeField] private GameObject rightClickMenu;
+    [SerializeField] private Color selectColor;
+    [SerializeField] private Color defaultColor;
+    public GameObject menuTarget;
+
+    [Header("Button Handlers")]
+    [SerializeField] private ButtonHandler selectBtn;
+    [SerializeField] private ButtonHandler selectParentBtn;
     [SerializeField] private ButtonHandler focusBtn;
     [SerializeField] private ButtonHandler unfocusBtn;
-    [SerializeField] private ButtonHandler selectParentBtn;
-    [SerializeField] private TMP_Text focusText;
     [SerializeField] private ButtonHandler editBtn;
     [SerializeField] private ButtonHandler resetTransBtn;
     [SerializeField] private ButtonHandler resetChildrenBtn;
-    [SerializeField] private ButtonHandler barChartBtn;
-    [SerializeField] private ButtonHandler scatterPlotBtn;
-    [SerializeField] private ButtonHandler heatMapBtn;
-    [SerializeField] private TMP_Text apiUrl;
-    public TMP_Dropdown labelsDropdown;
-
-    [Header("Panel Bottom")]
-    [SerializeField] private TMP_InputField currentItemText;
     [SerializeField] private ButtonHandler getCoordsBtn;
-
-    [Header("Panel Debug")]
-    [SerializeField] private GameObject debugPanel;
     [SerializeField] private ButtonHandler toggleTilesNameBtn;
     [SerializeField] private ButtonHandler toggleTilesColorBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
+    [SerializeField] private ButtonHandler barChartBtn;
+    [SerializeField] private ButtonHandler scatterPlotBtn;
+    [SerializeField] private ButtonHandler heatMapBtn;
+
+    [Header("Panel Top")]
+    [SerializeField] private TMP_InputField currentItemText;
+    [SerializeField] private TMP_Text focusText;
+    [SerializeField] private TMP_Text apiUrl;
+    public TMP_Dropdown labelsDropdown;
+
+    [Header("Panel Debug")]
+    [SerializeField] private GameObject debugPanel;
 
     [Header("Delay Slider")]
     [SerializeField] private Slider slider;
@@ -74,13 +79,21 @@ public class UiManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        focusBtn = new ButtonHandler(focusBtn.button, false)
+        selectBtn = new ButtonHandler(selectBtn.button, false)
         {
-            interactCondition = () => GameManager.instance.SelectIs<OObject>()
+            interactCondition = () => menuTarget
             &&
             !GameManager.instance.editMode
+        };
+        selectBtn.Check();
+
+        focusBtn = new ButtonHandler(focusBtn.button, false)
+        {
+            interactCondition = () => !GameManager.instance.editMode
             &&
-            !GameManager.instance.GetFocused().Contains(GameManager.instance.GetSelected()[GameManager.instance.GetSelected().Count - 1])
+            menuTarget
+            &&
+            menuTarget.GetComponent<OObject>()
         };
         focusBtn.Check();
 
@@ -92,9 +105,11 @@ public class UiManager : MonoBehaviour
         };
         unfocusBtn.Check();
 
-        selectParentBtn = new ButtonHandler(selectParentBtn.button, false)
+        selectParentBtn = new ButtonHandler(selectParentBtn.button, true)
         {
             interactCondition = () => GameManager.instance.selectMode
+            &&
+            GameManager.instance.GetSelected()[0] == menuTarget
             &&
             (
                 !GameManager.instance.focusMode
@@ -108,7 +123,7 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => GameManager.instance.focusMode
             &&
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == GameManager.instance.GetSelected()[0],
+            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget,
 
             toggledCondition = () => GameManager.instance.editMode,
             toggledColor = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"))
@@ -118,25 +133,34 @@ public class UiManager : MonoBehaviour
         resetTransBtn = new ButtonHandler(resetTransBtn.button, true)
         {
             interactCondition = () => GameManager.instance.editMode
+            &&
+            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
         };
         resetTransBtn.Check();
 
         resetChildrenBtn = new ButtonHandler(resetChildrenBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
+            &&
+            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
         };
         resetChildrenBtn.Check();
 
         barChartBtn = new ButtonHandler(barChartBtn.button, true)
         {
-            interactCondition = () =>
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            GameManager.instance.GetSelected()[0] == menuTarget
+            &&
             (
-                GameManager.instance.SelectIs<Room>()
-                &&
-                GameManager.instance.GetSelected().Count == 1
-            )
-            ||
-            GameManager.instance.SelectIs<OgreeObject>("tempBar"),
+                (
+                    GameManager.instance.SelectIs<Room>()
+                    &&
+                    GameManager.instance.GetSelected().Count == 1
+                )
+                ||
+                GameManager.instance.SelectIs<OgreeObject>("tempBar")
+            ),
 
             toggledCondition = () => TempDiagram.instance.isDiagramShown
         };
@@ -146,7 +170,9 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
             &&
-            GameManager.instance.GetSelected().Count == 1,
+            GameManager.instance.GetSelected().Count == 1
+            &&
+            GameManager.instance.GetSelected()[0] == menuTarget,
 
             toggledCondition = () => TempDiagram.instance.isScatterPlotShown
         };
@@ -157,6 +183,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => GameManager.instance.SelectIs<OObject>("device")
             &&
             GameManager.instance.GetSelected().Count == 1
+            &&
+            GameManager.instance.GetSelected()[0] == menuTarget
             &&
             DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1,
 
@@ -171,58 +199,75 @@ public class UiManager : MonoBehaviour
 
         toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.SelectIs<Room>(),
-
-            toggledCondition = () => GameManager.instance.SelectIs<Room>()
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<Room>().tileName
+            menuTarget.GetComponent<Room>(),
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>()
+            &&
+            menuTarget.GetComponent<Room>().tileName
         };
         toggleTilesNameBtn.Check();
 
         toggleTilesColorBtn = new ButtonHandler(toggleTilesColorBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.SelectIs<Room>(),
-
-            toggledCondition = () => GameManager.instance.SelectIs<Room>()
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<Room>().tileColor
+            menuTarget.GetComponent<Room>(),
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>()
+            &&
+            menuTarget.GetComponent<Room>().tileColor
         };
         toggleTilesColorBtn.Check();
 
         toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => menuTarget
             &&
-            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()),
+            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()),
 
-            toggledCondition = () => GameManager.instance.selectMode
+            toggledCondition = () => menuTarget
             &&
-            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>())
+            Utils.GetRackReferent(menuTarget.GetComponent<OObject>())
             &&
-            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()).uRoot
+            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()).uRoot
             &&
-            Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>()).uRoot.gameObject.activeSelf
+            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()).uRoot.gameObject.activeSelf
         };
         toggleUHelpersBtn.Check();
 
         toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.SelectIs<OObject>()
-            || GameManager.instance.SelectIs<Building>(),
+            interactCondition = () => menuTarget
+            &&
+            (
+                (
+                    menuTarget.GetComponent<OObject>()
+                    &&
+                    menuTarget.GetComponent<OObject>().category != "corridor"
+                )
+                ||
+                menuTarget.GetComponent<Building>()
+            ),
 
-            toggledCondition = () => GameManager.instance.selectMode
+            toggledCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected()[0].transform.Find("localCS")
+            menuTarget.transform.Find("localCS")
             &&
-            GameManager.instance.GetSelected()[0].transform.Find("localCS").gameObject.activeSelf
+            menuTarget.transform.Find("localCS").gameObject.activeSelf
         };
         toggleLocalCSBtn.Check();
 
         getCoordsBtn = new ButtonHandler(getCoordsBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.GetSelected().Count == 1
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.SelectIs<Building>()
+            menuTarget.GetComponent<Building>()
             &&
             !GameManager.instance.focusMode
             &&
@@ -436,7 +481,7 @@ public class UiManager : MonoBehaviour
             if (GameManager.instance.GetSelected().Count > 0)
                 rightClickMenu.GetComponent<Image>().color = selectColor;
             else
-                rightClickMenu.GetComponent<Image>().color = new Color(1, 1, 1, 0.42f);
+                rightClickMenu.GetComponent<Image>().color = defaultColor;
 
             float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
             float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
@@ -530,21 +575,19 @@ public class UiManager : MonoBehaviour
     #region CalledByGUI
 
     ///<summary>
+    /// Calle by GUI button: select object targeted by right click menu.
+    ///</summary>
+    public async void SelectItem()
+    {
+        await GameManager.instance.SetCurrentItem(menuTarget);
+    }
+
+    ///<summary>
     /// Called by GUI button: If currentItem is a room, toggle tiles name.
     ///</summary>
     public void ToggleTilesName()
     {
-        if (!GameManager.instance.selectMode)
-        {
-            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
-            return;
-        }
-
-        Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
-        if (currentRoom)
-            currentRoom.ToggleTilesName();
-        else
-            GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);
+        menuTarget.GetComponent<Room>().ToggleTilesName();
         toggleTilesNameBtn.Check();
     }
 
@@ -553,24 +596,14 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTilesColor()
     {
-        if (!GameManager.instance.selectMode)
+        Room currentRoom = menuTarget.GetComponent<Room>();
+        if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", ELogTarget.logger, ELogtype.warning);
             return;
         }
+        currentRoom.ToggleTilesColor();
 
-        Room currentRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
-        if (currentRoom)
-        {
-            if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
-            {
-                GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", ELogTarget.logger, ELogtype.warning);
-                return;
-            }
-            currentRoom.ToggleTilesColor();
-        }
-        else
-            GameManager.instance.AppendLogLine("Selected item must be a room", ELogTarget.logger, ELogtype.error);
         toggleTilesColorBtn.Check();
     }
 
@@ -579,14 +612,12 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.instance.selectMode)
-        {
-            Rack rack = Utils.GetRackReferent(GameManager.instance.GetSelected()[0].GetComponent<OObject>());
-            if (!rack)
-                return;
+        Rack rack = Utils.GetRackReferent(menuTarget.GetComponent<OObject>());
+        if (!rack)
+            return;
 
-            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
-        }
+        UHelpersManager.instance.ToggleU(menuTarget);
+
         toggleUHelpersBtn.Check();
     }
 
@@ -595,36 +626,28 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void GuiToggleCS()
     {
-        if (!GameManager.instance.selectMode)
-        {
-            GameManager.instance.AppendLogLine("Empty selection.", ELogTarget.logger, ELogtype.warning);
-            return;
-        }
+        OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
+        if (obj is Building bd)
+            bd.ToggleCS();
+        else if (obj is OObject oobj)
+            oobj.ToggleCS();
 
-        foreach (GameObject go in GameManager.instance.GetSelected())
-        {
-            OgreeObject obj = go.GetComponent<OgreeObject>();
-            if (obj is Building building)
-                building.ToggleCS();
-            else if (obj is OObject oobj && oobj.category != "corridor")
-                oobj.ToggleCS();
-        }
         toggleLocalCSBtn.Check();
     }
 
     ///<summary>
-    /// Called by GUI button: Focus selected object.
+    /// Called by GUI button: Focus object targeted by right click menu.
     ///</summary>
-    public async void FocusSelected()
+    public async void FocusItem()
     {
-        if (GameManager.instance.SelectIs<OObject>())
-            await GameManager.instance.FocusItem(GameManager.instance.GetSelected()[0]);
+        await GameManager.instance.SetCurrentItem(menuTarget);
+        await GameManager.instance.FocusItem(menuTarget);
     }
 
     ///<summary>
-    /// Called by GUI button: Focus selected object.
+    /// Called by GUI button: Unfocus an item.
     ///</summary>
-    public async void UnfocusSelected()
+    public async void UnfocusItem()
     {
         if (GameManager.instance.editMode)
             EditFocused();
@@ -806,19 +829,19 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: if one and only one building or room is selected, toggle the getCoords mode
     ///</summary>
-    public void ToggleGetCoordsMode()
+    public async void ToggleGetCoordsMode()
     {
-        if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Building>())
-        {
-            GameManager.instance.getCoordsMode ^= true;
-            Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
-            if (GameManager.instance.getCoordsMode)
-                GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
-            else
-                GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
-            bd.ToggleCS(GameManager.instance.getCoordsMode);
-            coordSystem.SetActive(GameManager.instance.getCoordsMode);
-        }
+        await GameManager.instance.SetCurrentItem(menuTarget);
+
+        GameManager.instance.getCoordsMode ^= true;
+        Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
+        if (GameManager.instance.getCoordsMode)
+            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+        else
+            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+        bd.ToggleCS(GameManager.instance.getCoordsMode);
+        coordSystem.SetActive(GameManager.instance.getCoordsMode);
+
         getCoordsBtn.Check();
         toggleLocalCSBtn.Check();
     }

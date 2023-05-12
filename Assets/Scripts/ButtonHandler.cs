@@ -33,6 +33,7 @@ public class ButtonHandler
         button = _button;
         hideWhenUseless = _hide;
         defaultCB = button.colors;
+        EventManager.instance.AddListener<RightClickEvent>(CheckRightClick);
         EventManager.instance.AddListener<OnSelectItemEvent>(CheckSelect);
         EventManager.instance.AddListener<OnFocusEvent>(CheckFocus);
         EventManager.instance.AddListener<OnUnFocusEvent>(CheckUnfocus);
@@ -43,6 +44,7 @@ public class ButtonHandler
 
     ~ButtonHandler()
     {
+        EventManager.instance.RemoveListener<RightClickEvent>(CheckRightClick);
         EventManager.instance.RemoveListener<OnSelectItemEvent>(CheckSelect);
         EventManager.instance.RemoveListener<OnFocusEvent>(CheckFocus);
         EventManager.instance.RemoveListener<OnUnFocusEvent>(CheckUnfocus);
@@ -60,7 +62,7 @@ public class ButtonHandler
             button.gameObject.SetActive(interactCondition());
         else
             button.interactable = interactCondition();
-        
+
         if (toggledCondition is null)
             return;
         ColorBlock cb = button.colors;
@@ -75,6 +77,15 @@ public class ButtonHandler
             cb = defaultCB;
         }
         button.colors = cb;
+    }
+
+    ///<summary>
+    /// Check executed when clicking on the right button
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void CheckRightClick(RightClickEvent _e)
+    {
+        Check();
     }
 
     /// <summary>

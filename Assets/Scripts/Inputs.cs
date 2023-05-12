@@ -151,13 +151,27 @@ public class Inputs : MonoBehaviour
             return;
 
         if (Input.GetMouseButtonDown(1))
-            savedMousePos = Input.mousePosition;
-        else if (Input.GetMouseButtonUp(1) && savedMousePos == Input.mousePosition)
         {
-            if (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0)
+            savedMousePos = Input.mousePosition;
+            if (!GameManager.instance.editMode)
             {
+                foreach (GameObject go in GameManager.instance.GetSelected())
+                    go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+            }
+        }
+        else if (Input.GetMouseButtonUp(1))
+        {
+            if (savedMousePos == Input.mousePosition)
+            {
+                UiManager.instance.menuTarget = target?.gameObject;
+                EventManager.instance.Raise(new RightClickEvent());
                 UiManager.instance.DisplayRightClickMenu();
                 lockMouseInteract = true;
+            }
+            if (!GameManager.instance.editMode)
+            {
+                foreach (GameObject go in GameManager.instance.GetSelected())
+                    go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
             }
         }
         else if (Input.GetMouseButtonUp(0))
