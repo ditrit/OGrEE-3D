@@ -17,6 +17,7 @@ public class UiManager : MonoBehaviour
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
     [SerializeField] private GameObject rightClickMenu;
+    [SerializeField] private Color selectColor;
     [SerializeField] private GameObject coordSystem;
 
     [Header("Panel Top")]
@@ -73,7 +74,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        focusBtn = new ButtonHandler(focusBtn.button, true)
+        focusBtn = new ButtonHandler(focusBtn.button, false)
         {
             interactCondition = () => GameManager.instance.SelectIs<OObject>()
             &&
@@ -91,7 +92,7 @@ public class UiManager : MonoBehaviour
         };
         unfocusBtn.Check();
 
-        selectParentBtn = new ButtonHandler(selectParentBtn.button, true)
+        selectParentBtn = new ButtonHandler(selectParentBtn.button, false)
         {
             interactCondition = () => GameManager.instance.selectMode
             &&
@@ -340,8 +341,8 @@ public class UiManager : MonoBehaviour
         if (!string.IsNullOrEmpty(selectColorCode))
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
-            currentItemText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
-            rightClickMenu.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            selectColor = new Color(c.r, c.g, c.b, alpha);
+            currentItemText.GetComponent<Image>().color = selectColor;
         }
 
         string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
@@ -432,6 +433,10 @@ public class UiManager : MonoBehaviour
         {
             // Setup the menu
             rightClickMenu.SetActive(true);
+            if (GameManager.instance.GetSelected().Count > 0)
+                rightClickMenu.GetComponent<Image>().color = selectColor;
+            else
+                rightClickMenu.GetComponent<Image>().color = new Color(1, 1, 1, 0.42f);
 
             float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
             float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
@@ -603,7 +608,7 @@ public class UiManager : MonoBehaviour
                 building.ToggleCS();
             else if (obj is OObject oobj && oobj.category != "corridor")
                 oobj.ToggleCS();
-        }   
+        }
         toggleLocalCSBtn.Check();
     }
 
