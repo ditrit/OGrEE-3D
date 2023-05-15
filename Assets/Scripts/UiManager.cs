@@ -614,6 +614,11 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
+        if (GameManager.instance.GetSelected().Contains(menuTarget))
+        {
+            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
+            return;
+        }
         Rack rack = Utils.GetRackReferent(menuTarget.GetComponent<OObject>());
         if (!rack)
             return;
