@@ -84,6 +84,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => menuTarget
             &&
             !GameManager.instance.editMode
+            &&
+            !GameManager.instance.GetSelected().Contains(menuTarget)
         };
         selectBtn.Check();
 
