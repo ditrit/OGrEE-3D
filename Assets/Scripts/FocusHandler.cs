@@ -435,10 +435,16 @@ public class FocusHandler : MonoBehaviour
                         break;
                     case "rack":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
-                        go.GetComponent<OObject>()?.ToggleSlots(false);
+                        OObject oObject = go.GetComponent<OObject>();
+                        oObject.ToggleSlots(false);
+                        oObject.ToggleCS(false);
+                        UHelpersManager.instance.ToggleU(go, false);
                         break;
                     case "device":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
+                        oObject = go.GetComponent<OObject>();
+                        oObject.ToggleCS(false);
+                        UHelpersManager.instance.ToggleU(go, false);
                         break;
                     case "group":
                         if (go.GetComponent<Group>().isDisplayed)
