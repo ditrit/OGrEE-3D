@@ -26,6 +26,8 @@ public class UiManager : MonoBehaviour
 
     [Header("Button Handlers")]
     [SerializeField] private ButtonHandler selectBtn;
+    [SerializeField] private ButtonHandler addSelectBtn;
+    [SerializeField] private ButtonHandler removeSelectBtn;
     [SerializeField] private ButtonHandler selectParentBtn;
     [SerializeField] private ButtonHandler focusBtn;
     [SerializeField] private ButtonHandler unfocusBtn;
@@ -88,6 +90,30 @@ public class UiManager : MonoBehaviour
             !GameManager.instance.GetSelected().Contains(menuTarget)
         };
         selectBtn.Check();
+
+        addSelectBtn = new ButtonHandler(addSelectBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            !GameManager.instance.editMode
+            &&
+            !GameManager.instance.GetSelected().Contains(menuTarget)
+            &&
+            GameManager.instance.GetSelected().Count > 0
+            &&
+            GameManager.instance.SelectIs<OgreeObject>(menuTarget.GetComponent<OgreeObject>().category)
+        };
+        addSelectBtn.Check();
+
+        removeSelectBtn = new ButtonHandler(removeSelectBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            !GameManager.instance.editMode
+            &&
+            GameManager.instance.GetSelected().Contains(menuTarget)
+        };
+        removeSelectBtn.Check();
 
         focusBtn = new ButtonHandler(focusBtn.button, false)
         {
@@ -577,11 +603,19 @@ public class UiManager : MonoBehaviour
     #region CalledByGUI
 
     ///<summary>
-    /// Calle by GUI button: select object targeted by right click menu.
+    /// Called by GUI button: select object targeted by right click menu.
     ///</summary>
     public async void SelectItem()
     {
         await GameManager.instance.SetCurrentItem(menuTarget);
+    }
+
+    ///<summary>
+    /// Called by GUI buttons: update the current selection wuth the object targeted by right click menu.
+    ///</summary>
+    public async void UpdateSelectItem()
+    {
+        await GameManager.instance.UpdateCurrentItems(menuTarget);
     }
 
     ///<summary>
