@@ -84,8 +84,8 @@ public class FocusHandler : MonoBehaviour
             isSelected = true;
             ToggleCollider(gameObject, false);
             UpdateParentRenderers(gameObject, false);
-            if (GetComponent<OObject>().category == "rack")
-                UpdateOwnMeshRenderers(false);
+            //if (GetComponent<OObject>().category == "rack")
+              //  UpdateOwnMeshRenderers(false);
 
             UpdateChildMeshRenderers(true, true);
             transform.GetChild(0).GetComponent<Renderer>().enabled = true;
