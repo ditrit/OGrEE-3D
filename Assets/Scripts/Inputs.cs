@@ -113,7 +113,10 @@ public class Inputs : MonoBehaviour
         else
         {
             if (Input.GetMouseButtonDown(0) && clickTime == 0)
+            {
+                savedMousePos = Input.mousePosition;
                 clickTime = Time.time;
+            }
 
             else if (Input.GetMouseButton(0) && target && !isDraggingObj && (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
                 && GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
@@ -197,7 +200,7 @@ public class Inputs : MonoBehaviour
         coroutineAllowed = false;
         while (Time.realtimeSinceStartup < _firstClickTime + doubleClickTimeLimit)
         {
-            if (clickCount == 2 && !GameManager.instance.editMode)
+            if (clickCount == 2 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
             {
                 if (savedTarget == target)
                     DoubleClick();
@@ -207,7 +210,7 @@ public class Inputs : MonoBehaviour
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !GameManager.instance.editMode)
+        if (clickCount == 1 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
             SingleClick();
         clickCount = 0;
         coroutineAllowed = true;
