@@ -156,7 +156,10 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                    go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+                {
+                    if (go.GetComponent<OgreeObject>() is OObject)
+                        go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+                }
             }
         }
         else if (Input.GetMouseButtonUp(1))
@@ -171,7 +174,10 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                    go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+                {
+                    if (go.GetComponent<OgreeObject>() is OObject)
+                        go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+                }
             }
         }
         else if (Input.GetMouseButtonUp(0))
