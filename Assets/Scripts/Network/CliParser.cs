@@ -36,7 +36,7 @@ public class CliParser
     #endregion
 
     readonly ReadFromJson rfJson = new ReadFromJson();
-    private bool canDraw = false;
+    private bool canDraw = true;
 
     public CliParser()
     {

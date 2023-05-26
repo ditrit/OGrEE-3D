@@ -77,7 +77,7 @@ public class ApiManager : MonoBehaviour
 
     private string url;
     private string token;
-    private bool canDraw = false;
+    private bool canDraw = true;
 
     private void Awake()
     {
