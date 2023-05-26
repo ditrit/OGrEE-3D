@@ -88,6 +88,7 @@ public class OgreeGenerator : MonoBehaviour
                 }
                 else //if (prompt.state == EPromptResp.refuse)
                 {
+                    EventManager.instance.Raise(new CancelGenerateEvent());
                     UiManager.instance.DeletePrompt(prompt);
                     return null;
                 }

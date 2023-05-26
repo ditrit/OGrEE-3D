@@ -77,6 +77,7 @@ public class ApiManager : MonoBehaviour
 
     private string url;
     private string token;
+    private bool canDraw = false;
 
     private void Awake()
     {
@@ -84,6 +85,11 @@ public class ApiManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
+    }
+
+    private void Start()
+    {
+        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
     }
 
     private void Update()
@@ -95,6 +101,20 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ///<summary>
+    /// When called, set canDraw to false
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnCancelGenenerate(CancelGenerateEvent _e)
+    {
+        canDraw = false;
     }
 
     ///<summary>
@@ -394,10 +414,16 @@ public class ApiManager : MonoBehaviour
         }
 
         foreach (SApiObject obj in physicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (SApiObject obj in logicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (string id in leafIds)
         {
@@ -406,7 +432,9 @@ public class ApiManager : MonoBehaviour
                 Utils.RebuildLods(leaf);
         }
 
-        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+        if (canDraw)
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+        canDraw = true;
     }
 
     ///<summary>

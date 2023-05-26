@@ -77,3 +77,7 @@ public class TemperatureScatterPlotEvent : CustomEvent
 {
     public GameObject obj;
 }
+
+public class CancelGenerateEvent : CustomEvent
+{
+}
