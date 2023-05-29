@@ -87,6 +87,8 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_room">the object where we show/hide the temperature diagram</param>
     public void HandleTempBarChart(Room _room)
     {
+        if (isScatterPlotShown)
+            HandleScatterPlot(lastScatterPlot);
         float roomHeight = Utils.ParseDecFrac(_room.attributes["height"]);
 
         switch (_room.attributes["heightUnit"])
@@ -193,6 +195,8 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_ogreeObject">the object where the scatter plot is shown or hidden</param>
     public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
+        if (isDiagramShown)
+            HandleTempBarChart(lastRoom);
         lastScatterPlot = _ogreeObject;
         EventManager.instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
 
