@@ -147,21 +147,22 @@ public class GameManager : MonoBehaviour
                 {
                     bool unloadChildren = true;
                     OObject previousSelected = previousObj.GetComponent<OObject>();
-
-                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentSelected != null && previousSelected.referent != null && previousSelected.referent == currentSelected.referent)
-                        unloadChildren = false;
-
-                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
-                    if (unloadChildren && previousSelected != null)
+                    if (previousSelected != null && previousSelected.referent != null)
                     {
-                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
-                            await previousSelected.referent.LoadChildren("0");
-                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
+                        //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                        if (currentSelected != null && previousSelected.referent == currentSelected.referent)
+                            unloadChildren = false;
+
+                        //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
+                        if (unloadChildren && previousSelected.referent.currentLod <= 1)
                         {
-                            previousItems.Remove(previousObj);
-                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
-                                previousItems.Add(previousSelected.referent.gameObject);
+                            await previousSelected.referent.LoadChildren("0");
+                            if (previousSelected.category != "rack")
+                            {
+                                previousItems.Remove(previousObj);
+                                if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                                    previousItems.Add(previousSelected.referent.gameObject);
+                            }
                         }
                     }
                 }
@@ -226,20 +227,18 @@ public class GameManager : MonoBehaviour
                 foreach (GameObject previousObj in currentItems)
                 {
                     OObject previousSelected = previousObj.GetComponent<OObject>();
-
-                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
-                        unloadChildren = false;
-
-                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
-                    if (unloadChildren && previousSelected != null)
+                    if (previousSelected != null && previousSelected.referent != null)
                     {
-                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
-                            await previousSelected.referent.LoadChildren("0");
-                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
+                        //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                        if (currentDeselected != null && previousSelected.referent == currentDeselected.referent)
+                            unloadChildren = false;
+
+                        //if no to the previous question, previousSelected is a device and level of details is <=1, unload its children
+                        if (unloadChildren && previousSelected.referent.currentLod <= 1 && previousSelected.category != "rack")
                         {
+                            await previousSelected.referent.LoadChildren("0");
                             previousItems.Remove(previousObj);
-                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                            if (!previousItems.Contains(previousSelected.referent.gameObject))
                                 previousItems.Add(previousSelected.referent.gameObject);
                         }
                     }

@@ -66,7 +66,6 @@ public class UHelpersManager : MonoBehaviour
             string str = "";
             foreach (GameObject obj in GameManager.instance.GetSelected())
                 str += (obj.name) + " ";
-            print(str);
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
