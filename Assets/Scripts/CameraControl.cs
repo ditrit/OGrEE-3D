@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class CameraControl : MonoBehaviour
 {
@@ -45,15 +44,6 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
-        // This check may be deleted when the build-in CLI will be removed
-        if (EventSystem.current.currentSelectedGameObject)
-            return;
-
-        if (humanMode)
-            FPSControls();
-        else
-            FreeModeControls();
-
         if (isReady && targetPos.Count > 0)
         {
             // Code for Waiting targetPos.y seconds
@@ -62,7 +52,6 @@ public class CameraControl : MonoBehaviour
             else
                 MoveToTarget();
         }
-
         UpdateGUIInfos();
     }
 
@@ -148,6 +137,17 @@ public class CameraControl : MonoBehaviour
     }
 
     ///<summary>
+    /// Control the camera from mouse & keyboard inputs
+    ///</summary>
+    public void InputControls()
+    {
+        if (humanMode)
+            FPSControls();
+        else
+            FreeModeControls();
+    }
+
+    ///<summary>
     /// Controls for "AntMan" mode.
     ///</summary>
     private void FreeModeControls()
@@ -216,6 +216,7 @@ public class CameraControl : MonoBehaviour
                 transform.Translate((defaultMoveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
         }
 
+        // Right click
         if (Input.GetMouseButton(1))
         {
             transform.Rotate(0, Input.GetAxis("Mouse X") * Time.deltaTime * rotationSpeed, 0);
