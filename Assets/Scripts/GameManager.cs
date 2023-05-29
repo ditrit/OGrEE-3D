@@ -366,7 +366,7 @@ public class GameManager : MonoBehaviour
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
-        Destroy(_toDel);
+        await _toDel.AwaitDestroy();
         StartCoroutine(Utils.ImportFinished());
     }
 
@@ -385,19 +385,19 @@ public class GameManager : MonoBehaviour
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
-            Destroy(doToDel[i]);
+            await doToDel[i].AwaitDestroy();
     }
 
     ///<summary>
     /// Delete all room and object templates.
     ///</summary>
-    public void PurgeTemplates()
+    public async void PurgeTemplates()
     {
         List<GameObject> templatesToDel = new List<GameObject>();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
-            Destroy(templatesToDel[i]);
+            await templatesToDel[i].AwaitDestroy();
         objectTemplates.Clear();
         buildingTemplates.Clear();
         roomTemplates.Clear();
