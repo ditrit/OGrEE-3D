@@ -223,18 +223,14 @@ public class FocusHandler : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnTemperatureDiagram(TemperatureDiagramEvent _e)
     {
-        if (!GetComponent<Slot>() && _e.obj == transform.parent.gameObject)
+        if (!GetComponent<Slot>() && _e.room.gameObject == transform.parent.gameObject)
         {
-            UpdateOwnMeshRenderers(TempDiagram.instance.isDiagramShown);
+            UpdateOwnMeshRenderers(_e.room.barChart);
             UpdateChildMeshRenderers(false);
         }
-        else if (_e.obj == gameObject)
-        {
-            if (TempDiagram.instance.isDiagramShown && GameManager.instance.GetSelected().Contains(gameObject))
-                UpdateChildMeshRenderers(true, true);
-            if (!TempDiagram.instance.isDiagramShown)
-                UpdateChildMeshRenderers(false, false);
-        }
+        else if (_e.room.gameObject == gameObject)
+            UpdateChildMeshRenderers(_e.room.barChart, _e.room.barChart);
+
     }
 
     /// <summary>
@@ -243,20 +239,15 @@ public class FocusHandler : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     public void OnTemperatureScatterPlot(TemperatureScatterPlotEvent _e)
     {
-        if (!GetComponent<Slot>() && transform.parent.gameObject == _e.obj)
+        if (!GetComponent<Slot>() && transform.parent.gameObject == _e.ogreeObject.gameObject)
         {
             Group group = GetComponent<Group>();
             if (!group || (group && group.isDisplayed))
-                UpdateOwnMeshRenderers(TempDiagram.instance.isScatterPlotShown);
+                UpdateOwnMeshRenderers(_e.ogreeObject.scatterPlot);
             UpdateChildMeshRenderers(false);
         }
-        else if (_e.obj == gameObject)
-        {
-            if (TempDiagram.instance.isScatterPlotShown && GameManager.instance.GetSelected().Contains(gameObject))
-                UpdateChildMeshRenderers(true, true);
-            if (!TempDiagram.instance.isScatterPlotShown)
-                UpdateChildMeshRenderers(false, false);
-        }
+        else if (_e.ogreeObject.gameObject == gameObject)
+            UpdateChildMeshRenderers(_e.ogreeObject.scatterPlot, _e.ogreeObject.scatterPlot);
     }
 
     ///<summary>
@@ -270,7 +261,7 @@ public class FocusHandler : MonoBehaviour
 
         foreach (Transform child in transform)
         {
-            if (child.GetComponent<OgreeObject>())
+            if (child.GetComponent<OgreeObject>() is OgreeObject ogree && ogree && ogree.category != "tempBar")
                 ogreeChildObjects.Add(child.gameObject);
             else if (child.GetComponent<Slot>())
                 slotsChildObjects.Add(child.gameObject);
@@ -375,9 +366,10 @@ public class FocusHandler : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject go = (GameObject)de.Value;
+            OgreeObject ogree = go.GetComponent<OgreeObject>();
             if (!ogreeChildObjects.Contains(go) && go != gameObject)
             {
-                switch (go.GetComponent<OgreeObject>().category)
+                switch (ogree.category)
                 {
                     case "domain":
                         break;
@@ -434,11 +426,25 @@ public class FocusHandler : MonoBehaviour
                         }
                         break;
                     case "rack":
-                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value);
-                        go.GetComponent<OObject>()?.ToggleSlots(false);
+                        Rack rack = go.GetComponent<Rack>();
+                        go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(_value && !rack.tempBar);
+                        OObject oObject = go.GetComponent<OObject>();
+                        oObject.ToggleSlots(false);
+                        oObject.ToggleCS(false);
+                        UHelpersManager.instance.ToggleU(go, false);
+                        if (rack.tempBar)
+                        {
+                            FocusHandler focusHandler = rack.tempBar.GetComponent<FocusHandler>();
+                            focusHandler.InitHandler();
+                            focusHandler.UpdateOwnMeshRenderers(_value);
+                        }
+
                         break;
                     case "device":
                         go.GetComponent<FocusHandler>().UpdateOwnMeshRenderers(false);
+                        oObject = go.GetComponent<OObject>();
+                        oObject.ToggleCS(false);
+                        UHelpersManager.instance.ToggleU(go, false);
                         break;
                     case "group":
                         if (go.GetComponent<Group>().isDisplayed)
@@ -450,6 +456,11 @@ public class FocusHandler : MonoBehaviour
                     default:
                         go.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
                         break;
+                }
+                if (ogree.scatterPlot)
+                {
+                    TempDiagram.instance.GetObjectSensors(ogree).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = false);
+                    ogree.scatterPlot = false;
                 }
             }
         }

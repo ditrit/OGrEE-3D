@@ -5,12 +5,13 @@ using UnityEngine.UI;
 public class ButtonHandler
 {
     public delegate bool Condition();
-    
+
     /// <summary>
     /// when this is true, the button is interactable
     /// </summary>
     public Condition interactCondition;
-    
+    public bool hideWhenUseless;
+
     public Button button;
 
     /// <summary>
@@ -27,10 +28,12 @@ public class ButtonHandler
     /// leave toggledCondition to null
     /// </summary>
     /// <param name="_button">the button to be handled </param>
-    public ButtonHandler(Button _button)
+    public ButtonHandler(Button _button, bool _hide)
     {
         button = _button;
+        hideWhenUseless = _hide;
         defaultCB = button.colors;
+        EventManager.instance.AddListener<RightClickEvent>(CheckRightClick);
         EventManager.instance.AddListener<OnSelectItemEvent>(CheckSelect);
         EventManager.instance.AddListener<OnFocusEvent>(CheckFocus);
         EventManager.instance.AddListener<OnUnFocusEvent>(CheckUnfocus);
@@ -39,15 +42,29 @@ public class ButtonHandler
         EventManager.instance.AddListener<ImportFinishedEvent>(CheckImportFinished);
     }
 
+    ~ButtonHandler()
+    {
+        EventManager.instance.RemoveListener<RightClickEvent>(CheckRightClick);
+        EventManager.instance.RemoveListener<OnSelectItemEvent>(CheckSelect);
+        EventManager.instance.RemoveListener<OnFocusEvent>(CheckFocus);
+        EventManager.instance.RemoveListener<OnUnFocusEvent>(CheckUnfocus);
+        EventManager.instance.RemoveListener<EditModeInEvent>(CheckEditIn);
+        EventManager.instance.RemoveListener<EditModeOutEvent>(CheckEditOut);
+        EventManager.instance.RemoveListener<ImportFinishedEvent>(CheckImportFinished);
+    }
+
     /// <summary>
     /// Check for interaction and toggling condition, then activate/deactivate and toggle the button according to them
     /// </summary>
     public void Check()
     {
-        button.interactable = interactCondition();
+        if (hideWhenUseless)
+            button.gameObject.SetActive(interactCondition());
+        else
+            button.interactable = interactCondition();
+
         if (toggledCondition is null)
             return;
-
         ColorBlock cb = button.colors;
         if (toggledCondition())
         {
@@ -60,6 +77,15 @@ public class ButtonHandler
             cb = defaultCB;
         }
         button.colors = cb;
+    }
+
+    ///<summary>
+    /// Check executed when clicking on the right button
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void CheckRightClick(RightClickEvent _e)
+    {
+        Check();
     }
 
     /// <summary>

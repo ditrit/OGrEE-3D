@@ -189,13 +189,14 @@ MonoBehaviour:
   category: tempBar
   description: []
   domain: 
-  tempBar: {fileID: 0}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
+  heatMap: 0
+  scatterPlot: 0
 --- !u!114 &1232021923839479270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +215,5 @@ MonoBehaviour:
   ogreeChildMeshRendererList: []
   slotChildMeshRendererList: []
   isActive: 0
-  isDeleted: 0
   isSelected: 0
   isFocused: 0

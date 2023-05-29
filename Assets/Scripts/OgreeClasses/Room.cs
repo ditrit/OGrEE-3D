@@ -19,6 +19,8 @@ public class Room : Building
     public bool tileName = false;
     public bool tileColor = false;
 
+    public bool barChart = false;
+
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
