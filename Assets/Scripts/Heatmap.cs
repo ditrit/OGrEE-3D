@@ -12,14 +12,11 @@ public class Heatmap : MonoBehaviour
 
     private void Awake()
     {
+        count = TempDiagram.instance.heatMapSensorsMaxNumber;
+        print(count);
         positions = new Vector4[count];
         adjustedPositions = new Vector4[count];
-        properties = new Vector4[count];
-    }
-
-    private void Start()
-    {
-        count = TempDiagram.instance.heatMapSensorsMaxNumber;        
+        properties = new Vector4[count];        
     }
 
     private void Update()
