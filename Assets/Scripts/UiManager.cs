@@ -176,51 +176,55 @@ public class UiManager : MonoBehaviour
 
         barChartBtn = new ButtonHandler(barChartBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected()[0] == menuTarget
-            &&
-            (
-                (
-                    GameManager.instance.SelectIs<Room>()
-                    &&
-                    GameManager.instance.GetSelected().Count == 1
-                )
-                ||
-                GameManager.instance.SelectIs<OgreeObject>("tempBar")
-            ),
+            menuTarget.GetComponent<Room>(),
 
-            toggledCondition = () => TempDiagram.instance.isDiagramShown
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room room
+            &&
+            room
+            &&
+            room.barChart
         };
         barChartBtn.Check();
 
         scatterPlotBtn = new ButtonHandler(scatterPlotBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.SelectIs<Room>() || GameManager.instance.SelectIs<OObject>()
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected().Count == 1
-            &&
-            GameManager.instance.GetSelected()[0] == menuTarget,
+            (
+                menuTarget.GetComponent<OObject>()
+                ||
+                menuTarget.GetComponent<Room>()
+            ),
 
-            toggledCondition = () => TempDiagram.instance.isScatterPlotShown
+            toggledCondition = () => menuTarget 
+            && 
+            menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree 
+            && 
+            ogree 
+            && 
+            ogree.scatterPlot
         };
         scatterPlotBtn.Check();
 
         heatMapBtn = new ButtonHandler(heatMapBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.SelectIs<OObject>("device")
+            interactCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected().Count == 1
+            menuTarget.GetComponent<OObject>()
             &&
-            GameManager.instance.GetSelected()[0] == menuTarget
+            menuTarget.GetComponent<OObject>().category == "device"
             &&
-            DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1,
+            DepthCheck(menuTarget.GetComponent<OObject>()) <= 1,
 
-            toggledCondition = () => GameManager.instance.SelectIs<OObject>("device")
+            toggledCondition = () => menuTarget
             &&
-            GameManager.instance.GetSelected().Count == 1
+            menuTarget.GetComponent<OObject>()
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<OObject>().heatMap
+            menuTarget.GetComponent<OObject>().heatMap
 
         };
         heatMapBtn.Check();
@@ -799,17 +803,9 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button: if one and only one room if selected, toggle its bar chart.
     ///</summary>
-    public async void ToggleTempBarChart()
+    public void ToggleTempBarChart()
     {
-        if (GameManager.instance.GetSelected().Count == 1 && GameManager.instance.SelectIs<Room>())
-            TempDiagram.instance.HandleTempBarChart(GameManager.instance.GetSelected()[0].GetComponent<Room>());
-        else if (GameManager.instance.SelectIs<OgreeObject>("tempBar"))
-        {
-            TempDiagram.instance.HandleTempBarChart(TempDiagram.instance.lastRoom);
-            await GameManager.instance.SetCurrentItem(null);
-        }
-        else
-            GameManager.instance.AppendLogLine("You have to select one and only one room", ELogTarget.both, ELogtype.warning);
+        TempDiagram.instance.HandleTempBarChart(menuTarget.GetComponent<Room>());
         barChartBtn.Check();
     }
 
@@ -829,10 +825,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleTempScatterPlot()
     {
-        if (GameManager.instance.GetSelected().Count == 1 && (GameManager.instance.SelectIs<OObject>() || GameManager.instance.SelectIs<Room>()))
-            TempDiagram.instance.HandleScatterPlot(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>());
-        else
-            GameManager.instance.AppendLogLine("You have to select one and only one room, rack or device", ELogTarget.both, ELogtype.warning);
+        TempDiagram.instance.HandleScatterPlot(menuTarget.GetComponent<OgreeObject>());
         scatterPlotBtn.Check();
     }
 
@@ -842,29 +835,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleHeatMap()
     {
-        try
-        {
-            if (GameManager.instance.GetSelected().Count == 1)
-            {
-                OObject oObject = GameManager.instance.GetSelected()[0].GetComponent<OObject>();
-                if (oObject && oObject.category == "device")
-                {
-                    if (DepthCheck(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>()) <= 1)
-                        TempDiagram.instance.HandleHeatMap(GameManager.instance.GetSelected()[0].GetComponent<OObject>());
-                    else
-                        GameManager.instance.AppendLogLine("This device has too many nested children levels", ELogTarget.both, ELogtype.warning);
-                }
-                else
-                    GameManager.instance.AppendLogLine("You have to select a device", ELogTarget.both, ELogtype.warning);
-            }
-            else
-                GameManager.instance.AppendLogLine("You have to select one device", ELogTarget.both, ELogtype.warning);
-            heatMapBtn.Check();
-        }
-        catch (System.Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
+        TempDiagram.instance.HandleHeatMap(menuTarget.GetComponent<OObject>());
     }
 
     ///<summary>

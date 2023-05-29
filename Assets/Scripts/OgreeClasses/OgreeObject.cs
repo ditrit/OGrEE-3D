@@ -28,6 +28,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public Quaternion originalLocalRotation = Quaternion.identity;
     public Vector3 originalLocalScale = Vector3.one;
     public bool heatMap = false;
+    public bool scatterPlot = false;
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -51,8 +52,10 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         UpdateHierarchyName();
     }
 
-    protected virtual void OnDestroy()
+    protected async virtual void OnDestroy()
     {
+        if (GameManager.instance.GetSelected().Contains(gameObject))
+            await GameManager.instance.SetCurrentItem(null);
         GameManager.instance.allItems.Remove(hierarchyName);
     }
 

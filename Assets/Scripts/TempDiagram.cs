@@ -6,13 +6,6 @@ public class TempDiagram : MonoBehaviour
 {
     public static TempDiagram instance;
 
-    /// <summary>
-    /// true if the temperature diagram is displayed
-    /// </summary>
-    public bool isDiagramShown = false;
-    public bool isScatterPlotShown = false;
-    public Room lastRoom;
-    private OgreeObject lastScatterPlot;
     [SerializeField] private GameObject heatMapModel;
     [SerializeField] private float radiusRatio;
     [SerializeField] private float intensityMin;
@@ -48,16 +41,16 @@ public class TempDiagram : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
-        if (isDiagramShown && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
-            HandleTempBarChart(lastRoom);
-        if (isScatterPlotShown)
-            HandleScatterPlot(lastScatterPlot);
-        if (GameManager.instance.GetPrevious().Count == 1)
-        {
-            OObject previous = GameManager.instance.GetPrevious()[0].GetComponent<OObject>();
-            if (previous && previous.heatMap)
-                HandleHeatMap(previous);
-        }
+    //    if (isDiagramShown && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+    //        HandleTempBarChart(lastRoom);
+    //    if (isScatterPlotShown)
+    //        HandleScatterPlot(lastScatterPlot);
+    //    if (GameManager.instance.GetPrevious().Count == 1)
+    //    {
+    //        OObject previous = GameManager.instance.GetPrevious()[0].GetComponent<OObject>();
+    //        if (previous && previous.heatMap)
+    //            HandleHeatMap(previous);
+    //    }
 
     }
 
@@ -66,7 +59,7 @@ public class TempDiagram : MonoBehaviour
     /// </summary>
     /// <param name="_ogreeObject">The object where we get the sensors</param>
     /// <returns>a list of sensors of the object</returns>
-    private List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
+    public List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
     {
         List<Sensor> sensors = new List<Sensor>();
         foreach (Transform childTransform in _ogreeObject.transform)
@@ -87,8 +80,8 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_room">the object where we show/hide the temperature diagram</param>
     public void HandleTempBarChart(Room _room)
     {
-        if (isScatterPlotShown)
-            HandleScatterPlot(lastScatterPlot);
+        if (_room.scatterPlot)
+            HandleScatterPlot(_room);
         float roomHeight = Utils.ParseDecFrac(_room.attributes["height"]);
 
         switch (_room.attributes["heightUnit"])
@@ -103,9 +96,9 @@ public class TempDiagram : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning); break;
         }
 
-        EventManager.instance.Raise(new TemperatureDiagramEvent() { obj = _room.gameObject });
+        EventManager.instance.Raise(new TemperatureDiagramEvent() { room = _room });
 
-        if (!isDiagramShown)
+        if (!_room.barChart)
         {
             foreach (Transform childTransform in _room.transform)
             {
@@ -113,7 +106,6 @@ public class TempDiagram : MonoBehaviour
                 if (childOgreeObject && !childTransform.GetComponent<Group>())
                     ComputeTempBar(childOgreeObject, _room.temperatureUnit, roomHeight);
             }
-            lastRoom = _room;
         }
         else
         {
@@ -124,7 +116,7 @@ public class TempDiagram : MonoBehaviour
                     Destroy(childOgreeObject.tempBar);
             }
         }
-        isDiagramShown = !isDiagramShown;
+        _room.barChart = !_room.barChart;
     }
 
     /// <summary>
@@ -195,14 +187,13 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_ogreeObject">the object where the scatter plot is shown or hidden</param>
     public void HandleScatterPlot(OgreeObject _ogreeObject)
     {
-        if (isDiagramShown)
-            HandleTempBarChart(lastRoom);
-        lastScatterPlot = _ogreeObject;
-        EventManager.instance.Raise(new TemperatureScatterPlotEvent() { obj = _ogreeObject.gameObject });
+        if (_ogreeObject is Room room && room.barChart)
+            HandleTempBarChart(room);
+        EventManager.instance.Raise(new TemperatureScatterPlotEvent() { ogreeObject = _ogreeObject });
 
-        GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !isScatterPlotShown);
+        GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !_ogreeObject.scatterPlot);
 
-        isScatterPlotShown = !isScatterPlotShown;
+        _ogreeObject.scatterPlot = !_ogreeObject.scatterPlot;
     }
 
     /// <summary>
