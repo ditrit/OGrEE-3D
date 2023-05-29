@@ -25,35 +25,6 @@ public class TempDiagram : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
-    {
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);        
-    }
-
-    private void OnDestroy()
-    {
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
-    }
-
-    ///<summary>
-    /// When called checks if the temperature diagram is currently shown if true hide it.
-    ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void OnSelectItem(OnSelectItemEvent _e)
-    {
-    //    if (isDiagramShown && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
-    //        HandleTempBarChart(lastRoom);
-    //    if (isScatterPlotShown)
-    //        HandleScatterPlot(lastScatterPlot);
-    //    if (GameManager.instance.GetPrevious().Count == 1)
-    //    {
-    //        OObject previous = GameManager.instance.GetPrevious()[0].GetComponent<OObject>();
-    //        if (previous && previous.heatMap)
-    //            HandleHeatMap(previous);
-    //    }
-
-    }
-
     /// <summary>
     /// Recursive fonction, get a list of the sensors in the object or in the children of it.
     /// </summary>
