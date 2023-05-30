@@ -200,12 +200,12 @@ public class UiManager : MonoBehaviour
                 menuTarget.GetComponent<Room>()
             ),
 
-            toggledCondition = () => menuTarget 
-            && 
-            menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree 
-            && 
-            ogree 
-            && 
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree
+            &&
+            ogree
+            &&
             ogree.scatterPlot
         };
         scatterPlotBtn.Check();
@@ -894,6 +894,22 @@ public class UiManager : MonoBehaviour
     {
         coordSystem.transform.position = _hit.point + new Vector3(0, 0.001f, 0);
         coordSystem.transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
+    }
+
+    ///<summary>
+    /// Disable getCoordsMode and hide localCS & coordSystem 
+    ///</summary>
+    public void DisableGetCoordsMode()
+    {
+        GameManager.instance.getCoordsMode = false;
+        if (GameManager.instance.SelectIs<Building>())
+        {
+            Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
+            bd.ToggleCS(false);
+            coordSystem.SetActive(false);
+            getCoordsBtn.Check();
+            toggleLocalCSBtn.Check();
+        }
     }
 
     ///<summary>

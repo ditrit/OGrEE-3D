@@ -352,6 +352,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_deselect">Should we remove current selection ?</param>
     public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool _deselect = true)
     {
+        UiManager.instance.DisableGetCoordsMode();
         if (_deselect)
             await SetCurrentItem(null);
 
