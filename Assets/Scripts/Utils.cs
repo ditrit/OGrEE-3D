@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public static class Utils
@@ -333,6 +334,18 @@ public static class Utils
         _target.SetActive(false); //for UI
         Object.Destroy(_target);
         GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
+    }
+
+    ///<summary>
+    /// Destroy an object and wait for its reference to be null
+    ///</summary>
+    ///<param name="_obj">The object to destroy</param>
+    ///<param name="_frequency">The time to wait at each loop. 10 by default</param>
+    public static async Task AwaitDestroy(this Object _obj, int _frequency = 10)
+    {
+        Object.Destroy(_obj);
+        while (_obj)
+            await Task.Delay(_frequency);
     }
 
     ///<summary>

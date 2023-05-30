@@ -82,3 +82,7 @@ public class RightClickEvent : CustomEvent
 {
 
 }
+
+public class CancelGenerateEvent : CustomEvent
+{
+}
