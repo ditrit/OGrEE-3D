@@ -404,6 +404,46 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Delete a template if not used
+    ///</summary>
+    ///<param name="_category">The type of the template</param>
+    ///<param name="_template">The name of the template</param>
+    public async void DeleteTemplate(string _category, string _template)
+    {
+        int count = 0;
+        foreach (DictionaryEntry de in allItems)
+        {
+            OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
+            if (obj && obj.attributes.ContainsKey("template") && obj.attributes["template"] == _template)
+                count++;
+        }
+
+        if (count == 0)
+        {
+            GameObject toDel;
+            switch (_category)
+            {
+                case "building":
+                    buildingTemplates.Remove(_template);
+                    break;
+                case "room":
+                    roomTemplates.Remove(_template);
+                    break;
+                case "rack":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+                case "device":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+            }
+        }
+    }
+
+    ///<summary>
     /// Display a message in the CLI.
     ///</summary>
     ///<param name="_line">The text to display</param>
