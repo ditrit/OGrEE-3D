@@ -59,7 +59,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         GameManager.instance.allItems.Remove(hierarchyName);
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
-            GameManager.instance.DeleteTemplate(category, attributes["template"]);
+            GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
     }
 
     ///<summary>

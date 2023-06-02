@@ -408,7 +408,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_category">The type of the template</param>
     ///<param name="_template">The name of the template</param>
-    public async void DeleteTemplate(string _category, string _template)
+    public async void DeleteTemplateIfUnused(string _category, string _template)
     {
         int count = 0;
         foreach (DictionaryEntry de in allItems)
