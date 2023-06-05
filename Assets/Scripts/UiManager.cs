@@ -760,7 +760,7 @@ public class UiManager : MonoBehaviour
     /// Toggle build-in CLI writing.
     ///</summary>
     ///<param name="_value">The toggle value</param>
-    public void ToggleCLI(bool _value)
+    public void ToggleCliWriting(bool _value)
     {
         if (_value)
         {
