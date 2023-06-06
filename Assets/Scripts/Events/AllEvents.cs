@@ -63,6 +63,7 @@ public class EditModeOutEvent : CustomEvent
 
 public class ConnectApiEvent : CustomEvent
 {
+    public string tenantName;
 }
 
 public class TemperatureDiagramEvent : CustomEvent

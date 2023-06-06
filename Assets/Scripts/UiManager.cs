@@ -383,12 +383,12 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            apiUrl.text = "Connected to " + ApiManager.instance.GetApiUrl();
+            apiUrl.text = $"Connected to {_e.tenantName} ({ApiManager.instance.GetApiUrl()})";
             apiUrl.color = Color.green;
         }
         else
         {
-            apiUrl.text = "Fail to connected to " + ApiManager.instance.GetApiUrl();
+            apiUrl.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
             apiUrl.color = Color.red;
         }
     }
