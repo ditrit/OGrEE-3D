@@ -45,7 +45,7 @@ public class UiManager : MonoBehaviour
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField currentItemText;
-    [SerializeField] private TMP_Text focusText;
+    [SerializeField] private TMP_InputField focusText;
     [SerializeField] private TMP_Text apiUrl;
     public TMP_Dropdown labelsDropdown;
 
@@ -363,7 +363,8 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent _e)
     {
-        UpdateFocusText();
+        SetFocusItemText();
+        GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -372,7 +373,11 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
-        UpdateFocusText();
+        SetFocusItemText();
+        if (string.IsNullOrEmpty(focusText.text))
+            GameManager.instance.AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+        else
+            GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -426,7 +431,7 @@ public class UiManager : MonoBehaviour
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
-            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            focusText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
     }
 
@@ -453,22 +458,6 @@ public class UiManager : MonoBehaviour
             objInfos.UpdateSingleFields(GameManager.instance.GetSelected()[0]);
         else
             objInfos.UpdateMultiFields(GameManager.instance.GetSelected());
-    }
-
-    ///<summary>
-    /// Update focusText according to focus' last item.
-    ///</summary>
-    public void UpdateFocusText()
-    {
-        if (GameManager.instance.focusMode)
-        {
-            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName;
-            focusText.text = $"Focus on {objName}";
-        }
-        else
-            focusText.text = "No focus";
-
-        GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -565,7 +554,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Set the current item text
     ///</summary>
-    public void SetCurrentItemText()
+    private void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
             currentItemText.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
@@ -573,6 +562,20 @@ public class UiManager : MonoBehaviour
             currentItemText.text = ("Multiple selection");
         else
             currentItemText.text = ("");
+    }
+
+    ///<summary>
+    /// Set focusText according to focus' last item.
+    ///</summary>
+    private void SetFocusItemText()
+    {
+        if (GameManager.instance.focusMode)
+        {
+            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            focusText.text = $"Focus on {objName}";
+        }
+        else
+            focusText.text = "";
     }
 
     #endregion
