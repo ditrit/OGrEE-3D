@@ -389,16 +389,19 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            apiText.text = $"Connected to {_e.tenantName}";
+            apiText.text = $"Connected to {_e.apiData.customer}";
             apiText.color = Color.green;
-            apiUrl.text = $"(API URL: {ApiManager.instance.GetApiUrl()})";
         }
         else
         {
             apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
             apiText.color = Color.red;
-            apiUrl.text = $"API URL: N/A";
         }
+        apiUrl.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
+        apiUrl.text += $"\nAPI build date:\t\t{_e.apiData.buildDate}";
+        apiUrl.text += $"\nAPI build hash:\t\t{_e.apiData.buildHash}";
+        apiUrl.text += $"\nAPI build tree:\t\t{_e.apiData.buildTree}";
+        apiUrl.text += $"\nAPI commit date:\t{_e.apiData.commitDate}";
     }
 
     ///<summary>

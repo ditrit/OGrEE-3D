@@ -68,7 +68,7 @@ public class ApiManager : MonoBehaviour
         public bool status;
     }
 
-    private struct SVersionData
+    public struct SVersionData
     {
         public string buildDate;
         public string buildHash;
@@ -157,7 +157,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     public async Task Initialize()
     {
-        string tenant = null;
+        SVersionResp apiResp = new SVersionResp();
         if (string.IsNullOrEmpty(url))
             GameManager.instance.AppendLogLine("Failed to connect with API: no url", ELogTarget.both, ELogtype.errorApi);
         else if (string.IsNullOrEmpty(token))
@@ -168,7 +168,9 @@ public class ApiManager : MonoBehaviour
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                tenant = await GetTenant();
+                string response = await httpClient.GetStringAsync($"{server}/version");
+                GameManager.instance.AppendLogLine(response, ELogTarget.none, ELogtype.infoApi);
+                apiResp = JsonConvert.DeserializeObject<SVersionResp>(response);
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
@@ -178,8 +180,8 @@ public class ApiManager : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", ELogTarget.both, ELogtype.errorApi);
             }
         }
-        if (!string.IsNullOrEmpty(tenant))
-            EventManager.instance.Raise(new ConnectApiEvent() { tenantName = tenant });
+        if (!string.IsNullOrEmpty(apiResp.data.customer))
+            EventManager.instance.Raise(new ConnectApiEvent() { apiData = apiResp.data });
     }
 
     ///<summary>
@@ -316,17 +318,6 @@ public class ApiManager : MonoBehaviour
             EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
             return default;
         }
-    }
-
-    ///<summary>
-    /// Get tenant name from API version call
-    ///</summary>
-    ///<returns>The tenant's name</returns>
-    public async Task<string> GetTenant()
-    {
-        string response = await httpClient.GetStringAsync($"{server}/version");
-        SVersionResp data = JsonConvert.DeserializeObject<SVersionResp>(response);
-        return data.data.customer;
     }
 
     ///<summary>
