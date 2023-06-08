@@ -168,11 +168,10 @@ public class ApiManager : MonoBehaviour
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                string response = await httpClient.GetStringAsync($"{url}/api/token/valid");
-                isReady = true;
-                GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
                 tenant = await GetTenant();
+                isReady = true;
                 isInit = true;
+                GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
             }
             catch (HttpRequestException e)
             {
@@ -325,7 +324,7 @@ public class ApiManager : MonoBehaviour
     ///<returns>The tenant's name</returns>
     public async Task<string> GetTenant()
     {
-        string response = await httpClient.GetStringAsync($"{url}/api/version");
+        string response = await httpClient.GetStringAsync($"{server}/version");
         SVersionResp data = JsonConvert.DeserializeObject<SVersionResp>(response);
         return data.data.customer;
     }
