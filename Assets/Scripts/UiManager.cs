@@ -46,6 +46,7 @@ public class UiManager : MonoBehaviour
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField currentItemText;
     [SerializeField] private TMP_InputField focusText;
+    [SerializeField] private TMP_Text apiText;
     [SerializeField] private TMP_Text apiUrl;
     public TMP_Dropdown labelsDropdown;
 
@@ -388,13 +389,15 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            apiUrl.text = $"Connected to {_e.tenantName} ({ApiManager.instance.GetApiUrl()})";
-            apiUrl.color = Color.green;
+            apiText.text = $"Connected to {_e.tenantName}";
+            apiText.color = Color.green;
+            apiUrl.text = $"(API URL: {ApiManager.instance.GetApiUrl()})";
         }
         else
         {
-            apiUrl.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
-            apiUrl.color = Color.red;
+            apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
+            apiText.color = Color.red;
+            apiUrl.text = $"API URL: N/A";
         }
     }
 
