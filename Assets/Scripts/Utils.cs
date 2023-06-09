@@ -144,6 +144,26 @@ public static class Utils
     }
 
     ///<summary>
+    /// Get an object from <see cref="GameManager.allItems"/> by it's hierarchyName.
+    ///</summary>
+    ///<param name="_id">The id to search</param>
+    ///<returns>The asked object</returns>
+    public static GameObject GetObjectByHierarchyName(string _hn)
+    {
+        if (!string.IsNullOrEmpty(_hn))
+        {
+            _hn = _hn.Replace('/', '.');
+            foreach (DictionaryEntry de in GameManager.instance.allItems)
+            {
+                GameObject obj = (GameObject)de.Value;
+                if (obj && obj.GetComponent<OgreeObject>().hierarchyName == _hn)
+                    return obj;
+            }
+        }
+        return null;
+    }
+
+    ///<summary>
     /// Set a Color with an hexadecimal value
     ///</summary>
     ///<param name="_str">The hexadecimal value, without '#'</param>

@@ -38,7 +38,8 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        camControl.InputControls();
+        if (!EventSystem.current.IsPointerOverGameObject())
+            camControl.InputControls();
 
         if (GameManager.instance.getCoordsMode && !lockMouseInteract)
             GetCoordsModeControls();

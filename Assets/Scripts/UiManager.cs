@@ -365,7 +365,6 @@ public class UiManager : MonoBehaviour
     private void OnFocusItem(OnFocusEvent _e)
     {
         SetFocusItemText();
-        GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -375,10 +374,6 @@ public class UiManager : MonoBehaviour
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
         SetFocusItemText();
-        if (string.IsNullOrEmpty(focusText.text))
-            GameManager.instance.AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
-        else
-            GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -578,7 +573,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.focusMode)
         {
             string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
-            focusText.text = $"Focus on {objName}";
+            focusText.text = $"{objName}";
         }
         else
             focusText.text = "";
@@ -876,6 +871,33 @@ public class UiManager : MonoBehaviour
         slider.value = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
+    }
+
+    ///<summary>
+    /// Call at InputField End Edit. Select given object (retrieve it by its hierarchyName)
+    ///</summary>
+    ///<param name="_value">Value given by the InputField</param>
+    public async void SelectEndEdit(string _value)
+    {
+        if (string.IsNullOrEmpty(_value))
+            await GameManager.instance.SetCurrentItem(null);
+        else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+            await GameManager.instance.SetCurrentItem(obj);
+        SetCurrentItemText();
+    }
+
+    ///<summary>
+    /// Call at InputField End Edit. Focus given object (retrieve it by its hierarchyName)
+    ///</summary>
+    ///<param name="_value">Value given by the InputField</param>
+    public async void FocusEndEdit(string _value)
+    {
+        if (!string.IsNullOrEmpty(_value) && Utils.GetObjectByHierarchyName(_value) is GameObject obj && GameManager.instance.IsInFocus(obj))
+        {
+            await GameManager.instance.SetCurrentItem(obj);
+            await GameManager.instance.FocusItem(obj);
+        }
+        SetFocusItemText();
     }
 
     /// <summary>

@@ -290,6 +290,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -312,9 +313,13 @@ public class GameManager : MonoBehaviour
         {
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
             await SetCurrentItem(focus[focus.Count - 1]);
+            AppendLogLine($"Focus {focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
         }
         else
+        {
             await SetCurrentItem(obj);
+            AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+        }
     }
 
     ///<summary>
