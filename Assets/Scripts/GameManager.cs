@@ -329,6 +329,9 @@ public class GameManager : MonoBehaviour
     ///<returns>True if _obj is a child of focused object</returns>
     public bool IsInFocus(GameObject _obj)
     {
+        if (focus.Count == 0)
+            return true;
+
         Transform root = focus[focus.Count - 1].transform;
         if (root.GetComponent<Group>())
         {
@@ -337,16 +340,15 @@ public class GameManager : MonoBehaviour
                 if (go == _obj)
                     return true;
             }
+            return false;
         }
+        else if (_obj.GetComponent<OgreeObject>().hierarchyName.Contains(root.GetComponent<OgreeObject>().hierarchyName))
+            return true;
         else
         {
-            foreach (Transform child in root)
-            {
-                if (child.gameObject == _obj || IsInFocus(child.gameObject))
-                    return true;
-            }
+            AppendLogLine($"Cannot focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.warning);
+            return false;
         }
-        return false;
     }
 
     ///<summary>

@@ -892,7 +892,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the InputField</param>
     public async void FocusEndEdit(string _value)
     {
-        if (!string.IsNullOrEmpty(_value) && Utils.GetObjectByHierarchyName(_value) is GameObject obj && GameManager.instance.IsInFocus(obj))
+        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj && GameManager.instance.IsInFocus(obj))
         {
             await GameManager.instance.SetCurrentItem(obj);
             await GameManager.instance.FocusItem(obj);
