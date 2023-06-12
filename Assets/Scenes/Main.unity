@@ -6601,9 +6601,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "OGrEE 3D is an OpenSource project by DitRit community\r\nLicense: MPL
-    2.0\n\nAuthor : Herve CHIBOIS \n\t(herve.chibois@orness.com) (GITHUB:hchybz)\r\n\nMain
-    Unity Dev : C\xE9dric VAUTRAIN \n\t(cedric.vautrain@orness.com) (GITHUB:Cedrok)\r\n\nhttps://github.com/ditrit/OGREE-3D"
+  m_text: "The OGrEE project is a set of OpenSource projects by DitRit community\r\nLicense:
+    MPL 2.0\n\nThis is OGrEE-3D, a viewer for items stored in OGrEE databases. \nGitHub
+    repository: https://github.com/ditrit/OGREE-3D\n\nOther modules can be found
+    at https://github.com/ditrit/OGREE-Core"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7749,7 +7750,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'OGrEE 3D :  Offline Graph End to End'
+  m_text: 'OGrEE : <i>Offline Graph End to End</i>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -12144,7 +12145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1389592959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19590,7 +19591,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: -0.0000036547985
-  m_Size: 0.5657963
+  m_Size: 0.5657999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
