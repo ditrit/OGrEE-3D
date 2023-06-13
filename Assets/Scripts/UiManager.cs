@@ -44,9 +44,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler heatMapBtn;
 
     [Header("Panel Top")]
-    [SerializeField] private TMP_InputField currentItemText;
-    [SerializeField] private TMP_Text focusText;
-    [SerializeField] private TMP_Text apiUrl;
+    [SerializeField] private TMP_InputField selectionInputField;
+    [SerializeField] private TMP_InputField focusInputField;
+    [SerializeField] private TMP_Text apiText;
+    [SerializeField] private TMP_Text apiInfos;
     public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Debug")]
@@ -363,7 +364,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnFocusItem(OnFocusEvent _e)
     {
-        UpdateFocusText();
+        SetFocusItemText();
     }
 
     ///<summary>
@@ -372,7 +373,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnUnFocusItem(OnUnFocusEvent _e)
     {
-        UpdateFocusText();
+        SetFocusItemText();
     }
 
     ///<summary>
@@ -383,14 +384,19 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            apiUrl.text = "Connected to " + ApiManager.instance.GetApiUrl();
-            apiUrl.color = Color.green;
+            apiText.text = $"Connected to {_e.apiData["Customer"]}";
+            apiText.color = Color.green;
         }
         else
         {
-            apiUrl.text = "Fail to connected to " + ApiManager.instance.GetApiUrl();
-            apiUrl.color = Color.red;
+            apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
+            apiText.color = Color.red;
         }
+        apiInfos.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
+        apiInfos.text += $"\nAPI build date:\t\t{_e.apiData["BuildDate"]}";
+        apiInfos.text += $"\nAPI build hash:\t\t{_e.apiData["BuildHash"]}";
+        apiInfos.text += $"\nAPI build tree:\t\t{_e.apiData["BuildTree"]}";
+        apiInfos.text += $"\nAPI commit date:\t{_e.apiData["CommitDate"]}";
     }
 
     ///<summary>
@@ -419,14 +425,14 @@ public class UiManager : MonoBehaviour
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
             selectColor = new Color(c.r, c.g, c.b, alpha);
-            currentItemText.GetComponent<Image>().color = selectColor;
+            selectionInputField.GetComponent<Image>().color = selectColor;
         }
 
         string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
-            focusText.transform.parent.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            focusInputField.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
     }
 
@@ -453,22 +459,6 @@ public class UiManager : MonoBehaviour
             objInfos.UpdateSingleFields(GameManager.instance.GetSelected()[0]);
         else
             objInfos.UpdateMultiFields(GameManager.instance.GetSelected());
-    }
-
-    ///<summary>
-    /// Update focusText according to focus' last item.
-    ///</summary>
-    public void UpdateFocusText()
-    {
-        if (GameManager.instance.focusMode)
-        {
-            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName;
-            focusText.text = $"Focus on {objName}";
-        }
-        else
-            focusText.text = "No focus";
-
-        GameManager.instance.AppendLogLine(focusText.text, ELogTarget.both, ELogtype.success);
     }
 
     ///<summary>
@@ -565,14 +555,28 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Set the current item text
     ///</summary>
-    public void SetCurrentItemText()
+    private void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            currentItemText.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
-            currentItemText.text = ("Multiple selection");
+            selectionInputField.text = ("Multiple selection");
         else
-            currentItemText.text = ("");
+            selectionInputField.text = ("");
+    }
+
+    ///<summary>
+    /// Set focusText according to focus' last item.
+    ///</summary>
+    private void SetFocusItemText()
+    {
+        if (GameManager.instance.focusMode)
+        {
+            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            focusInputField.text = $"{objName}";
+        }
+        else
+            focusInputField.text = "";
     }
 
     #endregion
@@ -760,7 +764,7 @@ public class UiManager : MonoBehaviour
     /// Toggle build-in CLI writing.
     ///</summary>
     ///<param name="_value">The toggle value</param>
-    public void ToggleCLI(bool _value)
+    public void ToggleCliWriting(bool _value)
     {
         if (_value)
         {
@@ -867,6 +871,42 @@ public class UiManager : MonoBehaviour
         slider.value = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
+    }
+
+    ///<summary>
+    /// Call at InputField End Edit. Select given object (retrieve it by its hierarchyName)
+    ///</summary>
+    ///<param name="_value">Value given by the InputField</param>
+    public async void SelectEndEdit(string _value)
+    {
+        if (string.IsNullOrEmpty(_value))
+            await GameManager.instance.SetCurrentItem(null);
+        else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+            await GameManager.instance.SetCurrentItem(obj);
+        else if (!string.IsNullOrEmpty(_value))
+            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
+        SetCurrentItemText();
+    }
+
+    ///<summary>
+    /// Call at InputField End Edit. Focus given object (retrieve it by its hierarchyName)
+    ///</summary>
+    ///<param name="_value">Value given by the InputField</param>
+    public async void FocusEndEdit(string _value)
+    {
+        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+        {
+            if (GameManager.instance.IsInFocus(obj))
+            {
+                await GameManager.instance.SetCurrentItem(obj);
+                await GameManager.instance.FocusItem(obj);
+            }
+            else
+                GameManager.instance.AppendLogLine($"Cannot focus {_value}", ELogTarget.logger, ELogtype.warning);
+        }
+        else if (!string.IsNullOrEmpty(_value))
+            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
+        SetFocusItemText();
     }
 
     /// <summary>

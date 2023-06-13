@@ -290,6 +290,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -312,18 +313,25 @@ public class GameManager : MonoBehaviour
         {
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
             await SetCurrentItem(focus[focus.Count - 1]);
+            AppendLogLine($"Focus {focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
         }
         else
+        {
             await SetCurrentItem(obj);
+            AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+        }
     }
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
     ///</summary>
     ///<param name="_obj">The object to check</param>
-    ///<returns>True if _obj is a child of focused object</returns>
+    ///<returns>True if _obj is a child of focused object or if there is no focused object</returns>
     public bool IsInFocus(GameObject _obj)
     {
+        if (!focusMode)
+            return true;
+
         Transform root = focus[focus.Count - 1].transform;
         if (root.GetComponent<Group>())
         {
@@ -333,14 +341,9 @@ public class GameManager : MonoBehaviour
                     return true;
             }
         }
-        else
-        {
-            foreach (Transform child in root)
-            {
-                if (child.gameObject == _obj || IsInFocus(child.gameObject))
-                    return true;
-            }
-        }
+        else if (_obj.GetComponent<OgreeObject>().hierarchyName.Contains(root.GetComponent<OgreeObject>().hierarchyName))
+            return true;
+
         return false;
     }
 
