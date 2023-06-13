@@ -148,15 +148,15 @@ public static class Utils
     ///</summary>
     ///<param name="_id">The id to search</param>
     ///<returns>The asked object</returns>
-    public static GameObject GetObjectByHierarchyName(string _hn)
+    public static GameObject GetObjectByHierarchyName(string _hierarchyName)
     {
-        if (!string.IsNullOrEmpty(_hn))
+        if (!string.IsNullOrEmpty(_hierarchyName))
         {
-            _hn = _hn.Replace('/', '.');
+            _hierarchyName = _hierarchyName.Replace('/', '.');
             foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
                 GameObject obj = (GameObject)de.Value;
-                if (obj && obj.GetComponent<OgreeObject>().hierarchyName == _hn)
+                if (obj && obj.GetComponent<OgreeObject>().hierarchyName == _hierarchyName)
                     return obj;
             }
         }

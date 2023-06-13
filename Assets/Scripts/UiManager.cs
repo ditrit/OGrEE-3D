@@ -47,7 +47,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField currentItemText;
     [SerializeField] private TMP_InputField focusText;
     [SerializeField] private TMP_Text apiText;
-    [SerializeField] private TMP_Text apiUrl;
+    [SerializeField] private TMP_Text apiInfos;
     public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Debug")]
