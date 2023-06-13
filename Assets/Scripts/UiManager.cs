@@ -384,7 +384,7 @@ public class UiManager : MonoBehaviour
     {
         if (ApiManager.instance.isInit)
         {
-            apiText.text = $"Connected to {_e.apiData.customer}";
+            apiText.text = $"Connected to {_e.apiData["Customer"]}";
             apiText.color = Color.green;
         }
         else
@@ -392,11 +392,11 @@ public class UiManager : MonoBehaviour
             apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
             apiText.color = Color.red;
         }
-        apiUrl.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
-        apiUrl.text += $"\nAPI build date:\t\t{_e.apiData.buildDate}";
-        apiUrl.text += $"\nAPI build hash:\t\t{_e.apiData.buildHash}";
-        apiUrl.text += $"\nAPI build tree:\t\t{_e.apiData.buildTree}";
-        apiUrl.text += $"\nAPI commit date:\t{_e.apiData.commitDate}";
+        apiInfos.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
+        apiInfos.text += $"\nAPI build date:\t\t{_e.apiData["BuildDate"]}";
+        apiInfos.text += $"\nAPI build hash:\t\t{_e.apiData["BuildHash"]}";
+        apiInfos.text += $"\nAPI build tree:\t\t{_e.apiData["BuildTree"]}";
+        apiInfos.text += $"\nAPI commit date:\t{_e.apiData["CommitDate"]}";
     }
 
     ///<summary>

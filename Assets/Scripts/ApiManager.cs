@@ -64,17 +64,8 @@ public class ApiManager : MonoBehaviour
 
     private struct SVersionResp
     {
-        public SVersionData data;
+        public Dictionary<string, string> data;
         public bool status;
-    }
-
-    public struct SVersionData
-    {
-        public string buildDate;
-        public string buildHash;
-        public string buildTree;
-        public string commitDate;
-        public string customer;
     }
 
     public static ApiManager instance;
@@ -180,7 +171,7 @@ public class ApiManager : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", ELogTarget.both, ELogtype.errorApi);
             }
         }
-        if (!string.IsNullOrEmpty(apiResp.data.customer))
+        if (!string.IsNullOrEmpty(apiResp.data["Customer"]))
             EventManager.instance.Raise(new ConnectApiEvent() { apiData = apiResp.data });
     }
 
