@@ -326,10 +326,10 @@ public class GameManager : MonoBehaviour
     /// Check if the given GameObject is a child (or a content) of focused object.
     ///</summary>
     ///<param name="_obj">The object to check</param>
-    ///<returns>True if _obj is a child of focused object</returns>
+    ///<returns>True if _obj is a child of focused object or if there is no focused object</returns>
     public bool IsInFocus(GameObject _obj)
     {
-        if (focus.Count == 0)
+        if (!focusMode)
             return true;
 
         Transform root = focus[focus.Count - 1].transform;
@@ -340,15 +340,11 @@ public class GameManager : MonoBehaviour
                 if (go == _obj)
                     return true;
             }
-            return false;
         }
         else if (_obj.GetComponent<OgreeObject>().hierarchyName.Contains(root.GetComponent<OgreeObject>().hierarchyName))
             return true;
-        else
-        {
-            AppendLogLine($"Cannot focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.warning);
-            return false;
-        }
+
+        return false;
     }
 
     ///<summary>

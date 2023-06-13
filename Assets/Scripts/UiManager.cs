@@ -883,6 +883,8 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
+        else
+            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetCurrentItemText();
     }
 
@@ -892,11 +894,18 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the InputField</param>
     public async void FocusEndEdit(string _value)
     {
-        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj && GameManager.instance.IsInFocus(obj))
+        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
         {
-            await GameManager.instance.SetCurrentItem(obj);
-            await GameManager.instance.FocusItem(obj);
+            if (GameManager.instance.IsInFocus(obj))
+            {
+                await GameManager.instance.SetCurrentItem(obj);
+                await GameManager.instance.FocusItem(obj);
+            }
+            else
+                GameManager.instance.AppendLogLine($"Cannot focus {_value}", ELogTarget.logger, ELogtype.warning);
         }
+        else
+            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetFocusItemText();
     }
 
