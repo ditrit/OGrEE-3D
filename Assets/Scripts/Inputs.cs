@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class Inputs : MonoBehaviour
@@ -38,7 +40,8 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        if (!EventSystem.current.IsPointerOverGameObject())
+        if (!(EventSystem.current.currentSelectedGameObject is GameObject tmp
+            && (tmp.GetComponent<TMP_InputField>() || tmp.GetComponent<InputField>())))
             camControl.InputControls();
 
         if (GameManager.instance.getCoordsMode && !lockMouseInteract)

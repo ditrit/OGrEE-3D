@@ -44,8 +44,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler heatMapBtn;
 
     [Header("Panel Top")]
-    [SerializeField] private TMP_InputField currentItemText;
-    [SerializeField] private TMP_InputField focusText;
+    [SerializeField] private TMP_InputField selectionInputField;
+    [SerializeField] private TMP_InputField focusInputField;
     [SerializeField] private TMP_Text apiText;
     [SerializeField] private TMP_Text apiInfos;
     public TMP_Dropdown labelsDropdown;
@@ -425,14 +425,14 @@ public class UiManager : MonoBehaviour
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
             selectColor = new Color(c.r, c.g, c.b, alpha);
-            currentItemText.GetComponent<Image>().color = selectColor;
+            selectionInputField.GetComponent<Image>().color = selectColor;
         }
 
         string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
-            focusText.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            focusInputField.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
         }
     }
 
@@ -558,11 +558,11 @@ public class UiManager : MonoBehaviour
     private void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            currentItemText.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
-            currentItemText.text = ("Multiple selection");
+            selectionInputField.text = ("Multiple selection");
         else
-            currentItemText.text = ("");
+            selectionInputField.text = ("");
     }
 
     ///<summary>
@@ -573,10 +573,10 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.focusMode)
         {
             string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
-            focusText.text = $"{objName}";
+            focusInputField.text = $"{objName}";
         }
         else
-            focusText.text = "";
+            focusInputField.text = "";
     }
 
     #endregion
@@ -883,7 +883,7 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
-        else
+        else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetCurrentItemText();
     }
@@ -904,7 +904,7 @@ public class UiManager : MonoBehaviour
             else
                 GameManager.instance.AppendLogLine($"Cannot focus {_value}", ELogTarget.logger, ELogtype.warning);
         }
-        else
+        else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetFocusItemText();
     }
