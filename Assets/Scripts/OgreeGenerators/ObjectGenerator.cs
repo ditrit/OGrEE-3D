@@ -30,10 +30,6 @@ public class ObjectGenerator
                 GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
                 return null;
             }
-            Renderer[] renderers = newRack.GetComponentsInChildren<Renderer>();
-            foreach (Renderer r in renderers)
-                r.enabled = true;
-            newRack.transform.GetChild(0).GetComponent<Collider>().enabled = true;
         }
 
         newRack.name = _rk.name;
@@ -356,10 +352,6 @@ public class ObjectGenerator
         {
             GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
             go.transform.parent = _parent;
-            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
-            foreach (Renderer r in renderers)
-                r.enabled = true;
-            go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
             return go;
         }
         else
@@ -745,7 +737,6 @@ public class ObjectGenerator
         dod.PlaceTexts("front");
         dod.SetLabel("#temperature");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-        newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
 
         return sensor;
     }

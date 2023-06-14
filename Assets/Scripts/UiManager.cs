@@ -101,6 +101,8 @@ public class UiManager : MonoBehaviour
             &&
             GameManager.instance.GetSelected().Count > 0
             &&
+            menuTarget.GetComponent<OgreeObject>()
+            &&
             GameManager.instance.SelectIs<OgreeObject>(menuTarget.GetComponent<OgreeObject>().category)
         };
         addSelectBtn.Check();
@@ -122,6 +124,8 @@ public class UiManager : MonoBehaviour
             menuTarget
             &&
             menuTarget.GetComponent<OObject>()
+            &&
+            !menuTarget.GetComponent<Group>()
         };
         focusBtn.Check();
 
@@ -194,8 +198,10 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
+            !menuTarget.GetComponent<Group>()
+            &&
             (
-                menuTarget.GetComponent<OObject>()
+                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != "corridor")
                 ||
                 menuTarget.GetComponent<Room>()
             ),

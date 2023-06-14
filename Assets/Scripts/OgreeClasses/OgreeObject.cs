@@ -27,7 +27,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public Vector3 originalLocalPosition = Vector3.negativeInfinity;
     public Quaternion originalLocalRotation = Quaternion.identity;
     public Vector3 originalLocalScale = Vector3.one;
-    public bool heatMap = false;
+    public GameObject heatMap;
     public bool scatterPlot = false;
     public void OnBeforeSerialize()
     {
@@ -185,10 +185,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
                 Debug.Log($"[Delete] {obj.hierarchyName}");
                 obj.transform.parent = null;
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
-                obj.GetComponent<FocusHandler>()?.UnsubscribeEvents();
-                obj.GetComponent<CustomRendererOutline>()?.UnsubscribeEvents();
+                obj.GetComponent<ObjectDisplayController>()?.UnsubscribeEvents();
             }
-            GetComponent<FocusHandler>()?.InitHandler();
         }
         else
         {

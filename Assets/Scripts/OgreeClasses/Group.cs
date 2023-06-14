@@ -5,12 +5,6 @@ public class Group : OObject
 {
     public bool isDisplayed = true;
 
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        ToggleContent(true);
-    }
-
     ///<summary>
     /// Display or hide the rackGroup and its content.
     ///</summary>
@@ -18,11 +12,15 @@ public class Group : OObject
     public void ToggleContent(bool _value)
     {
         isDisplayed = !_value;
-        ToggleAlpha(_value);
+        GetComponent<ObjectDisplayController>().Display(!_value,!_value,!_value);
         DisplayContent(_value);
-        transform.GetChild(0).GetComponent<Collider>().enabled = !_value;
         if (_value)
+        {
+            GetComponent<ObjectDisplayController>().UnsubscribeEvents();
             StartCoroutine(Utils.ImportFinished());
+        }
+        else
+            GetComponent<ObjectDisplayController>().SubscribeEvents();
     }
 
     ///<summary>
@@ -33,8 +31,6 @@ public class Group : OObject
     {
         foreach (GameObject r in GetContent())
             r.SetActive(_value);
-
-        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
     }
 
     ///<summary>
@@ -44,6 +40,8 @@ public class Group : OObject
     public List<GameObject> GetContent()
     {
         List<GameObject> content = new List<GameObject>();
+        if (!transform.parent) //needed when calling this function after the group has been destroyed
+            return content;
         string[] names = attributes["content"].Split(',');
 
         foreach (string rn in names)

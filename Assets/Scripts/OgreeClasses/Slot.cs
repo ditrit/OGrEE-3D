@@ -17,16 +17,6 @@ public class Slot : MonoBehaviour
     public void SlotTaken(bool _value)
     {
         used = _value;
-        Display(!used);
-    }
-
-    ///<summary>
-    /// Display or not the Renderer and all TMP
-    ///<summary>
-    ///<param name="_value">If the slot is hiden or not</param>
-    public void Display(bool _value)
-    {
-        transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
-        GetComponent<DisplayObjectData>().ToggleLabel(_value);
+        GetComponent<ObjectDisplayController>().Display(!used,!used);
     }
 }

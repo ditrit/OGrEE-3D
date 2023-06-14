@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     public Material editMat;
     public Material highlightMat;
     public Material mouseHoverMat;
+    public Material scatterPlotMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
     [Header("Custom units")]
@@ -311,9 +313,10 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            await SetCurrentItem(focus[focus.Count - 1]);
+            if (!currentItems.Contains(focus[focus.Count - 1]))
+                await SetCurrentItem(focus[focus.Count - 1]);
         }
-        else
+        else if (!currentItems.Contains(obj))
             await SetCurrentItem(obj);
     }
 
@@ -570,12 +573,30 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
+    public List<OObject> GetSelectedReferents()
+    {
+        return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+    }
+
+    /// <summary>
     /// Create a copy of the previously selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of previously selected objects</returns>
     public List<GameObject> GetPrevious()
     {
         return previousItems.GetRange(0, previousItems.Count);
+    }
+
+    /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
+    public List<OObject> GetPreviousReferents()
+    {
+        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
     }
 
     /// <summary>

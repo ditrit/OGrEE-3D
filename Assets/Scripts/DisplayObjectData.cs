@@ -246,7 +246,7 @@ public class DisplayObjectData : MonoBehaviour
             case ELabelMode.Default:
                 GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.enabled = true;
+                    tmp.GetComponent<MeshRenderer>().enabled = true;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
@@ -255,21 +255,21 @@ public class DisplayObjectData : MonoBehaviour
                 if (hasFloatingLabel)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
-                        tmp.enabled = false;
+                        tmp.GetComponent<MeshRenderer>().enabled = false;
                     floatingLabel.gameObject.SetActive(true);
                 }
                 break;
             case ELabelMode.Hidden:
                 GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.enabled = false;
+                    tmp.GetComponent<MeshRenderer>().enabled = false;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
             case ELabelMode.Forced:
                 GetComponent<LODGroup>().enabled = false;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.enabled = true;
+                    tmp.GetComponent<MeshRenderer>().enabled = true;
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
@@ -282,7 +282,7 @@ public class DisplayObjectData : MonoBehaviour
     {
         if (currentLabelMode == ELabelMode.Default)
             foreach (TextMeshPro tmp in usedLabels)
-                tmp.enabled = _value;
+                tmp.GetComponent<MeshRenderer>().enabled = _value;
         else if (currentLabelMode == ELabelMode.FloatingOnTop)
             floatingLabel.gameObject.SetActive(_value);
     }
