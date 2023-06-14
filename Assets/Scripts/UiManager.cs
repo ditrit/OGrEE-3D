@@ -129,6 +129,8 @@ public class UiManager : MonoBehaviour
             menuTarget
             &&
             menuTarget.GetComponent<OObject>()
+            &&
+            !GameManager.instance.GetFocused().Contains(menuTarget)
         };
         focusBtn.Check();
 
