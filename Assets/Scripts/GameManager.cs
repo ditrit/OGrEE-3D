@@ -217,6 +217,8 @@ public class GameManager : MonoBehaviour
                 OObject oObject = _obj.GetComponent<OObject>();
                 if (oObject != null)
                     await oObject.LoadChildren("0");
+                if (focusMode)
+                    currentItems.Add(focus[focus.Count -1]);
             }
             else
             {

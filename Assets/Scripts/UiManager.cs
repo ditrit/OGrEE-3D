@@ -113,6 +113,12 @@ public class UiManager : MonoBehaviour
             !GameManager.instance.editMode
             &&
             GameManager.instance.GetSelected().Contains(menuTarget)
+            &&
+            (
+                !GameManager.instance.focusMode
+                ||
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != menuTarget
+            )
         };
         removeSelectBtn.Check();
 
