@@ -505,11 +505,9 @@ public class ObjectDisplayController : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OObject>())
-                continue;
             switch (go.GetComponent<OgreeObject>())
             {
-                case var tmp when tmp is Building bd && !(tmp is Room):
+                case OgreeObject tmp when tmp is Building bd && !(tmp is Room):
                     bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
                     bd.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
                     bd.nameText.GetComponent<Renderer>().enabled = _value;
@@ -519,7 +517,7 @@ public class ObjectDisplayController : MonoBehaviour
                         wall.GetComponent<Collider>().enabled = _value;
                     }
                     break;
-                case var tmp when tmp is Room ro:
+                case OgreeObject tmp when tmp is Room ro:
                     if (ro.usableZone)
                     {
                         ro.usableZone.GetComponent<Renderer>().enabled = _value;
