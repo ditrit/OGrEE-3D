@@ -5,6 +5,12 @@ public class Group : OObject
 {
     public bool isDisplayed = true;
 
+    protected override void OnDestroy()
+    {
+        ToggleContent(true);
+        base.OnDestroy();
+    }
+
     ///<summary>
     /// Display or hide the rackGroup and its content.
     ///</summary>

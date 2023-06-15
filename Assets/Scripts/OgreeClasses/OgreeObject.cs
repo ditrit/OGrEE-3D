@@ -186,7 +186,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                obj.transform.parent = null;
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
             }
         }
