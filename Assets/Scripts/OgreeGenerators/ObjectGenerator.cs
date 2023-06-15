@@ -293,10 +293,10 @@ public class ObjectGenerator
 
         // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
-        if (string.IsNullOrEmpty(dv.attributes["slot"]))
-            dod.PlaceTexts("frontrear");
-        else
+        if (slot?.GetComponent<Slot>())
             dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
+        else
+            dod.PlaceTexts("frontrear");
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
