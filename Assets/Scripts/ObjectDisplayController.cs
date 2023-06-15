@@ -492,7 +492,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (oobject && oobject.isHidden)
         {
             cube.rend.enabled = false;
-            GetComponent<DisplayObjectData>()?.ToggleLabel(false);
+           displayObjectdata.ToggleLabel(false);
         }
     }
 
