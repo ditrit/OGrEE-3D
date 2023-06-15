@@ -318,6 +318,8 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnTemperatureDiagram(TemperatureDiagramEvent _e)
     {
+        if (sensor && sensor.fromTemplate && scatterPlotOfOneParent)
+            Display(_e.room.barChart,_e.room.barChart);
         if (!listening)
             return;
 
