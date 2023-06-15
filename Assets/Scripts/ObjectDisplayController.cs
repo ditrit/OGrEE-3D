@@ -258,7 +258,7 @@ public class ObjectDisplayController : MonoBehaviour
         }
 
         List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(oobject) || GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
+        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(oobject) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         HandleMaterial();
     }
@@ -279,7 +279,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         }
         List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = selection.Contains(transform.parent?.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode));
+        bool RendColAndLabels = selection.Contains(transform.parent?.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) && !GameManager.instance.focusMode));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
