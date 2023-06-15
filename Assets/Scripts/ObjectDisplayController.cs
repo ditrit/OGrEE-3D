@@ -492,7 +492,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (oobject && oobject.isHidden)
         {
             cube.rend.enabled = false;
-           displayObjectdata.ToggleLabel(false);
+            displayObjectdata.ToggleLabel(false);
         }
     }
 
@@ -575,9 +575,7 @@ public class ObjectDisplayController : MonoBehaviour
         STemp temp = oobject.GetTemperatureInfos();
         Material mat = Instantiate(GameManager.instance.defaultMat);
         if (float.IsNaN(temp.mean))
-        {
             mat.color = Color.gray;
-        }
         else
         {
             (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(temp.unit);
