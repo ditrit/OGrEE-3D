@@ -1384,6 +1384,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1595579791}
+        m_TargetAssemblyTypeName: UiManager, Assembly-CSharp
+        m_MethodName: HideRightClickMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &215373943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13794,6 +13806,7 @@ MonoBehaviour:
   editMat: {fileID: 2100000, guid: 4492313970cb76b4db45b4958b4d4c50, type: 2}
   highlightMat: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   mouseHoverMat: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
+  scatterPlotMat: {fileID: 2100000, guid: cb999e85f1be5734c9581dc5a2cbac0b, type: 2}
   tileSize: 0.6
   uSize: 0.04445
   ouSize: 0.048

@@ -63,33 +63,15 @@ public class OObject : OgreeObject
     }
 
     ///<summary>
-    /// Update object's alpha according to _input, true or false.
-    ///</summary>
-    ///<param name="_value">Alpha wanted for the rack</param>
-    public void ToggleAlpha(bool _value)
-    {
-        DisplayObjectData dod = GetComponent<DisplayObjectData>();
-        transform.GetChild(0).GetComponent<Renderer>().enabled = !_value;
-        dod?.ToggleLabel(!_value);
-        isHidden = _value;
-    }
-
-    ///<summary>
     /// Set a Color with an hexadecimal value
     ///</summary>
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
-        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = new Color();
         bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
         if (validColor)
-        {
-            color.a = mat.color.a;
-            CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
-            if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
-                mat.color = color;
-        }
+            color = GetComponent<ObjectDisplayController>().ChangeColor(color);
         else
         {
             UpdateColorByDomain();
@@ -123,12 +105,9 @@ public class OObject : OgreeObject
 
         OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
 
-        Material mat = transform.GetChild(0).GetComponent<Renderer>().material;
         color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
 
-        CustomRendererOutline cro = GetComponent<CustomRendererOutline>();
-        if (cro && !cro.isSelected && !cro.isHovered && !cro.isHighlighted && !cro.isFocused)
-            mat.color = new Color(color.r, color.g, color.b, mat.color.a);
+        GetComponent<ObjectDisplayController>().ChangeColor(color.r, color.g, color.b);
     }
 
     ///<summary>
@@ -138,13 +117,11 @@ public class OObject : OgreeObject
     public void ToggleSlots(bool _value)
     {
         Slot[] slots = GetComponentsInChildren<Slot>();
-        if (slots.Length == 0)
-            return;
 
         foreach (Slot s in slots)
         {
             if (s.transform.parent == transform && s.used == false)
-                s.Display(_value);
+                s.GetComponent<ObjectDisplayController>().Display(_value, _value);
         }
     }
 

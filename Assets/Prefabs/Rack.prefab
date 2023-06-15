@@ -13,9 +13,8 @@ GameObject:
   - component: {fileID: -3966503025729716914}
   - component: {fileID: 2844674376055364572}
   - component: {fileID: 5666233796082005944}
-  - component: {fileID: -4847266291842506605}
-  - component: {fileID: 4507776248461121190}
   - component: {fileID: 4919390282517756407}
+  - component: {fileID: 6431330485342086369}
   m_Layer: 0
   m_Name: Rack
   m_TagString: Selectable
@@ -109,6 +108,7 @@ MonoBehaviour:
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
   heatMap: 0
+  scatterPlot: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
@@ -139,43 +139,6 @@ MonoBehaviour:
   usedLabels: []
   attrToDisplay: 
   cc: {fileID: 0}
---- !u!114 &-4847266291842506605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382823270839367371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OwnObjectsList: []
-  ogreeChildObjects: []
-  slotsChildObjects: []
-  ogreeChildMeshRendererList: []
-  slotChildMeshRendererList: []
-  isActive: 0
-  isSelected: 0
-  isFocused: 0
---- !u!114 &4507776248461121190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 382823270839367371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ead1eefb9e5dfc409361e81e364eeeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 0
-  isSelected: 0
-  isHovered: 0
-  isHighlighted: 0
-  isFocused: 0
 --- !u!114 &4919390282517756407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,6 +155,21 @@ MonoBehaviour:
     type: 3}
   gridSize: 10
   boxscale: 1.5
+--- !u!114 &6431330485342086369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382823270839367371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11599482bb3741f4b890d546eeba923f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 0
+  isHovered: 0
+  isHighlighted: 0
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0
