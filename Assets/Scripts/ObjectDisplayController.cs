@@ -140,7 +140,7 @@ public class ObjectDisplayController : MonoBehaviour
         {
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
-            bool colAndLabels = selection.Contains(transform.parent.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode));
+            bool colAndLabels = (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject);
             bool rend = isSelected || colAndLabels;
 
             Display(rend, colAndLabels, colAndLabels);
@@ -170,7 +170,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (!listening || scatterPlotOfOneParent)
             return;
 
-        if (GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
+        if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
             Display(true, true);
         else
             Display(false, false);
@@ -187,7 +187,7 @@ public class ObjectDisplayController : MonoBehaviour
             ToggleRoomsAndBuildings(false);
             SetMaterial(GameManager.instance.focusMat);
         }
-        else if (_e.obj != transform.parent.gameObject)
+        else if (_e.obj.transform != transform.parent)
         {
             if (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject))
                 UHelpersManager.instance.ToggleU(gameObject, false);
@@ -258,7 +258,7 @@ public class ObjectDisplayController : MonoBehaviour
         }
 
         List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = selection.Contains(transform.parent.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode));
+        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(oobject) || GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         HandleMaterial();
     }
@@ -279,7 +279,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         }
         List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = selection.Contains(transform.parent.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode));
+        bool RendColAndLabels = selection.Contains(transform.parent?.gameObject) || (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
@@ -306,7 +306,7 @@ public class ObjectDisplayController : MonoBehaviour
             Display(false, false);
             return;
         }
-        if (GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
+        if (GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
             Display(true, true);
         else
             Display(false, false);
@@ -323,13 +323,13 @@ public class ObjectDisplayController : MonoBehaviour
         if (!listening)
             return;
 
-        OObject extendedReferent = oobject ? oobject.referent : transform.parent.GetComponent<OObject>().referent;
+        OObject extendedReferent = oobject ? oobject.referent : transform.parent?.GetComponent<OObject>().referent;
 
         if (!extendedReferent || _e.room.transform != extendedReferent.transform.parent)
             return;
 
         List<GameObject> selection = GameManager.instance.GetSelected();
-        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || selection.Contains(transform.parent.gameObject);
+        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || selection.Contains(transform.parent?.gameObject);
         bool rend = labels || selection.Contains(gameObject);
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
@@ -348,7 +348,7 @@ public class ObjectDisplayController : MonoBehaviour
 
         if (gameObject == _e.ogreeObject.gameObject && !GameManager.instance.GetSelected().Contains(gameObject) && !GameManager.instance.GetFocused().Contains(gameObject))
             HandleMaterial();
-        else if (transform.parent.gameObject == _e.ogreeObject.gameObject)
+        else if (transform.parent == _e.ogreeObject.transform)
             ScatterPlotToggle(_e.ogreeObject.scatterPlot);
     }
 
@@ -364,7 +364,7 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     /// <summary>
-    /// When called, Set the material of the object to <see cref="GameManager.mouseHoverMat"/> then invert its color if it is the object hovered and not selected
+    /// When called, invert this object's color if it is the object hovered and not selected
     /// </summary>
     /// <param name="_e">The event's intance</param>
     private void OnMouseHover(OnMouseHoverEvent _e)
@@ -372,7 +372,6 @@ public class ObjectDisplayController : MonoBehaviour
         if (_e.obj == gameObject && !GameManager.instance.GetSelected().Contains(gameObject))
         {
             Color temp = cube.rend.material.color;
-            SetMaterial(GameManager.instance.mouseHoverMat);
             cube.rend.material.color = Utils.InvertColor(temp);
             isHovered = true;
         }
@@ -436,7 +435,7 @@ public class ObjectDisplayController : MonoBehaviour
             Display(true, false, false);
             UHelpersManager.instance.ToggleU(gameObject, true);
         }
-        else if ((isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
+        else if ((isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
         {
             Display(true, true, !slot && !sensor);
             if (oobject)
