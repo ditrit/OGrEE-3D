@@ -9,14 +9,8 @@ public class Sensor : MonoBehaviour
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
 
-    private void Awake()
-    {
-    }
-
     private void Start()
     {
-        //transform.GetChild(0).GetComponent<Renderer>().enabled = !fromTemplate;
-        //GetComponent<DisplayObjectData>().ToggleLabel(!fromTemplate);
         EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
     }
 
