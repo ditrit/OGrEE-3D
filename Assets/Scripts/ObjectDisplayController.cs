@@ -644,6 +644,11 @@ public class ObjectDisplayController : MonoBehaviour
         cube.col.enabled = _col;
     }
 
+    /// <summary>
+    /// Check if this object if a child (loose definition) of an object
+    /// </summary>
+    /// <param name="_possibleParent">The possible parent (loose definition) of this object</param>
+    /// <returns>true if <paramref name="_possibleParent"/> is found while going up the parent chain</returns>
     private bool DistantChildOf(GameObject _possibleParent)
     {
         Transform parent = transform.parent;
