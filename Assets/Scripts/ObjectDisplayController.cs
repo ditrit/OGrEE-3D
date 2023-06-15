@@ -319,7 +319,7 @@ public class ObjectDisplayController : MonoBehaviour
     private void OnTemperatureDiagram(TemperatureDiagramEvent _e)
     {
         if (sensor && sensor.fromTemplate && scatterPlotOfOneParent)
-            Display(_e.room.barChart,_e.room.barChart);
+            Display(_e.room.barChart, _e.room.barChart);
         if (!listening)
             return;
 
@@ -623,9 +623,10 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     ///<summary>
-    /// Display or not the Renderer and all TMP
-    ///<summary>
-    ///<param name="_value">If the slot is hiden or not</param>
+    /// Toggles the Renderer and the labels.
+    ///</summary>
+    ///<param name="_rend">Determines whether the Renderer should be displayed or hidden.</param>
+    ///<param name="_label">Determines whether the labels should be displayed or hidden.</param>
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
@@ -635,9 +636,11 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     ///<summary>
-    /// Display or not the Renderer and all TMP
-    ///<summary>
-    ///<param name="_value">If the slot is hiden or not</param>
+    /// Toggles the Renderer, the Collider and the labels.
+    ///</summary>
+    ///<param name="_rend">Determines whether the Renderer should be displayed or hidden.</param>
+    ///<param name="_label">Determines whether the labels should be displayed or hidden.</param>
+    ///<param name="_col">Determines whether the collider should be enabled or disabled.</param>
     public void Display(bool _rend, bool _label, bool _col)
     {
         Display(_rend, _label);
@@ -645,7 +648,7 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     /// <summary>
-    /// Check if this object if a child (loose definition) of an object
+    /// Check if this object is a child (loose definition) of an object
     /// </summary>
     /// <param name="_possibleParent">The possible parent (loose definition) of this object</param>
     /// <returns>true if <paramref name="_possibleParent"/> is found while going up the parent chain</returns>
