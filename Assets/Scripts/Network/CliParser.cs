@@ -36,6 +36,26 @@ public class CliParser
     #endregion
 
     readonly ReadFromJson rfJson = new ReadFromJson();
+    private bool canDraw = true;
+
+    public CliParser()
+    {
+        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ~CliParser()
+    {
+        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ///<summary>
+    /// When called, set canDraw to false
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnCancelGenenerate(CancelGenerateEvent _e)
+    {
+        canDraw = false;
+    }
 
     ///<summary>
     /// Deserialize CLI input and parse it. 
@@ -161,10 +181,16 @@ public class CliParser
             Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
-                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            {
+                if (canDraw)
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            }
 
             foreach (SApiObject obj in logicalObjects)
-                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            {
+                if (canDraw)
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            }
 
             foreach (string id in leafIds)
             {
@@ -173,8 +199,10 @@ public class CliParser
                     Utils.RebuildLods(leaf);
             }
 
-            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
+            if (canDraw)
+                GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
         }
+        canDraw = true;
     }
 
     ///<summary>

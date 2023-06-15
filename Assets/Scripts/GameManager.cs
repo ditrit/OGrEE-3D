@@ -292,6 +292,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -313,18 +314,23 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            AppendLogLine($"Focus {focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
             if (!currentItems.Contains(focus[focus.Count - 1]))
                 await SetCurrentItem(focus[focus.Count - 1]);
         }
-        else if (!currentItems.Contains(obj))
-            await SetCurrentItem(obj);
+        else
+        {
+            if (!currentItems.Contains(obj))
+                await SetCurrentItem(obj);
+            AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+        }
     }
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
     ///</summary>
     ///<param name="_obj">The object to check</param>
-    ///<returns>True if _obj is a child of focused object</returns>
+    ///<returns>True if _obj is a child of focused object or if there is no focused object</returns>
     public bool IsInFocus(GameObject _obj)
     {
         if (!focusMode)
@@ -353,6 +359,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_deselect">Should we remove current selection ?</param>
     public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool _deselect = true)
     {
+        UiManager.instance.DisableGetCoordsMode();
         if (_deselect)
             await SetCurrentItem(null);
 
@@ -366,7 +373,7 @@ public class GameManager : MonoBehaviour
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
-        Destroy(_toDel);
+        await _toDel.AwaitDestroy();
         StartCoroutine(Utils.ImportFinished());
     }
 
@@ -385,22 +392,62 @@ public class GameManager : MonoBehaviour
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
-            Destroy(doToDel[i]);
+            await doToDel[i].AwaitDestroy();
     }
 
     ///<summary>
     /// Delete all room and object templates.
     ///</summary>
-    public void PurgeTemplates()
+    public async void PurgeTemplates()
     {
         List<GameObject> templatesToDel = new List<GameObject>();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
-            Destroy(templatesToDel[i]);
+            await templatesToDel[i].AwaitDestroy();
         objectTemplates.Clear();
         buildingTemplates.Clear();
         roomTemplates.Clear();
+    }
+
+    ///<summary>
+    /// Delete a template if not used
+    ///</summary>
+    ///<param name="_category">The type of the template</param>
+    ///<param name="_template">The name of the template</param>
+    public async void DeleteTemplateIfUnused(string _category, string _template)
+    {
+        int count = 0;
+        foreach (DictionaryEntry de in allItems)
+        {
+            OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
+            if (obj && obj.attributes.ContainsKey("template") && obj.attributes["template"] == _template)
+                count++;
+        }
+
+        if (count == 0)
+        {
+            GameObject toDel;
+            switch (_category)
+            {
+                case "building":
+                    buildingTemplates.Remove(_template);
+                    break;
+                case "room":
+                    roomTemplates.Remove(_template);
+                    break;
+                case "rack":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+                case "device":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+            }
+        }
     }
 
     ///<summary>

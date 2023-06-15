@@ -81,13 +81,13 @@ public class OgreeGenerator : MonoBehaviour
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
-                    Destroy(GameManager.instance.objectRoot);
+                    await GameManager.instance.objectRoot.AwaitDestroy();
                     await GameManager.instance.PurgeDomains(_obj.domain);
-                    GameManager.instance.objectRoot = null;
                     UiManager.instance.DeletePrompt(prompt);
                 }
                 else //if (prompt.state == EPromptResp.refuse)
                 {
+                    EventManager.instance.Raise(new CancelGenerateEvent());
                     UiManager.instance.DeletePrompt(prompt);
                     return null;
                 }

@@ -62,6 +62,12 @@ public class ApiManager : MonoBehaviour
         public STempUnit data;
     }
 
+    private struct SVersionResp
+    {
+        public Dictionary<string, string> data;
+        public bool status;
+    }
+
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new HttpClient();
@@ -77,6 +83,7 @@ public class ApiManager : MonoBehaviour
 
     private string url;
     private string token;
+    private bool canDraw = true;
 
     private void Awake()
     {
@@ -84,6 +91,11 @@ public class ApiManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
+    }
+
+    private void Start()
+    {
+        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
     }
 
     private void Update()
@@ -95,6 +107,20 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ///<summary>
+    /// When called, set canDraw to false
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnCancelGenenerate(CancelGenerateEvent _e)
+    {
+        canDraw = false;
     }
 
     ///<summary>
@@ -122,6 +148,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     public async Task Initialize()
     {
+        SVersionResp apiResp = new SVersionResp();
         if (string.IsNullOrEmpty(url))
             GameManager.instance.AppendLogLine("Failed to connect with API: no url", ELogTarget.both, ELogtype.errorApi);
         else if (string.IsNullOrEmpty(token))
@@ -132,7 +159,9 @@ public class ApiManager : MonoBehaviour
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                string response = await httpClient.GetStringAsync($"{url}/api/token/valid");
+                string response = await httpClient.GetStringAsync($"{server}/version");
+                GameManager.instance.AppendLogLine(response, ELogTarget.none, ELogtype.infoApi);
+                apiResp = JsonConvert.DeserializeObject<SVersionResp>(response);
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
@@ -142,7 +171,8 @@ public class ApiManager : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", ELogTarget.both, ELogtype.errorApi);
             }
         }
-        EventManager.instance.Raise(new ConnectApiEvent());
+        if (!string.IsNullOrEmpty(apiResp.data["Customer"]))
+            EventManager.instance.Raise(new ConnectApiEvent() { apiData = apiResp.data });
     }
 
     ///<summary>
@@ -394,10 +424,16 @@ public class ApiManager : MonoBehaviour
         }
 
         foreach (SApiObject obj in physicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (SApiObject obj in logicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (string id in leafIds)
         {
@@ -406,7 +442,9 @@ public class ApiManager : MonoBehaviour
                 Utils.RebuildLods(leaf);
         }
 
-        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+        if (canDraw)
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+        canDraw = true;
     }
 
     ///<summary>

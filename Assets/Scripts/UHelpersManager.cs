@@ -265,7 +265,7 @@ public class UHelpersManager : MonoBehaviour
             if (slot && slot.isU)
             {
                 minY = Mathf.Min(child.localPosition.y - 0.5f * (child.GetChild(0).localScale.y - scale), minY);
-                maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), minY);
+                maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), maxY);
             }
         }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public static class Utils
@@ -140,6 +141,26 @@ public static class Utils
                     objects.Add(obj);
         }
         return objects;
+    }
+
+    ///<summary>
+    /// Get an object from <see cref="GameManager.allItems"/> by it's hierarchyName.
+    ///</summary>
+    ///<param name="_id">The id to search</param>
+    ///<returns>The asked object</returns>
+    public static GameObject GetObjectByHierarchyName(string _hierarchyName)
+    {
+        if (!string.IsNullOrEmpty(_hierarchyName))
+        {
+            _hierarchyName = _hierarchyName.Replace('/', '.');
+            foreach (DictionaryEntry de in GameManager.instance.allItems)
+            {
+                GameObject obj = (GameObject)de.Value;
+                if (obj && obj.GetComponent<OgreeObject>().hierarchyName == _hierarchyName)
+                    return obj;
+            }
+        }
+        return null;
     }
 
     ///<summary>
@@ -333,6 +354,18 @@ public static class Utils
         _target.SetActive(false); //for UI
         Object.Destroy(_target);
         GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
+    }
+
+    ///<summary>
+    /// Destroy an object and wait for its reference to be null
+    ///</summary>
+    ///<param name="_obj">The object to destroy</param>
+    ///<param name="_frequency">The time to wait at each loop. 10 by default</param>
+    public static async Task AwaitDestroy(this Object _obj, int _frequency = 10)
+    {
+        Object.Destroy(_obj);
+        while (_obj)
+            await Task.Delay(_frequency);
     }
 
     ///<summary>

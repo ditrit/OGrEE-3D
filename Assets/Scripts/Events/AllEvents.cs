@@ -63,6 +63,7 @@ public class EditModeOutEvent : CustomEvent
 
 public class ConnectApiEvent : CustomEvent
 {
+    public Dictionary<string, string> apiData;
 }
 
 public class TemperatureDiagramEvent : CustomEvent
@@ -81,4 +82,8 @@ public class TemperatureScatterPlotEvent : CustomEvent
 public class RightClickEvent : CustomEvent
 {
 
+}
+
+public class CancelGenerateEvent : CustomEvent
+{
 }
