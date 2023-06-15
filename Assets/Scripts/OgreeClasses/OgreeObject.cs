@@ -188,7 +188,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
                 Debug.Log($"[Delete] {obj.hierarchyName}");
                 obj.transform.parent = null;
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
-                obj.GetComponent<ObjectDisplayController>()?.UnsubscribeEvents();
             }
         }
         else
