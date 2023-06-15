@@ -191,7 +191,7 @@ public class ObjectDisplayController : MonoBehaviour
         {
             if (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject))
                 UHelpersManager.instance.ToggleU(gameObject, false);
-            if (!sensor || !sensor.fromTemplate || !GameManager.instance.IsInFocus(gameObject))
+            if ((!sensor || !sensor.fromTemplate || scatterPlotOfOneParent) && !DistantChildOf(_e.obj))
                 Display(false, false, false);
         }
     }
@@ -296,7 +296,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnImportFinishedOther(ImportFinishedEvent _e)
     {
-        if (sensor && sensor.fromTemplate && scatterPlotOfOneParent)
+        if (sensor && sensor.fromTemplate && scatterPlotOfOneParent && (!GameManager.instance.focusMode || DistantChildOf(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1])))
         {
             Display(true, true);
             return;
@@ -326,20 +326,13 @@ public class ObjectDisplayController : MonoBehaviour
         if (!extendedReferent || _e.room.transform != extendedReferent.transform.parent)
             return;
 
-        if (!_e.room.barChart)
-        {
-            Display(false, false, false);
-            if (isReferent && GameManager.instance.GetSelected().Contains(gameObject))
-                UHelpersManager.instance.ToggleU(gameObject, false);
-        }
-        else if (GameManager.instance.GetSelected().Contains(gameObject))
-        {
-            Display(true, false, false);
-            if (isReferent)
-                UHelpersManager.instance.ToggleU(gameObject, true);
-        }
-        else if (isReferent || GameManager.instance.GetSelected().Contains(transform.parent.gameObject))
-            Display(true, true, !slot && !sensor);
+        List<GameObject> selection = GameManager.instance.GetSelected();
+        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || selection.Contains(transform.parent.gameObject);
+        bool rend = labels || selection.Contains(gameObject);
+        bool col = labels && !slot && !sensor;
+        Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
+        if (selection.Contains(gameObject))
+            UHelpersManager.instance.ToggleU(gameObject, _e.room.barChart);
     }
 
     /// <summary>
@@ -647,5 +640,17 @@ public class ObjectDisplayController : MonoBehaviour
     {
         Display(_rend, _label);
         cube.col.enabled = _col;
+    }
+
+    private bool DistantChildOf(GameObject _possibleParent)
+    {
+        Transform parent = transform.parent;
+        while (parent)
+        {
+            if (parent == _possibleParent.transform)
+                return true;
+            parent = parent.parent;
+        }
+        return false;
     }
 }
