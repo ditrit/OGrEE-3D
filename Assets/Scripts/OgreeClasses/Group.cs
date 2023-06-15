@@ -40,8 +40,6 @@ public class Group : OObject
     public List<GameObject> GetContent()
     {
         List<GameObject> content = new List<GameObject>();
-        if (!transform.parent) //needed when calling this function after the group has been destroyed
-            return content;
         string[] names = attributes["content"].Split(',');
 
         foreach (string rn in names)
