@@ -33,7 +33,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     {
         attributesKeys.Clear();
         attributesValues.Clear();
-        foreach (var kvp in attributes)
+        foreach (KeyValuePair<string, string> kvp in attributes)
         {
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
