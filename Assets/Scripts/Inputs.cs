@@ -285,7 +285,7 @@ public class Inputs : MonoBehaviour
     {
         if (target)
         {
-            if (!target.Equals(savedObjectThatWeHover))
+            if (target.gameObject != savedObjectThatWeHover)
             {
                 if (savedObjectThatWeHover)
                     EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });

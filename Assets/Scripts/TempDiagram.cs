@@ -16,6 +16,7 @@ public class TempDiagram : MonoBehaviour
     private Texture2D heatMapGradientCustom;
     private Gradient gradient;
     [SerializeField] private Material heatMapMat;
+    private GameObject LastHeatMap = null;
 
     private void Awake()
     {
@@ -160,11 +161,11 @@ public class TempDiagram : MonoBehaviour
     {
         if (_ogreeObject is Room room && room.barChart)
             HandleTempBarChart(room);
+        _ogreeObject.scatterPlot = !_ogreeObject.scatterPlot;
         EventManager.instance.Raise(new TemperatureScatterPlotEvent() { ogreeObject = _ogreeObject });
 
-        GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = !_ogreeObject.scatterPlot);
+        GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = _ogreeObject.scatterPlot);
 
-        _ogreeObject.scatterPlot = !_ogreeObject.scatterPlot;
     }
 
     /// <summary>
@@ -173,11 +174,11 @@ public class TempDiagram : MonoBehaviour
     /// <param name="_oObject">the object which will have the heatmap</param>
     public void HandleHeatMap(OObject _oObject)
     {
+        Destroy(LastHeatMap);
         Transform objTransform = _oObject.transform.GetChild(0);
         if (_oObject.heatMap)
         {
-            _oObject.heatMap = false;
-            Destroy(objTransform.GetChild(0).gameObject);
+            Destroy(_oObject.heatMap);
             return;
         }
         float minDimension = Mathf.Min(objTransform.localScale.x, objTransform.localScale.y, objTransform.localScale.z);
@@ -210,7 +211,8 @@ public class TempDiagram : MonoBehaviour
         }
         heatmap.GetComponent<Heatmap>().SetPositionsAndProperties(sensorPositions, sensorProperties);
         objTransform.hasChanged = true;
-        _oObject.heatMap = true;
+        _oObject.heatMap = heatmap;
+        LastHeatMap = heatmap;
     }
 
     /// <summary>

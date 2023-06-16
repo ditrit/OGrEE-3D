@@ -349,7 +349,7 @@ public class CliParser
                         rack.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        rack.ToggleAlpha(command.value == "true");
+                        rack.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         rack.ToggleSlots(command.value == "true");
@@ -378,7 +378,7 @@ public class CliParser
                         device.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        device.ToggleAlpha(command.value == "true");
+                        device.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         device.ToggleSlots(command.value == "true");

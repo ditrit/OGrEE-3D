@@ -395,6 +395,5 @@ public class ReadFromJson
         dod.PlaceTexts(_sensor.elemPos[1]);
         dod.SetLabel("#temperature");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-        newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
     }
 }
