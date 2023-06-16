@@ -211,6 +211,7 @@ public class GameManager : MonoBehaviour
         {
             AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
             currentItems.Remove(_obj);
+            selectMode = currentItems.Count != 0;
             // _obj was the last item in selection
             if (currentItems.Count == 0)
             {
@@ -218,7 +219,10 @@ public class GameManager : MonoBehaviour
                 if (oObject != null && oObject.currentLod <= 1)
                     await oObject.LoadChildren("0");
                 if (focusMode)
-                    currentItems.Add(focus[focus.Count -1]);
+                {
+                    currentItems.Add(focus[focus.Count - 1]);
+                    selectMode = true;
+                }
             }
             else
             {
@@ -252,14 +256,13 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            currentItems.Add(_obj);
+            selectMode = true;
             if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
                 && _obj.GetComponent<OgreeObject>().currentLod == 0)
                 await _obj.GetComponent<OgreeObject>().LoadChildren("1");
             AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
-            currentItems.Add(_obj);
         }
-
-        selectMode = currentItems.Count != 0;
         EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
