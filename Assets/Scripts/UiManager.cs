@@ -727,13 +727,13 @@ public class UiManager : MonoBehaviour
         {
             GameManager.instance.editMode = false;
             EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.GetSelected()[0] });
-            Debug.Log($"Edit out: {GameManager.instance.GetSelected()[0]}");
+            GameManager.instance.AppendLogLine($"Edit out: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
         else
         {
             GameManager.instance.editMode = true;
             EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.GetSelected()[0] });
-            Debug.Log($"Edit in: {GameManager.instance.GetSelected()[0]}");
+            GameManager.instance.AppendLogLine($"Edit in: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
     }
 
