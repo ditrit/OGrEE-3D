@@ -132,6 +132,8 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OObject>()
             &&
+            menuTarget.GetComponent<OgreeObject>().category != "corridor"
+            &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
             !menuTarget.GetComponent<Group>()
