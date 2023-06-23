@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -18,25 +17,6 @@ public class ReadFromJson
         GameManager.instance.buildingTemplates.Add(_data.slug, _data);
     }
 
-    /// <summary>
-    /// Check if given JSON is a room template and call <see cref="CreateRoomTemplate(SRoomFromJson)"/> if the JSON is valid
-    /// </summary>
-    /// <param name="_json">the JSON to deserialize</param>
-    public void CreateRoomTemplateJson(string _json)
-    {
-        SRoomFromJson roomData;
-        try
-        {
-            roomData = JsonConvert.DeserializeObject<SRoomFromJson>(_json);
-        }
-        catch (Exception e)
-        {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", ELogTarget.both, ELogtype.error);
-            return;
-        }
-        CreateRoomTemplate(roomData);
-    }
-
     ///<summary>
     /// Store <paramref name="_data"/> in <see cref="GameManager.roomTemplates"/>.
     ///</summary>
@@ -47,25 +27,6 @@ public class ReadFromJson
             return;
 
         GameManager.instance.roomTemplates.Add(_data.slug, _data);
-    }
-
-    ///<summary>
-    /// Create a rack or a device from received JSON and add it to correct <see cref="GameManager"/> list
-    ///</summary>
-    ///<param name="_json">JSON to parse</param>
-    public async Task CreateObjTemplateJson(string _json)
-    {
-        STemplate data;
-        try
-        {
-            data = JsonConvert.DeserializeObject<STemplate>(_json);
-        }
-        catch (Exception e)
-        {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", ELogTarget.both, ELogtype.error);
-            return;
-        }
-        await CreateObjectTemplate(data);
     }
 
     ///<summary>

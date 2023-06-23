@@ -20,13 +20,11 @@ public class ApiManager : MonoBehaviour
     private struct SObjRespSingle
     {
         public string message;
-        public string status;
         public SApiObject data;
     }
     private struct SObjRespArray
     {
         public string message;
-        public string status;
         public SObjectArray data;
     }
     private struct SObjectArray
@@ -37,28 +35,24 @@ public class ApiManager : MonoBehaviour
     private struct STemplateResp
     {
         public string message;
-        public string status;
         public STemplate data;
     }
 
     private struct SBuildingResp
     {
         public string message;
-        public string status;
         public SBuildingFromJson data;
     }
 
     private struct SRoomResp
     {
         public string message;
-        public string status;
         public SRoomFromJson data;
     }
 
     private struct STempUnitResp
     {
         public string message;
-        public string status;
         public STempUnit data;
     }
 
@@ -385,18 +379,40 @@ public class ApiManager : MonoBehaviour
     ///<param name="_input">The API response to use</param>
     public async Task DrawObject(string _input)
     {
-        if (_input.Contains("successfully got query for object") || _input.Contains("successfully got object"))
-            await CreateItemFromJson(_input);
-        else if (_input.Contains("successfully got obj_template"))
-            await CreateTemplateFromJson(_input, "obj");
-        else if (_input.Contains("successfully got building_template"))
-            await CreateTemplateFromJson(_input, "building");
-        else if (_input.Contains("successfully got room_template"))
-            await CreateTemplateFromJson(_input, "room");
-        else
+        try
         {
-            GameManager.instance.AppendLogLine("Unknown object received", ELogTarget.both, ELogtype.errorApi);
-            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+            Hashtable apiResp = JsonConvert.DeserializeObject<Hashtable>(_input);
+            // Hashtable data = (Hashtable)apiResp["data"];
+            Hashtable data = JsonConvert.DeserializeObject<Hashtable>(apiResp["data"].ToString());
+
+            if (data.ContainsKey("slug"))
+            {
+                switch (data["category"])
+                {
+                    case "building":
+                        SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(apiResp["data"].ToString());
+                        rfJson.CreateBuildingTemplate(buildingData);
+                        break;
+                    case "room":
+                        SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(apiResp["data"].ToString());
+                        rfJson.CreateRoomTemplate(roomData);
+                        break;
+                    case "rack":
+                        STemplate rackData = JsonConvert.DeserializeObject<STemplate>(apiResp["data"].ToString());
+                        await rfJson.CreateObjectTemplate(rackData);
+                        break;
+                    case "device":
+                        STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(apiResp["data"].ToString());
+                        await rfJson.CreateObjectTemplate(deviceData);
+                        break;
+                }
+            }
+            else
+                await CreateItemFromJson(_input);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
         }
     }
 
