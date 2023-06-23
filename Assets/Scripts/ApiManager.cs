@@ -363,7 +363,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine(responseStr, ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                await CreateTemplateFromJson(responseStr, _type);
+                await DrawObject(responseStr);
             else
                 GameManager.instance.AppendLogLine($"Fail to post on server", ELogTarget.logger, ELogtype.errorApi);
         }
@@ -406,6 +406,7 @@ public class ApiManager : MonoBehaviour
                         await rfJson.CreateObjectTemplate(deviceData);
                         break;
                 }
+                EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
             }
             else
                 await CreateItemFromJson(_input);
@@ -461,30 +462,6 @@ public class ApiManager : MonoBehaviour
         if (canDraw)
             GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
         canDraw = true;
-    }
-
-    ///<summary>
-    /// Use the given template json to instantiate an object or a room template.
-    ///</summary>
-    ///<param name="_json">The json given by the API</param>
-    private async Task CreateTemplateFromJson(string _json, string _type)
-    {
-        if (_type == "obj")
-        {
-            STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-            await rfJson.CreateObjectTemplate(resp.data);
-        }
-        else if (_type == "building")
-        {
-            SBuildingResp resp = JsonConvert.DeserializeObject<SBuildingResp>(_json);
-            rfJson.CreateBuildingTemplate(resp.data);
-        }
-        else if (_type == "room")
-        {
-            SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
-            rfJson.CreateRoomTemplate(resp.data);
-        }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
     }
 
     ///
