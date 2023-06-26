@@ -130,23 +130,23 @@ public class ReadFromJson
         }
 
         // Generate the 3D object
-        OgreeObject newObject;
+        OObject newObject;
         if (obj.category == "rack")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
+            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
+            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
 
-        newObject.GetComponent<OObject>().color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
+        newObject.color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
         // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
@@ -197,6 +197,7 @@ public class ReadFromJson
         foreach (Renderer r in renderers)
             r.enabled = false;
         newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        newObject.referent = null;
 #endif
         GameManager.instance.allItems.Remove(newObject.hierarchyName);
         GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
