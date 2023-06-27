@@ -635,8 +635,7 @@ public class GameManager : MonoBehaviour
     {
         if (selectMode)
             return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
-        else
-            return new List<OObject>();
+        return new List<OObject>();
     }
 
     /// <summary>
