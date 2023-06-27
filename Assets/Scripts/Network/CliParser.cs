@@ -78,7 +78,8 @@ public class CliParser
                 await Login(command["data"].ToString());
                 break;
             case "load template":
-                await rfJson.CreateObjTemplateJson(command["data"].ToString());
+                STemplate data = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
+                await rfJson.CreateObjectTemplate(data);
                 break;
             case "select":
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
