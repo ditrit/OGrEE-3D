@@ -33,7 +33,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     {
         attributesKeys.Clear();
         attributesValues.Clear();
-        foreach (var kvp in attributes)
+        foreach (KeyValuePair<string, string> kvp in attributes)
         {
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
@@ -52,10 +52,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         UpdateHierarchyName();
     }
 
-    protected async virtual void OnDestroy()
+    protected virtual void OnDestroy()
     {
-        if (GameManager.instance.GetSelected().Contains(gameObject))
-            await GameManager.instance.SetCurrentItem(null);
         GameManager.instance.allItems.Remove(hierarchyName);
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))

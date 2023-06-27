@@ -63,7 +63,7 @@ public class ConfigLoader
     ///<returns>The value of the asked argument</returns>
     private string GetArg(string _name)
     {
-        var args = System.Environment.GetCommandLineArgs();
+        string[] args = System.Environment.GetCommandLineArgs();
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == _name && args.Length > i + 1)
@@ -147,22 +147,22 @@ public class ConfigLoader
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
-        foreach (var kvp in (TomlTable)table["textures"])
+        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["textures"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value))
                 config.textures[kvp.Key] = (string)kvp.Value;
         }
-        // foreach (var kvp in config.textures)
+        // foreach (KeyValuePair<string, string> kvp in config.textures)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
-        foreach (var kvp in (TomlTable)table["colors"])
+        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["colors"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
             else
                 GameManager.instance.AppendLogLine($"\"{kvp.Key}\" value cannot be used as a color", ELogTarget.logger, ELogtype.error);
         }
-        // foreach (var kvp in config.colors)
+        // foreach (KeyValuePair<string, string> kvp in config.colors)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
         TomlTable temperatureTable = (TomlTable)table["temperature"];
@@ -173,20 +173,20 @@ public class ConfigLoader
 
         config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
         List<List<int>> tempGradient = new List<List<int>>();
-        foreach (var colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
+        foreach (System.Object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
         {
             List<int> tmp = new List<int>();
-            foreach (var i in (TomlArray)colorDef)
+            foreach (System.Object i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32(i));
             if (tmp.Count == 4 && tempGradient.Count < 8)
                 tempGradient.Add(tmp);
         }
         if (tempGradient.Count >= 2)
             config.customTemperatureGradient = tempGradient;
-        // foreach (var x in config.customTemperatureGradient)
+        // foreach (List<int> x in config.customTemperatureGradient)
         // {
         //     string str = "";
-        //     foreach (var i in x)
+        //     foreach (int i in x)
         //         str += $"{i}/";
         //     Debug.Log(str);
         // }

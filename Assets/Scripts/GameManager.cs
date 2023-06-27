@@ -133,6 +133,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
+            selectMode = false;
             previousItems = currentItems.GetRange(0, currentItems.Count);
 
             //////////////////////////////////////////////////////////
@@ -190,9 +191,9 @@ public class GameManager : MonoBehaviour
             selectMode = currentItems.Count != 0;
             EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        catch (Exception _e)
+        catch (Exception e)
         {
-            Debug.LogError(_e);
+            Debug.LogError(e);
         }
     }
 
@@ -202,65 +203,74 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to be added or removed from the selection</param>
     public async Task UpdateCurrentItems(GameObject _obj)
     {
-        previousItems = currentItems.GetRange(0, currentItems.Count);
-        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
-            || currentItems[0].transform.parent != _obj.transform.parent)
+        try
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-        if (currentItems.Contains(_obj))
-        {
-            AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
-            currentItems.Remove(_obj);
-            // _obj was the last item in selection
-            if (currentItems.Count == 0)
+            selectMode = false;
+            previousItems = currentItems.GetRange(0, currentItems.Count);
+            if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
+                || currentItems[0].transform.parent != _obj.transform.parent)
             {
-                OObject oObject = _obj.GetComponent<OObject>();
-                if (oObject != null)
-                    await oObject.LoadChildren("0");
+                AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
+                return;
+            }
+            if (currentItems.Contains(_obj))
+            {
+                AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
+                currentItems.Remove(_obj);
+                // _obj was the last item in selection
+                if (currentItems.Count == 0)
+                {
+                    OObject oObject = _obj.GetComponent<OObject>();
+                    if (oObject != null && oObject.currentLod <= 1)
+                        await oObject.LoadChildren("0");
+                    if (focusMode)
+                        currentItems.Add(focus[focus.Count - 1]);
+                }
+                else
+                {
+                    bool unloadChildren = true;
+                    OObject currentDeselected = _obj.GetComponent<OObject>();
+
+                    //Checking all of the previously selected objects
+                    foreach (GameObject previousObj in currentItems)
+                    {
+                        OObject previousSelected = previousObj.GetComponent<OObject>();
+                        if (previousSelected != null && previousSelected.referent != null)
+                        {
+                            //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                            if (currentDeselected != null && previousSelected.referent == currentDeselected.referent)
+                                unloadChildren = false;
+
+                            //if no to the previous question, previousSelected is a device and level of details is <=1, unload its children
+                            if (unloadChildren && previousSelected.referent.currentLod <= 1 && previousSelected.category != "rack")
+                            {
+                                await previousSelected.referent.LoadChildren("0");
+                                previousItems.Remove(previousObj);
+                                if (!previousItems.Contains(previousSelected.referent.gameObject))
+                                    previousItems.Add(previousSelected.referent.gameObject);
+                            }
+                        }
+                    }
+                    //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                    if (unloadChildren)
+                        await currentDeselected.LoadChildren("0");
+                }
             }
             else
             {
-                bool unloadChildren = true;
-                OObject currentDeselected = _obj.GetComponent<OObject>();
-
-                //Checking all of the previously selected objects
-                foreach (GameObject previousObj in currentItems)
-                {
-                    OObject previousSelected = previousObj.GetComponent<OObject>();
-                    if (previousSelected != null && previousSelected.referent != null)
-                    {
-                        //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                        if (currentDeselected != null && previousSelected.referent == currentDeselected.referent)
-                            unloadChildren = false;
-
-                        //if no to the previous question, previousSelected is a device and level of details is <=1, unload its children
-                        if (unloadChildren && previousSelected.referent.currentLod <= 1 && previousSelected.category != "rack")
-                        {
-                            await previousSelected.referent.LoadChildren("0");
-                            previousItems.Remove(previousObj);
-                            if (!previousItems.Contains(previousSelected.referent.gameObject))
-                                previousItems.Add(previousSelected.referent.gameObject);
-                        }
-                    }
-                }
-                //if no to the previous question and previousSelected is a rack or smaller, unload its children
-                if (unloadChildren)
-                    await currentDeselected.LoadChildren("0");
+                currentItems.Add(_obj);
+                if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                    && _obj.GetComponent<OgreeObject>().currentLod == 0)
+                    await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
+            selectMode = currentItems.Count != 0;
+            EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        else
+        catch (System.Exception e)
         {
-            if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
-                && _obj.GetComponent<OgreeObject>().currentLod == 0)
-                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-            AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
-            currentItems.Add(_obj);
+            Debug.LogError(e);
         }
-
-        selectMode = currentItems.Count != 0;
-        EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
@@ -623,7 +633,9 @@ public class GameManager : MonoBehaviour
     /// <returns>a copy of the list of currently selected objects</returns>
     public List<OObject> GetSelectedReferents()
     {
-        return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+        if (selectMode)
+            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+        return new List<OObject>();
     }
 
     /// <summary>

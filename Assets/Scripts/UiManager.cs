@@ -115,6 +115,12 @@ public class UiManager : MonoBehaviour
             !GameManager.instance.editMode
             &&
             GameManager.instance.GetSelected().Contains(menuTarget)
+            &&
+            (
+                !GameManager.instance.focusMode
+                ||
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != menuTarget
+            )
         };
         removeSelectBtn.Check();
 
@@ -125,6 +131,10 @@ public class UiManager : MonoBehaviour
             menuTarget
             &&
             menuTarget.GetComponent<OObject>()
+            &&
+            menuTarget.GetComponent<OgreeObject>().category != "corridor"
+            &&
+            !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
             !menuTarget.GetComponent<Group>()
         };
@@ -207,12 +217,12 @@ public class UiManager : MonoBehaviour
                 menuTarget.GetComponent<Room>()
             ),
 
-            toggledCondition = () => menuTarget 
-            && 
-            menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree 
-            && 
-            ogree 
-            && 
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree
+            &&
+            ogree
+            &&
             ogree.scatterPlot
         };
         scatterPlotBtn.Check();
@@ -719,13 +729,13 @@ public class UiManager : MonoBehaviour
         {
             GameManager.instance.editMode = false;
             EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.GetSelected()[0] });
-            Debug.Log($"Edit out: {GameManager.instance.GetSelected()[0]}");
+            GameManager.instance.AppendLogLine($"Edit out: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
         else
         {
             GameManager.instance.editMode = true;
             EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.GetSelected()[0] });
-            Debug.Log($"Edit in: {GameManager.instance.GetSelected()[0]}");
+            GameManager.instance.AppendLogLine($"Edit in: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
     }
 
