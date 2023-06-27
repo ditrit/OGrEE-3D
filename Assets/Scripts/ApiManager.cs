@@ -381,28 +381,28 @@ public class ApiManager : MonoBehaviour
     {
         try
         {
-            Hashtable apiResp = JsonConvert.DeserializeObject<Hashtable>(_input);
+            string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
             // Hashtable data = (Hashtable)apiResp["data"];
-            Hashtable data = JsonConvert.DeserializeObject<Hashtable>(apiResp["data"].ToString());
+            Hashtable data = JsonConvert.DeserializeObject<Hashtable>(dataStr);
 
             if (data.ContainsKey("slug"))
             {
                 switch (data["category"])
                 {
                     case "building":
-                        SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(apiResp["data"].ToString());
+                        SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(dataStr);
                         rfJson.CreateBuildingTemplate(buildingData);
                         break;
                     case "room":
-                        SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(apiResp["data"].ToString());
+                        SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(dataStr);
                         rfJson.CreateRoomTemplate(roomData);
                         break;
                     case "rack":
-                        STemplate rackData = JsonConvert.DeserializeObject<STemplate>(apiResp["data"].ToString());
+                        STemplate rackData = JsonConvert.DeserializeObject<STemplate>(dataStr);
                         await rfJson.CreateObjectTemplate(rackData);
                         break;
                     case "device":
-                        STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(apiResp["data"].ToString());
+                        STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
                         await rfJson.CreateObjectTemplate(deviceData);
                         break;
                 }
