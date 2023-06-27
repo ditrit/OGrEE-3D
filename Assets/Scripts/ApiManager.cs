@@ -398,9 +398,6 @@ public class ApiManager : MonoBehaviour
                         rfJson.CreateRoomTemplate(roomData);
                         break;
                     case "rack":
-                        STemplate rackData = JsonConvert.DeserializeObject<STemplate>(dataStr);
-                        await rfJson.CreateObjectTemplate(rackData);
-                        break;
                     case "device":
                         STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
                         await rfJson.CreateObjectTemplate(deviceData);
