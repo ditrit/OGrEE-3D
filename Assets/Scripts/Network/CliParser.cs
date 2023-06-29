@@ -36,6 +36,26 @@ public class CliParser
     #endregion
 
     readonly ReadFromJson rfJson = new ReadFromJson();
+    private bool canDraw = true;
+
+    public CliParser()
+    {
+        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ~CliParser()
+    {
+        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ///<summary>
+    /// When called, set canDraw to false
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnCancelGenenerate(CancelGenerateEvent _e)
+    {
+        canDraw = false;
+    }
 
     ///<summary>
     /// Deserialize CLI input and parse it. 
@@ -58,7 +78,8 @@ public class CliParser
                 await Login(command["data"].ToString());
                 break;
             case "load template":
-                await rfJson.CreateObjTemplateJson(command["data"].ToString());
+                STemplate data = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
+                await rfJson.CreateObjectTemplate(data);
                 break;
             case "select":
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
@@ -161,10 +182,16 @@ public class CliParser
             Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
-                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            {
+                if (canDraw)
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            }
 
             foreach (SApiObject obj in logicalObjects)
-                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            {
+                if (canDraw)
+                    await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+            }
 
             foreach (string id in leafIds)
             {
@@ -173,8 +200,10 @@ public class CliParser
                     Utils.RebuildLods(leaf);
             }
 
-            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
+            if (canDraw)
+                GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
         }
+        canDraw = true;
     }
 
     ///<summary>
@@ -321,7 +350,7 @@ public class CliParser
                         rack.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        rack.ToggleAlpha(command.value == "true");
+                        rack.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         rack.ToggleSlots(command.value == "true");
@@ -350,7 +379,7 @@ public class CliParser
                         device.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
                     case "alpha":
-                        device.ToggleAlpha(command.value == "true");
+                        device.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
                     case "slots":
                         device.ToggleSlots(command.value == "true");

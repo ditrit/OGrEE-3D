@@ -63,11 +63,12 @@ public class EditModeOutEvent : CustomEvent
 
 public class ConnectApiEvent : CustomEvent
 {
+    public Dictionary<string, string> apiData;
 }
 
 public class TemperatureDiagramEvent : CustomEvent
 {
-    public GameObject obj;
+    public Room room;
 }
 public class TemperatureColorEvent : CustomEvent
 {
@@ -75,5 +76,14 @@ public class TemperatureColorEvent : CustomEvent
 
 public class TemperatureScatterPlotEvent : CustomEvent
 {
-    public GameObject obj;
+    public OgreeObject ogreeObject;
+}
+
+public class RightClickEvent : CustomEvent
+{
+
+}
+
+public class CancelGenerateEvent : CustomEvent
+{
 }

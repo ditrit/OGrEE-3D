@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     public Material editMat;
     public Material highlightMat;
     public Material mouseHoverMat;
+    public Material scatterPlotMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
     [Header("Custom units")]
@@ -131,6 +133,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
+            selectMode = false;
             previousItems = currentItems.GetRange(0, currentItems.Count);
 
             //////////////////////////////////////////////////////////
@@ -147,21 +150,22 @@ public class GameManager : MonoBehaviour
                 {
                     bool unloadChildren = true;
                     OObject previousSelected = previousObj.GetComponent<OObject>();
-
-                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentSelected != null && previousSelected.referent != null && previousSelected.referent == currentSelected.referent)
-                        unloadChildren = false;
-
-                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
-                    if (unloadChildren && previousSelected != null)
+                    if (previousSelected != null && previousSelected.referent != null)
                     {
-                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
-                            await previousSelected.referent.LoadChildren("0");
-                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
+                        //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                        if (currentSelected != null && previousSelected.referent == currentSelected.referent)
+                            unloadChildren = false;
+
+                        //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
+                        if (unloadChildren && previousSelected.referent.currentLod <= 1)
                         {
-                            previousItems.Remove(previousObj);
-                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
-                                previousItems.Add(previousSelected.referent.gameObject);
+                            await previousSelected.referent.LoadChildren("0");
+                            if (previousSelected.category != "rack")
+                            {
+                                previousItems.Remove(previousObj);
+                                if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
+                                    previousItems.Add(previousSelected.referent.gameObject);
+                            }
                         }
                     }
                 }
@@ -187,9 +191,9 @@ public class GameManager : MonoBehaviour
             selectMode = currentItems.Count != 0;
             EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        catch (Exception _e)
+        catch (Exception e)
         {
-            Debug.LogError(_e);
+            Debug.LogError(e);
         }
     }
 
@@ -199,67 +203,74 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The object to be added or removed from the selection</param>
     public async Task UpdateCurrentItems(GameObject _obj)
     {
-        previousItems = currentItems.GetRange(0, currentItems.Count);
-        if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
-            || currentItems[0].transform.parent != _obj.transform.parent)
+        try
         {
-            AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
-            return;
-        }
-        if (currentItems.Contains(_obj))
-        {
-            AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
-            currentItems.Remove(_obj);
-            // _obj was the last item in selection
-            if (currentItems.Count == 0)
+            selectMode = false;
+            previousItems = currentItems.GetRange(0, currentItems.Count);
+            if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
+                || currentItems[0].transform.parent != _obj.transform.parent)
             {
-                OObject oObject = _obj.GetComponent<OObject>();
-                if (oObject != null)
-                    await oObject.LoadChildren("0");
+                AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
+                return;
+            }
+            if (currentItems.Contains(_obj))
+            {
+                AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
+                currentItems.Remove(_obj);
+                // _obj was the last item in selection
+                if (currentItems.Count == 0)
+                {
+                    OObject oObject = _obj.GetComponent<OObject>();
+                    if (oObject != null && oObject.currentLod <= 1)
+                        await oObject.LoadChildren("0");
+                    if (focusMode)
+                        currentItems.Add(focus[focus.Count - 1]);
+                }
+                else
+                {
+                    bool unloadChildren = true;
+                    OObject currentDeselected = _obj.GetComponent<OObject>();
+
+                    //Checking all of the previously selected objects
+                    foreach (GameObject previousObj in currentItems)
+                    {
+                        OObject previousSelected = previousObj.GetComponent<OObject>();
+                        if (previousSelected != null && previousSelected.referent != null)
+                        {
+                            //Are the previous and current selection both a rack or smaller and part of the same rack ?
+                            if (currentDeselected != null && previousSelected.referent == currentDeselected.referent)
+                                unloadChildren = false;
+
+                            //if no to the previous question, previousSelected is a device and level of details is <=1, unload its children
+                            if (unloadChildren && previousSelected.referent.currentLod <= 1 && previousSelected.category != "rack")
+                            {
+                                await previousSelected.referent.LoadChildren("0");
+                                previousItems.Remove(previousObj);
+                                if (!previousItems.Contains(previousSelected.referent.gameObject))
+                                    previousItems.Add(previousSelected.referent.gameObject);
+                            }
+                        }
+                    }
+                    //if no to the previous question and previousSelected is a rack or smaller, unload its children
+                    if (unloadChildren)
+                        await currentDeselected.LoadChildren("0");
+                }
             }
             else
             {
-                bool unloadChildren = true;
-                OObject currentDeselected = _obj.GetComponent<OObject>();
-
-                //Checking all of the previously selected objects
-                foreach (GameObject previousObj in currentItems)
-                {
-                    OObject previousSelected = previousObj.GetComponent<OObject>();
-
-                    //Are the previous and current selection both a rack or smaller and part of the same rack ?
-                    if (previousSelected != null && currentDeselected != null && previousSelected.referent != null && previousSelected.referent == currentDeselected.referent)
-                        unloadChildren = false;
-
-                    //if no to the previous question, previousSelected is a rack or smaller and level of details is <=1, unload its children
-                    if (unloadChildren && previousSelected != null)
-                    {
-                        if (previousSelected.referent && previousSelected.referent.currentLod <= 1)
-                            await previousSelected.referent.LoadChildren("0");
-                        if (previousSelected.category != "rack" && previousSelected.referent.currentLod <= 1)
-                        {
-                            previousItems.Remove(previousObj);
-                            if (previousSelected.referent && !previousItems.Contains(previousSelected.referent.gameObject))
-                                previousItems.Add(previousSelected.referent.gameObject);
-                        }
-                    }
-                }
-                //if no to the previous question and previousSelected is a rack or smaller, unload its children
-                if (unloadChildren)
-                    await currentDeselected.LoadChildren("0");
+                currentItems.Add(_obj);
+                if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
+                    && _obj.GetComponent<OgreeObject>().currentLod == 0)
+                    await _obj.GetComponent<OgreeObject>().LoadChildren("1");
+                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
+            selectMode = currentItems.Count != 0;
+            EventManager.instance.Raise(new OnSelectItemEvent());
         }
-        else
+        catch (System.Exception e)
         {
-            if ((_obj.GetComponent<OgreeObject>().category != "group" || _obj.GetComponent<OgreeObject>().category != "corridor")
-                && _obj.GetComponent<OgreeObject>().currentLod == 0)
-                await _obj.GetComponent<OgreeObject>().LoadChildren("1");
-            AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
-            currentItems.Add(_obj);
+            Debug.LogError(e);
         }
-
-        selectMode = currentItems.Count != 0;
-        EventManager.instance.Raise(new OnSelectItemEvent());
     }
 
     ///<summary>
@@ -291,6 +302,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
+            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
@@ -312,19 +324,28 @@ public class GameManager : MonoBehaviour
         if (focus.Count > 0)
         {
             EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            await SetCurrentItem(focus[focus.Count - 1]);
+            AppendLogLine($"Focus {focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
+            if (!currentItems.Contains(focus[focus.Count - 1]))
+                await SetCurrentItem(focus[focus.Count - 1]);
         }
         else
-            await SetCurrentItem(obj);
+        {
+            if (!currentItems.Contains(obj))
+                await SetCurrentItem(obj);
+            AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+        }
     }
 
     ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
     ///</summary>
     ///<param name="_obj">The object to check</param>
-    ///<returns>True if _obj is a child of focused object</returns>
+    ///<returns>True if _obj is a child of focused object or if there is no focused object</returns>
     public bool IsInFocus(GameObject _obj)
     {
+        if (!focusMode)
+            return true;
+
         Transform root = focus[focus.Count - 1].transform;
         if (root.GetComponent<Group>())
         {
@@ -334,14 +355,9 @@ public class GameManager : MonoBehaviour
                     return true;
             }
         }
-        else
-        {
-            foreach (Transform child in root)
-            {
-                if (child.gameObject == _obj || IsInFocus(child.gameObject))
-                    return true;
-            }
-        }
+        else if (_obj.GetComponent<OgreeObject>().hierarchyName.Contains(root.GetComponent<OgreeObject>().hierarchyName))
+            return true;
+
         return false;
     }
 
@@ -353,6 +369,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_deselect">Should we remove current selection ?</param>
     public async Task DeleteItem(GameObject _toDel, bool _serverDelete, bool _deselect = true)
     {
+        UiManager.instance.DisableGetCoordsMode();
         if (_deselect)
             await SetCurrentItem(null);
 
@@ -366,7 +383,7 @@ public class GameManager : MonoBehaviour
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
-        Destroy(_toDel);
+        await _toDel.AwaitDestroy();
         StartCoroutine(Utils.ImportFinished());
     }
 
@@ -385,22 +402,62 @@ public class GameManager : MonoBehaviour
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
-            Destroy(doToDel[i]);
+            await doToDel[i].AwaitDestroy();
     }
 
     ///<summary>
     /// Delete all room and object templates.
     ///</summary>
-    public void PurgeTemplates()
+    public async void PurgeTemplates()
     {
         List<GameObject> templatesToDel = new List<GameObject>();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
-            Destroy(templatesToDel[i]);
+            await templatesToDel[i].AwaitDestroy();
         objectTemplates.Clear();
         buildingTemplates.Clear();
         roomTemplates.Clear();
+    }
+
+    ///<summary>
+    /// Delete a template if not used
+    ///</summary>
+    ///<param name="_category">The type of the template</param>
+    ///<param name="_template">The name of the template</param>
+    public async void DeleteTemplateIfUnused(string _category, string _template)
+    {
+        int count = 0;
+        foreach (DictionaryEntry de in allItems)
+        {
+            OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
+            if (obj && obj.attributes.ContainsKey("template") && obj.attributes["template"] == _template)
+                count++;
+        }
+
+        if (count == 0)
+        {
+            GameObject toDel;
+            switch (_category)
+            {
+                case "building":
+                    buildingTemplates.Remove(_template);
+                    break;
+                case "room":
+                    roomTemplates.Remove(_template);
+                    break;
+                case "rack":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+                case "device":
+                    toDel = objectTemplates[_template];
+                    objectTemplates.Remove(_template);
+                    await toDel.AwaitDestroy();
+                    break;
+            }
+        }
     }
 
     ///<summary>
@@ -571,12 +628,32 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
+    public List<OObject> GetSelectedReferents()
+    {
+        if (selectMode)
+            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+        return new List<OObject>();
+    }
+
+    /// <summary>
     /// Create a copy of the previously selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of previously selected objects</returns>
     public List<GameObject> GetPrevious()
     {
         return previousItems.GetRange(0, previousItems.Count);
+    }
+
+    /// <summary>
+    /// Create a copy of the currently selected objects to be checked
+    /// </summary>
+    /// <returns>a copy of the list of currently selected objects</returns>
+    public List<OObject> GetPreviousReferents()
+    {
+        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -18,25 +17,6 @@ public class ReadFromJson
         GameManager.instance.buildingTemplates.Add(_data.slug, _data);
     }
 
-    /// <summary>
-    /// Check if given JSON is a room template and call <see cref="CreateRoomTemplate(SRoomFromJson)"/> if the JSON is valid
-    /// </summary>
-    /// <param name="_json">the JSON to deserialize</param>
-    public void CreateRoomTemplateJson(string _json)
-    {
-        SRoomFromJson roomData;
-        try
-        {
-            roomData = JsonConvert.DeserializeObject<SRoomFromJson>(_json);
-        }
-        catch (Exception e)
-        {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", ELogTarget.both, ELogtype.error);
-            return;
-        }
-        CreateRoomTemplate(roomData);
-    }
-
     ///<summary>
     /// Store <paramref name="_data"/> in <see cref="GameManager.roomTemplates"/>.
     ///</summary>
@@ -47,25 +27,6 @@ public class ReadFromJson
             return;
 
         GameManager.instance.roomTemplates.Add(_data.slug, _data);
-    }
-
-    ///<summary>
-    /// Create a rack or a device from received JSON and add it to correct <see cref="GameManager"/> list
-    ///</summary>
-    ///<param name="_json">JSON to parse</param>
-    public async Task CreateObjTemplateJson(string _json)
-    {
-        STemplate data;
-        try
-        {
-            data = JsonConvert.DeserializeObject<STemplate>(_json);
-        }
-        catch (Exception e)
-        {
-            GameManager.instance.AppendLogLine($"Error on Json deserialization: {e.Message}.", ELogTarget.both, ELogtype.error);
-            return;
-        }
-        await CreateObjectTemplate(data);
     }
 
     ///<summary>
@@ -130,23 +91,23 @@ public class ReadFromJson
         }
 
         // Generate the 3D object
-        OgreeObject newObject;
+        OObject newObject;
         if (obj.category == "rack")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
+            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         else// if (obj.category == "device")
         {
-            newObject = await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
+            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
         newObject.transform.localPosition = Vector3.zero;
 
-        newObject.GetComponent<OObject>().color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
+        newObject.color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
         // Retrieve custom colors
         Dictionary<string, string> customColors = new Dictionary<string, string>();
@@ -197,6 +158,7 @@ public class ReadFromJson
         foreach (Renderer r in renderers)
             r.enabled = false;
         newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        newObject.referent = null;
 #endif
         GameManager.instance.allItems.Remove(newObject.hierarchyName);
         GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
@@ -395,6 +357,5 @@ public class ReadFromJson
         dod.PlaceTexts(_sensor.elemPos[1]);
         dod.SetLabel("#temperature");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-        newSensor.transform.GetChild(0).GetComponent<Collider>().enabled = false;
     }
 }

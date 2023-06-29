@@ -20,13 +20,11 @@ public class ApiManager : MonoBehaviour
     private struct SObjRespSingle
     {
         public string message;
-        public string status;
         public SApiObject data;
     }
     private struct SObjRespArray
     {
         public string message;
-        public string status;
         public SObjectArray data;
     }
     private struct SObjectArray
@@ -37,29 +35,31 @@ public class ApiManager : MonoBehaviour
     private struct STemplateResp
     {
         public string message;
-        public string status;
         public STemplate data;
     }
 
     private struct SBuildingResp
     {
         public string message;
-        public string status;
         public SBuildingFromJson data;
     }
 
     private struct SRoomResp
     {
         public string message;
-        public string status;
         public SRoomFromJson data;
     }
 
     private struct STempUnitResp
     {
         public string message;
-        public string status;
         public STempUnit data;
+    }
+
+    private struct SVersionResp
+    {
+        public Dictionary<string, string> data;
+        public bool status;
     }
 
     public static ApiManager instance;
@@ -77,6 +77,7 @@ public class ApiManager : MonoBehaviour
 
     private string url;
     private string token;
+    private bool canDraw = true;
 
     private void Awake()
     {
@@ -84,6 +85,11 @@ public class ApiManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
+    }
+
+    private void Start()
+    {
+        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
     }
 
     private void Update()
@@ -95,6 +101,20 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+    }
+
+    ///<summary>
+    /// When called, set canDraw to false
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void OnCancelGenenerate(CancelGenerateEvent _e)
+    {
+        canDraw = false;
     }
 
     ///<summary>
@@ -122,6 +142,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     public async Task Initialize()
     {
+        SVersionResp apiResp = new SVersionResp();
         if (string.IsNullOrEmpty(url))
             GameManager.instance.AppendLogLine("Failed to connect with API: no url", ELogTarget.both, ELogtype.errorApi);
         else if (string.IsNullOrEmpty(token))
@@ -132,7 +153,9 @@ public class ApiManager : MonoBehaviour
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
             try
             {
-                string response = await httpClient.GetStringAsync($"{url}/api/token/valid");
+                string response = await httpClient.GetStringAsync($"{server}/version");
+                GameManager.instance.AppendLogLine(response, ELogTarget.none, ELogtype.infoApi);
+                apiResp = JsonConvert.DeserializeObject<SVersionResp>(response);
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
@@ -142,7 +165,8 @@ public class ApiManager : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", ELogTarget.both, ELogtype.errorApi);
             }
         }
-        EventManager.instance.Raise(new ConnectApiEvent());
+        if (!string.IsNullOrEmpty(apiResp.data["Customer"]))
+            EventManager.instance.Raise(new ConnectApiEvent() { apiData = apiResp.data });
     }
 
     ///<summary>
@@ -339,7 +363,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine(responseStr, ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                await CreateTemplateFromJson(responseStr, _type);
+                await DrawObject(responseStr);
             else
                 GameManager.instance.AppendLogLine($"Fail to post on server", ELogTarget.logger, ELogtype.errorApi);
         }
@@ -355,18 +379,38 @@ public class ApiManager : MonoBehaviour
     ///<param name="_input">The API response to use</param>
     public async Task DrawObject(string _input)
     {
-        if (_input.Contains("successfully got query for object") || _input.Contains("successfully got object"))
-            await CreateItemFromJson(_input);
-        else if (_input.Contains("successfully got obj_template"))
-            await CreateTemplateFromJson(_input, "obj");
-        else if (_input.Contains("successfully got building_template"))
-            await CreateTemplateFromJson(_input, "building");
-        else if (_input.Contains("successfully got room_template"))
-            await CreateTemplateFromJson(_input, "room");
-        else
+        try
         {
-            GameManager.instance.AppendLogLine("Unknown object received", ELogTarget.both, ELogtype.errorApi);
-            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+            string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+            // Hashtable data = (Hashtable)apiResp["data"];
+            Hashtable data = JsonConvert.DeserializeObject<Hashtable>(dataStr);
+
+            if (data.ContainsKey("slug"))
+            {
+                switch (data["category"])
+                {
+                    case "building":
+                        SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(dataStr);
+                        rfJson.CreateBuildingTemplate(buildingData);
+                        break;
+                    case "room":
+                        SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(dataStr);
+                        rfJson.CreateRoomTemplate(roomData);
+                        break;
+                    case "rack":
+                    case "device":
+                        STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
+                        await rfJson.CreateObjectTemplate(deviceData);
+                        break;
+                }
+                EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            }
+            else
+                await CreateItemFromJson(_input);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
         }
     }
 
@@ -394,10 +438,16 @@ public class ApiManager : MonoBehaviour
         }
 
         foreach (SApiObject obj in physicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (SApiObject obj in logicalObjects)
-            await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        {
+            if (canDraw)
+                await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
+        }
 
         foreach (string id in leafIds)
         {
@@ -406,31 +456,9 @@ public class ApiManager : MonoBehaviour
                 Utils.RebuildLods(leaf);
         }
 
-        GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
-    }
-
-    ///<summary>
-    /// Use the given template json to instantiate an object or a room template.
-    ///</summary>
-    ///<param name="_json">The json given by the API</param>
-    private async Task CreateTemplateFromJson(string _json, string _type)
-    {
-        if (_type == "obj")
-        {
-            STemplateResp resp = JsonConvert.DeserializeObject<STemplateResp>(_json);
-            await rfJson.CreateObjectTemplate(resp.data);
-        }
-        else if (_type == "building")
-        {
-            SBuildingResp resp = JsonConvert.DeserializeObject<SBuildingResp>(_json);
-            rfJson.CreateBuildingTemplate(resp.data);
-        }
-        else if (_type == "room")
-        {
-            SRoomResp resp = JsonConvert.DeserializeObject<SRoomResp>(_json);
-            rfJson.CreateRoomTemplate(resp.data);
-        }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        if (canDraw)
+            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+        canDraw = true;
     }
 
     ///

@@ -7,8 +7,8 @@ public class Group : OObject
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
         ToggleContent(true);
+        base.OnDestroy();
     }
 
     ///<summary>
@@ -18,11 +18,15 @@ public class Group : OObject
     public void ToggleContent(bool _value)
     {
         isDisplayed = !_value;
-        ToggleAlpha(_value);
+        GetComponent<ObjectDisplayController>().Display(!_value,!_value,!_value);
         DisplayContent(_value);
-        transform.GetChild(0).GetComponent<Collider>().enabled = !_value;
         if (_value)
+        {
+            GetComponent<ObjectDisplayController>().UnsubscribeEvents();
             StartCoroutine(Utils.ImportFinished());
+        }
+        else
+            GetComponent<ObjectDisplayController>().SubscribeEvents();
     }
 
     ///<summary>
@@ -33,8 +37,6 @@ public class Group : OObject
     {
         foreach (GameObject r in GetContent())
             r.SetActive(_value);
-
-        GetComponent<DisplayObjectData>().ToggleLabel(!_value);
     }
 
     ///<summary>

@@ -63,3 +63,5 @@ crashlytics-build.properties
 [Aa]ssets/Trilib.meta
 
 .vsconfig
+Assets/Plugins/AssetUsageDetector/
+Assets/Plugins/AssetUsageDetector.meta

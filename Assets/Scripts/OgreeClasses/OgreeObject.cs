@@ -27,12 +27,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public Vector3 originalLocalPosition = Vector3.negativeInfinity;
     public Quaternion originalLocalRotation = Quaternion.identity;
     public Vector3 originalLocalScale = Vector3.one;
-    public bool heatMap = false;
+    public GameObject heatMap;
+    public bool scatterPlot = false;
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
         attributesValues.Clear();
-        foreach (var kvp in attributes)
+        foreach (KeyValuePair<string, string> kvp in attributes)
         {
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
@@ -54,6 +55,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     protected virtual void OnDestroy()
     {
         GameManager.instance.allItems.Remove(hierarchyName);
+
+        if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
+            GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
     }
 
     ///<summary>
@@ -180,12 +184,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.hierarchyName}");
-                obj.transform.parent = null;
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
-                obj.GetComponent<FocusHandler>()?.UnsubscribeEvents();
-                obj.GetComponent<CustomRendererOutline>()?.UnsubscribeEvents();
             }
-            GetComponent<FocusHandler>()?.InitHandler();
         }
         else
         {

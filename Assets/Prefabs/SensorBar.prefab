@@ -107,7 +107,6 @@ GameObject:
   - component: {fileID: 530606338633814678}
   - component: {fileID: 7641173002511634591}
   - component: {fileID: 7990539262673825364}
-  - component: {fileID: 1232021923839479270}
   m_Layer: 0
   m_Name: SensorBar
   m_TagString: Selectable
@@ -189,31 +188,11 @@ MonoBehaviour:
   category: tempBar
   description: []
   domain: 
-  tempBar: {fileID: 0}
   attributesKeys: []
   attributesValues: []
   currentLod: 0
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
---- !u!114 &1232021923839479270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6010235731161253863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6e63b6201358084094481b20e176db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OwnObjectsList: []
-  ogreeChildObjects: []
-  slotsChildObjects: []
-  ogreeChildMeshRendererList: []
-  slotChildMeshRendererList: []
-  isActive: 0
-  isDeleted: 0
-  isSelected: 0
-  isFocused: 0
+  heatMap: 0
+  scatterPlot: 0
