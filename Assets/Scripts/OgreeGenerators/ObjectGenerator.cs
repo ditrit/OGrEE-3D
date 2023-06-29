@@ -54,46 +54,49 @@ public class ObjectGenerator
             PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
             // Correct position according to rack size & rack orientation
-            Vector3 boxOrigin;
-            Transform box = newRack.transform.GetChild(0);
-            if (box.childCount == 0)
-                boxOrigin = box.localScale / 2;
-            else
-                boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-            float floorUnit = GetUnitFromRoom(_parent.GetComponent<Room>());
-            Vector3 fixPos = Vector3.zero;
-            switch (rack.attributes["orientation"])
-            {
-                case "front":
-                    newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
-                    if (orient.y == 1)
-                        fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-                    else
-                        fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
-                    break;
-                case "rear":
-                    newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
-                    if (orient.y == 1)
-                        fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
-                    else
-                        fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-                    break;
-                case "left":
-                    newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
-                    if (orient.x == 1)
-                        fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
-                    else
-                        fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
-                    break;
-                case "right":
-                    newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
-                    if (orient.x == 1)
-                        fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
-                    else
-                        fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
-                    break;
-            }
-            newRack.transform.localPosition += fixPos;
+            TurnAndFixPos(newRack.transform, _rk, orient);
+
+            // Vector3 boxOrigin;
+            // Transform box = newRack.transform.GetChild(0);
+            // if (box.childCount == 0)
+            //     boxOrigin = box.localScale / 2;
+            // else
+            //     boxOrigin = box.GetComponent<BoxCollider>().size / 2;
+            // float floorUnit = GetUnitFromRoom(_parent.GetComponent<Room>());
+            // Vector3 fixPos = Vector3.zero;
+
+            // switch (rack.attributes["orientation"])
+            // {
+            //     case "front":
+            //         newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
+            //         if (orient.y == 1)
+            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+            //         else
+            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
+            //         break;
+            //     case "rear":
+            //         newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
+            //         if (orient.y == 1)
+            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
+            //         else
+            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+            //         break;
+            //     case "left":
+            //         newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
+            //         if (orient.x == 1)
+            //             fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
+            //         else
+            //             fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
+            //         break;
+            //     case "right":
+            //         newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
+            //         if (orient.x == 1)
+            //             fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
+            //         else
+            //             fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
+            //         break;
+            // }
+            // newRack.transform.localPosition += fixPos;
         }
         else
             newRack.transform.localPosition = Vector3.zero;
@@ -815,6 +818,90 @@ public class ObjectGenerator
             _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
 
         _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
+    }
+
+    ///
+    private void TurnAndFixPos(Transform _obj, SApiObject _apiObj, Vector2 _orient)
+    {
+        Vector3 boxOrigin;
+        Transform box = _obj.GetChild(0);
+        if (box.childCount == 0)
+            boxOrigin = box.localScale / 2;
+        else
+            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
+        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
+        Vector3 fixPos = Vector3.zero;
+
+        Vector3 rotation = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(_apiObj.attributes["rotation"]));
+        _obj.localEulerAngles = rotation;
+
+        // ROT X
+        if (0 <= rotation.x && rotation.x < 90)
+        {
+
+        }
+        else if (90 <= rotation.x && rotation.x < 180)
+        {
+            
+        }
+        else if (180 <= rotation.x && rotation.x < 270)
+        {
+
+        }
+        else if (270 <= rotation.x && rotation.x < 360)
+        {
+
+        }
+
+        // ROT Y
+        if (0 <= rotation.y && rotation.y < 90)
+        {
+            if (_orient.y == 1)
+                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
+            else
+                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+        }
+        else if (90 <= rotation.y && rotation.y < 180)
+        {
+            if (_orient.x == 1)
+                fixPos += new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
+            else
+                fixPos += new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
+        }
+        else if (180 <= rotation.y && rotation.y < 270)
+        {
+            if (_orient.y == 1)
+                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
+            else
+                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
+        }
+        else
+        {
+            if (_orient.x == 1)
+                fixPos += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
+            else
+                fixPos += new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
+        }
+
+        // ROT Z
+        if (0 <= rotation.z && rotation.z < 90)
+        {
+
+        }
+        else if (90 <= rotation.z && rotation.z < 180)
+        {
+
+        }
+        else if (180 <= rotation.z && rotation.z < 270)
+        {
+
+        }
+        else if (270 <= rotation.z && rotation.z < 360)
+        {
+
+        }
+
+        _obj.localPosition += fixPos;
     }
 
     ///<summary>
