@@ -231,7 +231,7 @@ public class UHelpersManager : MonoBehaviour
 
         _rack.uRoot = new GameObject("uRoot").transform;
         _rack.uRoot.parent = _rack.transform;
-        _rack.uRoot.localPosition = Vector3.zero;
+        _rack.uRoot.localPosition = _rack.transform.GetChild(0).localPosition;
         _rack.uRoot.localEulerAngles = Vector3.zero;
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
         Transform URearLeft = new GameObject(cornerRearLeft).transform;

@@ -31,10 +31,12 @@ public class ObjectGenerator
                 return null;
             }
         }
+        DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
 
         newRack.name = _rk.name;
         newRack.transform.parent = _parent;
 
+        // Apply scale and move all components to have the rack's pivot at the lower left corner
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
@@ -44,6 +46,11 @@ public class ObjectGenerator
             else if (_rk.attributes["heightUnit"] == "cm")
                 height /= 100;
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
+
+            dod.PlaceTexts("frontrear");
+
+            foreach (Transform comp in newRack.transform)
+                comp.localPosition += new Vector3(size.x / 100, height, size.y / 100) / 2;
         }
 
         Rack rack = newRack.GetComponent<Rack>();
@@ -55,54 +62,10 @@ public class ObjectGenerator
 
             // Correct position according to rack size & rack orientation
             TurnAndFixPos(newRack.transform, _rk, orient);
-
-            // Vector3 boxOrigin;
-            // Transform box = newRack.transform.GetChild(0);
-            // if (box.childCount == 0)
-            //     boxOrigin = box.localScale / 2;
-            // else
-            //     boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-            // float floorUnit = GetUnitFromRoom(_parent.GetComponent<Room>());
-            // Vector3 fixPos = Vector3.zero;
-
-            // switch (rack.attributes["orientation"])
-            // {
-            //     case "front":
-            //         newRack.transform.localEulerAngles = new Vector3(0, 180, 0);
-            //         if (orient.y == 1)
-            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-            //         else
-            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
-            //         break;
-            //     case "rear":
-            //         newRack.transform.localEulerAngles = new Vector3(0, 0, 0);
-            //         if (orient.y == 1)
-            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
-            //         else
-            //             fixPos = new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-            //         break;
-            //     case "left":
-            //         newRack.transform.localEulerAngles = new Vector3(0, 90, 0);
-            //         if (orient.x == 1)
-            //             fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
-            //         else
-            //             fixPos = new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
-            //         break;
-            //     case "right":
-            //         newRack.transform.localEulerAngles = new Vector3(0, -90, 0);
-            //         if (orient.x == 1)
-            //             fixPos = new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
-            //         else
-            //             fixPos = new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
-            //         break;
-            // }
-            // newRack.transform.localPosition += fixPos;
         }
         else
             newRack.transform.localPosition = Vector3.zero;
 
-        DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
-        dod.PlaceTexts("frontrear");
         dod.SetLabel("#name");
         dod.hasFloatingLabel = true;
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
@@ -842,7 +805,7 @@ public class ObjectGenerator
         }
         else if (90 <= rotation.x && rotation.x < 180)
         {
-            
+
         }
         else if (180 <= rotation.x && rotation.x < 270)
         {
@@ -901,7 +864,7 @@ public class ObjectGenerator
 
         }
 
-        _obj.localPosition += fixPos;
+        // _obj.localPosition += fixPos;
     }
 
     ///<summary>

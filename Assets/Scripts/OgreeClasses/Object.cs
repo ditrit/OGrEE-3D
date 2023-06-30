@@ -163,7 +163,10 @@ public class OObject : OgreeObject
         localCS.transform.parent = transform;
         localCS.transform.localScale = Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
+        if (this is Rack)
+            localCS.transform.localPosition = Vector3.zero;
+        else
+            localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 
