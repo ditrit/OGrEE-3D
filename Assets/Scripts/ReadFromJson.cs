@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -108,7 +108,7 @@ public class ReadFromJson
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
-        newObject.transform.localPosition = Vector3.zero;
+        newObject.GetComponent<ObjectDisplayController>().isTemplate = true;
 
         newObject.color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
