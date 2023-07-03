@@ -55,6 +55,8 @@ public class DisplayObjectData : MonoBehaviour
     public void PlaceTexts(string _labelPos)
     {
         OgreeObject oObj = GetComponent<OgreeObject>();
+        Transform shape = transform.GetChild(0);
+
         if (oObj && oObj.attributes.ContainsKey("template")
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
         {
@@ -74,14 +76,25 @@ public class DisplayObjectData : MonoBehaviour
             boxSize = new Vector3(size.x, height, size.y);
         }
         else
-            boxSize = transform.GetChild(0).localScale;
+            boxSize = shape.localScale;
 
-        labelFront.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / 2;
-        labelRear.transform.localPosition = new Vector3(0, 0, boxSize.z + 0.002f) / -2;
-        labelRight.transform.localPosition = new Vector3(boxSize.x + 0.002f, 0, 0) / 2;
-        labelLeft.transform.localPosition = new Vector3(boxSize.x + 0.002f, 0, 0) / -2;
-        labelTop.transform.localPosition = new Vector3(0, boxSize.y + 0.002f, 0) / 2;
-        labelBottom.transform.localPosition = new Vector3(0, boxSize.y + 0.002f, 0) / -2;
+        labelFront.transform.localPosition = shape.localPosition;
+        labelFront.transform.localPosition += new Vector3(0, 0, boxSize.z + 0.002f) / 2;
+
+        labelRear.transform.localPosition = shape.localPosition;
+        labelRear.transform.localPosition += new Vector3(0, 0, boxSize.z + 0.002f) / -2;
+
+        labelRight.transform.localPosition = shape.localPosition;
+        labelRight.transform.localPosition += new Vector3(boxSize.x + 0.002f, 0, 0) / 2;
+
+        labelLeft.transform.localPosition = shape.localPosition;
+        labelLeft.transform.localPosition += new Vector3(boxSize.x + 0.002f, 0, 0) / -2;
+
+        labelTop.transform.localPosition = shape.localPosition;
+        labelTop.transform.localPosition += new Vector3(0, boxSize.y + 0.002f, 0) / 2;
+
+        labelBottom.transform.localPosition = shape.localPosition;
+        labelBottom.transform.localPosition += new Vector3(0, boxSize.y + 0.002f, 0) / -2;
 
         labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
         labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);

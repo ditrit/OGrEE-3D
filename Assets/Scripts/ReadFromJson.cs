@@ -101,7 +101,10 @@ public class ReadFromJson
         else// if (obj.category == "device")
         {
             newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
-            newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
+            Vector3 accurateScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
+            newObject.transform.GetChild(0).localScale = accurateScale;
+            foreach (Transform comp in newObject.transform)
+                comp.localPosition = accurateScale / 2;
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }

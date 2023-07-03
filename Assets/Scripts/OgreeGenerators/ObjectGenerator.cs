@@ -47,8 +47,6 @@ public class ObjectGenerator
                 height /= 100;
             newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
 
-            dod.PlaceTexts("frontrear");
-
             foreach (Transform comp in newRack.transform)
                 comp.localPosition += new Vector3(size.x / 100, height, size.y / 100) / 2;
         }
@@ -61,11 +59,14 @@ public class ObjectGenerator
             PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
             // Correct position according to rack size & rack orientation
-            TurnAndFixPos(newRack.transform, _rk, orient);
+            // TurnAndFixPos(newRack.transform, _rk, orient);
+
+            newRack.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]));
         }
         else
             newRack.transform.localPosition = Vector3.zero;
 
+        dod.PlaceTexts("frontrear");
         dod.SetLabel("#name");
         dod.hasFloatingLabel = true;
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
@@ -235,13 +236,15 @@ public class ObjectGenerator
             }
             else
             {
+                Vector3 parentShape = _parent.GetChild(0).localScale;
                 newDevice.transform.localEulerAngles = Vector3.zero;
-                newDevice.transform.localPosition = new Vector3(0, (-_parent.GetChild(0).localScale.y + height) / 2, 0);
+                newDevice.transform.localPosition = Vector3.zero;
                 if (_dv.attributes.ContainsKey("posU"))
                     newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
 
+                float deltaX = _parent.GetChild(0).localScale.x - size.x;
                 float deltaZ = _parent.GetChild(0).localScale.z - size.y;
-                newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                newDevice.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
                 newDevice.GetComponent<OObject>().color = Color.white;
             }
         }
@@ -303,6 +306,10 @@ public class ObjectGenerator
             scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
+
+        foreach (Transform comp in go.transform)
+            comp.localPosition = scale / 2;
+
         return go;
     }
 
