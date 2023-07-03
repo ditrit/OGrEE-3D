@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using System;
@@ -178,18 +178,10 @@ public class ReadFromJson
     {
         GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
-        Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
-        Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
-        if (_parent.attributes["sizeUnit"] == "mm")
-            parentSize /= 1000;
-        else if (_parent.attributes["sizeUnit"] == "cm")
-            parentSize /= 100;
-
         go.name = _data.location;
         go.transform.parent = _parent.transform;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
-        go.transform.localPosition = parentSize / -2;
-        go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
+        go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
         {
             go.transform.localEulerAngles = new Vector3(0, 0, 90);

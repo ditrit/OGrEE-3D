@@ -202,13 +202,15 @@ public class ObjectGenerator
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
+                Vector3 slotScale = slot.GetChild(0).localScale;
                 newDevice.transform.localEulerAngles = slot.localEulerAngles;
                 newDevice.transform.localPosition = slot.localPosition;
+                newDevice.transform.localPosition -= slotScale / 2;
 
-                if (height > slot.GetChild(0).localScale.y)
+                if (height > slotScale.y)
                     newDevice.transform.localPosition += new Vector3(0, height / 2 - GameManager.instance.uSize / 2, 0);
 
-                float deltaZ = slot.GetChild(0).localScale.z - size.y;
+                float deltaZ = slotScale.z - size.y;
                 switch (_dv.attributes["orientation"])
                 {
                     case "front":
