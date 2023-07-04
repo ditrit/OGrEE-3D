@@ -53,6 +53,7 @@ public class ModelLoader : MonoBehaviour
         }
         while (isLocked)
             await Task.Delay(100);
+        _object.GetComponent<ObjectDisplayController>().Initialize();
     }
 
     ///<summary>
