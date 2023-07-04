@@ -66,7 +66,7 @@ public class ReadFromJson
             obj.attributes["sizeUnit"] = "cm";
             obj.attributes["height"] = ((int)tmp.z).ToString();
             obj.attributes["heightUnit"] = "cm";
-            obj.attributes["orientation"] = "front";
+            obj.attributes["rotation"] = JsonUtility.ToJson(Vector3.zero);
         }
         else if (obj.category == "device")
         {

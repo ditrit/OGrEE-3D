@@ -20,14 +20,14 @@ public class ObjectGenerator
 
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
-        {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
-            newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
-        }
         else
         {
             if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
+            {
                 newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
+                newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
+            }
             else
             {
                 GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
