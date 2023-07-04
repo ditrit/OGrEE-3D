@@ -68,12 +68,12 @@ public class GridCell : MonoBehaviour
         GameObject grid = Instantiate(gridCellPrefab, transform);
         grid.name = "GridForULocation";
 
-        Vector3 newPosition = grid.transform.position;
+        Vector3 newPosition = transform.GetChild(0).localPosition;
         if (GetComponent<Rack>().attributes["heightUnit"] == "OU")
             newPosition.y = _height - GameManager.instance.ouSize / 2;
         else
             newPosition.y = _height - GameManager.instance.uSize / 2;
-        grid.transform.position = newPosition;
+        grid.transform.localPosition = newPosition;
 
         Vector2 size = new Vector2(transform.GetChild(0).localScale.x, transform.GetChild(0).localScale.z) / 10;
         size *= boxscale;
