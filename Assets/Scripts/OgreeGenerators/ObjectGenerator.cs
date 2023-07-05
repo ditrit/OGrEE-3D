@@ -18,9 +18,24 @@ public class ObjectGenerator
             return null;
         }
 
+        Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
+        float height = Utils.ParseDecFrac(_rk.attributes["height"]);
+        if (_rk.attributes["heightUnit"] == "U")
+            height *= GameManager.instance.uSize;
+        else if (_rk.attributes["heightUnit"] == "cm")
+            height /= 100;
+        Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
+
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
+            
+            // Apply scale and move all components to have the rack's pivot at the lower left corner
+            newRack.transform.GetChild(0).localScale = scale;
+            foreach (Transform comp in newRack.transform)
+                comp.localPosition += new Vector3(size.x / 100, height, size.y / 100) / 2;
+        }
         else
         {
             if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
@@ -38,21 +53,6 @@ public class ObjectGenerator
 
         newRack.name = _rk.name;
         newRack.transform.parent = _parent;
-
-        // Apply scale and move all components to have the rack's pivot at the lower left corner
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
-        {
-            Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
-            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
-            if (_rk.attributes["heightUnit"] == "U")
-                height *= GameManager.instance.uSize;
-            else if (_rk.attributes["heightUnit"] == "cm")
-                height /= 100;
-            newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
-
-            foreach (Transform comp in newRack.transform)
-                comp.localPosition += new Vector3(size.x / 100, height, size.y / 100) / 2;
-        }
 
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk);

@@ -10,7 +10,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// the collider and the renderer of the first child of this gameobject (the box)
     /// </summary>
     private (Collider col, MeshRenderer rend) cube;
-    private DisplayObjectData displayObjectdata;
+    private DisplayObjectData displayObjectData;
     private OObject oobject;
     private Sensor sensor;
     private Slot slot;
@@ -37,8 +37,7 @@ public class ObjectDisplayController : MonoBehaviour
 
     private void Awake()
     {
-        cube = (transform.GetChild(0).GetComponent<Collider>(), transform.GetChild(0).GetComponent<MeshRenderer>());
-        displayObjectdata = GetComponent<DisplayObjectData>();
+        Initialize();
     }
 
     private void Start()
@@ -403,6 +402,15 @@ public class ObjectDisplayController : MonoBehaviour
             ToggleHighlight(!isHighlighted);
     }
 
+    ///<summary>
+    /// Setup collider and renderer
+    ///</summary>
+    public void Initialize()
+    {
+        cube = (transform.GetChild(0).GetComponent<Collider>(), transform.GetChild(0).GetComponent<MeshRenderer>());
+        displayObjectData = GetComponent<DisplayObjectData>();
+    }
+
     /// <summary>
     /// Call itself from its parent CustomRenderer if it has one, change the boolean <see cref="isHighlighted"/> then call <see cref="HandleMaterial"/>
     /// </summary>
@@ -494,7 +502,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (oobject && oobject.isHidden)
         {
             cube.rend.enabled = false;
-            displayObjectdata.ToggleLabel(false);
+            displayObjectData.ToggleLabel(false);
         }
     }
 
@@ -628,7 +636,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
-        displayObjectdata.ToggleLabel(_label);
+        displayObjectData.ToggleLabel(_label);
         if (oobject && oobject.heatMap)
             oobject.heatMap.GetComponent<Renderer>().enabled = _rend;
     }
