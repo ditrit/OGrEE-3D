@@ -18,9 +18,20 @@ public class ObjectGenerator
             return null;
         }
 
+        Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
+        float height = Utils.ParseDecFrac(_rk.attributes["height"]);
+        if (_rk.attributes["heightUnit"] == "U")
+            height *= GameManager.instance.uSize;
+        else if (_rk.attributes["heightUnit"] == "cm")
+            height /= 100;
+        Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
+
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
+            newRack.transform.GetChild(0).localScale = scale;
+        }
         else
         {
             if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
@@ -35,17 +46,6 @@ public class ObjectGenerator
         newRack.name = _rk.name;
         newRack.transform.parent = _parent;
 
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
-        {
-            Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
-            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
-            if (_rk.attributes["heightUnit"] == "U")
-                height *= GameManager.instance.uSize;
-            else if (_rk.attributes["heightUnit"] == "cm")
-                height /= 100;
-            newRack.transform.GetChild(0).localScale = new Vector3(size.x / 100, height, size.y / 100);
-        }
-
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk);
 
@@ -54,12 +54,7 @@ public class ObjectGenerator
             PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
 
             // Correct position according to rack size & rack orientation
-            Vector3 boxOrigin;
-            Transform box = newRack.transform.GetChild(0);
-            if (box.childCount == 0)
-                boxOrigin = box.localScale / 2;
-            else
-                boxOrigin = box.GetComponent<BoxCollider>().size / 2;
+            Vector3 boxOrigin = scale / 2;
             float floorUnit = GetUnitFromRoom(_parent.GetComponent<Room>());
             Vector3 fixPos = Vector3.zero;
             switch (rack.attributes["orientation"])
