@@ -18,23 +18,24 @@ public class ObjectGenerator
             return null;
         }
 
-        Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
-        float height = Utils.ParseDecFrac(_rk.attributes["height"]);
-        if (_rk.attributes["heightUnit"] == "U")
-            height *= GameManager.instance.uSize;
-        else if (_rk.attributes["heightUnit"] == "cm")
-            height /= 100;
-        Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
 
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
-            
+
             // Apply scale and move all components to have the rack's pivot at the lower left corner
+            Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
+            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
+            if (_rk.attributes["heightUnit"] == "U")
+                height *= GameManager.instance.uSize;
+            else if (_rk.attributes["heightUnit"] == "cm")
+                height /= 100;
+            Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
+
             newRack.transform.GetChild(0).localScale = scale;
             foreach (Transform comp in newRack.transform)
-                comp.localPosition += new Vector3(size.x / 100, height, size.y / 100) / 2;
+                comp.localPosition += scale / 2;
         }
         else
         {
@@ -63,7 +64,6 @@ public class ObjectGenerator
 
             // Correct position according to rack size & rack orientation
             // TurnAndFixPos(newRack.transform, _rk, orient);
-
             newRack.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]));
         }
         else
