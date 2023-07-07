@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -402,7 +402,7 @@ public class ObjectGenerator
             DeviceGroupPosScale(content, out pos, out scale);
             newGr.transform.localEulerAngles = Vector3.zero;
         }
-        newGr.transform.localPosition = pos;
+        newGr.transform.position = pos;
         newGr.transform.GetChild(0).localScale = scale;
 
         // Set Group component
@@ -460,8 +460,8 @@ public class ObjectGenerator
 
         float witdh = rackAtRight.localPosition.x - rackAtLowerLeft.localPosition.x;
         float length = rackAtTop.localPosition.z - rackAtLowerLeft.localPosition.z;
-        if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
-            || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        Vector3 lowerLeftRackRot = JsonUtility.FromJson<Vector3>(rackAtLowerLeft.GetComponent<OObject>().attributes["rotation"]);
+        if (lowerLeftRackRot.y == 0 || lowerLeftRackRot.y == 180)
         {
             witdh += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
             length -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
@@ -475,10 +475,9 @@ public class ObjectGenerator
         }
         _scale = new Vector3(witdh, maxHeight, length);
 
-        float xOffset;
-        float zOffset;
-        if (rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "front"
-            || rackAtLowerLeft.GetComponent<Rack>().attributes["orientation"] == "rear")
+        float xOffset = 0;
+        float zOffset = 0;
+        if (lowerLeftRackRot.y == 0 || lowerLeftRackRot.y == 180)
         {
             xOffset = (_scale.x - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
             zOffset = (_scale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
@@ -488,7 +487,7 @@ public class ObjectGenerator
             xOffset = (_scale.x + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
             zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
         }
-        _pos = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
+        _pos = new Vector3(rackAtLowerLeft.GetChild(0).position.x, maxHeight / 2, rackAtLowerLeft.GetChild(0).position.z);
         _pos += new Vector3(xOffset, 0, zOffset);
     }
 
@@ -521,7 +520,7 @@ public class ObjectGenerator
 
         _scale = new Vector3(maxWidth, height, maxLength);
 
-        _pos = lowerDv.localPosition;
+        _pos = lowerDv.position;
         _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
 
     }
