@@ -147,7 +147,7 @@ public class ConfigLoader
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
-        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["textures"])
+        foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value))
                 config.textures[kvp.Key] = (string)kvp.Value;
@@ -155,7 +155,7 @@ public class ConfigLoader
         // foreach (KeyValuePair<string, string> kvp in config.textures)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
-        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["colors"])
+        foreach (KeyValuePair<string, object> kvp in (TomlTable)table["colors"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
@@ -173,10 +173,10 @@ public class ConfigLoader
 
         config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
         List<List<int>> tempGradient = new List<List<int>>();
-        foreach (System.Object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
+        foreach (object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
         {
             List<int> tmp = new List<int>();
-            foreach (System.Object i in (TomlArray)colorDef)
+            foreach (object i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32(i));
             if (tmp.Count == 4 && tempGradient.Count < 8)
                 tempGradient.Add(tmp);
@@ -206,6 +206,7 @@ public class ConfigLoader
         SetMaterialColor("focus", GameManager.instance.focusMat);
         SetMaterialColor("edit", GameManager.instance.editMat);
         SetMaterialColor("highlight", GameManager.instance.highlightMat);
+        SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
     }
 
     ///<summary> 
