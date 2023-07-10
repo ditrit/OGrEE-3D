@@ -328,7 +328,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
 
         List<GameObject> selection = GameManager.instance.GetSelected();
-        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || selection.Contains(transform.parent?.gameObject);
+        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || (transform.parent && !scatterPlotOfOneParent && selection.Contains(transform.parent.gameObject));
         bool rend = labels || selection.Contains(gameObject);
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
