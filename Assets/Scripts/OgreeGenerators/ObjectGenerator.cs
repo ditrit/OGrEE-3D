@@ -557,7 +557,9 @@ public class ObjectGenerator
             return null;
         }
 
-        bool horizontalCorridor = (cornerA.GetComponent<Rack>().attributes["orientation"] == "front" || cornerA.GetComponent<Rack>().attributes["orientation"] == "rear");
+        Vector3 cornerARotation = JsonUtility.FromJson<Vector3>(cornerA.GetComponent<Rack>().attributes["rotation"]);
+        Vector3 cornerBRotation = JsonUtility.FromJson<Vector3>(cornerB.GetComponent<Rack>().attributes["rotation"]);
+        bool horizontalCorridor = (cornerARotation.y == 0 || cornerARotation.y == 180);
 
         Vector2 orient = Vector2.one;
         if (cornerA.localPosition.x > cornerB.localPosition.x)
@@ -574,23 +576,21 @@ public class ObjectGenerator
         newCo.transform.parent = parent;
 
         // Scale
-        float x = (cornerB.localPosition.x - cornerA.localPosition.x) * orient.x;
-        float z = (cornerB.localPosition.z - cornerA.localPosition.z) * orient.y;
+        float x = Mathf.Abs(cornerB.localPosition.x - cornerA.localPosition.x);
+        float z = Mathf.Abs(cornerB.localPosition.z - cornerA.localPosition.z);
         if (horizontalCorridor)
         {
-            x += (cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x) / 2;
-            z -= (cornerB.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
+            x += cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x;
         }
         else
         {
-            x -= (cornerB.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
-            z += (cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x) / 2;
+            z += cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x;
         }
-        newCo.transform.GetChild(0).localScale = new Vector3(Mathf.Abs(x), maxHeight, Mathf.Abs(z));
+        newCo.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
 
         // localPosition
         newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newCo.transform.localPosition = new Vector3(cornerA.localPosition.x, maxHeight / 2, cornerA.localPosition.z);
+        newCo.transform.position = new Vector3(cornerA.GetChild(0).position.x, maxHeight / 2, cornerA.GetChild(0).position.z);
         float xOffset;
         float zOffset;
         if (horizontalCorridor)
