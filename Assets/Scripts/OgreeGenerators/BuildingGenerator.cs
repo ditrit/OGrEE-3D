@@ -67,9 +67,13 @@ public class BuildingGenerator
             floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
             roof.localScale = floor.localScale;
             roof.localPosition = floor.localPosition;
+            
             // Align walls & nameText to the floor & setup nameText
             building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
+
             building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+            building.nameText.rectTransform.sizeDelta = size;
+            
             BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
         // Apply posXY
@@ -80,7 +84,6 @@ public class BuildingGenerator
 
         // Setup nameText
         building.nameText.text = _bd.name;
-        building.nameText.rectTransform.sizeDelta = size;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
 
         building.UpdateColorByDomain();
@@ -161,7 +164,9 @@ public class BuildingGenerator
             room.tilesGrid.localPosition = new Vector3(room.usableZone.localScale.x, room.tilesGrid.localPosition.y, room.usableZone.localScale.z) / 0.2f;
 
             room.walls.localPosition = new Vector3(room.usableZone.localScale.x, room.walls.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+
             room.nameText.transform.localPosition = new Vector3(room.usableZone.localScale.x, room.nameText.transform.localPosition.y, room.usableZone.localScale.z) / 0.2f;
+            room.nameText.rectTransform.sizeDelta = size;
 
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
@@ -175,7 +180,6 @@ public class BuildingGenerator
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
-        room.nameText.rectTransform.sizeDelta = size;
 
         room.UpdateColorByDomain();
 
