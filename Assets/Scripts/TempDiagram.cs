@@ -85,7 +85,7 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
-                    await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));// Destroy(childOgreeObject.tempBar);
+                    await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));
             }
         }
         _room.barChart = !_room.barChart;
