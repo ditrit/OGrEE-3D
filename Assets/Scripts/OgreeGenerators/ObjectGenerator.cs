@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -435,60 +435,110 @@ public class ObjectGenerator
     ///<param name="_scale">The localScale to apply to the group</param>
     private void RackGroupPosScale(List<Transform> _racks, out Vector3 _pos, out Vector3 _scale)
     {
-        Transform rackAtLowerLeft = _racks[0];
-        Transform rackAtRight = _racks[0];
-        Transform rackAtTop = _racks[0];
-        float maxHeight = 0;
-        float maxLength = 0;
+        // x axis
+        float left = float.PositiveInfinity;
+        float right = float.NegativeInfinity;
+        // y axis
+        float bottom = float.PositiveInfinity;
+        float top = float.NegativeInfinity;
+        // z axis
+        float rear = float.PositiveInfinity;
+        float front = float.NegativeInfinity;
+
+        Vector3 positionSum = Vector3.zero;
+        float nbOfRacks = 0;
         foreach (Transform rk in _racks)
         {
             if (rk.GetComponent<OgreeObject>().category == "rack")
             {
-                if (rk.localPosition.x <= rackAtLowerLeft.localPosition.x && rk.localPosition.z <= rackAtLowerLeft.localPosition.z)
-                    rackAtLowerLeft = rk;
-                if (rk.localPosition.x > rackAtRight.localPosition.x)
-                    rackAtRight = rk;
-                if (rk.localPosition.z > rackAtTop.localPosition.z)
-                    rackAtTop = rk;
-
-                if (rk.GetChild(0).localScale.y > maxHeight)
-                    maxHeight = rk.GetChild(0).localScale.y;
-                if (rk.GetChild(0).localScale.z > maxLength)
-                    maxLength = rk.GetChild(0).localScale.z;
+                List<Vector3> tmpCorners = RackCorners(rk);
+                foreach (Vector3 corner in tmpCorners)
+                {
+                    if (left > corner.x)
+                        left = corner.x;
+                    if (right < corner.x)
+                        right = corner.x;
+                    if (bottom > corner.y)
+                        bottom = corner.y;
+                    if (top < corner.y)
+                        top = corner.y;
+                    if (rear > corner.z)
+                        rear = corner.z;
+                    if (front < corner.z)
+                        front = corner.z;
+                }
+                positionSum += rk.GetChild(0).position;
+                nbOfRacks++;
             }
         }
+        float witdh = right - left;
+        float height = top - bottom;
+        float length = front - rear;
 
-        float witdh = rackAtRight.localPosition.x - rackAtLowerLeft.localPosition.x;
-        float length = rackAtTop.localPosition.z - rackAtLowerLeft.localPosition.z;
-        Vector3 lowerLeftRackRot = JsonUtility.FromJson<Vector3>(rackAtLowerLeft.GetComponent<OObject>().attributes["rotation"]);
-        if (lowerLeftRackRot.y == 0 || lowerLeftRackRot.y == 180)
-        {
-            witdh += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            length -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
-            length += maxLength * 2;
-        }
-        else
-        {
-            length += (rackAtRight.GetChild(0).localScale.x + rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            witdh -= (rackAtTop.GetChild(0).localScale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2;
-            witdh += maxLength * 2;
-        }
-        _scale = new Vector3(witdh, maxHeight, length);
+        _scale = new Vector3(witdh, height, length);
+        _pos = positionSum / nbOfRacks;
+    }
 
-        float xOffset = 0;
-        float zOffset = 0;
-        if (lowerLeftRackRot.y == 0 || lowerLeftRackRot.y == 180)
+    ///<summary>
+    /// Generate a list of Vector3 containing the position of all corners of the given racks.
+    ///</summary>
+    ///<param name="_rk">The rack used to have a list of points</param>
+    ///<returns>A list of all corners of a rack</returns>
+    private List<Vector3> RackCorners(Transform _rk)
+    {
+        List<Vector3> corners = new List<Vector3>();
+        try
         {
-            xOffset = (_scale.x - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
-            zOffset = (_scale.z + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
+            Rack rack = _rk.GetComponent<Rack>();
+            Vector2 rkHalfSize = JsonUtility.FromJson<Vector2>(rack.attributes["size"]) / 2;
+            switch (rack.attributes["sizeUnit"])
+            {
+                case "cm":
+                    rkHalfSize /= 100;
+                    break;
+                case "mm":
+                    rkHalfSize /= 1000;
+                    break;
+            }
+            float rkHalfHeight = Utils.ParseDecFrac(rack.attributes["height"]) / 2;
+            switch (rack.attributes["heightUnit"])
+            {
+                case "U":
+                    rkHalfHeight *= GameManager.instance.uSize;
+                    break;
+                case "cm":
+                    rkHalfHeight /= 100;
+                    break;
+                case "mm":
+                    rkHalfHeight /= 1000;
+                    break;
+            }
+            Vector3 rkRotation = JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]);
+            Vector3 turnedHalfSize = Quaternion.Euler(rkRotation) * new Vector3(rkHalfSize.x, rkHalfHeight, rkHalfSize.y);
+            Vector3 rkShapePos = _rk.GetChild(0).position;
+
+            // corner 0:             left                             bottom                           rear
+            corners.Add(new Vector3(rkShapePos.x - turnedHalfSize.x, rkShapePos.y - turnedHalfSize.y, rkShapePos.z - turnedHalfSize.z));
+            // corner 1:             left                             bottom                           front
+            corners.Add(new Vector3(rkShapePos.x - turnedHalfSize.x, rkShapePos.y - turnedHalfSize.y, rkShapePos.z + turnedHalfSize.z));
+            // corner 2:             right                            bottom                           front
+            corners.Add(new Vector3(rkShapePos.x + turnedHalfSize.x, rkShapePos.y - turnedHalfSize.y, rkShapePos.z + turnedHalfSize.z));
+            // corner 3:             right                            bottom                           rear
+            corners.Add(new Vector3(rkShapePos.x + turnedHalfSize.x, rkShapePos.y - turnedHalfSize.y, rkShapePos.z - turnedHalfSize.z));
+            // corner 4:             left                             top                              rear
+            corners.Add(new Vector3(rkShapePos.x - turnedHalfSize.x, rkShapePos.y + turnedHalfSize.y, rkShapePos.z - turnedHalfSize.z));
+            // corner 5:             left                             top                              front
+            corners.Add(new Vector3(rkShapePos.x - turnedHalfSize.x, rkShapePos.y + turnedHalfSize.y, rkShapePos.z + turnedHalfSize.z));
+            // corner 6:             right                            top                              front
+            corners.Add(new Vector3(rkShapePos.x + turnedHalfSize.x, rkShapePos.y + turnedHalfSize.y, rkShapePos.z + turnedHalfSize.z));
+            // corner 7:             right                            top                              rear
+            corners.Add(new Vector3(rkShapePos.x + turnedHalfSize.x, rkShapePos.y + turnedHalfSize.y, rkShapePos.z - turnedHalfSize.z));
         }
-        else
+        catch (System.Exception e)
         {
-            xOffset = (_scale.x + rackAtLowerLeft.GetChild(0).localScale.z) / 2 - maxLength;
-            zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
+            Debug.LogError(e);
         }
-        _pos = new Vector3(rackAtLowerLeft.GetChild(0).position.x, maxHeight / 2, rackAtLowerLeft.GetChild(0).position.z);
-        _pos += new Vector3(xOffset, 0, zOffset);
+        return corners;
     }
 
     ///<summary>
