@@ -8,6 +8,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// the collider and the renderer of the first child of this gameobject (the box)
     /// </summary>
     private (Collider col, MeshRenderer rend) cube;
+    public bool Shown { get => cube.rend.enabled;}
     private DisplayObjectData displayObjectData;
     private OObject oobject;
     private Sensor sensor;

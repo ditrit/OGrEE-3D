@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
-    private readonly List<GameObject> currentItems = new List<GameObject>();
+    private List<GameObject> currentItems = new List<GameObject>();
     private List<GameObject> previousItems = new List<GameObject>();
     public Hashtable allItems = new Hashtable();
     public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();

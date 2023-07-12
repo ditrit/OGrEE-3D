@@ -50,7 +50,7 @@ public class TempDiagram : MonoBehaviour
     /// Show the temperature diagram if it is not already shown, hide it if it is.
     /// </summary>
     /// <param name="_room">the object where we show/hide the temperature diagram</param>
-    public void HandleTempBarChart(Room _room)
+    public async void HandleTempBarChart(Room _room)
     {
         if (_room.scatterPlot)
             HandleScatterPlot(_room);
@@ -85,7 +85,7 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
-                    Destroy(childOgreeObject.tempBar);
+                    await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));
             }
         }
         _room.barChart = !_room.barChart;
