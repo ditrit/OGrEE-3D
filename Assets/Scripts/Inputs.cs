@@ -164,7 +164,7 @@ public class Inputs : MonoBehaviour
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
                 {
-                    if (go.GetComponent<OgreeObject>() is OObject)
+                    if (go.GetComponent<OgreeObject>() is OObject && go.GetComponent<ObjectDisplayController>().Shown)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
                 }
             }
