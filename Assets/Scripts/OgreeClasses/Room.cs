@@ -20,6 +20,7 @@ public class Room : Building
     public bool tileColor = false;
 
     public bool barChart = false;
+    public List<Group> openedGroups = new List<Group>();
 
     ///<summary>
     /// Set usable/reserved/technical areas.

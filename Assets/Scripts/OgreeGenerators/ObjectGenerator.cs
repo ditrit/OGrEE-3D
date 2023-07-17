@@ -426,7 +426,6 @@ public class ObjectGenerator
         gr.hierarchyName = hierarchyName;
         gr.UpdateFromSApiObject(_gr);
         gr.UpdateColorByDomain();
-        gr.DisplayContent(false);
 
         // Setup labels
         DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();
