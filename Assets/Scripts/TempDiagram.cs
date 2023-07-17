@@ -74,12 +74,10 @@ public class TempDiagram : MonoBehaviour
         {
             foreach (Transform childTransform in _room.transform)
             {
-                _room.openedGroups = new List<Group>();
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
                 {
-                    Group childGroup = childTransform.GetComponent<Group>();
-                    if (childGroup && childGroup.isDisplayed)
+                    if (childOgreeObject is Group childGroup && childGroup.isDisplayed)
                     {
                         childGroup.ToggleContent(true);
                         _room.openedGroups.Add(childGroup);
@@ -98,6 +96,7 @@ public class TempDiagram : MonoBehaviour
             }
             foreach(Group group in _room.openedGroups)
                 group.ToggleContent(false);
+            _room.openedGroups.Clear();
         }
         _room.barChart = !_room.barChart;
     }
