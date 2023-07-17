@@ -74,9 +74,18 @@ public class TempDiagram : MonoBehaviour
         {
             foreach (Transform childTransform in _room.transform)
             {
+                _room.openedGroups = new List<Group>();
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
-                if (childOgreeObject && !childTransform.GetComponent<Group>())
+                if (childOgreeObject)
+                {
+                    Group childGroup = childTransform.GetComponent<Group>();
+                    if (childGroup && childGroup.isDisplayed)
+                    {
+                        childGroup.ToggleContent(true);
+                        _room.openedGroups.Add(childGroup);
+                    }
                     ComputeTempBar(childOgreeObject, _room.temperatureUnit, roomHeight);
+                }
             }
         }
         else
@@ -87,6 +96,8 @@ public class TempDiagram : MonoBehaviour
                 if (childOgreeObject)
                     await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));
             }
+            foreach(Group group in _room.openedGroups)
+                group.ToggleContent(false);
         }
         _room.barChart = !_room.barChart;
     }
