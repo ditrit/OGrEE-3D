@@ -42,9 +42,9 @@ public class ConfigLoader
         config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
 
         // Load toml config from given path
-        string configPath = GetArg("-c");
+        string configPath = GetArg(LaunchArgs.ConfigPathShort);
         if (string.IsNullOrEmpty(configPath))
-            configPath = GetArg("--config-file");
+            configPath = GetArg(LaunchArgs.ConfigPathLong);
 
         LoadConfigFile(configPath);
 
@@ -63,7 +63,7 @@ public class ConfigLoader
     ///<returns>The value of the asked argument</returns>
     private string GetArg(string _name)
     {
-        string[] args = System.Environment.GetCommandLineArgs();
+        string[] args = Environment.GetCommandLineArgs();
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == _name && args.Length > i + 1)
@@ -79,27 +79,23 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "-v", "--verbose", "-fs", "--fullscreen" };
-        for (int i = 0; i < args.Length; i++)
+        foreach (string arg in LaunchArgs.Args)
         {
-            string str = GetArg(args[i]);
-            if (!string.IsNullOrEmpty(str))
+            string str = GetArg(arg);
+            if (string.IsNullOrEmpty(str))
+                continue;
+
+            switch (arg)
             {
-                switch (i)
-                {
-                    case 0:
-                        config.verbose = bool.Parse(str);
-                        break;
-                    case 1:
-                        config.verbose = bool.Parse(str);
-                        break;
-                    case 2:
-                        config.fullscreen = bool.Parse(str);
-                        break;
-                    case 3:
-                        config.fullscreen = bool.Parse(str);
-                        break;
-                }
+                case LaunchArgs.VerboseShort:
+                case LaunchArgs.VerboseLong:
+                    config.verbose = bool.Parse(str);
+                    break;
+
+                case LaunchArgs.FullScreenShort:
+                case LaunchArgs.FullScreenLong:
+                    config.fullscreen = bool.Parse(str);
+                    break;
             }
         }
     }

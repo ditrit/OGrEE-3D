@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 public enum ELogtype
 {
     info,
@@ -137,4 +140,15 @@ public class LengthUnit
     public const string Meter = "m";
     public const string Feet = "f";
     public const string OU = "OU";
+}
+
+public class LaunchArgs
+{
+    public const string ConfigPathShort = "-c";
+    public const string ConfigPathLong = "--config-file";
+    public const string VerboseShort = "-v";
+    public const string VerboseLong = "--verbose";
+    public const string FullScreenShort = "-fs";
+    public const string FullScreenLong = "--fullscreen";
+    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort,ConfigPathLong,VerboseShort,VerboseLong,FullScreenShort,FullScreenLong });
 }
