@@ -248,36 +248,38 @@ public class Room : Building
         Vector2 orient = Vector2.one;
         int offsetX = 0;
         int offsetY = 0;
-        if (attributes["axisOrientation"] == "+x+y")
+        switch (attributes["axisOrientation"])
         {
-            // Lower Left   
-            orient = new Vector2(1, 1);
-            offsetX = (int)-reserved.left;
-            offsetY = (int)-reserved.bottom;
-        }
-        else if (attributes["axisOrientation"] == "-x+y")
-        {
-            // Lower Right
-            orient = new Vector2(-1, 1);
-            offsetX = (int)-reserved.right;
-            offsetY = (int)-reserved.bottom;
-            _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
-        }
-        else if (attributes["axisOrientation"] == "-x-y")
-        {
-            // Upper Right
-            orient = new Vector2(-1, -1);
-            offsetX = (int)-reserved.right;
-            offsetY = (int)-reserved.top;
-            _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
-        }
-        else if (attributes["axisOrientation"] == "+x-y")
-        {
-            // Upper Left
-            orient = new Vector2(1, -1);
-            offsetX = (int)-reserved.left;
-            offsetY = (int)-reserved.top;
-            _root.transform.localPosition -= new Vector3(0, 0, GameManager.instance.tileSize);
+            case AxisOrientation.Default:
+                // Lower Left   
+                orient = new Vector2(1, 1);
+                offsetX = (int)-reserved.left;
+                offsetY = (int)-reserved.bottom;
+                break;
+
+            case AxisOrientation.XMinus:
+                // Lower Right
+                orient = new Vector2(-1, 1);
+                offsetX = (int)-reserved.right;
+                offsetY = (int)-reserved.bottom;
+                _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
+                break;
+
+            case AxisOrientation.YMinus:
+                // Upper Left
+                orient = new Vector2(1, -1);
+                offsetX = (int)-reserved.left;
+                offsetY = (int)-reserved.top;
+                _root.transform.localPosition -= new Vector3(0, 0, GameManager.instance.tileSize);
+                break;
+
+            case AxisOrientation.BothMinus:
+                // Upper Right
+                orient = new Vector2(-1, -1);
+                offsetX = (int)-reserved.right;
+                offsetY = (int)-reserved.top;
+                _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
+                break;
         }
 
         Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);

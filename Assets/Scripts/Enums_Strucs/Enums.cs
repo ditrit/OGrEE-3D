@@ -118,3 +118,22 @@ public class SensorPos
     public const string Upper = "upper";
     public const string Center = "center";
 }
+
+public class AxisOrientation
+{
+    public const string Default = "+x+y";
+    public const string XMinus = "-x+y";
+    public const string YMinus = "+x-y";
+    public const string BothMinus = "-x-y";
+}
+
+public class LengthUnit
+{
+    public const string Tile = "t";
+    public const string U = "U";
+    public const string MilliMeter = "mm";
+    public const string CentiMeter = "cm";
+    public const string Meter = "m";
+    public const string Feet = "f";
+    public const string OU = "OU";
+}

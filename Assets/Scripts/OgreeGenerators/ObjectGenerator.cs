@@ -750,31 +750,33 @@ public class ObjectGenerator
         _orient = new Vector2();
         if (parentRoom.attributes.ContainsKey("axisOrientation"))
         {
-            if (parentRoom.attributes["axisOrientation"] == "+x+y")
+            switch (parentRoom.attributes["axisOrientation"])
             {
-                // Lower Left corner of the room
-                _orient = new Vector2(1, 1);
-            }
-            else if (parentRoom.attributes["axisOrientation"] == "-x+y")
-            {
-                // Lower Right corner of the room
-                _orient = new Vector2(-1, 1);
-                if (_apiObj.category == Category.Rack)
-                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
-            }
-            else if (parentRoom.attributes["axisOrientation"] == "-x-y")
-            {
-                // Upper Right corner of the room
-                _orient = new Vector2(-1, -1);
-                if (_apiObj.category == Category.Rack)
-                    _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
-            }
-            else if (parentRoom.attributes["axisOrientation"] == "+x-y")
-            {
-                // Upper Left corner of the room
-                _orient = new Vector2(1, -1);
-                if (_apiObj.category == Category.Rack)
-                    _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
+                case AxisOrientation.Default:
+                    // Lower Left corner of the room
+                    _orient = new Vector2(1, 1);
+                    break;
+
+                case AxisOrientation.XMinus:
+                    // Lower Right corner of the room
+                    _orient = new Vector2(-1, 1);
+                    if (_apiObj.category == Category.Rack)
+                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
+                    break;
+
+                case AxisOrientation.YMinus:
+                    // Upper Left corner of the room
+                    _orient = new Vector2(1, -1);
+                    if (_apiObj.category == Category.Rack)
+                        _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
+                    break;
+
+                case AxisOrientation.BothMinus:
+                    // Upper Right corner of the room
+                    _orient = new Vector2(-1, -1);
+                    if (_apiObj.category == Category.Rack)
+                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
+                    break;
             }
         }
 
