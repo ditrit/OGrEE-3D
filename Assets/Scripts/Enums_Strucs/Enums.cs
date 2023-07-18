@@ -46,6 +46,7 @@ public class Category
     public const string Device = "device";
     public const string Group = "group";
     public const string Corridor = "corridor";
+    public const string Sensor = "sensor";
 }
 public class CommandType
 {

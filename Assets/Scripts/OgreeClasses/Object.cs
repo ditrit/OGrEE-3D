@@ -196,7 +196,7 @@ public class OObject : OgreeObject
                     attributes = new Dictionary<string, string>(),
 
                     name = "sensor", // ?
-                    category = "sensor",
+                    category = Category.Sensor,
                     parentId = id,
                     domain = domain
                 };
