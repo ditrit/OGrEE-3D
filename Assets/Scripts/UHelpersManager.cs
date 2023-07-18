@@ -63,9 +63,6 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            string str = "";
-            foreach (GameObject obj in GameManager.instance.GetSelected())
-                str += (obj.name) + " ";
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
