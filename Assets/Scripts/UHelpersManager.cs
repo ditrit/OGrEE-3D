@@ -81,7 +81,7 @@ public class UHelpersManager : MonoBehaviour
             return;
         switch (_selection[0].GetComponent<OObject>().category)
         {
-            case "rack":
+            case Category.Rack:
                 foreach (GameObject obj in _selection)
                 {
                     GameObject u = obj.GetComponent<Rack>().uRoot.gameObject;
@@ -92,7 +92,7 @@ public class UHelpersManager : MonoBehaviour
                 }
                 break;
 
-            case "device":
+            case Category.Device:
                 if (wasEdited)
                     return;
                 Rack rack = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());

@@ -132,7 +132,7 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OObject>()
             &&
-            menuTarget.GetComponent<OgreeObject>().category != "corridor"
+            menuTarget.GetComponent<OgreeObject>().category != Category.Corridor
             &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
@@ -212,7 +212,7 @@ public class UiManager : MonoBehaviour
             !menuTarget.GetComponent<Group>()
             &&
             (
-                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != "corridor")
+                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != Category.Corridor)
                 ||
                 menuTarget.GetComponent<Room>()
             ),
@@ -233,7 +233,7 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OObject>()
             &&
-            menuTarget.GetComponent<OObject>().category == "device"
+            menuTarget.GetComponent<OObject>().category == Category.Device
             &&
             DepthCheck(menuTarget.GetComponent<OObject>()) <= 1,
 
@@ -298,7 +298,7 @@ public class UiManager : MonoBehaviour
                 (
                     menuTarget.GetComponent<OObject>()
                     &&
-                    menuTarget.GetComponent<OObject>().category != "corridor"
+                    menuTarget.GetComponent<OObject>().category != Category.Corridor
                 )
                 ||
                 menuTarget.GetComponent<Building>()

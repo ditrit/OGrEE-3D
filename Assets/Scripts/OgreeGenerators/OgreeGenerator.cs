@@ -34,25 +34,25 @@ public class OgreeGenerator : MonoBehaviour
 
         OgreeObject newItem;
         // Get dependencies from API
-        if (_obj.category != "domain" && !string.IsNullOrEmpty(_obj.domain)
+        if (_obj.category != Category.Domain && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.instance.allItems.Contains(_obj.domain))
             await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.DrawObject);
 
-        if (_obj.category == "building" && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if (_obj.category == Category.Building && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if (_obj.category == "room" && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if (_obj.category == Category.Room && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if ((_obj.category == "rack" || _obj.category == "device") && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if ((_obj.category == Category.Rack || _obj.category == Category.Device) && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
@@ -63,18 +63,18 @@ public class OgreeGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _obj.parentId);
         if (!parent)
         {
-            if (_obj.category == "device" && string.IsNullOrEmpty(_obj.attributes["template"]))
+            if (_obj.category == Category.Device && string.IsNullOrEmpty(_obj.attributes["template"]))
             {
                 GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
-            if (_obj.category == "corridor" || _obj.category == "group")
+            if (_obj.category == Category.Corridor || _obj.category == Category.Group)
             {
                 GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
 
-            if (_obj.category != "domain" && GameManager.instance.objectRoot)
+            if (_obj.category != Category.Domain && GameManager.instance.objectRoot)
             {
                 Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
                 while (prompt.state == EPromptStatus.wait)
@@ -96,28 +96,28 @@ public class OgreeGenerator : MonoBehaviour
         // Call Create function
         switch (_obj.category)
         {
-            case "domain":
+            case Category.Domain:
                 newItem = customerGenerator.CreateDomain(_obj);
                 break;
-            case "site":
+            case Category.Site:
                 newItem = customerGenerator.CreateSite(_obj, parent);
                 break;
-            case "building":
+            case Category.Building:
                 newItem = buildingGenerator.CreateBuilding(_obj, parent);
                 break;
-            case "room":
+            case Category.Room:
                 newItem = buildingGenerator.CreateRoom(_obj, parent);
                 break;
-            case "rack":
+            case Category.Rack:
                 newItem = objectGenerator.CreateRack(_obj, parent);
                 break;
-            case "device":
+            case Category.Device:
                 newItem = objectGenerator.CreateDevice(_obj, parent);
                 break;
-            case "corridor":
+            case Category.Corridor:
                 newItem = objectGenerator.CreateCorridor(_obj, parent);
                 break;
-            case "group":
+            case Category.Group:
                 newItem = objectGenerator.CreateGroup(_obj, parent);
                 break;
             default:
@@ -128,7 +128,7 @@ public class OgreeGenerator : MonoBehaviour
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != "domain" && !GameManager.instance.objectRoot
+            if (newItem.category != Category.Domain && !GameManager.instance.objectRoot
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;

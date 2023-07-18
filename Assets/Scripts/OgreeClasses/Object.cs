@@ -52,7 +52,7 @@ public class OObject : OgreeObject
 
         attributes = _src.attributes;
 
-        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == "room")
+        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == Category.Room)
             referent = this;
         else if (transform.parent?.GetComponent<OObject>().referent != null)
             referent = transform.parent.GetComponent<OObject>().referent;

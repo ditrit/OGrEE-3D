@@ -109,26 +109,26 @@ public class DisplayObjectData : MonoBehaviour
         usedLabels.Clear();
         switch (_labelPos)
         {
-            case "frontrear":
+            case LabelPos.FrontRear:
                 usedLabels.Add(labelFront);
                 usedLabels.Add(labelRear);
                 break;
-            case "front":
+            case LabelPos.Front:
                 usedLabels.Add(labelFront);
                 break;
-            case "rear":
+            case LabelPos.Rear:
                 usedLabels.Add(labelRear);
                 break;
-            case "right":
+            case LabelPos.Right:
                 usedLabels.Add(labelRight);
                 break;
-            case "left":
+            case LabelPos.Left:
                 usedLabels.Add(labelLeft);
                 break;
-            case "top":
+            case LabelPos.Top:
                 usedLabels.Add(labelTop);
                 break;
-            case "bottom":
+            case LabelPos.Bottom:
                 usedLabels.Add(labelBottom);
                 break;
         }
@@ -209,7 +209,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_face)
             {
                 OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj.category == "rack")
+                if (obj && obj.category == Category.Rack)
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";

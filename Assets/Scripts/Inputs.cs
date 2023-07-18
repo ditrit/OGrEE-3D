@@ -98,7 +98,7 @@ public class Inputs : MonoBehaviour
                     isRotatingObj = true;
                     mouseRef = Input.mousePosition;
                 }
-                else if (target.GetComponent<OgreeObject>().category == "rack")
+                else if (target.GetComponent<OgreeObject>().category == Category.Rack)
                 {
                     isDraggingObj = true;
                     screenSpace = Camera.main.WorldToScreenPoint(target.position);
@@ -309,9 +309,9 @@ public class Inputs : MonoBehaviour
     {
         Vector3 curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenSpace) + offsetPos;
-        if (target.GetComponent<OgreeObject>().category == "rack")
+        if (target.GetComponent<OgreeObject>().category == Category.Rack)
             target.position = new Vector3(target.position.x, curPosition.y, target.position.z);
-        else if (target.GetComponent<OgreeObject>().category == "device")
+        else if (target.GetComponent<OgreeObject>().category == Category.Device)
             target.position = curPosition;
     }
 
@@ -324,12 +324,12 @@ public class Inputs : MonoBehaviour
 
         Vector3 mouseOffset = (Input.mousePosition - mouseRef);
         Vector3 rotation = Vector3.zero;
-        if (target.GetComponent<OgreeObject>().category == "rack")
+        if (target.GetComponent<OgreeObject>().category == Category.Rack)
         {
             rotation.y = -(mouseOffset.x + mouseOffset.y) * sensitivity;
             target.Rotate(rotation);
         }
-        else if (target.GetComponent<OgreeObject>().category == "device")
+        else if (target.GetComponent<OgreeObject>().category == Category.Device)
         {
             rotation.y = -(mouseOffset.x) * sensitivity;
             rotation.x = -(mouseOffset.y) * sensitivity;

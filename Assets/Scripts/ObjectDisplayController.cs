@@ -471,11 +471,11 @@ public class ObjectDisplayController : MonoBehaviour
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
-        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != "corridor")
+        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
         {
-            if (oobject && oobject.category == "corridor")
+            if (oobject && oobject.category == Category.Corridor)
                 SetMaterial(GameManager.instance.alphaMat);
             else
                 SetMaterial(GameManager.instance.defaultMat);

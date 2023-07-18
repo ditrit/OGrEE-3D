@@ -74,14 +74,14 @@ public class CliParser
         }
         switch (command["type"])
         {
-            case "login":
+            case CommandType.Login:
                 await Login(command["data"].ToString());
                 break;
-            case "load template":
+            case CommandType.LoadTemplate:
                 STemplate data = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
                 await rfJson.CreateObjectTemplate(data);
                 break;
-            case "select":
+            case CommandType.Select:
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
                 if (objsToSelect.Count == 0)
                     await GameManager.instance.SetCurrentItem(null);
@@ -97,7 +97,7 @@ public class CliParser
                     }
                 }
                 break;
-            case "delete":
+            case CommandType.Delete:
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
@@ -112,7 +112,7 @@ public class CliParser
                         GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
                 }
                 break;
-            case "focus":
+            case CommandType.Focus:
                 GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
                 if (objToFocus)
                 {
@@ -126,19 +126,19 @@ public class CliParser
                         await GameManager.instance.UnfocusItem();
                 }
                 break;
-            case "create":
+            case CommandType.Create:
                 await CreateObjectFromData(command["data"].ToString());
                 break;
-            case "modify":
+            case CommandType.Modify:
                 ModifyObject(command["data"].ToString());
                 break;
-            case "interact":
+            case CommandType.Interact:
                 InteractWithObject(command["data"].ToString());
                 break;
-            case "ui":
+            case CommandType.UI:
                 await ManipulateUi(command["data"].ToString());
                 break;
-            case "camera":
+            case CommandType.Camera:
                 ManipulateCamera(command["data"].ToString());
                 break;
             default:
@@ -222,12 +222,12 @@ public class CliParser
             await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool domainColorChanged = (newData.category == "domain" && obj.attributes["color"] != newData.attributes["color"]);
+        bool domainColorChanged = (newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"]);
 
         // Case color for racks & devices
         if (obj is OObject item)
         {
-            if (newData.category != "corridor")
+            if (newData.category != Category.Corridor)
             {
                 if (newData.attributes.ContainsKey("color")
                     && (!item.attributes.ContainsKey("color")
@@ -312,13 +312,13 @@ public class CliParser
             case Room room:
                 switch (command.param)
                 {
-                    case "tilesName":
+                    case CommandParameter.TilesName:
                         room.ToggleTilesName(command.value == "true");
                         break;
-                    case "tilesColor":
+                    case CommandParameter.TilesColor:
                         room.ToggleTilesColor(command.value == "true");
                         break;
-                    case "localCS":
+                    case CommandParameter.LocalCS:
                         room.ToggleCS(command.value == "true");
                         break;
                     default:
@@ -329,7 +329,7 @@ public class CliParser
             case Building building:
                 switch (command.param)
                 {
-                    case "localCS":
+                    case CommandParameter.LocalCS:
                         building.ToggleCS(command.value == "true");
                         break;
                     default:
@@ -340,25 +340,25 @@ public class CliParser
             case Rack rack:
                 switch (command.param)
                 {
-                    case "label":
+                    case CommandParameter.Label:
                         rack.GetComponent<DisplayObjectData>().SetLabel(command.value);
                         break;
-                    case "labelFont":
+                    case CommandParameter.LabelFont:
                         rack.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
-                    case "labelBackground":
+                    case CommandParameter.LabelBackground:
                         rack.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
-                    case "alpha":
+                    case CommandParameter.Alpha:
                         rack.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
-                    case "slots":
+                    case CommandParameter.Slots:
                         rack.ToggleSlots(command.value == "true");
                         break;
-                    case "localCS":
+                    case CommandParameter.LocalCS:
                         rack.ToggleCS(command.value == "true");
                         break;
-                    case "U":
+                    case CommandParameter.U:
                         UHelpersManager.instance.ToggleU(rack.gameObject, command.value == "true");
                         break;
                     default:
@@ -366,25 +366,25 @@ public class CliParser
                         break;
                 }
                 break;
-            case OObject device when device.category == "device":
+            case OObject device when device.category == Category.Device:
                 switch (command.param)
                 {
-                    case "label":
+                    case CommandParameter.Label:
                         device.GetComponent<DisplayObjectData>().SetLabel(command.value);
                         break;
-                    case "labelFont":
+                    case CommandParameter.LabelFont:
                         device.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
-                    case "labelBackground":
+                    case CommandParameter.LabelBackground:
                         device.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
-                    case "alpha":
+                    case CommandParameter.Alpha:
                         device.GetComponent<ObjectDisplayController>().ToggleAlpha(command.value == "true");
                         break;
-                    case "slots":
+                    case CommandParameter.Slots:
                         device.ToggleSlots(command.value == "true");
                         break;
-                    case "localCS":
+                    case CommandParameter.LocalCS:
                         device.ToggleCS(command.value == "true");
                         break;
                     default:
@@ -395,16 +395,16 @@ public class CliParser
             case Group group:
                 switch (command.param)
                 {
-                    case "label":
+                    case CommandParameter.Label:
                         group.GetComponent<DisplayObjectData>().SetLabel(command.value);
                         break;
-                    case "labelFont":
+                    case CommandParameter.LabelFont:
                         group.GetComponent<DisplayObjectData>().SetLabelFont(command.value);
                         break;
-                    case "labelBackground":
+                    case CommandParameter.LabelBackground:
                         group.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
-                    case "content":
+                    case CommandParameter.Content:
                         group.ToggleContent(command.value == "true");
                         break;
                     default:
@@ -427,24 +427,24 @@ public class CliParser
         SUiManip manip = JsonConvert.DeserializeObject<SUiManip>(_input);
         switch (manip.command)
         {
-            case "delay":
+            case Command.Delay:
                 float time = Utils.ParseDecFrac(manip.data);
                 UiManager.instance.UpdateTimerValue(time);
                 break;
-            case "infos":
+            case Command.Infos:
                 UiManager.instance.MovePanel("infos", manip.data == "true");
                 break;
-            case "debug":
+            case Command.Debug:
                 UiManager.instance.MovePanel("debug", manip.data == "true");
                 break;
-            case "highlight":
+            case Command.Highlight:
                 GameObject obj = Utils.GetObjectById(manip.data);
                 if (obj)
                     EventManager.instance.Raise(new HighlightEvent { obj = obj });
                 else
                     GameManager.instance.AppendLogLine("Error on highlight", ELogTarget.both, ELogtype.errorCli);
                 break;
-            case "clearcache":
+            case Command.ClearCache:
                 if (GameManager.instance.objectRoot)
                 {
                     Prompt prompt = UiManager.instance.GeneratePrompt("Clearing cache will erase current scene", "Continue", "Cancel");
@@ -480,13 +480,13 @@ public class CliParser
         CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
         switch (manip.command)
         {
-            case "move":
+            case Command.Move:
                 cc.MoveCamera(refinedPos, manip.rotation);
                 break;
-            case "translate":
+            case Command.Translate:
                 cc.TranslateCamera(refinedPos, manip.rotation);
                 break;
-            case "wait":
+            case Command.Wait:
                 cc.WaitCamera(manip.rotation.y);
                 break;
             default:

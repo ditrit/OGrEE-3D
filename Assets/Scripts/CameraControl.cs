@@ -330,12 +330,12 @@ public class CameraControl : MonoBehaviour
 
         transform.position = _target.position;
         transform.eulerAngles = _target.eulerAngles;
-        if (obj.category == "rack")
+        if (obj.category == Category.Rack)
         {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
             transform.eulerAngles += new Vector3(0, 180, 0);
         }
-        else if (obj.category == "device")
+        else if (obj.category == Category.Device)
         {
             offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
             transform.eulerAngles += new Vector3(0, 180, 0);

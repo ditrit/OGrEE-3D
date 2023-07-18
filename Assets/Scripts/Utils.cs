@@ -194,7 +194,7 @@ public static class Utils
     ///<param name="_leafIds">The list of leaf IDs to complete</param>
     public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src, List<string> _leafIds)
     {
-        if (_src.category == "group")
+        if (_src.category == Category.Group)
             _logicalList.Add(_src);
         else
             _physicalList.Add(_src);

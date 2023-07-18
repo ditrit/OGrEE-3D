@@ -174,7 +174,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != "group" && selectOgree.category != "corridor" && selectOgree.currentLod == 0)
+                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren("1");
             }
             else // deselection => unload children if level of details is <=1
@@ -240,7 +240,7 @@ public class GameManager : MonoBehaviour
             {
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != "group" && selectOgree.category != "corridor" && selectOgree.currentLod == 0)
+                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren("1");
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
@@ -259,7 +259,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == "corridor"))
+        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == Category.Corridor))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
@@ -378,7 +378,7 @@ public class GameManager : MonoBehaviour
         foreach (DictionaryEntry de in allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>().category == "domain" && go.name != _exception)
+            if (go.GetComponent<OgreeObject>().category == Category.Domain && go.name != _exception)
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
@@ -420,18 +420,18 @@ public class GameManager : MonoBehaviour
             GameObject toDel;
             switch (_category)
             {
-                case "building":
+                case Category.Building:
                     buildingTemplates.Remove(_template);
                     break;
-                case "room":
+                case Category.Room:
                     roomTemplates.Remove(_template);
                     break;
-                case "rack":
+                case Category.Rack:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
                     await toDel.AwaitDestroy();
                     break;
-                case "device":
+                case Category.Device:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
                     await toDel.AwaitDestroy();
