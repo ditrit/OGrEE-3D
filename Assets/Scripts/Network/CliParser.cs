@@ -432,10 +432,8 @@ public class CliParser
                 UiManager.instance.UpdateTimerValue(time);
                 break;
             case Command.Infos:
-                UiManager.instance.MovePanel("infos", manip.data == "true");
-                break;
             case Command.Debug:
-                UiManager.instance.MovePanel("debug", manip.data == "true");
+                UiManager.instance.MovePanel(manip.command, manip.data == "true");
                 break;
             case Command.Highlight:
                 GameObject obj = Utils.GetObjectById(manip.data);
