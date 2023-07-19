@@ -10,27 +10,9 @@ using Tomlyn.Model;
 
 public class ConfigLoader
 {
-    private struct SConfig
-    {
-        public bool verbose;
-        public bool fullscreen;
-        public string cachePath;
-        public int cacheLimitMo;
-        public int cliPort;
-        public Dictionary<string, string> textures;
-        public Dictionary<string, string> colors;
-        public float alphaOnInteract;
-        public int temperatureMinC;
-        public int temperatureMaxC;
-        public int temperatureMinF;
-        public int temperatureMaxF;
-        public List<List<int>> customTemperatureGradient;
-        public bool useCustomGradient;
-    }
 
     private SConfig config;
     private bool verbose = false;
-    private readonly string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file & look for command line overrides.
@@ -38,8 +20,7 @@ public class ConfigLoader
     public void LoadConfig()
     {
         // Load default config file
-        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
-        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
+        config = DefaultValues.Config.Clone();
 
         // Load toml config from given path
         string configPath = GetArg(LaunchArgs.ConfigPathShort);
@@ -109,10 +90,10 @@ public class ConfigLoader
         try
         {
 #if UNITY_EDITOR
-            StreamReader loadedConfig = File.OpenText("Assets/Resources/config.toml");
+            StreamReader loadedConfig = File.OpenText(DefaultValues.DefaultConfigPath);
 #else
             if (string.IsNullOrEmpty(_path))
-                _path = "./config.toml";
+                _path = DefaultValues.DefaultConfigPath;
             StreamReader loadedConfig = File.OpenText(_path);
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
@@ -223,7 +204,7 @@ public class ConfigLoader
     {
         if (!string.IsNullOrEmpty(config.cachePath) && !config.cachePath.EndsWith("/"))
             config.cachePath += "/";
-        string fullPath = config.cachePath + cacheDirName;
+        string fullPath = config.cachePath + DefaultValues.CacheDirName;
         try
         {
             if (!Directory.Exists(fullPath))
@@ -260,7 +241,7 @@ public class ConfigLoader
     ///<returns>The path of the cache directory</returns>
     public string GetCacheDir()
     {
-        return config.cachePath + cacheDirName;
+        return config.cachePath + DefaultValues.CacheDirName;
     }
 
     ///<summary>
@@ -319,9 +300,9 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// Get the minimum and the maximum of a temperature unit
+    /// Get the minimum and the maximum of a temperature unit defined in <see cref="TemperatureUnits"/>
     ///</summary>
-    ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
+    ///<param name="_unit">The temperature unit for the extremum, must be in <see cref="TemperatureUnits"/></param>
     ///<returns>The minimum and the maximum for the temperature unit</returns>
     public (int min, int max) GetTemperatureLimit(string _unit)
     {
@@ -331,9 +312,9 @@ public class ConfigLoader
             return (0, 0);
         }
         _unit = _unit.ToLower();
-        if (_unit == "°c")
+        if (_unit ==TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
-        if (_unit == "°f")
+        if (_unit == TemperatureUnits.Fahrenheit)
             return (config.temperatureMinF, config.temperatureMaxF);
         GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", ELogTarget.logger, ELogtype.error);
         return (0, 0);

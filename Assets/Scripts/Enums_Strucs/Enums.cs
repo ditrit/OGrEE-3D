@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 public enum ELogtype
 {
@@ -150,10 +151,99 @@ public class LaunchArgs
     public const string VerboseLong = "--verbose";
     public const string FullScreenShort = "-fs";
     public const string FullScreenLong = "--fullscreen";
-    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort,ConfigPathLong,VerboseShort,VerboseLong,FullScreenShort,FullScreenLong });
+    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort, ConfigPathLong, VerboseShort, VerboseLong, FullScreenShort, FullScreenLong });
+}
+public struct SConfig
+{
+    public bool verbose;
+    public bool fullscreen;
+    public string cachePath;
+    public int cacheLimitMo;
+    public int cliPort;
+    public float alphaOnInteract;
+    public Dictionary<string, string> textures;
+    public Dictionary<string, string> colors;
+    public int temperatureMinC;
+    public int temperatureMaxC;
+    public int temperatureMinF;
+    public int temperatureMaxF;
+    public List<List<int>> customTemperatureGradient;
+    public bool useCustomGradient;
+    public float doubleClickTimeLimit;
+    public float moveSpeed;
+    public float rotationSpeed;
+    public float humanHeight;
+
+    /// <summary>
+    /// Deep copy
+    /// </summary>
+    /// <returns>A deep copy of this struct</returns>
+    public SConfig Clone()
+    {
+        SConfig clone = this;
+        clone.textures = new Dictionary<string, string>();
+        foreach (KeyValuePair<string, string> keyValuePair in textures)
+            clone.textures.Add(keyValuePair.Key, keyValuePair.Value);
+        clone.colors = new Dictionary<string, string>();
+        foreach (KeyValuePair<string, string> keyValuePair in colors)
+            clone.colors.Add(keyValuePair.Key, keyValuePair.Value);
+        clone.customTemperatureGradient = new List<List<int>>();
+        foreach (List<int> color in customTemperatureGradient)
+            clone.customTemperatureGradient.Add(color.GetRange(0, color.Count));
+        return clone;
+    }
 }
 
 public class DefaultValues
 {
+    public const string CacheDirName = ".ogreeCache";
+#if UNITY_EDITOR
+    public const string DefaultConfigPath = "Assets/Resources/config.toml";
+#else
+    public const string DefaultConfigPath = "./config.toml";
+#endif
+    public static readonly SConfig Config = new SConfig
+    {
+        verbose = true,
+        fullscreen = false,
+        cachePath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/tmp/": "C:/",
+        cacheLimitMo = 100,
+        cliPort = 5500,
+        alphaOnInteract = 50,
+        textures = new Dictionary<string, string>()
+        {
+            { "perf22", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png" },
+            { "perf29", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png" }
+        },
+        colors = new Dictionary<string, string>()
+        {
+            { "selection", "#21FF00" },
+            { "edit", "#C900FF" },
+            { "focus", "#FF9F00" },
+            { "highlight", "#00D5FF" },
+            { "scatterPlot", "#2C4CBE" },
+            { "usableZone", "#DBEDF2" },
+            { "reservedZone", "#F2F2F2" },
+            { "technicalZone", "#EBF2DE" }
+        },
+        temperatureMinC = 0,
+        temperatureMaxC = 100,
+        temperatureMinF = 32,
+        temperatureMaxF = 212,
+        customTemperatureGradient = new List<List<int>>() {
+            new List<int>() { 0,0,255,0 },
+            new List<int>() { 255,0,0,100 },
+            new List<int>() { 255,255,0,50 }
+        },
+        doubleClickTimeLimit = 0.25f,
+        moveSpeed = 15,
+        rotationSpeed = 50,
+        humanHeight = 1.62f
+    };
+}
 
+public class TemperatureUnits
+{
+    public const string Celsius = "°C";
+    public const string Fahrenheit = "°F";
 }
