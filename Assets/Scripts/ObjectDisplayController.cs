@@ -77,7 +77,13 @@ public class ObjectDisplayController : MonoBehaviour
             EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOutBasic);
 
             if (group)
+            {
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedGroup);
+                ObjectDisplayController customRendererParent = transform.parent?.GetComponent<ObjectDisplayController>();
+                OgreeObject ogreeObjectParent = transform.parent?.GetComponent<OgreeObject>();
+                scatterPlotOfOneParent = customRendererParent && customRendererParent.scatterPlotOfOneParent || ogreeObjectParent && ogreeObjectParent.scatterPlot;
+                Display(!scatterPlotOfOneParent, !scatterPlotOfOneParent, !scatterPlotOfOneParent);
+            }
             else
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedBasic);
 
@@ -273,7 +279,7 @@ public class ObjectDisplayController : MonoBehaviour
 
         if (selection.Contains(gameObject))
             return;
-        if (!GetComponent<Group>().isDisplayed)
+        if (!group.isDisplayed || scatterPlotOfOneParent)
         {
             Display(false, false, false);
             return;
