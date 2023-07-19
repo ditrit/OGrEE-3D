@@ -249,7 +249,7 @@ public class UHelpersManager : MonoBehaviour
         UFrontRight.localEulerAngles = Vector3.zero;
 
         float scale = GameManager.instance.uSize;
-        if (_rack.attributes["heightUnit"] == "OU")
+        if (_rack.attributes["heightUnit"] == LengthUnit.OU)
             scale = GameManager.instance.ouSize;
 
         //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
@@ -273,7 +273,7 @@ public class UHelpersManager : MonoBehaviour
             BuildU(minY, maxY, scale, UFrontLeft, cornerFrontLeft, Color.blue);
             BuildU(minY, maxY, scale, UFrontRight, cornerFrontRight, Color.green);
         }
-        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == "U" || _rack.attributes["heightUnit"] == "OU")
+        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == LengthUnit.U || _rack.attributes["heightUnit"] == LengthUnit.OU)
         {
             int Unumber;
             if (_rack.attributes.ContainsKey("sizeWDHu"))

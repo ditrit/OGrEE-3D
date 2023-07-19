@@ -152,3 +152,8 @@ public class LaunchArgs
     public const string FullScreenLong = "--fullscreen";
     public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort,ConfigPathLong,VerboseShort,VerboseLong,FullScreenShort,FullScreenLong });
 }
+
+public class DefaultValues
+{
+
+}

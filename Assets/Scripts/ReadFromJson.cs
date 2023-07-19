@@ -61,11 +61,11 @@ public class ReadFromJson
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
-            obj.attributes["posXYUnit"] = "tile";
+            obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
-            obj.attributes["sizeUnit"] = "cm";
+            obj.attributes["sizeUnit"] = LengthUnit.CentiMeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
-            obj.attributes["heightUnit"] = "cm";
+            obj.attributes["heightUnit"] = LengthUnit.CentiMeter;
             obj.attributes["orientation"] = Orientation.Front;
         }
         else if (obj.category == Category.Device)
@@ -77,9 +77,9 @@ public class ReadFromJson
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
-            obj.attributes["sizeUnit"] = "mm";
+            obj.attributes["sizeUnit"] = LengthUnit.MilliMeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
-            obj.attributes["heightUnit"] = "mm";
+            obj.attributes["heightUnit"] = LengthUnit.MilliMeter;
             obj.attributes["slot"] = "";
         }
         obj.attributes["template"] = "";
@@ -148,7 +148,7 @@ public class ReadFromJson
                         height++;
                 }
                 newObject.attributes["height"] = height.ToString();
-                newObject.attributes["heightUnit"] = "U";
+                newObject.attributes["heightUnit"] = LengthUnit.U;
             }
         }
 
@@ -177,9 +177,9 @@ public class ReadFromJson
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
         Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
-        if (_parent.attributes["sizeUnit"] == "mm")
+        if (_parent.attributes["sizeUnit"] == LengthUnit.MilliMeter)
             parentSize /= 1000;
-        else if (_parent.attributes["sizeUnit"] == "cm")
+        else if (_parent.attributes["sizeUnit"] == LengthUnit.CentiMeter)
             parentSize /= 100;
 
         go.name = _data.location;

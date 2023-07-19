@@ -69,7 +69,7 @@ public class GridCell : MonoBehaviour
         grid.name = "GridForULocation";
 
         Vector3 newPosition = grid.transform.position;
-        if (GetComponent<Rack>().attributes["heightUnit"] == "OU")
+        if (GetComponent<Rack>().attributes["heightUnit"] == LengthUnit.OU)
             newPosition.y = _height - GameManager.instance.ouSize / 2;
         else
             newPosition.y = _height - GameManager.instance.uSize / 2;

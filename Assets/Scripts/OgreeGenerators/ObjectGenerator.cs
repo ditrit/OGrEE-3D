@@ -20,9 +20,9 @@ public class ObjectGenerator
 
         Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
         float height = Utils.ParseDecFrac(_rk.attributes["height"]);
-        if (_rk.attributes["heightUnit"] == "U")
+        if (_rk.attributes["heightUnit"] == LengthUnit.U)
             height *= GameManager.instance.uSize;
-        else if (_rk.attributes["heightUnit"] == "cm")
+        else if (_rk.attributes["heightUnit"] == LengthUnit.CentiMeter)
             height /= 100;
         Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
 
@@ -683,7 +683,7 @@ public class ObjectGenerator
             Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
             newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
             float uXSize = GameManager.instance.ouSize;
-            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == "U")
+            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
                 uXSize = GameManager.instance.uSize;
             newSensor.transform.localPosition += new Vector3(boxSize.x + uXSize, -boxSize.y, 0) / 2;
         }
@@ -790,7 +790,7 @@ public class ObjectGenerator
         }
 
         Transform floor = _obj.parent.Find("Floor");
-        if (!parentRoom.isSquare && _apiObj.category == Category.Rack && parentRoom.attributes["floorUnit"] == "t" && floor)
+        if (!parentRoom.isSquare && _apiObj.category == Category.Rack && parentRoom.attributes["floorUnit"] == LengthUnit.Tile && floor)
         {
             int trunkedX = (int)pos.x;
             int trunkedY = (int)pos.y;
@@ -824,8 +824,8 @@ public class ObjectGenerator
             return GameManager.instance.tileSize;
         return _r.attributes["floorUnit"] switch
         {
-            "m" => 1.0f,
-            "f" => 3.28084f,
+            LengthUnit.Meter=> 1.0f,
+            LengthUnit.Feet => 3.28084f,
             _ => GameManager.instance.tileSize,
         };
     }
