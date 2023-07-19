@@ -812,7 +812,7 @@ public class UiManager : MonoBehaviour
         DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
         {
-            if (file.Name != "log.txt")
+            if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
         }
         GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);

@@ -311,7 +311,6 @@ public class ConfigLoader
             GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
-        _unit = _unit.ToLower();
         if (_unit ==TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == TemperatureUnits.Fahrenheit)
