@@ -77,7 +77,13 @@ public class ObjectDisplayController : MonoBehaviour
             EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOutBasic);
 
             if (group)
+            {
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedGroup);
+                ObjectDisplayController customRendererParent = transform.parent?.GetComponent<ObjectDisplayController>();
+                OgreeObject ogreeObjectParent = transform.parent?.GetComponent<OgreeObject>();
+                scatterPlotOfOneParent = customRendererParent && customRendererParent.scatterPlotOfOneParent || ogreeObjectParent && ogreeObjectParent.scatterPlot;
+                Display(!scatterPlotOfOneParent, !scatterPlotOfOneParent, !scatterPlotOfOneParent);
+            }
             else
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedBasic);
 
@@ -273,7 +279,7 @@ public class ObjectDisplayController : MonoBehaviour
 
         if (selection.Contains(gameObject))
             return;
-        if (!GetComponent<Group>().isDisplayed)
+        if (!group.isDisplayed || scatterPlotOfOneParent)
         {
             Display(false, false, false);
             return;
@@ -471,11 +477,11 @@ public class ObjectDisplayController : MonoBehaviour
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
-        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != "corridor")
+        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
         {
-            if (oobject && oobject.category == "corridor")
+            if (oobject && oobject.category == Category.Corridor)
                 SetMaterial(GameManager.instance.alphaMat);
             else
                 SetMaterial(GameManager.instance.defaultMat);

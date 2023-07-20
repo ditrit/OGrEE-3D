@@ -65,3 +65,4 @@ crashlytics-build.properties
 .vsconfig
 Assets/Plugins/AssetUsageDetector/
 Assets/Plugins/AssetUsageDetector.meta
+.ogreeCache

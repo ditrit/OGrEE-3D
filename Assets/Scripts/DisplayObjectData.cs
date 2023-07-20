@@ -59,17 +59,17 @@ public class DisplayObjectData : MonoBehaviour
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(oObj.attributes["size"]);
-            if (oObj.attributes["sizeUnit"] == "mm")
+            if (oObj.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
-            else if (oObj.attributes["sizeUnit"] == "cm")
+            else if (oObj.attributes["sizeUnit"] == LengthUnit.Centimeter)
                 size /= 100;
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
-            if (oObj.attributes["heightUnit"] == "U")
-                height *= GameManager.instance.uSize;
-            else if (oObj.attributes["heightUnit"] == "mm")
+            if (oObj.attributes["heightUnit"] == LengthUnit.U)
+                height *= UnitValue.U;
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Millimeter)
                 height /= 1000;
-            else if (oObj.attributes["heightUnit"] == "cm")
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
             boxSize = new Vector3(size.x, height, size.y);
         }
@@ -109,26 +109,26 @@ public class DisplayObjectData : MonoBehaviour
         usedLabels.Clear();
         switch (_labelPos)
         {
-            case "frontrear":
+            case LabelPos.FrontRear:
                 usedLabels.Add(labelFront);
                 usedLabels.Add(labelRear);
                 break;
-            case "front":
+            case LabelPos.Front:
                 usedLabels.Add(labelFront);
                 break;
-            case "rear":
+            case LabelPos.Rear:
                 usedLabels.Add(labelRear);
                 break;
-            case "right":
+            case LabelPos.Right:
                 usedLabels.Add(labelRight);
                 break;
-            case "left":
+            case LabelPos.Left:
                 usedLabels.Add(labelLeft);
                 break;
-            case "top":
+            case LabelPos.Top:
                 usedLabels.Add(labelTop);
                 break;
-            case "bottom":
+            case LabelPos.Bottom:
                 usedLabels.Add(labelBottom);
                 break;
         }
@@ -209,7 +209,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_face)
             {
                 OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj.category == "rack")
+                if (obj && obj.category == Category.Rack)
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";
