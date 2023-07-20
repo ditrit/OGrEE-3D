@@ -136,8 +136,8 @@ public class LengthUnit
 {
     public const string Tile = "t";
     public const string U = "U";
-    public const string MilliMeter = "mm";
-    public const string CentiMeter = "cm";
+    public const string Millimeter = "mm";
+    public const string Centimeter = "cm";
     public const string Meter = "m";
     public const string Feet = "f";
     public const string OU = "OU";
@@ -206,7 +206,7 @@ public class DefaultValues
     {
         verbose = true,
         fullscreen = false,
-        cachePath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/tmp/": "C:/",
+        cachePath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/tmp/" : "C:/",
         cacheLimitMo = 100,
         cliPort = 5500,
         alphaOnInteract = 50,

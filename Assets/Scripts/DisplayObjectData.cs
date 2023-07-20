@@ -59,17 +59,17 @@ public class DisplayObjectData : MonoBehaviour
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(oObj.attributes["size"]);
-            if (oObj.attributes["sizeUnit"] == LengthUnit.MilliMeter)
+            if (oObj.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
-            else if (oObj.attributes["sizeUnit"] == LengthUnit.CentiMeter)
+            else if (oObj.attributes["sizeUnit"] == LengthUnit.Centimeter)
                 size /= 100;
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == LengthUnit.U)
                 height *= GameManager.instance.uSize;
-            else if (oObj.attributes["heightUnit"] == LengthUnit.MilliMeter)
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Millimeter)
                 height /= 1000;
-            else if (oObj.attributes["heightUnit"] == LengthUnit.CentiMeter)
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
             boxSize = new Vector3(size.x, height, size.y);
         }

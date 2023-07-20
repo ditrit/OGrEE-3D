@@ -63,9 +63,9 @@ public class ReadFromJson
             obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
             obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
-            obj.attributes["sizeUnit"] = LengthUnit.CentiMeter;
+            obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
-            obj.attributes["heightUnit"] = LengthUnit.CentiMeter;
+            obj.attributes["heightUnit"] = LengthUnit.Centimeter;
             obj.attributes["orientation"] = Orientation.Front;
         }
         else if (obj.category == Category.Device)
@@ -77,9 +77,9 @@ public class ReadFromJson
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
-            obj.attributes["sizeUnit"] = LengthUnit.MilliMeter;
+            obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
-            obj.attributes["heightUnit"] = LengthUnit.MilliMeter;
+            obj.attributes["heightUnit"] = LengthUnit.Millimeter;
             obj.attributes["slot"] = "";
         }
         obj.attributes["template"] = "";
@@ -177,9 +177,9 @@ public class ReadFromJson
 
         Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
         Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
-        if (_parent.attributes["sizeUnit"] == LengthUnit.MilliMeter)
+        if (_parent.attributes["sizeUnit"] == LengthUnit.Millimeter)
             parentSize /= 1000;
-        else if (_parent.attributes["sizeUnit"] == LengthUnit.CentiMeter)
+        else if (_parent.attributes["sizeUnit"] == LengthUnit.Centimeter)
             parentSize /= 100;
 
         go.name = _data.location;

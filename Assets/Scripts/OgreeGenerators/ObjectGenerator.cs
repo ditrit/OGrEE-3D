@@ -22,7 +22,7 @@ public class ObjectGenerator
         float height = Utils.ParseDecFrac(_rk.attributes["height"]);
         if (_rk.attributes["heightUnit"] == LengthUnit.U)
             height *= GameManager.instance.uSize;
-        else if (_rk.attributes["heightUnit"] == LengthUnit.CentiMeter)
+        else if (_rk.attributes["heightUnit"] == LengthUnit.Centimeter)
             height /= 100;
         Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
 
