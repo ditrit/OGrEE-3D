@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 public enum ELogtype
 {
@@ -213,7 +214,7 @@ public class DefaultValues
     {
         verbose = true,
         fullscreen = false,
-        cachePath = RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/tmp/" : "C:/",
+        cachePath = $"{Application.dataPath}/",
         cacheLimitMo = 100,
         cliPort = 5500,
         alphaOnInteract = 50,

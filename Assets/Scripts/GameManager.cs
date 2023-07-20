@@ -552,7 +552,7 @@ public class GameManager : MonoBehaviour
         }
         catch (Exception _e)
         {
-            Debug.LogError(_e.Message);
+            Debug.LogError(_e);
         }
         finally
         {
