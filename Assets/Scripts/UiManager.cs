@@ -86,6 +86,8 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
+            menuTarget.GetComponent<OgreeObject>()
+            &&
             !GameManager.instance.editMode
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
@@ -306,9 +308,9 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.transform.Find("localCS")
+            menuTarget.GetComponent<OgreeObject>()
             &&
-            menuTarget.transform.Find("localCS").gameObject.activeSelf
+            menuTarget.GetComponent<OgreeObject>().localCS
         };
         toggleLocalCSBtn.Check();
 
