@@ -103,48 +103,4 @@ public class Building : OgreeObject
         if (roof)
             roof.GetComponent<Renderer>().material.color = color;
     }
-
-
-    ///<summary>
-    /// Display or hide the local coordinate system
-    ///</summary>
-    public void ToggleCS()
-    {
-        string csName = "localCS";
-        Transform localCS = transform.Find(csName);
-        if (localCS)
-            localCS.gameObject.CleanDestroy($"Hide local Coordinate System for {name}");
-        else
-            BuildLocalCS(csName);
-    }
-
-    ///<summary>
-    /// Display or hide the local coordinate system
-    ///</summary>
-    ///<param name="_value">true of false value</param>
-    public void ToggleCS(bool _value)
-    {
-        string csName = "localCS";
-        Transform localCS = transform.Find(csName);
-        if (localCS && !_value)
-            localCS.gameObject.CleanDestroy($"Hide local Coordinate System for {name}");
-        else if (!localCS && _value)
-            BuildLocalCS(csName);
-    }
-
-    ///<summary>
-    /// Create a local Coordinate System for this object.
-    ///</summary>
-    ///<param name="_name">The name of the local CS</param>
-    private void BuildLocalCS(string _name)
-    {
-        GameObject localCS = Instantiate(GameManager.instance.coordinateSystemModel);
-        localCS.name = _name;
-        localCS.transform.parent = transform;
-        localCS.transform.localScale = 7 * Vector3.one;
-        localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = Vector3.zero;
-        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
-    }
-
 }
