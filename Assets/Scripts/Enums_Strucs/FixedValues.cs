@@ -143,6 +143,13 @@ public class LengthUnit
     public const string OU = "OU";
 }
 
+public class UnitValue
+{
+    public const float U = 0.04445f;
+    public const float OU = 0.048f;
+    public const float Tile = 0.6f;
+}
+
 public class LaunchArgs
 {
     public const string ConfigPathShort = "-c";

@@ -66,7 +66,7 @@ public class DisplayObjectData : MonoBehaviour
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
             if (oObj.attributes["heightUnit"] == LengthUnit.U)
-                height *= GameManager.instance.uSize;
+                height *= UnitValue.U;
             else if (oObj.attributes["heightUnit"] == LengthUnit.Millimeter)
                 height /= 1000;
             else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)

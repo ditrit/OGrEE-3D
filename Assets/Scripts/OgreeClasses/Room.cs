@@ -118,7 +118,7 @@ public class Room : Building
         GameObject root = new GameObject("tilesNameRoot");
         root.transform.parent = transform;
         root.transform.localPosition = usableZone.localPosition;
-        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.003f, GameManager.instance.tileSize) / 2;
+        root.transform.localPosition += new Vector3(UnitValue.Tile, 0.003f, UnitValue.Tile) / 2;
         root.transform.localEulerAngles = Vector3.zero;
         LoopThroughTiles("name", root.transform);
         GameManager.instance.AppendLogLine($"Display tiles name for {name}", ELogTarget.logger, ELogtype.success);
@@ -232,7 +232,7 @@ public class Room : Building
         GameObject root = new GameObject("tilesColorRoot");
         root.transform.parent = transform;
         root.transform.localPosition = usableZone.localPosition;
-        root.transform.localPosition += new Vector3(GameManager.instance.tileSize, 0.002f, GameManager.instance.tileSize) / 2;
+        root.transform.localPosition += new Vector3(UnitValue.Tile, 0.002f, UnitValue.Tile) / 2;
         root.transform.localEulerAngles = Vector3.zero;
         LoopThroughTiles("color", root.transform);
         GameManager.instance.AppendLogLine($"Display tiles color for {name}", ELogTarget.logger, ELogtype.success);
@@ -262,7 +262,7 @@ public class Room : Building
                 orient = new Vector2(-1, 1);
                 offsetX = (int)-reserved.right;
                 offsetY = (int)-reserved.bottom;
-                _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, 0);
+                _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, 0);
                 break;
 
             case AxisOrientation.YMinus:
@@ -270,7 +270,7 @@ public class Room : Building
                 orient = new Vector2(1, -1);
                 offsetX = (int)-reserved.left;
                 offsetY = (int)-reserved.top;
-                _root.transform.localPosition -= new Vector3(0, 0, GameManager.instance.tileSize);
+                _root.transform.localPosition -= new Vector3(0, 0, UnitValue.Tile);
                 break;
 
             case AxisOrientation.BothMinus:
@@ -278,13 +278,13 @@ public class Room : Building
                 orient = new Vector2(-1, -1);
                 offsetX = (int)-reserved.right;
                 offsetY = (int)-reserved.top;
-                _root.transform.localPosition -= new Vector3(GameManager.instance.tileSize, 0, GameManager.instance.tileSize);
+                _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, UnitValue.Tile);
                 break;
         }
 
         Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
-        float x = size.x / GameManager.instance.tileSize - technical.right - technical.left + offsetX;
-        float y = size.y / GameManager.instance.tileSize - technical.top - technical.bottom + offsetY;
+        float x = size.x / UnitValue.Tile - technical.right - technical.left + offsetX;
+        float y = size.y / UnitValue.Tile - technical.top - technical.bottom + offsetY;
         Vector3 origin = usableZone.localScale / 0.2f;
         _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
@@ -292,7 +292,7 @@ public class Room : Building
         {
             for (int i = offsetX; i < x; i++)
             {
-                Vector2 pos = new Vector2(i, j) * orient * GameManager.instance.tileSize;
+                Vector2 pos = new Vector2(i, j) * orient * UnitValue.Tile;
 
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
@@ -409,17 +409,17 @@ public class Room : Building
     ///<param name="_dim">The dimensions of the reduction</param>
     private void ReduceZone(Transform _zone, SMargin _dim)
     {
-        _zone.localScale -= new Vector3(0, 0, _dim.top) * GameManager.instance.tileSize / 10;
-        _zone.localPosition -= new Vector3(0, 0, _dim.top) * GameManager.instance.tileSize / 2;
+        _zone.localScale -= new Vector3(0, 0, _dim.top) * UnitValue.Tile / 10;
+        _zone.localPosition -= new Vector3(0, 0, _dim.top) * UnitValue.Tile / 2;
 
-        _zone.localScale -= new Vector3(0, 0, _dim.bottom) * GameManager.instance.tileSize / 10;
-        _zone.localPosition += new Vector3(0, 0, _dim.bottom) * GameManager.instance.tileSize / 2;
+        _zone.localScale -= new Vector3(0, 0, _dim.bottom) * UnitValue.Tile / 10;
+        _zone.localPosition += new Vector3(0, 0, _dim.bottom) * UnitValue.Tile / 2;
 
-        _zone.localScale -= new Vector3(_dim.right, 0, 0) * GameManager.instance.tileSize / 10;
-        _zone.localPosition -= new Vector3(_dim.right, 0, 0) * GameManager.instance.tileSize / 2;
+        _zone.localScale -= new Vector3(_dim.right, 0, 0) * UnitValue.Tile / 10;
+        _zone.localPosition -= new Vector3(_dim.right, 0, 0) * UnitValue.Tile / 2;
 
-        _zone.localScale -= new Vector3(_dim.left, 0, 0) * GameManager.instance.tileSize / 10;
-        _zone.localPosition += new Vector3(_dim.left, 0, 0) * GameManager.instance.tileSize / 2;
+        _zone.localScale -= new Vector3(_dim.left, 0, 0) * UnitValue.Tile / 10;
+        _zone.localPosition += new Vector3(_dim.left, 0, 0) * UnitValue.Tile / 2;
     }
 
     ///<summary>

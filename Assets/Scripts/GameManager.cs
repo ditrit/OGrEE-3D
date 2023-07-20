@@ -24,11 +24,6 @@ public class GameManager : MonoBehaviour
     public Material scatterPlotMat;
     public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 
-    [Header("Custom units")]
-    public float tileSize = 0.6f;
-    public float uSize = 0.04445f;
-    public float ouSize = 0.048f;
-
     [Header("Models")]
     public GameObject buildingModel;
     public GameObject nonConvexBuildingModel;

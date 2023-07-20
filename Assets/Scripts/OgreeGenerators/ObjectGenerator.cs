@@ -21,7 +21,7 @@ public class ObjectGenerator
         Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
         float height = Utils.ParseDecFrac(_rk.attributes["height"]);
         if (_rk.attributes["heightUnit"] == LengthUnit.U)
-            height *= GameManager.instance.uSize;
+            height *= UnitValue.U;
         else if (_rk.attributes["heightUnit"] == LengthUnit.Centimeter)
             height /= 100;
         Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
@@ -181,7 +181,7 @@ public class ObjectGenerator
                 if (string.IsNullOrEmpty(_dv.attributes["template"]))
                     max = Utils.ParseDecFrac(_dv.attributes["sizeU"]);
                 else
-                    max = Utils.ParseDecFrac(GameManager.instance.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / GameManager.instance.uSize;
+                    max = Utils.ParseDecFrac(GameManager.instance.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / UnitValue.U;
                 foreach (Transform child in _parent)
                 {
                     if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
@@ -234,7 +234,7 @@ public class ObjectGenerator
                 newDevice.transform.localPosition = slot.localPosition;
 
                 if (height > slot.GetChild(0).localScale.y)
-                    newDevice.transform.localPosition += new Vector3(0, height / 2 - GameManager.instance.uSize / 2, 0);
+                    newDevice.transform.localPosition += new Vector3(0, height / 2 - UnitValue.U / 2, 0);
 
                 float deltaZ = slot.GetChild(0).localScale.z - size.y;
                 switch (_dv.attributes["orientation"])
@@ -267,7 +267,7 @@ public class ObjectGenerator
                 newDevice.transform.localEulerAngles = Vector3.zero;
                 newDevice.transform.localPosition = new Vector3(0, (-_parent.GetChild(0).localScale.y + height) / 2, 0);
                 if (_dv.attributes.ContainsKey("posU"))
-                    newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * GameManager.instance.uSize, 0);
+                    newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * UnitValue.U, 0);
 
                 float deltaZ = _parent.GetChild(0).localScale.z - size.y;
                 newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
@@ -682,9 +682,9 @@ public class ObjectGenerator
             Vector3 parentSize = _parent.GetChild(0).localScale;
             Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
             newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
-            float uXSize = GameManager.instance.ouSize;
+            float uXSize = UnitValue.OU;
             if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
-                uXSize = GameManager.instance.uSize;
+                uXSize = UnitValue.U;
             newSensor.transform.localPosition += new Vector3(boxSize.x + uXSize, -boxSize.y, 0) / 2;
         }
         else
@@ -707,8 +707,8 @@ public class ObjectGenerator
                 }
                 else
                 {
-                    newSensor.transform.localScale = 5 * GameManager.instance.uSize * Vector3.one;
-                    newSensor.transform.localPosition += Vector3.up * (posU * GameManager.instance.uSize);
+                    newSensor.transform.localScale = 5 * UnitValue.U * Vector3.one;
+                    newSensor.transform.localPosition += Vector3.up * (posU * UnitValue.U);
                 }
             }
             else
@@ -800,7 +800,7 @@ public class ObjectGenerator
                 if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
                     _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += GameManager.instance.tileSize * new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
+                    _obj.localPosition += UnitValue.Tile * new Vector3(pos.x - trunkedX, 0, pos.y - trunkedY);
                     return;
                 }
             }
@@ -821,12 +821,12 @@ public class ObjectGenerator
     private float GetUnitFromRoom(Room _r)
     {
         if (!_r.attributes.ContainsKey("floorUnit"))
-            return GameManager.instance.tileSize;
+            return UnitValue.Tile;
         return _r.attributes["floorUnit"] switch
         {
             LengthUnit.Meter=> 1.0f,
             LengthUnit.Feet => 3.28084f,
-            _ => GameManager.instance.tileSize,
+            _ => UnitValue.Tile,
         };
     }
 }

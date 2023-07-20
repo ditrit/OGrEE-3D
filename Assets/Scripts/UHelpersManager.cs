@@ -248,9 +248,9 @@ public class UHelpersManager : MonoBehaviour
         UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
         UFrontRight.localEulerAngles = Vector3.zero;
 
-        float scale = GameManager.instance.uSize;
+        float scale = UnitValue.U;
         if (_rack.attributes["heightUnit"] == LengthUnit.OU)
-            scale = GameManager.instance.ouSize;
+            scale = UnitValue.OU;
 
         //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
         float minY = float.PositiveInfinity;
