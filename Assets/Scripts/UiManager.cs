@@ -166,9 +166,13 @@ public class UiManager : MonoBehaviour
 
         editBtn = new ButtonHandler(editBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.focusMode
-            &&
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget,
+            interactCondition = () => GameManager.instance.editMode
+            ||
+            (
+                GameManager.instance.focusMode
+                &&
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
+            ),
 
             toggledCondition = () => GameManager.instance.editMode,
             toggledColor = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"))
