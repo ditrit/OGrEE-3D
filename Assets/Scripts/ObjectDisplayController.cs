@@ -10,6 +10,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// the collider and the renderer of the first child of this gameobject (the box)
     /// </summary>
     private (Collider col, MeshRenderer rend) cube;
+    public bool Shown { get => cube.rend.enabled; }
     private DisplayObjectData displayObjectData;
     private OObject oobject;
     private Sensor sensor;
@@ -79,7 +80,13 @@ public class ObjectDisplayController : MonoBehaviour
             EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOutBasic);
 
             if (group)
+            {
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedGroup);
+                ObjectDisplayController customRendererParent = transform.parent?.GetComponent<ObjectDisplayController>();
+                OgreeObject ogreeObjectParent = transform.parent?.GetComponent<OgreeObject>();
+                scatterPlotOfOneParent = customRendererParent && customRendererParent.scatterPlotOfOneParent || ogreeObjectParent && ogreeObjectParent.scatterPlot;
+                Display(!scatterPlotOfOneParent, !scatterPlotOfOneParent, !scatterPlotOfOneParent);
+            }
             else
                 EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedBasic);
 
@@ -179,7 +186,7 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     /// <summary>
-    /// When called, call <see cref="ToggleRoomsAndBuildings"/> and set its material to <see cref="GameManager.focusMat"/> if it is the object being focused, else toggles its renderer, labels and collider depending on if it is a refent,a sensor from a template, if its parent is focused, and if it in focus
+    /// When called, call <see cref="ToggleRoomsAndBuildings"/> and set its material to <see cref="GameManager.focusMat"/> if it is the object being focused, else toggles its renderer, labels and collider depending on if it is a refent,a sensor from a template, if its parent is focused, and if it is in focus
     /// </summary>
     /// <param name="_e">The event's intance</param>
     private void OnFocus(OnFocusEvent _e)
@@ -204,6 +211,8 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnUnFocus(OnUnFocusEvent _e)
     {
+        if (!listening)
+            return;
         if (_e.obj == gameObject)
         {
             oobject.ResetTransform();
@@ -213,6 +222,8 @@ public class ObjectDisplayController : MonoBehaviour
             else
                 HandleMaterial();
         }
+        else if (_e.obj == transform.parent.gameObject)
+                oobject.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
             Display(true, true, true);
     }
@@ -275,7 +286,7 @@ public class ObjectDisplayController : MonoBehaviour
 
         if (selection.Contains(gameObject))
             return;
-        if (!GetComponent<Group>().isDisplayed)
+        if (!group.isDisplayed || scatterPlotOfOneParent)
         {
             Display(false, false, false);
             return;
@@ -331,7 +342,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
 
         List<GameObject> selection = GameManager.instance.GetSelected();
-        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || selection.Contains(transform.parent?.gameObject);
+        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || (transform.parent && !scatterPlotOfOneParent && selection.Contains(transform.parent.gameObject));
         bool rend = labels || selection.Contains(gameObject);
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
@@ -473,11 +484,11 @@ public class ObjectDisplayController : MonoBehaviour
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
-        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != "corridor")
+        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
         {
-            if (oobject && oobject.category == "corridor")
+            if (oobject && oobject.category == Category.Corridor)
                 SetMaterial(GameManager.instance.alphaMat);
             else
                 SetMaterial(GameManager.instance.defaultMat);
@@ -515,7 +526,13 @@ public class ObjectDisplayController : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             GameObject go = (GameObject)de.Value;
-            switch (go.GetComponent<OgreeObject>())
+            if (!go)
+                continue;
+            OgreeObject oo = go.GetComponent<OgreeObject>();
+            if (oo.localCS)
+                oo.localCS.SetActive(_value);
+
+            switch (oo)
             {
                 case OgreeObject tmp when tmp is Building bd && !(tmp is Room):
                     bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
@@ -548,22 +565,27 @@ public class ObjectDisplayController : MonoBehaviour
                         ro.tilesGrid.GetComponent<Renderer>().enabled = _value;
                         ro.tilesGrid.GetComponent<Collider>().enabled = _value;
                     }
-                    ro.nameText.GetComponent<Renderer>().enabled = _value;
+                    ro.nameText.GetComponent<Renderer>().enabled = _value && !ro.tileName;
                     foreach (Transform wall in ro.walls)
                     {
                         wall.GetComponentInChildren<Renderer>().enabled = _value;
                         wall.GetComponentInChildren<Collider>().enabled = _value;
                     }
+                    if (go.transform.Find("Floor"))
+                    {
+                        foreach (Transform child in go.transform.Find("Floor"))
+                        {
+                            child.GetComponent<Renderer>().enabled = _value;
+                            child.GetChild(0).GetComponent<Renderer>().enabled = _value && ro.tileName;
+                        }
+                        break;
+                    }
                     if (go.transform.Find("tilesNameRoot"))
-                    {
-                        foreach (Transform child in go.transform.Find("tilesNameRoot"))
-                            child.GetComponent<Renderer>().enabled = _value;
-                    }
+                        foreach (Renderer rend in go.transform.Find("tilesNameRoot").GetComponentsInChildren<Renderer>())
+                            rend.enabled = _value && ro.tileName;
                     if (go.transform.Find("tilesColorRoot"))
-                    {
-                        foreach (Transform child in go.transform.Find("tilesColorRoot"))
-                            child.GetComponent<Renderer>().enabled = _value;
-                    }
+                        foreach (Renderer rend in go.transform.Find("tilesColorRoot").GetComponentsInChildren<Renderer>())
+                            rend.enabled = _value && ro.tileColor;
                     break;
                 default:
                     break;

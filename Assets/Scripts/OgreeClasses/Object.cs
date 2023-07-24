@@ -52,7 +52,7 @@ public class OObject : OgreeObject
 
         attributes = _src.attributes;
 
-        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == "room")
+        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == Category.Room)
             referent = this;
         else if (transform.parent?.GetComponent<OObject>().referent != null)
             referent = transform.parent.GetComponent<OObject>().referent;
@@ -126,51 +126,6 @@ public class OObject : OgreeObject
     }
 
     ///<summary>
-    /// Display or hide the local coordinate system
-    ///</summary>
-    public void ToggleCS()
-    {
-        string csName = "localCS";
-        GameObject localCS = transform.Find(csName)?.gameObject;
-        if (localCS)
-            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
-        else
-            BuildLocalCS(csName);
-    }
-
-    ///<summary>
-    /// Display or hide the local coordinate system
-    ///</summary>
-    ///<param name="_value">true of false value</param>
-    public void ToggleCS(bool _value)
-    {
-        string csName = "localCS";
-        GameObject localCS = transform.Find(csName)?.gameObject;
-        if (localCS && !_value)
-            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
-        else if (!localCS && _value)
-            BuildLocalCS(csName);
-    }
-
-    ///<summary>
-    /// Create a local Coordinate System for this object.
-    ///</summary>
-    ///<param name="_name">The name of the local CS</param>
-    private void BuildLocalCS(string _name)
-    {
-        GameObject localCS = Instantiate(GameManager.instance.coordinateSystemModel);
-        localCS.name = _name;
-        localCS.transform.parent = transform;
-        localCS.transform.localScale = Vector3.one;
-        localCS.transform.localEulerAngles = Vector3.zero;
-        if (category == "corridor")
-            localCS.transform.localPosition = transform.GetChild(0).localScale / -2f;
-        else
-            localCS.transform.localPosition = Vector3.zero;
-        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
-    }
-
-    ///<summary>
     /// Set temperature attribute and create/update related sensor object.
     ///</summary>
     ///<param name="_value">The temperature value</param>
@@ -199,7 +154,7 @@ public class OObject : OgreeObject
                     attributes = new Dictionary<string, string>(),
 
                     name = "sensor", // ?
-                    category = "sensor",
+                    category = Category.Sensor,
                     parentId = id,
                     domain = domain
                 };

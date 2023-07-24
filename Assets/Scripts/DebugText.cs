@@ -59,19 +59,19 @@ public class DebugText : MonoBehaviour
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
             switch (obj.category)
             {
-                case "site":
+                case Category.Site:
                     sitesCount++;
                     break;
-                case "building":
+                case Category.Building:
                     buildingsCount++;
                     break;
-                case "room":
+                case Category.Room:
                     roomsCount++;
                     break;
-                case "rack":
+                case Category.Rack:
                     racksCount++;
                     break;
-                case "device":
+                case Category.Device:
                     devicesCount++;
                     break;
             }

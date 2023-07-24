@@ -29,6 +29,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public Vector3 originalLocalScale = Vector3.one;
     public GameObject heatMap;
     public bool scatterPlot = false;
+    public GameObject localCS = null;
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -212,5 +213,44 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         originalLocalPosition = transform.localPosition;
         originalLocalRotation = transform.localRotation;
         originalLocalScale = transform.localScale;
+    }
+
+    ///<summary>
+    /// Display or hide the local coordinate system
+    ///</summary>
+    public void ToggleCS()
+    {
+        if (localCS)
+            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
+        else
+            BuildLocalCS();
+    }
+
+    ///<summary>
+    /// Display or hide the local coordinate system
+    ///</summary>
+    ///<param name="_value">true of false value</param>
+    public void ToggleCS(bool _value)
+    {
+        if (localCS && !_value)
+            gameObject.CleanDestroy($"Hide local Coordinate System for {name}");
+        else if (!localCS && _value)
+            BuildLocalCS();
+    }
+
+    ///<summary>
+    /// Create a local Coordinate System for this object.
+    ///</summary>
+    ///<param name="_name">The name of the local CS</param>
+    protected void BuildLocalCS()
+    {
+        float scale = this is OObject ? 1 : 7;
+        localCS = Instantiate(GameManager.instance.coordinateSystemModel);
+        localCS.name = "localCS";
+        localCS.transform.parent = transform;
+        localCS.transform.localScale = scale * Vector3.one;
+        localCS.transform.localEulerAngles = Vector3.zero;
+        localCS.transform.localPosition = category == Category.Corridor || category == Category.Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
+        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 }

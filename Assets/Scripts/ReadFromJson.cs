@@ -35,7 +35,7 @@ public class ReadFromJson
     ///<param name="_data">The data template</param>
     public async Task CreateObjectTemplate(STemplate _data)
     {
-        if (_data.category != "rack" && _data.category != "device")
+        if (_data.category != Category.Rack && _data.category != Category.Device)
         {
             GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", ELogTarget.both, ELogtype.error);
             return;
@@ -57,29 +57,29 @@ public class ReadFromJson
             category = _data.category
         };
         obj.description.Add(_data.description);
-        if (obj.category == "rack")
+        if (obj.category == Category.Rack)
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
-            obj.attributes["posXYUnit"] = "tile";
+            obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
-            obj.attributes["sizeUnit"] = "cm";
+            obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
-            obj.attributes["heightUnit"] = "cm";
+            obj.attributes["heightUnit"] = LengthUnit.Centimeter;
             obj.attributes["rotation"] = JsonUtility.ToJson(Vector3.zero);
         }
-        else if (obj.category == "device")
+        else if (obj.category == Category.Device)
         {
             if (_data.attributes.ContainsKey("type")
                 && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / GameManager.instance.uSize);
+                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / UnitValue.U);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
-            obj.attributes["sizeUnit"] = "mm";
+            obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
-            obj.attributes["heightUnit"] = "mm";
+            obj.attributes["heightUnit"] = LengthUnit.Millimeter;
             obj.attributes["slot"] = "";
         }
         obj.attributes["template"] = "";
@@ -92,13 +92,13 @@ public class ReadFromJson
 
         // Generate the 3D object
         OObject newObject;
-        if (obj.category == "rack")
+        if (obj.category == Category.Rack)
         {
             newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
-        else// if (obj.category == "device")
+        else// if (obj.category == Category.Device)
         {
             newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             Vector3 accurateScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
@@ -139,7 +139,7 @@ public class ReadFromJson
         }
 
         // For rack, update height counting
-        if (newObject.category == "rack")
+        if (newObject.category == Category.Rack)
         {
             Slot[] slots = newObject.GetComponentsInChildren<Slot>();
             if (slots.Length > 0)
@@ -151,7 +151,7 @@ public class ReadFromJson
                         height++;
                 }
                 newObject.attributes["height"] = height.ToString();
-                newObject.attributes["heightUnit"] = "U";
+                newObject.attributes["heightUnit"] = LengthUnit.U;
             }
         }
 
@@ -210,7 +210,7 @@ public class ReadFromJson
             OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
             obj.parentId = _parent.id;
-            obj.category = "device";
+            obj.category = Category.Device;
             obj.domain = _parent.domain;
             obj.description = new List<string>();
             obj.attributes = new Dictionary<string, string>
@@ -275,12 +275,12 @@ public class ReadFromJson
         Vector3 offset = 0.5f * (_parent.GetChild(0).localScale - newSensor.transform.GetChild(0).localScale);
         switch (_sensor.elemPos[0])
         {
-            case "left":
+            case SensorPos.Left:
                 newSensor.transform.localPosition += (offset.x) * Vector3.left;
                 break;
-            case "center":
+            case SensorPos.Center:
                 break;
-            case "right":
+            case SensorPos.Right:
                 newSensor.transform.localPosition += (offset.x) * Vector3.right;
                 break;
             default:
@@ -299,12 +299,12 @@ public class ReadFromJson
         }
         switch (_sensor.elemPos[1])
         {
-            case "front":
+            case SensorPos.Front:
                 newSensor.transform.localPosition += (offset.z) * Vector3.forward;
                 break;
-            case "center":
+            case SensorPos.Center:
                 break;
-            case "rear":
+            case SensorPos.Rear:
                 newSensor.transform.localPosition += (offset.z) * Vector3.back;
                 break;
             default:
@@ -323,12 +323,12 @@ public class ReadFromJson
         }
         switch (_sensor.elemPos[2])
         {
-            case "lower":
+            case SensorPos.Lower:
                 newSensor.transform.localPosition += (offset.y) * Vector3.down;
                 break;
-            case "center":
+            case SensorPos.Center:
                 break;
-            case "upper":
+            case SensorPos.Upper:
                 newSensor.transform.localPosition += (offset.y) * Vector3.up;
                 break;
             default:

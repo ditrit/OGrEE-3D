@@ -10,27 +10,9 @@ using Tomlyn.Model;
 
 public class ConfigLoader
 {
-    private struct SConfig
-    {
-        public bool verbose;
-        public bool fullscreen;
-        public string cachePath;
-        public int cacheLimitMo;
-        public int cliPort;
-        public Dictionary<string, string> textures;
-        public Dictionary<string, string> colors;
-        public float alphaOnInteract;
-        public int temperatureMinC;
-        public int temperatureMaxC;
-        public int temperatureMinF;
-        public int temperatureMaxF;
-        public List<List<int>> customTemperatureGradient;
-        public bool useCustomGradient;
-    }
 
     private SConfig config;
     private bool verbose = false;
-    private readonly string cacheDirName = ".ogreeCache";
 
     ///<summary>
     /// Load a config file & look for command line overrides.
@@ -38,13 +20,12 @@ public class ConfigLoader
     public void LoadConfig()
     {
         // Load default config file
-        TextAsset ResourcesConfig = Resources.Load<TextAsset>("config");
-        config = JsonConvert.DeserializeObject<SConfig>(ResourcesConfig.ToString());
+        config = DefaultValues.Config.Clone();
 
         // Load toml config from given path
-        string configPath = GetArg("-c");
+        string configPath = GetArg(LaunchArgs.ConfigPathShort);
         if (string.IsNullOrEmpty(configPath))
-            configPath = GetArg("--config-file");
+            configPath = GetArg(LaunchArgs.ConfigPathLong);
 
         LoadConfigFile(configPath);
 
@@ -63,7 +44,7 @@ public class ConfigLoader
     ///<returns>The value of the asked argument</returns>
     private string GetArg(string _name)
     {
-        string[] args = System.Environment.GetCommandLineArgs();
+        string[] args = Environment.GetCommandLineArgs();
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == _name && args.Length > i + 1)
@@ -79,27 +60,23 @@ public class ConfigLoader
     ///</summmary>
     private void OverrideConfig()
     {
-        string[] args = new string[] { "-v", "--verbose", "-fs", "--fullscreen" };
-        for (int i = 0; i < args.Length; i++)
+        foreach (string arg in LaunchArgs.Args)
         {
-            string str = GetArg(args[i]);
-            if (!string.IsNullOrEmpty(str))
+            string str = GetArg(arg);
+            if (string.IsNullOrEmpty(str))
+                continue;
+
+            switch (arg)
             {
-                switch (i)
-                {
-                    case 0:
-                        config.verbose = bool.Parse(str);
-                        break;
-                    case 1:
-                        config.verbose = bool.Parse(str);
-                        break;
-                    case 2:
-                        config.fullscreen = bool.Parse(str);
-                        break;
-                    case 3:
-                        config.fullscreen = bool.Parse(str);
-                        break;
-                }
+                case LaunchArgs.VerboseShort:
+                case LaunchArgs.VerboseLong:
+                    config.verbose = bool.Parse(str);
+                    break;
+
+                case LaunchArgs.FullScreenShort:
+                case LaunchArgs.FullScreenLong:
+                    config.fullscreen = bool.Parse(str);
+                    break;
             }
         }
     }
@@ -113,10 +90,10 @@ public class ConfigLoader
         try
         {
 #if UNITY_EDITOR
-            StreamReader loadedConfig = File.OpenText("Assets/Resources/config.toml");
+            StreamReader loadedConfig = File.OpenText(DefaultValues.DefaultConfigPath);
 #else
             if (string.IsNullOrEmpty(_path))
-                _path = "./config.toml";
+                _path = DefaultValues.DefaultConfigPath;
             StreamReader loadedConfig = File.OpenText(_path);
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
@@ -147,7 +124,7 @@ public class ConfigLoader
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
-        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["textures"])
+        foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value))
                 config.textures[kvp.Key] = (string)kvp.Value;
@@ -155,7 +132,7 @@ public class ConfigLoader
         // foreach (KeyValuePair<string, string> kvp in config.textures)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
-        foreach (KeyValuePair<string, System.Object> kvp in (TomlTable)table["colors"])
+        foreach (KeyValuePair<string, object> kvp in (TomlTable)table["colors"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
@@ -173,10 +150,10 @@ public class ConfigLoader
 
         config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
         List<List<int>> tempGradient = new List<List<int>>();
-        foreach (System.Object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
+        foreach (object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
         {
             List<int> tmp = new List<int>();
-            foreach (System.Object i in (TomlArray)colorDef)
+            foreach (object i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32(i));
             if (tmp.Count == 4 && tempGradient.Count < 8)
                 tempGradient.Add(tmp);
@@ -206,6 +183,7 @@ public class ConfigLoader
         SetMaterialColor("focus", GameManager.instance.focusMat);
         SetMaterialColor("edit", GameManager.instance.editMat);
         SetMaterialColor("highlight", GameManager.instance.highlightMat);
+        SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
     }
 
     ///<summary> 
@@ -226,7 +204,7 @@ public class ConfigLoader
     {
         if (!string.IsNullOrEmpty(config.cachePath) && !config.cachePath.EndsWith("/"))
             config.cachePath += "/";
-        string fullPath = config.cachePath + cacheDirName;
+        string fullPath = config.cachePath + DefaultValues.CacheDirName;
         try
         {
             if (!Directory.Exists(fullPath))
@@ -263,7 +241,7 @@ public class ConfigLoader
     ///<returns>The path of the cache directory</returns>
     public string GetCacheDir()
     {
-        return config.cachePath + cacheDirName;
+        return config.cachePath + DefaultValues.CacheDirName;
     }
 
     ///<summary>
@@ -322,9 +300,9 @@ public class ConfigLoader
     }
 
     ///<summary>
-    /// Get the minimum and the maximum of a temperature unit
+    /// Get the minimum and the maximum of a temperature unit defined in <see cref="TemperatureUnits"/>
     ///</summary>
-    ///<param name="_unit">The temperature unit for the extremum, must be "c" or "f"</param>
+    ///<param name="_unit">The temperature unit for the extremum, must be in <see cref="TemperatureUnits"/></param>
     ///<returns>The minimum and the maximum for the temperature unit</returns>
     public (int min, int max) GetTemperatureLimit(string _unit)
     {
@@ -333,10 +311,9 @@ public class ConfigLoader
             GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
-        _unit = _unit.ToLower();
-        if (_unit == "°c")
+        if (_unit ==TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
-        if (_unit == "°f")
+        if (_unit == TemperatureUnits.Fahrenheit)
             return (config.temperatureMinF, config.temperatureMaxF);
         GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", ELogTarget.logger, ELogtype.error);
         return (0, 0);

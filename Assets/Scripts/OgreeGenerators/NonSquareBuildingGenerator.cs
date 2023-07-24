@@ -46,19 +46,22 @@ public static class NonSquareBuildingGenerator
     {
         public string slug;
         public float[] sizeWDHm;
-        public List<float> center;
-        public List<List<float>> vertices;
+        public Vector2 isolationPoleCenter;
+        public float isolationPoleRadius;
+        public List<Vector2> vertices;
         public STile[] tiles;
         public float tileAngle;
+        public Vector2 offset;
 
         public SCommonTemplate(SBuildingFromJson _src)
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
-            center = _src.center;
-            vertices = new List<List<float>>();
+            offset = new Vector2(_src.vertices[0][0], _src.vertices[0][1]);
+            vertices = new List<Vector2>();
             foreach (List<float> vertex in _src.vertices)
-                vertices.Add(vertex.GetRange(0, vertex.Count));
+                vertices.Add(new Vector2(vertex[0] - offset.x, vertex[1] - offset.y));
+            (isolationPoleRadius, isolationPoleCenter) = PolyLabel.FindPoleOfIsolation(vertices, 0.1f);
             tiles = null;
             tileAngle = float.NaN;
         }
@@ -67,10 +70,11 @@ public static class NonSquareBuildingGenerator
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
-            center = _src.center;
-            vertices = new List<List<float>>();
+            offset = new Vector2(_src.vertices[0][0], _src.vertices[0][1]);
+            vertices = new List<Vector2>();
             foreach (List<float> vertex in _src.vertices)
-                vertices.Add(vertex.GetRange(0, vertex.Count));
+                vertices.Add(new Vector2(vertex[0] - offset.x, vertex[1]-offset.y));
+            (isolationPoleRadius, isolationPoleCenter) = PolyLabel.FindPoleOfIsolation(vertices, 0.1f);
             tiles = _src.tiles;
             tileAngle = _src.tileAngle;
         }
@@ -86,17 +90,12 @@ public static class NonSquareBuildingGenerator
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new SCommonTemplate(_template);
 
-        List<float> offset = new List<float>(data.vertices[0]);
-        foreach (List<float> vertice in data.vertices)
-        {
-            vertice[0] -= offset[0];
-            vertice[1] -= offset[1];
-        }
-
-        BuildFloor(_building, data, null, false);
+        BuildFloor(_building, data, Vector2.zero, false);
         BuildWalls(_building, data);
 
-        _building.GetComponent<Building>().nameText.transform.localPosition = new Vector3(_template.center[0] - offset[0], 0.003f, _template.center[1] - offset[1]);
+        TMPro.TextMeshPro nameText = _building.GetComponent<Building>().nameText;
+        nameText.transform.localPosition = new Vector3(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
+        nameText.rectTransform.sizeDelta = Mathf.Sqrt(2) * data.isolationPoleRadius * Vector2.one;
     }
 
     /// <summary>
@@ -109,18 +108,12 @@ public static class NonSquareBuildingGenerator
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new SCommonTemplate(_template);
 
-        List<float> offset = new List<float>(data.vertices[0]);
-        foreach (List<float> vertice in data.vertices)
-        {
-            vertice[0] -= offset[0];
-            vertice[1] -= offset[1];
-        }
-
-        BuildFloor(_room, data, offset, (_template.floorUnit == "t"));
+        BuildFloor(_room, data, data.offset, (_template.floorUnit == LengthUnit.Tile));
         _room.GetChild(0).localPosition += new Vector3(0, 0.001f, 0);
         BuildWalls(_room, data);
-
-        _room.GetComponent<Room>().nameText.transform.localPosition = new Vector3(_template.center[0] - offset[0], 0.003f, _template.center[1] - offset[1]);
+        TMPro.TextMeshPro nameText = _room.GetComponent<Room>().nameText;
+        nameText.transform.localPosition = new Vector3(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
+        nameText.rectTransform.sizeDelta = Mathf.Sqrt(2) * data.isolationPoleRadius * Vector2.one;
     }
 
     /// <summary>
@@ -182,11 +175,12 @@ public static class NonSquareBuildingGenerator
     /// <param name="_root">the transform of the room's floor</param>
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
-    private static void BuildFloor(Transform _root, SCommonTemplate _template, List<float> _offset, bool _tiles)
+    /// <param name="_offset">Position of the first vertice</param>
+    private static void BuildFloor(Transform _root, SCommonTemplate _template, Vector2 _offset, bool _tiles)
     {
         List<int> trianglesRoom = new List<int>();
 
-        List<Vector3> walls = _template.vertices.Select(w => new Vector3(w[0], 0, w[1])).ToList();
+        List<Vector3> walls = _template.vertices.Select(w => new Vector3(w.x, 0, w.y)).ToList();
         if (!MostlyClockWise(walls))
             walls.Reverse();
         List<Vector3> shrinkingWalls = new List<Vector3>(walls);
@@ -259,7 +253,7 @@ public static class NonSquareBuildingGenerator
                 GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
                 newTile.name = $"Tile_{_template.tiles[i].label}";
                 newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].label;
-                newTile.transform.localPosition = (new Vector3(x - _offset[0], 0.001f, z - _offset[1]));
+                newTile.transform.localPosition = new Vector3(x - _offset.x, 0.001f, z - _offset.y);
 
                 Tile tile = newTile.GetComponent<Tile>();
                 tile.color = _template.tiles[i].color;

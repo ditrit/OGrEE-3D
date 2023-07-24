@@ -86,6 +86,8 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
+            menuTarget.GetComponent<OgreeObject>()
+            &&
             !GameManager.instance.editMode
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
@@ -132,7 +134,7 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OObject>()
             &&
-            menuTarget.GetComponent<OgreeObject>().category != "corridor"
+            menuTarget.GetComponent<OgreeObject>().category != Category.Corridor
             &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
@@ -164,9 +166,13 @@ public class UiManager : MonoBehaviour
 
         editBtn = new ButtonHandler(editBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.focusMode
-            &&
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget,
+            interactCondition = () => GameManager.instance.editMode
+            ||
+            (
+                GameManager.instance.focusMode
+                &&
+                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
+            ),
 
             toggledCondition = () => GameManager.instance.editMode,
             toggledColor = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"))
@@ -212,7 +218,7 @@ public class UiManager : MonoBehaviour
             !menuTarget.GetComponent<Group>()
             &&
             (
-                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != "corridor")
+                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != Category.Corridor)
                 ||
                 menuTarget.GetComponent<Room>()
             ),
@@ -233,7 +239,7 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OObject>()
             &&
-            menuTarget.GetComponent<OObject>().category == "device"
+            menuTarget.GetComponent<OObject>().category == Category.Device
             &&
             DepthCheck(menuTarget.GetComponent<OObject>()) <= 1,
 
@@ -298,7 +304,7 @@ public class UiManager : MonoBehaviour
                 (
                     menuTarget.GetComponent<OObject>()
                     &&
-                    menuTarget.GetComponent<OObject>().category != "corridor"
+                    menuTarget.GetComponent<OObject>().category != Category.Corridor
                 )
                 ||
                 menuTarget.GetComponent<Building>()
@@ -306,9 +312,9 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.transform.Find("localCS")
+            menuTarget.GetComponent<OgreeObject>()
             &&
-            menuTarget.transform.Find("localCS").gameObject.activeSelf
+            menuTarget.GetComponent<OgreeObject>().localCS
         };
         toggleLocalCSBtn.Check();
 
@@ -812,7 +818,7 @@ public class UiManager : MonoBehaviour
         DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
         {
-            if (file.Name != "log.txt")
+            if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
         }
         GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);
