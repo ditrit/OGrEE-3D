@@ -30,6 +30,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public GameObject heatMap;
     public bool scatterPlot = false;
     public GameObject localCS = null;
+    public bool doomed = false;
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -59,6 +60,19 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
             GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
+    }
+
+    private void OnDisable()
+    {
+        if (gameObject.activeInHierarchy)
+            Doom();
+    }
+
+    private void Doom()
+    {
+        doomed = true;
+        foreach (Transform child in transform)
+            child.GetComponent<OgreeObject>()?.Doom();
     }
 
     ///<summary>
