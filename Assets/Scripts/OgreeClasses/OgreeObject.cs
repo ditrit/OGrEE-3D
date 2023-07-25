@@ -114,7 +114,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async Task LoadChildren(string _level)
+    public async Task LoadChildren(int _level)
     {
         if (!ApiManager.instance.isInit)
         {
@@ -127,22 +127,21 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
             GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", ELogTarget.logger, ELogtype.warning);
             return;
         }
-        int.TryParse(_level, out int lvl);
-        if (lvl < 0)
-            lvl = 0;
+        if (_level < 0)
+            _level = 0;
 
-        if (currentLod != lvl)
+        if (currentLod != _level)
         {
-            await DeleteChildren(lvl);
+            await DeleteChildren(_level);
 
-            if (lvl != 0)
+            if (_level != 0)
             {
-                string apiCall = $"{category}s/{id}/all?limit={lvl}";
+                string apiCall = $"{category}s/{id}/all?limit={_level}";
                 Debug.Log(apiCall);
                 await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
             }
 
-            SetCurrentLod(lvl);
+            SetCurrentLod(_level);
         }
     }
 

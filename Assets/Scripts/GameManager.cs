@@ -165,12 +165,12 @@ public class GameManager : MonoBehaviour
                     if (previousSelected.referent != previousSelected)
                         previousItems.Remove(previousObj);
 
-                    await previousSelected.referent.LoadChildren("0");
+                    await previousSelected.referent.LoadChildren(0);
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
                 if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
-                    await selectOgree.LoadChildren("1");
+                    await selectOgree.LoadChildren(1);
             }
             else // deselection => unload children if level of details is <=1
             {
@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
                     }
                     OObject oObject = previousObj.GetComponent<OObject>();
                     if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren("0");
+                        await oObject.LoadChildren(0);
                 }
             }
             // add new item
@@ -226,7 +226,7 @@ public class GameManager : MonoBehaviour
                 {
                     OObject oObject = _obj.GetComponent<OObject>();
                     if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren("0");
+                        await oObject.LoadChildren(0);
                     if (focusMode)
                         currentItems.Add(focus[focus.Count - 1]);
                 }
@@ -236,7 +236,7 @@ public class GameManager : MonoBehaviour
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
                 if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
-                    await selectOgree.LoadChildren("1");
+                    await selectOgree.LoadChildren(1);
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
             selectMode = currentItems.Count != 0;

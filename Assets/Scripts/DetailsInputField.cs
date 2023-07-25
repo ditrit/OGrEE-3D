@@ -28,12 +28,12 @@ public class DetailsInputField : MonoBehaviour
     {
         if (_value.Contains("-"))
             _value = "0";
-
+        int.TryParse(_value, out int level);
         List<OgreeObject> objsToUpdate = new List<OgreeObject>();
         foreach (GameObject go in GameManager.instance.GetSelected())
             objsToUpdate.Add(go.GetComponent<OgreeObject>());
         foreach (OgreeObject obj in objsToUpdate)
-            await obj.LoadChildren(_value);
+            await obj.LoadChildren(level);
     }
 
     ///
