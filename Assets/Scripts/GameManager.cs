@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
-        await _toDel.AwaitDestroy();
+        Destroy(_toDel);
         StartCoroutine(Utils.ImportFinished());
     }
 
@@ -377,19 +377,19 @@ public class GameManager : MonoBehaviour
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
-            await doToDel[i].AwaitDestroy();
+            Destroy(doToDel[i]);
     }
 
     ///<summary>
     /// Delete all room and object templates.
     ///</summary>
-    public async void PurgeTemplates()
+    public void PurgeTemplates()
     {
         List<GameObject> templatesToDel = new List<GameObject>();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
-            await templatesToDel[i].AwaitDestroy();
+            Destroy(templatesToDel[i]);
         objectTemplates.Clear();
         buildingTemplates.Clear();
         roomTemplates.Clear();
@@ -400,7 +400,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_category">The type of the template</param>
     ///<param name="_template">The name of the template</param>
-    public async void DeleteTemplateIfUnused(string _category, string _template)
+    public void DeleteTemplateIfUnused(string _category, string _template)
     {
         int count = 0;
         foreach (DictionaryEntry de in allItems)
@@ -424,12 +424,12 @@ public class GameManager : MonoBehaviour
                 case Category.Rack:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
-                    await toDel.AwaitDestroy();
+                    Destroy(toDel);
                     break;
                 case Category.Device:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
-                    await toDel.AwaitDestroy();
+                    Destroy(toDel);
                     break;
             }
         }
