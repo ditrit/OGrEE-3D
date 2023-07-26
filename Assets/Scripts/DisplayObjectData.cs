@@ -22,12 +22,10 @@ public class DisplayObjectData : MonoBehaviour
     private string backgroundColor = "000000";
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
-    [SerializeField] private CameraControl cc;
 
     private void Start()
     {
         EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
-        cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
@@ -41,8 +39,8 @@ public class DisplayObjectData : MonoBehaviour
         if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
-            floatingLabel.transform.LookAt(cc.transform);
-            floatingLabel.transform.rotation = Quaternion.LookRotation(cc.transform.forward);
+            floatingLabel.transform.LookAt(GameManager.instance.cameraControl.transform);
+            floatingLabel.transform.rotation = Quaternion.LookRotation(GameManager.instance.cameraControl.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
         }
     }
