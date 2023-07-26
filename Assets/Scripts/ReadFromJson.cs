@@ -183,18 +183,10 @@ public class ReadFromJson
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
-        {
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
-            go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
-                                                      go.transform.GetChild(0).localScale.x,
-                                                      go.transform.GetChild(0).localScale.z) / 2;
-        }
         else
-        {
             go.transform.localEulerAngles = Vector3.zero;
-            go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
-        }
-
+        go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
         if (_isSlot)
         {
             Slot s = go.AddComponent<Slot>();

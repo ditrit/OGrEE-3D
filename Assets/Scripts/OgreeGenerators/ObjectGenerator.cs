@@ -208,28 +208,33 @@ public class ObjectGenerator
                 Vector3 slotScale = slot.GetChild(0).localScale;
                 newDevice.transform.localEulerAngles = slot.localEulerAngles;
                 newDevice.transform.localPosition = slot.localPosition;
-                newDevice.transform.localPosition -= slotScale / 2;
-
-                if (height > slotScale.y)
-                    newDevice.transform.localPosition += new Vector3(0, height / 2 - UnitValue.U / 2, 0);
 
                 float deltaZ = slotScale.z - size.y;
                 switch (_dv.attributes["orientation"])
                 {
                     case Orientation.Front:
-                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
+                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ);
                         break;
                     case Orientation.Rear:
-                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
+                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                            newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
+                        else
+                            newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
                         break;
                     case Orientation.FrontFlipped:
-                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
+                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                            newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
+                        else
+                            newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
                         break;
                     case Orientation.RearFlipped:
-                        newDevice.transform.localPosition -= new Vector3(0, 0, deltaZ / 2);
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
+                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                            newDevice.transform.localPosition += new Vector3(0, height, size.y);
+                        else
+                            newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
                         break;
                 }
 
@@ -860,7 +865,7 @@ public class ObjectGenerator
             return UnitValue.Tile;
         return _r.attributes["floorUnit"] switch
         {
-            LengthUnit.Meter=> 1.0f,
+            LengthUnit.Meter => 1.0f,
             LengthUnit.Feet => 3.28084f,
             _ => UnitValue.Tile,
         };

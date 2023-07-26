@@ -7084,9 +7084,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-07-17
+  m_text: 'Build date: 2023-07-26
 
-    Commit #f528962'
+    Commit #e1999a7'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -10910,7 +10910,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09996}
+  m_AnchoredPosition: {x: 0, y: 217.1}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -11681,6 +11681,7 @@ MonoBehaviour:
   originalLocalScale: {x: 1, y: 1, z: 1}
   heatMap: {fileID: 0}
   scatterPlot: 0
+  localCS: {fileID: 0}
   isSquare: 1
   walls: {fileID: 0}
   nameText: {fileID: 0}
@@ -11702,6 +11703,7 @@ MonoBehaviour:
   tileName: 0
   tileColor: 0
   barChart: 0
+  openedGroups: []
 --- !u!1 &1332719423
 GameObject:
   m_ObjectHideFlags: 0
@@ -13619,6 +13621,7 @@ MonoBehaviour:
   originalLocalScale: {x: 1, y: 1, z: 1}
   heatMap: {fileID: 0}
   scatterPlot: 0
+  localCS: {fileID: 0}
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
@@ -13807,9 +13810,6 @@ MonoBehaviour:
   highlightMat: {fileID: 2100000, guid: 9f132a6217ec08946b826f8a1381a487, type: 2}
   mouseHoverMat: {fileID: 2100000, guid: 55a107fc2ac396c43b4da8ea0c82268f, type: 2}
   scatterPlotMat: {fileID: 2100000, guid: cb999e85f1be5734c9581dc5a2cbac0b, type: 2}
-  tileSize: 0.6
-  uSize: 0.04445
-  ouSize: 0.048
   buildingModel: {fileID: 405515581002141253, guid: 8fa8fbf8aabdd8e4eb025a0613eca6e6,
     type: 3}
   nonConvexBuildingModel: {fileID: 405515581002141253, guid: beac4c3ec27fa884b84387e16d84be31,
@@ -19603,7 +19603,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0.00000028113843
+  m_Value: 0
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
