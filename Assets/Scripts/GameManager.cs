@@ -155,10 +155,8 @@ public class GameManager : MonoBehaviour
 
                     OObject previousSelected = previousObj.GetComponent<OObject>();
 
-                    //Are the previous and current selection both an OObject and part of the same referent ?
-                    //Is the LOD of the previous selection less than 1 ?
-                    if (!previousSelected || !previousSelected.referent || previousSelected.referent.currentLod > 1 ||
-                       (currentSelected && currentSelected.referent == previousSelected.referent))
+                    //Are the previous and current selection part of the same referent ?
+                    if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
                         continue;
 
                     //If the previous selection is not a referent, it will deleted during LoadChildren("0") and we don't want
@@ -184,9 +182,7 @@ public class GameManager : MonoBehaviour
                         previousItems.Remove(previousObj);
                         continue;
                     }
-                    OObject oObject = previousObj.GetComponent<OObject>();
-                    if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren(0);
+                    previousObj.GetComponent<OObject>()?.LoadChildren(0);
                 }
             }
             // add new item
