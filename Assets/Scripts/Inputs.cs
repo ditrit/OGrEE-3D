@@ -11,6 +11,7 @@ public class Inputs : MonoBehaviour
     private int clickCount = 0;
     private float clickTime;
     private CameraControl camControl;
+    [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
 
     // Drag
@@ -32,6 +33,7 @@ public class Inputs : MonoBehaviour
     private void Start()
     {
         camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
+        EventManager.instance.AddListener<ToggleCameraControlEvent>(ToggleCameraControl);
     }
 
     private void Update()
@@ -40,8 +42,7 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        if (!(EventSystem.current.currentSelectedGameObject is GameObject tmp) 
-            || (tmp && !(tmp.GetComponent<TMP_InputField>() || tmp.GetComponent<InputField>())))
+        if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
 
         if (GameManager.instance.getCoordsMode && !lockMouseInteract)
@@ -57,6 +58,20 @@ public class Inputs : MonoBehaviour
         }
 
         RightClickMenu();
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener<ToggleCameraControlEvent>(ToggleCameraControl);
+    }
+
+    ///<summary>
+    /// When called, change the value of <see cref="camControlAllowed"/>
+    ///</summary>
+    ///<param name="_e">The event's instance</param>
+    private void ToggleCameraControl(ToggleCameraControlEvent _e)
+    {
+        camControlAllowed = _e.enabled;
     }
 
     ///<summary>

@@ -931,6 +931,22 @@ public class UiManager : MonoBehaviour
         SetFocusItemText();
     }
 
+    ///<summary>
+    /// Raise a ToggleCameraControlEvent with enabled = true
+    ///</summary>
+    public void EnableCameraControls()
+    {
+        EventManager.instance.Raise(new ToggleCameraControlEvent(true));
+    }
+
+    ///<summary>
+    /// Raise a ToggleCameraControlEvent with enabled = false
+    ///</summary>
+    public void DisableCameraControls()
+    {
+        EventManager.instance.Raise(new ToggleCameraControlEvent(false));
+    }
+
     /// <summary>
     /// Recursively compute the depth of an object
     /// </summary>
