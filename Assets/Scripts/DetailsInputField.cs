@@ -51,7 +51,7 @@ public class DetailsInputField : MonoBehaviour
         {
             ActiveInputField(false);
             UpdateInputField("0");
-            lockLodButton.enabled = false;
+            lockLodButton.gameObject.SetActive(false);
         }
         else
         {
