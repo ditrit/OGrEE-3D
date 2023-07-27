@@ -9,6 +9,7 @@ public class DetailsInputField : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TextMeshProUGUI lockICon;
+    [SerializeField] private Button lockLodButton;
 
     private void Start()
     {
@@ -50,13 +51,15 @@ public class DetailsInputField : MonoBehaviour
         {
             ActiveInputField(false);
             UpdateInputField("0");
-            lockICon.text = "🔓";
+            lockLodButton.enabled = false;
         }
         else
         {
             ActiveInputField(true);
-            UpdateInputField(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().currentLod.ToString());
-            lockICon.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().LodLocked ? "🔒" : "🔓";
+            OgreeObject firstSelected = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>();
+            UpdateInputField(firstSelected.currentLod.ToString());
+            lockLodButton.gameObject.SetActive(firstSelected is OObject oObject && oObject.referent == oObject);
+            lockICon.text = firstSelected.LodLocked ? "🔒" : "🔓";
         }
     }
 
