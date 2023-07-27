@@ -312,6 +312,16 @@ public class GameManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Remove all items from focus list .
+    ///</summary>
+    public async Task UnfocusAll()
+    {
+        int count = focus.Count;
+        for (int i = 0; i < count; i++)
+            await UnfocusItem();
+    }
+
+    ///<summary>
     /// Check if the given GameObject is a child (or a content) of focused object.
     ///</summary>
     ///<param name="_obj">The object to check</param>

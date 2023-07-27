@@ -81,6 +81,9 @@ public class OgreeGenerator : MonoBehaviour
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
+                    if (GameManager.instance.editMode)
+                        UiManager.instance.EditFocused();
+                    await GameManager.instance.UnfocusAll();
                     await GameManager.instance.objectRoot.AwaitDestroy();
                     await GameManager.instance.PurgeDomains(_obj.domain);
                     UiManager.instance.DeletePrompt(prompt);

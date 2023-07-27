@@ -100,6 +100,9 @@ public class CliParser
             case CommandType.Delete:
                 if (string.IsNullOrEmpty(command["data"].ToString()))
                 {
+                    if (GameManager.instance.editMode)
+                        UiManager.instance.EditFocused();
+                    await GameManager.instance.UnfocusAll();
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
                     await GameManager.instance.PurgeDomains();
                 }
@@ -113,6 +116,8 @@ public class CliParser
                 }
                 break;
             case CommandType.Focus:
+                if (GameManager.instance.editMode)
+                    UiManager.instance.EditFocused();
                 GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
                 if (objToFocus)
                 {
@@ -120,11 +125,7 @@ public class CliParser
                     await GameManager.instance.FocusItem(objToFocus);
                 }
                 else
-                {
-                    int count = GameManager.instance.GetFocused().Count;
-                    for (int i = 0; i < count; i++)
-                        await GameManager.instance.UnfocusItem();
-                }
+                    await GameManager.instance.UnfocusAll();
                 break;
             case CommandType.Create:
                 await CreateObjectFromData(command["data"].ToString());
