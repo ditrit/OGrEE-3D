@@ -280,7 +280,7 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (currentLabelMode == ELabelMode.Default || !hasFloatingLabel)
+        if (currentLabelMode == ELabelMode.Default || currentLabelMode == ELabelMode.Forced || !hasFloatingLabel)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.GetComponent<MeshRenderer>().enabled = _value;
         else if (currentLabelMode == ELabelMode.FloatingOnTop)
