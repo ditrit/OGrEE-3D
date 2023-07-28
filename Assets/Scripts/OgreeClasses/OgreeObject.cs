@@ -70,6 +70,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
             Doom();
     }
 
+    /// <summary>
+    /// Doom this object and all of its children
+    /// </summary>
     private void Doom()
     {
         doomed = true;
