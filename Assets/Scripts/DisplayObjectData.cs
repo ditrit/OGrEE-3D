@@ -22,9 +22,11 @@ public class DisplayObjectData : MonoBehaviour
     private string backgroundColor = "000000";
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
+    private OObject oObject;
 
     private void Start()
     {
+        oObject = GetComponent<OObject>();
         EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
     }
 
@@ -278,7 +280,7 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (currentLabelMode == ELabelMode.Default)
+        if (currentLabelMode == ELabelMode.Default || !hasFloatingLabel)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.GetComponent<MeshRenderer>().enabled = _value;
         else if (currentLabelMode == ELabelMode.FloatingOnTop)
@@ -287,12 +289,14 @@ public class DisplayObjectData : MonoBehaviour
 
     private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
-        // Ignore slots
-        if (GetComponent<Slot>())
+        // Ignore slots and opened groups
+        if (GetComponent<Slot>() || (oObject is Group group && !group.isDisplayed))
             return;
 
-        if (!GameManager.instance.focusMode || GameManager.instance.GetFocused().Contains(gameObject)
-            || GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
+        if ( (oObject && oObject.referent == oObject && !GameManager.instance.GetSelected().Contains(gameObject)) ||
+            GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
+            GameManager.instance.GetFocused().Contains(transform.parent.gameObject)
+            )
             SwitchLabel(_e.value);
     }
 

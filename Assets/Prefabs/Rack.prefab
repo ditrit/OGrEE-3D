@@ -107,8 +107,11 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
-  heatMap: 0
+  heatMap: {fileID: 0}
   scatterPlot: 0
+  localCS: {fileID: 0}
+  doomed: 0
+  LodLocked: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
   referent: {fileID: 0}
@@ -138,7 +141,6 @@ MonoBehaviour:
   hasFloatingLabel: 1
   usedLabels: []
   attrToDisplay: 
-  cc: {fileID: 0}
 --- !u!114 &4919390282517756407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,9 +169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11599482bb3741f4b890d546eeba923f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isHovered: 0
-  isHighlighted: 0
 --- !u!1 &2368179890683896667
 GameObject:
   m_ObjectHideFlags: 0
