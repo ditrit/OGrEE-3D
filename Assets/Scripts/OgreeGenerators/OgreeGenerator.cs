@@ -131,7 +131,7 @@ public class OgreeGenerator : MonoBehaviour
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != Category.Domain && !GameManager.instance.objectRoot
+            if (newItem.category != Category.Domain && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;
