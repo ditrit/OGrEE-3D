@@ -29,7 +29,10 @@ public class DetailsInputField : MonoBehaviour
         foreach (GameObject go in GameManager.instance.GetSelected())
             await go.GetComponent<OgreeObject>().LoadChildren(level);
     }
-
+    
+    /// <summary>
+    /// Lock the LOD of the selected objects
+    /// </summary>
     public void LockLOD()
     {
         if (!GameManager.instance.selectMode)
@@ -39,12 +42,23 @@ public class DetailsInputField : MonoBehaviour
         foreach (GameObject go in GameManager.instance.GetSelected())
             go.GetComponent<OgreeObject>().LodLocked = value;
         if (value)
+        {
             lockICon.text = "🔒";
+            lockICon.color = Color.red;
+            ActiveInputField(false);
+        }
         else
+        {
             lockICon.text = "🔓";
+            lockICon.color = Color.green;
+            ActiveInputField(true);
+        }
     }
 
-    ///
+    /// <summary>
+    /// Set up the LOD fields depending on the selection
+    /// </summary>
+    /// <param name="_e"></param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         if (!GameManager.instance.selectMode)
@@ -60,6 +74,7 @@ public class DetailsInputField : MonoBehaviour
             UpdateInputField(firstSelected.currentLod.ToString());
             lockLodButton.gameObject.SetActive(firstSelected is OObject oObject && oObject.referent == oObject);
             lockICon.text = firstSelected.LodLocked ? "🔒" : "🔓";
+            lockICon.color = firstSelected.LodLocked ? Color.red : Color.green;
         }
     }
 
