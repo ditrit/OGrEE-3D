@@ -36,11 +36,7 @@ public class Group : OObject
         GetComponent<ObjectDisplayController>().Display(!_value, !_value, !_value);
         DisplayContent(_value);
         if (_value)
-        {
             GetComponent<ObjectDisplayController>().UnsubscribeEvents();
-            if (isActiveAndEnabled)
-            StartCoroutine(Utils.ImportFinished());
-        }
         else
             GetComponent<ObjectDisplayController>().SubscribeEvents();
     }
