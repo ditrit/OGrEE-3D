@@ -212,7 +212,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         if (_e.obj == gameObject)
         {
-            oobject.ResetTransform();
+            oobject?.ResetTransform();
             ToggleRoomsAndBuildings(true);
             if (GameManager.instance.GetSelected().Contains(gameObject))
                 SetMaterial(GameManager.instance.selectMat);
@@ -220,7 +220,7 @@ public class ObjectDisplayController : MonoBehaviour
                 HandleMaterial();
         }
         else if (_e.obj == transform.parent.gameObject)
-                oobject.ResetTransform();
+                oobject?.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
             Display(true, true, true);
     }

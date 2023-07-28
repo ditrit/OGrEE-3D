@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
     private readonly List<GameObject> focus = new List<GameObject>();
     public bool writeLogs = true;
+    public CameraControl cameraControl;
 
     /// <summary>
     /// True if Temperature Color mode is toggled on
@@ -154,10 +155,8 @@ public class GameManager : MonoBehaviour
 
                     OObject previousSelected = previousObj.GetComponent<OObject>();
 
-                    //Are the previous and current selection both an OObject and part of the same referent ?
-                    //Is the LOD of the previous selection less than 1 ?
-                    if (!previousSelected || !previousSelected.referent || previousSelected.referent.currentLod > 1 ||
-                       (currentSelected && currentSelected.referent == previousSelected.referent))
+                    //Are the previous and current selection part of the same referent ?
+                    if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
                         continue;
 
                     //If the previous selection is not a referent, it will deleted during LoadChildren("0") and we don't want
@@ -165,12 +164,12 @@ public class GameManager : MonoBehaviour
                     if (previousSelected.referent != previousSelected)
                         previousItems.Remove(previousObj);
 
-                    await previousSelected.referent.LoadChildren("0");
+                    await previousSelected.referent.LoadChildren(0);
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
                 if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
-                    await selectOgree.LoadChildren("1");
+                    await selectOgree.LoadChildren(1);
             }
             else // deselection => unload children if level of details is <=1
             {
@@ -183,9 +182,7 @@ public class GameManager : MonoBehaviour
                         previousItems.Remove(previousObj);
                         continue;
                     }
-                    OObject oObject = previousObj.GetComponent<OObject>();
-                    if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren("0");
+                    previousObj.GetComponent<OObject>()?.LoadChildren(0);
                 }
             }
             // add new item
@@ -226,7 +223,7 @@ public class GameManager : MonoBehaviour
                 {
                     OObject oObject = _obj.GetComponent<OObject>();
                     if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren("0");
+                        await oObject.LoadChildren(0);
                     if (focusMode)
                         currentItems.Add(focus[focus.Count - 1]);
                 }
@@ -236,7 +233,7 @@ public class GameManager : MonoBehaviour
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
                 if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
-                    await selectOgree.LoadChildren("1");
+                    await selectOgree.LoadChildren(1);
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
             selectMode = currentItems.Count != 0;
@@ -358,7 +355,7 @@ public class GameManager : MonoBehaviour
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
             }
         }
-        await _toDel.AwaitDestroy();
+        Destroy(_toDel);
         StartCoroutine(Utils.ImportFinished());
     }
 
@@ -377,19 +374,19 @@ public class GameManager : MonoBehaviour
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
-            await doToDel[i].AwaitDestroy();
+            Destroy(doToDel[i]);
     }
 
     ///<summary>
     /// Delete all room and object templates.
     ///</summary>
-    public async void PurgeTemplates()
+    public void PurgeTemplates()
     {
         List<GameObject> templatesToDel = new List<GameObject>();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
-            await templatesToDel[i].AwaitDestroy();
+            Destroy(templatesToDel[i]);
         objectTemplates.Clear();
         buildingTemplates.Clear();
         roomTemplates.Clear();
@@ -400,7 +397,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     ///<param name="_category">The type of the template</param>
     ///<param name="_template">The name of the template</param>
-    public async void DeleteTemplateIfUnused(string _category, string _template)
+    public void DeleteTemplateIfUnused(string _category, string _template)
     {
         int count = 0;
         foreach (DictionaryEntry de in allItems)
@@ -424,12 +421,12 @@ public class GameManager : MonoBehaviour
                 case Category.Rack:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
-                    await toDel.AwaitDestroy();
+                    Destroy(toDel);
                     break;
                 case Category.Device:
                     toDel = objectTemplates[_template];
                     objectTemplates.Remove(_template);
-                    await toDel.AwaitDestroy();
+                    Destroy(toDel);
                     break;
             }
         }
