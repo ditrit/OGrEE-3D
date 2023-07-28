@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 public class DetailsInputField : MonoBehaviour
 {
-    private TMP_InputField inputField;
-
-    private void Awake()
-    {
-        inputField = GetComponent<TMP_InputField>();
-    }
+    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private TextMeshProUGUI lockICon;
+    [SerializeField] private Button lockLodButton;
 
     private void Start()
     {
@@ -28,26 +25,56 @@ public class DetailsInputField : MonoBehaviour
     {
         if (_value.Contains("-"))
             _value = "0";
-
-        List<OgreeObject> objsToUpdate = new List<OgreeObject>();
+        int.TryParse(_value, out int level);
         foreach (GameObject go in GameManager.instance.GetSelected())
-            objsToUpdate.Add(go.GetComponent<OgreeObject>());
-        foreach (OgreeObject obj in objsToUpdate)
-            await obj.LoadChildren(_value);
+            await go.GetComponent<OgreeObject>().LoadChildren(level);
+    }
+    
+    /// <summary>
+    /// Lock the LOD of the selected objects
+    /// </summary>
+    public void LockLOD()
+    {
+        if (!GameManager.instance.selectMode)
+            return;
+
+        bool value = !GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().LodLocked;
+        foreach (GameObject go in GameManager.instance.GetSelected())
+            go.GetComponent<OgreeObject>().LodLocked = value;
+        if (value)
+        {
+            lockICon.text = "🔒";
+            lockICon.color = Color.red;
+            ActiveInputField(false);
+        }
+        else
+        {
+            lockICon.text = "🔓";
+            lockICon.color = Color.green;
+            ActiveInputField(true);
+        }
     }
 
-    ///
+    /// <summary>
+    /// Set up the LOD fields depending on the selection
+    /// </summary>
+    /// <param name="_e"></param>
     private void OnSelectItem(OnSelectItemEvent _e)
     {
         if (!GameManager.instance.selectMode)
         {
             ActiveInputField(false);
             UpdateInputField("0");
+            lockLodButton.gameObject.SetActive(false);
         }
         else
         {
             ActiveInputField(true);
-            UpdateInputField(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().currentLod.ToString());
+            OgreeObject firstSelected = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>();
+            UpdateInputField(firstSelected.currentLod.ToString());
+            lockLodButton.gameObject.SetActive(firstSelected is OObject oObject && oObject.referent == oObject);
+            lockICon.text = firstSelected.LodLocked ? "🔒" : "🔓";
+            lockICon.color = firstSelected.LodLocked ? Color.red : Color.green;
         }
     }
 

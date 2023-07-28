@@ -8,6 +8,7 @@ public class Sensor : MonoBehaviour
     public Color color;
     public bool fromTemplate;
     public GameObject sensorTempDiagram = null;
+    private bool importDone = false;
 
     private void Start()
     {
@@ -66,6 +67,11 @@ public class Sensor : MonoBehaviour
     /// <param name="_e">the event's instance</param>
     private void OnImportFinished(ImportFinishedEvent _e)
     {
+        if (importDone)
+            return;
+
+        importDone = true;
+
         OObject parent = transform.parent.GetComponent<OObject>();
         if (parent)
             if (!fromTemplate)
@@ -74,6 +80,5 @@ public class Sensor : MonoBehaviour
                 SetTemperature(parent.attributes[$"temperature_{name}"]);
             else
                 SetTemperature(float.NaN);
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
     }
 }

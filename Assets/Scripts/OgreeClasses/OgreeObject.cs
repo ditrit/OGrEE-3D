@@ -30,6 +30,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public GameObject heatMap;
     public bool scatterPlot = false;
     public GameObject localCS = null;
+    public bool doomed = false;
+    public bool LodLocked = false;
+
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -59,6 +62,22 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
             GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
+    }
+
+    private void OnDisable()
+    {
+        if (gameObject.activeInHierarchy)
+            Doom();
+    }
+
+    /// <summary>
+    /// Doom this object and all of its children
+    /// </summary>
+    private void Doom()
+    {
+        doomed = true;
+        foreach (Transform child in transform)
+            child.GetComponent<OgreeObject>()?.Doom();
     }
 
     ///<summary>
@@ -114,36 +133,20 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async Task LoadChildren(string _level)
+    public async Task LoadChildren(int _level)
     {
-        if (!ApiManager.instance.isInit)
-        {
-            Debug.Log("API offline");
+        if (!ApiManager.instance.isInit || id == "" || LodLocked)
             return;
-        }
 
-        if (id == "")
-        {
-            GameManager.instance.AppendLogLine($"Id of {hierarchyName} is empty, no child loaded.", ELogTarget.logger, ELogtype.warning);
-            return;
-        }
-        int.TryParse(_level, out int lvl);
-        if (lvl < 0)
-            lvl = 0;
+        if (_level < 0)
+            _level = 0;
 
-        if (currentLod != lvl)
-        {
-            await DeleteChildren(lvl);
+        if (currentLod > _level)
+            await DeleteChildren(_level);
+        else if (_level != currentLod)
+            await ApiManager.instance.GetObject($"{category}s/{id}/all?limit={_level}", ApiManager.instance.DrawObject);
 
-            if (lvl != 0)
-            {
-                string apiCall = $"{category}s/{id}/all?limit={lvl}";
-                Debug.Log(apiCall);
-                await ApiManager.instance.GetObject(apiCall, ApiManager.instance.DrawObject);
-            }
-
-            SetCurrentLod(lvl);
-        }
+        SetCurrentLod(_level);
     }
 
     ///<summary>
