@@ -186,7 +186,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         EventManager.instance.Raise(new ImportFinishedEvent());
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         // Debug.Log("[] event raised !");
     }
 }

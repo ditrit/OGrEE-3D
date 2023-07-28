@@ -297,7 +297,7 @@ public class CliParser
         obj.UpdateFromSApiObject(newData);
 
         if (domainColorChanged)
-            EventManager.instance.Raise(new UpdateDomainEvent { name = newData.name });
+            EventManager.instance.Raise(new UpdateDomainEvent(newData.name));
     }
 
     ///<summary>
@@ -439,7 +439,7 @@ public class CliParser
             case Command.Highlight:
                 GameObject obj = Utils.GetObjectById(manip.data);
                 if (obj)
-                    EventManager.instance.Raise(new HighlightEvent { obj = obj });
+                    EventManager.instance.Raise(new HighlightEvent(obj));
                 else
                     GameManager.instance.AppendLogLine("Error on highlight", ELogTarget.both, ELogtype.errorCli);
                 break;

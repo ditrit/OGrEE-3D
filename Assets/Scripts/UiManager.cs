@@ -734,13 +734,13 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.editMode)
         {
             GameManager.instance.editMode = false;
-            EventManager.instance.Raise(new EditModeOutEvent() { obj = GameManager.instance.GetSelected()[0] });
+            EventManager.instance.Raise(new EditModeOutEvent(GameManager.instance.GetSelected()[0]));
             GameManager.instance.AppendLogLine($"Edit out: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
         else
         {
             GameManager.instance.editMode = true;
-            EventManager.instance.Raise(new EditModeInEvent() { obj = GameManager.instance.GetSelected()[0] });
+            EventManager.instance.Raise(new EditModeInEvent(GameManager.instance.GetSelected()[0]));
             GameManager.instance.AppendLogLine($"Edit in: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
         }
     }
@@ -806,7 +806,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">The toggle value</param>
     public void ToggleLabels(int _value)
     {
-        EventManager.instance.Raise(new SwitchLabelEvent() { value = (ELabelMode)_value });
+        EventManager.instance.Raise(new SwitchLabelEvent((ELabelMode)_value));
         mouseName.gameObject.SetActive((ELabelMode)_value == ELabelMode.Hidden);
     }
 

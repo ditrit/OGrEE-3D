@@ -166,7 +166,7 @@ public class ApiManager : MonoBehaviour
             }
         }
         if (!string.IsNullOrEmpty(apiResp.data["Customer"]))
-            EventManager.instance.Raise(new ConnectApiEvent() { apiData = apiResp.data });
+            EventManager.instance.Raise(new ConnectApiEvent(apiResp.data));
     }
 
     ///<summary>
@@ -259,7 +259,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warning);
             return;
         }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
 
         string fullPath = $"{server}/{_input}";
         try
@@ -271,7 +271,7 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.instance.AppendLogLine($"{fullPath}: {e.Message}", ELogTarget.logger, ELogtype.errorApi);
-            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         }
     }
 
@@ -288,7 +288,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
             return default;
         }
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
 
         string fullPath = $"{server}/{_input}";
         try
@@ -300,7 +300,7 @@ public class ApiManager : MonoBehaviour
         catch (HttpRequestException e)
         {
             GameManager.instance.AppendLogLine($"{fullPath}: {e.Message}", ELogTarget.logger, ELogtype.errorApi);
-            EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
             return default;
         }
     }
@@ -403,7 +403,7 @@ public class ApiManager : MonoBehaviour
                         await rfJson.CreateObjectTemplate(deviceData);
                         break;
                 }
-                EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+                EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
             }
             else
                 await CreateItemFromJson(_input);
