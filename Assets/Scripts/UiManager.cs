@@ -29,6 +29,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler addSelectBtn;
     [SerializeField] private ButtonHandler removeSelectBtn;
     [SerializeField] private ButtonHandler selectParentBtn;
+    [SerializeField] private ButtonHandler toggleGroupContent;
     [SerializeField] private ButtonHandler focusBtn;
     [SerializeField] private ButtonHandler unfocusBtn;
     [SerializeField] private ButtonHandler editBtn;
@@ -67,6 +68,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Scrollbar loggerSB;
     private const int loggerSize = 100;
     private Queue<string> loggerQueue = new Queue<string>(loggerSize);
+
+    public List<Group> openedGroups;
 
     private void Awake()
     {
@@ -163,6 +166,14 @@ public class UiManager : MonoBehaviour
             )
         };
         selectParentBtn.Check();
+
+        toggleGroupContent = new ButtonHandler(toggleGroupContent.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Group>()
+        };
+        toggleGroupContent.Check();
 
         editBtn = new ButtonHandler(editBtn.button, true)
         {
@@ -780,6 +791,15 @@ public class UiManager : MonoBehaviour
             return;
 
         await GameManager.instance.SetCurrentItem(GameManager.instance.GetSelected()[0].transform.parent?.gameObject);
+    }
+
+    ///<summary>
+    /// Called by GUI button: Toggle content of group under the mouse
+    ///</summary>
+    public void ToggleGroupContent()
+    {
+        Group group = menuTarget.GetComponent<Group>();
+        group.ToggleContent(group.isDisplayed);
     }
 
     ///<summary>
