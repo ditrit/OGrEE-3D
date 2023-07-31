@@ -194,7 +194,7 @@ public static class Utils
     ///<param name="_leafIds">The list of leaf IDs to complete</param>
     public static void ParseNestedObjects(List<SApiObject> _physicalList, List<SApiObject> _logicalList, SApiObject _src, List<string> _leafIds)
     {
-        if (_src.category == "group")
+        if (_src.category == Category.Group)
             _logicalList.Add(_src);
         else
             _physicalList.Add(_src);
@@ -354,18 +354,6 @@ public static class Utils
         _target.SetActive(false); //for UI
         Object.Destroy(_target);
         GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
-    }
-
-    ///<summary>
-    /// Destroy an object and wait for its reference to be null
-    ///</summary>
-    ///<param name="_obj">The object to destroy</param>
-    ///<param name="_frequency">The time to wait at each loop. 10 by default</param>
-    public static async Task AwaitDestroy(this Object _obj, int _frequency = 10)
-    {
-        Object.Destroy(_obj);
-        while (_obj)
-            await Task.Delay(_frequency);
     }
 
     ///<summary>

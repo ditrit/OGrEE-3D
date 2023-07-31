@@ -63,9 +63,6 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
         {
-            string str = "";
-            foreach (GameObject obj in GameManager.instance.GetSelected())
-                str += (obj.name) + " ";
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
@@ -81,7 +78,7 @@ public class UHelpersManager : MonoBehaviour
             return;
         switch (_selection[0].GetComponent<OObject>().category)
         {
-            case "rack":
+            case Category.Rack:
                 foreach (GameObject obj in _selection)
                 {
                     GameObject u = obj.GetComponent<Rack>().uRoot.gameObject;
@@ -92,7 +89,7 @@ public class UHelpersManager : MonoBehaviour
                 }
                 break;
 
-            case "device":
+            case Category.Device:
                 if (wasEdited)
                     return;
                 Rack rack = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
@@ -251,9 +248,9 @@ public class UHelpersManager : MonoBehaviour
         UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
         UFrontRight.localEulerAngles = Vector3.zero;
 
-        float scale = GameManager.instance.uSize;
-        if (_rack.attributes["heightUnit"] == "OU")
-            scale = GameManager.instance.ouSize;
+        float scale = UnitValue.U;
+        if (_rack.attributes["heightUnit"] == LengthUnit.OU)
+            scale = UnitValue.OU;
 
         //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
         float minY = float.PositiveInfinity;
@@ -276,7 +273,7 @@ public class UHelpersManager : MonoBehaviour
             BuildU(minY, maxY, scale, UFrontLeft, cornerFrontLeft, Color.blue);
             BuildU(minY, maxY, scale, UFrontRight, cornerFrontRight, Color.green);
         }
-        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == "U" || _rack.attributes["heightUnit"] == "OU")
+        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == LengthUnit.U || _rack.attributes["heightUnit"] == LengthUnit.OU)
         {
             int Unumber;
             if (_rack.attributes.ContainsKey("sizeWDHu"))

@@ -118,7 +118,7 @@ public class GUIObjectInfos : MonoBehaviour
                 i++;
 
                 // If rack, display pos by tile name if available
-                if (_obj.category == "rack" && _obj.transform.parent)
+                if (_obj.category == Category.Rack && _obj.transform.parent)
                 {
                     Room room = _obj.transform.parent.GetComponent<Room>();
                     if (room.attributes.ContainsKey("tiles"))
