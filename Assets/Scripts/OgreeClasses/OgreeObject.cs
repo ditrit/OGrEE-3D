@@ -30,7 +30,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public GameObject heatMap;
     public bool scatterPlot = false;
     public GameObject localCS = null;
-    public bool doomed = false;
+    public bool isDoomed = false;
     public bool LodLocked = false;
 
     public void OnBeforeSerialize()
@@ -75,7 +75,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     /// </summary>
     private void Doom()
     {
-        doomed = true;
+        isDoomed = true;
         foreach (Transform child in transform)
             child.GetComponent<OgreeObject>()?.Doom();
     }
