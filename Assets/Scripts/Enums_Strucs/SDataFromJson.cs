@@ -35,7 +35,6 @@ public struct SBuildingFromJson
     public string slug;
     public string category;
     public float[] sizeWDHm;
-    public List<float> center;
     public List<List<float>> vertices;
 }
 
@@ -47,7 +46,6 @@ public struct SRoomFromJson
     public string axisOrientation;
     public float[] sizeWDHm;
     public string floorUnit;
-    public List<float> center;
     public List<List<float>> vertices;
     public int[] technicalArea;
     public int[] reservedArea;

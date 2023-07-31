@@ -69,10 +69,10 @@ public class GridCell : MonoBehaviour
         grid.name = "GridForULocation";
 
         Vector3 newPosition = grid.transform.position;
-        if (GetComponent<Rack>().attributes["heightUnit"] == "OU")
-            newPosition.y = _height - GameManager.instance.ouSize / 2;
+        if (GetComponent<Rack>().attributes["heightUnit"] == LengthUnit.OU)
+            newPosition.y = _height - UnitValue.OU / 2;
         else
-            newPosition.y = _height - GameManager.instance.uSize / 2;
+            newPosition.y = _height - UnitValue.U / 2;
         grid.transform.position = newPosition;
 
         Vector2 size = new Vector2(transform.GetChild(0).localScale.x, transform.GetChild(0).localScale.z) / 10;

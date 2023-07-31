@@ -22,12 +22,12 @@ public class DisplayObjectData : MonoBehaviour
     private string backgroundColor = "000000";
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
-    [SerializeField] private CameraControl cc;
+    private OObject oObject;
 
     private void Start()
     {
+        oObject = GetComponent<OObject>();
         EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
-        cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
@@ -41,8 +41,8 @@ public class DisplayObjectData : MonoBehaviour
         if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
-            floatingLabel.transform.LookAt(cc.transform);
-            floatingLabel.transform.rotation = Quaternion.LookRotation(cc.transform.forward);
+            floatingLabel.transform.LookAt(GameManager.instance.cameraControl.transform);
+            floatingLabel.transform.rotation = Quaternion.LookRotation(GameManager.instance.cameraControl.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
         }
     }
@@ -59,17 +59,17 @@ public class DisplayObjectData : MonoBehaviour
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
         {
             Vector2 size = JsonUtility.FromJson<Vector2>(oObj.attributes["size"]);
-            if (oObj.attributes["sizeUnit"] == "mm")
+            if (oObj.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
-            else if (oObj.attributes["sizeUnit"] == "cm")
+            else if (oObj.attributes["sizeUnit"] == LengthUnit.Centimeter)
                 size /= 100;
 
             float height = Utils.ParseDecFrac(oObj.attributes["height"]);
-            if (oObj.attributes["heightUnit"] == "U")
-                height *= GameManager.instance.uSize;
-            else if (oObj.attributes["heightUnit"] == "mm")
+            if (oObj.attributes["heightUnit"] == LengthUnit.U)
+                height *= UnitValue.U;
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Millimeter)
                 height /= 1000;
-            else if (oObj.attributes["heightUnit"] == "cm")
+            else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
             boxSize = new Vector3(size.x, height, size.y);
         }
@@ -109,26 +109,26 @@ public class DisplayObjectData : MonoBehaviour
         usedLabels.Clear();
         switch (_labelPos)
         {
-            case "frontrear":
+            case LabelPos.FrontRear:
                 usedLabels.Add(labelFront);
                 usedLabels.Add(labelRear);
                 break;
-            case "front":
+            case LabelPos.Front:
                 usedLabels.Add(labelFront);
                 break;
-            case "rear":
+            case LabelPos.Rear:
                 usedLabels.Add(labelRear);
                 break;
-            case "right":
+            case LabelPos.Right:
                 usedLabels.Add(labelRight);
                 break;
-            case "left":
+            case LabelPos.Left:
                 usedLabels.Add(labelLeft);
                 break;
-            case "top":
+            case LabelPos.Top:
                 usedLabels.Add(labelTop);
                 break;
-            case "bottom":
+            case LabelPos.Bottom:
                 usedLabels.Add(labelBottom);
                 break;
         }
@@ -209,7 +209,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_face)
             {
                 OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj.category == "rack")
+                if (obj && obj.category == Category.Rack)
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";
@@ -280,7 +280,7 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (currentLabelMode == ELabelMode.Default)
+        if (currentLabelMode == ELabelMode.Default || currentLabelMode == ELabelMode.Forced || !hasFloatingLabel)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.GetComponent<MeshRenderer>().enabled = _value;
         else if (currentLabelMode == ELabelMode.FloatingOnTop)
@@ -289,12 +289,14 @@ public class DisplayObjectData : MonoBehaviour
 
     private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
-        // Ignore slots
-        if (GetComponent<Slot>())
+        // Ignore slots and opened groups
+        if (GetComponent<Slot>() || (oObject is Group group && !group.isDisplayed))
             return;
 
-        if (!GameManager.instance.focusMode || GameManager.instance.GetFocused().Contains(gameObject)
-            || GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
+        if ( (oObject && oObject.referent == oObject && !GameManager.instance.GetSelected().Contains(gameObject)) ||
+            GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
+            GameManager.instance.GetFocused().Contains(transform.parent.gameObject)
+            )
             SwitchLabel(_e.value);
     }
 

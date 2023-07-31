@@ -50,7 +50,7 @@ public class TempDiagram : MonoBehaviour
     /// Show the temperature diagram if it is not already shown, hide it if it is.
     /// </summary>
     /// <param name="_room">the object where we show/hide the temperature diagram</param>
-    public void HandleTempBarChart(Room _room)
+    public async void HandleTempBarChart(Room _room)
     {
         if (_room.scatterPlot)
             HandleScatterPlot(_room);
@@ -58,11 +58,11 @@ public class TempDiagram : MonoBehaviour
 
         switch (_room.attributes["heightUnit"])
         {
-            case "m":
+            case LengthUnit.Meter:
                 break;
-            case "cm":
+            case LengthUnit.Centimeter:
                 roomHeight /= 100; break;
-            case "mm":
+            case LengthUnit.Millimeter:
                 roomHeight /= 1000; break;
             default:
                 GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning); break;
@@ -75,8 +75,15 @@ public class TempDiagram : MonoBehaviour
             foreach (Transform childTransform in _room.transform)
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
-                if (childOgreeObject && !childTransform.GetComponent<Group>())
+                if (childOgreeObject)
+                {
+                    if (childOgreeObject is Group childGroup && childGroup.isDisplayed)
+                    {
+                        childGroup.ToggleContent(true);
+                        _room.openedGroups.Add(childGroup);
+                    }
                     ComputeTempBar(childOgreeObject, _room.temperatureUnit, roomHeight);
+                }
             }
         }
         else
@@ -85,8 +92,11 @@ public class TempDiagram : MonoBehaviour
             {
                 OObject childOgreeObject = childTransform.GetComponent<OObject>();
                 if (childOgreeObject)
-                    Destroy(childOgreeObject.tempBar);
+                    await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));
             }
+            foreach(Group group in _room.openedGroups)
+                group.ToggleContent(false);
+            _room.openedGroups.Clear();
         }
         _room.barChart = !_room.barChart;
     }

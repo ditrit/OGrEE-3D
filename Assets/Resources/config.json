@@ -13,6 +13,7 @@
         "edit": "#C900FF",
         "focus": "#FF9F00",
         "highlight": "#00D5FF",
+        "scatterPlot": "#2C4CBE",
 
         "usableZone": "#DBEDF2",
         "reservedZone": "#F2F2F2",

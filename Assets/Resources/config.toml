@@ -21,6 +21,7 @@ selection = "#21FF00"
 edit = "#C900FF"
 focus = "#FF9F00"
 highlight = "#00D5FF"
+scatterPlot = "#2C4CBE"
 
 usableZone = "#DBEDF2"
 reservedZone = "#F2F2F2"
@@ -37,6 +38,8 @@ maxF = 212
 useCustomGradient = true
 customTemperatureGradient = [
     [0,0,255,0],
-    [255,0,0,100],
-    [255,255,0,50]
+    [0,255,255,30],
+    [0,255,0,50],
+    [255,255,0,70],
+    [255,0,0,100]
 ]
