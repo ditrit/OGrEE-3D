@@ -151,13 +151,3 @@ public class RightClickEvent : CustomEvent
 public class CancelGenerateEvent : CustomEvent
 {
 }
-
-public class ToggleCameraControlEvent : CustomEvent
-{
-    public bool enabled;
-
-    public ToggleCameraControlEvent(bool _enabled)
-    {
-        enabled = _enabled;
-    }
-}

@@ -33,7 +33,6 @@ public class Inputs : MonoBehaviour
     private void Start()
     {
         camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
-        EventManager.instance.AddListener<ToggleCameraControlEvent>(ToggleCameraControl);
     }
 
     private void Update()
@@ -58,20 +57,6 @@ public class Inputs : MonoBehaviour
         }
 
         RightClickMenu();
-    }
-
-    private void OnDestroy()
-    {
-        EventManager.instance.RemoveListener<ToggleCameraControlEvent>(ToggleCameraControl);
-    }
-
-    ///<summary>
-    /// When called, change the value of <see cref="camControlAllowed"/>
-    ///</summary>
-    ///<param name="_e">The event's instance</param>
-    private void ToggleCameraControl(ToggleCameraControlEvent _e)
-    {
-        camControlAllowed = _e.enabled;
     }
 
     ///<summary>
@@ -375,5 +360,14 @@ public class Inputs : MonoBehaviour
         string objName = hitObject.GetComponent<OgreeObject>().hierarchyName;
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
         GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
+    }
+
+    ///<summary>
+    /// Toggle value of <see cref="camControlAllowed"/>.
+    ///</summary>
+    ///<param name="_value">The value to assign</param>
+    public void ToggleCameraControls(bool _value)
+    {
+        camControlAllowed = _value;
     }
 }
