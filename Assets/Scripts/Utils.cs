@@ -357,18 +357,6 @@ public static class Utils
     }
 
     ///<summary>
-    /// Destroy an object and wait for its reference to be null
-    ///</summary>
-    ///<param name="_obj">The object to destroy</param>
-    ///<param name="_frequency">The time to wait at each loop. 10 by default</param>
-    public static async Task AwaitDestroy(this Object _obj, int _frequency = 10)
-    {
-        Object.Destroy(_obj);
-        while (_obj)
-            await Task.Delay(_frequency);
-    }
-
-    ///<summary>
     /// Convert a float to a string with "0.##" format
     ///</summary>
     ///<param name="_input">The float to convert</param>

@@ -22,12 +22,12 @@ public class DisplayObjectData : MonoBehaviour
     private string backgroundColor = "000000";
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
-    [SerializeField] private CameraControl cc;
+    private OObject oObject;
 
     private void Start()
     {
+        oObject = GetComponent<OObject>();
         EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
-        cc = FindObjectOfType<CameraControl>();
     }
 
     private void OnDestroy()
@@ -41,8 +41,8 @@ public class DisplayObjectData : MonoBehaviour
         if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
             floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
-            floatingLabel.transform.LookAt(cc.transform);
-            floatingLabel.transform.rotation = Quaternion.LookRotation(cc.transform.forward);
+            floatingLabel.transform.LookAt(GameManager.instance.cameraControl.transform);
+            floatingLabel.transform.rotation = Quaternion.LookRotation(GameManager.instance.cameraControl.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
         }
     }
@@ -293,7 +293,7 @@ public class DisplayObjectData : MonoBehaviour
 
     public void ToggleLabel(bool _value)
     {
-        if (currentLabelMode == ELabelMode.Default)
+        if (currentLabelMode == ELabelMode.Default || currentLabelMode == ELabelMode.Forced || !hasFloatingLabel)
             foreach (TextMeshPro tmp in usedLabels)
                 tmp.GetComponent<MeshRenderer>().enabled = _value;
         else if (currentLabelMode == ELabelMode.FloatingOnTop)
@@ -302,12 +302,14 @@ public class DisplayObjectData : MonoBehaviour
 
     private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
-        // Ignore slots
-        if (GetComponent<Slot>())
+        // Ignore slots and opened groups
+        if (GetComponent<Slot>() || (oObject is Group group && !group.isDisplayed))
             return;
 
-        if (!GameManager.instance.focusMode || GameManager.instance.GetFocused().Contains(gameObject)
-            || GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
+        if ( (oObject && oObject.referent == oObject && !GameManager.instance.GetSelected().Contains(gameObject)) ||
+            GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
+            GameManager.instance.GetFocused().Contains(transform.parent.gameObject)
+            )
             SwitchLabel(_e.value);
     }
 

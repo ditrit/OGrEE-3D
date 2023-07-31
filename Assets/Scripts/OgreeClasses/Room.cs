@@ -59,7 +59,7 @@ public class Room : Building
     ///<param name="_value">True or false value</param>
     public void ToggleTilesName(bool _value)
     {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         if (isSquare)
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
@@ -79,7 +79,7 @@ public class Room : Building
             }
         }
         tileName = _value;
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
     ///<summary>
@@ -87,7 +87,7 @@ public class Room : Building
     ///</summary>
     public void ToggleTilesName()
     {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         if (isSquare)
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
@@ -107,7 +107,7 @@ public class Room : Building
             }
         }
         tileName = !tileName;
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
     ///<summary>
@@ -136,7 +136,7 @@ public class Room : Building
             return;
         }
 
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         if (isSquare)
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
@@ -176,7 +176,7 @@ public class Room : Building
             }
         }
         tileColor = _value;
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
     ///<summary>
@@ -184,7 +184,7 @@ public class Room : Building
     ///</summary>
     public void ToggleTilesColor()
     {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Loading });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         if (isSquare)
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
@@ -221,7 +221,7 @@ public class Room : Building
             }
         }
         tileColor = !tileColor;
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
     ///<summary>

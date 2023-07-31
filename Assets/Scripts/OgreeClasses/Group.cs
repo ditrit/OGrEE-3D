@@ -36,10 +36,7 @@ public class Group : OObject
         GetComponent<ObjectDisplayController>().Display(!_value, !_value, !_value);
         DisplayContent(_value);
         if (_value)
-        {
             GetComponent<ObjectDisplayController>().UnsubscribeEvents();
-            StartCoroutine(Utils.ImportFinished());
-        }
         else
             GetComponent<ObjectDisplayController>().SubscribeEvents();
     }
@@ -51,7 +48,8 @@ public class Group : OObject
     private void DisplayContent(bool _value)
     {
         foreach (GameObject r in GetContent())
-                r?.SetActive(_value);
+            if (r && !r.GetComponent<OgreeObject>().isDoomed)
+                r.SetActive(_value);
     }
 
     ///<summary>
