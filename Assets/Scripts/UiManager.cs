@@ -90,6 +90,8 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OgreeObject>()
             &&
+            menuTarget.GetComponent<OgreeObject>()
+            &&
             !GameManager.instance.editMode
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
