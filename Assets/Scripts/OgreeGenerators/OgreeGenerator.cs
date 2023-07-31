@@ -81,6 +81,9 @@ public class OgreeGenerator : MonoBehaviour
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
+                    if (GameManager.instance.editMode)
+                        UiManager.instance.EditFocused();
+                    await GameManager.instance.UnfocusAll();
                     Destroy(GameManager.instance.objectRoot);
                     await GameManager.instance.PurgeDomains(_obj.domain);
                     UiManager.instance.DeletePrompt(prompt);
@@ -128,7 +131,7 @@ public class OgreeGenerator : MonoBehaviour
         if (newItem)
         {
             newItem.SetBaseTransform();
-            if (newItem.category != Category.Domain && !GameManager.instance.objectRoot
+            if (newItem.category != Category.Domain && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newItem.gameObject;
@@ -183,7 +186,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         EventManager.instance.Raise(new ImportFinishedEvent());
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         // Debug.Log("[] event raised !");
     }
 }

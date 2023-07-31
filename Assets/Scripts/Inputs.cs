@@ -11,6 +11,7 @@ public class Inputs : MonoBehaviour
     private int clickCount = 0;
     private float clickTime;
     private CameraControl camControl;
+    [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
 
     // Drag
@@ -40,8 +41,7 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        if (!(EventSystem.current.currentSelectedGameObject is GameObject tmp) 
-            || (tmp && !(tmp.GetComponent<TMP_InputField>() || tmp.GetComponent<InputField>())))
+        if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
 
         if (GameManager.instance.getCoordsMode && !lockMouseInteract)
@@ -288,16 +288,16 @@ public class Inputs : MonoBehaviour
             if (target.gameObject != savedObjectThatWeHover)
             {
                 if (savedObjectThatWeHover)
-                    EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                    EventManager.instance.Raise(new OnMouseUnHoverEvent(savedObjectThatWeHover));
 
                 savedObjectThatWeHover = target.gameObject;
-                EventManager.instance.Raise(new OnMouseHoverEvent { obj = target.gameObject });
+                EventManager.instance.Raise(new OnMouseHoverEvent(target.gameObject));
             }
         }
         else
         {
             if (savedObjectThatWeHover)
-                EventManager.instance.Raise(new OnMouseUnHoverEvent { obj = savedObjectThatWeHover });
+                EventManager.instance.Raise(new OnMouseUnHoverEvent(savedObjectThatWeHover));
             savedObjectThatWeHover = null;
         }
     }
@@ -360,5 +360,14 @@ public class Inputs : MonoBehaviour
         string objName = hitObject.GetComponent<OgreeObject>().hierarchyName;
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
         GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
+    }
+
+    ///<summary>
+    /// Toggle value of <see cref="camControlAllowed"/>.
+    ///</summary>
+    ///<param name="_value">The value to assign</param>
+    public void ToggleCameraControls(bool _value)
+    {
+        camControlAllowed = _value;
     }
 }

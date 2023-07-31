@@ -68,7 +68,7 @@ public class TempDiagram : MonoBehaviour
                 GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning); break;
         }
 
-        EventManager.instance.Raise(new TemperatureDiagramEvent() { room = _room });
+        EventManager.instance.Raise(new TemperatureDiagramEvent(_room));
 
         if (!_room.barChart)
         {
@@ -94,7 +94,7 @@ public class TempDiagram : MonoBehaviour
                 if (childOgreeObject)
                     await GameManager.instance.DeleteItem(childOgreeObject.tempBar, false, GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar));
             }
-            foreach(Group group in _room.openedGroups)
+            foreach (Group group in _room.openedGroups)
                 group.ToggleContent(false);
             _room.openedGroups.Clear();
         }
@@ -172,7 +172,7 @@ public class TempDiagram : MonoBehaviour
         if (_ogreeObject is Room room && room.barChart)
             HandleTempBarChart(room);
         _ogreeObject.scatterPlot = !_ogreeObject.scatterPlot;
-        EventManager.instance.Raise(new TemperatureScatterPlotEvent() { ogreeObject = _ogreeObject });
+        EventManager.instance.Raise(new TemperatureScatterPlotEvent(_ogreeObject));
 
         GetObjectSensors(_ogreeObject).ForEach(s => s.transform.GetChild(0).GetComponent<Renderer>().enabled = _ogreeObject.scatterPlot);
 
