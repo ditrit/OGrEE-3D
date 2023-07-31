@@ -236,7 +236,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
     public void ToggleCS(bool _value)
     {
         if (localCS && !_value)
-            gameObject.CleanDestroy($"Hide local Coordinate System for {name}");
+            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
         else if (!localCS && _value)
             BuildLocalCS();
     }

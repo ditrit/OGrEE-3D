@@ -84,7 +84,9 @@ public class UiManager : MonoBehaviour
     {
         selectBtn = new ButtonHandler(selectBtn.button, false)
         {
-            interactCondition = () => menuTarget
+            interactCondition = () => !GameManager.instance.getCoordsMode
+            &&
+            menuTarget
             &&
             menuTarget.GetComponent<OgreeObject>()
             &&
@@ -96,7 +98,9 @@ public class UiManager : MonoBehaviour
 
         addSelectBtn = new ButtonHandler(addSelectBtn.button, true)
         {
-            interactCondition = () => menuTarget
+            interactCondition = () => !GameManager.instance.getCoordsMode
+            &&
+            menuTarget
             &&
             !GameManager.instance.editMode
             &&
@@ -112,7 +116,9 @@ public class UiManager : MonoBehaviour
 
         removeSelectBtn = new ButtonHandler(removeSelectBtn.button, true)
         {
-            interactCondition = () => menuTarget
+            interactCondition = () => !GameManager.instance.getCoordsMode
+            &&
+            menuTarget
             &&
             !GameManager.instance.editMode
             &&
@@ -128,7 +134,9 @@ public class UiManager : MonoBehaviour
 
         focusBtn = new ButtonHandler(focusBtn.button, false)
         {
-            interactCondition = () => !GameManager.instance.editMode
+            interactCondition = () => !GameManager.instance.getCoordsMode
+            &&
+            !GameManager.instance.editMode
             &&
             menuTarget
             &&
@@ -152,7 +160,9 @@ public class UiManager : MonoBehaviour
 
         selectParentBtn = new ButtonHandler(selectParentBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => !GameManager.instance.getCoordsMode
+            &&
+            GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0] == menuTarget
             &&
@@ -161,6 +171,8 @@ public class UiManager : MonoBehaviour
                 ||
                 GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
             )
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().category != "tempBar"
         };
         selectParentBtn.Check();
 

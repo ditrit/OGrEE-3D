@@ -43,18 +43,19 @@ public class Inputs : MonoBehaviour
 #endif
         if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
+        
+        if (!isDraggingObj && !isRotatingObj && !isScalingObj)
+            target = Utils.RaycastFromCameraToMouse()?.transform;
 
         if (GameManager.instance.getCoordsMode && !lockMouseInteract)
             GetCoordsModeControls();
         else if (!GameManager.instance.getCoordsMode)
         {
-            if (!isDraggingObj && !isRotatingObj && !isScalingObj)
-                target = Utils.RaycastFromCameraToMouse()?.transform;
-
             if (!lockMouseInteract)
                 MouseControls();
             MouseHover();
         }
+
 
         RightClickMenu();
     }
