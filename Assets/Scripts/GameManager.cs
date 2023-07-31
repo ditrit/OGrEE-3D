@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.Raise(new ChangeCursorEvent() { type = CursorChanger.CursorType.Idle });
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         configLoader.LoadConfig();
         server.StartServer();
         StartCoroutine(configLoader.LoadTextures());
@@ -277,7 +277,7 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
-            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
+            EventManager.instance.Raise(new OnFocusEvent(focus[focus.Count - 1]));
         }
         else
             await UnfocusItem();
@@ -292,13 +292,14 @@ public class GameManager : MonoBehaviour
         focus.Remove(obj);
 
         focusMode = focus.Count != 0;
-        EventManager.instance.Raise(new OnUnFocusEvent() { obj = obj });
+        EventManager.instance.Raise(new OnUnFocusEvent(obj));
         if (focus.Count > 0)
         {
-            EventManager.instance.Raise(new OnFocusEvent() { obj = focus[focus.Count - 1] });
-            AppendLogLine($"Focus {focus[focus.Count - 1].GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
-            if (!currentItems.Contains(focus[focus.Count - 1]))
-                await SetCurrentItem(focus[focus.Count - 1]);
+            GameObject lastFocus = focus[focus.Count - 1];
+            EventManager.instance.Raise(new OnFocusEvent(lastFocus));
+            AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
+            if (!currentItems.Contains(lastFocus))
+                await SetCurrentItem(lastFocus);
         }
         else
         {
@@ -306,6 +307,16 @@ public class GameManager : MonoBehaviour
                 await SetCurrentItem(obj);
             AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
         }
+    }
+
+    ///<summary>
+    /// Remove all items from focus list .
+    ///</summary>
+    public async Task UnfocusAll()
+    {
+        int count = focus.Count;
+        for (int i = 0; i < count; i++)
+            await UnfocusItem();
     }
 
     ///<summary>

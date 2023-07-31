@@ -48,7 +48,7 @@ public class Group : OObject
     private void DisplayContent(bool _value)
     {
         foreach (GameObject r in GetContent())
-            if (r && !r.GetComponent<OgreeObject>().doomed)
+            if (r && !r.GetComponent<OgreeObject>().isDoomed)
                 r.SetActive(_value);
     }
 
