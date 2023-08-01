@@ -69,6 +69,11 @@ public class UiManager : MonoBehaviour
     private const int loggerSize = 100;
     private Queue<string> loggerQueue = new Queue<string>(loggerSize);
 
+    [Header("Groups")]
+    [SerializeField] private GameObject groupsMenu;
+    [SerializeField] private TMP_Text groupsMenuBtnText;
+    private bool expendGroupsMenu = false;
+    [SerializeField] private GameObject groupBtnPrefab;
     public List<Group> openedGroups;
 
     private void Awake()
@@ -361,6 +366,7 @@ public class UiManager : MonoBehaviour
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
         rightClickMenu.SetActive(false);
+        groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
         EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
@@ -577,6 +583,68 @@ public class UiManager : MonoBehaviour
     {
         rightClickMenu.SetActive(false);
         GetComponent<Inputs>().lockMouseInteract = false;
+    }
+
+    ///<summary>
+    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="groupsMenuBtnText"/>.
+    ///</summary>
+    public void ToggleGroupsMenu()
+    {
+        expendGroupsMenu ^= true;
+        groupsMenuBtnText.text = expendGroupsMenu ? "Hide opened group list" : "Display opened group list";
+
+        GroupsMenuBackgroundSize();
+        foreach (Transform btn in groupsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                btn.gameObject.SetActive(expendGroupsMenu);
+        }
+    }
+
+    ///<summary>
+    /// Active <see cref="groupsMenu"/> depending on <see cref="openedGroups"/> count and re-generate a button for each <see cref="openedGroups"/> item.
+    ///</summary>
+    public void RebuildGroupsMenu()
+    {
+        groupsMenu.SetActive(openedGroups.Count > 0);
+
+        // Wipe previous buttons
+        foreach (Transform btn in groupsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                Destroy(btn.gameObject);
+        }
+
+        // Create a button for each opened group
+        foreach (Group gr in openedGroups)
+        {
+            GameObject newButton = Instantiate(groupBtnPrefab, groupsMenu.transform);
+            newButton.name = $"ButtonOpenGr_{gr.name}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.hierarchyName;
+
+            Button btn = newButton.GetComponent<Button>();
+            btn.onClick.AddListener(() => gr.ToggleContent(false));
+            btn.onClick.AddListener(() => Destroy(newButton));
+
+            newButton.SetActive(expendGroupsMenu);
+        }
+        GroupsMenuBackgroundSize();
+    }
+
+    ///<summary>
+    /// Set the <see cref="groupsMenu"/>'s background according to <see cref="expendGroupsMenu"/>
+    ///</summary>
+    private void GroupsMenuBackgroundSize()
+    {
+        int count = expendGroupsMenu ? openedGroups.Count + 1 : 1;
+
+        float btnHeight = groupsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+        float padding = groupsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+        float spacing = groupsMenu.GetComponent<VerticalLayoutGroup>().spacing;
+
+        float menuWidth = groupsMenu.GetComponent<RectTransform>().sizeDelta.x;
+        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
+        groupsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
     }
 
     ///<summary>

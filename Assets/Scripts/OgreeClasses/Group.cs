@@ -47,6 +47,7 @@ public class Group : OObject
             if (UiManager.instance.openedGroups.Contains(this))
                 UiManager.instance.openedGroups.Remove(this);
         }
+        UiManager.instance.RebuildGroupsMenu();
     }
 
     ///<summary>
