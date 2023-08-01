@@ -39,7 +39,10 @@ public class Group : OObject
         {
             GetComponent<ObjectDisplayController>().UnsubscribeEvents();
             if (!UiManager.instance.openedGroups.Contains(this))
+            {
                 UiManager.instance.openedGroups.Add(this);
+                UiManager.instance.openedGroups.Sort();
+            }
         }
         else
         {
