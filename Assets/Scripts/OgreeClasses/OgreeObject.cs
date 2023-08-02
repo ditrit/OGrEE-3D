@@ -8,7 +8,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 {
     [Header("Standard attributes")]
     public new string name;
-    public string hierarchyName;
     public string id;
     public string parentId;
     public string category;
@@ -58,17 +57,12 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         if (_other == null)
             return 1;
         else
-            return this.hierarchyName.CompareTo(_other.hierarchyName);
-    }
-
-    private void OnEnable()
-    {
-        UpdateHierarchyName();
+            return this.id.CompareTo(_other.id);
     }
 
     protected virtual void OnDestroy()
     {
-        GameManager.instance.allItems.Remove(hierarchyName);
+        GameManager.instance.allItems.Remove(id);
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
             GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
@@ -91,27 +85,12 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     }
 
     ///<summary>
-    /// Update the OgreeObject's hierarchyName with it's parent's one.
-    ///</summary>
-    ///<returns>The updated hierarchyName of the object</returns>
-    public string UpdateHierarchyName()
-    {
-        Transform parent = transform.parent;
-        if (parent)
-            hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{name}";
-        else
-            hierarchyName = name;
-        return hierarchyName;
-    }
-
-    ///<summary>
     /// Update the OgreeObject attributes with given SApiObject.
     ///</summary>
     ///<param name="_src">The SApiObject used to update attributes</param>
     public virtual void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
-        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
@@ -145,7 +124,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(int _level)
     {
-        if (!ApiManager.instance.isInit || id == "" || LodLocked)
+        if (!ApiManager.instance.isInit || LodLocked || (this is OObject obj && obj.isComponent))
             return;
 
         if (_level < 0)
@@ -197,7 +176,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         {
             foreach (OgreeObject obj in objsToDel)
             {
-                Debug.Log($"[Delete] {obj.hierarchyName}");
+                Debug.Log($"[Delete] {obj.id}");
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
             }
         }

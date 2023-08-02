@@ -358,7 +358,7 @@ public class Inputs : MonoBehaviour
     private void AppendDistFromClick(RaycastHit _hit)
     {
         Transform hitObject = _hit.collider.transform.parent;
-        string objName = hitObject.GetComponent<OgreeObject>().hierarchyName;
+        string objName = hitObject.GetComponent<OgreeObject>().id;
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
         GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
     }

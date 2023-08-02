@@ -62,7 +62,7 @@ public class GUIObjectInfos : MonoBehaviour
 
         objList.text = "";
         foreach (GameObject obj in _objects)
-            objList.text += $"{obj.GetComponent<OgreeObject>().hierarchyName}\n";
+            objList.text += $"{obj.GetComponent<OgreeObject>().id}\n";
 
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
@@ -76,7 +76,7 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(OgreeObject _obj)
     {
         int i = 1;
-        tmpName.text = _obj.hierarchyName;
+        tmpName.text = _obj.id;
         if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();

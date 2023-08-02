@@ -62,7 +62,6 @@ public class Building : OgreeObject
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
-        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;

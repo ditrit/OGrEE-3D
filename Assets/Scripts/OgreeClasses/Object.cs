@@ -7,6 +7,7 @@ public class OObject : OgreeObject
 {
     public Color color;
     public bool isHidden = false;
+    public bool isComponent = false;
 
     /// <summary>
     /// The direct child of a room which is a parent of this object or which is this object
@@ -33,7 +34,6 @@ public class OObject : OgreeObject
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
-        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
@@ -75,7 +75,7 @@ public class OObject : OgreeObject
         else
         {
             UpdateColorByDomain();
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknown color to display", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{id}] Unknown color to display", ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -139,7 +139,7 @@ public class OObject : OgreeObject
                 sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
             else
             {
-                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"[{id}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
                 return;
             }
 
@@ -166,7 +166,7 @@ public class OObject : OgreeObject
             }
         }
         else
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{id}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
     }
 
     /// <summary>
