@@ -29,7 +29,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler addSelectBtn;
     [SerializeField] private ButtonHandler removeSelectBtn;
     [SerializeField] private ButtonHandler selectParentBtn;
-    [SerializeField] private ButtonHandler toggleGroupContent;
+    [SerializeField] private ButtonHandler OpenGroupBtn;
     [SerializeField] private ButtonHandler focusBtn;
     [SerializeField] private ButtonHandler unfocusBtn;
     [SerializeField] private ButtonHandler editBtn;
@@ -186,13 +186,13 @@ public class UiManager : MonoBehaviour
         };
         selectParentBtn.Check();
 
-        toggleGroupContent = new ButtonHandler(toggleGroupContent.button, true)
+        OpenGroupBtn = new ButtonHandler(OpenGroupBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
             menuTarget.GetComponent<Group>()
         };
-        toggleGroupContent.Check();
+        OpenGroupBtn.Check();
 
         editBtn = new ButtonHandler(editBtn.button, true)
         {
