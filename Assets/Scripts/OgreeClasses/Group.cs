@@ -23,6 +23,8 @@ public class Group : OObject
     protected override void OnDestroy()
     {
         ToggleContent(true);
+        UiManager.instance.openedGroups.Remove(this);
+        UiManager.instance.RebuildGroupsMenu();
         base.OnDestroy();
     }
 
