@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine;
 
-public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
+public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, IComparable<OgreeObject>
 {
     [Header("Standard attributes")]
     public new string name;
@@ -49,6 +50,15 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver
         attributes = new Dictionary<string, string>();
         for (int i = 0; i < attributesKeys.Count; i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
+    }
+
+    public int CompareTo(OgreeObject _other)
+    {
+        // A null value means that this object is greater.
+        if (_other == null)
+            return 1;
+        else
+            return this.hierarchyName.CompareTo(_other.hierarchyName);
     }
 
     private void OnEnable()

@@ -36,9 +36,21 @@ public class Group : OObject
         GetComponent<ObjectDisplayController>().Display(!_value, !_value, !_value);
         DisplayContent(_value);
         if (_value)
+        {
             GetComponent<ObjectDisplayController>().UnsubscribeEvents();
+            if (!UiManager.instance.openedGroups.Contains(this))
+            {
+                UiManager.instance.openedGroups.Add(this);
+                UiManager.instance.openedGroups.Sort();
+            }
+        }
         else
+        {
             GetComponent<ObjectDisplayController>().SubscribeEvents();
+            if (UiManager.instance.openedGroups.Contains(this))
+                UiManager.instance.openedGroups.Remove(this);
+        }
+        UiManager.instance.RebuildGroupsMenu();
     }
 
     ///<summary>
