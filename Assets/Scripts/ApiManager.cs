@@ -89,7 +89,7 @@ public class ApiManager : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
+        EventManager.instance.CancelGenerate += OnCancelGenenerate;
     }
 
     private void Update()
@@ -105,7 +105,7 @@ public class ApiManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+        EventManager.instance.CancelGenerate -= OnCancelGenenerate;
     }
 
     ///<summary>

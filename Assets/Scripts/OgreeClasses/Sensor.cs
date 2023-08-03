@@ -12,12 +12,12 @@ public class Sensor : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ImportFinished += OnImportFinished;
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ImportFinished -= OnImportFinished;
     }
 
     ///<summary>

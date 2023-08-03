@@ -12,16 +12,16 @@ public class Building : OgreeObject
     private void Start()
     {
         if (!(this is Room))
-            EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
+            EventManager.instance.ImportFinished += OnImportFinihsed;
+        EventManager.instance.UpdateDomain += UpdateColorByDomain;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         if (!(this is Room))
-            EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
+            EventManager.instance.ImportFinished -= OnImportFinihsed;
+        EventManager.instance.UpdateDomain -= UpdateColorByDomain;
     }
 
     /// <summary>

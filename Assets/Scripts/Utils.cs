@@ -365,4 +365,8 @@ public static class Utils
     {
         return _input.ToString("0.##", CultureInfo.InvariantCulture);
     }
+    public static void Raise(this System.EventHandler e, object _key)
+    {
+
+    }
 }

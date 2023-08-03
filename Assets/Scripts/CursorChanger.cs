@@ -33,12 +33,12 @@ public class CursorChanger : MonoBehaviour, IEventHandler
 
     public void SubscribeEvents()
     {
-        EventManager.instance.AddListener<ChangeCursorEvent>(OnChangeCursor);
+        EventManager.instance.ChangeCursor += OnChangeCursor;
     }
 
     public void UnsubscribeEvents()
     {
-        EventManager.instance.RemoveListener<ChangeCursorEvent>(OnChangeCursor);
+        EventManager.instance.ChangeCursor -= OnChangeCursor;
     }
 
     ///<summary>

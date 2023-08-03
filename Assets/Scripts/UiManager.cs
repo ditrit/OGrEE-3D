@@ -352,13 +352,13 @@ public class UiManager : MonoBehaviour
         rightClickMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem += OnSelectItem;
 
-        EventManager.instance.AddListener<OnFocusEvent>(OnFocusItem);
-        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.OnFocus += OnFocusItem;
+        EventManager.instance.OnUnFocus += OnUnFocusItem;
 
-        EventManager.instance.AddListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ConnectApi += OnApiConnected;
+        EventManager.instance.ImportFinished += OnImportFinished;
     }
 
     private void Update()
@@ -375,13 +375,13 @@ public class UiManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem -= OnSelectItem;
 
-        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocusItem);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.OnFocus -= OnFocusItem;
+        EventManager.instance.OnUnFocus -= OnUnFocusItem;
 
-        EventManager.instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ConnectApi -= OnApiConnected;
+        EventManager.instance.ImportFinished -= OnImportFinished;
     }
 
     ///<summary>

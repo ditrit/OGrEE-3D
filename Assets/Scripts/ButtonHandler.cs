@@ -33,24 +33,24 @@ public class ButtonHandler
         button = _button;
         hideWhenUseless = _hide;
         defaultCB = button.colors;
-        EventManager.instance.AddListener<RightClickEvent>(CheckRightClick);
-        EventManager.instance.AddListener<OnSelectItemEvent>(CheckSelect);
-        EventManager.instance.AddListener<OnFocusEvent>(CheckFocus);
-        EventManager.instance.AddListener<OnUnFocusEvent>(CheckUnfocus);
-        EventManager.instance.AddListener<EditModeInEvent>(CheckEditIn);
-        EventManager.instance.AddListener<EditModeOutEvent>(CheckEditOut);
-        EventManager.instance.AddListener<ImportFinishedEvent>(CheckImportFinished);
+        EventManager.instance.RightClick += CheckRightClick;
+        EventManager.instance.OnSelectItem += CheckSelect;
+        EventManager.instance.OnFocus += CheckFocus;
+        EventManager.instance.OnUnFocus += CheckUnfocus;
+        EventManager.instance.EditModeIn += CheckEditIn;
+        EventManager.instance.EditModeOut += CheckEditOut;
+        EventManager.instance.ImportFinished += CheckImportFinished;
     }
 
     ~ButtonHandler()
     {
-        EventManager.instance.RemoveListener<RightClickEvent>(CheckRightClick);
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(CheckSelect);
-        EventManager.instance.RemoveListener<OnFocusEvent>(CheckFocus);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(CheckUnfocus);
-        EventManager.instance.RemoveListener<EditModeInEvent>(CheckEditIn);
-        EventManager.instance.RemoveListener<EditModeOutEvent>(CheckEditOut);
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(CheckImportFinished);
+        EventManager.instance.RightClick -= CheckRightClick;
+        EventManager.instance.OnSelectItem -= CheckSelect;
+        EventManager.instance.OnFocus -= CheckFocus;
+        EventManager.instance.OnUnFocus -= CheckUnfocus;
+        EventManager.instance.EditModeIn -= CheckEditIn;
+        EventManager.instance.EditModeOut -= CheckEditOut;
+        EventManager.instance.ImportFinished -= CheckImportFinished;
     }
 
     /// <summary>

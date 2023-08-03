@@ -17,13 +17,13 @@ public class OObject : OgreeObject
 
     private void Start()
     {
-        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain += UpdateColorByDomain;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain -= UpdateColorByDomain;
     }
 
     ///<summary>

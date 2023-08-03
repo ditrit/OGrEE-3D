@@ -27,12 +27,12 @@ public class DisplayObjectData : MonoBehaviour
     private void Start()
     {
         oObject = GetComponent<OObject>();
-        EventManager.instance.AddListener<SwitchLabelEvent>(OnSwitchLabelEvent);
+        EventManager.instance.SwitchLabel += OnSwitchLabelEvent;
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<SwitchLabelEvent>(OnSwitchLabelEvent);
+        EventManager.instance.SwitchLabel -= OnSwitchLabelEvent;
     }
 
     private void Update()

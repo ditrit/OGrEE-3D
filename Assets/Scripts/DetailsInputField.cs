@@ -13,12 +13,12 @@ public class DetailsInputField : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem += OnSelectItem;
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem -= OnSelectItem;
     }
 
     public async void OnValueChanged(string _value)
