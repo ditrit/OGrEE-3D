@@ -47,8 +47,9 @@ public struct SRoomFromJson
     public float[] sizeWDHm;
     public string floorUnit;
     public List<List<float>> vertices;
-    public int[] technicalArea;
-    public int[] reservedArea;
+    public List<float> tileOffset;
+    public List<int> technicalArea;
+    public List<int> reservedArea;
     public SSeparator[] separators;
     public SPillar[] pillars;
     public SColor[] colors;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -51,6 +51,41 @@ public class Room : Building
         ReduceZone(reservedZone, _techDim);
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
+
+        // Apply tileOffset if available
+        if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
+        {
+            SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
+            if (template.tileOffset.Count == 2)
+            {
+                ApplyTileOffset(usableZone, template.tileOffset);
+                ApplyTileOffset(reservedZone, template.tileOffset);
+
+                tilesGrid.GetComponent<Renderer>().material.mainTextureOffset += new Vector2(template.tileOffset[0], template.tileOffset[1]) / UnitValue.Tile;
+            }
+        }
+    }
+
+    ///<summary>
+    /// Apply given _offset to a _zone
+    ///</summary>
+    ///<param name="_zone">The zone to modify</param>
+    ///<param name="_offset">The offset to apply</param>
+    private void ApplyTileOffset(Transform _zone, List<float> _offset)
+    {
+        _zone.localPosition += new Vector3(_offset[0], 0, _offset[1]);
+        // _zone overflow X
+        if (_zone.localScale.x * 10 + Mathf.Abs(_offset[0]) > technicalZone.localScale.x * 10)
+        {
+            _zone.localScale -= new Vector3(Mathf.Abs(_offset[0]), 0, 0) / 10;
+            _zone.localPosition -= new Vector3(_offset[0], 0, 0) / 2;
+        }
+        // _zone overflow Y
+        if (_zone.localScale.z * 10 + Mathf.Abs(_offset[1]) > technicalZone.localScale.z * 10)
+        {
+            _zone.localScale -= new Vector3(0, 0, Mathf.Abs(_offset[1])) / 10;
+            _zone.localPosition -= new Vector3(0, 0, _offset[1]) / 2;
+        }
     }
 
     ///<summary>
