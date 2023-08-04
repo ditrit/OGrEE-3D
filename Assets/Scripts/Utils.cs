@@ -113,12 +113,10 @@ public static class Utils
     {
         if (!string.IsNullOrEmpty(_id))
         {
-            foreach (DictionaryEntry de in GameManager.instance.allItems)
-            {
-                GameObject obj = (GameObject)de.Value;
-                if (obj && obj.GetComponent<OgreeObject>().id == _id)
-                    return obj;
-            }
+            if (GameManager.instance.allItems.Contains(_id))
+                return (GameObject)GameManager.instance.allItems[_id];
+            else
+                return null;
         }
         return null;
     }
@@ -133,12 +131,10 @@ public static class Utils
         string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
 
         List<GameObject> objects = new List<GameObject>();
-        foreach (DictionaryEntry de in GameManager.instance.allItems)
+        foreach (string objId in ids)
         {
-            GameObject obj = (GameObject)de.Value;
-            foreach (string objId in ids)
-                if (obj.GetComponent<OgreeObject>().id == objId)
-                    objects.Add(obj);
+            if (GameManager.instance.allItems.Contains(objId))
+                objects.Add((GameObject)GameManager.instance.allItems[objId]);
         }
         return objects;
     }

@@ -563,7 +563,7 @@ public class ObjectGenerator
         string[] rackNames = _co.attributes["content"].Split(',');
         Transform cornerA = Utils.GetObjectById($"{_co.parentId}.{rackNames[0]}")?.transform;
         Transform cornerB = Utils.GetObjectById($"{_co.parentId}.{rackNames[1]}")?.transform;
-        if (cornerA == null || cornerB == null)
+        if (!cornerA || !cornerB)
         {
             GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", ELogTarget.both, ELogtype.error);
             return null;
