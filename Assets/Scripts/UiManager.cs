@@ -496,7 +496,7 @@ public class UiManager : MonoBehaviour
     {
         GameObject obj = Utils.RaycastFromCameraToMouse();
         if (obj && obj.GetComponent<OgreeObject>())
-            mouseName.text = obj.GetComponent<OgreeObject>().id;
+            mouseName.text = obj.GetComponent<OgreeObject>().id.Replace(".", "/");
         else
             mouseName.text = "";
     }

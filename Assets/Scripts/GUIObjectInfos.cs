@@ -76,7 +76,7 @@ public class GUIObjectInfos : MonoBehaviour
     private void UpdateFields(OgreeObject _obj)
     {
         int i = 1;
-        tmpName.text = _obj.id;
+        tmpName.text = _obj.id.Replace(".", "/");
         if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
