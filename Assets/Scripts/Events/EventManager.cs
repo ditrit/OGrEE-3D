@@ -17,249 +17,91 @@ public class EventManager
     }
     private static EventManager newEventManagerInstance = null;
 
-    public EventHandlerList listEventDelegates = new EventHandlerList();
 
+    public delegate void Event<T>(T _eventParam) where T : CustomEvent;
+    public event Event<OnFocusEvent> OnFocus;
+    public event Event<OnUnFocusEvent> OnUnFocus;
+    public event Event<OnSelectItemEvent> OnSelectItem;
+    public event Event<OnMouseHoverEvent> OnMouseHover;
+    public event Event<OnMouseUnHoverEvent> OnMouseUnHover;
+    public event Event<HighlightEvent> Highlight;
+    public event Event<ImportFinishedEvent> ImportFinished;
+    public event Event<ChangeCursorEvent> ChangeCursor;
+    public event Event<UpdateDomainEvent> UpdateDomain;
+    public event Event<SwitchLabelEvent> SwitchLabel;
+    public event Event<EditModeInEvent> EditModeIn;
+    public event Event<EditModeOutEvent> EditModeOut;
+    public event Event<ConnectApiEvent> ConnectApi;
+    public event Event<TemperatureDiagramEvent> TemperatureDiagram;
+    public event Event<TemperatureColorEvent> TemperatureColor;
+    public event Event<TemperatureScatterPlotEvent> TemperatureScatterPlot;
+    public event Event<RightClickEvent> RightClick;
+    public event Event<CancelGenerateEvent> CancelGenerate;
 
-    public delegate void Event<T>(T _eventParam) where T : EventParam;
-    public event Event<OnFocusEvent> OnFocus
+    /// <summary>
+    /// Raise the event to all the listeners
+    /// </summary>
+    public void Raise<T>(T _param) where T : CustomEvent
     {
-        // Add the input delegate to the collection.
-        add
+        switch (_param)
         {
-            listEventDelegates.AddHandler(OnFocusEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(OnFocusEvent.key, value);
+            case OnFocusEvent e:
+                OnFocus?.Invoke(e);
+                break;
+            case OnUnFocusEvent e:
+                OnUnFocus?.Invoke(e);
+                break;
+            case OnSelectItemEvent e:
+                OnSelectItem?.Invoke(e);
+                break;
+            case OnMouseHoverEvent e:
+                OnMouseHover?.Invoke(e);
+                break;
+            case OnMouseUnHoverEvent e: 
+                OnMouseUnHover?.Invoke(e); 
+                break;
+            case HighlightEvent e: 
+                Highlight?.Invoke(e); 
+                break;
+            case ImportFinishedEvent e: 
+                ImportFinished?.Invoke(e); 
+                break;
+            case ChangeCursorEvent e: 
+                ChangeCursor?.Invoke(e); 
+                break;
+            case UpdateDomainEvent e: 
+                UpdateDomain?.Invoke(e); 
+                break;
+            case SwitchLabelEvent e: 
+                SwitchLabel?.Invoke(e); 
+                break;
+            case EditModeInEvent e: 
+                EditModeIn?.Invoke(e); 
+                break;
+            case EditModeOutEvent e: 
+                EditModeOut?.Invoke(e); 
+                break;
+            case ConnectApiEvent e: 
+                ConnectApi?.Invoke(e); 
+                break;
+            case TemperatureDiagramEvent e: 
+                TemperatureDiagram?.Invoke(e); 
+                break;
+            case TemperatureColorEvent e: 
+                TemperatureColor?.Invoke(e); 
+                break;
+            case TemperatureScatterPlotEvent e: 
+                TemperatureScatterPlot?.Invoke(e); 
+                break;
+            case RightClickEvent e: 
+                RightClick?.Invoke(e); 
+                break;
+            case CancelGenerateEvent e: 
+                CancelGenerate?.Invoke(e); 
+                break;
+            default: 
+                Debug.LogError($"UNKNOWN EVENT :{typeof(T)}"); 
+                break;
         }
     }
-    public event Event<OnUnFocusEvent> OnUnFocus
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(OnUnFocusEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(OnUnFocusEvent.key, value);
-        }
-    }
-    public event Event<OnSelectItemEvent> OnSelectItem
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(OnSelectItemEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(OnSelectItemEvent.key, value);
-        }
-    }
-    public event Event<OnMouseHoverEvent> OnMouseHover
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(OnMouseHoverEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(OnMouseHoverEvent.key, value);
-        }
-    }
-    public event Event<OnMouseUnHoverEvent> OnMouseUnHover
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(OnMouseUnHoverEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(OnMouseUnHoverEvent.key, value);
-        }
-    }
-    public event Event<HighlightEvent> Highlight
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(HighlightEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(HighlightEvent.key, value);
-        }
-    }
-    public event Event<ImportFinishedEvent> ImportFinished
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(ImportFinishedEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(ImportFinishedEvent.key, value);
-        }
-    }
-    public event Event<ChangeCursorEvent> ChangeCursor
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(ChangeCursorEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(ChangeCursorEvent.key, value);
-        }
-    }
-    public event Event<UpdateDomainEvent> UpdateDomain
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(UpdateDomainEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(UpdateDomainEvent.key, value);
-        }
-    }
-    public event Event<SwitchLabelEvent> SwitchLabel
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(SwitchLabelEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(SwitchLabelEvent.key, value);
-        }
-    }
-    public event Event<EditModeInEvent> EditModeIn
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(EditModeInEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(EditModeInEvent.key, value);
-        }
-    }
-    public event Event<EditModeOutEvent> EditModeOut
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(EditModeOutEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(EditModeOutEvent.key, value);
-        }
-    }
-    public event Event<ConnectApiEvent> ConnectApi
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(ConnectApiEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(ConnectApiEvent.key, value);
-        }
-    }
-    public event Event<TemperatureDiagramEvent> TemperatureDiagram
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(TemperatureDiagramEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(TemperatureDiagramEvent.key, value);
-        }
-    }
-    public event Event<TemperatureColorEvent> TemperatureColor
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(TemperatureColorEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(TemperatureColorEvent.key, value);
-        }
-    }
-    public event Event<TemperatureScatterPlotEvent> TemperatureScatterPlot
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(TemperatureScatterPlotEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(TemperatureScatterPlotEvent.key, value);
-        }
-    }
-    public event Event<RightClickEvent> RightClick
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(RightClickEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(RightClickEvent.key, value);
-        }
-    }
-    public event Event<CancelGenerateEvent> CancelGenerate
-    {
-        // Add the input delegate to the collection.
-        add
-        {
-            listEventDelegates.AddHandler(CancelGenerateEvent.key, value);
-        }
-        // Remove the input delegate from the collection.
-        remove
-        {
-            listEventDelegates.RemoveHandler(CancelGenerateEvent.key, value);
-        }
-    }
-    public void Raise<T>(T _param) where T : EventParam
-    {
-        if (listEventDelegates[_param.Key()] == null)
-            Debug.Log(typeof(T));
-        ((Event<T>)listEventDelegates[_param.Key()])?.Invoke(_param);
-    }
-
 }
