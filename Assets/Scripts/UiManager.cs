@@ -1005,7 +1005,7 @@ public class UiManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_value))
             await GameManager.instance.SetCurrentItem(null);
-        else if (Utils.GetObjectById(_value) is GameObject obj)
+        else if (Utils.GetObjectById(_value.Replace("/", ".")) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
         else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
