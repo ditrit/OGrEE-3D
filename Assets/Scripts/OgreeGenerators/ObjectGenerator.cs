@@ -504,7 +504,8 @@ public class ObjectGenerator
             zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
         }
         _pos = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
-        _pos += new Vector3(xOffset, 0, zOffset);
+        // 0.015f in Y to be on top of usableZone
+        _pos += new Vector3(xOffset, 0.015f, zOffset);
     }
 
     ///<summary>
@@ -619,7 +620,8 @@ public class ObjectGenerator
             xOffset = (newCo.transform.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.z) / 2;
             zOffset = (newCo.transform.GetChild(0).localScale.z - cornerA.GetChild(0).localScale.x) / 2;
         }
-        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0, zOffset * orient.y);
+        // 0.015f in Y to be on top of usableZone
+        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0.015f, zOffset * orient.y);
 
         OObject co = newCo.AddComponent<OObject>();
         co.hierarchyName = hierarchyName;
