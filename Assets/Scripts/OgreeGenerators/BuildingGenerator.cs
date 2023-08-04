@@ -154,8 +154,8 @@ public class BuildingGenerator
             room.reservedZone.localScale = room.usableZone.localScale;
             room.technicalZone.localScale = room.usableZone.localScale;
             room.tilesGrid.localScale = room.usableZone.localScale;
-            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
-            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / UnitValue.Tile;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / UnitValue.Tile % 1, size.y / UnitValue.Tile % 1);
 
             // ...and move the floors layer, wall & text to have the container at the lower left corner of them
             room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;

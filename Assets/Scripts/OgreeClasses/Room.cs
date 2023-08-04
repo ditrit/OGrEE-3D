@@ -47,10 +47,53 @@ public class Room : Building
         reservedZone.localPosition = new Vector3(technicalZone.localPosition.x,
                                                 reservedZone.localPosition.y, technicalZone.localPosition.z);
 
+        // If tileOffset in template, apply it
+        if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
+        {
+            SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
+            if (template.tileOffset.Count != 0)
+            {
+                // Find the part to substract to land on a whole tile
+                float sizeX = technicalZone.localScale.x * 10 - template.tileOffset[0];
+                float sizeY = technicalZone.localScale.z * 10 - template.tileOffset[1];
+                Vector3 delta = new Vector3(sizeX % UnitValue.Tile, 0, sizeY % UnitValue.Tile);
+
+                ApplyTileOffset(usableZone, template.tileOffset, delta);
+                ApplyTileOffset(reservedZone, template.tileOffset, delta);
+                tilesGrid.GetComponent<Renderer>().material.mainTextureOffset += new Vector2(template.tileOffset[0], template.tileOffset[1]) / UnitValue.Tile;
+            }
+        }
+
         // Reduce zones
         ReduceZone(reservedZone, _techDim);
         ReduceZone(usableZone, _techDim);
         ReduceZone(usableZone, _resDim);
+    }
+
+    ///<summary>
+    /// Apply given _offset to a _zone
+    ///</summary>
+    ///<param name="_zone">The zone to modify</param>
+    ///<param name="_offset">The offset to apply</param>
+    private void ApplyTileOffset(Transform _zone, List<float> _offset, Vector3 _delta)
+    {
+        // Move the _zone
+        _zone.localPosition += new Vector3(_offset[0], 0, _offset[1]);
+        // _zone overflow X
+        if (_zone.localScale.x * 10 + Mathf.Abs(_offset[0]) > technicalZone.localScale.x * 10)
+        {
+            _zone.localScale -= new Vector3(Mathf.Abs(_offset[0]), 0, 0) / 10;
+            _zone.localPosition -= new Vector3(_offset[0], 0, 0) / 2;
+        }
+        // _zone overflow Y
+        if (_zone.localScale.z * 10 + Mathf.Abs(_offset[1]) > technicalZone.localScale.z * 10)
+        {
+            _zone.localScale -= new Vector3(0, 0, Mathf.Abs(_offset[1])) / 10;
+            _zone.localPosition -= new Vector3(0, 0, _offset[1]) / 2;
+        }
+        // Rescale and move to have the whole tile
+        _zone.localScale -= _delta / 10;
+        _zone.localPosition -= _delta / 2;
     }
 
     ///<summary>
@@ -409,17 +452,8 @@ public class Room : Building
     ///<param name="_dim">The dimensions of the reduction</param>
     private void ReduceZone(Transform _zone, SMargin _dim)
     {
-        _zone.localScale -= new Vector3(0, 0, _dim.top) * UnitValue.Tile / 10;
-        _zone.localPosition -= new Vector3(0, 0, _dim.top) * UnitValue.Tile / 2;
-
-        _zone.localScale -= new Vector3(0, 0, _dim.bottom) * UnitValue.Tile / 10;
-        _zone.localPosition += new Vector3(0, 0, _dim.bottom) * UnitValue.Tile / 2;
-
-        _zone.localScale -= new Vector3(_dim.right, 0, 0) * UnitValue.Tile / 10;
-        _zone.localPosition -= new Vector3(_dim.right, 0, 0) * UnitValue.Tile / 2;
-
-        _zone.localScale -= new Vector3(_dim.left, 0, 0) * UnitValue.Tile / 10;
-        _zone.localPosition += new Vector3(_dim.left, 0, 0) * UnitValue.Tile / 2;
+        _zone.localScale -= UnitValue.Tile * 0.1f * new Vector3(_dim.right + _dim.left, 0, _dim.top + _dim.bottom);
+        _zone.localPosition -= UnitValue.Tile * 0.5f * new Vector3(_dim.right - _dim.left, 0, _dim.top - _dim.bottom);
     }
 
     ///<summary>
