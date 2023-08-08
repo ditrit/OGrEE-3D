@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EventManager
@@ -18,25 +18,53 @@ public class EventManager
     private static EventManager newEventManagerInstance = null;
 
 
-    public delegate void Event<T>(T _eventParam) where T : CustomEvent;
-    public event Event<OnFocusEvent> OnFocus;
-    public event Event<OnUnFocusEvent> OnUnFocus;
-    public event Event<OnSelectItemEvent> OnSelectItem;
-    public event Event<OnMouseHoverEvent> OnMouseHover;
-    public event Event<OnMouseUnHoverEvent> OnMouseUnHover;
-    public event Event<HighlightEvent> Highlight;
-    public event Event<ImportFinishedEvent> ImportFinished;
-    public event Event<ChangeCursorEvent> ChangeCursor;
-    public event Event<UpdateDomainEvent> UpdateDomain;
-    public event Event<SwitchLabelEvent> SwitchLabel;
-    public event Event<EditModeInEvent> EditModeIn;
-    public event Event<EditModeOutEvent> EditModeOut;
-    public event Event<ConnectApiEvent> ConnectApi;
-    public event Event<TemperatureDiagramEvent> TemperatureDiagram;
-    public event Event<TemperatureColorEvent> TemperatureColor;
-    public event Event<TemperatureScatterPlotEvent> TemperatureScatterPlot;
-    public event Event<RightClickEvent> RightClick;
-    public event Event<CancelGenerateEvent> CancelGenerate;
+    public delegate void EventDelegate<T>(T _eventParam) where T : CustomEvent;
+
+    public class EventWrap<T> where T : CustomEvent
+    {
+        private readonly HashSet<EventDelegate<T>> handlers = new HashSet<EventDelegate<T>>();
+        private event EventDelegate<T> EventDelegate
+        {
+            add => handlers.Add(value);
+            remove => handlers.Remove(value);
+        }
+        public void Add(EventDelegate<T> _event)
+        {
+            EventDelegate += _event;
+        }
+        public void Remove(EventDelegate<T> _event)
+        {
+            EventDelegate -= _event;
+        }
+        public void Invoke(T _param)
+        {
+            Debug.Log("###"+handlers.Count);
+            foreach (var handler in handlers)
+            {
+                Debug.Log(handler.GetInvocationList().Length);
+                handler( _param);
+            }
+        }
+    }
+
+    public EventWrap<OnFocusEvent> OnFocus = new EventWrap<OnFocusEvent>();
+    public EventWrap<OnUnFocusEvent> OnUnFocus = new EventWrap<OnUnFocusEvent>();
+    public EventWrap<OnSelectItemEvent> OnSelectItem = new EventWrap<OnSelectItemEvent>();
+    public EventWrap<OnMouseHoverEvent> OnMouseHover = new EventWrap<OnMouseHoverEvent>();
+    public EventWrap<OnMouseUnHoverEvent> OnMouseUnHover = new EventWrap<OnMouseUnHoverEvent>();
+    public EventWrap<HighlightEvent> Highlight = new EventWrap<HighlightEvent>();
+    public EventWrap<ImportFinishedEvent> ImportFinished = new EventWrap<ImportFinishedEvent>();
+    public EventWrap<ChangeCursorEvent> ChangeCursor = new EventWrap<ChangeCursorEvent>();
+    public EventWrap<UpdateDomainEvent> UpdateDomain = new EventWrap<UpdateDomainEvent>();
+    public EventWrap<SwitchLabelEvent> SwitchLabel = new EventWrap<SwitchLabelEvent>();
+    public EventWrap<EditModeInEvent> EditModeIn = new EventWrap<EditModeInEvent>();
+    public EventWrap<EditModeOutEvent> EditModeOut = new EventWrap<EditModeOutEvent>();
+    public EventWrap<ConnectApiEvent> ConnectApi = new EventWrap<ConnectApiEvent>();
+    public EventWrap<TemperatureDiagramEvent> TemperatureDiagram = new EventWrap<TemperatureDiagramEvent>();
+    public EventWrap<TemperatureColorEvent> TemperatureColor = new EventWrap<TemperatureColorEvent>();
+    public EventWrap<TemperatureScatterPlotEvent> TemperatureScatterPlot = new EventWrap<TemperatureScatterPlotEvent>();
+    public EventWrap<RightClickEvent> RightClick = new EventWrap<RightClickEvent>();
+    public EventWrap<CancelGenerateEvent> CancelGenerate = new EventWrap<CancelGenerateEvent>();
 
     /// <summary>
     /// Raise the event to all the listeners
@@ -46,7 +74,7 @@ public class EventManager
         switch (_param)
         {
             case OnFocusEvent e:
-                OnFocus?.Invoke(e);
+                OnFocus.Invoke(e);
                 break;
             case OnUnFocusEvent e:
                 OnUnFocus?.Invoke(e);
@@ -57,50 +85,50 @@ public class EventManager
             case OnMouseHoverEvent e:
                 OnMouseHover?.Invoke(e);
                 break;
-            case OnMouseUnHoverEvent e: 
-                OnMouseUnHover?.Invoke(e); 
+            case OnMouseUnHoverEvent e:
+                OnMouseUnHover?.Invoke(e);
                 break;
-            case HighlightEvent e: 
-                Highlight?.Invoke(e); 
+            case HighlightEvent e:
+                Highlight?.Invoke(e);
                 break;
-            case ImportFinishedEvent e: 
-                ImportFinished?.Invoke(e); 
+            case ImportFinishedEvent e:
+                ImportFinished?.Invoke(e);
                 break;
-            case ChangeCursorEvent e: 
-                ChangeCursor?.Invoke(e); 
+            case ChangeCursorEvent e:
+                ChangeCursor?.Invoke(e);
                 break;
-            case UpdateDomainEvent e: 
-                UpdateDomain?.Invoke(e); 
+            case UpdateDomainEvent e:
+                UpdateDomain?.Invoke(e);
                 break;
-            case SwitchLabelEvent e: 
-                SwitchLabel?.Invoke(e); 
+            case SwitchLabelEvent e:
+                SwitchLabel?.Invoke(e);
                 break;
-            case EditModeInEvent e: 
-                EditModeIn?.Invoke(e); 
+            case EditModeInEvent e:
+                EditModeIn?.Invoke(e);
                 break;
-            case EditModeOutEvent e: 
-                EditModeOut?.Invoke(e); 
+            case EditModeOutEvent e:
+                EditModeOut?.Invoke(e);
                 break;
-            case ConnectApiEvent e: 
-                ConnectApi?.Invoke(e); 
+            case ConnectApiEvent e:
+                ConnectApi?.Invoke(e);
                 break;
-            case TemperatureDiagramEvent e: 
-                TemperatureDiagram?.Invoke(e); 
+            case TemperatureDiagramEvent e:
+                TemperatureDiagram?.Invoke(e);
                 break;
-            case TemperatureColorEvent e: 
-                TemperatureColor?.Invoke(e); 
+            case TemperatureColorEvent e:
+                TemperatureColor?.Invoke(e);
                 break;
-            case TemperatureScatterPlotEvent e: 
-                TemperatureScatterPlot?.Invoke(e); 
+            case TemperatureScatterPlotEvent e:
+                TemperatureScatterPlot?.Invoke(e);
                 break;
-            case RightClickEvent e: 
-                RightClick?.Invoke(e); 
+            case RightClickEvent e:
+                RightClick?.Invoke(e);
                 break;
-            case CancelGenerateEvent e: 
-                CancelGenerate?.Invoke(e); 
+            case CancelGenerateEvent e:
+                CancelGenerate?.Invoke(e);
                 break;
-            default: 
-                Debug.LogError($"UNKNOWN EVENT :{typeof(T)}"); 
+            default:
+                Debug.LogError($"UNKNOWN EVENT :{typeof(T)}");
                 break;
         }
     }

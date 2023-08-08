@@ -33,24 +33,24 @@ public class ButtonHandler
         button = _button;
         hideWhenUseless = _hide;
         defaultCB = button.colors;
-        EventManager.instance.RightClick += CheckRightClick;
-        EventManager.instance.OnSelectItem += CheckSelect;
-        EventManager.instance.OnFocus += CheckFocus;
-        EventManager.instance.OnUnFocus += CheckUnfocus;
-        EventManager.instance.EditModeIn += CheckEditIn;
-        EventManager.instance.EditModeOut += CheckEditOut;
-        EventManager.instance.ImportFinished += CheckImportFinished;
+        EventManager.instance.RightClick.Add(CheckRightClick);
+        EventManager.instance.OnSelectItem.Add(CheckSelect);
+        EventManager.instance.OnFocus.Add(CheckFocus);
+        EventManager.instance.OnUnFocus.Add(CheckUnfocus);
+        EventManager.instance.EditModeIn.Add(CheckEditIn);
+        EventManager.instance.EditModeOut.Add(CheckEditOut);
+        EventManager.instance.ImportFinished.Add(CheckImportFinished);
     }
 
     ~ButtonHandler()
     {
-        EventManager.instance.RightClick -= CheckRightClick;
-        EventManager.instance.OnSelectItem -= CheckSelect;
-        EventManager.instance.OnFocus -= CheckFocus;
-        EventManager.instance.OnUnFocus -= CheckUnfocus;
-        EventManager.instance.EditModeIn -= CheckEditIn;
-        EventManager.instance.EditModeOut -= CheckEditOut;
-        EventManager.instance.ImportFinished -= CheckImportFinished;
+        EventManager.instance.RightClick.Remove(CheckRightClick);
+        EventManager.instance.OnSelectItem.Remove(CheckSelect);
+        EventManager.instance.OnFocus.Remove(CheckFocus);
+        EventManager.instance.OnUnFocus.Remove(CheckUnfocus);
+        EventManager.instance.EditModeIn.Remove(CheckEditIn);
+        EventManager.instance.EditModeOut.Remove(CheckEditOut);
+        EventManager.instance.ImportFinished.Remove(CheckImportFinished);
     }
 
     /// <summary>

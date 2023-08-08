@@ -40,12 +40,12 @@ public class CliParser
 
     public CliParser()
     {
-        EventManager.instance.CancelGenerate += OnCancelGenenerate;
+        EventManager.instance.CancelGenerate.Add(OnCancelGenenerate);
     }
 
     ~CliParser()
     {
-        EventManager.instance.CancelGenerate -= OnCancelGenenerate;
+        EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
     }
 
     ///<summary>

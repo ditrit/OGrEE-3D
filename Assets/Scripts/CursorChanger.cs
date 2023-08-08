@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // https://www.youtube.com/watch?v=8Fm37H1Mwxw
-public class CursorChanger : MonoBehaviour, IEventHandler
+public class CursorChanger : MonoBehaviour
 {
     [System.Serializable]
     public class CursorData
@@ -23,22 +23,12 @@ public class CursorChanger : MonoBehaviour, IEventHandler
 
     private void Start()
     {
-        SubscribeEvents();
+        EventManager.instance.ChangeCursor.Add(OnChangeCursor);
     }
 
     private void OnDestroy()
     {
-        UnsubscribeEvents();
-    }
-
-    public void SubscribeEvents()
-    {
-        EventManager.instance.ChangeCursor += OnChangeCursor;
-    }
-
-    public void UnsubscribeEvents()
-    {
-        EventManager.instance.ChangeCursor -= OnChangeCursor;
+        EventManager.instance.ChangeCursor.Remove(OnChangeCursor);
     }
 
     ///<summary>
