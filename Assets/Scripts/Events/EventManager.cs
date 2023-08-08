@@ -38,12 +38,8 @@ public class EventManager
         }
         public void Invoke(T _param)
         {
-            Debug.Log("###"+handlers.Count);
             foreach (var handler in handlers)
-            {
-                Debug.Log(handler.GetInvocationList().Length);
                 handler( _param);
-            }
         }
     }
 
