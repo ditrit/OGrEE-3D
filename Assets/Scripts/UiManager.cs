@@ -496,7 +496,7 @@ public class UiManager : MonoBehaviour
     {
         GameObject obj = Utils.RaycastFromCameraToMouse();
         if (obj && obj.GetComponent<OgreeObject>())
-            mouseName.text = obj.GetComponent<OgreeObject>().hierarchyName;
+            mouseName.text = obj.GetComponent<OgreeObject>().id.Replace(".", "/");
         else
             mouseName.text = "";
     }
@@ -620,7 +620,7 @@ public class UiManager : MonoBehaviour
         {
             GameObject newButton = Instantiate(groupBtnPrefab, groupsMenu.transform);
             newButton.name = $"ButtonOpenGr_{gr.name}";
-            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.hierarchyName;
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.id;
 
             Button btn = newButton.GetComponent<Button>();
             btn.onClick.AddListener(() => gr.ToggleContent(false));
@@ -673,7 +673,7 @@ public class UiManager : MonoBehaviour
     private void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().id.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
             selectionInputField.text = ("Multiple selection");
         else
@@ -687,7 +687,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.focusMode)
         {
-            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().id.Replace(".", "/");
             focusInputField.text = $"{objName}";
         }
         else
@@ -976,9 +976,9 @@ public class UiManager : MonoBehaviour
         GameManager.instance.getCoordsMode ^= true;
         Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
         if (GameManager.instance.getCoordsMode)
-            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
         else
-            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
         bd.ToggleCS(GameManager.instance.getCoordsMode);
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
 
@@ -1005,7 +1005,7 @@ public class UiManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_value))
             await GameManager.instance.SetCurrentItem(null);
-        else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+        else if (Utils.GetObjectById(_value.Replace("/", ".")) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
         else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
@@ -1018,7 +1018,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the InputField</param>
     public async void FocusEndEdit(string _value)
     {
-        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+        if (Utils.GetObjectById(_value) is GameObject obj)
         {
             if (GameManager.instance.IsInFocus(obj))
             {

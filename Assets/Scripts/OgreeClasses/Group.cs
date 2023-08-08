@@ -13,7 +13,7 @@ public class Group : OObject
 
         foreach (string rn in names)
         {
-            GameObject go = GameManager.instance.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
+            GameObject go = Utils.GetObjectById($"{parentId}.{rn}");
             if (go)
                 content.Add(go);
         }

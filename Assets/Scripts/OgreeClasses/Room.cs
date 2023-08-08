@@ -31,7 +31,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"[{id}] Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
             return;
         }
         tilesGrid.gameObject.SetActive(true);
@@ -210,7 +210,7 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                        tile.SetTexture(hierarchyName);
+                        tile.SetTexture(id);
                     if (!string.IsNullOrEmpty(tile.color))
                         tile.SetColor(customColors);
 
@@ -255,7 +255,7 @@ public class Room : Building
                     }
 
                     if (!string.IsNullOrEmpty(tile.texture))
-                        tile.SetTexture(hierarchyName);
+                        tile.SetTexture(id);
                     if (!string.IsNullOrEmpty(tile.color))
                         tile.SetColor(customColors);
 
@@ -423,7 +423,7 @@ public class Room : Building
                         };
                     }
                     else
-                        GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknow tile texture: {tileData.texture}", ELogTarget.logger, ELogtype.warning);
+                        GameManager.instance.AppendLogLine($"[{id}] Unknow tile texture: {tileData.texture}", ELogTarget.logger, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
