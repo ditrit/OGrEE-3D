@@ -43,7 +43,7 @@ public class Inputs : MonoBehaviour
 #endif
         if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
-        
+
         if (!isDraggingObj && !isRotatingObj && !isScalingObj)
             target = Utils.RaycastFromCameraToMouse()?.transform;
 
@@ -360,7 +360,7 @@ public class Inputs : MonoBehaviour
         Transform hitObject = _hit.collider.transform.parent;
         string objName = hitObject.GetComponent<OgreeObject>().id;
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
-        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}]", ELogTarget.logger, ELogtype.info);
+        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}] m / [{ Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile)},{ Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)}] t", ELogTarget.logger, ELogtype.info);
     }
 
     ///<summary>
