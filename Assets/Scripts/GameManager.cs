@@ -109,19 +109,6 @@ public class GameManager : MonoBehaviour
     #endregion
 
     ///<summary>
-    /// Find a GameObject by its HierarchyName.
-    ///</summary>
-    ///<param name="_path">Which hierarchy name to look for</param>
-    ///<returns>The GameObject looked for</returns>
-    public GameObject FindByAbsPath(string _path)
-    {
-        if (allItems.Contains(_path))
-            return (GameObject)allItems[_path];
-        else
-            return null;
-    }
-
-    ///<summary>
     /// Save current object and change the CLI idle text.
     ///</summary>
     ///<param name="_obj">The object to save. If null, set default text</param>
@@ -253,14 +240,14 @@ public class GameManager : MonoBehaviour
     {
         if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == Category.Corridor))
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
         OObject[] children = _obj.GetComponentsInChildren<OObject>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().hierarchyName}: no children found.", ELogTarget.both, ELogtype.warning);
+            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id}: no children found.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -274,7 +261,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
-            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
+            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent(focus[focus.Count - 1]));
@@ -297,7 +284,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject lastFocus = focus[focus.Count - 1];
             EventManager.instance.Raise(new OnFocusEvent(lastFocus));
-            AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().hierarchyName}", ELogTarget.both, ELogtype.success);
+            AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
             if (!currentItems.Contains(lastFocus))
                 await SetCurrentItem(lastFocus);
         }
@@ -338,7 +325,7 @@ public class GameManager : MonoBehaviour
                     return true;
             }
         }
-        else if (_obj.GetComponent<OgreeObject>().hierarchyName.Contains(root.GetComponent<OgreeObject>().hierarchyName))
+        else if (_obj.GetComponent<OgreeObject>().id.Contains(root.GetComponent<OgreeObject>().id))
             return true;
 
         return false;

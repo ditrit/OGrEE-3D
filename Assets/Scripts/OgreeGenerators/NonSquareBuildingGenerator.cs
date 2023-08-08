@@ -45,11 +45,11 @@ public static class NonSquareBuildingGenerator
     private struct SCommonTemplate
     {
         public string slug;
-        public float[] sizeWDHm;
+        public List<float> sizeWDHm;
         public Vector2 isolationPoleCenter;
         public float isolationPoleRadius;
         public List<Vector2> vertices;
-        public STile[] tiles;
+        public List<STile> tiles;
         public float tileAngle;
         public Vector2 offset;
 
@@ -239,7 +239,7 @@ public static class NonSquareBuildingGenerator
             OgreeObject site = null;
             if (_root.transform.parent && _root.transform.parent.parent)
                 site = _root.transform.parent.parent.GetComponentInParent<OgreeObject>();
-            for (int i = 0; i < _template.tiles.Length; i++)
+            for (int i = 0; i < _template.tiles.Count; i++)
             {
                 string[] separated = _template.tiles[i].location.Split('/');
                 float x = Utils.ParseDecFrac(separated[0]);

@@ -29,6 +29,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler addSelectBtn;
     [SerializeField] private ButtonHandler removeSelectBtn;
     [SerializeField] private ButtonHandler selectParentBtn;
+    [SerializeField] private ButtonHandler OpenGroupBtn;
     [SerializeField] private ButtonHandler focusBtn;
     [SerializeField] private ButtonHandler unfocusBtn;
     [SerializeField] private ButtonHandler editBtn;
@@ -67,6 +68,13 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Scrollbar loggerSB;
     private const int loggerSize = 100;
     private Queue<string> loggerQueue = new Queue<string>(loggerSize);
+
+    [Header("Groups")]
+    [SerializeField] private GameObject groupsMenu;
+    [SerializeField] private TMP_Text groupsMenuBtnText;
+    private bool expendGroupsMenu = false;
+    [SerializeField] private GameObject groupBtnPrefab;
+    public List<Group> openedGroups;
 
     private void Awake()
     {
@@ -177,6 +185,14 @@ public class UiManager : MonoBehaviour
             GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().category != "tempBar"
         };
         selectParentBtn.Check();
+
+        OpenGroupBtn = new ButtonHandler(OpenGroupBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Group>()
+        };
+        OpenGroupBtn.Check();
 
         editBtn = new ButtonHandler(editBtn.button, true)
         {
@@ -350,6 +366,7 @@ public class UiManager : MonoBehaviour
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
         rightClickMenu.SetActive(false);
+        groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
         EventManager.instance.OnSelectItem.Add(OnSelectItem);
@@ -479,7 +496,7 @@ public class UiManager : MonoBehaviour
     {
         GameObject obj = Utils.RaycastFromCameraToMouse();
         if (obj && obj.GetComponent<OgreeObject>())
-            mouseName.text = obj.GetComponent<OgreeObject>().hierarchyName;
+            mouseName.text = obj.GetComponent<OgreeObject>().id.Replace(".", "/");
         else
             mouseName.text = "";
     }
@@ -569,6 +586,68 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="groupsMenuBtnText"/>.
+    ///</summary>
+    public void ToggleGroupsMenu()
+    {
+        expendGroupsMenu ^= true;
+        groupsMenuBtnText.text = expendGroupsMenu ? "Hide opened group list" : "Display opened group list";
+
+        GroupsMenuBackgroundSize();
+        foreach (Transform btn in groupsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                btn.gameObject.SetActive(expendGroupsMenu);
+        }
+    }
+
+    ///<summary>
+    /// Active <see cref="groupsMenu"/> depending on <see cref="openedGroups"/> count and re-generate a button for each <see cref="openedGroups"/> item.
+    ///</summary>
+    public void RebuildGroupsMenu()
+    {
+        groupsMenu.SetActive(openedGroups.Count > 0);
+
+        // Wipe previous buttons
+        foreach (Transform btn in groupsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                Destroy(btn.gameObject);
+        }
+
+        // Create a button for each opened group
+        foreach (Group gr in openedGroups)
+        {
+            GameObject newButton = Instantiate(groupBtnPrefab, groupsMenu.transform);
+            newButton.name = $"ButtonOpenGr_{gr.name}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.id;
+
+            Button btn = newButton.GetComponent<Button>();
+            btn.onClick.AddListener(() => gr.ToggleContent(false));
+            btn.onClick.AddListener(() => Destroy(newButton));
+
+            newButton.SetActive(expendGroupsMenu);
+        }
+        GroupsMenuBackgroundSize();
+    }
+
+    ///<summary>
+    /// Set the <see cref="groupsMenu"/>'s background according to <see cref="expendGroupsMenu"/>
+    ///</summary>
+    private void GroupsMenuBackgroundSize()
+    {
+        int count = expendGroupsMenu ? openedGroups.Count + 1 : 1;
+
+        float btnHeight = groupsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+        float padding = groupsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+        float spacing = groupsMenu.GetComponent<VerticalLayoutGroup>().spacing;
+
+        float menuWidth = groupsMenu.GetComponent<RectTransform>().sizeDelta.x;
+        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
+        groupsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+    }
+
+    ///<summary>
     /// Set animator triger of _panel according to its current state and _value
     ///</summary>
     ///<param name="_panel">The panel to modify</param>
@@ -594,7 +673,7 @@ public class UiManager : MonoBehaviour
     private void SetCurrentItemText()
     {
         if (GameManager.instance.GetSelected().Count == 1)
-            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().id.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
             selectionInputField.text = ("Multiple selection");
         else
@@ -608,7 +687,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.focusMode)
         {
-            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().hierarchyName.Replace(".", "/");
+            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().id.Replace(".", "/");
             focusInputField.text = $"{objName}";
         }
         else
@@ -797,6 +876,15 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Called by GUI button: Toggle content of group under the mouse
+    ///</summary>
+    public void ToggleGroupContent()
+    {
+        Group group = menuTarget.GetComponent<Group>();
+        group.ToggleContent(group.isDisplayed);
+    }
+
+    ///<summary>
     /// Toggle build-in CLI writing.
     ///</summary>
     ///<param name="_value">The toggle value</param>
@@ -888,9 +976,9 @@ public class UiManager : MonoBehaviour
         GameManager.instance.getCoordsMode ^= true;
         Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
         if (GameManager.instance.getCoordsMode)
-            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
         else
-            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.hierarchyName}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
         bd.ToggleCS(GameManager.instance.getCoordsMode);
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
 
@@ -917,7 +1005,7 @@ public class UiManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_value))
             await GameManager.instance.SetCurrentItem(null);
-        else if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+        else if (Utils.GetObjectById(_value.Replace("/", ".")) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
         else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
@@ -930,7 +1018,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the InputField</param>
     public async void FocusEndEdit(string _value)
     {
-        if (Utils.GetObjectByHierarchyName(_value) is GameObject obj)
+        if (Utils.GetObjectById(_value) is GameObject obj)
         {
             if (GameManager.instance.IsInFocus(obj))
             {

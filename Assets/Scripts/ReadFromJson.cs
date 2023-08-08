@@ -53,7 +53,7 @@ public class ReadFromJson
             attributes = new Dictionary<string, string>(),
 
             name = _data.slug,
-            hierarchyName = _data.slug,
+            id = _data.slug,
             category = _data.category
         };
         obj.description.Add(_data.description);
@@ -160,7 +160,7 @@ public class ReadFromJson
         newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
         newObject.referent = null;
 #endif
-        GameManager.instance.allItems.Remove(newObject.hierarchyName);
+        GameManager.instance.allItems.Remove(newObject.id);
         GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
     }
 
@@ -214,6 +214,7 @@ public class ReadFromJson
         {
             OObject obj = go.AddComponent<OObject>();
             obj.name = go.name;
+            obj.id = $"{_parent.id}.{obj.name}";
             obj.parentId = _parent.id;
             obj.category = Category.Device;
             obj.domain = _parent.domain;
@@ -227,7 +228,7 @@ public class ReadFromJson
                 foreach (KeyValuePair<string, string> kvp in _data.attributes)
                     obj.attributes[kvp.Key] = kvp.Value;
             }
-            obj.UpdateHierarchyName();
+            obj.isComponent = true;
             obj.SetBaseTransform();
         }
 

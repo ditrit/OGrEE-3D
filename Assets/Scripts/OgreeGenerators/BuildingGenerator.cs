@@ -13,9 +13,9 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_bd.hierarchyName))
+        if (GameManager.instance.allItems.Contains(_bd.id))
         {
-            GameManager.instance.AppendLogLine($"{_bd.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_bd.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -90,7 +90,7 @@ public class BuildingGenerator
 
         roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
 
-        GameManager.instance.allItems.Add(building.hierarchyName, newBD);
+        GameManager.instance.allItems.Add(building.id, newBD);
         return building;
     }
 
@@ -102,9 +102,9 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_ro.hierarchyName))
+        if (GameManager.instance.allItems.Contains(_ro.id))
         {
-            GameManager.instance.AppendLogLine($"{_ro.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_ro.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -154,8 +154,8 @@ public class BuildingGenerator
             room.reservedZone.localScale = room.usableZone.localScale;
             room.technicalZone.localScale = room.usableZone.localScale;
             room.tilesGrid.localScale = room.usableZone.localScale;
-            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / 0.6f;
-            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / 0.6f % 1, size.y / 0.6f % 1);
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / UnitValue.Tile;
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / UnitValue.Tile % 1, size.y / UnitValue.Tile % 1);
 
             // ...and move the floors layer, wall & text to have the container at the lower left corner of them
             room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
@@ -183,7 +183,7 @@ public class BuildingGenerator
 
         room.UpdateColorByDomain();
 
-        GameManager.instance.allItems.Add(room.hierarchyName, newRoom);
+        GameManager.instance.allItems.Add(room.id, newRoom);
 
         if (template.vertices == null)
         {

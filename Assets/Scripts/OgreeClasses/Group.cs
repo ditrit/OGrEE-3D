@@ -13,7 +13,7 @@ public class Group : OObject
 
         foreach (string rn in names)
         {
-            GameObject go = GameManager.instance.FindByAbsPath($"{transform.parent.GetComponent<OgreeObject>().hierarchyName}.{rn}");
+            GameObject go = Utils.GetObjectById($"{parentId}.{rn}");
             if (go)
                 content.Add(go);
         }
@@ -23,6 +23,8 @@ public class Group : OObject
     protected override void OnDestroy()
     {
         ToggleContent(true);
+        UiManager.instance.openedGroups.Remove(this);
+        UiManager.instance.RebuildGroupsMenu();
         base.OnDestroy();
     }
 
@@ -36,9 +38,21 @@ public class Group : OObject
         GetComponent<ObjectDisplayController>().Display(!_value, !_value, !_value);
         DisplayContent(_value);
         if (_value)
+        {
             GetComponent<ObjectDisplayController>().UnsubscribeEvents();
+            if (!UiManager.instance.openedGroups.Contains(this))
+            {
+                UiManager.instance.openedGroups.Add(this);
+                UiManager.instance.openedGroups.Sort();
+            }
+        }
         else
+        {
             GetComponent<ObjectDisplayController>().SubscribeEvents();
+            if (UiManager.instance.openedGroups.Contains(this))
+                UiManager.instance.openedGroups.Remove(this);
+        }
+        UiManager.instance.RebuildGroupsMenu();
     }
 
     ///<summary>

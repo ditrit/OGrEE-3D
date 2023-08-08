@@ -12,9 +12,9 @@ public class ObjectGenerator
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_rk.hierarchyName))
+        if (GameManager.instance.allItems.Contains(_rk.id))
         {
-            GameManager.instance.AppendLogLine($"{_rk.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_rk.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -104,7 +104,7 @@ public class ObjectGenerator
         else
             rack.UpdateColorByDomain();
 
-        GameManager.instance.allItems.Add(rack.hierarchyName, newRack);
+        GameManager.instance.allItems.Add(rack.id, newRack);
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
@@ -113,9 +113,9 @@ public class ObjectGenerator
             {
                 if (comp.gameObject != rack.gameObject)
                 {
+                    comp.id = $"{rack.id}.{comp.name}";
                     comp.domain = rack.domain;
-                    string compHn = comp.UpdateHierarchyName();
-                    GameManager.instance.allItems.Add(compHn, comp.gameObject);
+                    GameManager.instance.allItems.Add(comp.id, comp.gameObject);
                     comp.referent = rack;
                 }
             }
@@ -156,9 +156,9 @@ public class ObjectGenerator
         }
 
         // Check if unique hierarchyName
-        if (GameManager.instance.allItems.Contains(_dv.hierarchyName))
+        if (GameManager.instance.allItems.Contains(_dv.id))
         {
-            GameManager.instance.AppendLogLine($"{_dv.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_dv.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -295,7 +295,7 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        GameManager.instance.allItems.Add(dv.hierarchyName, newDevice);
+        GameManager.instance.allItems.Add(dv.id, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
@@ -304,9 +304,9 @@ public class ObjectGenerator
             {
                 if (comp.gameObject != newDevice)
                 {
+                    comp.id = $"{dv.id}.{comp.name}";
                     comp.domain = dv.domain;
-                    string compHn = comp.UpdateHierarchyName();
-                    GameManager.instance.allItems.Add(compHn, comp.gameObject);
+                    GameManager.instance.allItems.Add(comp.id, comp.gameObject);
                     comp.referent = dv.referent;
                 }
             }
@@ -377,10 +377,9 @@ public class ObjectGenerator
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_gr.name}";
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_gr.id))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_gr.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -388,7 +387,7 @@ public class ObjectGenerator
         string[] contentNames = _gr.attributes["content"].Split(',');
         foreach (string cn in contentNames)
         {
-            GameObject go = GameManager.instance.FindByAbsPath($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn}");
+            GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
             {
                 if ((parentCategory == Category.Room && (go.GetComponent<OgreeObject>().category == Category.Rack || go.GetComponent<OgreeObject>().category == Category.Corridor))
@@ -396,7 +395,7 @@ public class ObjectGenerator
                     content.Add(go.transform);
             }
             else
-                GameManager.instance.AppendLogLine($"{parent.GetComponent<OgreeObject>().hierarchyName}.{cn} doesn't exists.", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"{_gr.parentId}.{cn} doesn't exists.", ELogTarget.both, ELogtype.warning);
         }
         if (content.Count == 0)
             return null;
@@ -423,7 +422,6 @@ public class ObjectGenerator
 
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
-        gr.hierarchyName = hierarchyName;
         gr.UpdateFromSApiObject(_gr);
         gr.UpdateColorByDomain();
 
@@ -437,7 +435,7 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        GameManager.instance.allItems.Add(hierarchyName, newGr);
+        GameManager.instance.allItems.Add(gr.id, newGr);
 
         return gr;
     }
@@ -504,7 +502,8 @@ public class ObjectGenerator
             zOffset = (_scale.z - rackAtLowerLeft.GetChild(0).localScale.x) / 2;
         }
         _pos = new Vector3(rackAtLowerLeft.localPosition.x, maxHeight / 2, rackAtLowerLeft.localPosition.z);
-        _pos += new Vector3(xOffset, 0, zOffset);
+        // 0.015f in Y to be on top of usableZone
+        _pos += new Vector3(xOffset, 0.015f, zOffset);
     }
 
     ///<summary>
@@ -556,18 +555,16 @@ public class ObjectGenerator
             return null;
         }
 
-        string hierarchyName = $"{parent.GetComponent<OgreeObject>().hierarchyName}.{_co.name}";
-        if (GameManager.instance.allItems.Contains(hierarchyName))
+        if (GameManager.instance.allItems.Contains(_co.id))
         {
-            GameManager.instance.AppendLogLine($"{hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_co.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
-        string roomHierarchyName = parent.GetComponent<OgreeObject>().hierarchyName;
         string[] rackNames = _co.attributes["content"].Split(',');
-        Transform cornerA = GameManager.instance.FindByAbsPath($"{roomHierarchyName}.{rackNames[0]}")?.transform;
-        Transform cornerB = GameManager.instance.FindByAbsPath($"{roomHierarchyName}.{rackNames[1]}")?.transform;
-        if (cornerA == null || cornerB == null)
+        Transform cornerA = Utils.GetObjectById($"{_co.parentId}.{rackNames[0]}")?.transform;
+        Transform cornerB = Utils.GetObjectById($"{_co.parentId}.{rackNames[1]}")?.transform;
+        if (!cornerA || !cornerB)
         {
             GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", ELogTarget.both, ELogtype.error);
             return null;
@@ -619,10 +616,10 @@ public class ObjectGenerator
             xOffset = (newCo.transform.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.z) / 2;
             zOffset = (newCo.transform.GetChild(0).localScale.z - cornerA.GetChild(0).localScale.x) / 2;
         }
-        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0, zOffset * orient.y);
+        // 0.015f in Y to be on top of usableZone
+        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0.015f, zOffset * orient.y);
 
         OObject co = newCo.AddComponent<OObject>();
-        co.hierarchyName = hierarchyName;
         co.UpdateFromSApiObject(_co);
 
         newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
@@ -639,7 +636,7 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        GameManager.instance.allItems.Add(hierarchyName, newCo);
+        GameManager.instance.allItems.Add(co.id, newCo);
 
         return co;
     }
