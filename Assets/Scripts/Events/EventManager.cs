@@ -7,15 +7,15 @@ public class EventManager
     {
         get
         {
-            if (newEventManagerInstance == null)
+            if (eventManagerInstance == null)
             {
-                newEventManagerInstance = new EventManager();
+                eventManagerInstance = new EventManager();
             }
 
-            return newEventManagerInstance;
+            return eventManagerInstance;
         }
     }
-    private static EventManager newEventManagerInstance = null;
+    private static EventManager eventManagerInstance = null;
 
 
     public delegate void EventDelegate<T>(T _eventParam) where T : CustomEvent;
@@ -39,7 +39,7 @@ public class EventManager
         public void Invoke(T _param)
         {
             foreach (var handler in handlers)
-                handler( _param);
+                handler(_param);
         }
     }
 
@@ -73,55 +73,55 @@ public class EventManager
                 OnFocus.Invoke(e);
                 break;
             case OnUnFocusEvent e:
-                OnUnFocus?.Invoke(e);
+                OnUnFocus.Invoke(e);
                 break;
             case OnSelectItemEvent e:
-                OnSelectItem?.Invoke(e);
+                OnSelectItem.Invoke(e);
                 break;
             case OnMouseHoverEvent e:
-                OnMouseHover?.Invoke(e);
+                OnMouseHover.Invoke(e);
                 break;
             case OnMouseUnHoverEvent e:
-                OnMouseUnHover?.Invoke(e);
+                OnMouseUnHover.Invoke(e);
                 break;
             case HighlightEvent e:
-                Highlight?.Invoke(e);
+                Highlight.Invoke(e);
                 break;
             case ImportFinishedEvent e:
-                ImportFinished?.Invoke(e);
+                ImportFinished.Invoke(e);
                 break;
             case ChangeCursorEvent e:
-                ChangeCursor?.Invoke(e);
+                ChangeCursor.Invoke(e);
                 break;
             case UpdateDomainEvent e:
-                UpdateDomain?.Invoke(e);
+                UpdateDomain.Invoke(e);
                 break;
             case SwitchLabelEvent e:
-                SwitchLabel?.Invoke(e);
+                SwitchLabel.Invoke(e);
                 break;
             case EditModeInEvent e:
-                EditModeIn?.Invoke(e);
+                EditModeIn.Invoke(e);
                 break;
             case EditModeOutEvent e:
-                EditModeOut?.Invoke(e);
+                EditModeOut.Invoke(e);
                 break;
             case ConnectApiEvent e:
-                ConnectApi?.Invoke(e);
+                ConnectApi.Invoke(e);
                 break;
             case TemperatureDiagramEvent e:
-                TemperatureDiagram?.Invoke(e);
+                TemperatureDiagram.Invoke(e);
                 break;
             case TemperatureColorEvent e:
-                TemperatureColor?.Invoke(e);
+                TemperatureColor.Invoke(e);
                 break;
             case TemperatureScatterPlotEvent e:
-                TemperatureScatterPlot?.Invoke(e);
+                TemperatureScatterPlot.Invoke(e);
                 break;
             case RightClickEvent e:
-                RightClick?.Invoke(e);
+                RightClick.Invoke(e);
                 break;
             case CancelGenerateEvent e:
-                CancelGenerate?.Invoke(e);
+                CancelGenerate.Invoke(e);
                 break;
             default:
                 Debug.LogError($"UNKNOWN EVENT :{typeof(T)}");

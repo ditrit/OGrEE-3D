@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {
     static public GameManager instance;
     public Server server;
