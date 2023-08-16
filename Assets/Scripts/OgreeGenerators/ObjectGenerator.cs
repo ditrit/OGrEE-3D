@@ -225,6 +225,7 @@ public class ObjectGenerator
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
+        OObject dv = newDevice.GetComponent<OObject>();
         // Place the device
         if (_parent)
         {
@@ -261,6 +262,7 @@ public class ObjectGenerator
                 Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
                 mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
                 newDevice.GetComponent<OObject>().color = mat.color;
+                dv.hasSlotColor = true;
             }
             else
             {
@@ -283,7 +285,6 @@ public class ObjectGenerator
 
         // Fill OObject class
         newDevice.name = _dv.name;
-        OObject dv = newDevice.GetComponent<OObject>();
         dv.UpdateFromSApiObject(_dv);
 
         // Set labels
@@ -295,10 +296,13 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        if (dv.attributes.ContainsKey("color"))
-            dv.SetColor(dv.attributes["color"]);
-        else
-            dv.UpdateColorByDomain();
+        if (!dv.hasSlotColor)
+        {
+            if (dv.attributes.ContainsKey("color"))
+                dv.SetColor(dv.attributes["color"]);
+            else
+                dv.UpdateColorByDomain();
+        }
 
         GameManager.instance.allItems.Add(dv.id, newDevice);
 
@@ -802,7 +806,7 @@ public class ObjectGenerator
                 if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
                     _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += UnitValue.Tile * new Vector3(_orient.x*( pos.x - trunkedX), 0,_orient.y*( pos.y - trunkedY));
+                    _obj.localPosition += UnitValue.Tile * new Vector3(_orient.x * (pos.x - trunkedX), 0, _orient.y * (pos.y - trunkedY));
                     return;
                 }
             }
@@ -826,7 +830,7 @@ public class ObjectGenerator
             return UnitValue.Tile;
         return _r.attributes["floorUnit"] switch
         {
-            LengthUnit.Meter=> 1.0f,
+            LengthUnit.Meter => 1.0f,
             LengthUnit.Feet => 3.28084f,
             _ => UnitValue.Tile,
         };

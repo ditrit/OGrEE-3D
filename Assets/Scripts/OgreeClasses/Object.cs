@@ -15,6 +15,7 @@ public class OObject : OgreeObject
     public OObject referent;
     public GameObject tempBar;
     public string temperatureUnit;
+    public bool hasSlotColor = false;
 
     private void Start()
     {
@@ -68,6 +69,8 @@ public class OObject : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
+        if (hasSlotColor)
+            return;
         color = new Color();
         bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
         if (validColor)
@@ -85,7 +88,7 @@ public class OObject : OgreeObject
     ///<param name="_event">The event to catch</param>
     private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
-        if (_event.name == domain && !attributes.ContainsKey("color"))
+        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
             UpdateColorByDomain();
     }
 
