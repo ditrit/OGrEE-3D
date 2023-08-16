@@ -295,6 +295,11 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
+        if (dv.attributes.ContainsKey("color"))
+            dv.SetColor(dv.attributes["color"]);
+        else
+            dv.UpdateColorByDomain();
+
         GameManager.instance.allItems.Add(dv.id, newDevice);
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))

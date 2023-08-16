@@ -85,7 +85,7 @@ public class OObject : OgreeObject
     ///<param name="_event">The event to catch</param>
     private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
-        if (_event.name == domain)
+        if (_event.name == domain && !attributes.ContainsKey("color"))
             UpdateColorByDomain();
     }
 
