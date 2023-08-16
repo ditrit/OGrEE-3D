@@ -33,24 +33,24 @@ public class ButtonHandler
         button = _button;
         hideWhenUseless = _hide;
         defaultCB = button.colors;
-        EventManager.instance.AddListener<RightClickEvent>(CheckRightClick);
-        EventManager.instance.AddListener<OnSelectItemEvent>(CheckSelect);
-        EventManager.instance.AddListener<OnFocusEvent>(CheckFocus);
-        EventManager.instance.AddListener<OnUnFocusEvent>(CheckUnfocus);
-        EventManager.instance.AddListener<EditModeInEvent>(CheckEditIn);
-        EventManager.instance.AddListener<EditModeOutEvent>(CheckEditOut);
-        EventManager.instance.AddListener<ImportFinishedEvent>(CheckImportFinished);
+        EventManager.instance.RightClick.Add(CheckRightClick);
+        EventManager.instance.OnSelectItem.Add(CheckSelect);
+        EventManager.instance.OnFocus.Add(CheckFocus);
+        EventManager.instance.OnUnFocus.Add(CheckUnfocus);
+        EventManager.instance.EditModeIn.Add(CheckEditIn);
+        EventManager.instance.EditModeOut.Add(CheckEditOut);
+        EventManager.instance.ImportFinished.Add(CheckImportFinished);
     }
 
     ~ButtonHandler()
     {
-        EventManager.instance.RemoveListener<RightClickEvent>(CheckRightClick);
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(CheckSelect);
-        EventManager.instance.RemoveListener<OnFocusEvent>(CheckFocus);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(CheckUnfocus);
-        EventManager.instance.RemoveListener<EditModeInEvent>(CheckEditIn);
-        EventManager.instance.RemoveListener<EditModeOutEvent>(CheckEditOut);
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(CheckImportFinished);
+        EventManager.instance.RightClick.Remove(CheckRightClick);
+        EventManager.instance.OnSelectItem.Remove(CheckSelect);
+        EventManager.instance.OnFocus.Remove(CheckFocus);
+        EventManager.instance.OnUnFocus.Remove(CheckUnfocus);
+        EventManager.instance.EditModeIn.Remove(CheckEditIn);
+        EventManager.instance.EditModeOut.Remove(CheckEditOut);
+        EventManager.instance.ImportFinished.Remove(CheckImportFinished);
     }
 
     /// <summary>

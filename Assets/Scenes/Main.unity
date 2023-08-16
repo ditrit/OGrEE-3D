@@ -374,7 +374,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.55
+  m_fontSize: 15
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7774,7 +7774,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.55
+  m_fontSize: 15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -10335,7 +10335,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12.7
+  m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11275,7 +11275,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.1}
+  m_AnchoredPosition: {x: 0, y: 217.09996}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -14436,6 +14436,7 @@ MonoBehaviour:
   LodLocked: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
+  isComponent: 0
   referent: {fileID: 0}
   tempBar: {fileID: 0}
   temperatureUnit: 
@@ -14653,6 +14654,10 @@ MonoBehaviour:
   sensorBarModel: {fileID: 6010235731161253863, guid: ecb7d2f802cf7f0448633282e339ca0c,
     type: 3}
   sensorBarStdModel: {fileID: 6010235731161253863, guid: d51715e26f98a7f4282097484c0dc95d,
+    type: 3}
+  labelModel: {fileID: 3029898195884055071, guid: 7b6f51d9493cd9341be8878292390a03,
+    type: 3}
+  floatingLabelModel: {fileID: 1559629824987823668, guid: a33726834467cb6459ed6a37476698a7,
     type: 3}
   templatePlaceholder: {fileID: 1332629501}
   writeLogs: 1
@@ -17083,7 +17088,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.75
+  m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -17238,7 +17243,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.55
+  m_fontSize: 15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -19279,7 +19284,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.75
+  m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -20665,8 +20670,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0.00000028113843
-  m_Size: 0.5658
+  m_Value: 0.00000014056921
+  m_Size: 0.565791
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -51,7 +51,7 @@ public class Room : Building
         if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
             SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
-            if (template.tileOffset.Count != 0)
+            if (template.tileOffset != null && template.tileOffset.Count != 0)
             {
                 // Find the part to substract to land on a whole tile
                 float sizeX = technicalZone.localScale.x * 10 - template.tileOffset[0];
