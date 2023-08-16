@@ -208,7 +208,7 @@ public class DefaultValues
 #if UNITY_EDITOR
     public const string DefaultConfigPath = "Assets/Resources/config.toml";
 #else
-    public const string DefaultConfigPath = "./config.toml";
+    public const string DefaultConfigPath = "../OGrEE-Core/config.toml";
 #endif
     public static readonly SConfig Config = new SConfig
     {
