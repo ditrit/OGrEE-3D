@@ -220,7 +220,7 @@ public class ObjectDisplayController : MonoBehaviour
                 HandleMaterial();
         }
         else if (_e.obj == transform.parent.gameObject)
-                oobject?.ResetTransform();
+            oobject?.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
             Display(true, true, true);
     }
@@ -475,7 +475,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <br/> - <b>if this object is a corridor</b> : <see cref="GameManager.alphaMat"/> with the color of the object
     /// <br/> - <see cref="GameManager.defaultMat"/> with the color of the object
     /// </summary>
-    private void HandleMaterial()
+    public void HandleMaterial()
     {
         if (oobject && oobject.scatterPlot)
             SetMaterial(GameManager.instance.scatterPlotMat);
