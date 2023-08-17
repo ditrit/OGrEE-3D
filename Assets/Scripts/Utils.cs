@@ -113,12 +113,10 @@ public static class Utils
     {
         if (!string.IsNullOrEmpty(_id))
         {
-            foreach (DictionaryEntry de in GameManager.instance.allItems)
-            {
-                GameObject obj = (GameObject)de.Value;
-                if (obj && obj.GetComponent<OgreeObject>().id == _id)
-                    return obj;
-            }
+            if (GameManager.instance.allItems.Contains(_id))
+                return (GameObject)GameManager.instance.allItems[_id];
+            else
+                return null;
         }
         return null;
     }
@@ -133,34 +131,12 @@ public static class Utils
         string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
 
         List<GameObject> objects = new List<GameObject>();
-        foreach (DictionaryEntry de in GameManager.instance.allItems)
+        foreach (string objId in ids)
         {
-            GameObject obj = (GameObject)de.Value;
-            foreach (string objId in ids)
-                if (obj.GetComponent<OgreeObject>().id == objId)
-                    objects.Add(obj);
+            if (GameManager.instance.allItems.Contains(objId))
+                objects.Add((GameObject)GameManager.instance.allItems[objId]);
         }
         return objects;
-    }
-
-    ///<summary>
-    /// Get an object from <see cref="GameManager.allItems"/> by it's hierarchyName.
-    ///</summary>
-    ///<param name="_id">The id to search</param>
-    ///<returns>The asked object</returns>
-    public static GameObject GetObjectByHierarchyName(string _hierarchyName)
-    {
-        if (!string.IsNullOrEmpty(_hierarchyName))
-        {
-            _hierarchyName = _hierarchyName.Replace('/', '.');
-            foreach (DictionaryEntry de in GameManager.instance.allItems)
-            {
-                GameObject obj = (GameObject)de.Value;
-                if (obj && obj.GetComponent<OgreeObject>().hierarchyName == _hierarchyName)
-                    return obj;
-            }
-        }
-        return null;
     }
 
     ///<summary>

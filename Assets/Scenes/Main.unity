@@ -7291,9 +7291,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-08-02
+  m_text: 'Build date: 2023-08-04
 
-    Commit #4f58e5d2'
+    Commit #3466919'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -12032,7 +12032,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
-  hierarchyName: 
   id: 
   parentId: 
   category: room
@@ -12837,7 +12836,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1389592959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14419,7 +14418,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
-  hierarchyName: 
   id: 
   parentId: 
   category: rack
@@ -14438,6 +14436,7 @@ MonoBehaviour:
   LodLocked: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
+  isComponent: 0
   referent: {fileID: 0}
   tempBar: {fileID: 0}
   temperatureUnit: 
@@ -14655,6 +14654,10 @@ MonoBehaviour:
   sensorBarModel: {fileID: 6010235731161253863, guid: ecb7d2f802cf7f0448633282e339ca0c,
     type: 3}
   sensorBarStdModel: {fileID: 6010235731161253863, guid: d51715e26f98a7f4282097484c0dc95d,
+    type: 3}
+  labelModel: {fileID: 3029898195884055071, guid: 7b6f51d9493cd9341be8878292390a03,
+    type: 3}
+  floatingLabelModel: {fileID: 1559629824987823668, guid: a33726834467cb6459ed6a37476698a7,
     type: 3}
   templatePlaceholder: {fileID: 1332629501}
   writeLogs: 1

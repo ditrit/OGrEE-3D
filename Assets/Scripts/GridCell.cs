@@ -10,14 +10,14 @@ public class GridCell : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.EditModeIn.Add(OnEditModeIn);
+        EventManager.instance.OnSelectItem.Add(OnSelectItem);
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.EditModeIn.Remove(OnEditModeIn);
+        EventManager.instance.OnSelectItem.Remove(OnSelectItem);
     }
 
     ///<summary>

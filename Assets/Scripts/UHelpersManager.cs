@@ -23,16 +23,16 @@ public class UHelpersManager : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOut);
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelect);
+        EventManager.instance.EditModeIn.Add(OnEditModeIn);
+        EventManager.instance.EditModeOut.Add(OnEditModeOut);
+        EventManager.instance.OnSelectItem.Add(OnSelect);
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeIn);
-        EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOut);
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelect);
+        EventManager.instance.EditModeIn.Remove(OnEditModeIn);
+        EventManager.instance.EditModeOut.Remove(OnEditModeOut);
+        EventManager.instance.OnSelectItem.Remove(OnSelect);
     }
 
     ///<summary>

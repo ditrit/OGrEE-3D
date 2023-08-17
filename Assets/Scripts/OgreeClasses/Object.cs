@@ -7,6 +7,7 @@ public class OObject : OgreeObject
 {
     public Color color;
     public bool isHidden = false;
+    public bool isComponent = false;
 
     /// <summary>
     /// The direct child of a room which is a parent of this object or which is this object
@@ -14,16 +15,17 @@ public class OObject : OgreeObject
     public OObject referent;
     public GameObject tempBar;
     public string temperatureUnit;
+    public bool hasSlotColor = false;
 
-    private void Start()
+    protected virtual void Start()
     {
-        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
     }
 
     ///<summary>
@@ -33,15 +35,10 @@ public class OObject : OgreeObject
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
-        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
-        if (domain != _src.domain)
-        {
-            domain = _src.domain;
-            UpdateColorByDomain();
-        }
+        domain = _src.domain;
         description = _src.description;
 
         foreach (string attribute in _src.attributes.Keys)
@@ -75,7 +72,7 @@ public class OObject : OgreeObject
         else
         {
             UpdateColorByDomain();
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Unknown color to display", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{id}] Unknown color to display", ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -85,7 +82,7 @@ public class OObject : OgreeObject
     ///<param name="_event">The event to catch</param>
     private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
-        if (_event.name == domain)
+        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
             UpdateColorByDomain();
     }
 
@@ -139,7 +136,7 @@ public class OObject : OgreeObject
                 sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
             else
             {
-                GameManager.instance.AppendLogLine($"[{hierarchyName}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine($"[{id}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
                 return;
             }
 
@@ -166,7 +163,7 @@ public class OObject : OgreeObject
             }
         }
         else
-            GameManager.instance.AppendLogLine($"[{hierarchyName}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"[{id}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
     }
 
     /// <summary>

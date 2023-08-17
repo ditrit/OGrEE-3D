@@ -1,7 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Base event for all EventManager events.
+/// </summary>
+public class CustomEvent
+{
+
+}
 public class OnFocusEvent : CustomEvent
 {
     public GameObject obj;

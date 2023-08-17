@@ -12,16 +12,16 @@ public class Building : OgreeObject
     private void Start()
     {
         if (!(this is Room))
-            EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
+            EventManager.instance.ImportFinished.Add(OnImportFinihsed);
+        EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         if (!(this is Room))
-            EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinihsed);
-        EventManager.instance.RemoveListener<UpdateDomainEvent>(UpdateColorByDomain);
+            EventManager.instance.ImportFinished.Remove(OnImportFinihsed);
+        EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
     }
 
     /// <summary>
@@ -62,7 +62,6 @@ public class Building : OgreeObject
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         name = _src.name;
-        hierarchyName = _src.hierarchyName;
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;

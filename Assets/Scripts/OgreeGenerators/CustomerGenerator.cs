@@ -11,18 +11,17 @@ public class CustomerGenerator
     ///<returns>The created domain</returns>
     public OgreeObject CreateDomain(SApiObject _do)
     {
-        if (GameManager.instance.allItems.Contains(_do.name))
+        if (GameManager.instance.allItems.Contains(_do.id))
         {
-            GameManager.instance.AppendLogLine($"{_do.name} already exists.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"{_do.id} already exists.", ELogTarget.both, ELogtype.error);
             return null;
         }
 
         GameObject newDomain = new GameObject(_do.name);
         OgreeObject domain = newDomain.AddComponent<OgreeObject>();
         domain.UpdateFromSApiObject(_do);
-        domain.hierarchyName = _do.name;
 
-        GameManager.instance.allItems.Add(_do.name, newDomain);
+        GameManager.instance.allItems.Add(_do.id, newDomain);
         return domain;
     }
 
@@ -34,9 +33,9 @@ public class CustomerGenerator
     ///<returns>The created Site</returns>
     public OgreeObject CreateSite(SApiObject _si, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_si.hierarchyName))
+        if (GameManager.instance.allItems.Contains(_si.id))
         {
-            GameManager.instance.AppendLogLine($"{_si.hierarchyName} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_si.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -46,7 +45,7 @@ public class CustomerGenerator
         OgreeObject site = newSite.AddComponent<OgreeObject>();
         site.UpdateFromSApiObject(_si);
 
-        GameManager.instance.allItems.Add(site.hierarchyName, newSite);
+        GameManager.instance.allItems.Add(site.id, newSite);
         return site;
     }
 }

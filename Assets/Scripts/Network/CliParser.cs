@@ -40,12 +40,12 @@ public class CliParser
 
     public CliParser()
     {
-        EventManager.instance.AddListener<CancelGenerateEvent>(OnCancelGenenerate);
+        EventManager.instance.CancelGenerate.Add(OnCancelGenenerate);
     }
 
     ~CliParser()
     {
-        EventManager.instance.RemoveListener<CancelGenerateEvent>(OnCancelGenenerate);
+        EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
     }
 
     ///<summary>
@@ -232,7 +232,7 @@ public class CliParser
             {
                 if (newData.attributes.ContainsKey("color")
                     && (!item.attributes.ContainsKey("color")
-                        || item.attributes.ContainsKey("color") && item.attributes["color"] != newData.attributes["color"]))
+                        ||item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
             }
             // Case temperature for corridors
@@ -240,7 +240,7 @@ public class CliParser
             {
                 if (newData.attributes.ContainsKey("temperature")
                     && (!item.attributes.ContainsKey("temperature")
-                        || item.attributes.ContainsKey("temperature") && item.attributes["temperature"] != newData.attributes["temperature"]))
+                        ||item.attributes["temperature"] != newData.attributes["temperature"]))
                 {
                     if (newData.attributes["temperature"] == "cold")
                         item.SetColor("000099");
