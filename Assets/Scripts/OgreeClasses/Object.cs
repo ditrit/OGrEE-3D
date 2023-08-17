@@ -15,8 +15,9 @@ public class OObject : OgreeObject
     public OObject referent;
     public GameObject tempBar;
     public string temperatureUnit;
+    public bool hasSlotColor = false;
 
-    private void Start()
+    protected virtual void Start()
     {
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
@@ -37,11 +38,7 @@ public class OObject : OgreeObject
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
-        if (domain != _src.domain)
-        {
-            domain = _src.domain;
-            UpdateColorByDomain();
-        }
+        domain = _src.domain;
         description = _src.description;
 
         foreach (string attribute in _src.attributes.Keys)
@@ -85,7 +82,7 @@ public class OObject : OgreeObject
     ///<param name="_event">The event to catch</param>
     private void UpdateColorByDomain(UpdateDomainEvent _event)
     {
-        if (_event.name == domain)
+        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
             UpdateColorByDomain();
     }
 

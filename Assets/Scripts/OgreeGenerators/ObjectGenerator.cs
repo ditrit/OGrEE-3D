@@ -225,6 +225,8 @@ public class ObjectGenerator
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
+        OObject dv = newDevice.GetComponent<OObject>();
+        dv.UpdateFromSApiObject(_dv);
         // Place the device
         if (_parent)
         {
@@ -255,12 +257,14 @@ public class ObjectGenerator
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
                         break;
                 }
-
-                // if slot, color
-                Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
-                Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
-                mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
-                newDevice.GetComponent<OObject>().color = mat.color;
+                if (!dv.attributes.ContainsKey("color"))
+                {
+                    // if slot, color
+                    Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+                    dv.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+                    newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
+                    dv.hasSlotColor = true;
+                }
             }
             else
             {
@@ -283,8 +287,6 @@ public class ObjectGenerator
 
         // Fill OObject class
         newDevice.name = _dv.name;
-        OObject dv = newDevice.GetComponent<OObject>();
-        dv.UpdateFromSApiObject(_dv);
 
         // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
@@ -294,6 +296,11 @@ public class ObjectGenerator
             dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
+        if (dv.attributes.ContainsKey("color"))
+            dv.SetColor(dv.attributes["color"]);
+        else if (!dv.hasSlotColor)
+            dv.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(dv.id, newDevice);
 
@@ -797,7 +804,7 @@ public class ObjectGenerator
                 if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
                     _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += UnitValue.Tile * new Vector3(_orient.x*( pos.x - trunkedX), 0,_orient.y*( pos.y - trunkedY));
+                    _obj.localPosition += UnitValue.Tile * new Vector3(_orient.x * (pos.x - trunkedX), 0, _orient.y * (pos.y - trunkedY));
                     return;
                 }
             }
@@ -821,7 +828,7 @@ public class ObjectGenerator
             return UnitValue.Tile;
         return _r.attributes["floorUnit"] switch
         {
-            LengthUnit.Meter=> 1.0f,
+            LengthUnit.Meter => 1.0f,
             LengthUnit.Feet => 3.28084f,
             _ => UnitValue.Tile,
         };
