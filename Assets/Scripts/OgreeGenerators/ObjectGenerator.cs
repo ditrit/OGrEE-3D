@@ -226,6 +226,7 @@ public class ObjectGenerator
         }
 
         OObject dv = newDevice.GetComponent<OObject>();
+        dv.UpdateFromSApiObject(_dv);
         // Place the device
         if (_parent)
         {
@@ -256,13 +257,14 @@ public class ObjectGenerator
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
                         break;
                 }
-
-                // if slot, color
-                Material mat = newDevice.transform.GetChild(0).GetComponent<Renderer>().material;
-                Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
-                mat.color = new Color(slotColor.r, slotColor.g, slotColor.b);
-                newDevice.GetComponent<OObject>().color = mat.color;
-                dv.hasSlotColor = true;
+                if (!dv.attributes.ContainsKey("color"))
+                {
+                    // if slot, color
+                    Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+                    dv.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+                    newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
+                    dv.hasSlotColor = true;
+                }
             }
             else
             {
@@ -285,7 +287,6 @@ public class ObjectGenerator
 
         // Fill OObject class
         newDevice.name = _dv.name;
-        dv.UpdateFromSApiObject(_dv);
 
         // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
@@ -296,13 +297,10 @@ public class ObjectGenerator
         dod.SetLabel("#name");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        if (!dv.hasSlotColor)
-        {
-            if (dv.attributes.ContainsKey("color"))
-                dv.SetColor(dv.attributes["color"]);
-            else
-                dv.UpdateColorByDomain();
-        }
+        if (dv.attributes.ContainsKey("color"))
+            dv.SetColor(dv.attributes["color"]);
+        else if (!dv.hasSlotColor)
+            dv.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(dv.id, newDevice);
 

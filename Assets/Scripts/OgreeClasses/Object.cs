@@ -17,7 +17,7 @@ public class OObject : OgreeObject
     public string temperatureUnit;
     public bool hasSlotColor = false;
 
-    private void Start()
+    protected virtual void Start()
     {
         EventManager.instance.AddListener<UpdateDomainEvent>(UpdateColorByDomain);
     }
@@ -38,11 +38,7 @@ public class OObject : OgreeObject
         id = _src.id;
         parentId = _src.parentId;
         category = _src.category;
-        if (domain != _src.domain)
-        {
-            domain = _src.domain;
-            UpdateColorByDomain();
-        }
+        domain = _src.domain;
         description = _src.description;
 
         foreach (string attribute in _src.attributes.Keys)
@@ -69,8 +65,6 @@ public class OObject : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
-        if (hasSlotColor)
-            return;
         color = new Color();
         bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
         if (validColor)

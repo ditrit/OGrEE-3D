@@ -6,8 +6,9 @@ public class Group : OObject
     private List<GameObject> content;
     public bool isDisplayed = true;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         content = new List<GameObject>();
         string[] names = attributes["content"].Split(',');
 
@@ -48,7 +49,9 @@ public class Group : OObject
         }
         else
         {
-            GetComponent<ObjectDisplayController>().SubscribeEvents();
+            ObjectDisplayController objectDisplayController = GetComponent<ObjectDisplayController>();
+            objectDisplayController.SubscribeEvents();
+            objectDisplayController.HandleMaterial();
             if (UiManager.instance.openedGroups.Contains(this))
                 UiManager.instance.openedGroups.Remove(this);
         }
