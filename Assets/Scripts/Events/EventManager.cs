@@ -1,25 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-/// <summary>
-/// Event Manager manages publishing raised events to subscribing/listening classes.
-///
-/// @example subscribe
-///     EventManager.Instance.AddListener<SomethingHappenedEvent>(OnSomethingHappened);
-///
-/// @example unsubscribe
-///     EventManager.Instance.RemoveListener<SomethingHappenedEvent>(OnSomethingHappened);
-///
-/// @example publish an event
-///     EventManager.Instance.Raise(new SomethingHappenedEvent());
-///
-/// This class is a minor variation on <http://www.willrmiller.com/?p=87>
-/// </summary>
 public class EventManager
 {
-#pragma warning disable IDE1006 // Name assignment styles
     public static EventManager instance
-#pragma warning restore IDE1006 // Name assignment styles
     {
         get
         {
@@ -33,86 +17,115 @@ public class EventManager
     }
     private static EventManager eventManagerInstance = null;
 
-    public delegate void EventDelegate<T>(T e) where T : CustomEvent;
-    private delegate void EventDelegate(CustomEvent e);
 
-    /// <summary>
-    /// The actual delegate, there is one delegate per unique event. Each
-    /// delegate has multiple invocation list items.
-    /// </summary>
-    private readonly Dictionary<System.Type, EventDelegate> delegates = new Dictionary<System.Type, EventDelegate>();
+    public delegate void EventDelegate<T>(T _eventParam) where T : CustomEvent;
 
-    /// <summary>
-    /// Lookups only, there is one delegate lookup per listener
-    /// </summary>
-    private readonly Dictionary<System.Delegate, EventDelegate> delegateLookup = new Dictionary<System.Delegate, EventDelegate>();
-
-    /// <summary>
-    /// Add the delegate.
-    /// </summary>
-    public void AddListener<T>(EventDelegate<T> del) where T : CustomEvent
+    public class EventWrap<T> where T : CustomEvent
     {
-
-        if (delegateLookup.ContainsKey(del))
+        private readonly HashSet<EventDelegate<T>> handlers = new HashSet<EventDelegate<T>>();
+        private event EventDelegate<T> EventDelegate
         {
-            return;
+            add => handlers.Add(value);
+            remove => handlers.Remove(value);
         }
-
-        // Create a new non-generic delegate which calls our generic one.
-        // This is the delegate we actually invoke.
-        void internalDelegate(CustomEvent e) => del((T)e);
-        delegateLookup[del] = internalDelegate;
-
-        if (delegates.TryGetValue(typeof(T), out EventDelegate tempDel))
+        public void Add(EventDelegate<T> _event)
         {
-            delegates[typeof(T)] = tempDel += internalDelegate;
+            EventDelegate += _event;
         }
-        else
+        public void Remove(EventDelegate<T> _event)
         {
-            delegates[typeof(T)] = internalDelegate;
+            EventDelegate -= _event;
+        }
+        public void Invoke(T _param)
+        {
+            foreach (var handler in handlers)
+                handler(_param);
         }
     }
 
-    /// <summary>
-    /// Remove the delegate. Can be called multiple times on same delegate.
-    /// </summary>
-    public void RemoveListener<T>(EventDelegate<T> del) where T : CustomEvent
-    {
-
-        if (delegateLookup.TryGetValue(del, out EventDelegate internalDelegate))
-        {
-            if (delegates.TryGetValue(typeof(T), out EventDelegate tempDel))
-            {
-                tempDel -= internalDelegate;
-                if (tempDel == null)
-                {
-                    delegates.Remove(typeof(T));
-                }
-                else
-                {
-                    delegates[typeof(T)] = tempDel;
-                }
-            }
-
-            delegateLookup.Remove(del);
-        }
-    }
-
-    /// <summary>
-    /// The count of delegate lookups. The delegate lookups will increase by
-    /// one for each unique AddListener. Useful for debugging and not much else.
-    /// </summary>
-    public int DelegateLookupCount { get { return delegateLookup.Count; } }
+    public EventWrap<OnFocusEvent> OnFocus = new EventWrap<OnFocusEvent>();
+    public EventWrap<OnUnFocusEvent> OnUnFocus = new EventWrap<OnUnFocusEvent>();
+    public EventWrap<OnSelectItemEvent> OnSelectItem = new EventWrap<OnSelectItemEvent>();
+    public EventWrap<OnMouseHoverEvent> OnMouseHover = new EventWrap<OnMouseHoverEvent>();
+    public EventWrap<OnMouseUnHoverEvent> OnMouseUnHover = new EventWrap<OnMouseUnHoverEvent>();
+    public EventWrap<HighlightEvent> Highlight = new EventWrap<HighlightEvent>();
+    public EventWrap<ImportFinishedEvent> ImportFinished = new EventWrap<ImportFinishedEvent>();
+    public EventWrap<ChangeCursorEvent> ChangeCursor = new EventWrap<ChangeCursorEvent>();
+    public EventWrap<UpdateDomainEvent> UpdateDomain = new EventWrap<UpdateDomainEvent>();
+    public EventWrap<SwitchLabelEvent> SwitchLabel = new EventWrap<SwitchLabelEvent>();
+    public EventWrap<EditModeInEvent> EditModeIn = new EventWrap<EditModeInEvent>();
+    public EventWrap<EditModeOutEvent> EditModeOut = new EventWrap<EditModeOutEvent>();
+    public EventWrap<ConnectApiEvent> ConnectApi = new EventWrap<ConnectApiEvent>();
+    public EventWrap<TemperatureDiagramEvent> TemperatureDiagram = new EventWrap<TemperatureDiagramEvent>();
+    public EventWrap<TemperatureColorEvent> TemperatureColor = new EventWrap<TemperatureColorEvent>();
+    public EventWrap<TemperatureScatterPlotEvent> TemperatureScatterPlot = new EventWrap<TemperatureScatterPlotEvent>();
+    public EventWrap<RightClickEvent> RightClick = new EventWrap<RightClickEvent>();
+    public EventWrap<CancelGenerateEvent> CancelGenerate = new EventWrap<CancelGenerateEvent>();
 
     /// <summary>
     /// Raise the event to all the listeners
     /// </summary>
-    public void Raise(CustomEvent e)
+    public void Raise<T>(T _param) where T : CustomEvent
     {
-        if (delegates.TryGetValue(e.GetType(), out EventDelegate del))
+        switch (_param)
         {
-            del.Invoke(e);
+            case OnFocusEvent e:
+                OnFocus.Invoke(e);
+                break;
+            case OnUnFocusEvent e:
+                OnUnFocus.Invoke(e);
+                break;
+            case OnSelectItemEvent e:
+                OnSelectItem.Invoke(e);
+                break;
+            case OnMouseHoverEvent e:
+                OnMouseHover.Invoke(e);
+                break;
+            case OnMouseUnHoverEvent e:
+                OnMouseUnHover.Invoke(e);
+                break;
+            case HighlightEvent e:
+                Highlight.Invoke(e);
+                break;
+            case ImportFinishedEvent e:
+                ImportFinished.Invoke(e);
+                break;
+            case ChangeCursorEvent e:
+                ChangeCursor.Invoke(e);
+                break;
+            case UpdateDomainEvent e:
+                UpdateDomain.Invoke(e);
+                break;
+            case SwitchLabelEvent e:
+                SwitchLabel.Invoke(e);
+                break;
+            case EditModeInEvent e:
+                EditModeIn.Invoke(e);
+                break;
+            case EditModeOutEvent e:
+                EditModeOut.Invoke(e);
+                break;
+            case ConnectApiEvent e:
+                ConnectApi.Invoke(e);
+                break;
+            case TemperatureDiagramEvent e:
+                TemperatureDiagram.Invoke(e);
+                break;
+            case TemperatureColorEvent e:
+                TemperatureColor.Invoke(e);
+                break;
+            case TemperatureScatterPlotEvent e:
+                TemperatureScatterPlot.Invoke(e);
+                break;
+            case RightClickEvent e:
+                RightClick.Invoke(e);
+                break;
+            case CancelGenerateEvent e:
+                CancelGenerate.Invoke(e);
+                break;
+            default:
+                Debug.LogError($"UNKNOWN EVENT :{typeof(T)}");
+                break;
         }
     }
-
 }

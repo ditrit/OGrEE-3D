@@ -32,14 +32,14 @@ public class CameraControl : MonoBehaviour
 
     private void Start()
     {
-        EventManager.instance.AddListener<OnFocusEvent>(OnFocus);
-        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.instance.OnFocus.Add(OnFocus);
+        EventManager.instance.OnUnFocus.Add(OnUnFocus);
     }
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocus);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
+        EventManager.instance.OnFocus.Remove(OnFocus);
+        EventManager.instance.OnUnFocus.Remove(OnUnFocus);
     }
 
     private void Update()

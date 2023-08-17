@@ -51,7 +51,7 @@ public class Room : Building
         if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
             SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
-            if (template.tileOffset.Count != 0)
+            if (template.tileOffset != null && template.tileOffset.Count != 0)
             {
                 // Find the part to substract to land on a whole tile
                 float sizeX = technicalZone.localScale.x * 10 - template.tileOffset[0];
@@ -194,8 +194,8 @@ public class Room : Building
             if (root)
             {
                 List<SColor> customColors = new List<SColor>();
-                if (attributes.ContainsKey("customColors"))
-                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
+                if (attributes.ContainsKey("colors"))
+                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
@@ -242,8 +242,8 @@ public class Room : Building
             if (root)
             {
                 List<SColor> customColors = new List<SColor>();
-                if (attributes.ContainsKey("customColors"))
-                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
+                if (attributes.ContainsKey("colors"))
+                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
@@ -400,8 +400,8 @@ public class Room : Building
         }
 
         List<SColor> customColors = new List<SColor>();
-        if (attributes.ContainsKey("customColors"))
-            customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["customColors"]);
+        if (attributes.ContainsKey("colors"))
+            customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
 
         if (!string.IsNullOrEmpty(tileData.location))
         {

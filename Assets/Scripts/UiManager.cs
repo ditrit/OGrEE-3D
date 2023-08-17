@@ -369,13 +369,13 @@ public class UiManager : MonoBehaviour
         groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
-        EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem.Add(OnSelectItem);
 
-        EventManager.instance.AddListener<OnFocusEvent>(OnFocusItem);
-        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.OnFocus.Add(OnFocusItem);
+        EventManager.instance.OnUnFocus.Add(OnUnFocusItem);
 
-        EventManager.instance.AddListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ConnectApi.Add(OnApiConnected);
+        EventManager.instance.ImportFinished.Add(OnImportFinished);
     }
 
     private void Update()
@@ -392,13 +392,13 @@ public class UiManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectItem);
+        EventManager.instance.OnSelectItem.Remove(OnSelectItem);
 
-        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocusItem);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocusItem);
+        EventManager.instance.OnFocus.Remove(OnFocusItem);
+        EventManager.instance.OnUnFocus.Remove(OnUnFocusItem);
 
-        EventManager.instance.RemoveListener<ConnectApiEvent>(OnApiConnected);
-        EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinished);
+        EventManager.instance.ConnectApi.Remove(OnApiConnected);
+        EventManager.instance.ImportFinished.Remove(OnImportFinished);
     }
 
     ///<summary>

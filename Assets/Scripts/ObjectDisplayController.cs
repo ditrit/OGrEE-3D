@@ -66,37 +66,37 @@ public class ObjectDisplayController : MonoBehaviour
     {
         if (slot || sensor)
         {
-            EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectOther);
-            EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedOther);
+            EventManager.instance.OnSelectItem.Add(OnSelectOther);
+            EventManager.instance.ImportFinished.Add(OnImportFinishedOther);
         }
         else
         {
-            EventManager.instance.AddListener<OnSelectItemEvent>(OnSelectBasic);
+            EventManager.instance.OnSelectItem.Add(OnSelectBasic);
 
-            EventManager.instance.AddListener<EditModeInEvent>(OnEditModeInBasic);
-            EventManager.instance.AddListener<EditModeOutEvent>(OnEditModeOutBasic);
+            EventManager.instance.EditModeIn.Add(OnEditModeInBasic);
+            EventManager.instance.EditModeOut.Add(OnEditModeOutBasic);
 
             if (group)
             {
-                EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedGroup);
+                EventManager.instance.ImportFinished.Add(OnImportFinishedGroup);
                 ObjectDisplayController customRendererParent = transform.parent?.GetComponent<ObjectDisplayController>();
                 OgreeObject ogreeObjectParent = transform.parent?.GetComponent<OgreeObject>();
                 scatterPlotOfOneParent = customRendererParent && customRendererParent.scatterPlotOfOneParent || ogreeObjectParent && ogreeObjectParent.scatterPlot;
                 Display(!scatterPlotOfOneParent, !scatterPlotOfOneParent, !scatterPlotOfOneParent);
             }
             else
-                EventManager.instance.AddListener<ImportFinishedEvent>(OnImportFinishedBasic);
+                EventManager.instance.ImportFinished.Add(OnImportFinishedBasic);
 
-            EventManager.instance.AddListener<TemperatureColorEvent>(OnTemperatureColorEvent);
+            EventManager.instance.TemperatureColor.Add(OnTemperatureColorEvent);
 
-            EventManager.instance.AddListener<OnMouseHoverEvent>(OnMouseHover);
-            EventManager.instance.AddListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+            EventManager.instance.OnMouseHover.Add(OnMouseHover);
+            EventManager.instance.OnMouseUnHover.Add(OnMouseUnHover);
         }
-        EventManager.instance.AddListener<OnFocusEvent>(OnFocus);
-        EventManager.instance.AddListener<OnUnFocusEvent>(OnUnFocus);
-        EventManager.instance.AddListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
-        EventManager.instance.AddListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
-        EventManager.instance.AddListener<HighlightEvent>(OnHighLight);
+        EventManager.instance.OnFocus.Add(OnFocus);
+        EventManager.instance.OnUnFocus.Add(OnUnFocus);
+        EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
+        EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
+        EventManager.instance.Highlight.Add(OnHighLight);
     }
 
     ///<summary>
@@ -106,31 +106,31 @@ public class ObjectDisplayController : MonoBehaviour
     {
         if (slot || sensor)
         {
-            EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectOther);
-            EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinishedOther);
+            EventManager.instance.OnSelectItem.Remove(OnSelectOther);
+            EventManager.instance.ImportFinished.Remove(OnImportFinishedOther);
         }
         else
         {
-            EventManager.instance.RemoveListener<OnSelectItemEvent>(OnSelectBasic);
+            EventManager.instance.OnSelectItem.Remove(OnSelectBasic);
 
-            EventManager.instance.RemoveListener<EditModeInEvent>(OnEditModeInBasic);
-            EventManager.instance.RemoveListener<EditModeOutEvent>(OnEditModeOutBasic);
+            EventManager.instance.EditModeIn.Remove(OnEditModeInBasic);
+            EventManager.instance.EditModeOut.Remove(OnEditModeOutBasic);
 
             if (group)
-                EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinishedGroup);
+                EventManager.instance.ImportFinished.Remove(OnImportFinishedGroup);
             else
-                EventManager.instance.RemoveListener<ImportFinishedEvent>(OnImportFinishedBasic);
+                EventManager.instance.ImportFinished.Remove(OnImportFinishedBasic);
 
-            EventManager.instance.RemoveListener<TemperatureColorEvent>(OnTemperatureColorEvent);
+            EventManager.instance.TemperatureColor.Remove(OnTemperatureColorEvent);
 
-            EventManager.instance.RemoveListener<OnMouseHoverEvent>(OnMouseHover);
-            EventManager.instance.RemoveListener<OnMouseUnHoverEvent>(OnMouseUnHover);
+            EventManager.instance.OnMouseHover.Remove(OnMouseHover);
+            EventManager.instance.OnMouseUnHover.Remove(OnMouseUnHover);
         }
-        EventManager.instance.RemoveListener<OnFocusEvent>(OnFocus);
-        EventManager.instance.RemoveListener<OnUnFocusEvent>(OnUnFocus);
-        EventManager.instance.RemoveListener<TemperatureDiagramEvent>(OnTemperatureDiagram);
-        EventManager.instance.RemoveListener<TemperatureScatterPlotEvent>(OnTemperatureScatterPlot);
-        EventManager.instance.RemoveListener<HighlightEvent>(OnHighLight);
+        EventManager.instance.OnFocus.Remove(OnFocus);
+        EventManager.instance.OnUnFocus.Remove(OnUnFocus);
+        EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
+        EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
+        EventManager.instance.Highlight.Remove(OnHighLight);
     }
 
     /// <summary>
