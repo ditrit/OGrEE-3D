@@ -504,87 +504,45 @@ public class ObjectGenerator
     }
 
     ///<summary>
-    /// Generate a corridor (from GameManager.labeledBoxModel) with defined corners and color.
+    /// Generate a corridor (from GameManager.labeledBoxModel) and apply the given data to it.
     ///</summary>
     ///<param name="_co">The corridor data to apply</param>
     ///<param name="_parent">The parent of the created corridor. Leave null if _co contains the parendId</param>
     ///<returns>The created corridor</returns>
     public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _co.parentId);
-        if (!parent || parent.GetComponent<OgreeObject>().category != Category.Room)
-        {
-            GameManager.instance.AppendLogLine($"Parent room not found", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-
         if (GameManager.instance.allItems.Contains(_co.id))
         {
             GameManager.instance.AppendLogLine($"{_co.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
-        string[] rackNames = _co.attributes["content"].Split(',');
-        Transform cornerA = Utils.GetObjectById($"{_co.parentId}.{rackNames[0]}")?.transform;
-        Transform cornerB = Utils.GetObjectById($"{_co.parentId}.{rackNames[1]}")?.transform;
-        if (!cornerA || !cornerB)
-        {
-            GameManager.instance.AppendLogLine($"{rackNames[0]} or {rackNames[1]} doesn't exist", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-
-        Vector3 cornerARotation = JsonUtility.FromJson<Vector3>(cornerA.GetComponent<Rack>().attributes["rotation"]);
-        Vector3 cornerBRotation = JsonUtility.FromJson<Vector3>(cornerB.GetComponent<Rack>().attributes["rotation"]);
-        bool horizontalCorridor = (cornerARotation.y == 0 || cornerARotation.y == 180);
-
-        Vector2 orient = Vector2.one;
-        if (cornerA.localPosition.x > cornerB.localPosition.x)
-            orient.x = -1;
-        if (cornerA.localPosition.z > cornerB.localPosition.z)
-            orient.y = -1;
-
-        float maxHeight = cornerA.GetChild(0).localScale.y;
-        if (cornerB.GetChild(0).localScale.y > maxHeight)
-            maxHeight = cornerB.GetChild(0).localScale.y;
-
         GameObject newCo = Object.Instantiate(GameManager.instance.labeledBoxModel);
         newCo.name = _co.name;
-        newCo.transform.parent = parent;
+        newCo.transform.parent = _parent;
 
-        // Scale
-        float x = Mathf.Abs(cornerB.localPosition.x - cornerA.localPosition.x);
-        float z = Mathf.Abs(cornerB.localPosition.z - cornerA.localPosition.z);
-        if (horizontalCorridor)
-        {
-            x += cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x;
-        }
-        else
-        {
-            z += cornerB.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.x;
-        }
-        newCo.transform.GetChild(0).localScale = new Vector3(x, maxHeight, z);
+        // Apply scale and move all components to have the rack's pivot at the lower left corner
+        Vector2 size = JsonUtility.FromJson<Vector2>(_co.attributes["size"]);
+        float height = Utils.ParseDecFrac(_co.attributes["height"]);
+        Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
-        // localPosition
-        newCo.transform.localEulerAngles = new Vector3(0, 180, 0);
-        newCo.transform.position = new Vector3(cornerA.GetChild(0).position.x, maxHeight / 2, cornerA.GetChild(0).position.z);
-        float xOffset;
-        float zOffset;
-        if (horizontalCorridor)
-        {
-            xOffset = (newCo.transform.GetChild(0).localScale.x - cornerA.GetChild(0).localScale.x) / 2;
-            zOffset = (newCo.transform.GetChild(0).localScale.z + cornerA.GetChild(0).localScale.z) / 2;
-        }
-        else
-        {
-            xOffset = (newCo.transform.GetChild(0).localScale.x + cornerA.GetChild(0).localScale.z) / 2;
-            zOffset = (newCo.transform.GetChild(0).localScale.z - cornerA.GetChild(0).localScale.x) / 2;
-        }
-        // 0.015f in Y to be on top of usableZone
-        newCo.transform.localPosition += new Vector3(xOffset * orient.x, 0.015f, zOffset * orient.y);
+        newCo.transform.GetChild(0).localScale = scale;
+        foreach (Transform comp in newCo.transform)
+            comp.localPosition += scale / 2;
 
         OObject co = newCo.AddComponent<OObject>();
         co.UpdateFromSApiObject(_co);
 
+        // Apply position & rotation
+        if (_parent)
+        {
+            PlaceInRoom(newCo.transform, _co, out Vector2 orient);
+            newCo.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(co.attributes["rotation"]));
+        }
+        else
+            newCo.transform.localPosition = Vector3.zero;
+
+        // Set color according to attribute["temperature"]
         newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
         mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
@@ -741,7 +699,7 @@ public class ObjectGenerator
         }
 
         Vector3 pos;
-        if (_apiObj.category == Category.Rack && _apiObj.attributes.ContainsKey("posXYZ"))
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor) && _apiObj.attributes.ContainsKey("posXYZ"))
             pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]);
         else
         {
