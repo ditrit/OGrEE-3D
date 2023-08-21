@@ -341,17 +341,4 @@ public static class Utils
     {
         return _input.ToString("0.##", CultureInfo.InvariantCulture);
     }
-
-    ///
-    public static float NormalizeAngle(float _value)
-    {
-        float angle = _value % 360;
-        return angle < 0 ? angle + 360 : angle;
-    }
-
-    ///
-    public static Vector3 NormalizeRotation(Vector3 _value)
-    {
-        return new Vector3(NormalizeAngle(_value.x), NormalizeAngle(_value.y), NormalizeAngle(_value.z));
-    }
 }

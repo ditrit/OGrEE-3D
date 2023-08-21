@@ -33,8 +33,8 @@ public class ObjectGenerator
             Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
 
             newRack.transform.GetChild(0).localScale = scale;
-            foreach (Transform comp in newRack.transform)
-                comp.localPosition += scale / 2;
+            foreach (Transform child in newRack.transform)
+                child.localPosition += scale / 2;
         }
         else
         {
@@ -59,7 +59,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newRack.transform, _rk);
-            newRack.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]));
+            newRack.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]);
         }
         else
             newRack.transform.localPosition = Vector3.zero;
@@ -320,8 +320,8 @@ public class ObjectGenerator
         go.transform.GetChild(0).localScale = scale;
         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
-        foreach (Transform comp in go.transform)
-            comp.localPosition = scale / 2;
+        foreach (Transform child in go.transform)
+            child.localPosition = scale / 2;
 
         return go;
     }
@@ -435,8 +435,8 @@ public class ObjectGenerator
     ///<summary>
     /// For a group of Racks, set _pos and _scale
     ///</summary>
-    ///<param name="_content">The list of racks in the group</param>
-    ///<param name="_pos">The localPosition to apply to the group</param>
+    ///<param name="_content">The list of racks or corridors in the group</param>
+    ///<param name="_pos">The position to apply to the group</param>
     ///<param name="_scale">The localScale to apply to the group</param>
     private void RackGroupPosScale(List<Transform> _content, out Vector3 _pos, out Vector3 _scale)
     {
@@ -462,7 +462,7 @@ public class ObjectGenerator
         }
 
         _scale = new Vector3(right - left, top - bottom, front - rear);
-        _pos = new Vector3(left + right, bottom + top, rear + front) / 2;
+        _pos = 0.5f * new Vector3(left + right, bottom + top, rear + front);
     }
 
     ///<summary>
@@ -523,8 +523,8 @@ public class ObjectGenerator
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
         newCo.transform.GetChild(0).localScale = scale;
-        foreach (Transform comp in newCo.transform)
-            comp.localPosition += scale / 2;
+        foreach (Transform child in newCo.transform)
+            child.localPosition += scale / 2;
 
         OObject co = newCo.AddComponent<OObject>();
         co.UpdateFromSApiObject(_co);
@@ -533,7 +533,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newCo.transform, _co);
-            newCo.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(co.attributes["rotation"]));
+            newCo.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(co.attributes["rotation"]);
         }
         else
             newCo.transform.localPosition = Vector3.zero;
