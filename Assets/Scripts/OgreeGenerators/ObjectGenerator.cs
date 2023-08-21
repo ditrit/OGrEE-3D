@@ -18,7 +18,6 @@ public class ObjectGenerator
             return null;
         }
 
-
         GameObject newRack;
         if (string.IsNullOrEmpty(_rk.attributes["template"]))
         {
@@ -60,9 +59,6 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newRack.transform, _rk);
-
-            // Correct position according to rack size & rack orientation
-            // TurnAndFixPos(newRack.transform, _rk, orient);
             newRack.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]));
         }
         else
@@ -256,8 +252,8 @@ public class ObjectGenerator
                 if (_dv.attributes.ContainsKey("posU"))
                     newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * UnitValue.U, 0);
 
-                float deltaX = _parent.GetChild(0).localScale.x - size.x;
-                float deltaZ = _parent.GetChild(0).localScale.z - size.y;
+                float deltaX = parentShape.x - size.x;
+                float deltaZ = parentShape.z - size.y;
                 newDevice.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
                 newDevice.GetComponent<OObject>().color = Color.white;
             }
@@ -678,90 +674,6 @@ public class ObjectGenerator
             _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
         _obj.localPosition += new Vector3(pos.x * orient.x * floorUnit, pos.z / 100, pos.y * orient.y * floorUnit);
-    }
-
-    ///
-    private void TurnAndFixPos(Transform _obj, SApiObject _apiObj, Vector2 _orient)
-    {
-        Vector3 boxOrigin;
-        Transform box = _obj.GetChild(0);
-        if (box.childCount == 0)
-            boxOrigin = box.localScale / 2;
-        else
-            boxOrigin = box.GetComponent<BoxCollider>().size / 2;
-        float floorUnit = GetUnitFromRoom(_obj.parent.GetComponent<Room>());
-        Vector3 fixPos = Vector3.zero;
-
-        Vector3 rotation = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(_apiObj.attributes["rotation"]));
-        _obj.localEulerAngles = rotation;
-
-        // ROT X
-        if (0 <= rotation.x && rotation.x < 90)
-        {
-
-        }
-        else if (90 <= rotation.x && rotation.x < 180)
-        {
-
-        }
-        else if (180 <= rotation.x && rotation.x < 270)
-        {
-
-        }
-        else if (270 <= rotation.x && rotation.x < 360)
-        {
-
-        }
-
-        // ROT Y
-        if (0 <= rotation.y && rotation.y < 90)
-        {
-            if (_orient.y == 1)
-                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, -boxOrigin.z + floorUnit);
-            else
-                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-        }
-        else if (90 <= rotation.y && rotation.y < 180)
-        {
-            if (_orient.x == 1)
-                fixPos += new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, boxOrigin.x);
-            else
-                fixPos += new Vector3(boxOrigin.z, boxOrigin.y, boxOrigin.x);
-        }
-        else if (180 <= rotation.y && rotation.y < 270)
-        {
-            if (_orient.y == 1)
-                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z);
-            else
-                fixPos += new Vector3(boxOrigin.x, boxOrigin.y, boxOrigin.z + floorUnit);
-        }
-        else
-        {
-            if (_orient.x == 1)
-                fixPos += new Vector3(boxOrigin.z, boxOrigin.y, -boxOrigin.x + floorUnit);
-            else
-                fixPos += new Vector3(-boxOrigin.z + floorUnit, boxOrigin.y, -boxOrigin.x + floorUnit);
-        }
-
-        // ROT Z
-        if (0 <= rotation.z && rotation.z < 90)
-        {
-
-        }
-        else if (90 <= rotation.z && rotation.z < 180)
-        {
-
-        }
-        else if (180 <= rotation.z && rotation.z < 270)
-        {
-
-        }
-        else if (270 <= rotation.z && rotation.z < 360)
-        {
-
-        }
-
-        // _obj.localPosition += fixPos;
     }
 
     ///<summary>
