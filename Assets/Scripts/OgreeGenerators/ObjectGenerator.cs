@@ -59,7 +59,7 @@ public class ObjectGenerator
 
         if (_parent)
         {
-            PlaceInRoom(newRack.transform, _rk, out Vector2 orient);
+            PlaceInRoom(newRack.transform, _rk);
 
             // Correct position according to rack size & rack orientation
             // TurnAndFixPos(newRack.transform, _rk, orient);
@@ -536,7 +536,7 @@ public class ObjectGenerator
         // Apply position & rotation
         if (_parent)
         {
-            PlaceInRoom(newCo.transform, _co, out Vector2 orient);
+            PlaceInRoom(newCo.transform, _co);
             newCo.transform.localEulerAngles = Utils.NormalizeRotation(JsonUtility.FromJson<Vector3>(co.attributes["rotation"]));
         }
         else
@@ -577,70 +577,19 @@ public class ObjectGenerator
             return null;
         }
         OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
-        string parentCategory = parentOgree.category;
-        if (_se.attributes["formFactor"] == "ext"
-            && (parentCategory != Category.Rack && parentCategory != Category.Device))
-        {
-            GameManager.instance.AppendLogLine("An external sensor must be child of a rack or a device", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-        if (_se.attributes["formFactor"] == "int"
-            && parentCategory != Category.Room && parentCategory != Category.Rack && parentCategory != Category.Device)
-        {
-            GameManager.instance.AppendLogLine("An internal sensor must be child of a room, a rack or a device", ELogTarget.both, ELogtype.error);
-            return null;
-        }
+        Vector3 parentSize = _parent.GetChild(0).localScale;
 
-        GameObject newSensor;
-        if (_se.attributes["formFactor"] == "ext") //Dimensions : 80 x 26 x 18 mm
-        {
-            newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
-            newSensor.name = "sensor";
+        GameObject newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
+        newSensor.name = "sensor";
 
-            Vector3 parentSize = _parent.GetChild(0).localScale;
-            Vector3 boxSize = newSensor.transform.GetChild(0).localScale;
-            newSensor.transform.localPosition = new Vector3(-parentSize.x, parentSize.y, parentSize.z) / 2;
+        Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
+        newSensor.transform.localPosition = new Vector3(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
+        if (parentOgree is Rack)
+        {
             float uXSize = UnitValue.OU;
             if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
                 uXSize = UnitValue.U;
-            newSensor.transform.localPosition += new Vector3(boxSize.x + uXSize, -boxSize.y, 0) / 2;
-        }
-        else
-        {
-            newSensor = Object.Instantiate(GameManager.instance.sensorIntModel, _parent);
-            newSensor.name = _se.name;
-            if (parentCategory == Category.Room)
-            {
-                PlaceInRoom(newSensor.transform, _se, out Vector2 orient);
-
-                // Adjust position
-                float floorUnit = GetUnitFromRoom(parent.GetComponent<Room>());
-                newSensor.transform.localPosition += new Vector3(floorUnit * orient.x, 0, floorUnit * orient.y) / 2;
-                newSensor.transform.localEulerAngles = new Vector3(0, 180, 0);
-
-                float posU = Utils.ParseDecFrac(_se.attributes["posU"]);
-                if (posU == 0)
-                {
-                    newSensor.transform.localPosition += Vector3.up;
-                }
-                else
-                {
-                    newSensor.transform.localScale = 5 * UnitValue.U * Vector3.one;
-                    newSensor.transform.localPosition += Vector3.up * (posU * UnitValue.U);
-                }
-            }
-            else
-            {
-                newSensor.transform.localPosition = parent.GetChild(0).localScale / -2;
-                // Assuming given pos is in mm
-                Vector2 posXY = JsonUtility.FromJson<Vector2>(_se.attributes["posXY"]);
-                Vector3 newPos = new Vector3(posXY.x, Utils.ParseDecFrac(_se.attributes["posU"]), posXY.y) / 1000;
-                newSensor.transform.localPosition += newPos;
-
-                newSensor.transform.GetChild(0).localScale = Vector3.one * 0.05f;
-                newSensor.transform.localEulerAngles = Vector3.zero;
-            }
-
+            newSensor.transform.localPosition += uXSize * Vector3.right;
         }
 
         Sensor sensor = newSensor.GetComponent<Sensor>();
@@ -658,40 +607,40 @@ public class ObjectGenerator
     ///</summary>
     ///<param name="_obj">The object to move</param>
     ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
-    private void PlaceInRoom(Transform _obj, SApiObject _apiObj, out Vector2 _orient)
+    private void PlaceInRoom(Transform _obj, SApiObject _apiObj)
     {
         Room parentRoom = _obj.parent.GetComponent<Room>();
         float floorUnit = GetUnitFromRoom(parentRoom);
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
-        _orient = new Vector2();
+        Vector2 orient = new Vector2();
         if (parentRoom.attributes.ContainsKey("axisOrientation"))
         {
             switch (parentRoom.attributes["axisOrientation"])
             {
                 case AxisOrientation.Default:
                     // Lower Left corner of the room
-                    _orient = new Vector2(1, 1);
+                    orient = new Vector2(1, 1);
                     break;
 
                 case AxisOrientation.XMinus:
                     // Lower Right corner of the room
-                    _orient = new Vector2(-1, 1);
+                    orient = new Vector2(-1, 1);
                     if (_apiObj.category == Category.Rack)
                         _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
                     break;
 
                 case AxisOrientation.YMinus:
                     // Upper Left corner of the room
-                    _orient = new Vector2(1, -1);
+                    orient = new Vector2(1, -1);
                     if (_apiObj.category == Category.Rack)
                         _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
                     break;
 
                 case AxisOrientation.BothMinus:
                     // Upper Right corner of the room
-                    _orient = new Vector2(-1, -1);
+                    orient = new Vector2(-1, -1);
                     if (_apiObj.category == Category.Rack)
                         _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
                     break;
@@ -718,7 +667,7 @@ public class ObjectGenerator
                 if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
                 {
                     _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += UnitValue.Tile * new Vector3(_orient.x * (pos.x - trunkedX), 0, _orient.y * (pos.y - trunkedY));
+                    _obj.localPosition += UnitValue.Tile * new Vector3(orient.x * (pos.x - trunkedX), 0, orient.y * (pos.y - trunkedY));
                     return;
                 }
             }
@@ -726,9 +675,9 @@ public class ObjectGenerator
 
         // Go to the right corner of the room & apply pos
         if (parentRoom.isSquare)
-            _obj.localPosition += new Vector3(origin.x * -_orient.x, 0, origin.z * -_orient.y);
+            _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
-        _obj.localPosition += new Vector3(pos.x * _orient.x * floorUnit, pos.z / 100, pos.y * _orient.y * floorUnit);
+        _obj.localPosition += new Vector3(pos.x * orient.x * floorUnit, pos.z / 100, pos.y * orient.y * floorUnit);
     }
 
     ///
