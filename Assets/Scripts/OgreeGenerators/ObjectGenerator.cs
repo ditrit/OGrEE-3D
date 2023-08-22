@@ -59,7 +59,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newRack.transform, _rk);
-            newRack.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]);
+            newRack.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]).ZAxisUp();
         }
         else
             newRack.transform.localPosition = Vector3.zero;
@@ -533,7 +533,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newCo.transform, _co);
-            newCo.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(co.attributes["rotation"]);
+            newCo.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(co.attributes["rotation"]).ZAxisUp();
         }
         else
             newCo.transform.localPosition = Vector3.zero;
