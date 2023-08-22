@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     public GameObject sensorBarStdModel;
     public GameObject labelModel;
     public GameObject floatingLabelModel;
+    public GameObject clearanceModel;
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
