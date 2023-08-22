@@ -13,23 +13,17 @@ public class ClearanceHandler
         public Vector3 direction;
     }
 
-    [SerializeField]
-    private Clearance front = new Clearance();
-    [SerializeField]
-    private Clearance rear = new Clearance();
-    [SerializeField]
-    private Clearance left = new Clearance();
-    [SerializeField]
-    private Clearance right = new Clearance();
-    [SerializeField]
-    private Clearance top = new Clearance();
-
-    [SerializeField]
-    private Transform parent;
+    [SerializeField] private Clearance front = new Clearance();
+    [SerializeField] private Clearance rear = new Clearance();
+    [SerializeField] private Clearance left = new Clearance();
+    [SerializeField] private Clearance right = new Clearance();
+    [SerializeField] private Clearance top = new Clearance();
+    [SerializeField] private Transform parent;
 
     private bool isCreated = false;
+    public bool toggled = false;
+    [SerializeField] private List<Clearance> clearances = new List<Clearance>();
 
-    private readonly List<Clearance> clearances = new List<Clearance>();
     public ClearanceHandler(float _front, float _rear, float _left, float _right, float _top, Transform _parent)
     {
         front.length = _front / 1000;
@@ -48,6 +42,7 @@ public class ClearanceHandler
 
     public void ToggleClearance(bool _toggle)
     {
+        toggled = _toggle;
         if (!isCreated)
         {
             if (_toggle)
@@ -56,8 +51,12 @@ public class ClearanceHandler
         }
         foreach (Clearance clearance in clearances)
             clearance.gameObject.SetActive(_toggle);
+    }
 
-
+    public void ToggleClearance()
+    {
+        ToggleClearance(!toggled);
+        toggled = !toggled;
     }
 
     public void BuildClearance()
@@ -68,8 +67,6 @@ public class ClearanceHandler
             clearances.Add(rear);
         if (left.length > 0)
             clearances.Add(left);
-        if (right.length > 0)
-            clearances.Add(right);
         if (right.length > 0)
             clearances.Add(right);
         if (top.length > 0)
