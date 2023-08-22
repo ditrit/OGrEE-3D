@@ -645,25 +645,25 @@ public class ObjectGenerator
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor) && _apiObj.attributes.ContainsKey("posXYZ"))
-            pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]);
+            pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]).ZAxisUp();
         else
         {
             Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
-            pos = new Vector3(tmp.x, tmp.y, 0);
+            pos = new Vector3(tmp.x, 0, tmp.y);
         }
 
         Transform floor = _obj.parent.Find("Floor");
         if (!parentRoom.isSquare && _apiObj.category == Category.Rack && parentRoom.attributes["floorUnit"] == LengthUnit.Tile && floor)
         {
             int trunkedX = (int)pos.x;
-            int trunkedY = (int)pos.y;
+            int trunkedZ = (int)pos.z;
             foreach (Transform tileObj in floor)
             {
                 Tile tile = tileObj.GetComponent<Tile>();
-                if (tile.coord.x == trunkedX && tile.coord.y == trunkedY)
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedZ)
                 {
-                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.z / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
-                    _obj.localPosition += UnitValue.Tile * new Vector3(orient.x * (pos.x - trunkedX), 0, orient.y * (pos.y - trunkedY));
+                    _obj.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.y / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    _obj.localPosition += UnitValue.Tile * new Vector3(orient.x * (pos.x - trunkedX), 0, orient.y * (pos.z - trunkedZ));
                     return;
                 }
             }
@@ -673,7 +673,7 @@ public class ObjectGenerator
         if (parentRoom.isSquare)
             _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
-        _obj.localPosition += new Vector3(pos.x * orient.x * floorUnit, pos.z / 100, pos.y * orient.y * floorUnit);
+        _obj.localPosition += new Vector3(pos.x * orient.x * floorUnit, pos.y / 100, pos.z * orient.y * floorUnit);
     }
 
     ///<summary>
