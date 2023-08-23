@@ -528,7 +528,8 @@ public class ObjectDisplayController : MonoBehaviour
             OgreeObject oo = go.GetComponent<OgreeObject>();
             if (oo.localCS)
                 oo.localCS.SetActive(_value);
-
+            if (oo is OObject oObject && oObject.clearanceHandler.toggled)
+                oObject.clearanceHandler.clearanceWrapper.SetActive(_value);
             switch (oo)
             {
                 case OgreeObject tmp when tmp is Building bd && !(tmp is Room):
