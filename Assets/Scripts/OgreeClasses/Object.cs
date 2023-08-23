@@ -18,8 +18,7 @@ public class OObject : OgreeObject
     public string temperatureUnit;
     public bool hasSlotColor = false;
 
-    [SerializeField]
-    private ClearanceHandler clearanceHandler;
+    public ClearanceHandler clearanceHandler;
 
     protected virtual void Start()
     {

@@ -42,6 +42,7 @@ public class ClearanceHandler
 
     public void ToggleClearance(bool _toggle)
     {
+        string verb = _toggle ? "Display" : "Hide";
         toggled = _toggle;
         if (!isCreated)
         {
@@ -51,12 +52,12 @@ public class ClearanceHandler
         }
         foreach (Clearance clearance in clearances)
             clearance.gameObject.SetActive(_toggle);
+        GameManager.instance.AppendLogLine($"{verb} local Clearance for {parent.name}", ELogTarget.logger, ELogtype.success);
     }
 
     public void ToggleClearance()
     {
         ToggleClearance(!toggled);
-        toggled = !toggled;
     }
 
     public void BuildClearance()
