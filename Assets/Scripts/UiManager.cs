@@ -38,6 +38,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler getCoordsBtn;
     [SerializeField] private ButtonHandler toggleTilesNameBtn;
     [SerializeField] private ButtonHandler toggleTilesColorBtn;
+    [SerializeField] private ButtonHandler toggleWallsBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
     [SerializeField] private ButtonHandler barChartBtn;
@@ -309,6 +310,20 @@ public class UiManager : MonoBehaviour
             menuTarget.GetComponent<Room>().tileColor
         };
         toggleTilesColorBtn.Check();
+        
+        toggleWallsBtn = new ButtonHandler(toggleWallsBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>(),
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>()
+            &&
+            menuTarget.GetComponent<Room>().displayWalls
+        };
+        toggleWallsBtn.Check();
 
         toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button, true)
         {
@@ -764,6 +779,12 @@ public class UiManager : MonoBehaviour
         currentRoom.ToggleTilesColor();
 
         toggleTilesColorBtn.Check();
+    }
+
+    public void ToggleWalls()
+    {
+        menuTarget.GetComponent<Building>().ToggleWalls();
+        toggleWallsBtn.Check();
     }
 
     ///<summary>

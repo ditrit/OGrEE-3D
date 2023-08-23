@@ -565,8 +565,8 @@ public class ObjectDisplayController : MonoBehaviour
                     ro.nameText.GetComponent<Renderer>().enabled = _value && !ro.tileName;
                     foreach (Transform wall in ro.walls)
                     {
-                        wall.GetComponentInChildren<Renderer>().enabled = _value;
-                        wall.GetComponentInChildren<Collider>().enabled = _value;
+                        wall.GetComponentInChildren<Renderer>().enabled = _value && ro.displayWalls;
+                        wall.GetComponentInChildren<Collider>().enabled = _value && ro.displayWalls;
                     }
                     if (go.transform.Find("Floor"))
                     {

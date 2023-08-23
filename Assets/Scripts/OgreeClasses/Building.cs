@@ -8,6 +8,7 @@ public class Building : OgreeObject
     [Header("BD References")]
     public Transform walls;
     public TextMeshPro nameText;
+    public bool displayWalls = true;
 
     private void Start()
     {
@@ -101,5 +102,14 @@ public class Building : OgreeObject
         Transform roof = transform.Find("Roof");
         if (roof)
             roof.GetComponent<Renderer>().material.color = color;
+    }
+
+    public void ToggleWalls()
+    {
+        displayWalls = !displayWalls;
+        foreach (Transform wall in walls)
+        {
+            wall.GetComponentInChildren<Renderer>().enabled = displayWalls;
+        }
     }
 }
