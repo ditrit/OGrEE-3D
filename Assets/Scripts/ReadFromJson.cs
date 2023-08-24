@@ -66,7 +66,7 @@ public class ReadFromJson
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
             obj.attributes["heightUnit"] = LengthUnit.Centimeter;
-            obj.attributes["orientation"] = Orientation.Front;
+            obj.attributes["rotation"] = JsonUtility.ToJson(Vector3.zero);
         }
         else if (obj.category == Category.Device)
         {
@@ -101,11 +101,14 @@ public class ReadFromJson
         else// if (obj.category == Category.Device)
         {
             newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
-            newObject.transform.GetChild(0).localScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
+            Vector3 accurateScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
+            newObject.transform.GetChild(0).localScale = accurateScale;
+            foreach (Transform comp in newObject.transform)
+                comp.localPosition = accurateScale / 2;
             if (!string.IsNullOrEmpty(_data.fbxModel))
                 await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
         }
-        newObject.transform.localPosition = Vector3.zero;
+        newObject.GetComponent<ObjectDisplayController>().isTemplate = true;
 
         newObject.color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
@@ -175,31 +178,15 @@ public class ReadFromJson
     {
         GameObject go = UnityEngine.Object.Instantiate(GameManager.instance.labeledBoxModel);
 
-        Vector2 parentSizeXZ = JsonUtility.FromJson<Vector2>(_parent.attributes["size"]);
-        Vector3 parentSize = new Vector3(parentSizeXZ.x, Utils.ParseDecFrac(_parent.attributes["height"]), parentSizeXZ.y);
-        if (_parent.attributes["sizeUnit"] == LengthUnit.Millimeter)
-            parentSize /= 1000;
-        else if (_parent.attributes["sizeUnit"] == LengthUnit.Centimeter)
-            parentSize /= 100;
-
         go.name = _data.location;
         go.transform.parent = _parent.transform;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
-        go.transform.localPosition = parentSize / -2;
-        go.transform.localPosition += new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
+        go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
-        {
             go.transform.localEulerAngles = new Vector3(0, 0, 90);
-            go.transform.localPosition += new Vector3(go.transform.GetChild(0).localScale.y,
-                                                      go.transform.GetChild(0).localScale.x,
-                                                      go.transform.GetChild(0).localScale.z) / 2;
-        }
         else
-        {
             go.transform.localEulerAngles = Vector3.zero;
-            go.transform.localPosition += go.transform.GetChild(0).localScale / 2;
-        }
-
+        go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
         if (_isSlot)
         {
             Slot s = go.AddComponent<Slot>();

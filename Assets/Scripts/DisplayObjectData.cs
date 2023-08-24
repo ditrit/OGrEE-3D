@@ -56,6 +56,8 @@ public class DisplayObjectData : MonoBehaviour
     {
         usedLabels.Clear();
         OgreeObject oObj = GetComponent<OgreeObject>();
+        Transform shape = transform.GetChild(0);
+
         if (oObj && oObj.attributes.ContainsKey("template")
             && !string.IsNullOrEmpty(oObj.attributes["template"]))
         {
@@ -75,7 +77,7 @@ public class DisplayObjectData : MonoBehaviour
             boxSize = new Vector3(size.x, height, size.y);
         }
         else
-            boxSize = transform.GetChild(0).localScale;
+            boxSize = shape.localScale;
 
 
         if (hasFloatingLabel)
@@ -91,48 +93,48 @@ public class DisplayObjectData : MonoBehaviour
         {
             case LabelPos.FrontRear:
                 labelFront = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelFront.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
+                labelFront.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
                 labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
                 labelFront.name = "LabelFront";
                 usedLabels.Add(labelFront);
 
                 labelRear = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelRear.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
+                labelRear.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
                 labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
                 labelRear.name = "LabelRear";
                 usedLabels.Add(labelRear);
                 break;
             case LabelPos.Front:
                 labelFront = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelFront.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
+                labelFront.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
                 labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
                 labelFront.name = "LabelFront";
                 usedLabels.Add(labelFront);
                 break;
             case LabelPos.Rear:
                 labelRear = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelRear.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
+                labelRear.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
                 labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
                 labelRear.name = "LabelRear";
                 usedLabels.Add(labelRear);
                 break;
             case LabelPos.Right:
                 labelRight = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelRight.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.right), transform.rotation * Quaternion.Euler(0, -90, 0));
+                labelRight.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.right), transform.rotation * Quaternion.Euler(0, -90, 0));
                 labelRight.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
                 labelRight.name = "LabelRight";
                 usedLabels.Add(labelRight);
                 break;
             case LabelPos.Left:
                 labelLeft = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelLeft.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.left), transform.rotation * Quaternion.Euler(0, 90, 0));
+                labelLeft.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.left), transform.rotation * Quaternion.Euler(0, 90, 0));
                 labelLeft.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
                 labelLeft.name = "LabelLeft";
                 usedLabels.Add(labelLeft);
                 break;
             case LabelPos.Top:
                 labelTop = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelTop.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.up), transform.rotation * Quaternion.Euler(90, 180, 0));
+                labelTop.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.up), transform.rotation * Quaternion.Euler(90, 180, 0));
                 if (boxSize.x >= boxSize.z)
                     labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
                 else
@@ -145,7 +147,7 @@ public class DisplayObjectData : MonoBehaviour
                 break;
             case LabelPos.Bottom:
                 labelBottom = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
-                labelBottom.rectTransform.SetPositionAndRotation(transform.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.down), transform.rotation * Quaternion.Euler(-90, 0, 0));
+                labelBottom.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.down), transform.rotation * Quaternion.Euler(-90, 0, 0));
                 if (boxSize.x >= boxSize.z)
                     labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
                 else

@@ -242,7 +242,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.parent = transform;
         localCS.transform.localScale = scale * Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = this is OObject ? transform.GetChild(0).localScale / -2f : Vector3.zero;
+        localCS.transform.localPosition = category == Category.Corridor || category == Category.Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 }

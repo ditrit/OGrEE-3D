@@ -252,6 +252,6 @@ public class DefaultValues
 
 public class TemperatureUnits
 {
-    public const string Celsius = "°C";
-    public const string Fahrenheit = "°F";
+    public const string Celsius = "Â°C";
+    public const string Fahrenheit = "Â°F";
 }
