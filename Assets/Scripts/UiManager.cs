@@ -315,13 +315,13 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>(),
+            menuTarget.GetComponent<Building>(),
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>()
+            menuTarget.GetComponent<Building>()
             &&
-            menuTarget.GetComponent<Room>().displayWalls
+            menuTarget.GetComponent<Building>().displayWalls
         };
         toggleWallsBtn.Check();
 

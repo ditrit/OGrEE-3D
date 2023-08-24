@@ -537,8 +537,8 @@ public class ObjectDisplayController : MonoBehaviour
                     bd.nameText.GetComponent<Renderer>().enabled = _value;
                     foreach (Transform wall in bd.walls)
                     {
-                        wall.GetComponent<Renderer>().enabled = _value;
-                        wall.GetComponent<Collider>().enabled = _value;
+                        wall.GetComponent<Renderer>().enabled = _value && bd.displayWalls;
+                        wall.GetComponent<Collider>().enabled = _value && bd.displayWalls;
                     }
                     break;
                 case OgreeObject tmp when tmp is Room ro:

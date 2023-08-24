@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8474729802068539309}
   m_Layer: 0
   m_Name: Building
-  m_TagString: Untagged
+  m_TagString: Selectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
-  hierarchyName: 
   id: 
   parentId: 
   category: 
@@ -60,10 +59,15 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
-  heatMap: 0
+  heatMap: {fileID: 0}
+  scatterPlot: 0
+  localCS: {fileID: 0}
+  isDoomed: 0
+  LodLocked: 0
   isSquare: 1
   walls: {fileID: 2447770562802736307}
   nameText: {fileID: 8231767122964568241}
+  displayWalls: 1
 --- !u!1 &760801759331240274
 GameObject:
   m_ObjectHideFlags: 0

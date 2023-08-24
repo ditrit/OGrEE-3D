@@ -104,12 +104,16 @@ public class Building : OgreeObject
             roof.GetComponent<Renderer>().material.color = color;
     }
 
+    /// <summary>
+    /// Toggle walls, separators and pillars Renderer & Collider according to <see cref="displayWalls"/>.
+    /// </summary>
     public void ToggleWalls()
     {
         displayWalls = !displayWalls;
         foreach (Transform wall in walls)
         {
             wall.GetComponentInChildren<Renderer>().enabled = displayWalls;
+            wall.GetComponentInChildren<Collider>().enabled = displayWalls;
         }
     }
 }
