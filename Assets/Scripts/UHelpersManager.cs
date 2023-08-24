@@ -228,9 +228,11 @@ public class UHelpersManager : MonoBehaviour
 
         _rack.uRoot = new GameObject("uRoot").transform;
         _rack.uRoot.parent = _rack.transform;
-        _rack.uRoot.localPosition = Vector3.zero;
-        _rack.uRoot.localEulerAngles = Vector3.zero;
+
         Vector3 boxSize = _rack.transform.GetChild(0).localScale;
+        _rack.uRoot.localPosition = new Vector3(boxSize.x, 0, boxSize.z) / 2;
+        _rack.uRoot.localEulerAngles = Vector3.zero;
+
         Transform URearLeft = new GameObject(cornerRearLeft).transform;
         URearLeft.parent = _rack.uRoot;
         URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
@@ -258,8 +260,7 @@ public class UHelpersManager : MonoBehaviour
 
         foreach (Transform child in _rack.transform)
         {
-            Slot slot = child.GetComponent<Slot>();
-            if (slot && slot.isU)
+            if (child.GetComponent<Slot>() is Slot slot && slot.isU)
             {
                 minY = Mathf.Min(child.localPosition.y - 0.5f * (child.GetChild(0).localScale.y - scale), minY);
                 maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), maxY);
@@ -283,7 +284,7 @@ public class UHelpersManager : MonoBehaviour
             else
                 Unumber = int.Parse(_rack.attributes["height"]);
 
-            float offset = -(Unumber - 1) * scale / 2;
+            float offset = scale / 2;
             BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, cornerRearLeft, Color.red);
             BuildU(offset, offset + (Unumber - 1) * scale, scale, URearRight, cornerRearRight, Color.yellow);
             BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
@@ -320,13 +321,13 @@ public class UHelpersManager : MonoBehaviour
         for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
         {
             floorNumber++;
-            Transform rearLeft = Instantiate(GameManager.instance.uLocationModel, _UColumn).transform;
-            rearLeft.localPosition = positionY * Vector3.up;
-            rearLeft.name = $"{_cornerName}_u{floorNumber}";
-            rearLeft.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            rearLeft.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
-            rearLeft.localScale = Vector3.one * _scale;
-            rearLeft.GetComponent<Renderer>().material.color = _color;
+            Transform helper = Instantiate(GameManager.instance.uLocationModel, _UColumn).transform;
+            helper.localPosition = positionY * Vector3.up;
+            helper.name = $"{_cornerName}_u{floorNumber}";
+            helper.GetChild(0).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            helper.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
+            helper.localScale = Vector3.one * _scale;
+            helper.GetComponent<Renderer>().material.color = _color;
         }
     }
 }

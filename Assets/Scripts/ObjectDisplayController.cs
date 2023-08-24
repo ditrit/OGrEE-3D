@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectDisplayController : MonoBehaviour
 {
+    public bool isTemplate = false;
+
     /// <summary>
     /// the collider and the renderer of the first child of this gameobject (the box)
     /// </summary>
@@ -49,7 +51,8 @@ public class ObjectDisplayController : MonoBehaviour
         slot = GetComponent<Slot>();
         sensor = GetComponent<Sensor>();
         group = GetComponent<Group>();
-        SubscribeEvents();
+        if (!isTemplate)
+            SubscribeEvents();
         if (scatterPlotOfOneParent && sensor && sensor.fromTemplate)
             Display(true, true);
     }

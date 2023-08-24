@@ -328,22 +328,22 @@ public class CameraControl : MonoBehaviour
         float offset = 3f;
         OgreeObject obj = _target.GetComponent<OgreeObject>();
 
-        transform.position = _target.position;
-        transform.eulerAngles = _target.eulerAngles;
-        if (obj.category == Category.Rack)
+        switch (obj.category)
         {
-            offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
-            transform.eulerAngles += new Vector3(0, 180, 0);
-        }
-        else if (obj.category == Category.Device)
-        {
-            offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
-            transform.eulerAngles += new Vector3(0, 180, 0);
-        }
-        else
-        {
-            transform.position += new Vector3(0, 25, -10);
-            transform.eulerAngles = new Vector3(45, 0, 0);
+            case Category.Rack:
+                transform.position = _target.GetChild(0).position;
+                offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 45;
+                transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
+                break;
+            case Category.Device:
+                transform.position = _target.GetChild(0).position;
+                offset = JsonUtility.FromJson<Vector2>(obj.attributes["size"]).y / 450;
+                transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
+                break;
+            default:
+                transform.position = _target.position + new Vector3(0, 25, -10);
+                transform.eulerAngles = new Vector3(45, 0, 0);
+                break;
         }
         switch ((int)_target.eulerAngles.y)
         {
