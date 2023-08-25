@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectDisplayController : MonoBehaviour
 {
+    public bool isTemplate = false;
+
     /// <summary>
     /// the collider and the renderer of the first child of this gameobject (the box)
     /// </summary>
@@ -49,7 +51,8 @@ public class ObjectDisplayController : MonoBehaviour
         slot = GetComponent<Slot>();
         sensor = GetComponent<Sensor>();
         group = GetComponent<Group>();
-        SubscribeEvents();
+        if (!isTemplate)
+            SubscribeEvents();
         if (scatterPlotOfOneParent && sensor && sensor.fromTemplate)
             Display(true, true);
     }
@@ -542,8 +545,8 @@ public class ObjectDisplayController : MonoBehaviour
                     bd.nameText.GetComponent<Renderer>().enabled = _value;
                     foreach (Transform wall in bd.walls)
                     {
-                        wall.GetComponent<Renderer>().enabled = _value;
-                        wall.GetComponent<Collider>().enabled = _value;
+                        wall.GetComponent<Renderer>().enabled = _value && bd.displayWalls;
+                        wall.GetComponent<Collider>().enabled = _value && bd.displayWalls;
                     }
                     break;
                 case OgreeObject tmp when tmp is Room ro:
@@ -570,8 +573,8 @@ public class ObjectDisplayController : MonoBehaviour
                     ro.nameText.GetComponent<Renderer>().enabled = _value && !ro.tileName;
                     foreach (Transform wall in ro.walls)
                     {
-                        wall.GetComponentInChildren<Renderer>().enabled = _value;
-                        wall.GetComponentInChildren<Collider>().enabled = _value;
+                        wall.GetComponentInChildren<Renderer>().enabled = _value && ro.displayWalls;
+                        wall.GetComponentInChildren<Collider>().enabled = _value && ro.displayWalls;
                     }
                     if (go.transform.Find("Floor"))
                     {

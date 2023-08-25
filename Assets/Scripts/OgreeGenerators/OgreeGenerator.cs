@@ -103,7 +103,7 @@ public class OgreeGenerator : MonoBehaviour
                 newItem = customerGenerator.CreateDomain(_obj);
                 break;
             case Category.Site:
-                newItem = customerGenerator.CreateSite(_obj, parent);
+                newItem = customerGenerator.CreateSite(_obj);
                 break;
             case Category.Building:
                 newItem = buildingGenerator.CreateBuilding(_obj, parent);

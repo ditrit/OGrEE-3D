@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
-  hierarchyName: 
   id: 
   parentId: 
   category: 
@@ -60,10 +59,15 @@ MonoBehaviour:
   originalLocalPosition: {x: -Infinity, y: -Infinity, z: -Infinity}
   originalLocalRotation: {x: 0, y: 0, z: 0, w: 1}
   originalLocalScale: {x: 1, y: 1, z: 1}
-  heatMap: 0
+  heatMap: {fileID: 0}
+  scatterPlot: 0
+  localCS: {fileID: 0}
+  isDoomed: 0
+  LodLocked: 0
   isSquare: 1
   walls: {fileID: 8751730331367169420}
   nameText: {fileID: 1070277913875691498}
+  displayWalls: 1
 --- !u!1 &1744753523067553287
 GameObject:
   m_ObjectHideFlags: 0

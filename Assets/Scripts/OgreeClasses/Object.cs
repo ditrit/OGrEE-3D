@@ -174,7 +174,6 @@ public class OObject : OgreeObject
                     parentId = id,
                     domain = domain
                 };
-                se.attributes["formFactor"] = "ext";
                 se.attributes["temperature"] = _value;
 
                 Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);

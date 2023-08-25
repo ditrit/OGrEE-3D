@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public static class Utils
@@ -340,5 +339,15 @@ public static class Utils
     public static string FloatToRefinedStr(float _input)
     {
         return _input.ToString("0.##", CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Switch y and z value.
+    /// </summary>
+    /// <param name="_v">The vector to modify</param>
+    /// <returns>A Z-Up oriented vector</returns>
+    public static Vector3 ZAxisUp(this Vector3 _v)
+    {
+        return new Vector3(_v.x, _v.z, _v.y);
     }
 }
