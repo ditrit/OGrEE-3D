@@ -823,7 +823,7 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
+    /// Called by GUI: toggle local Coordinate System of the object targeted by right click menu.
     ///</summary>
     public void ToggleCS()
     {
@@ -1130,7 +1130,7 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
+    /// Called by GUI: toggle clearance of the object targeted by right click menu..
     ///</summary>
     public void ToggleClearance()
     {

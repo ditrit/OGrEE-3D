@@ -26,6 +26,15 @@ public class ClearanceHandler
     public GameObject clearanceWrapper;
     [SerializeField] private List<Clearance> clearances;
 
+    /// <summary>
+    /// Initialize the clearance of the object
+    /// </summary>
+    /// <param name="_front">front clearance length</param>
+    /// <param name="_rear">rear clearance length</param>
+    /// <param name="_left">left clearance length</param>
+    /// <param name="_right">right clearance length</param>
+    /// <param name="_top">top clearance length</param>
+    /// <param name="_clearedObject">object which has the clearance</param>
     public void Initialize(float _front, float _rear, float _left, float _right, float _top, Transform _clearedObject)
     {
         clearances = new List<Clearance>();
@@ -48,6 +57,10 @@ public class ClearanceHandler
         initialized = true;
     }
 
+    /// <summary>
+    /// Display the clearance according to the boolean, call <see cref="BuildClearance"/> if <see cref="isCreated"/> is false
+    /// </summary>
+    /// <param name="_toggle">if the clearance is displayed or not</param>
     public void ToggleClearance(bool _toggle)
     {
         toggled = _toggle;
@@ -62,11 +75,17 @@ public class ClearanceHandler
         GameManager.instance.AppendLogLine($"{(_toggle ? "Display" : "Hide")} local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
     }
 
+    /// <summary>
+    /// Toggle the clearance
+    /// </summary>
     public void ToggleClearance()
     {
         ToggleClearance(!toggled);
     }
 
+    /// <summary>
+    /// Build each side of the clearance which is greater than 0
+    /// </summary>
     public void BuildClearance()
     {
         if (!clearedObject)
