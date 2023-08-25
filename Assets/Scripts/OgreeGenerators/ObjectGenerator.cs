@@ -697,7 +697,7 @@ public class ObjectGenerator
         return _obj.attributes["posXYUnit"] switch
         {
             LengthUnit.Meter => 1.0f,
-            LengthUnit.Feet => 3.28084f,
+            LengthUnit.Feet => UnitValue.Foot,
             _ => UnitValue.Tile,
         };
     }
