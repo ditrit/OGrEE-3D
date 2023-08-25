@@ -827,7 +827,6 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleCS()
     {
-        Debug.Log(menuTarget.GetComponent<OObject>().clearanceHandler);
         OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
         if (obj is Building bd)
             bd.ToggleCS();
