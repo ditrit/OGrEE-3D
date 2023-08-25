@@ -606,7 +606,7 @@ public class ObjectGenerator
     private void PlaceInRoom(Transform _obj, SApiObject _apiObj)
     {
         Room parentRoom = _obj.parent.GetComponent<Room>();
-        float floorUnit = GetUnitFromRoom(parentRoom);
+        float posXYUnit = GetUnitFromAttributes(_apiObj);
         Vector3 origin = _obj.parent.GetChild(0).localScale / 0.2f;
         _obj.position = _obj.parent.GetChild(0).position;
 
@@ -673,19 +673,19 @@ public class ObjectGenerator
         if (parentRoom.isSquare)
             _obj.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
-        _obj.localPosition += new Vector3(pos.x * orient.x * floorUnit, pos.y / 100, pos.z * orient.y * floorUnit);
+        _obj.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
     }
 
     ///<summary>
-    /// Get a floorUnit regarding given room attributes.
+    /// Get a posXYUnit regarding given object's attributes.
     ///</summary>
-    ///<param name="_r">The room to parse</param>
-    ///<returns>The floor unit</returns>
-    private float GetUnitFromRoom(Room _r)
+    ///<param name="_obj">The object to parse</param>
+    ///<returns>The posXYUnit, <see cref="UnitValue.Tile"/> by default</returns>
+    private float GetUnitFromAttributes(SApiObject _obj)
     {
-        if (!_r.attributes.ContainsKey("floorUnit"))
+        if (!_obj.attributes.ContainsKey("posXYUnit"))
             return UnitValue.Tile;
-        return _r.attributes["floorUnit"] switch
+        return _obj.attributes["posXYUnit"] switch
         {
             LengthUnit.Meter => 1.0f,
             LengthUnit.Feet => 3.28084f,
