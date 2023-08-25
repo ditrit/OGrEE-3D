@@ -21,8 +21,8 @@ public class ClearanceHandler
     [SerializeField] private Transform clearedObject;
 
     private bool isCreated = false;
-    public bool toggled = false;
-    public bool initialized = false;
+    public bool isToggled = false;
+    public bool isInitialized = false;
     public GameObject clearanceWrapper;
     [SerializeField] private List<Clearance> clearances;
 
