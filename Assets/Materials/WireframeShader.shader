@@ -7,9 +7,10 @@
     }
         SubShader
     {
-        Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
+        Tags { "RenderType" = "Transparent" "Queue" = "Transparent+1" }
         Pass
         {
+            ZTest Always
             Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex VSMain
