@@ -608,23 +608,15 @@ public class ObjectGenerator
         Room parentRoom = _obj.parent.GetComponent<Room>();
         float posXYUnit = GetUnitFromAttributes(_apiObj);
         Vector3 origin;
-        if (parentRoom.usableZone != null)
+        if (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) // technicalZone is null for a nonSquareRoom
         {
-            if (posXYUnit == UnitValue.Tile)
-            {
-                _obj.position = parentRoom.usableZone.position;
-                origin = parentRoom.usableZone.localScale / 0.2f;
-            }
-            else
-            {
-                _obj.position = parentRoom.technicalZone.position;
-                origin = parentRoom.technicalZone.localScale / 0.2f;
-            }
+            _obj.position = parentRoom.technicalZone.position;
+            origin = parentRoom.technicalZone.localScale / 0.2f;
         }
         else
         {
-            _obj.position = _obj.parent.GetChild(0).position;
-            origin = _obj.parent.GetChild(0).localScale / 0.2f;
+            _obj.position = parentRoom.usableZone.position;
+            origin = parentRoom.usableZone.localScale / 0.2f;
         }
 
         Vector2 orient = new Vector2();
