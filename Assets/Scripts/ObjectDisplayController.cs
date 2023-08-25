@@ -348,6 +348,8 @@ public class ObjectDisplayController : MonoBehaviour
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
         if (selection.Contains(gameObject))
             UHelpersManager.instance.ToggleU(gameObject, _e.room.barChart);
+        if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
+            oobject.clearanceHandler.clearanceWrapper.SetActive(_e.room.barChart);
     }
 
     /// <summary>
@@ -466,6 +468,8 @@ public class ObjectDisplayController : MonoBehaviour
                 HandleMaterial();
             }
         }
+        if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
+            oobject.clearanceHandler.clearanceWrapper.SetActive(!_scatterPlot);
         foreach (Transform child in transform)
             child.GetComponent<ObjectDisplayController>()?.ScatterPlotToggle(_scatterPlot);
     }
@@ -531,7 +535,8 @@ public class ObjectDisplayController : MonoBehaviour
             OgreeObject oo = go.GetComponent<OgreeObject>();
             if (oo.localCS)
                 oo.localCS.SetActive(_value);
-
+            if (oo is OObject deOObject && oobject != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.toggled)
+                deOObject.clearanceHandler.clearanceWrapper.SetActive(_value);
             switch (oo)
             {
                 case OgreeObject tmp when tmp is Building bd && !(tmp is Room):

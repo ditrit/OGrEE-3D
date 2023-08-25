@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.Linq;
+using Newtonsoft.Json;
 
 public class OObject : OgreeObject
 {
@@ -16,6 +17,8 @@ public class OObject : OgreeObject
     public GameObject tempBar;
     public string temperatureUnit;
     public bool hasSlotColor = false;
+
+    public ClearanceHandler clearanceHandler = new ClearanceHandler();
 
     protected virtual void Start()
     {
@@ -42,10 +45,26 @@ public class OObject : OgreeObject
         description = _src.description;
 
         foreach (string attribute in _src.attributes.Keys)
+        {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute)
                     || attributes[attribute] != _src.attributes[attribute]))
                 SetTemperature(_src.attributes[attribute], attribute.Substring(12));
+            if (attribute == "clearance")
+            {
+                try
+                {
+                    List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
+                    if (lengths != null && lengths.Count == 5)
+                        clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
+                    else
+                        GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
+                } catch (System.Exception e)
+                {
+                    Debug.LogError(e);
+                }
+            }
+        }
 
         attributes = _src.attributes;
 

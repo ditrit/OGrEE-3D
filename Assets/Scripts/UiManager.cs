@@ -41,6 +41,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleWallsBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
+    [SerializeField] private ButtonHandler toggleClearanceBtn;
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
@@ -376,6 +377,21 @@ public class UiManager : MonoBehaviour
             toggledCondition = () => GameManager.instance.getCoordsMode
         };
         getCoordsBtn.Check();
+
+        toggleClearanceBtn = new ButtonHandler(toggleClearanceBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OObject>()
+            && menuTarget.GetComponent<OObject>().clearanceHandler.initialized,
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OObject>()
+            &&
+            menuTarget.GetComponent<OObject>().clearanceHandler.toggled
+        };
+        toggleClearanceBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -809,8 +825,9 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
     ///</summary>
-    public void GuiToggleCS()
+    public void ToggleCS()
     {
+        Debug.Log(menuTarget.GetComponent<OObject>().clearanceHandler);
         OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
         if (obj is Building bd)
             bd.ToggleCS();
@@ -1113,5 +1130,13 @@ public class UiManager : MonoBehaviour
         Application.Quit();
     }
 
+    ///<summary>
+    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
+    ///</summary>
+    public void ToggleClearance()
+    {
+        menuTarget.GetComponent<OObject>().clearanceHandler.ToggleClearance();
+        toggleLocalCSBtn.Check();
+    }
     #endregion
 }
