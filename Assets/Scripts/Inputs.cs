@@ -37,6 +37,8 @@ public class Inputs : MonoBehaviour
 
     private void Update()
     {
+        if (!Application.isFocused)
+            return;
 #if !PROD
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
@@ -360,7 +362,7 @@ public class Inputs : MonoBehaviour
         Transform hitObject = _hit.collider.transform.parent;
         string objName = hitObject.GetComponent<OgreeObject>().id;
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
-        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}] m / [{ Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile)},{ Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)}] t", ELogTarget.logger, ELogtype.info);
+        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}] m / [{Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile)},{Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)}] t", ELogTarget.logger, ELogtype.info);
     }
 
     ///<summary>
