@@ -18,7 +18,7 @@ public class OObject : OgreeObject
     public string temperatureUnit;
     public bool hasSlotColor = false;
 
-    public ClearanceHandler clearanceHandler;
+    public ClearanceHandler clearanceHandler = new ClearanceHandler();
 
     protected virtual void Start()
     {
@@ -56,7 +56,7 @@ public class OObject : OgreeObject
                 {
                     List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
                     if (lengths != null && lengths.Count == 5)
-                        clearanceHandler = new ClearanceHandler(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
+                        clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
                     else
                         GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
                 } catch (System.Exception e)

@@ -367,7 +367,8 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OObject>(),
+            menuTarget.GetComponent<OObject>()
+            && menuTarget.GetComponent<OObject>().clearanceHandler.initialized,
 
             toggledCondition = () => menuTarget
             &&
@@ -805,6 +806,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleCS()
     {
+        Debug.Log(menuTarget.GetComponent<OObject>().clearanceHandler);
         OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
         if (obj is Building bd)
             bd.ToggleCS();

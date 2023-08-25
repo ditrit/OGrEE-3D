@@ -22,11 +22,14 @@ public class ClearanceHandler
 
     private bool isCreated = false;
     public bool toggled = false;
+    public bool initialized = false;
     public GameObject clearanceWrapper;
-    [SerializeField] private List<Clearance> clearances = new List<Clearance>();
-
-    public ClearanceHandler(float _front, float _rear, float _left, float _right, float _top, Transform _parent)
+    [SerializeField] private List<Clearance> clearances;
+    
+    public void Initialize(float _front, float _rear, float _left, float _right, float _top, Transform _parent)
     {
+        clearances = new List<Clearance>();
+        Object.Destroy(clearanceWrapper);
         front.length = _front / 1000;
         front.direction = Vector3.forward;
         rear.length = _rear / 1000;
@@ -38,6 +41,11 @@ public class ClearanceHandler
         top.length = _top / 1000;
         top.direction = Vector3.up;
         parent = _parent;
+        if (toggled)
+            BuildClearance();
+        else
+            isCreated = false;
+        initialized = true;
     }
 
     public void ToggleClearance(bool _toggle)
@@ -62,6 +70,8 @@ public class ClearanceHandler
 
     public void BuildClearance()
     {
+        if (!parent)
+            return;
         if (front.length > 0)
             clearances.Add(front);
         if (rear.length > 0)
@@ -75,6 +85,7 @@ public class ClearanceHandler
         clearanceWrapper = new GameObject("Clearance Wrapper");
         clearanceWrapper.transform.parent = parent;
         clearanceWrapper.transform.localPosition = Vector3.zero;
+        clearanceWrapper.transform.localRotation = Quaternion.identity;
         foreach (Clearance clearance in clearances)
         {
             Vector3 absDirection = Vector3.Scale(clearance.direction, clearance.direction);
