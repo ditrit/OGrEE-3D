@@ -590,8 +590,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    1: PROD
-	  2: TRILIB
+    1: PROD;TRILIB
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
