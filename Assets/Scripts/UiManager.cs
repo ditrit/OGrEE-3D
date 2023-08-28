@@ -383,13 +383,13 @@ public class UiManager : MonoBehaviour
             interactCondition = () => menuTarget
             &&
             menuTarget.GetComponent<OObject>()
-            && menuTarget.GetComponent<OObject>().clearanceHandler.initialized,
+            && menuTarget.GetComponent<OObject>().clearanceHandler.isInitialized,
 
             toggledCondition = () => menuTarget
             &&
             menuTarget.GetComponent<OObject>()
             &&
-            menuTarget.GetComponent<OObject>().clearanceHandler.toggled
+            menuTarget.GetComponent<OObject>().clearanceHandler.isToggled
         };
         toggleClearanceBtn.Check();
 

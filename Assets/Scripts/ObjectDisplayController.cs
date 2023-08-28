@@ -535,7 +535,7 @@ public class ObjectDisplayController : MonoBehaviour
             OgreeObject oo = go.GetComponent<OgreeObject>();
             if (oo.localCS)
                 oo.localCS.SetActive(_value);
-            if (oo is OObject deOObject && oobject != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.toggled)
+            if (oo is OObject deOObject && oobject != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.isToggled)
                 deOObject.clearanceHandler.clearanceWrapper.SetActive(_value);
             switch (oo)
             {

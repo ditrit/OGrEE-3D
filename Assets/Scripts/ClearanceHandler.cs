@@ -50,11 +50,11 @@ public class ClearanceHandler
         top.length = _top / 1000;
         top.direction = Vector3.up;
         clearedObject = _clearedObject;
-        if (toggled)
+        if (isToggled)
             BuildClearance();
         else
             isCreated = false;
-        initialized = true;
+        isInitialized = true;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class ClearanceHandler
     /// <param name="_toggle">if the clearance is displayed or not</param>
     public void ToggleClearance(bool _toggle)
     {
-        toggled = _toggle;
+        isToggled = _toggle;
         if (!isCreated)
         {
             if (_toggle)
@@ -80,7 +80,7 @@ public class ClearanceHandler
     /// </summary>
     public void ToggleClearance()
     {
-        ToggleClearance(!toggled);
+        ToggleClearance(!isToggled);
     }
 
     /// <summary>
