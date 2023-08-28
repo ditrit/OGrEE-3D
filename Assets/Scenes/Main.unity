@@ -779,7 +779,7 @@ RectTransform:
   m_Children:
   - {fileID: 1776792828}
   m_Father: {fileID: 731465983}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4628,7 +4628,7 @@ RectTransform:
   m_Children:
   - {fileID: 1739995265}
   m_Father: {fileID: 731465983}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6280,10 +6280,10 @@ RectTransform:
   - {fileID: 1724230490}
   - {fileID: 314828350}
   - {fileID: 577279988}
+  - {fileID: 1734394082}
   - {fileID: 75145214}
   - {fileID: 1407650634}
   - {fileID: 565046243}
-  - {fileID: 1734394082}
   m_Father: {fileID: 636338289}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -11277,7 +11277,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09991}
+  m_AnchoredPosition: {x: 0, y: 217.09999}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -13360,7 +13360,7 @@ RectTransform:
   m_Children:
   - {fileID: 1997727722}
   m_Father: {fileID: 731465983}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -14733,8 +14733,10 @@ MonoBehaviour:
       length: 0
       gameObject: {fileID: 0}
       direction: {x: 0, y: 0, z: 0}
-    parent: {fileID: 0}
-    toggled: 0
+    clearedObject: {fileID: 0}
+    isToggled: 0
+    isInitialized: 0
+    clearanceWrapper: {fileID: 0}
     clearances: []
   uRoot: {fileID: 0}
   gridForULocation: {fileID: 0}
@@ -17297,7 +17299,7 @@ RectTransform:
   m_Children:
   - {fileID: 1498077005}
   m_Father: {fileID: 731465983}
-  m_RootOrder: 18
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -19511,7 +19513,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -21308,8 +21310,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0.0000004217077
-  m_Size: 0.56365246
+  m_Value: -0.0000002811385
+  m_Size: 0.5533431
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
