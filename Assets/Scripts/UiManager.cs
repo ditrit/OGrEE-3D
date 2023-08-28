@@ -41,6 +41,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleWallsBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
+    [SerializeField] private ButtonHandler toggleClearanceBtn;
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
@@ -376,6 +377,21 @@ public class UiManager : MonoBehaviour
             toggledCondition = () => GameManager.instance.getCoordsMode
         };
         getCoordsBtn.Check();
+
+        toggleClearanceBtn = new ButtonHandler(toggleClearanceBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OObject>()
+            && menuTarget.GetComponent<OObject>().clearanceHandler.isInitialized,
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<OObject>()
+            &&
+            menuTarget.GetComponent<OObject>().clearanceHandler.isToggled
+        };
+        toggleClearanceBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -807,9 +823,9 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI: foreach Object in currentItems, toggle local Coordinate System.
+    /// Called by GUI: toggle local Coordinate System of the object targeted by right click menu.
     ///</summary>
-    public void GuiToggleCS()
+    public void ToggleCS()
     {
         OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
         if (obj is Building bd)
@@ -1113,5 +1129,13 @@ public class UiManager : MonoBehaviour
         Application.Quit();
     }
 
+    ///<summary>
+    /// Called by GUI: toggle clearance of the object targeted by right click menu..
+    ///</summary>
+    public void ToggleClearance()
+    {
+        menuTarget.GetComponent<OObject>().clearanceHandler.ToggleClearance();
+        toggleLocalCSBtn.Check();
+    }
     #endregion
 }
