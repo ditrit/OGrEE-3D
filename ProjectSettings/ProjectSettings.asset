@@ -591,6 +591,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: PROD
+	  2: TRILIB
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

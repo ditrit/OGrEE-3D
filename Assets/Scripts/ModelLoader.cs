@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TRILIB
+using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -145,3 +146,4 @@ public class ModelLoader : MonoBehaviour
         isLocked = false;
     }
 }
+#endif
