@@ -117,6 +117,9 @@ public class ModelLoader : MonoBehaviour
         Transform triLibWrapper = assetLoaderContext.RootGameObject.transform;
         Transform triLibObj = triLibWrapper.GetChild(0);
 
+        // Get the basic box' scale 
+        Vector3 boxScale = triLibWrapper.parent.GetChild(0).localScale;
+
         triLibWrapper.name = $"Wraper_{triLibObj.name}";
         triLibWrapper.localPosition = Vector3.zero;
 
@@ -124,17 +127,11 @@ public class ModelLoader : MonoBehaviour
         triLibObj.parent = triLibWrapper.parent;
         triLibWrapper.parent = triLibObj;
         triLibObj.SetAsFirstSibling();
-        triLibObj.localPosition = Vector3.zero;
+        triLibObj.localPosition = boxScale / 2;
         triLibWrapper.localPosition = Vector3.zero;
 
         triLibObj.gameObject.AddComponent<BoxCollider>();
         triLibObj.tag = "Selectable";
-
-#if PROD
-        // Hide template object
-        triLibObj.GetComponent<Renderer>().enabled = false;
-        triLibObj.GetComponent<Collider>().enabled = false;
-#endif
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.
