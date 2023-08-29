@@ -23,6 +23,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Color selectColor;
     [SerializeField] private Color defaultColor;
     public GameObject menuTarget;
+    [SerializeField] private TMP_Text buildDate;
 
     [Header("Button Handlers")]
     [SerializeField] private ButtonHandler selectBtn;
@@ -92,6 +93,9 @@ public class UiManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+#if !TRILIB
+        buildDate.text += "\n<color=\"red\">Build without TriLib plugin</color>";
+#endif
         selectBtn = new ButtonHandler(selectBtn.button, false)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
@@ -311,7 +315,7 @@ public class UiManager : MonoBehaviour
             menuTarget.GetComponent<Room>().tileColor
         };
         toggleTilesColorBtn.Check();
-        
+
         toggleWallsBtn = new ButtonHandler(toggleWallsBtn.button, true)
         {
             interactCondition = () => menuTarget
