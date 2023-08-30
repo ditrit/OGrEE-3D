@@ -166,8 +166,8 @@ public class UHelpersManager : MonoBehaviour
 
             if (_active && !rack.uRoot)
                 GenerateUHelpers(rack);
-            rack.AreUHelpersToggled = _active;
-            rack.uRoot?.gameObject.SetActive(rack.AreUHelpersToggled);
+            rack.areUHelpersToggled = _active;
+            rack.uRoot?.gameObject.SetActive(rack.areUHelpersToggled);
         }
     }
 
@@ -183,11 +183,11 @@ public class UHelpersManager : MonoBehaviour
             if (!rack)
                 break;
 
-            if (!rack.AreUHelpersToggled && !rack.uRoot)
+            if (!rack.areUHelpersToggled && !rack.uRoot)
                 GenerateUHelpers(rack);
-            rack.AreUHelpersToggled = !rack.AreUHelpersToggled;
-            rack.uRoot.gameObject.SetActive(rack.AreUHelpersToggled);
-            GameManager.instance.AppendLogLine($"U helpers {(rack.AreUHelpersToggled ? "ON" : "OFF")} for {obj.name}.", ELogTarget.logger, ELogtype.info);
+            rack.areUHelpersToggled = !rack.areUHelpersToggled;
+            rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
+            GameManager.instance.AppendLogLine($"U helpers {(rack.areUHelpersToggled ? "ON" : "OFF")} for {obj.name}.", ELogTarget.logger, ELogtype.info);
         }
     }
 

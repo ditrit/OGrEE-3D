@@ -224,8 +224,8 @@ public class ObjectDisplayController : MonoBehaviour
             oobject?.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
             Display(true, true, true);
-        if (oobject is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.AreUHelpersToggled)
-            rack.uRoot.gameObject.SetActive(rack.AreUHelpersToggled);
+        if (oobject is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
+            rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
     }
 
     /// <summary>
@@ -347,7 +347,7 @@ public class ObjectDisplayController : MonoBehaviour
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
         if (oobject is Rack rack && rack.uRoot)
-            rack.uRoot.gameObject.SetActive(_e.room.barChart && rack.AreUHelpersToggled);
+            rack.uRoot.gameObject.SetActive(_e.room.barChart && rack.areUHelpersToggled);
         if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
             oobject.clearanceHandler.clearanceWrapper.SetActive(_e.room.barChart);
     }
@@ -467,7 +467,7 @@ public class ObjectDisplayController : MonoBehaviour
             }
         }
         if (oobject is Rack rack && rack.uRoot)
-            rack.uRoot.gameObject.SetActive(!_scatterPlot && rack.AreUHelpersToggled);
+            rack.uRoot.gameObject.SetActive(!_scatterPlot && rack.areUHelpersToggled);
         if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
             oobject.clearanceHandler.clearanceWrapper.SetActive(!_scatterPlot);
         foreach (Transform child in transform)
