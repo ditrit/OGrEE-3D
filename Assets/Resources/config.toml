@@ -8,6 +8,12 @@ cliPort = 5500
 # Value clamped from 0 to 100
 alphaOnInteract = 50
 
+# Camera settings
+moveSpeed = 15
+rotationSpeed = 50
+# Height of the camera in "Human mode movement". 1.62 by default
+humanHeight = 1.62
+
 [OGrEE-3D.textures]
 # Textures loaded in the 3D client at startup, in "name = url" format
 perf22 = "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png"
