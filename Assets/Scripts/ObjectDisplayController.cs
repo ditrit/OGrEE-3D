@@ -143,8 +143,6 @@ public class ObjectDisplayController : MonoBehaviour
     private void OnSelectBasic(OnSelectItemEvent _e)
     {
         List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        if (!selectionrefs.Contains(oobject.referent))
-            UHelpersManager.instance.ToggleU(gameObject, false);
         if (!oobject.tempBar && !scatterPlotOfOneParent)
         {
             List<GameObject> selection = GameManager.instance.GetSelected();
@@ -198,8 +196,8 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (_e.obj.transform != transform.parent)
         {
-            if (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject))
-                UHelpersManager.instance.ToggleU(gameObject, false);
+            if (oobject is Rack rack && rack.uRoot && !GameManager.instance.GetSelectedReferents().Contains(oobject))
+                rack.uRoot.gameObject.SetActive(false);
             if ((!sensor || !sensor.fromTemplate || scatterPlotOfOneParent) && !DistantChildOf(_e.obj))
                 Display(false, false, false);
         }
@@ -226,6 +224,8 @@ public class ObjectDisplayController : MonoBehaviour
             oobject?.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
             Display(true, true, true);
+        if (oobject is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
+            rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
     }
 
     /// <summary>
@@ -346,8 +346,8 @@ public class ObjectDisplayController : MonoBehaviour
         bool rend = labels || selection.Contains(gameObject);
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
-        if (selection.Contains(gameObject))
-            UHelpersManager.instance.ToggleU(gameObject, _e.room.barChart);
+        if (oobject is Rack rack && rack.uRoot)
+            rack.uRoot.gameObject.SetActive(_e.room.barChart && rack.areUHelpersToggled);
         if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
             oobject.clearanceHandler.clearanceWrapper.SetActive(_e.room.barChart);
     }
@@ -449,8 +449,6 @@ public class ObjectDisplayController : MonoBehaviour
         if (_scatterPlot)
         {
             Display(false, false, false);
-            if (GameManager.instance.GetSelected().Contains(gameObject))
-                UHelpersManager.instance.ToggleU(gameObject, false);
         }
         else if (GameManager.instance.GetSelected().Contains(gameObject))
         {
@@ -468,6 +466,8 @@ public class ObjectDisplayController : MonoBehaviour
                 HandleMaterial();
             }
         }
+        if (oobject is Rack rack && rack.uRoot)
+            rack.uRoot.gameObject.SetActive(!_scatterPlot && rack.areUHelpersToggled);
         if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
             oobject.clearanceHandler.clearanceWrapper.SetActive(!_scatterPlot);
         foreach (Transform child in transform)

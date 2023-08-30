@@ -4,4 +4,5 @@ public class Rack : OObject
 {
     public Transform uRoot;
     public GameObject gridForULocation;
+    public bool areUHelpersToggled = false;
 }
