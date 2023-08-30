@@ -268,25 +268,22 @@ public class ReadFromJson
             newSensor.transform.GetChild(0).localScale = 0.001f * new Vector3(_sensor.elemSize[0], _sensor.elemSize[1], _sensor.elemSize[2]);
         }
         newSensor.name = _sensor.location;
-        newSensor.transform.localPosition = new Vector3(0, 0, 0);
-        Vector3 offset = 0.5f * (_parent.GetChild(0).localScale - newSensor.transform.GetChild(0).localScale);
+        newSensor.transform.localPosition = Vector3.zero;
+        Vector3 parentScale = _parent.GetChild(0).localScale;
         switch (_sensor.elemPos[0])
         {
             case SensorPos.Left:
-                newSensor.transform.localPosition += (offset.x) * Vector3.left;
+                newSensor.transform.localPosition += parentScale.x * Vector3.right;
                 break;
             case SensorPos.Center:
+                newSensor.transform.localPosition += 0.5f * parentScale.x * Vector3.right;
                 break;
             case SensorPos.Right:
-                newSensor.transform.localPosition += (offset.x) * Vector3.right;
                 break;
             default:
                 try
                 {
-                    Vector3 pos = newSensor.transform.localPosition;
-                    pos[0] = _parent.GetChild(0).localScale[0] / -2;
-                    pos[0] += Utils.ParseDecFrac(_sensor.elemPos[0]) / 1000;
-                    newSensor.transform.localPosition = pos;
+                    newSensor.transform.localPosition += Utils.ParseDecFrac(_sensor.elemPos[0]) / 1000 * Vector3.right;
                 }
                 catch (FormatException)
                 {
@@ -297,20 +294,17 @@ public class ReadFromJson
         switch (_sensor.elemPos[1])
         {
             case SensorPos.Front:
-                newSensor.transform.localPosition += (offset.z) * Vector3.forward;
+                newSensor.transform.localPosition += parentScale.z * Vector3.forward;
                 break;
             case SensorPos.Center:
+                newSensor.transform.localPosition += 0.5f * parentScale.z * Vector3.forward;
                 break;
             case SensorPos.Rear:
-                newSensor.transform.localPosition += (offset.z) * Vector3.back;
                 break;
             default:
                 try
                 {
-                    Vector3 pos = newSensor.transform.localPosition;
-                    pos[2] = _parent.GetChild(0).localScale[2] / -2;
-                    pos[2] += Utils.ParseDecFrac(_sensor.elemPos[1]) / 1000;
-                    newSensor.transform.localPosition = pos;
+                    newSensor.transform.localPosition += Utils.ParseDecFrac(_sensor.elemPos[1]) / 1000 * Vector3.forward;
                 }
                 catch (FormatException)
                 {
@@ -321,20 +315,17 @@ public class ReadFromJson
         switch (_sensor.elemPos[2])
         {
             case SensorPos.Lower:
-                newSensor.transform.localPosition += (offset.y) * Vector3.down;
                 break;
             case SensorPos.Center:
+                newSensor.transform.localPosition += 0.5f * parentScale.y * Vector3.up;
                 break;
             case SensorPos.Upper:
-                newSensor.transform.localPosition += (offset.y) * Vector3.up;
+                newSensor.transform.localPosition += parentScale.y * Vector3.up;
                 break;
             default:
                 try
                 {
-                    Vector3 pos = newSensor.transform.localPosition;
-                    pos[1] = _parent.GetChild(0).localScale[1] / -2;
-                    pos[1] += Utils.ParseDecFrac(_sensor.elemPos[2]) / 1000;
-                    newSensor.transform.localPosition = pos;
+                    newSensor.transform.localPosition += Utils.ParseDecFrac(_sensor.elemPos[2]) / 1000 * Vector3.up;
                 }
                 catch (FormatException)
                 {
