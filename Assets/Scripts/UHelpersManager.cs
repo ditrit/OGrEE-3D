@@ -89,6 +89,7 @@ public class UHelpersManager : MonoBehaviour
         bool first = true;
         Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
         foreach (OObject oObject in _selection.Select(go => go.GetComponent<OObject>()))
+        {
             if (oObject is Rack rack)
             {
                 rack.uRoot.gameObject.SetActive(true);
@@ -131,6 +132,7 @@ public class UHelpersManager : MonoBehaviour
                         ChangeUColor(rackRef.uRoot, i, true);
                 }
             }
+        }
     }
 
     /// <summary>
