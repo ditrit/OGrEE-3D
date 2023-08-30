@@ -124,6 +124,10 @@ public class ConfigLoader
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
+        config.moveSpeed = Convert.ToInt32(table["moveSpeed"]);
+        config.rotationSpeed = Convert.ToInt32(table["rotationSpeed"]);
+        config.humanHeight = Convert.ToSingle(table["humanHeight"]);
+
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
             if (!string.IsNullOrEmpty((string)kvp.Value))
@@ -311,7 +315,7 @@ public class ConfigLoader
             GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
-        if (_unit ==TemperatureUnits.Celsius)
+        if (_unit == TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == TemperatureUnits.Fahrenheit)
             return (config.temperatureMinF, config.temperatureMaxF);
