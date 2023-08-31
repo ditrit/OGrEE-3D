@@ -356,7 +356,7 @@ public class ConfigLoader
     /// <param name="_value"></param>
     public void SetMoveSpeed(float _value)
     {
-        config.moveSpeed = _value;
+        config.moveSpeed = Mathf.Clamp(_value, 1, 50);
     }
 
     /// <summary>
@@ -374,7 +374,7 @@ public class ConfigLoader
     /// <param name="_value"></param>
     public void SetRotationSpeed(float _value)
     {
-        config.rotationSpeed = _value;
+        config.rotationSpeed = Mathf.Clamp(_value, 1, 100);
     }
 
     /// <summary>
@@ -392,6 +392,6 @@ public class ConfigLoader
     /// <param name="_value"></param>
     public void SetHumanHeight(float _value)
     {
-        config.humanHeight = _value;
+        config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
     }
 }
