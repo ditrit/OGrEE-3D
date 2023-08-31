@@ -59,12 +59,21 @@ public class CameraControl : MonoBehaviour
         humanMode = _value;
         if (humanMode)
         {
-            transform.localPosition = new Vector3(transform.localPosition.x, GameManager.instance.configLoader.GetHumanHeight(), transform.localPosition.z);
+            UpdateHumanModeHeight();
             transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
         }
         else
             transform.GetChild(0).localEulerAngles = Vector3.zero;//apply to wrapper and reset!
         UpdateGUIInfos();
+    }
+
+    /// <summary>
+    /// Set localPosition.y to <see cref="GameManager.configLoader.config.humanHeight"/> if <see cref="humanMode"/> is enabled.
+    /// </summary>
+    public void UpdateHumanModeHeight()
+    {
+        if (humanMode)
+            transform.localPosition = new Vector3(transform.localPosition.x, GameManager.instance.configLoader.GetHumanHeight(), transform.localPosition.z);
     }
 
     ///<summary>

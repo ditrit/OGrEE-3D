@@ -79,6 +79,14 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GameObject groupBtnPrefab;
     public List<Group> openedGroups;
 
+    [Header("Settings Panel")]
+    [SerializeField] private Slider moveSpeedSlider;
+    [SerializeField] private float defaultMoveSpeed;
+    [SerializeField] private Slider rotationSpeedSlider;
+    [SerializeField] private float defaultRotationSpeed;
+    [SerializeField] private Slider humanHeightSlider;
+    [SerializeField] private float defaultHumanHeight;
+
     private void Awake()
     {
         if (!instance)
@@ -403,6 +411,10 @@ public class UiManager : MonoBehaviour
         rightClickMenu.SetActive(false);
         groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
+
+        defaultMoveSpeed = GameManager.instance.configLoader.GetMoveSpeed();
+        defaultRotationSpeed = GameManager.instance.configLoader.GetRotationSpeed();
+        defaultHumanHeight = GameManager.instance.configLoader.GetHumanHeight();
 
         EventManager.instance.OnSelectItem.Add(OnSelectItem);
 
@@ -1046,7 +1058,15 @@ public class UiManager : MonoBehaviour
     {
         GameManager.instance.configLoader.SetMoveSpeed(_value);
     }
-    
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="moveSpeedSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetMoveSpeed()
+    {
+        moveSpeedSlider.value = defaultMoveSpeed;
+    }
+
     /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.rotationSpeed"/>
     /// </summary>
@@ -1057,12 +1077,29 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Called by GUI button. Reset value of <see cref="rotationSpeedSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetRotationSpeed()
+    {
+        rotationSpeedSlider.value = defaultRotationSpeed;
+    }
+
+    /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.humanHeight"/>
     /// </summary>
     /// <param name="_value"></param>
     public void UpdateHumanHeight(float _value)
     {
         GameManager.instance.configLoader.SetHumanHeight(_value);
+        GameManager.instance.cameraControl.UpdateHumanModeHeight();
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="humanHeightSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetHumanHeight()
+    {
+        humanHeightSlider.value = defaultHumanHeight;
     }
 
     ///<summary>
