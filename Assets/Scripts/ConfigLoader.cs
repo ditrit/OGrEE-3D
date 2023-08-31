@@ -340,4 +340,58 @@ public class ConfigLoader
     {
         return config.useCustomGradient;
     }
+
+    /// <summary>
+    /// Get the value of <see cref="config.moveSpeed"/>
+    /// </summary>
+    /// <returns></returns>
+    public float GetMoveSpeed()
+    {
+        return config.moveSpeed;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.moveSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetMoveSpeed(float _value)
+    {
+        config.moveSpeed = _value;
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.rotationSpeed"/>
+    /// </summary>
+    /// <returns></returns>
+    public float GetRotationSpeed()
+    {
+        return config.rotationSpeed;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.rotationSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetRotationSpeed(float _value)
+    {
+        config.rotationSpeed = _value;
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.humanHeight"/>
+    /// </summary>
+    /// <returns></returns>
+    public float GetHumanHeight()
+    {
+        return config.humanHeight;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.humanHeight"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetHumanHeight(float _value)
+    {
+        config.humanHeight = _value;
+    }
 }

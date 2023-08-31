@@ -1038,6 +1038,33 @@ public class UiManager : MonoBehaviour
         value.text = _value.ToString("0.##") + "s";
     }
 
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.moveSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateMoveSpeed(float _value)
+    {
+        GameManager.instance.configLoader.SetMoveSpeed(_value);
+    }
+    
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.rotationSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateRotationSpeed(float _value)
+    {
+        GameManager.instance.configLoader.SetRotationSpeed(_value);
+    }
+
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.humanHeight"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateHumanHeight(float _value)
+    {
+        GameManager.instance.configLoader.SetHumanHeight(_value);
+    }
+
     ///<summary>
     /// Call at InputField End Edit. Select given object (retrieve it by its hierarchyName)
     ///</summary>
