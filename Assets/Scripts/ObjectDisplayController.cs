@@ -358,6 +358,8 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnTemperatureScatterPlot(TemperatureScatterPlotEvent _e)
     {
+        if (sensor && sensor.fromTemplate && transform.parent == _e.ogreeObject.transform)
+            scatterPlotOfOneParent = _e.ogreeObject.scatterPlot;
         if (!listening)
             return;
 
