@@ -188,7 +188,7 @@ public struct SConfig
     public int temperatureMaxF;
     public List<List<int>> customTemperatureGradient;
     public bool useCustomGradient;
-    public float doubleClickTimeLimit;
+    public float doubleClickDelay;
     public float moveSpeed;
     public float rotationSpeed;
     public float humanHeight;
@@ -254,7 +254,7 @@ public class DefaultValues
             new List<int>() { 255,0,0,100 },
             new List<int>() { 255,255,0,50 }
         },
-        doubleClickTimeLimit = 0.25f,
+        doubleClickDelay = 0.25f,
         moveSpeed = 15,
         rotationSpeed = 50,
         humanHeight = 1.62f

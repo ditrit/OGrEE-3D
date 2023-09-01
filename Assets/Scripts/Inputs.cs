@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 public class Inputs : MonoBehaviour
 {
-    private readonly float doubleClickTimeLimit = 0.25f;
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
@@ -205,7 +204,7 @@ public class Inputs : MonoBehaviour
     {
         Transform savedTarget = target;
         coroutineAllowed = false;
-        while (Time.realtimeSinceStartup < _firstClickTime + doubleClickTimeLimit)
+        while (Time.realtimeSinceStartup < _firstClickTime + GameManager.instance.configHandler.GetDoubleClickDelay())
         {
             if (clickCount == 2 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
             {
