@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public enum ELogtype
@@ -162,6 +162,8 @@ public class LaunchArgs
     public const string FullScreenLong = "--fullscreen";
     public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort, ConfigPathLong, VerboseShort, VerboseLong, FullScreenShort, FullScreenLong });
 }
+
+[Serializable]
 public struct SConfig
 {
     public bool verbose;

@@ -1068,6 +1068,14 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Write the value of <see cref="moveSpeedSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveMoveSpeed()
+    {
+        Utils.WritePreference("moveSpeed", Utils.FloatToRefinedStr(moveSpeedSlider.value));
+    }
+
+    /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.rotationSpeed"/>
     /// </summary>
     /// <param name="_value"></param>
@@ -1082,6 +1090,14 @@ public class UiManager : MonoBehaviour
     public void ResetRotationSpeed()
     {
         rotationSpeedSlider.value = defaultRotationSpeed;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="rotationSpeedSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveRotationSpeed()
+    {
+        Utils.WritePreference("rotationSpeed", Utils.FloatToRefinedStr(rotationSpeedSlider.value));
     }
 
     /// <summary>
@@ -1100,6 +1116,14 @@ public class UiManager : MonoBehaviour
     public void ResetHumanHeight()
     {
         humanHeightSlider.value = defaultHumanHeight;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="humanHeightSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveHumanHeight()
+    {
+        Utils.WritePreference("humanHeight", Utils.FloatToRefinedStr(humanHeightSlider.value));
     }
 
     ///<summary>

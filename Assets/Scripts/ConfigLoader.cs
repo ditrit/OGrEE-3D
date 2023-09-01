@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -8,11 +7,12 @@ using UnityEngine.Networking;
 using Tomlyn;
 using Tomlyn.Model;
 
+[Serializable]
 public class ConfigLoader
 {
-
-    private SConfig config;
-    private bool verbose = false;
+    [SerializeField] private SConfig config;
+    [SerializeField] private bool verbose = false;
+    [SerializeField] private string savedConfigPath;
 
     ///<summary>
     /// Load a config file & look for command line overrides.
@@ -91,10 +91,12 @@ public class ConfigLoader
         {
 #if UNITY_EDITOR
             StreamReader loadedConfig = File.OpenText(DefaultValues.DefaultConfigPath);
+            savedConfigPath = DefaultValues.DefaultConfigPath;
 #else
             if (string.IsNullOrEmpty(_path))
                 _path = DefaultValues.DefaultConfigPath;
             StreamReader loadedConfig = File.OpenText(_path);
+            savedConfigPath = _path;
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
@@ -344,7 +346,7 @@ public class ConfigLoader
     /// <summary>
     /// Get the value of <see cref="config.moveSpeed"/>
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The value of <see cref="config.moveSpeed"/></returns>
     public float GetMoveSpeed()
     {
         return config.moveSpeed;
@@ -362,7 +364,7 @@ public class ConfigLoader
     /// <summary>
     /// Get the value of <see cref="config.rotationSpeed"/>
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The value of <see cref="config.rotationSpeed"/></returns>
     public float GetRotationSpeed()
     {
         return config.rotationSpeed;
@@ -380,7 +382,7 @@ public class ConfigLoader
     /// <summary>
     /// Get the value of <see cref="config.humanHeight"/>
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The value of <see cref="config.humanHeight"/></returns>
     public float GetHumanHeight()
     {
         return config.humanHeight;
@@ -393,5 +395,14 @@ public class ConfigLoader
     public void SetHumanHeight(float _value)
     {
         config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="savedConfigPath"/>
+    /// </summary>
+    /// <returns>The value of <see cref="savedConfigPath"/></returns>
+    public string GetConfigPath()
+    {
+        return savedConfigPath;
     }
 }
