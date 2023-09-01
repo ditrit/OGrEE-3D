@@ -160,7 +160,15 @@ public class LaunchArgs
     public const string VerboseLong = "--verbose";
     public const string FullScreenShort = "-fs";
     public const string FullScreenLong = "--fullscreen";
-    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>() { ConfigPathShort, ConfigPathLong, VerboseShort, VerboseLong, FullScreenShort, FullScreenLong });
+    public const string CliPortShort = "-p";
+    public const string CliPortLong = "--cliPort";
+    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>()
+    {
+        ConfigPathShort, ConfigPathLong,
+        VerboseShort, VerboseLong,
+        FullScreenShort, FullScreenLong,
+        CliPortShort, CliPortLong
+    });
 }
 
 [Serializable]

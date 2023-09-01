@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -75,6 +75,10 @@ public class ConfigHandler
                 case LaunchArgs.FullScreenShort:
                 case LaunchArgs.FullScreenLong:
                     config.fullscreen = bool.Parse(str);
+                    break;
+                case LaunchArgs.CliPortShort:
+                case LaunchArgs.CliPortLong:
+                    config.cliPort = int.Parse(str);
                     break;
             }
         }
