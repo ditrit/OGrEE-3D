@@ -116,7 +116,7 @@ public class TempDiagram : MonoBehaviour
         float pixelX;
         GameObject sensorBar;
         STemp tempInfos = _oobject.GetTemperatureInfos();
-        (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(_tempUnit);
+        (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(_tempUnit);
         if (!float.IsNaN(tempInfos.mean) && (tempMin, tempMax) != (0,0))
         {
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);
@@ -219,7 +219,7 @@ public class TempDiagram : MonoBehaviour
             sensorPos = Quaternion.Inverse(heatmap.transform.rotation) * sensorPos;
             sensorPos.Scale(new Vector3(1 / heatmap.transform.lossyScale.x, 1 / heatmap.transform.lossyScale.y, 1 / heatmap.transform.lossyScale.z));
             sensorPositions[i] = new Vector4(sensorPos.x, sensorPos.y, 0, 0);
-            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(sensor.temperatureUnit);
+            (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(sensor.temperatureUnit);
             float intensity = Utils.MapAndClamp(sensor.temperature, tempMin, tempMax, intensityMin, intensityMax);
             sensorProperties[i] = new Vector4(objTransform.localScale.sqrMagnitude * radiusRatio, intensity, 0, 0);
         }

@@ -8,7 +8,7 @@ using Tomlyn;
 using Tomlyn.Model;
 
 [Serializable]
-public class ConfigLoader
+public class ConfigHandler
 {
     [SerializeField] private SConfig config;
     [SerializeField] private string savedConfigPath;
@@ -187,6 +187,25 @@ public class ConfigLoader
         SetMaterialColor("edit", GameManager.instance.editMat);
         SetMaterialColor("highlight", GameManager.instance.highlightMat);
         SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
+    }
+
+    /// <summary>
+    /// In used config.toml file, change <see cref="_key"/> to its new <see cref="_value"/>.
+    /// </summary>
+    /// <param name="_key">The config parameter to update</param>
+    /// <param name="_value">The new value to write</param>
+    public void WritePreference(string _key, string _value)
+    {
+        if (!string.IsNullOrEmpty(savedConfigPath))
+        {
+            string[] arrLine = File.ReadAllLines(savedConfigPath);
+            for (int i = 0; i < arrLine.Length; i++)
+            {
+                if (arrLine[i].StartsWith(_key))
+                    arrLine[i] = $"{_key} = {_value}";
+            }
+            File.WriteAllLines(savedConfigPath, arrLine);
+        }
     }
 
     ///<summary> 
@@ -392,14 +411,5 @@ public class ConfigLoader
     public void SetHumanHeight(float _value)
     {
         config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
-    }
-
-    /// <summary>
-    /// Get the value of <see cref="savedConfigPath"/>
-    /// </summary>
-    /// <returns>The value of <see cref="savedConfigPath"/></returns>
-    public string GetConfigPath()
-    {
-        return savedConfigPath;
     }
 }

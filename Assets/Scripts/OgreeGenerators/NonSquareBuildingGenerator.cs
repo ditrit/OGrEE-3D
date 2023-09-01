@@ -262,7 +262,7 @@ public static class NonSquareBuildingGenerator
                 if (site && site.attributes.ContainsKey("usableColor"))
                     newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
                 else
-                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("usableZone"));
+                    newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("usableZone"));
                 tile.defaultMat = new Material(newTile.GetComponent<Renderer>().material);
             }
 

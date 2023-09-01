@@ -351,21 +351,4 @@ public static class Utils
     {
         return new Vector3(_v.x, _v.z, _v.y);
     }
-
-    /// <summary>
-    /// In used config.toml file, change <see cref="_key"/> to its new <see cref="_value"/>.
-    /// </summary>
-    /// <param name="_key">The config parameter to update</param>
-    /// <param name="_value">The new value to write</param>
-    public static void WritePreference(string _key, string _value)
-    {
-        string fileName = GameManager.instance.configLoader.GetConfigPath();
-        string[] arrLine = File.ReadAllLines(fileName);
-        for (int i = 0; i < arrLine.Length; i++)
-        {
-            if (arrLine[i].StartsWith(_key))
-                arrLine[i] = $"{_key} = {_value}";
-        }
-        File.WriteAllLines(fileName, arrLine);
-    }
 }

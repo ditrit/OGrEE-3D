@@ -29,7 +29,7 @@ public class ModelLoader : MonoBehaviour
     {
         isLocked = true;
 
-        Uri filePath = new Uri($"{GameManager.instance.configLoader.GetCacheDir()}/{_object.name}.fbx");
+        Uri filePath = new Uri($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
@@ -64,13 +64,13 @@ public class ModelLoader : MonoBehaviour
     ///<param name="_filePath">The path to write the file</param>
     private async Task DownloadFile(string _url, string _filePath)
     {
-        DirectoryInfo info = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
+        DirectoryInfo info = new DirectoryInfo(GameManager.instance.configHandler.GetCacheDir());
         float totalSize = 0;
         foreach (FileInfo file in info.EnumerateFiles())
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
 
-        if (sizeMo > GameManager.instance.configLoader.GetCacheLimit())
+        if (sizeMo > GameManager.instance.configHandler.GetCacheLimit())
         {
             GameManager.instance.AppendLogLine($"Local cache limit reached ({sizeMo}Mo)", ELogTarget.both, ELogtype.warning);
             return;
