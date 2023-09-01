@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -8,11 +7,11 @@ using UnityEngine.Networking;
 using Tomlyn;
 using Tomlyn.Model;
 
-public class ConfigLoader
+[Serializable]
+public class ConfigHandler
 {
-
-    private SConfig config;
-    private bool verbose = false;
+    [SerializeField] private SConfig config;
+    [SerializeField] private string savedConfigPath;
 
     ///<summary>
     /// Load a config file & look for command line overrides.
@@ -91,10 +90,12 @@ public class ConfigLoader
         {
 #if UNITY_EDITOR
             StreamReader loadedConfig = File.OpenText(DefaultValues.DefaultConfigPath);
+            savedConfigPath = DefaultValues.DefaultConfigPath;
 #else
             if (string.IsNullOrEmpty(_path))
                 _path = DefaultValues.DefaultConfigPath;
             StreamReader loadedConfig = File.OpenText(_path);
+            savedConfigPath = _path;
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
@@ -123,6 +124,10 @@ public class ConfigLoader
         config.cacheLimitMo = Convert.ToInt32(table["cacheLimitMo"]);
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
+
+        config.moveSpeed = Convert.ToInt32(table["moveSpeed"]);
+        config.rotationSpeed = Convert.ToInt32(table["rotationSpeed"]);
+        config.humanHeight = Convert.ToSingle(table["humanHeight"]);
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
@@ -174,8 +179,6 @@ public class ConfigLoader
     ///</summary>
     private void ApplyConfig()
     {
-        verbose = config.verbose;
-
         GameManager.instance.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
@@ -186,13 +189,32 @@ public class ConfigLoader
         SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
     }
 
+    /// <summary>
+    /// In used config.toml file, change <see cref="_key"/> to its new <see cref="_value"/>.
+    /// </summary>
+    /// <param name="_key">The config parameter to update</param>
+    /// <param name="_value">The new value to write</param>
+    public void WritePreference(string _key, string _value)
+    {
+        if (!string.IsNullOrEmpty(savedConfigPath))
+        {
+            string[] arrLine = File.ReadAllLines(savedConfigPath);
+            for (int i = 0; i < arrLine.Length; i++)
+            {
+                if (arrLine[i].StartsWith(_key))
+                    arrLine[i] = $"{_key} = {_value}";
+            }
+            File.WriteAllLines(savedConfigPath, arrLine);
+        }
+    }
+
     ///<summary> 
     /// Set fullscreen mode.
     ///</summary> 
     ///<param name="_value">The value to set</param>
     private void FullScreenMode(bool _value)
     {
-        if (verbose)
+        if (config.verbose)
             GameManager.instance.AppendLogLine($"Fullscreen: {_value}", ELogTarget.none);
         Screen.fullScreen = _value;
     }
@@ -311,7 +333,7 @@ public class ConfigLoader
             GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
-        if (_unit ==TemperatureUnits.Celsius)
+        if (_unit == TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == TemperatureUnits.Fahrenheit)
             return (config.temperatureMinF, config.temperatureMaxF);
@@ -335,5 +357,59 @@ public class ConfigLoader
     public bool IsUsingCustomGradient()
     {
         return config.useCustomGradient;
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.moveSpeed"/>
+    /// </summary>
+    /// <returns>The value of <see cref="config.moveSpeed"/></returns>
+    public float GetMoveSpeed()
+    {
+        return config.moveSpeed;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.moveSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetMoveSpeed(float _value)
+    {
+        config.moveSpeed = Mathf.Clamp(_value, 1, 50);
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.rotationSpeed"/>
+    /// </summary>
+    /// <returns>The value of <see cref="config.rotationSpeed"/></returns>
+    public float GetRotationSpeed()
+    {
+        return config.rotationSpeed;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.rotationSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetRotationSpeed(float _value)
+    {
+        config.rotationSpeed = Mathf.Clamp(_value, 1, 100);
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.humanHeight"/>
+    /// </summary>
+    /// <returns>The value of <see cref="config.humanHeight"/></returns>
+    public float GetHumanHeight()
+    {
+        return config.humanHeight;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.humanHeight"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void SetHumanHeight(float _value)
+    {
+        config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
     }
 }

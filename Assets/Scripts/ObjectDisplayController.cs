@@ -615,7 +615,7 @@ public class ObjectDisplayController : MonoBehaviour
             mat.color = Color.gray;
         else
         {
-            (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(temp.unit);
+            (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(temp.unit);
             Texture2D text = TempDiagram.instance.heatMapGradient;
             float pixelX = Utils.MapAndClamp(temp.mean, tempMin, tempMax, 0, text.width);
             mat.color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);

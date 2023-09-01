@@ -79,6 +79,14 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GameObject groupBtnPrefab;
     public List<Group> openedGroups;
 
+    [Header("Settings Panel")]
+    [SerializeField] private Slider moveSpeedSlider;
+    [SerializeField] private float defaultMoveSpeed;
+    [SerializeField] private Slider rotationSpeedSlider;
+    [SerializeField] private float defaultRotationSpeed;
+    [SerializeField] private Slider humanHeightSlider;
+    [SerializeField] private float defaultHumanHeight;
+
     private void Awake()
     {
         if (!instance)
@@ -211,7 +219,7 @@ public class UiManager : MonoBehaviour
             ),
 
             toggledCondition = () => GameManager.instance.editMode,
-            toggledColor = Utils.ParseHtmlColor(GameManager.instance.configLoader.GetColor("edit"))
+            toggledColor = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("edit"))
         };
         editBtn.Check();
 
@@ -404,6 +412,10 @@ public class UiManager : MonoBehaviour
         groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
+        defaultMoveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
+        defaultRotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
+        defaultHumanHeight = GameManager.instance.configHandler.GetHumanHeight();
+
         EventManager.instance.OnSelectItem.Add(OnSelectItem);
 
         EventManager.instance.OnFocus.Add(OnFocusItem);
@@ -508,7 +520,7 @@ public class UiManager : MonoBehaviour
     private void SetupColors()
     {
         float alpha = 0.5f;
-        string selectColorCode = GameManager.instance.configLoader.GetColor("selection");
+        string selectColorCode = GameManager.instance.configHandler.GetColor("selection");
         if (!string.IsNullOrEmpty(selectColorCode))
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
@@ -516,7 +528,7 @@ public class UiManager : MonoBehaviour
             selectionInputField.GetComponent<Image>().color = selectColor;
         }
 
-        string focusColorCode = GameManager.instance.configLoader.GetColor("focus");
+        string focusColorCode = GameManager.instance.configHandler.GetColor("focus");
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
@@ -958,13 +970,13 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ClearCache()
     {
-        DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configLoader.GetCacheDir());
+        DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configHandler.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
         {
             if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
         }
-        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configLoader.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);
+        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configHandler.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
 
@@ -1036,6 +1048,82 @@ public class UiManager : MonoBehaviour
         slider.value = _value;
         GameManager.instance.server.timer = (int)(_value);
         value.text = _value.ToString("0.##") + "s";
+    }
+
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.moveSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateMoveSpeed(float _value)
+    {
+        GameManager.instance.configHandler.SetMoveSpeed(_value);
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="moveSpeedSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetMoveSpeed()
+    {
+        moveSpeedSlider.value = defaultMoveSpeed;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="moveSpeedSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveMoveSpeed()
+    {
+        GameManager.instance.configHandler.WritePreference("moveSpeed", Utils.FloatToRefinedStr(moveSpeedSlider.value));
+    }
+
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.rotationSpeed"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateRotationSpeed(float _value)
+    {
+        GameManager.instance.configHandler.SetRotationSpeed(_value);
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="rotationSpeedSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetRotationSpeed()
+    {
+        rotationSpeedSlider.value = defaultRotationSpeed;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="rotationSpeedSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveRotationSpeed()
+    {
+        GameManager.instance.configHandler.WritePreference("rotationSpeed", Utils.FloatToRefinedStr(rotationSpeedSlider.value));
+    }
+
+    /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.humanHeight"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateHumanHeight(float _value)
+    {
+        GameManager.instance.configHandler.SetHumanHeight(_value);
+        GameManager.instance.cameraControl.UpdateHumanModeHeight();
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="humanHeightSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetHumanHeight()
+    {
+        humanHeightSlider.value = defaultHumanHeight;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="humanHeightSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveHumanHeight()
+    {
+        GameManager.instance.configHandler.WritePreference("humanHeight", Utils.FloatToRefinedStr(humanHeightSlider.value));
     }
 
     ///<summary>

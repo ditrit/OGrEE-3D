@@ -53,7 +53,7 @@ public class Sensor : MonoBehaviour
     ///</summary>
     public void UpdateSensorColor()
     {
-        (int tempMin, int tempMax) = GameManager.instance.configLoader.GetTemperatureLimit(temperatureUnit);
+        (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(temperatureUnit);
         Texture2D text = TempDiagram.instance.heatMapGradient;
         float pixelX = Utils.MapAndClamp(temperature, tempMin, tempMax, 0, text.width);
         color = text.GetPixel(Mathf.FloorToInt(pixelX), text.height / 2);

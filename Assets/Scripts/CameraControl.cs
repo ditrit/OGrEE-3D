@@ -17,12 +17,6 @@ public class CameraControl : MonoBehaviour
     [SerializeField] private TMP_InputField infosTMP = null;
 
     [Header("Parameters")]
-    [Range(5, 20)]
-    public float defaultMoveSpeed = 15;
-    [Range(20, 100)]
-    public float rotationSpeed = 50;
-    [Range(1.60f, 1.90f)]
-    public float humanHeight = 1.62f;
     [SerializeField] private bool humanMode = false;
 
     [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
@@ -65,12 +59,21 @@ public class CameraControl : MonoBehaviour
         humanMode = _value;
         if (humanMode)
         {
-            transform.localPosition = new Vector3(transform.localPosition.x, humanHeight, transform.localPosition.z);
+            UpdateHumanModeHeight();
             transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
         }
         else
             transform.GetChild(0).localEulerAngles = Vector3.zero;//apply to wrapper and reset!
         UpdateGUIInfos();
+    }
+
+    /// <summary>
+    /// Set localPosition.y to <see cref="GameManager.configLoader.config.humanHeight"/> if <see cref="humanMode"/> is enabled.
+    /// </summary>
+    public void UpdateHumanModeHeight()
+    {
+        if (humanMode)
+            transform.localPosition = new Vector3(transform.localPosition.x, GameManager.instance.configHandler.GetHumanHeight(), transform.localPosition.z);
     }
 
     ///<summary>
@@ -152,14 +155,13 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void FreeModeControls()
     {
-        float moveSpeed;
+        float moveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
+        float rotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
         if (GameManager.instance.focusMode)
         {
             moveSpeed = Vector3.Distance(Camera.main.transform.position,
                                                 GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].transform.position);
         }
-        else
-            moveSpeed = defaultMoveSpeed;
 
         if (Input.GetAxis("Vertical") != 0)
         {
@@ -201,19 +203,22 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void FPSControls()
     {
+        float moveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
+        float rotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
+
         if (Input.GetAxis("Vertical") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.GetChild(0).Rotate(-Input.GetAxis("Vertical") * Time.deltaTime * rotationSpeed, 0, 0);
             else
-                transform.Translate((defaultMoveSpeed / 2) * Input.GetAxis("Vertical") * Time.deltaTime * Vector3.forward);
+                transform.Translate((moveSpeed / 2) * Input.GetAxis("Vertical") * Time.deltaTime * Vector3.forward);
         }
         if (Input.GetAxis("Horizontal") != 0)
         {
             if (Input.GetKey(KeyCode.LeftShift))
                 transform.Rotate(0, Input.GetAxis("Horizontal") * Time.deltaTime * rotationSpeed, 0);
             else
-                transform.Translate((defaultMoveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
+                transform.Translate((moveSpeed / 2) * Input.GetAxis("Horizontal") * Time.deltaTime * Vector3.right);
         }
 
         // Right click

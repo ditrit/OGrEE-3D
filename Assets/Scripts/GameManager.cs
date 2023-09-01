@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager instance;
     public Server server;
-    public ConfigLoader configLoader = new ConfigLoader();
+    public ConfigHandler configHandler = new ConfigHandler();
 
     [Header("Materials")]
     public Material defaultMat;
@@ -98,10 +98,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
-        configLoader.LoadConfig();
+        configHandler.LoadConfig();
         server.StartServer();
-        StartCoroutine(configLoader.LoadTextures());
-        TempDiagram.instance.SetGradient(configLoader.GetCustomGradientColors(), configLoader.IsUsingCustomGradient());
+        StartCoroutine(configHandler.LoadTextures());
+        TempDiagram.instance.SetGradient(configHandler.GetCustomGradientColors(), configHandler.IsUsingCustomGradient());
     }
 
     private void OnDestroy()
@@ -540,7 +540,7 @@ public class GameManager : MonoBehaviour
         if (_str[_str.Length - 1] != '\n')
             _str += "\n";
 
-        string fileName = $"{configLoader.GetCacheDir()}/{startDateTime}_log.txt";
+        string fileName = $"{configHandler.GetCacheDir()}/{startDateTime}_log.txt";
         FileStream fs = null;
         try
         {
