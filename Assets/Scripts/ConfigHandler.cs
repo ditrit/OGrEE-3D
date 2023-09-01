@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
@@ -125,9 +125,9 @@ public class ConfigHandler
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
 
-        config.moveSpeed = Convert.ToInt32(table["moveSpeed"]);
-        config.rotationSpeed = Convert.ToInt32(table["rotationSpeed"]);
-        config.humanHeight = Convert.ToSingle(table["humanHeight"]);
+        config.moveSpeed = Mathf.Clamp(Convert.ToInt32(table["moveSpeed"]), 1, 50);
+        config.rotationSpeed = Mathf.Clamp(Convert.ToInt32(table["rotationSpeed"]), 1, 100);
+        config.humanHeight = Mathf.Clamp(Convert.ToSingle(table["humanHeight"]), 1.5f, 1.8f);
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {

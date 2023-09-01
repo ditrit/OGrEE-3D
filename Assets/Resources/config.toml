@@ -9,9 +9,11 @@ cliPort = 5500
 alphaOnInteract = 50
 
 # Camera settings
+# Value clamped from 1 to 50, 15 by default
 moveSpeed = 15
+# Value clamped from 1 to 100, 50 by default
 rotationSpeed = 50
-# Height of the camera in "Human mode movement". 1.62 by default
+# Height of the camera in "Human mode movement". Clamped from 1.5 to 1.8, 1.62 by default
 humanHeight = 1.62
 
 [OGrEE-3D.textures]
