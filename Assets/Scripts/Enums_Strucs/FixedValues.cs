@@ -215,7 +215,7 @@ public class DefaultValues
 #endif
     public static readonly SConfig Config = new SConfig
     {
-        verbose = true,
+        verbose = false,
         fullscreen = false,
         cachePath = $"{Application.dataPath}/",
         cacheLimitMo = 100,

@@ -11,7 +11,6 @@ using Tomlyn.Model;
 public class ConfigLoader
 {
     [SerializeField] private SConfig config;
-    [SerializeField] private bool verbose = false;
     [SerializeField] private string savedConfigPath;
 
     ///<summary>
@@ -180,8 +179,6 @@ public class ConfigLoader
     ///</summary>
     private void ApplyConfig()
     {
-        verbose = config.verbose;
-
         GameManager.instance.server.SetupPorts(config.cliPort);
         CreateCacheDir();
         FullScreenMode(config.fullscreen);
@@ -198,7 +195,7 @@ public class ConfigLoader
     ///<param name="_value">The value to set</param>
     private void FullScreenMode(bool _value)
     {
-        if (verbose)
+        if (config.verbose)
             GameManager.instance.AppendLogLine($"Fullscreen: {_value}", ELogTarget.none);
         Screen.fullScreen = _value;
     }
