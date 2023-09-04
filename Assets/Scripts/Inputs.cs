@@ -225,6 +225,7 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when single clicking on a gameObject.
     ///</summary>
+    ///<param name="_target">The single click target (can be null)</param>
     private async void SingleClick(Transform _target)
     {
         if (_target)

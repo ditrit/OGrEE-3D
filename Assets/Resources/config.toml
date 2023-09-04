@@ -7,7 +7,7 @@ cacheLimitMo = 100
 cliPort = 5500
 # Value clamped from 0 to 100
 alphaOnInteract = 50
-# Value clamped from 0.01 to 1
+# Value clamped from 0.01 to 1, 0.25 by default
 doubleClickDelay = 0.25
 
 # Camera settings
