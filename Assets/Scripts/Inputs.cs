@@ -173,7 +173,7 @@ public class Inputs : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            if (savedMousePos == Input.mousePosition)
+            if (Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < 100f)
             {
                 UiManager.instance.menuTarget = target?.gameObject;
                 EventManager.instance.Raise(new RightClickEvent());
