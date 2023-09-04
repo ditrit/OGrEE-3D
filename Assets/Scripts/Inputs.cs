@@ -123,7 +123,6 @@ public class Inputs : MonoBehaviour
                 savedMousePos = Input.mousePosition;
                 clickTime = Time.time;
             }
-
             else if (Input.GetMouseButton(0) && target && !isDraggingObj && (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
                 && GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
             {
@@ -173,7 +172,7 @@ public class Inputs : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            if (Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < 100f)
+            if (Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < 100)
             {
                 UiManager.instance.menuTarget = target?.gameObject;
                 EventManager.instance.Raise(new RightClickEvent());
@@ -206,7 +205,7 @@ public class Inputs : MonoBehaviour
         coroutineAllowed = false;
         while (Time.realtimeSinceStartup < _firstClickTime + GameManager.instance.configHandler.GetDoubleClickDelay())
         {
-            if (clickCount == 2 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
+            if (clickCount == 2 && !GameManager.instance.editMode && Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < 100)
             {
                 if (savedTarget == target)
                     DoubleClick();
@@ -216,7 +215,7 @@ public class Inputs : MonoBehaviour
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
+        if (clickCount == 1 && !GameManager.instance.editMode && Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < 100)
             SingleClick();
         clickCount = 0;
         coroutineAllowed = true;
