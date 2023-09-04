@@ -80,6 +80,8 @@ public class UiManager : MonoBehaviour
     public List<Group> openedGroups;
 
     [Header("Settings Panel")]
+    [SerializeField] private Slider doubleClickSlider;
+    [SerializeField] private float defaultDoubleClickDelay;
     [SerializeField] private Slider moveSpeedSlider;
     [SerializeField] private float defaultMoveSpeed;
     [SerializeField] private Slider rotationSpeedSlider;
@@ -412,6 +414,7 @@ public class UiManager : MonoBehaviour
         groupsMenu.SetActive(false);
         UpdateTimerValue(slider.value);
 
+        defaultDoubleClickDelay = GameManager.instance.configHandler.GetDoubleClickDelay();
         defaultMoveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
         defaultRotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
         defaultHumanHeight = GameManager.instance.configHandler.GetHumanHeight();
@@ -1051,9 +1054,34 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.doubleClickDelay"/>
+    /// </summary>
+    ///<param name="_value">Value given by the slider</param>
+    public void UpdateDoubleClickDelay(float _value)
+    {
+        GameManager.instance.configHandler.SetDoubleClickDelay(_value);
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="doubleClickSlider"/> using what was given by config.toml
+    /// </summary>
+    public void ResetDoubleClickDelay()
+    {
+        doubleClickSlider.value = defaultDoubleClickDelay;
+    }
+
+    /// <summary>
+    /// Write the value of <see cref="doubleClickSlider"/> in used config.toml file
+    /// </summary>
+    public void SaveDoubleClickDelay()
+    {
+        GameManager.instance.configHandler.WritePreference("doubleClickDelay", Utils.FloatToRefinedStr(doubleClickSlider.value));
+    }
+
+    /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.moveSpeed"/>
     /// </summary>
-    /// <param name="_value"></param>
+    ///<param name="_value">Value given by the slider</param>
     public void UpdateMoveSpeed(float _value)
     {
         GameManager.instance.configHandler.SetMoveSpeed(_value);
@@ -1078,7 +1106,7 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.rotationSpeed"/>
     /// </summary>
-    /// <param name="_value"></param>
+    ///<param name="_value">Value given by the slider</param>
     public void UpdateRotationSpeed(float _value)
     {
         GameManager.instance.configHandler.SetRotationSpeed(_value);
@@ -1103,7 +1131,7 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.humanHeight"/>
     /// </summary>
-    /// <param name="_value"></param>
+    ///<param name="_value">Value given by the slider</param>
     public void UpdateHumanHeight(float _value)
     {
         GameManager.instance.configHandler.SetHumanHeight(_value);

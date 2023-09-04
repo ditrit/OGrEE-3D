@@ -76,6 +76,10 @@ public class ConfigHandler
                 case LaunchArgs.FullScreenLong:
                     config.fullscreen = bool.Parse(str);
                     break;
+                case LaunchArgs.CliPortShort:
+                case LaunchArgs.CliPortLong:
+                    config.cliPort = int.Parse(str);
+                    break;
             }
         }
     }
@@ -124,10 +128,11 @@ public class ConfigHandler
         config.cacheLimitMo = Convert.ToInt32(table["cacheLimitMo"]);
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
+        config.doubleClickDelay = Mathf.Clamp(Convert.ToSingle(table["doubleClickDelay"]), 0.01f, 1);
 
-        config.moveSpeed = Convert.ToInt32(table["moveSpeed"]);
-        config.rotationSpeed = Convert.ToInt32(table["rotationSpeed"]);
-        config.humanHeight = Convert.ToSingle(table["humanHeight"]);
+        config.moveSpeed = Mathf.Clamp(Convert.ToInt32(table["moveSpeed"]), 1, 50);
+        config.rotationSpeed = Mathf.Clamp(Convert.ToInt32(table["rotationSpeed"]), 1, 100);
+        config.humanHeight = Mathf.Clamp(Convert.ToSingle(table["humanHeight"]), 1.5f, 1.8f);
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
@@ -360,6 +365,24 @@ public class ConfigHandler
     }
 
     /// <summary>
+    /// Get the value of <see cref="config.doubleClickDelay"/>
+    /// </summary>
+    /// <returns>The value of <see cref="config.doubleClickDelay"/></returns>
+    public float GetDoubleClickDelay()
+    {
+        return config.doubleClickDelay;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.doubleClickDelay"/>
+    /// </summary>
+    /// <param name="_value">The value to set</param>
+    public void SetDoubleClickDelay(float _value)
+    {
+        config.doubleClickDelay = Mathf.Clamp(_value, 0.01f, 1);
+    }
+
+    /// <summary>
     /// Get the value of <see cref="config.moveSpeed"/>
     /// </summary>
     /// <returns>The value of <see cref="config.moveSpeed"/></returns>
@@ -371,7 +394,7 @@ public class ConfigHandler
     /// <summary>
     /// Set the value of <see cref="config.moveSpeed"/>
     /// </summary>
-    /// <param name="_value"></param>
+    /// <param name="_value">The value to set</param>
     public void SetMoveSpeed(float _value)
     {
         config.moveSpeed = Mathf.Clamp(_value, 1, 50);
@@ -389,7 +412,7 @@ public class ConfigHandler
     /// <summary>
     /// Set the value of <see cref="config.rotationSpeed"/>
     /// </summary>
-    /// <param name="_value"></param>
+    /// <param name="_value">The value to set</param>
     public void SetRotationSpeed(float _value)
     {
         config.rotationSpeed = Mathf.Clamp(_value, 1, 100);
@@ -407,7 +430,7 @@ public class ConfigHandler
     /// <summary>
     /// Set the value of <see cref="config.humanHeight"/>
     /// </summary>
-    /// <param name="_value"></param>
+    /// <param name="_value">The value to set</param>
     public void SetHumanHeight(float _value)
     {
         config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);

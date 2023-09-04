@@ -6,10 +6,10 @@ using UnityEngine.EventSystems;
 
 public class Inputs : MonoBehaviour
 {
-    private readonly float doubleClickTimeLimit = 0.25f;
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
+    private float authorizedDrag = 100;
     private CameraControl camControl;
     [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
@@ -124,7 +124,6 @@ public class Inputs : MonoBehaviour
                 savedMousePos = Input.mousePosition;
                 clickTime = Time.time;
             }
-
             else if (Input.GetMouseButton(0) && target && !isDraggingObj && (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
                 && GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
             {
@@ -174,7 +173,7 @@ public class Inputs : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(1))
         {
-            if (savedMousePos == Input.mousePosition)
+            if (Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < authorizedDrag)
             {
                 UiManager.instance.menuTarget = target?.gameObject;
                 EventManager.instance.Raise(new RightClickEvent());
@@ -205,20 +204,20 @@ public class Inputs : MonoBehaviour
     {
         Transform savedTarget = target;
         coroutineAllowed = false;
-        while (Time.realtimeSinceStartup < _firstClickTime + doubleClickTimeLimit)
+        while (Time.realtimeSinceStartup < _firstClickTime + GameManager.instance.configHandler.GetDoubleClickDelay())
         {
-            if (clickCount == 2 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
+            if (clickCount == 2 && !GameManager.instance.editMode && Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < authorizedDrag)
             {
                 if (savedTarget == target)
                     DoubleClick();
                 else
-                    SingleClick();
+                    SingleClick(savedTarget);
                 break;
             }
             yield return new WaitForEndOfFrame();
         }
-        if (clickCount == 1 && !GameManager.instance.editMode && savedMousePos == Input.mousePosition)
-            SingleClick();
+        if (clickCount == 1 && !GameManager.instance.editMode && Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < authorizedDrag)
+            SingleClick(savedTarget);
         clickCount = 0;
         coroutineAllowed = true;
     }
@@ -226,26 +225,27 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Method called when single clicking on a gameObject.
     ///</summary>
-    private async void SingleClick()
+    ///<param name="_target">The single click target (can be null)</param>
+    private async void SingleClick(Transform _target)
     {
-        if (target)
+        if (_target)
         {
-            if (target.CompareTag("Selectable"))
+            if (_target.CompareTag("Selectable"))
             {
                 bool canSelect = true;
                 if (GameManager.instance.focusMode)
-                    canSelect = GameManager.instance.IsInFocus(target.gameObject);
+                    canSelect = GameManager.instance.IsInFocus(_target.gameObject);
 
                 if (canSelect)
                 {
                     if (Input.GetKey(KeyCode.LeftControl) && GameManager.instance.selectMode)
-                        await GameManager.instance.UpdateCurrentItems(target.gameObject);
+                        await GameManager.instance.UpdateCurrentItems(_target.gameObject);
                     else
-                        await GameManager.instance.SetCurrentItem(target.gameObject);
+                        await GameManager.instance.SetCurrentItem(_target.gameObject);
                 }
             }
-            else if (target.CompareTag("UHelper"))
-                ClickOnU(target);
+            else if (_target.CompareTag("UHelper"))
+                ClickOnU(_target);
         }
         else if (GameManager.instance.GetFocused().Count > 0)
             await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1]);
