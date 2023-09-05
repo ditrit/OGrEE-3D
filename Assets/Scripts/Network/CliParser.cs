@@ -232,7 +232,7 @@ public class CliParser
             {
                 if (newData.attributes.ContainsKey("color")
                     && (!item.attributes.ContainsKey("color")
-                        ||item.attributes["color"] != newData.attributes["color"]))
+                        || item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
             }
             // Case temperature for corridors
@@ -240,7 +240,7 @@ public class CliParser
             {
                 if (newData.attributes.ContainsKey("temperature")
                     && (!item.attributes.ContainsKey("temperature")
-                        ||item.attributes["temperature"] != newData.attributes["temperature"]))
+                        || item.attributes["temperature"] != newData.attributes["temperature"]))
                 {
                     if (newData.attributes["temperature"] == "cold")
                         item.SetColor("000099");
@@ -263,9 +263,9 @@ public class CliParser
                         if (wall.name.Contains("Separator"))
                             Object.Destroy(wall.gameObject);
                     }
-                    List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(newData.attributes["separators"]);
-                    foreach (SSeparator sep in separators)
-                        room.BuildSeparator(sep);
+                    Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
+                    foreach (KeyValuePair<string, SSeparator> sep in separators)
+                        room.BuildSeparator(sep.Value);
                 }
             }
             if (newData.attributes.ContainsKey("pillars"))
@@ -278,9 +278,9 @@ public class CliParser
                         if (wall.name.Contains("Pillar"))
                             Object.Destroy(wall.gameObject);
                     }
-                    List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(newData.attributes["pillars"]);
-                    foreach (SPillar pillar in pillars)
-                        room.BuildPillar(pillar);
+                    Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
+                    foreach (KeyValuePair<string, SPillar> pillar in pillars)
+                        room.BuildPillar(pillar.Value);
                 }
             }
             if (newData.attributes.ContainsKey("reserved"))
