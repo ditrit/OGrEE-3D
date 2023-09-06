@@ -67,13 +67,13 @@ public class BuildingGenerator
             floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
             roof.localScale = floor.localScale;
             roof.localPosition = floor.localPosition;
-            
+
             // Align walls & nameText to the floor & setup nameText
             building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
 
             building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
             building.nameText.rectTransform.sizeDelta = size;
-            
+
             BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
         // Apply posXY
@@ -198,16 +198,16 @@ public class BuildingGenerator
 
         if (room.attributes.ContainsKey("separators"))
         {
-            List<SSeparator> separators = JsonConvert.DeserializeObject<List<SSeparator>>(room.attributes["separators"]);
-            foreach (SSeparator sep in separators)
-                room.BuildSeparator(sep);
+            Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(room.attributes["separators"]);
+            foreach (KeyValuePair<string, SSeparator> sep in separators)
+                room.BuildSeparator(sep.Value);
         }
 
         if (room.attributes.ContainsKey("pillars"))
         {
-            List<SPillar> pillars = JsonConvert.DeserializeObject<List<SPillar>>(room.attributes["pillars"]);
-            foreach (SPillar pillar in pillars)
-                room.BuildPillar(pillar);
+            Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(room.attributes["pillars"]);
+            foreach (KeyValuePair<string, SPillar> pillar in pillars)
+                room.BuildPillar(pillar.Value);
         }
 
         return room;
