@@ -203,7 +203,7 @@ public class ReadFromJson
         }
         else
         {
-            OObject obj = go.AddComponent<OObject>();
+            Device obj = go.AddComponent<Device>();
             obj.name = go.name;
             obj.id = $"{_parent.id}.{obj.name}";
             obj.parentId = _parent.id;

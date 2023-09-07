@@ -158,7 +158,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
+                if (!(selectOgree is Group || selectOgree is Corridor) && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
             }
             else // deselection => unload children if level of details is <=1
@@ -222,7 +222,7 @@ public class GameManager : MonoBehaviour
             {
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
+                if (!(selectOgree is Group || selectOgree is Corridor) && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
@@ -241,7 +241,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == Category.Corridor))
+        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<Corridor>()))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;

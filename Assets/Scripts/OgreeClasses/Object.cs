@@ -8,7 +8,6 @@ public class OObject : OgreeObject
 {
     public Color color;
     public bool isHidden = false;
-    public bool isComponent = false;
 
     /// <summary>
     /// The direct child of a room which is a parent of this object or which is this object

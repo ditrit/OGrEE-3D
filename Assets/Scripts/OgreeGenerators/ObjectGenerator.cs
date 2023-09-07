@@ -100,11 +100,11 @@ public class ObjectGenerator
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device</param>
     ///<returns>The created Device</returns>
-    public OObject CreateDevice(SApiObject _dv, Transform _parent)
+    public Device CreateDevice(SApiObject _dv, Transform _parent)
     {
         if (_parent)
         {
-            if (_parent.GetComponent<OObject>() == null)
+            if (!(_parent.GetComponent<Rack>() || _parent.GetComponent<Device>()))
             {
                 GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", ELogTarget.both, ELogtype.error);
                 return null;
@@ -196,7 +196,7 @@ public class ObjectGenerator
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
-        OObject dv = newDevice.GetComponent<OObject>();
+        Device dv = newDevice.GetComponent<Device>();
         dv.UpdateFromSApiObject(_dv);
         // Place the device
         if (_parent)
@@ -310,7 +310,7 @@ public class ObjectGenerator
     private GameObject GenerateBasicDevice(Transform _parent, float _height, Transform _slot = null)
     {
         GameObject go = Object.Instantiate(GameManager.instance.labeledBoxModel);
-        go.AddComponent<OObject>();
+        go.AddComponent<Device>();
         go.transform.parent = _parent;
         Vector3 scale;
         if (_slot)
@@ -382,8 +382,8 @@ public class ObjectGenerator
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
             {
-                if ((parentCategory == Category.Room && (go.GetComponent<OgreeObject>().category == Category.Rack || go.GetComponent<OgreeObject>().category == Category.Corridor))
-                    || parentCategory == Category.Rack && go.GetComponent<OgreeObject>().category == Category.Device)
+                if ((parentCategory == Category.Room && (go.GetComponent<Rack>() || go.GetComponent<Corridor>()))
+                    || parentCategory == Category.Rack && go.GetComponent<Device>())
                     content.Add(go.transform);
             }
             else

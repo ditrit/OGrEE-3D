@@ -124,7 +124,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(int _level)
     {
-        if (!ApiManager.instance.isInit || LodLocked || (this is OObject obj && obj.isComponent))
+        if (!ApiManager.instance.isInit || LodLocked || (this is Device dv && dv.isComponent))
             return;
 
         if (_level < 0)
@@ -168,7 +168,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         foreach (Transform child in transform)
         {
             OgreeObject obj = child.GetComponent<OgreeObject>();
-            if (obj && obj.id != "") // Exclude components
+            if (obj && obj is Device dv && !dv.isComponent)
                 objsToDel.Add(obj);
         }
 
@@ -242,7 +242,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.parent = transform;
         localCS.transform.localScale = scale * Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = category == Category.Corridor || category == Category.Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
+        localCS.transform.localPosition = this is Corridor || this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 }

@@ -244,7 +244,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_face)
             {
                 OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj.category == Category.Rack)
+                if (obj && obj is Rack)
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";
