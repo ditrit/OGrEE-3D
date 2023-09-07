@@ -48,8 +48,8 @@ public struct SRoomFromJson
     public List<float> tileOffset;
     public List<int> technicalArea;
     public List<int> reservedArea;
-    public List<SSeparator> separators;
-    public List<SPillar> pillars;
+    public Dictionary<string, SSeparator> separators;
+    public Dictionary<string, SPillar> pillars;
     public List<SColor> colors;
     public List<STile> tiles;
     public List<SRow> rows;
