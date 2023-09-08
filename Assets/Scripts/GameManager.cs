@@ -371,7 +371,7 @@ public class GameManager : MonoBehaviour
         foreach (DictionaryEntry de in allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>().category == Category.Domain && go.name != _exception)
+            if (go.GetComponent<Domain>() && go.name != _exception)
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
