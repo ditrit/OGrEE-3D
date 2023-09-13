@@ -264,7 +264,7 @@ public class UiManager : MonoBehaviour
             !menuTarget.GetComponent<Group>()
             &&
             (
-                (menuTarget.GetComponent<Item>() && menuTarget.GetComponent<Item>().category != Category.Corridor)
+                (menuTarget.GetComponent<Item>() && !menuTarget.GetComponent<Corridor>())
                 ||
                 menuTarget.GetComponent<Room>()
             ),
@@ -283,9 +283,7 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Item>()
-            &&
-            menuTarget.GetComponent<Item>().category == Category.Device
+            menuTarget.GetComponent<Device>()
             &&
             DepthCheck(menuTarget.GetComponent<Item>()) <= 1,
 

@@ -63,7 +63,7 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
         {
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());

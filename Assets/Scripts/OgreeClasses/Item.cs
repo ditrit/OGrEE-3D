@@ -193,10 +193,10 @@ public class Item : OgreeObject
         List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
         foreach (Transform child in transform)
         {
-            Item childOO = child.GetComponent<Item>();
-            if (childOO)
+            Item childItem = child.GetComponent<Item>();
+            if (childItem)
             {
-                temps.Add((childOO.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childOO.name));
+                temps.Add((childItem.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childItem.name));
             }
             else
             {
