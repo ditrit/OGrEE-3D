@@ -79,8 +79,8 @@ public class ObjectGenerator
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            OObject[] components = rack.transform.GetComponentsInChildren<OObject>();
-            foreach (OObject comp in components)
+            Device[] components = rack.transform.GetComponentsInChildren<Device>();
+            foreach (Device comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
@@ -255,14 +255,14 @@ public class ObjectGenerator
                 float deltaX = parentShape.x - size.x;
                 float deltaZ = parentShape.z - size.y;
                 newDevice.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
-                newDevice.GetComponent<OObject>().color = Color.white;
+                newDevice.GetComponent<Device>().color = Color.white;
             }
         }
         else
         {
             newDevice.transform.localEulerAngles = Vector3.zero;
             newDevice.transform.localPosition = Vector3.zero;
-            newDevice.GetComponent<OObject>().color = Color.white;
+            newDevice.GetComponent<Device>().color = Color.white;
         }
 
         // Fill OObject class
@@ -286,8 +286,8 @@ public class ObjectGenerator
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
-            foreach (OObject comp in components)
+            Device[] components = newDevice.transform.GetComponentsInChildren<Device>();
+            foreach (Device comp in components)
             {
                 if (comp.gameObject != newDevice)
                 {
@@ -505,7 +505,7 @@ public class ObjectGenerator
     ///<param name="_co">The corridor data to apply</param>
     ///<param name="_parent">The parent of the created corridor. Leave null if _co contains the parendId</param>
     ///<returns>The created corridor</returns>
-    public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
+    public Corridor CreateCorridor(SApiObject _co, Transform _parent = null)
     {
         if (GameManager.instance.allItems.Contains(_co.id))
         {
@@ -526,7 +526,7 @@ public class ObjectGenerator
         foreach (Transform child in newCo.transform)
             child.localPosition += scale / 2;
 
-        OObject co = newCo.AddComponent<OObject>();
+        Corridor co = newCo.AddComponent<Corridor>();
         co.UpdateFromSApiObject(_co);
 
         // Apply position & rotation

@@ -166,7 +166,7 @@ public class Inputs : MonoBehaviour
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
                 {
-                    if (go.GetComponent<OgreeObject>() is OObject && go.GetComponent<ObjectDisplayController>().Shown)
+                    if (go.GetComponent<OgreeObject>() is Item && go.GetComponent<ObjectDisplayController>().Shown)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
                 }
             }
@@ -184,7 +184,7 @@ public class Inputs : MonoBehaviour
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
                 {
-                    if (go.GetComponent<OgreeObject>() is OObject)
+                    if (go.GetComponent<OgreeObject>() is Item)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
                 }
             }
@@ -258,7 +258,7 @@ public class Inputs : MonoBehaviour
     ///</summary>
     private async void DoubleClick()
     {
-        if (target && target.CompareTag("Selectable") && target.GetComponent<OObject>())
+        if (target && target.CompareTag("Selectable") && target.GetComponent<Item>())
         {
             if (target.GetComponent<Group>())
                 target.GetComponent<Group>().ToggleContent(true);

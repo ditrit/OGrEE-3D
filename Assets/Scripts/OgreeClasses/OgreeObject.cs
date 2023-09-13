@@ -236,7 +236,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_name">The name of the local CS</param>
     protected void BuildLocalCS()
     {
-        float scale = this is OObject ? 1 : 7;
+        float scale = this is Item ? 1 : 7;
         localCS = Instantiate(GameManager.instance.coordinateSystemModel);
         localCS.name = "localCS";
         localCS.transform.parent = transform;

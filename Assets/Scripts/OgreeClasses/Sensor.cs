@@ -28,7 +28,7 @@ public class Sensor : MonoBehaviour
     public void SetTemperature(string _value)
     {
         temperature = Utils.ParseDecFrac(_value);
-        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        temperatureUnit = transform.parent.GetComponent<Item>().temperatureUnit;
         if (!string.IsNullOrEmpty(temperatureUnit))
             UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
@@ -42,7 +42,7 @@ public class Sensor : MonoBehaviour
     public void SetTemperature(float _value)
     {
         temperature = _value;
-        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        temperatureUnit = transform.parent.GetComponent<Item>().temperatureUnit;
         if (!string.IsNullOrEmpty(temperatureUnit))
             UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
@@ -72,7 +72,7 @@ public class Sensor : MonoBehaviour
 
         importDone = true;
 
-        OObject parent = transform.parent.GetComponent<OObject>();
+        Item parent = transform.parent.GetComponent<Item>();
         if (parent)
             if (!fromTemplate)
                 SetTemperature(parent.GetTemperatureInfos().mean);

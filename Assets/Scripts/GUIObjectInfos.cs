@@ -93,9 +93,9 @@ public class GUIObjectInfos : MonoBehaviour
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
-        if (GameManager.instance.tempColorMode && _obj is OObject @object)
+        if (GameManager.instance.tempColorMode && _obj is Item item)
         {
-            STemp tempInfos = @object.GetTemperatureInfos();
+            STemp tempInfos = item.GetTemperatureInfos();
             tmpAttributes.text += $"<b>average:</b> {Utils.FloatToRefinedStr(tempInfos.mean)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";

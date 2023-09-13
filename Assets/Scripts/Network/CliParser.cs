@@ -226,7 +226,7 @@ public class CliParser
         bool domainColorChanged = (newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"]);
 
         // Case color for racks & devices
-        if (obj is OObject item)
+        if (obj is Item item)
         {
             if (newData.category != Category.Corridor)
             {
@@ -367,7 +367,7 @@ public class CliParser
                         break;
                 }
                 break;
-            case OObject device when device.category == Category.Device:
+            case Item device when device.category == Category.Device:
                 switch (command.param)
                 {
                     case CommandParameter.Label:

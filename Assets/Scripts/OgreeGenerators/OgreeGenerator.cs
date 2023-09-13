@@ -137,13 +137,13 @@ public class OgreeGenerator : MonoBehaviour
                 GameManager.instance.objectRoot = newItem.gameObject;
                 FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
             }
-            if (newItem is OObject newItemOObject)
+            if (newItem is Item newItemOObject)
             {
                 if (parent)
                 {
                     newItemOObject.temperatureUnit = parent.GetComponent<Room>()?.temperatureUnit;
                     if (string.IsNullOrEmpty(newItemOObject.temperatureUnit))
-                        newItemOObject.temperatureUnit = parent.GetComponent<OObject>()?.temperatureUnit;
+                        newItemOObject.temperatureUnit = parent.GetComponent<Item>()?.temperatureUnit;
                 }
                 else
                     newItemOObject.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);

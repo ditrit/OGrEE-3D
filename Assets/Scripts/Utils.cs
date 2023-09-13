@@ -276,13 +276,13 @@ public static class Utils
     /// <summary>
     /// Returns the referent of an OObject if it's a rack, returns null otherwise
     /// </summary>
-    /// <param name="_oObject">The Oobject whose referent is returned</param>
-    /// <returns>the Rack which is the referent of <paramref name="_oObject"/> or null</returns>
-    public static Rack GetRackReferent(OObject _oObject)
+    /// <param name="_item">The Oobject whose referent is returned</param>
+    /// <returns>the Rack which is the referent of <paramref name="_item"/> or null</returns>
+    public static Rack GetRackReferent(Item _item)
     {
         try
         {
-            return (Rack)_oObject.referent;
+            return (Rack)_item.referent;
         }
         catch (System.Exception)
         {

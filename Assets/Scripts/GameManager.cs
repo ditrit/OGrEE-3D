@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
             if (_obj)
             {
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
-                OObject currentSelected = _obj.GetComponent<OObject>();
+                Item currentSelected = _obj.GetComponent<Item>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in previousItemsTMP)
                 {
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
                         continue;
                     }
 
-                    OObject previousSelected = previousObj.GetComponent<OObject>();
+                    Item previousSelected = previousObj.GetComponent<Item>();
 
                     //Are the previous and current selection part of the same referent ?
                     if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour
                         previousItems.Remove(previousObj);
                         continue;
                     }
-                    previousObj.GetComponent<OObject>()?.LoadChildren(0);
+                    previousObj.GetComponent<Item>()?.LoadChildren(0);
                 }
             }
             // add new item
@@ -211,9 +211,9 @@ public class GameManager : MonoBehaviour
                 // _obj was the last item in selection
                 if (currentItems.Count == 0)
                 {
-                    OObject oObject = _obj.GetComponent<OObject>();
-                    if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren(0);
+                    Item item = _obj.GetComponent<Item>();
+                    if (item && item.currentLod <= 1)
+                        await item.LoadChildren(0);
                     if (focusMode)
                         currentItems.Add(focus[focus.Count - 1]);
                 }
@@ -241,13 +241,13 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<Corridor>()))
+        if (_obj && (!_obj.GetComponent<Item>() || _obj.GetComponent<Corridor>()))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
-        OObject[] children = _obj.GetComponentsInChildren<OObject>();
+        Item[] children = _obj.GetComponentsInChildren<Item>();
         if (children.Length == 1)
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id}: no children found.", ELogTarget.both, ELogtype.warning);
@@ -581,7 +581,7 @@ public class GameManager : MonoBehaviour
     /// <typeparam name="T">The type of OObject you want to check</typeparam>
     /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
     /// <returns>False if the select list is empty or if the last focused object is not of right type and category </returns>
-    public bool FocusIs<T>(string _category = "") where T : OObject
+    public bool FocusIs<T>(string _category = "") where T : Item
     {
         if (focus.Count == 0)
             return false;
@@ -604,11 +604,11 @@ public class GameManager : MonoBehaviour
     /// Create a copy of the currently selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of currently selected objects</returns>
-    public List<OObject> GetSelectedReferents()
+    public List<Item> GetSelectedReferents()
     {
         if (selectMode)
-            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
-        return new List<OObject>();
+            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
+        return new List<Item>();
     }
 
     /// <summary>
@@ -624,9 +624,9 @@ public class GameManager : MonoBehaviour
     /// Create a copy of the currently selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of currently selected objects</returns>
-    public List<OObject> GetPreviousReferents()
+    public List<Item> GetPreviousReferents()
     {
-        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
     }
 
     /// <summary>

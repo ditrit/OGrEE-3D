@@ -12,7 +12,7 @@ public class ObjectDisplayController : MonoBehaviour
     private (Collider col, MeshRenderer rend) cube;
     public bool Shown { get => cube.rend.enabled; }
     private DisplayObjectData displayObjectData;
-    private OObject oobject;
+    private Item item;
     private Sensor sensor;
     private Slot slot;
     private Group group;
@@ -30,7 +30,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// Check if the object should be listening to events, ie if it is an oobject or a sensor not from a template or an unused slot
     /// </summary>
-    private bool listening => oobject || (sensor && !sensor.fromTemplate) || (slot && !slot.used);
+    private bool listening => item || (sensor && !sensor.fromTemplate) || (slot && !slot.used);
 #pragma warning restore IDE1006 // Styles d'affectation de noms
 
     private bool isHovered = false;
@@ -46,8 +46,8 @@ public class ObjectDisplayController : MonoBehaviour
         ObjectDisplayController customRendererParent = transform.parent?.GetComponent<ObjectDisplayController>();
         OgreeObject ogreeObjectParent = transform.parent?.GetComponent<OgreeObject>();
         scatterPlotOfOneParent = customRendererParent && customRendererParent.scatterPlotOfOneParent || ogreeObjectParent && ogreeObjectParent.scatterPlot;
-        oobject = GetComponent<OObject>();
-        isReferent = oobject && oobject.referent == oobject;
+        item = GetComponent<Item>();
+        isReferent = item && item.referent == item;
         slot = GetComponent<Slot>();
         sensor = GetComponent<Sensor>();
         group = GetComponent<Group>();
@@ -142,12 +142,12 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnSelectBasic(OnSelectItemEvent _e)
     {
-        List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        if (!oobject.tempBar && !scatterPlotOfOneParent)
+        List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
+        if (!item.tempBar && !scatterPlotOfOneParent)
         {
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
-            bool colAndLabels = (isReferent && !(selectionrefs.Contains(oobject) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject);
+            bool colAndLabels = (isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject);
             bool rend = isSelected || colAndLabels;
 
             Display(rend, colAndLabels, colAndLabels);
@@ -196,7 +196,7 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (_e.obj.transform != transform.parent)
         {
-            if (oobject is Rack rack && rack.uRoot && !GameManager.instance.GetSelectedReferents().Contains(oobject))
+            if (item is Rack rack && rack.uRoot && !GameManager.instance.GetSelectedReferents().Contains(item))
                 rack.uRoot.gameObject.SetActive(false);
             if ((!sensor || !sensor.fromTemplate || scatterPlotOfOneParent) && !DistantChildOf(_e.obj))
                 Display(false, false, false);
@@ -213,7 +213,7 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         if (_e.obj == gameObject)
         {
-            oobject?.ResetTransform();
+            item?.ResetTransform();
             ToggleRoomsAndBuildings(true);
             if (GameManager.instance.GetSelected().Contains(gameObject))
                 SetMaterial(GameManager.instance.selectMat);
@@ -221,10 +221,10 @@ public class ObjectDisplayController : MonoBehaviour
                 HandleMaterial();
         }
         else if (_e.obj == transform.parent.gameObject)
-            oobject?.ResetTransform();
-        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)))
+            item?.ResetTransform();
+        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item)))
             Display(true, true, true);
-        if (oobject is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
+        if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
             rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
     }
 
@@ -262,7 +262,7 @@ public class ObjectDisplayController : MonoBehaviour
     {
         List<GameObject> selection = GameManager.instance.GetSelected();
 
-        if (selection.Contains(gameObject) || oobject.tempBar)
+        if (selection.Contains(gameObject) || item.tempBar)
             return;
         if (scatterPlotOfOneParent)
         {
@@ -270,8 +270,8 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         }
 
-        List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(oobject) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
+        List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
+        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         HandleMaterial();
     }
@@ -291,15 +291,15 @@ public class ObjectDisplayController : MonoBehaviour
             Display(false, false, false);
             return;
         }
-        List<OObject> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(oobject) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
+        List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
+        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
         else
         {
             SetMaterial(GameManager.instance.defaultMat);
-            cube.rend.material.color = oobject.color;
+            cube.rend.material.color = item.color;
         }
     }
 
@@ -336,20 +336,20 @@ public class ObjectDisplayController : MonoBehaviour
         if (!listening)
             return;
 
-        OObject extendedReferent = oobject ? oobject.referent : transform.parent?.GetComponent<OObject>().referent;
+        Item extendedReferent = item ? item.referent : transform.parent?.GetComponent<Item>().referent;
 
         if (!extendedReferent || _e.room.transform != extendedReferent.transform.parent)
             return;
 
         List<GameObject> selection = GameManager.instance.GetSelected();
-        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || (transform.parent && !scatterPlotOfOneParent && selection.Contains(transform.parent.gameObject));
+        bool labels = (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item)) || (transform.parent && !scatterPlotOfOneParent && selection.Contains(transform.parent.gameObject));
         bool rend = labels || selection.Contains(gameObject);
         bool col = labels && !slot && !sensor;
         Display(_e.room.barChart && rend, _e.room.barChart && labels, _e.room.barChart && col);
-        if (oobject is Rack rack && rack.uRoot)
+        if (item is Rack rack && rack.uRoot)
             rack.uRoot.gameObject.SetActive(_e.room.barChart && rack.areUHelpersToggled);
-        if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
-            oobject.clearanceHandler.clearanceWrapper.SetActive(_e.room.barChart);
+        if (item && item.clearanceHandler != null && item.clearanceHandler.clearanceWrapper)
+            item.clearanceHandler.clearanceWrapper.SetActive(_e.room.barChart);
     }
 
     /// <summary>
@@ -454,24 +454,24 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (GameManager.instance.GetSelected().Contains(gameObject))
         {
-            if (oobject && oobject.referent)
-                oobject.scatterPlot = false;
+            if (item && item.referent)
+                item.scatterPlot = false;
             Display(true, false, false);
             UHelpersManager.instance.ToggleU(gameObject, true);
         }
-        else if ((isReferent && !GameManager.instance.GetSelectedReferents().Contains(oobject)) || GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
+        else if ((isReferent && !GameManager.instance.GetSelectedReferents().Contains(item)) || GameManager.instance.GetSelected().Contains(transform.parent?.gameObject))
         {
             Display(true, true, !slot && !sensor);
-            if (oobject)
+            if (item)
             {
-                oobject.scatterPlot = false;
+                item.scatterPlot = false;
                 HandleMaterial();
             }
         }
-        if (oobject is Rack rack && rack.uRoot)
+        if (item is Rack rack && rack.uRoot)
             rack.uRoot.gameObject.SetActive(!_scatterPlot && rack.areUHelpersToggled);
-        if (oobject && oobject.clearanceHandler != null && oobject.clearanceHandler.clearanceWrapper)
-            oobject.clearanceHandler.clearanceWrapper.SetActive(!_scatterPlot);
+        if (item && item.clearanceHandler != null && item.clearanceHandler.clearanceWrapper)
+            item.clearanceHandler.clearanceWrapper.SetActive(!_scatterPlot);
         foreach (Transform child in transform)
             child.GetComponent<ObjectDisplayController>()?.ScatterPlotToggle(_scatterPlot);
     }
@@ -486,19 +486,19 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public void HandleMaterial()
     {
-        if (oobject && oobject.scatterPlot)
+        if (item && item.scatterPlot)
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
             SetMaterial(GameManager.instance.highlightMat);
-        else if (GameManager.instance.tempColorMode && !group && oobject && oobject.category != Category.Corridor)
+        else if (GameManager.instance.tempColorMode && !group && item && item.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
         {
-            if (oobject && oobject.category == Category.Corridor)
+            if (item && item.category == Category.Corridor)
                 SetMaterial(GameManager.instance.alphaMat);
             else
                 SetMaterial(GameManager.instance.defaultMat);
-            cube.rend.material.color = oobject.color;
+            cube.rend.material.color = item.color;
         }
     }
 
@@ -516,7 +516,7 @@ public class ObjectDisplayController : MonoBehaviour
         cube.rend.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
         cube.rend.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
 
-        if (oobject && oobject.isHidden)
+        if (item && item.isHidden)
         {
             cube.rend.enabled = false;
             displayObjectData.ToggleLabel(false);
@@ -537,7 +537,7 @@ public class ObjectDisplayController : MonoBehaviour
             OgreeObject oo = go.GetComponent<OgreeObject>();
             if (oo.localCS)
                 oo.localCS.SetActive(_value);
-            if (oo is OObject deOObject && oobject != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.isToggled)
+            if (oo is Item deOObject && item != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.isToggled)
                 deOObject.clearanceHandler.clearanceWrapper.SetActive(_value);
             switch (oo)
             {
@@ -609,7 +609,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (!cube.rend.enabled) //templace placeholder
             return GameManager.instance.defaultMat;
 
-        STemp temp = oobject.GetTemperatureInfos();
+        STemp temp = item.GetTemperatureInfos();
         Material mat = Instantiate(GameManager.instance.defaultMat);
         if (float.IsNaN(temp.mean))
             mat.color = Color.gray;
@@ -654,7 +654,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void ToggleAlpha(bool _value)
     {
         Display(!_value, !_value);
-        oobject.isHidden = _value;
+        item.isHidden = _value;
     }
 
     ///<summary>
@@ -666,8 +666,8 @@ public class ObjectDisplayController : MonoBehaviour
     {
         cube.rend.enabled = _rend;
         displayObjectData.ToggleLabel(_label);
-        if (oobject && oobject.heatMap)
-            oobject.heatMap.GetComponent<Renderer>().enabled = _rend;
+        if (item && item.heatMap)
+            item.heatMap.GetComponent<Renderer>().enabled = _rend;
     }
 
     ///<summary>
