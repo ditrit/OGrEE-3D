@@ -367,7 +367,7 @@ public class CliParser
                         break;
                 }
                 break;
-            case Item device when device.category == Category.Device:
+            case Device device:
                 switch (command.param)
                 {
                     case CommandParameter.Label:
@@ -476,17 +476,16 @@ public class CliParser
     {
         SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
         Vector3 refinedPos = new Vector3(manip.position.x, manip.position.z, manip.position.y);
-        CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
         switch (manip.command)
         {
             case Command.Move:
-                cc.MoveCamera(refinedPos, manip.rotation);
+                GameManager.instance.cameraControl.MoveCamera(refinedPos, manip.rotation);
                 break;
             case Command.Translate:
-                cc.TranslateCamera(refinedPos, manip.rotation);
+                GameManager.instance.cameraControl.TranslateCamera(refinedPos, manip.rotation);
                 break;
             case Command.Wait:
-                cc.WaitCamera(manip.rotation.y);
+                GameManager.instance.cameraControl.WaitCamera(manip.rotation.y);
                 break;
             default:
                 GameManager.instance.AppendLogLine("Unknown camera command", ELogTarget.both, ELogtype.errorCli);

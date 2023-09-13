@@ -7,16 +7,11 @@ public class EventManager
     {
         get
         {
-            if (eventManagerInstance == null)
-            {
-                eventManagerInstance = new EventManager();
-            }
-
+            eventManagerInstance ??= new EventManager();
             return eventManagerInstance;
         }
     }
     private static EventManager eventManagerInstance = null;
-
 
     public delegate void EventDelegate<T>(T _eventParam) where T : CustomEvent;
 

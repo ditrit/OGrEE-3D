@@ -36,13 +36,13 @@ public class Building : OgreeObject
         {
             nameText.gameObject.SetActive(true);
             nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, roof.localPosition.y + 0.005f, nameText.transform.localPosition.z);
-            transform.Find("Roof").gameObject.SetActive(true);
+            roof.gameObject.SetActive(true);
         }
         else
         {
             nameText.gameObject.SetActive(false);
             nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
-            transform.Find("Roof").gameObject.SetActive(false);
+            roof.gameObject.SetActive(false);
         }
     }
 

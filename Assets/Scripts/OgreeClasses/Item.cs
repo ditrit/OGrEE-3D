@@ -1,8 +1,8 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using System.Linq;
-using Newtonsoft.Json;
 
 public class Item : OgreeObject
 {
@@ -46,8 +46,7 @@ public class Item : OgreeObject
         foreach (string attribute in _src.attributes.Keys)
         {
             if (attribute.StartsWith("temperature_")
-                && (!attributes.ContainsKey(attribute)
-                    || attributes[attribute] != _src.attributes[attribute]))
+                && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
                 SetTemperature(_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
@@ -58,7 +57,8 @@ public class Item : OgreeObject
                         clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
                     else
                         GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
-                } catch (System.Exception e)
+                }
+                catch (System.Exception e)
                 {
                     Debug.LogError(e);
                 }
@@ -67,7 +67,7 @@ public class Item : OgreeObject
 
         attributes = _src.attributes;
 
-        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == Category.Room)
+        if (!transform.parent || transform.parent.GetComponent<Room>())
             referent = this;
         else if (transform.parent?.GetComponent<Item>().referent != null)
             referent = transform.parent.GetComponent<Item>().referent;
@@ -121,8 +121,7 @@ public class Item : OgreeObject
         OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
 
         color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
-
-        GetComponent<ObjectDisplayController>().ChangeColor(color.r, color.g, color.b);
+        GetComponent<ObjectDisplayController>().ChangeColor(color);
     }
 
     ///<summary>

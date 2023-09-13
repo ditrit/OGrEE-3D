@@ -8,6 +8,7 @@ public class CustomEvent
 {
 
 }
+
 public class OnFocusEvent : CustomEvent
 {
     public GameObject obj;

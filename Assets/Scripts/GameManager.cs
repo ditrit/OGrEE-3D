@@ -144,7 +144,6 @@ public class GameManager : MonoBehaviour
                     }
 
                     Item previousSelected = previousObj.GetComponent<Item>();
-
                     //Are the previous and current selection part of the same referent ?
                     if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
                         continue;
@@ -241,7 +240,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<Item>() || _obj.GetComponent<Corridor>()))
+        if (_obj && !(_obj.GetComponent<Rack>() || _obj.GetComponent<Device>()))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
@@ -304,8 +303,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UnfocusAll()
     {
-        int count = focus.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < focus.Count; i++)
             await UnfocusItem();
     }
 
@@ -554,8 +552,7 @@ public class GameManager : MonoBehaviour
         }
         finally
         {
-            if (fs != null)
-                fs.Dispose();
+            fs?.Dispose();
         }
     }
 

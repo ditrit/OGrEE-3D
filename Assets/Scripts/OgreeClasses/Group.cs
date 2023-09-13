@@ -10,12 +10,11 @@ public class Group : Item
     {
         base.Start();
         content = new List<GameObject>();
-        string[] names = attributes["content"].Split(',');
 
+        string[] names = attributes["content"].Split(',');
         foreach (string rn in names)
         {
-            GameObject go = Utils.GetObjectById($"{parentId}.{rn}");
-            if (go)
+            if (Utils.GetObjectById($"{parentId}.{rn}") is GameObject go)
                 content.Add(go);
         }
         DisplayContent(false);
@@ -65,8 +64,10 @@ public class Group : Item
     private void DisplayContent(bool _value)
     {
         foreach (GameObject r in GetContent())
+        {
             if (r && !r.GetComponent<OgreeObject>().isDoomed)
                 r.SetActive(_value);
+        }
     }
 
     ///<summary>
