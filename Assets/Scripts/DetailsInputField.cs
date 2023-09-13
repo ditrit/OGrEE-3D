@@ -72,7 +72,7 @@ public class DetailsInputField : MonoBehaviour
             ActiveInputField(true);
             OgreeObject firstSelected = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>();
             UpdateInputField(firstSelected.currentLod.ToString());
-            lockLodButton.gameObject.SetActive(firstSelected is OObject oObject && oObject.referent == oObject);
+            lockLodButton.gameObject.SetActive(firstSelected is Item item && item.referent == item);
             lockICon.text = firstSelected.LodLocked ? "🔒" : "🔓";
             lockICon.color = firstSelected.LodLocked ? Color.red : Color.green;
         }

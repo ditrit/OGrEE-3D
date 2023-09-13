@@ -7457,9 +7457,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-09-05
-
-    Commit #be9d8a4c'
+  m_text: "Build date: 2023-09-13\nCommit #2bc9ed7"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -11608,7 +11606,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09998}
+  m_AnchoredPosition: {x: 0, y: 217.10043}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -15037,7 +15035,6 @@ MonoBehaviour:
   LodLocked: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   isHidden: 0
-  isComponent: 0
   referent: {fileID: 0}
   tempBar: {fileID: 0}
   temperatureUnit: 
@@ -20258,7 +20255,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22076,8 +22073,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.5636989
+  m_Value: -0.0000018273996
+  m_Size: 0.5651735
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

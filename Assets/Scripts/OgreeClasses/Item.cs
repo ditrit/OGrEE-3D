@@ -4,16 +4,15 @@ using UnityEngine;
 using System.Linq;
 using Newtonsoft.Json;
 
-public class OObject : OgreeObject
+public class Item : OgreeObject
 {
     public Color color;
     public bool isHidden = false;
-    public bool isComponent = false;
 
     /// <summary>
     /// The direct child of a room which is a parent of this object or which is this object
     /// </summary>
-    public OObject referent;
+    public Item referent;
     public GameObject tempBar;
     public string temperatureUnit;
     public bool hasSlotColor = false;
@@ -70,8 +69,8 @@ public class OObject : OgreeObject
 
         if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == Category.Room)
             referent = this;
-        else if (transform.parent?.GetComponent<OObject>().referent != null)
-            referent = transform.parent.GetComponent<OObject>().referent;
+        else if (transform.parent?.GetComponent<Item>().referent != null)
+            referent = transform.parent.GetComponent<Item>().referent;
         else
             referent = null;
 
@@ -194,10 +193,10 @@ public class OObject : OgreeObject
         List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
         foreach (Transform child in transform)
         {
-            OObject childOO = child.GetComponent<OObject>();
-            if (childOO)
+            Item childItem = child.GetComponent<Item>();
+            if (childItem)
             {
-                temps.Add((childOO.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childOO.name));
+                temps.Add((childItem.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childItem.name));
             }
             else
             {

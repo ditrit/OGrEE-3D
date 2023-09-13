@@ -166,7 +166,7 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget
             &&
-            menuTarget.GetComponent<OObject>()
+            menuTarget.GetComponent<Item>()
             &&
             menuTarget.GetComponent<OgreeObject>().category != Category.Corridor
             &&
@@ -264,7 +264,7 @@ public class UiManager : MonoBehaviour
             !menuTarget.GetComponent<Group>()
             &&
             (
-                (menuTarget.GetComponent<OObject>() && menuTarget.GetComponent<OObject>().category != Category.Corridor)
+                (menuTarget.GetComponent<Item>() && !menuTarget.GetComponent<Corridor>())
                 ||
                 menuTarget.GetComponent<Room>()
             ),
@@ -283,17 +283,15 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OObject>()
+            menuTarget.GetComponent<Device>()
             &&
-            menuTarget.GetComponent<OObject>().category == Category.Device
-            &&
-            DepthCheck(menuTarget.GetComponent<OObject>()) <= 1,
+            DepthCheck(menuTarget.GetComponent<Item>()) <= 1,
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OObject>()
+            menuTarget.GetComponent<Item>()
             &&
-            menuTarget.GetComponent<OObject>().heatMap
+            menuTarget.GetComponent<Item>().heatMap
 
         };
         heatMapBtn.Check();
@@ -344,15 +342,15 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()),
+            Utils.GetRackReferent(menuTarget.GetComponent<Item>()),
 
             toggledCondition = () => menuTarget
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<OObject>())
+            Utils.GetRackReferent(menuTarget.GetComponent<Item>())
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()).uRoot
+            Utils.GetRackReferent(menuTarget.GetComponent<Item>()).uRoot
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<OObject>()).uRoot.gameObject.activeSelf
+            Utils.GetRackReferent(menuTarget.GetComponent<Item>()).uRoot.gameObject.activeSelf
         };
         toggleUHelpersBtn.Check();
 
@@ -362,9 +360,9 @@ public class UiManager : MonoBehaviour
             &&
             (
                 (
-                    menuTarget.GetComponent<OObject>()
+                    menuTarget.GetComponent<Item>()
                     &&
-                    menuTarget.GetComponent<OObject>().category != Category.Corridor
+                    !menuTarget.GetComponent<Corridor>()
                 )
                 ||
                 menuTarget.GetComponent<Building>()
@@ -396,14 +394,14 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OObject>()
-            && menuTarget.GetComponent<OObject>().clearanceHandler.isInitialized,
+            menuTarget.GetComponent<Item>()
+            && menuTarget.GetComponent<Item>().clearanceHandler.isInitialized,
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OObject>()
+            menuTarget.GetComponent<Item>()
             &&
-            menuTarget.GetComponent<OObject>().clearanceHandler.isToggled
+            menuTarget.GetComponent<Item>().clearanceHandler.isToggled
         };
         toggleClearanceBtn.Check();
 
@@ -832,7 +830,7 @@ public class UiManager : MonoBehaviour
             UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
             return;
         }
-        Rack rack = Utils.GetRackReferent(menuTarget.GetComponent<OObject>());
+        Rack rack = Utils.GetRackReferent(menuTarget.GetComponent<Item>());
         if (!rack)
             return;
 
@@ -849,8 +847,8 @@ public class UiManager : MonoBehaviour
         OgreeObject obj = menuTarget.GetComponent<OgreeObject>();
         if (obj is Building bd)
             bd.ToggleCS();
-        else if (obj is OObject oobj)
-            oobj.ToggleCS();
+        else if (obj is Item item)
+            item.ToggleCS();
 
         toggleLocalCSBtn.Check();
     }
@@ -1019,7 +1017,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleHeatMap()
     {
-        TempDiagram.instance.HandleHeatMap(menuTarget.GetComponent<OObject>());
+        TempDiagram.instance.HandleHeatMap(menuTarget.GetComponent<Item>());
     }
 
     ///<summary>
@@ -1254,7 +1252,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleClearance()
     {
-        menuTarget.GetComponent<OObject>().clearanceHandler.ToggleClearance();
+        menuTarget.GetComponent<Item>().clearanceHandler.ToggleClearance();
         toggleLocalCSBtn.Check();
     }
     #endregion

@@ -13,7 +13,7 @@ public class UHelpersManager : MonoBehaviour
     private readonly string cornerFrontLeft = "frontLeft";
     private readonly string cornerFrontRight = "frontRight";
     private bool wasEdited = false;
-    private List<OObject> lastSelectedReferent = new List<OObject>();
+    private List<Item> lastSelectedReferent = new List<Item>();
 
     private void Awake()
     {
@@ -63,17 +63,17 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
         {
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
-        foreach (OObject oObject in lastSelectedReferent)
-            if (!GameManager.instance.GetSelectedReferents().Contains(oObject) && oObject is Rack rack)
+        foreach (Item item in lastSelectedReferent)
+            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
-                ToggleU(oObject.referent.gameObject, false);
+                ToggleU(item.referent.gameObject, false);
             }
         lastSelectedReferent = GameManager.instance.GetSelectedReferents();
     }
@@ -87,8 +87,8 @@ public class UHelpersManager : MonoBehaviour
         if (_selection.Count == 0)
             return;
         bool first = true;
-        Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
-        foreach (OObject oObject in _selection.Select(go => go.GetComponent<OObject>()))
+        Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<Item>());
+        foreach (Item oObject in _selection.Select(go => go.GetComponent<Item>()))
         {
             if (oObject is Rack rack)
             {
@@ -162,7 +162,7 @@ public class UHelpersManager : MonoBehaviour
     {
         foreach (GameObject obj in _selection)
         {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
             if (!rack)
                 break;
 
@@ -181,7 +181,7 @@ public class UHelpersManager : MonoBehaviour
     {
         foreach (GameObject obj in _selection)
         {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
             if (!rack)
                 break;
 

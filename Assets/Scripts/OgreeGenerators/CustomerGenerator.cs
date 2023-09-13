@@ -9,7 +9,7 @@ public class CustomerGenerator
     ///</summary>
     ///<param name="_do">The domain data to apply</param>
     ///<returns>The created domain</returns>
-    public OgreeObject CreateDomain(SApiObject _do)
+    public Domain CreateDomain(SApiObject _do)
     {
         if (GameManager.instance.allItems.Contains(_do.id))
         {
@@ -18,7 +18,7 @@ public class CustomerGenerator
         }
 
         GameObject newDomain = new GameObject(_do.name);
-        OgreeObject domain = newDomain.AddComponent<OgreeObject>();
+        Domain domain = newDomain.AddComponent<Domain>();
         domain.UpdateFromSApiObject(_do);
 
         GameManager.instance.allItems.Add(_do.id, newDomain);

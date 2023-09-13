@@ -22,11 +22,11 @@ public class DisplayObjectData : MonoBehaviour
     private string backgroundColor = "000000";
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
-    private OObject oObject;
+    private Item item;
 
     private void Start()
     {
-        oObject = GetComponent<OObject>();
+        item = GetComponent<Item>();
         EventManager.instance.SwitchLabel.Add(OnSwitchLabelEvent);
     }
 
@@ -244,7 +244,7 @@ public class DisplayObjectData : MonoBehaviour
             if (_face)
             {
                 OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj.category == Category.Rack)
+                if (obj && obj is Rack)
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";
@@ -325,10 +325,10 @@ public class DisplayObjectData : MonoBehaviour
     private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
         // Ignore slots and opened groups
-        if (GetComponent<Slot>() || (oObject is Group group && !group.isDisplayed))
+        if (GetComponent<Slot>() || (item is Group group && !group.isDisplayed))
             return;
 
-        if ((oObject && oObject.referent == oObject && !GameManager.instance.GetSelected().Contains(gameObject)) ||
+        if ((item && item.referent == item && !GameManager.instance.GetSelected().Contains(gameObject)) ||
             GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
             GameManager.instance.GetFocused().Contains(transform.parent.gameObject)
             )

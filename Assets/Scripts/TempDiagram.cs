@@ -74,7 +74,7 @@ public class TempDiagram : MonoBehaviour
         {
             foreach (Transform childTransform in _room.transform)
             {
-                OObject childOgreeObject = childTransform.GetComponent<OObject>();
+                Item childOgreeObject = childTransform.GetComponent<Item>();
                 if (childOgreeObject)
                 {
                     if (childOgreeObject is Group childGroup && childGroup.isDisplayed)
@@ -90,7 +90,7 @@ public class TempDiagram : MonoBehaviour
         {
             foreach (Transform childTransform in _room.transform)
             {
-                OObject childOgreeObject = childTransform.GetComponent<OObject>();
+                Item childOgreeObject = childTransform.GetComponent<Item>();
                 if (childOgreeObject)
                 {
                     if (GameManager.instance.GetSelected().Contains(childOgreeObject.tempBar))
@@ -108,25 +108,25 @@ public class TempDiagram : MonoBehaviour
     /// <summary>
     /// Create a vertical bar representing the mean and standard deviation of the temperature of an object
     /// </summary>
-    /// <param name="_oobject">the object whose temperature is represented by the bar</param>
+    /// <param name="_item">the object whose temperature is represented by the bar</param>
     /// <param name="_tempUnit">the temperature unit of the object</param>
     /// <param name="_roomheight">the height of the room containing the object</param>
-    private void ComputeTempBar(OObject _oobject, string _tempUnit, float _roomheight)
+    private void ComputeTempBar(Item _item, string _tempUnit, float _roomheight)
     {
         float pixelX;
         GameObject sensorBar;
-        STemp tempInfos = _oobject.GetTemperatureInfos();
+        STemp tempInfos = _item.GetTemperatureInfos();
         (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(_tempUnit);
         if (!float.IsNaN(tempInfos.mean) && (tempMin, tempMax) != (0,0))
         {
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);
             float heigthStd = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, _roomheight);
-            float yBase = _oobject.transform.parent.position.y + 0.01f;
+            float yBase = _item.transform.parent.position.y + 0.01f;
 
 
-            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
-            sensorBar.name = _oobject.name + "TempBar";
-            sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
+            sensorBar.name = _item.name + "TempBar";
+            sensorBar.transform.position = new Vector3(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
 
             pixelX = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, heatMapGradient.width);
@@ -135,8 +135,8 @@ public class TempDiagram : MonoBehaviour
 
             if (tempInfos.std != 0)
             {
-                GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _oobject.transform);
-                sensorBarStd.transform.position = new Vector3(_oobject.transform.position.x, yBase + height, _oobject.transform.position.z);
+                GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _item.transform);
+                sensorBarStd.transform.position = new Vector3(_item.transform.position.x, yBase + height, _item.transform.position.z);
                 sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
 
@@ -151,10 +151,10 @@ public class TempDiagram : MonoBehaviour
         {
             float height = _roomheight / 2;
 
-            float yBase = _oobject.transform.parent.position.y + 0.01f;
-            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _oobject.transform);
-            sensorBar.name = _oobject.name + "TempBar";
-            sensorBar.transform.position = new Vector3(_oobject.transform.position.x, yBase + 0.5f * height, _oobject.transform.position.z);
+            float yBase = _item.transform.parent.position.y + 0.01f;
+            sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
+            sensorBar.name = _item.name + "TempBar";
+            sensorBar.transform.position = new Vector3(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
             sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
             sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f, 0.85f);
         }
@@ -164,7 +164,7 @@ public class TempDiagram : MonoBehaviour
         sensorBarOO.attributes["minimum"] = $"{tempInfos.min} {tempInfos.unit}";
         sensorBarOO.attributes["maximum"] = $"{tempInfos.max} {tempInfos.unit}";
         sensorBarOO.attributes["hottest child"] = tempInfos.hottestChild;
-        _oobject.tempBar = sensorBar;
+        _item.tempBar = sensorBar;
     }
 
     /// <summary>
@@ -185,14 +185,14 @@ public class TempDiagram : MonoBehaviour
     /// <summary>
     /// Create a heatmap for an object which show its temperature values. The normal of the heatmap is the smallest dimension (x,y or z) of the object
     /// </summary>
-    /// <param name="_oObject">the object which will have the heatmap</param>
-    public void HandleHeatMap(OObject _oObject)
+    /// <param name="_item">the object which will have the heatmap</param>
+    public void HandleHeatMap(Item _item)
     {
         Destroy(LastHeatMap);
-        Transform objTransform = _oObject.transform.GetChild(0);
-        if (_oObject.heatMap)
+        Transform objTransform = _item.transform.GetChild(0);
+        if (_item.heatMap)
         {
-            Destroy(_oObject.heatMap);
+            Destroy(_item.heatMap);
             return;
         }
         float minDimension = Mathf.Min(objTransform.localScale.x, objTransform.localScale.y, objTransform.localScale.z);
@@ -206,7 +206,7 @@ public class TempDiagram : MonoBehaviour
         else
             heatmap.transform.SetPositionAndRotation(objTransform.position + (objTransform.localScale.x / 2 + 0.01f) * (objTransform.rotation * Vector3.left), objTransform.rotation * Quaternion.Euler(0, 90, 0));
 
-        List<Sensor> sensors = GetObjectSensors(_oObject);
+        List<Sensor> sensors = GetObjectSensors(_item);
 
         Vector4[] sensorPositions = new Vector4[sensors.Count];
         Vector4[] sensorProperties = new Vector4[sensors.Count];
@@ -225,7 +225,7 @@ public class TempDiagram : MonoBehaviour
         }
         heatmap.GetComponent<Heatmap>().SetPositionsAndProperties(sensorPositions, sensorProperties);
         objTransform.hasChanged = true;
-        _oObject.heatMap = heatmap;
+        _item.heatMap = heatmap;
         LastHeatMap = heatmap;
     }
 

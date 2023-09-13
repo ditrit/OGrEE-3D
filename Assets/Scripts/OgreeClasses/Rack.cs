@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Rack : OObject
+public class Rack : Item
 {
     public Transform uRoot;
     public GameObject gridForULocation;

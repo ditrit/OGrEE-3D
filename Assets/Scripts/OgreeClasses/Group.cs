@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Group : OObject
+public class Group : Item
 {
     private List<GameObject> content;
     public bool isDisplayed = true;

@@ -53,6 +53,7 @@ public class Category
     public const string Corridor = "corridor";
     public const string Sensor = "sensor";
 }
+
 public class CommandType
 {
     public const string Login = "login";
@@ -81,7 +82,6 @@ public class CommandParameter
     public const string U = "U";
 }
 
-
 public class Command
 {
     public const string Delay = "delay";
@@ -103,6 +103,7 @@ public class Orientation
     public const string FrontFlipped = "frontflipped";
     public const string RearFlipped = "rearflipped";
 }
+
 public class LabelPos
 {
     public const string Front = "front";
