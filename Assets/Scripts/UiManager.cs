@@ -362,7 +362,7 @@ public class UiManager : MonoBehaviour
                 (
                     menuTarget.GetComponent<Item>()
                     &&
-                    menuTarget.GetComponent<Item>().category != Category.Corridor
+                    !menuTarget.GetComponent<Corridor>()
                 )
                 ||
                 menuTarget.GetComponent<Building>()
