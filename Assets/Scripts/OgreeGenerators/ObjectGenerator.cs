@@ -415,7 +415,10 @@ public class ObjectGenerator
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
         gr.UpdateFromSApiObject(_gr);
-        gr.UpdateColorByDomain();
+        if (gr.attributes.ContainsKey("color"))
+            gr.SetColor(gr.attributes["color"]);
+        else
+            gr.UpdateColorByDomain();
 
         // Setup labels
         DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();

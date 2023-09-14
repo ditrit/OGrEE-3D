@@ -624,27 +624,16 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     /// <summary>
-    /// Change the color of the material of its renderer if the object is not hovered or highlighted or selected or focused
+    /// Change the color but keep the alpha of the material of its renderer if the object is not hovered or highlighted or selected or focused
     /// </summary>
-    /// <param name="_r">red component</param>
-    /// <param name="_g">green component</param>
-    /// <param name="_b">blue component</param>
-    /// <returns>a Color created from the three component with the alpha of the previous color of the material of this object's renderer</returns>
-    public Color ChangeColor(float _r, float _g, float _b)
+    /// <param name="_color">the color replacing this object's one</param>
+    public void ChangeColor(Color _color)
     {
         if (!isHovered && !isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject) && !GameManager.instance.GetFocused().Contains(gameObject))
-            cube.rend.material.color = new Color(_r, _g, _b, cube.rend.material.color.a);
-        return cube.rend.material.color;
-    }
-
-    /// <summary>
-    /// call and returns <see cref="ChangeColor(float, float, float)"/> with the red, green and blue component of the image (the alpha is ignored)
-    /// </summary>
-    /// <param name="c">the color replacing this object's one</param>
-    /// <returns><see cref="ChangeColor(float, float, float)"/></returns>
-    public Color ChangeColor(Color c)
-    {
-        return ChangeColor(c.r, c.g, c.b);
+        {
+            _color.a = cube.rend.material.color.a;
+            cube.rend.material.color = _color;
+        }
     }
 
     ///<summary>

@@ -83,10 +83,12 @@ public class Item : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
-        color = new Color();
-        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
+        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
         if (validColor)
-            color = GetComponent<ObjectDisplayController>().ChangeColor(color);
+        {
+            color = newColor;
+            GetComponent<ObjectDisplayController>().ChangeColor(color);
+        }
         else
         {
             UpdateColorByDomain();
@@ -118,7 +120,7 @@ public class Item : OgreeObject
             return;
         }
 
-        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
+        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
 
         color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
         GetComponent<ObjectDisplayController>().ChangeColor(color);
