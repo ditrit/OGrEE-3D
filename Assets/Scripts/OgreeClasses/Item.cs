@@ -132,12 +132,10 @@ public class Item : OgreeObject
     ///<param name="_value">True or false value</param>
     public void ToggleSlots(bool _value)
     {
-        Slot[] slots = GetComponentsInChildren<Slot>();
-
-        foreach (Slot s in slots)
+        foreach (Slot slot in GetComponentsInChildren<Slot>())
         {
-            if (s.transform.parent == transform && s.used == false)
-                s.GetComponent<ObjectDisplayController>().Display(_value, _value);
+            if (slot.transform.parent == transform && slot.used == false)
+                slot.GetComponent<ObjectDisplayController>().Display(_value, _value);
         }
     }
 
@@ -152,7 +150,7 @@ public class Item : OgreeObject
         {
             Transform sensorTransform = transform.Find(_sensorName);
             if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                sensorTransform.GetComponent<Sensor>().SetTemperature(Utils.ParseDecFrac(_value));
             else
             {
                 GameManager.instance.AppendLogLine($"[{id}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);

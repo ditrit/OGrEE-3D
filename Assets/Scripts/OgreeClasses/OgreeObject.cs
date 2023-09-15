@@ -31,7 +31,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public bool scatterPlot = false;
     public GameObject localCS = null;
     public bool isDoomed = false;
-    public bool LodLocked = false;
+    public bool isLodLocked = false;
 
     public void OnBeforeSerialize()
     {
@@ -124,7 +124,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(int _level)
     {
-        if (!ApiManager.instance.isInit || LodLocked || (this is Device dv && dv.isComponent))
+        if (!ApiManager.instance.isInit || isLodLocked || (this is Device dv && dv.isComponent))
             return;
 
         if (_level < 0)
@@ -151,8 +151,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         {
             foreach (Transform child in transform)
             {
-                OgreeObject obj = child.GetComponent<OgreeObject>();
-                if (obj)
+                if (child.GetComponent<OgreeObject>() is OgreeObject obj)
                     obj.SetCurrentLod(currentLod - 1);
             }
         }
@@ -167,8 +166,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         List<OgreeObject> objsToDel = new List<OgreeObject>();
         foreach (Transform child in transform)
         {
-            OgreeObject obj = child.GetComponent<OgreeObject>();
-            if (obj && obj is Device dv && !dv.isComponent)
+            if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj is Device dv && !dv.isComponent)
                 objsToDel.Add(obj);
         }
 
@@ -242,7 +240,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.parent = transform;
         localCS.transform.localScale = scale * Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = this is Corridor || this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
+        localCS.transform.localPosition = this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 }

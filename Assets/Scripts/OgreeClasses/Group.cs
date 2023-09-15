@@ -63,10 +63,10 @@ public class Group : Item
     ///<param name="_value">The bool value to apply</param>
     private void DisplayContent(bool _value)
     {
-        foreach (GameObject r in GetContent())
+        foreach (GameObject go in content)
         {
-            if (r && !r.GetComponent<OgreeObject>().isDoomed)
-                r.SetActive(_value);
+            if (go && !go.GetComponent<OgreeObject>().isDoomed)
+                go.SetActive(_value);
         }
     }
 
