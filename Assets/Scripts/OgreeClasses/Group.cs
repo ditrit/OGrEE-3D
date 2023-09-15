@@ -58,7 +58,7 @@ public class Group : Item
     }
 
     ///<summary>
-    /// Enable or disable racks from attributes["content"].
+    /// Enable or disable GameObjects in <see cref="content"/>.
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
     private void DisplayContent(bool _value)
@@ -71,9 +71,9 @@ public class Group : Item
     }
 
     ///<summary>
-    /// Get all GameObjects listed in attributes["content"].
+    /// Get all GameObjects listed in <see cref="content"/>.
     ///</summary>
-    ///<returns>The list of GameObject corresponding to attributes["content"]</returns>
+    ///<returns>The list of GameObject corresponding to <see cref="content"/></returns>
     public List<GameObject> GetContent()
     {
         return content;
