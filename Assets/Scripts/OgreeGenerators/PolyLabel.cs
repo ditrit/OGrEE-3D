@@ -14,7 +14,7 @@ public class PolyLabel
     /// <param name="_vertices">The vertices defining the exterior of a polygon</param>
     /// <param name="precision">The precision needed of the pole of isolation</param>
     /// <returns>The radius and the center of the biggest center entirely contained in the polygon</returns>
-    public static (float radius,Vector2 pole) FindPoleOfIsolation(List<Vector2> _vertices, float precision = 1)
+    public static (float radius, Vector2 pole) FindPoleOfIsolation(List<Vector2> _vertices, float precision = 1)
     {
         float minX = float.MaxValue;
         float minY = float.MaxValue;
@@ -36,16 +36,16 @@ public class PolyLabel
 
         Cell bestCell = GetCentroidCell(_vertices);
 
-        Cell bboxCell = new Cell(minX + width / 2, minY + height / 2, 0, _vertices);
+        Cell bboxCell = new(minX + width / 2, minY + height / 2, 0, _vertices);
         bestCell = bboxCell.distance > bestCell.distance ? bboxCell : bestCell;
 
-        PriorityQueue cellQueue = new PriorityQueue();
+        PriorityQueue cellQueue = new();
 
         for (float x = minX; x < maxX; x += cellSize)
         {
             for (float y = minY; y < maxY; y += cellSize)
             {
-                Cell cell = new Cell(x + h, y + h, h, _vertices);
+                Cell cell = new(x + h, y + h, h, _vertices);
                 cellQueue.Enqueue(cell, cell.maxDistance);
             }
         }
@@ -62,17 +62,17 @@ public class PolyLabel
 
             h = cell.halfSize / 2;
 
-            Cell cell1 = new Cell(cell.center.x - h, cell.center.y - h, h, _vertices);;
+            Cell cell1 = new(cell.center.x - h, cell.center.y - h, h, _vertices); ;
             cellQueue.Enqueue(cell1, cell1.maxDistance);
-            Cell cell2 = new Cell(cell.center.x + h, cell.center.y - h, h, _vertices);
+            Cell cell2 = new(cell.center.x + h, cell.center.y - h, h, _vertices);
             cellQueue.Enqueue(cell2, cell2.maxDistance);
-            Cell cell3 = new Cell(cell.center.x - h, cell.center.y + h, h, _vertices);
+            Cell cell3 = new(cell.center.x - h, cell.center.y + h, h, _vertices);
             cellQueue.Enqueue(cell3, cell3.maxDistance);
-            Cell cell4 = new Cell(cell.center.x + h, cell.center.y + h, h, _vertices);
+            Cell cell4 = new(cell.center.x + h, cell.center.y + h, h, _vertices);
             cellQueue.Enqueue(cell4, cell4.maxDistance);
         }
 
-        return (bestCell.distance,bestCell.center);
+        return (bestCell.distance, bestCell.center);
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class PolyLabel
     private static Cell GetCentroidCell(List<Vector2> _vertices)
     {
         Vector2 centroid = Centroid(_vertices);
-        return new Cell(centroid.x,centroid.y, 0, _vertices);
+        return new(centroid.x, centroid.y, 0, _vertices);
     }
 
     /// <summary>
@@ -112,8 +112,8 @@ public class PolyLabel
         }
 
         totalArea *= 0.5f;
-        centroidX /= (6 * totalArea);
-        centroidY /= (6 * totalArea);
+        centroidX /= 6 * totalArea;
+        centroidY /= 6 * totalArea;
 
         return new Vector2(centroidX, centroidY);
     }
@@ -130,7 +130,7 @@ public class PolyLabel
 
         public Cell(float _x, float _y, float _h, List<Vector2> _vertices)
         {
-            center = new Vector2(_x, _y);
+            center = new(_x, _y);
             halfSize = _h;
             distance = PointToPolygonDist(center, _vertices);
             maxDistance = distance + halfSize * (float)Math.Sqrt(2);
@@ -162,7 +162,7 @@ public class PolyLabel
         /// <returns></returns>
         private float DistancePointSegment(Vector2 _point, Vector2 _segStart, Vector2 _segEnd)
         {
-            float squaredLength = Mathf.Pow( Vector2.Distance(_segEnd,_segStart),2);
+            float squaredLength = Mathf.Pow(Vector2.Distance(_segEnd, _segStart), 2);
             if (squaredLength == 0)
                 return Vector2.Distance(_point, _segStart);
             float t = Mathf.Clamp01(Vector2.Dot(_point - _segStart, _segEnd - _segStart) / squaredLength);

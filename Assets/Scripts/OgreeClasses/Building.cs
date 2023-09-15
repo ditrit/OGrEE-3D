@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine;
 
 public class Building : OgreeObject
@@ -12,7 +12,7 @@ public class Building : OgreeObject
 
     private void Start()
     {
-        if (!(this is Room))
+        if (this is not Room)
             EventManager.instance.ImportFinished.Add(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
@@ -20,7 +20,7 @@ public class Building : OgreeObject
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        if (!(this is Room))
+        if (this is not Room)
             EventManager.instance.ImportFinished.Remove(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
     }

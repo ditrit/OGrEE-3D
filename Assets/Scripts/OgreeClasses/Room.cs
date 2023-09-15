@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ public class Room : Building
     public bool tileColor = false;
 
     public bool barChart = false;
-    public List<Group> openedGroups = new List<Group>();
+    public List<Group> openedGroups = new();
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -36,16 +36,14 @@ public class Room : Building
         }
         tilesGrid.gameObject.SetActive(true);
 
-        reserved = new SMargin(_resDim);
-        technical = new SMargin(_techDim);
+        reserved = new(_resDim);
+        technical = new(_techDim);
 
         // Reset  ->  techzone is always full size of a room
         usableZone.localScale = technicalZone.localScale;
-        usableZone.localPosition = new Vector3(technicalZone.localPosition.x,
-                                                usableZone.localPosition.y, technicalZone.localPosition.z);
+        usableZone.localPosition = new(technicalZone.localPosition.x, usableZone.localPosition.y, technicalZone.localPosition.z);
         reservedZone.localScale = technicalZone.localScale;
-        reservedZone.localPosition = new Vector3(technicalZone.localPosition.x,
-                                                reservedZone.localPosition.y, technicalZone.localPosition.z);
+        reservedZone.localPosition = new(technicalZone.localPosition.x, reservedZone.localPosition.y, technicalZone.localPosition.z);
 
         // If tileOffset in template, apply it
         if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
@@ -56,7 +54,7 @@ public class Room : Building
                 // Find the part to substract to land on a whole tile
                 float sizeX = technicalZone.localScale.x * 10 - template.tileOffset[0];
                 float sizeY = technicalZone.localScale.z * 10 - template.tileOffset[1];
-                Vector3 delta = new Vector3(sizeX % UnitValue.Tile, 0, sizeY % UnitValue.Tile);
+                Vector3 delta = new(sizeX % UnitValue.Tile, 0, sizeY % UnitValue.Tile);
 
                 ApplyTileOffset(usableZone, template.tileOffset, delta);
                 ApplyTileOffset(reservedZone, template.tileOffset, delta);
@@ -356,7 +354,7 @@ public class Room : Building
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        STile tileData = new STile();
+        STile tileData = new();
         if (attributes.ContainsKey("tiles"))
         {
             List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
@@ -388,7 +386,7 @@ public class Room : Building
     private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
         // Select the right tile from attributes["tiles"]
-        STile tileData = new STile();
+        STile tileData = new();
         if (attributes.ContainsKey("tiles"))
         {
             List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
@@ -399,7 +397,7 @@ public class Room : Building
             }
         }
 
-        List<SColor> customColors = new List<SColor>();
+        List<SColor> customColors = new();
         if (attributes.ContainsKey("colors"))
             customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
 
@@ -417,7 +415,7 @@ public class Room : Building
                     Renderer rend = tile.GetComponent<Renderer>();
                     if (GameManager.instance.textures.ContainsKey(tileData.texture))
                     {
-                        rend.material = new Material(GameManager.instance.perfMat)
+                        rend.material = new(GameManager.instance.perfMat)
                         {
                             mainTexture = GameManager.instance.textures[tileData.texture]
                         };
@@ -428,7 +426,7 @@ public class Room : Building
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
                     Material mat = tile.GetComponent<Renderer>().material;
-                    Color customColor = new Color();
+                    Color customColor = new();
                     if (tileData.color.StartsWith("@"))
                     {
                         foreach (SColor color in customColors)
@@ -487,8 +485,8 @@ public class Room : Building
     ///<param name="_sep">The separator to draw</param>
     public void BuildSeparator(SSeparator _sep)
     {
-        Vector2 startPos = new Vector2(_sep.startPosXYm[0], _sep.startPosXYm[1]);
-        Vector2 endPos = new Vector2(_sep.endPosXYm[0], _sep.endPosXYm[1]);
+        Vector2 startPos = new(_sep.startPosXYm[0], _sep.startPosXYm[1]);
+        Vector2 endPos = new(_sep.endPosXYm[0], _sep.endPosXYm[1]);
 
         float length = Vector2.Distance(startPos, endPos);
         float height = Utils.ParseDecFrac(attributes["height"]);
@@ -531,18 +529,18 @@ public class Room : Building
         GameObject pillar = Instantiate(GameManager.instance.pillarModel);
         pillar.transform.parent = walls;
 
-        pillar.transform.localScale = new Vector3(_pil.sizeXY[0], height, _pil.sizeXY[1]);
+        pillar.transform.localScale = new(_pil.sizeXY[0], height, _pil.sizeXY[1]);
 
         // Place the pillar in the right place
         if (technicalZone)
         {
             Vector3 roomScale = technicalZone.localScale * -5;
-            pillar.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+            pillar.transform.localPosition = new(roomScale.x, 0, roomScale.z);
         }
         else
             pillar.transform.localPosition = Vector3.zero;
 
         pillar.transform.localPosition += new Vector3(_pil.centerXY[0], height / 2, _pil.centerXY[1]);
-        pillar.transform.localEulerAngles = new Vector3(0, _pil.rotation, 0);
+        pillar.transform.localEulerAngles = new(0, _pil.rotation, 0);
     }
 }

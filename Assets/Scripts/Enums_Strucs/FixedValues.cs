@@ -163,7 +163,7 @@ public class LaunchArgs
     public const string FullScreenLong = "--fullscreen";
     public const string CliPortShort = "-p";
     public const string CliPortLong = "--cliPort";
-    public static readonly ReadOnlyCollection<string> Args = new ReadOnlyCollection<string>(new List<string>()
+    public static readonly ReadOnlyCollection<string> Args = new(new List<string>()
     {
         ConfigPathShort, ConfigPathLong,
         VerboseShort, VerboseLong,
@@ -250,7 +250,7 @@ public class DefaultValues
         temperatureMaxC = 100,
         temperatureMinF = 32,
         temperatureMaxF = 212,
-        customTemperatureGradient = new List<List<int>>() {
+        customTemperatureGradient = new() {
             new List<int>() { 0,0,255,0 },
             new List<int>() { 255,0,0,100 },
             new List<int>() { 255,255,0,50 }

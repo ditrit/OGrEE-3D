@@ -1,8 +1,8 @@
-using UnityEngine;
-using TMPro;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine;
 
 public class UHelpersManager : MonoBehaviour
 {
@@ -220,19 +220,19 @@ public class UHelpersManager : MonoBehaviour
 
         Transform URearLeft = new GameObject(cornerRearLeft).transform;
         URearLeft.parent = _rack.uRoot;
-        URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
+        URearLeft.localPosition = new(-boxSize.x / 2, 0, -boxSize.z / 2);
         URearLeft.localEulerAngles = Vector3.zero;
         Transform URearRight = new GameObject(cornerRearRight).transform;
         URearRight.parent = _rack.uRoot;
-        URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
+        URearRight.localPosition = new(boxSize.x / 2, 0, -boxSize.z / 2);
         URearRight.localEulerAngles = Vector3.zero;
         Transform UFrontLeft = new GameObject(cornerFrontLeft).transform;
         UFrontLeft.parent = _rack.uRoot;
-        UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontLeft.localPosition = new(-boxSize.x / 2, 0, boxSize.z / 2);
         UFrontLeft.localEulerAngles = Vector3.zero;
         Transform UFrontRight = new GameObject(cornerFrontRight).transform;
         UFrontRight.parent = _rack.uRoot;
-        UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontRight.localPosition = new(boxSize.x / 2, 0, boxSize.z / 2);
         UFrontRight.localEulerAngles = Vector3.zero;
 
         float scale = UnitValue.U;
@@ -284,7 +284,7 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.editMode)
             return;
-        if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>()))
+        if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[^1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
             ToggleU(GameManager.instance.GetSelected()[0], true);

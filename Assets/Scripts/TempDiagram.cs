@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 public class TempDiagram : MonoBehaviour
 {
@@ -33,7 +33,7 @@ public class TempDiagram : MonoBehaviour
     /// <returns>a list of sensors of the object</returns>
     public List<Sensor> GetObjectSensors(OgreeObject _ogreeObject)
     {
-        List<Sensor> sensors = new List<Sensor>();
+        List<Sensor> sensors = new();
         foreach (Transform childTransform in _ogreeObject.transform)
         {
             OgreeObject childOgreeObject = childTransform.GetComponent<OgreeObject>();
@@ -126,18 +126,18 @@ public class TempDiagram : MonoBehaviour
 
             sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
             sensorBar.name = _item.name + "TempBar";
-            sensorBar.transform.position = new Vector3(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
-            sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
+            sensorBar.transform.position = new(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
+            sensorBar.transform.GetChild(0).localScale = new(0.1f, height, 0.1f);
 
             pixelX = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, heatMapGradient.width);
             Color col = heatMapGradient.GetPixel(Mathf.FloorToInt(pixelX), heatMapGradient.height / 2);
-            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(col.r, col.g, col.b, 0.85f);
+            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new(col.r, col.g, col.b, 0.85f);
 
             if (tempInfos.std != 0)
             {
                 GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _item.transform);
-                sensorBarStd.transform.position = new Vector3(_item.transform.position.x, yBase + height, _item.transform.position.z);
-                sensorBarStd.transform.GetChild(0).localScale = new Vector3(1, heigthStd, 1);
+                sensorBarStd.transform.position = new(_item.transform.position.x, yBase + height, _item.transform.position.z);
+                sensorBarStd.transform.GetChild(0).localScale = new(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
 
                 pixelX = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, heatMapGradient.width);
@@ -154,9 +154,9 @@ public class TempDiagram : MonoBehaviour
             float yBase = _item.transform.parent.position.y + 0.01f;
             sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
             sensorBar.name = _item.name + "TempBar";
-            sensorBar.transform.position = new Vector3(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
-            sensorBar.transform.GetChild(0).localScale = new Vector3(0.1f, height, 0.1f);
-            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f, 0.85f);
+            sensorBar.transform.position = new(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
+            sensorBar.transform.GetChild(0).localScale = new(0.1f, height, 0.1f);
+            sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new(0.5f, 0.5f, 0.5f, 0.85f);
         }
         OgreeObject sensorBarOO = sensorBar.GetComponent<OgreeObject>();
         sensorBarOO.attributes["average"] = $"{tempInfos.mean} {tempInfos.unit}";
@@ -239,12 +239,12 @@ public class TempDiagram : MonoBehaviour
     {
         GradientColorKey[] colorKeys = new GradientColorKey[Mathf.Min(_colors.Count, 8)]; //Unity gradients can only take 8 colors max
         foreach (List<int> color in _colors)
-            colorKeys[_colors.IndexOf(color)] = new GradientColorKey { color = new Color(color[0], color[1], color[2]), time = color[3] / 100.0f };
+            colorKeys[_colors.IndexOf(color)] = new() { color = new Color(color[0], color[1], color[2]), time = color[3] / 100.0f };
 
         gradient = new Gradient();
         gradient.SetKeys(colorKeys, new GradientAlphaKey[0]);
         // create texture
-        Texture2D outputTex = new Texture2D(1024, 128)
+        Texture2D outputTex = new(1024, 128)
         {
             wrapMode = TextureWrapMode.Clamp,
             filterMode = FilterMode.Bilinear
@@ -254,7 +254,7 @@ public class TempDiagram : MonoBehaviour
             for (int y = 0; y < 128; y++)
             {
                 Color color = gradient.Evaluate(x / (float)1024);
-                color = new Color(color.r / 255, color.g / 255, color.b / 255, 1);
+                color = new(color.r / 255, color.g / 255, color.b / 255, 1);
                 outputTex.SetPixel(x, y, color);
             }
         outputTex.Apply();

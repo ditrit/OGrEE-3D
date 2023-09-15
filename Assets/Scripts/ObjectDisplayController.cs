@@ -309,7 +309,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's intance</param>
     private void OnImportFinishedOther(ImportFinishedEvent _e)
     {
-        if (sensor && sensor.fromTemplate && scatterPlotOfOneParent && (!GameManager.instance.focusMode || DistantChildOf(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1])))
+        if (sensor && sensor.fromTemplate && scatterPlotOfOneParent && (!GameManager.instance.focusMode || DistantChildOf(GameManager.instance.GetFocused()[^1])))
         {
             Display(true, true);
             return;
@@ -534,14 +534,14 @@ public class ObjectDisplayController : MonoBehaviour
             GameObject go = (GameObject)de.Value;
             if (!go)
                 continue;
-            OgreeObject oo = go.GetComponent<OgreeObject>();
-            if (oo.localCS)
-                oo.localCS.SetActive(_value);
-            if (oo is Item deOObject && item != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.isToggled)
+            OgreeObject obj = go.GetComponent<OgreeObject>();
+            if (obj.localCS)
+                obj.localCS.SetActive(_value);
+            if (obj is Item deOObject && item != deOObject && deOObject.clearanceHandler != null && deOObject.clearanceHandler.isToggled)
                 deOObject.clearanceHandler.clearanceWrapper.SetActive(_value);
-            switch (oo)
+            switch (obj)
             {
-                case OgreeObject tmp when tmp is Building bd && !(tmp is Room):
+                case Building bd and not Room:
                     bd.transform.GetChild(0).GetComponent<Renderer>().enabled = _value;
                     bd.transform.GetChild(0).GetComponent<Collider>().enabled = _value;
                     bd.nameText.GetComponent<Renderer>().enabled = _value;
@@ -551,7 +551,7 @@ public class ObjectDisplayController : MonoBehaviour
                         wall.GetComponent<Collider>().enabled = _value && bd.displayWalls;
                     }
                     break;
-                case OgreeObject tmp when tmp is Room ro:
+                case Room ro:
                     if (ro.usableZone)
                     {
                         ro.usableZone.GetComponent<Renderer>().enabled = _value;

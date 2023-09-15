@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,11 +12,11 @@ public class ClearanceHandler
         public Vector3 direction;
     }
 
-    [SerializeField] private Clearance front = new Clearance();
-    [SerializeField] private Clearance rear = new Clearance();
-    [SerializeField] private Clearance left = new Clearance();
-    [SerializeField] private Clearance right = new Clearance();
-    [SerializeField] private Clearance top = new Clearance();
+    [SerializeField] private Clearance front = new();
+    [SerializeField] private Clearance rear = new();
+    [SerializeField] private Clearance left = new();
+    [SerializeField] private Clearance right = new();
+    [SerializeField] private Clearance top = new();
     [SerializeField] private Transform clearedObject;
 
     private bool isCreated = false;

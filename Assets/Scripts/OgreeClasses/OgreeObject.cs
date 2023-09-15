@@ -11,13 +11,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string id;
     public string parentId;
     public string category;
-    public List<string> description = new List<string>();
+    public List<string> description = new();
     public string domain;
 
     [Header("Specific attributes")]
-    [SerializeField] private List<string> attributesKeys = new List<string>();
-    [SerializeField] private List<string> attributesValues = new List<string>();
-    public Dictionary<string, string> attributes = new Dictionary<string, string>();
+    [SerializeField] private List<string> attributesKeys = new();
+    [SerializeField] private List<string> attributesValues = new();
+    public Dictionary<string, string> attributes = new();
 
     [Header("LOD")]
     public int currentLod = 0;
@@ -163,7 +163,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_askedLevel">The LOD to switch on</param>
     protected async Task DeleteChildren(int _askedLevel)
     {
-        List<OgreeObject> objsToDel = new List<OgreeObject>();
+        List<OgreeObject> objsToDel = new();
         foreach (Transform child in transform)
         {
             if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj is Device dv && !dv.isComponent)
@@ -190,8 +190,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///</summary>
     public void ResetTransform()
     {
-        transform.localPosition = originalLocalPosition;
-        transform.localRotation = originalLocalRotation;
+        transform.SetLocalPositionAndRotation(originalLocalPosition, originalLocalRotation);
         transform.localScale = originalLocalScale;
     }
 

@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public class BuildingGenerator
             return null;
         }
 
-        SBuildingFromJson template = new SBuildingFromJson();
+        SBuildingFromJson template = new();
         if (!string.IsNullOrEmpty(_bd.attributes["template"]))
         {
             if (GameManager.instance.buildingTemplates.ContainsKey(_bd.attributes["template"]))
@@ -50,7 +49,7 @@ public class BuildingGenerator
         building.UpdateFromSApiObject(_bd);
 
         // Apply rotation
-        newBD.transform.localEulerAngles = new Vector3(0, rotation, 0);
+        newBD.transform.localEulerAngles = new(0, rotation, 0);
 
         Transform roof = newBD.transform.Find("Roof");
         if (template.vertices != null)
@@ -63,22 +62,22 @@ public class BuildingGenerator
             // Apply size & move the floor to have the container at the lower left corner of it
             Transform floor = newBD.transform.GetChild(0);
             Vector3 originalSize = floor.localScale;
-            floor.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+            floor.localScale = new(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             floor.localPosition = new Vector3(floor.localScale.x, 0, floor.localScale.z) / 0.2f;
             roof.localScale = floor.localScale;
             roof.localPosition = floor.localPosition;
 
             // Align walls & nameText to the floor & setup nameText
-            building.walls.localPosition = new Vector3(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
+            building.walls.localPosition = new(floor.localPosition.x, building.walls.localPosition.y, floor.localPosition.z);
 
-            building.nameText.transform.localPosition = new Vector3(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
+            building.nameText.transform.localPosition = new(floor.localPosition.x, building.nameText.transform.localPosition.y, floor.localPosition.z);
             building.nameText.rectTransform.sizeDelta = size;
 
-            BuildWalls(building.walls, new Vector3(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
+            BuildWalls(building.walls, new(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
         // Apply posXY
         if (_parent)
-            newBD.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+            newBD.transform.localPosition = new(posXY.x, 0, posXY.y);
         else
             newBD.transform.localPosition = Vector3.zero;
 
@@ -88,7 +87,7 @@ public class BuildingGenerator
 
         building.UpdateColorByDomain();
 
-        roof.localPosition = new Vector3(roof.localPosition.x, height, roof.localPosition.z);
+        roof.localPosition = new(roof.localPosition.x, height, roof.localPosition.z);
 
         GameManager.instance.allItems.Add(building.id, newBD);
         return building;
@@ -108,7 +107,7 @@ public class BuildingGenerator
             return null;
         }
 
-        SRoomFromJson template = new SRoomFromJson();
+        SRoomFromJson template = new();
         if (!string.IsNullOrEmpty(_ro.attributes["template"]))
         {
             if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
@@ -139,7 +138,7 @@ public class BuildingGenerator
         room.UpdateFromSApiObject(_ro);
 
         // Apply rotation
-        newRoom.transform.localEulerAngles = new Vector3(0, rotation, 0);
+        newRoom.transform.localEulerAngles = new(0, rotation, 0);
 
         if (template.vertices != null)
         {
@@ -150,12 +149,12 @@ public class BuildingGenerator
         {
             // Apply size...
             Vector3 originalSize = room.usableZone.localScale;
-            room.usableZone.localScale = new Vector3(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
+            room.usableZone.localScale = new(originalSize.x * size.x, originalSize.y, originalSize.z * size.y);
             room.reservedZone.localScale = room.usableZone.localScale;
             room.technicalZone.localScale = room.usableZone.localScale;
             room.tilesGrid.localScale = room.usableZone.localScale;
             room.tilesGrid.GetComponent<Renderer>().material.mainTextureScale = size / UnitValue.Tile;
-            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(size.x / UnitValue.Tile % 1, size.y / UnitValue.Tile % 1);
+            room.tilesGrid.GetComponent<Renderer>().material.mainTextureOffset = new(size.x / UnitValue.Tile % 1, size.y / UnitValue.Tile % 1);
 
             // ...and move the floors layer, wall & text to have the container at the lower left corner of them
             room.usableZone.localPosition = new Vector3(room.usableZone.localScale.x, room.usableZone.localPosition.y, room.usableZone.localScale.z) / 0.2f;
@@ -174,7 +173,7 @@ public class BuildingGenerator
         }
         // Apply posXY
         if (_parent)
-            newRoom.transform.localPosition = new Vector3(posXY.x, 0, posXY.y);
+            newRoom.transform.localPosition = new(posXY.x, 0, posXY.y);
         else
             newRoom.transform.localPosition = Vector3.zero;
 
@@ -226,14 +225,14 @@ public class BuildingGenerator
         Transform wallRight = _root.GetChild(2);
         Transform wallLeft = _root.GetChild(3);
 
-        wallFront.localScale = new Vector3(_dim.x, _dim.y, 0.01f);
-        wallBack.localScale = new Vector3(_dim.x, _dim.y, 0.01f);
-        wallRight.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
-        wallLeft.localScale = new Vector3(_dim.z, _dim.y, 0.01f);
+        wallFront.localScale = new(_dim.x, _dim.y, 0.01f);
+        wallBack.localScale = new(_dim.x, _dim.y, 0.01f);
+        wallRight.localScale = new(_dim.z, _dim.y, 0.01f);
+        wallLeft.localScale = new(_dim.z, _dim.y, 0.01f);
 
-        wallFront.localPosition = new Vector3(0, wallFront.localScale.y / 2, _dim.z / 2 + _offset);
-        wallBack.localPosition = new Vector3(0, wallFront.localScale.y / 2, -(_dim.z / 2 + _offset));
-        wallRight.localPosition = new Vector3(_dim.x / 2 + _offset, wallFront.localScale.y / 2, 0);
-        wallLeft.localPosition = new Vector3(-(_dim.x / 2 + _offset), wallFront.localScale.y / 2, 0);
+        wallFront.localPosition = new(0, wallFront.localScale.y / 2, _dim.z / 2 + _offset);
+        wallBack.localPosition = new(0, wallFront.localScale.y / 2, -(_dim.z / 2 + _offset));
+        wallRight.localPosition = new(_dim.x / 2 + _offset, wallFront.localScale.y / 2, 0);
+        wallLeft.localPosition = new(-(_dim.x / 2 + _offset), wallFront.localScale.y / 2, 0);
     }
 }

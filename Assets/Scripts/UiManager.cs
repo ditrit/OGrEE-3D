@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -70,7 +69,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField loggerText;
     [SerializeField] private Scrollbar loggerSB;
     private const int loggerSize = 100;
-    private Queue<string> loggerQueue = new Queue<string>(loggerSize);
+    private Queue<string> loggerQueue = new(loggerSize);
 
     [Header("Groups")]
     [SerializeField] private GameObject groupsMenu;
@@ -106,7 +105,7 @@ public class UiManager : MonoBehaviour
 #if !TRILIB
         buildDate.text += "\n<color=\"red\">Build without TriLib plugin</color>";
 #endif
-        selectBtn = new ButtonHandler(selectBtn.button, false)
+        selectBtn = new(selectBtn.button, false)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
@@ -120,7 +119,7 @@ public class UiManager : MonoBehaviour
         };
         selectBtn.Check();
 
-        addSelectBtn = new ButtonHandler(addSelectBtn.button, true)
+        addSelectBtn = new(addSelectBtn.button, true)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
@@ -138,7 +137,7 @@ public class UiManager : MonoBehaviour
         };
         addSelectBtn.Check();
 
-        removeSelectBtn = new ButtonHandler(removeSelectBtn.button, true)
+        removeSelectBtn = new(removeSelectBtn.button, true)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
@@ -151,12 +150,12 @@ public class UiManager : MonoBehaviour
             (
                 !GameManager.instance.focusMode
                 ||
-                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != menuTarget
+                GameManager.instance.GetFocused()[^1] != menuTarget
             )
         };
         removeSelectBtn.Check();
 
-        focusBtn = new ButtonHandler(focusBtn.button, false)
+        focusBtn = new(focusBtn.button, false)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
@@ -164,9 +163,9 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget
             &&
-            menuTarget.GetComponent<Item>()
+            menuTarget.GetComponent<Item>() is Item item
             &&
-            menuTarget.GetComponent<OgreeObject>().category != Category.Corridor
+            item is not Corridor
             &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
@@ -174,7 +173,7 @@ public class UiManager : MonoBehaviour
         };
         focusBtn.Check();
 
-        unfocusBtn = new ButtonHandler(unfocusBtn.button, true)
+        unfocusBtn = new(unfocusBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
             &&
@@ -182,7 +181,7 @@ public class UiManager : MonoBehaviour
         };
         unfocusBtn.Check();
 
-        selectParentBtn = new ButtonHandler(selectParentBtn.button, true)
+        selectParentBtn = new(selectParentBtn.button, true)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
@@ -193,14 +192,14 @@ public class UiManager : MonoBehaviour
             (
                 !GameManager.instance.focusMode
                 ||
-                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] != GameManager.instance.GetSelected()[0]
+                GameManager.instance.GetFocused()[^1] != GameManager.instance.GetSelected()[0]
             )
             &&
             GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().category != "tempBar"
         };
         selectParentBtn.Check();
 
-        OpenGroupBtn = new ButtonHandler(OpenGroupBtn.button, true)
+        OpenGroupBtn = new(OpenGroupBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -208,14 +207,14 @@ public class UiManager : MonoBehaviour
         };
         OpenGroupBtn.Check();
 
-        editBtn = new ButtonHandler(editBtn.button, true)
+        editBtn = new(editBtn.button, true)
         {
             interactCondition = () => GameManager.instance.editMode
             ||
             (
                 GameManager.instance.focusMode
                 &&
-                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
+                GameManager.instance.GetFocused()[^1] == menuTarget
             ),
 
             toggledCondition = () => GameManager.instance.editMode,
@@ -223,23 +222,23 @@ public class UiManager : MonoBehaviour
         };
         editBtn.Check();
 
-        resetTransBtn = new ButtonHandler(resetTransBtn.button, true)
+        resetTransBtn = new(resetTransBtn.button, true)
         {
             interactCondition = () => GameManager.instance.editMode
             &&
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
+            GameManager.instance.GetFocused()[^1] == menuTarget
         };
         resetTransBtn.Check();
 
-        resetChildrenBtn = new ButtonHandler(resetChildrenBtn.button, true)
+        resetChildrenBtn = new(resetChildrenBtn.button, true)
         {
             interactCondition = () => GameManager.instance.focusMode
             &&
-            GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == menuTarget
+            GameManager.instance.GetFocused()[^1] == menuTarget
         };
         resetChildrenBtn.Check();
 
-        barChartBtn = new ButtonHandler(barChartBtn.button, true)
+        barChartBtn = new(barChartBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -249,20 +248,22 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<Room>() is Room room
             &&
-            room
-            &&
             room.barChart
         };
         barChartBtn.Check();
 
-        scatterPlotBtn = new ButtonHandler(scatterPlotBtn.button, true)
+        scatterPlotBtn = new(scatterPlotBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
             !menuTarget.GetComponent<Group>()
             &&
             (
-                (menuTarget.GetComponent<Item>() && !menuTarget.GetComponent<Corridor>())
+                (
+                    menuTarget.GetComponent<Item>() is Item item
+                    &&
+                    item is not Corridor
+                )
                 ||
                 menuTarget.GetComponent<Room>()
             ),
@@ -271,13 +272,11 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<OgreeObject>() is OgreeObject ogree
             &&
-            ogree
-            &&
             ogree.scatterPlot
         };
         scatterPlotBtn.Check();
 
-        heatMapBtn = new ButtonHandler(heatMapBtn.button, true)
+        heatMapBtn = new(heatMapBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -287,14 +286,14 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Item>()
+            menuTarget.GetComponent<Item>() is Item item
             &&
-            menuTarget.GetComponent<Item>().heatMap
+            item.heatMap
 
         };
         heatMapBtn.Check();
 
-        toggleTilesNameBtn = new ButtonHandler(toggleTilesNameBtn.button, true)
+        toggleTilesNameBtn = new(toggleTilesNameBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -302,13 +301,13 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>()
+            menuTarget.GetComponent<Room>() is Room room
             &&
-            menuTarget.GetComponent<Room>().tileName
+            room.tileName
         };
         toggleTilesNameBtn.Check();
 
-        toggleTilesColorBtn = new ButtonHandler(toggleTilesColorBtn.button, true)
+        toggleTilesColorBtn = new(toggleTilesColorBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -316,13 +315,13 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>()
+            menuTarget.GetComponent<Room>() is Room room
             &&
-            menuTarget.GetComponent<Room>().tileColor
+            room.tileColor
         };
         toggleTilesColorBtn.Check();
 
-        toggleWallsBtn = new ButtonHandler(toggleWallsBtn.button, true)
+        toggleWallsBtn = new(toggleWallsBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -330,13 +329,13 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Building>()
+            menuTarget.GetComponent<Building>() is Building building
             &&
-            menuTarget.GetComponent<Building>().displayWalls
+            building.displayWalls
         };
         toggleWallsBtn.Check();
 
-        toggleUHelpersBtn = new ButtonHandler(toggleUHelpersBtn.button, true)
+        toggleUHelpersBtn = new(toggleUHelpersBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -344,23 +343,23 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<Item>())
+            Utils.GetRackReferent(menuTarget.GetComponent<Item>()) is Rack rack
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<Item>()).uRoot
+            rack.uRoot
             &&
-            Utils.GetRackReferent(menuTarget.GetComponent<Item>()).uRoot.gameObject.activeSelf
+            rack.uRoot.gameObject.activeSelf
         };
         toggleUHelpersBtn.Check();
 
-        toggleLocalCSBtn = new ButtonHandler(toggleLocalCSBtn.button, true)
+        toggleLocalCSBtn = new(toggleLocalCSBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
             (
                 (
-                    menuTarget.GetComponent<Item>()
+                    menuTarget.GetComponent<Item>() is Item item
                     &&
-                    !menuTarget.GetComponent<Corridor>()
+                    item is not Corridor
                 )
                 ||
                 menuTarget.GetComponent<Building>()
@@ -368,13 +367,13 @@ public class UiManager : MonoBehaviour
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<OgreeObject>()
+            menuTarget.GetComponent<OgreeObject>() is OgreeObject obj
             &&
-            menuTarget.GetComponent<OgreeObject>().localCS
+            obj.localCS
         };
         toggleLocalCSBtn.Check();
 
-        getCoordsBtn = new ButtonHandler(getCoordsBtn.button, true)
+        getCoordsBtn = new(getCoordsBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
@@ -388,18 +387,19 @@ public class UiManager : MonoBehaviour
         };
         getCoordsBtn.Check();
 
-        toggleClearanceBtn = new ButtonHandler(toggleClearanceBtn.button, true)
+        toggleClearanceBtn = new(toggleClearanceBtn.button, true)
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Item>()
-            && menuTarget.GetComponent<Item>().clearanceHandler.isInitialized,
+            menuTarget.GetComponent<Item>() is Item item
+            &&
+            item.clearanceHandler.isInitialized,
 
             toggledCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Item>()
+            menuTarget.GetComponent<Item>() is Item item
             &&
-            menuTarget.GetComponent<Item>().clearanceHandler.isToggled
+            item.clearanceHandler.isToggled
         };
         toggleClearanceBtn.Check();
 
@@ -523,7 +523,7 @@ public class UiManager : MonoBehaviour
         if (!string.IsNullOrEmpty(selectColorCode))
         {
             Color c = Utils.ParseHtmlColor(selectColorCode);
-            selectColor = new Color(c.r, c.g, c.b, alpha);
+            selectColor = new(c.r, c.g, c.b, alpha);
             selectionInputField.GetComponent<Image>().color = selectColor;
         }
 
@@ -531,7 +531,7 @@ public class UiManager : MonoBehaviour
         if (!string.IsNullOrEmpty(focusColorCode))
         {
             Color c = Utils.ParseHtmlColor(focusColorCode);
-            focusInputField.GetComponent<Image>().color = new Color(c.r, c.g, c.b, alpha);
+            focusInputField.GetComponent<Image>().color = new(c.r, c.g, c.b, alpha);
         }
     }
 
@@ -611,7 +611,7 @@ public class UiManager : MonoBehaviour
 
             float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
             float menuHeight = padding * 2 + (btnHeight + spacing) * displayedButtons;
-            rightClickMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+            rightClickMenu.GetComponent<RectTransform>().sizeDelta = new(menuWidth, menuHeight);
 
             // Move the menu at mouse position and prevent it to be out of the window
             rightClickMenu.transform.position = Input.mousePosition;
@@ -733,7 +733,7 @@ public class UiManager : MonoBehaviour
     {
         if (GameManager.instance.focusMode)
         {
-            string objName = GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>().id.Replace(".", "/");
+            string objName = GameManager.instance.GetFocused()[^1].GetComponent<OgreeObject>().id.Replace(".", "/");
             focusInputField.text = $"{objName}";
         }
         else
@@ -969,7 +969,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ClearCache()
     {
-        DirectoryInfo dir = new DirectoryInfo(GameManager.instance.configHandler.GetCacheDir());
+        DirectoryInfo dir = new(GameManager.instance.configHandler.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
         {
             if (!file.Name.EndsWith("log.txt"))
@@ -1232,7 +1232,7 @@ public class UiManager : MonoBehaviour
     ///<summary>
     /// Called by GUI button
     ///</summary>
-    public void FocusHandlerUpdateArrayButtonPressed()
+    public void RaiseImportFinishedEvent()
     {
         EventManager.instance.Raise(new ImportFinishedEvent());
     }

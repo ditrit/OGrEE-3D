@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -66,7 +65,7 @@ public class GUIObjectInfos : MonoBehaviour
 
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0, _objects.Count * 20);
+        rt.sizeDelta = new(0, _objects.Count * 20);
     }
 
     ///<summary>
@@ -124,7 +123,7 @@ public class GUIObjectInfos : MonoBehaviour
                     if (room.attributes.ContainsKey("tiles"))
                     {
                         List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(room.attributes["tiles"]);
-                        STile tileData = new STile();
+                        STile tileData = new();
                         foreach (STile t in tiles)
                         {
                             if (t.location == $"{posXY.x:0}/{posXY.y:0}")
@@ -185,7 +184,7 @@ public class GUIObjectInfos : MonoBehaviour
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0, i * 30);
+        rt.sizeDelta = new(0, i * 30);
     }
 
     ///<summary>

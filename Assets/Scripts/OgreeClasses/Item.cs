@@ -17,7 +17,7 @@ public class Item : OgreeObject
     public string temperatureUnit;
     public bool hasSlotColor = false;
 
-    public ClearanceHandler clearanceHandler = new ClearanceHandler();
+    public ClearanceHandler clearanceHandler = new();
 
     protected virtual void Start()
     {
@@ -162,10 +162,10 @@ public class Item : OgreeObject
                 sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
             else
             {
-                SApiObject se = new SApiObject
+                SApiObject se = new()
                 {
-                    description = new List<string>(),
-                    attributes = new Dictionary<string, string>(),
+                    description = new(),
+                    attributes = new(),
 
                     name = "sensor", // ?
                     category = Category.Sensor,
@@ -188,8 +188,8 @@ public class Item : OgreeObject
     /// <returns>a STemp instance containg all temperature infos of the object</returns>
     public STemp GetTemperatureInfos()
     {
-        List<(float temp, float volume, string childName)> temps = new List<(float, float, string)>();
-        List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
+        List<(float temp, float volume, string childName)> temps = new();
+        List<(float temp, string sensorName)> sensorsTemps = new();
         foreach (Transform child in transform)
         {
             Item childItem = child.GetComponent<Item>();

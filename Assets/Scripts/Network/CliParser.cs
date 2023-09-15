@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class CliParser
 {
@@ -35,7 +35,7 @@ public class CliParser
 
     #endregion
 
-    readonly ReadFromJson rfJson = new ReadFromJson();
+    readonly ReadFromJson rfJson = new();
     private bool canDraw = true;
 
     public CliParser()
@@ -63,7 +63,7 @@ public class CliParser
     ///<param name="_input">The json to deserialize</param>
     public async Task DeserializeInput(string _input)
     {
-        Hashtable command = new Hashtable();
+        Hashtable command = new();
         try
         {
             command = JsonConvert.DeserializeObject<Hashtable>(_input);
@@ -165,7 +165,7 @@ public class CliParser
     ///<param name="_input">The SApiObject to deserialize</param>
     private async Task CreateObjectFromData(string _input)
     {
-        SApiObject src = new SApiObject();
+        SApiObject src = new();
         try
         {
             src = JsonConvert.DeserializeObject<SApiObject>(_input);
@@ -175,11 +175,11 @@ public class CliParser
             GameManager.instance.AppendLogLine(e.Message, ELogTarget.both, ELogtype.errorCli);
         }
 
-        List<string> leafIds = new List<string>();
+        List<string> leafIds = new();
         if (!string.IsNullOrEmpty(src.category))
         {
-            List<SApiObject> physicalObjects = new List<SApiObject>();
-            List<SApiObject> logicalObjects = new List<SApiObject>();
+            List<SApiObject> physicalObjects = new();
+            List<SApiObject> logicalObjects = new();
             Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
@@ -310,6 +310,17 @@ public class CliParser
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
         switch (obj)
         {
+            case Building building and not Room:
+                switch (command.param)
+                {
+                    case CommandParameter.LocalCS:
+                        building.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
+                break;
             case Room room:
                 switch (command.param)
                 {
@@ -324,17 +335,6 @@ public class CliParser
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
-                        break;
-                }
-                break;
-            case Building building:
-                switch (command.param)
-                {
-                    case CommandParameter.LocalCS:
-                        building.ToggleCS(command.value == "true");
-                        break;
-                    default:
-                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -475,7 +475,7 @@ public class CliParser
     private void ManipulateCamera(string _input)
     {
         SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
-        Vector3 refinedPos = new Vector3(manip.position.x, manip.position.z, manip.position.y);
+        Vector3 refinedPos = new(manip.position.x, manip.position.z, manip.position.y);
         switch (manip.command)
         {
             case Command.Move:

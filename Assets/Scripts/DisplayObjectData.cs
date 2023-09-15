@@ -1,4 +1,3 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -14,7 +13,7 @@ public class DisplayObjectData : MonoBehaviour
     [SerializeField] private TextMeshPro labelRight = null;
     [SerializeField] private TextMeshPro floatingLabel = null;
     public bool hasFloatingLabel = false;
-    [SerializeField] private List<TextMeshPro> usedLabels = new List<TextMeshPro>();
+    [SerializeField] private List<TextMeshPro> usedLabels = new();
     public string attrToDisplay = "";
     private bool isBold = false;
     private bool isItalic = false;
@@ -74,7 +73,7 @@ public class DisplayObjectData : MonoBehaviour
                 height /= 1000;
             else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
-            boxSize = new Vector3(size.x, height, size.y);
+            boxSize = new(size.x, height, size.y);
         }
         else
             boxSize = shape.localScale;
@@ -84,9 +83,9 @@ public class DisplayObjectData : MonoBehaviour
         {
             floatingLabel = Instantiate(GameManager.instance.floatingLabelModel, transform).GetComponent<TextMeshPro>();
             if (boxSize.x >= boxSize.z)
-                floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.z);
+                floatingLabel.rectTransform.sizeDelta = new(boxSize.z, boxSize.z);
             else
-                floatingLabel.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.x);
+                floatingLabel.rectTransform.sizeDelta = new(boxSize.x, boxSize.x);
         }
 
         switch (_labelPos)
@@ -95,14 +94,14 @@ public class DisplayObjectData : MonoBehaviour
                 if (!labelFront)
                     labelFront = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelFront.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
-                labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
+                labelFront.rectTransform.sizeDelta = new(boxSize.x, boxSize.y);
                 labelFront.name = "LabelFront";
                 usedLabels.Add(labelFront);
 
                 if (!labelRear)
                     labelRear = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelRear.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
-                labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
+                labelRear.rectTransform.sizeDelta = new(boxSize.x, boxSize.y);
                 labelRear.name = "LabelRear";
                 usedLabels.Add(labelRear);
                 break;
@@ -110,7 +109,7 @@ public class DisplayObjectData : MonoBehaviour
                 if (!labelFront)
                     labelFront = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelFront.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.forward), transform.rotation * Quaternion.Euler(0, 180, 0));
-                labelFront.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
+                labelFront.rectTransform.sizeDelta = new(boxSize.x, boxSize.y);
                 labelFront.name = "LabelFront";
                 usedLabels.Add(labelFront);
                 break;
@@ -118,7 +117,7 @@ public class DisplayObjectData : MonoBehaviour
                 if (!labelRear)
                     labelRear = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelRear.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.z + 0.002f) / 2 * Vector3.back), transform.rotation * Quaternion.Euler(0, 0, 0));
-                labelRear.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.y);
+                labelRear.rectTransform.sizeDelta = new(boxSize.x, boxSize.y);
                 labelRear.name = "LabelRear";
                 usedLabels.Add(labelRear);
                 break;
@@ -126,7 +125,7 @@ public class DisplayObjectData : MonoBehaviour
                 if (!labelRight)
                     labelRight = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelRight.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.right), transform.rotation * Quaternion.Euler(0, -90, 0));
-                labelRight.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
+                labelRight.rectTransform.sizeDelta = new(boxSize.z, boxSize.y);
                 labelRight.name = "LabelRight";
                 usedLabels.Add(labelRight);
                 break;
@@ -134,7 +133,7 @@ public class DisplayObjectData : MonoBehaviour
                 if (!labelLeft)
                     labelLeft = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelLeft.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.x + 0.002f) / 2 * Vector3.left), transform.rotation * Quaternion.Euler(0, 90, 0));
-                labelLeft.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.y);
+                labelLeft.rectTransform.sizeDelta = new(boxSize.z, boxSize.y);
                 labelLeft.name = "LabelLeft";
                 usedLabels.Add(labelLeft);
                 break;
@@ -143,11 +142,11 @@ public class DisplayObjectData : MonoBehaviour
                     labelTop = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelTop.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.up), transform.rotation * Quaternion.Euler(90, 180, 0));
                 if (boxSize.x >= boxSize.z)
-                    labelTop.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+                    labelTop.rectTransform.sizeDelta = new(boxSize.x, boxSize.z);
                 else
                 {
-                    labelTop.transform.localEulerAngles = new Vector3(90, 0, -90);
-                    labelTop.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
+                    labelTop.transform.localEulerAngles = new(90, 0, -90);
+                    labelTop.rectTransform.sizeDelta = new(boxSize.z, boxSize.x);
                 }
                 labelTop.name = "LabelTop";
                 usedLabels.Add(labelTop);
@@ -157,11 +156,11 @@ public class DisplayObjectData : MonoBehaviour
                     labelBottom = Instantiate(GameManager.instance.labelModel, transform).GetComponent<TextMeshPro>();
                 labelBottom.rectTransform.SetPositionAndRotation(shape.position + transform.rotation * ((boxSize.y + 0.002f) / 2 * Vector3.down), transform.rotation * Quaternion.Euler(-90, 0, 0));
                 if (boxSize.x >= boxSize.z)
-                    labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.x, boxSize.z);
+                    labelBottom.rectTransform.sizeDelta = new(boxSize.x, boxSize.z);
                 else
                 {
-                    labelBottom.transform.localEulerAngles = new Vector3(90, 0, -90);
-                    labelBottom.rectTransform.sizeDelta = new Vector2(boxSize.z, boxSize.x);
+                    labelBottom.transform.localEulerAngles = new(90, 0, -90);
+                    labelBottom.rectTransform.sizeDelta = new(boxSize.z, boxSize.x);
                 }
                 labelBottom.name = "LabelBottom";
                 usedLabels.Add(labelBottom);
@@ -330,8 +329,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if ((item && item.referent == item && !GameManager.instance.GetSelected().Contains(gameObject)) ||
             GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
-            GameManager.instance.GetFocused().Contains(transform.parent.gameObject)
-            )
+            GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
             SwitchLabel(_e.value);
     }
 
@@ -366,9 +364,7 @@ public class DisplayObjectData : MonoBehaviour
     {
         string pattern = "[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_value, pattern))
-        {
             backgroundColor = _value;
-        }
         else
             GameManager.instance.AppendLogLine("Unknown color", ELogTarget.both, ELogtype.warning);
     }

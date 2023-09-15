@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System.Collections;
 using TMPro;
-using UnityEditor;
+using UnityEngine;
 
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DebugText : MonoBehaviour

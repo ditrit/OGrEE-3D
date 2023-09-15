@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CustomerGenerator
 {
@@ -17,7 +15,7 @@ public class CustomerGenerator
             return null;
         }
 
-        GameObject newDomain = new GameObject(_do.name);
+        GameObject newDomain = new(_do.name);
         Domain domain = newDomain.AddComponent<Domain>();
         domain.UpdateFromSApiObject(_do);
 
@@ -39,7 +37,7 @@ public class CustomerGenerator
             return null;
         }
 
-        GameObject newSite = new GameObject(_si.name);
+        GameObject newSite = new(_si.name);
 
         OgreeObject site = newSite.AddComponent<OgreeObject>();
         site.UpdateFromSApiObject(_si);

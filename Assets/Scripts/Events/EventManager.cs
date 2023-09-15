@@ -17,7 +17,7 @@ public class EventManager
 
     public class EventWrap<T> where T : CustomEvent
     {
-        private readonly HashSet<EventDelegate<T>> handlers = new HashSet<EventDelegate<T>>();
+        private readonly HashSet<EventDelegate<T>> handlers = new();
         private event EventDelegate<T> EventDelegate
         {
             add => handlers.Add(value);
@@ -38,24 +38,24 @@ public class EventManager
         }
     }
 
-    public EventWrap<OnFocusEvent> OnFocus = new EventWrap<OnFocusEvent>();
-    public EventWrap<OnUnFocusEvent> OnUnFocus = new EventWrap<OnUnFocusEvent>();
-    public EventWrap<OnSelectItemEvent> OnSelectItem = new EventWrap<OnSelectItemEvent>();
-    public EventWrap<OnMouseHoverEvent> OnMouseHover = new EventWrap<OnMouseHoverEvent>();
-    public EventWrap<OnMouseUnHoverEvent> OnMouseUnHover = new EventWrap<OnMouseUnHoverEvent>();
-    public EventWrap<HighlightEvent> Highlight = new EventWrap<HighlightEvent>();
-    public EventWrap<ImportFinishedEvent> ImportFinished = new EventWrap<ImportFinishedEvent>();
-    public EventWrap<ChangeCursorEvent> ChangeCursor = new EventWrap<ChangeCursorEvent>();
-    public EventWrap<UpdateDomainEvent> UpdateDomain = new EventWrap<UpdateDomainEvent>();
-    public EventWrap<SwitchLabelEvent> SwitchLabel = new EventWrap<SwitchLabelEvent>();
-    public EventWrap<EditModeInEvent> EditModeIn = new EventWrap<EditModeInEvent>();
-    public EventWrap<EditModeOutEvent> EditModeOut = new EventWrap<EditModeOutEvent>();
-    public EventWrap<ConnectApiEvent> ConnectApi = new EventWrap<ConnectApiEvent>();
-    public EventWrap<TemperatureDiagramEvent> TemperatureDiagram = new EventWrap<TemperatureDiagramEvent>();
-    public EventWrap<TemperatureColorEvent> TemperatureColor = new EventWrap<TemperatureColorEvent>();
-    public EventWrap<TemperatureScatterPlotEvent> TemperatureScatterPlot = new EventWrap<TemperatureScatterPlotEvent>();
-    public EventWrap<RightClickEvent> RightClick = new EventWrap<RightClickEvent>();
-    public EventWrap<CancelGenerateEvent> CancelGenerate = new EventWrap<CancelGenerateEvent>();
+    public EventWrap<OnFocusEvent> OnFocus = new();
+    public EventWrap<OnUnFocusEvent> OnUnFocus = new();
+    public EventWrap<OnSelectItemEvent> OnSelectItem = new();
+    public EventWrap<OnMouseHoverEvent> OnMouseHover = new();
+    public EventWrap<OnMouseUnHoverEvent> OnMouseUnHover = new();
+    public EventWrap<HighlightEvent> Highlight = new();
+    public EventWrap<ImportFinishedEvent> ImportFinished = new();
+    public EventWrap<ChangeCursorEvent> ChangeCursor = new();
+    public EventWrap<UpdateDomainEvent> UpdateDomain = new();
+    public EventWrap<SwitchLabelEvent> SwitchLabel = new();
+    public EventWrap<EditModeInEvent> EditModeIn = new();
+    public EventWrap<EditModeOutEvent> EditModeOut = new();
+    public EventWrap<ConnectApiEvent> ConnectApi = new();
+    public EventWrap<TemperatureDiagramEvent> TemperatureDiagram = new();
+    public EventWrap<TemperatureColorEvent> TemperatureColor = new();
+    public EventWrap<TemperatureScatterPlotEvent> TemperatureScatterPlot = new();
+    public EventWrap<RightClickEvent> RightClick = new();
+    public EventWrap<CancelGenerateEvent> CancelGenerate = new();
 
     /// <summary>
     /// Raise the event to all the listeners
