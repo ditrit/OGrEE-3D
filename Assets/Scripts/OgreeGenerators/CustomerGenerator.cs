@@ -39,7 +39,7 @@ public class CustomerGenerator
 
         GameObject newSite = new(_si.name);
 
-        OgreeObject site = newSite.AddComponent<OgreeObject>();
+        OgreeObject site = newSite.AddComponent<Site>();
         site.UpdateFromSApiObject(_si);
 
         GameManager.instance.allItems.Add(site.id, newSite);
