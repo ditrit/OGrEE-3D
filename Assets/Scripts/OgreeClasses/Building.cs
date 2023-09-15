@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class Building : OgreeObject
@@ -95,8 +95,7 @@ public class Building : OgreeObject
 
         foreach (Transform child in walls)
         {
-            Renderer rend = child.GetComponent<Renderer>();
-            if (rend)
+            if (child.TryGetComponent(out Renderer rend))
                 rend.material.color = color;
         }
         Transform roof = transform.Find("Roof");

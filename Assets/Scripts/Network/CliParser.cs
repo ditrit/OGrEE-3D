@@ -108,8 +108,7 @@ public class CliParser
                 }
                 else
                 {
-                    GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
-                    if (objToDel)
+                    if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToDel)
                         await GameManager.instance.DeleteItem(objToDel, false);
                     else
                         GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
@@ -118,8 +117,7 @@ public class CliParser
             case CommandType.Focus:
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
-                GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
-                if (objToFocus)
+                if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToFocus)
                 {
                     await GameManager.instance.SetCurrentItem(objToFocus);
                     await GameManager.instance.FocusItem(objToFocus);
@@ -196,9 +194,8 @@ public class CliParser
 
             foreach (string id in leafIds)
             {
-                Transform leaf = Utils.GetObjectById(id)?.transform;
-                if (leaf)
-                    Utils.RebuildLods(leaf);
+                if (Utils.GetObjectById(id) is GameObject leaf)
+                    Utils.RebuildLods(leaf.transform);
             }
 
             if (canDraw)
@@ -223,7 +220,7 @@ public class CliParser
             await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool domainColorChanged = (newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"]);
+        bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
 
         // Case color for racks & devices
         if (obj is Item item)
@@ -231,16 +228,14 @@ public class CliParser
             if (newData.category != Category.Corridor)
             {
                 if (newData.attributes.ContainsKey("color")
-                    && (!item.attributes.ContainsKey("color")
-                        || item.attributes["color"] != newData.attributes["color"]))
+                    && (!item.attributes.ContainsKey("color") || item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
             }
             // Case temperature for corridors
             else
             {
                 if (newData.attributes.ContainsKey("temperature")
-                    && (!item.attributes.ContainsKey("temperature")
-                        || item.attributes["temperature"] != newData.attributes["temperature"]))
+                    && (!item.attributes.ContainsKey("temperature") || item.attributes["temperature"] != newData.attributes["temperature"]))
                 {
                     if (newData.attributes["temperature"] == "cold")
                         item.SetColor("000099");

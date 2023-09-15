@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -242,8 +242,7 @@ public class DisplayObjectData : MonoBehaviour
             tmp.text = _str;
             if (_face)
             {
-                OgreeObject obj = GetComponent<OgreeObject>();
-                if (obj && obj is Rack)
+                if (TryGetComponent(out Rack _))
                 {
                     if (tmp == labelFront)
                         tmp.text += " (F)";

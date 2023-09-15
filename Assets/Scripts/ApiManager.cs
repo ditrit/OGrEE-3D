@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -351,7 +351,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
             return;
         }
-        Debug.Log(_json);
+        // Debug.Log(_json);
         string fullPath = $"{server}/{_type}-templates";
 
         StringContent content = new(_json, System.Text.Encoding.UTF8, "application/json");
@@ -450,9 +450,8 @@ public class ApiManager : MonoBehaviour
 
         foreach (string id in leafIds)
         {
-            Transform leaf = Utils.GetObjectById(id)?.transform;
-            if (leaf)
-                Utils.RebuildLods(leaf);
+            if (Utils.GetObjectById(id) is GameObject leaf)
+                Utils.RebuildLods(leaf.transform);
         }
 
         if (canDraw)
@@ -460,7 +459,11 @@ public class ApiManager : MonoBehaviour
         canDraw = true;
     }
 
-    ///
+    /// <summary>
+    /// Use response from API to get a temperatureUnit.
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns>A temperature unit if correct response from API or an empty string</returns>
     public Task<string> TempUnitFromAPI(string _input)
     {
         if (_input.Contains("successfully got temperatureUnit from object's parent site"))

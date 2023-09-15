@@ -323,7 +323,7 @@ public class Inputs : MonoBehaviour
     {
         float sensitivity = 0.2f;
 
-        Vector3 mouseOffset = (Input.mousePosition - mouseRef);
+        Vector3 mouseOffset = Input.mousePosition - mouseRef;
         Vector3 rotation = Vector3.zero;
         if (target.GetComponent<Rack>())
         {
@@ -332,8 +332,8 @@ public class Inputs : MonoBehaviour
         }
         else if (target.GetComponent<Device>())
         {
-            rotation.y = -(mouseOffset.x) * sensitivity;
-            rotation.x = -(mouseOffset.y) * sensitivity;
+            rotation.y = -mouseOffset.x * sensitivity;
+            rotation.x = -mouseOffset.y * sensitivity;
             target.eulerAngles += rotation;
         }
         mouseRef = Input.mousePosition;

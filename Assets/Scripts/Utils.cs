@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -218,7 +218,7 @@ public static class Utils
         float v213 = _p2.x * _p1.y * _p3.z;
         float v123 = _p1.x * _p2.y * _p3.z;
 
-        return (1.0f / 6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
+        return (-v321 + v231 + v312 - v132 - v213 + v123) / 6;
     }
 
     /// <summary>

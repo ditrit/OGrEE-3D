@@ -540,9 +540,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     private void NameUnderMouse()
     {
-        GameObject obj = Utils.RaycastFromCameraToMouse();
-        if (obj && obj.GetComponent<OgreeObject>())
-            mouseName.text = obj.GetComponent<OgreeObject>().id.Replace(".", "/");
+        if (Utils.RaycastFromCameraToMouse() is GameObject go && go.TryGetComponent(out OgreeObject obj))
+            mouseName.text = obj.id.Replace(".", "/");
         else
             mouseName.text = "";
     }
@@ -721,9 +720,9 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.GetSelected().Count == 1)
             selectionInputField.text = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().id.Replace(".", "/");
         else if (GameManager.instance.GetSelected().Count > 1)
-            selectionInputField.text = ("Multiple selection");
+            selectionInputField.text = "Multiple selection";
         else
-            selectionInputField.text = ("");
+            selectionInputField.text = "";
     }
 
     ///<summary>
@@ -828,12 +827,10 @@ public class UiManager : MonoBehaviour
             UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
             return;
         }
-        Rack rack = Utils.GetRackReferent(menuTarget.GetComponent<Item>());
-        if (!rack)
+        if (!Utils.GetRackReferent(menuTarget.GetComponent<Item>()))
             return;
 
         UHelpersManager.instance.ToggleU(menuTarget);
-
         toggleUHelpersBtn.Check();
     }
 
@@ -895,8 +892,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        GameObject obj = GameManager.instance.GetSelected()[0];
-        if (obj)
+        if (GameManager.instance.GetSelected()[0] is GameObject obj)
             obj.GetComponent<OgreeObject>().ResetTransform();
     }
 
@@ -905,13 +901,12 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetChildrenTransforms()
     {
-        GameObject obj = GameManager.instance.GetSelected()[0];
-        if (obj)
+        if (GameManager.instance.GetSelected()[0] is GameObject obj)
         {
             foreach (Transform child in obj.transform)
             {
-                if (child.GetComponent<OgreeObject>())
-                    child.GetComponent<OgreeObject>().ResetTransform();
+                if (child.GetComponent<OgreeObject>() is OgreeObject childObj)
+                    childObj.ResetTransform();
             }
         }
     }
@@ -932,8 +927,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleGroupContent()
     {
-        Group group = menuTarget.GetComponent<Group>();
-        group.ToggleContent(group.isDisplayed);
+        if (menuTarget.GetComponent<Group>() is Group group)
+            group.ToggleContent(group.isDisplayed);
     }
 
     ///<summary>
@@ -1045,7 +1040,7 @@ public class UiManager : MonoBehaviour
     public void UpdateTimerValue(float _value)
     {
         slider.value = _value;
-        GameManager.instance.server.timer = (int)(_value);
+        GameManager.instance.server.timer = (int)_value;
         value.text = _value.ToString("0.##") + "s";
     }
 
@@ -1196,8 +1191,7 @@ public class UiManager : MonoBehaviour
         int depth = 0;
         foreach (Transform child in _ogreeObject.gameObject.transform)
         {
-            OgreeObject childOgree = child.GetComponent<OgreeObject>();
-            if (childOgree)
+            if (child.GetComponent<OgreeObject>() is OgreeObject childOgree)
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
         }
         return depth;

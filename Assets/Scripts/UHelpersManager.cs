@@ -69,12 +69,14 @@ public class UHelpersManager : MonoBehaviour
             HighlightULocation(GameManager.instance.GetSelected());
         }
         foreach (Item item in lastSelectedReferent)
+        {
             if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
                 ToggleU(item.referent.gameObject, false);
             }
+        }
         lastSelectedReferent = GameManager.instance.GetSelectedReferents();
     }
 
@@ -88,9 +90,9 @@ public class UHelpersManager : MonoBehaviour
             return;
         bool first = true;
         Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<Item>());
-        foreach (Item oObject in _selection.Select(go => go.GetComponent<Item>()))
+        foreach (Item item in _selection.Select(go => go.GetComponent<Item>()))
         {
-            if (oObject is Rack rack)
+            if (item is Rack rack)
             {
                 rack.uRoot.gameObject.SetActive(true);
                 for (int i = 0; i < rack.uRoot.GetChild(0).childCount; i++)
@@ -111,7 +113,7 @@ public class UHelpersManager : MonoBehaviour
                     first = false;
                 }
                 float difference;
-                Transform t = oObject.transform.GetChild(0);
+                Transform t = item.transform.GetChild(0);
                 float center = t.position.y;
 
                 BoxCollider boxCollider = t.GetComponent<BoxCollider>();
@@ -120,7 +122,7 @@ public class UHelpersManager : MonoBehaviour
                 difference = boxCollider.bounds.extents.y;
                 boxCollider.enabled = isEnabled;
 
-                t = oObject.transform;
+                t = item.transform;
                 float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
                 float lowerBound = center - difference - delta;
                 float upperBound = center + difference - delta;

@@ -107,7 +107,7 @@ public static class NonSquareBuildingGenerator
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new(_template);
 
-        BuildFloor(_room, data, data.offset, (_template.floorUnit == LengthUnit.Tile));
+        BuildFloor(_room, data, data.offset, _template.floorUnit == LengthUnit.Tile);
         _room.GetChild(0).localPosition += new Vector3(0, 0.001f, 0);
         BuildWalls(_room, data);
         TMPro.TextMeshPro nameText = _room.GetComponent<Room>().nameText;

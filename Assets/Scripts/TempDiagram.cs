@@ -61,11 +61,14 @@ public class TempDiagram : MonoBehaviour
             case LengthUnit.Meter:
                 break;
             case LengthUnit.Centimeter:
-                roomHeight /= 100; break;
+                roomHeight /= 100;
+                break;
             case LengthUnit.Millimeter:
-                roomHeight /= 1000; break;
+                roomHeight /= 1000;
+                break;
             default:
-                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning); break;
+                GameManager.instance.AppendLogLine($"Room height unit not supported :{_room.attributes["heightUnit"]}", ELogTarget.both, ELogtype.warning);
+                break;
         }
 
         EventManager.instance.Raise(new TemperatureDiagramEvent(_room));
@@ -117,7 +120,7 @@ public class TempDiagram : MonoBehaviour
         GameObject sensorBar;
         STemp tempInfos = _item.GetTemperatureInfos();
         (int tempMin, int tempMax) = GameManager.instance.configHandler.GetTemperatureLimit(_tempUnit);
-        if (!float.IsNaN(tempInfos.mean) && (tempMin, tempMax) != (0,0))
+        if (!float.IsNaN(tempInfos.mean) && (tempMin, tempMax) != (0, 0))
         {
             float height = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, _roomheight);
             float heigthStd = Utils.MapAndClamp(tempInfos.std, tempMin, tempMax, 0, _roomheight);
