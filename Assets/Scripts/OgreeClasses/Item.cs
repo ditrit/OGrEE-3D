@@ -83,8 +83,7 @@ public class Item : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
-        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
-        if (validColor)
+        if (ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor))
         {
             color = newColor;
             GetComponent<ObjectDisplayController>().ChangeColor(color);
@@ -194,15 +193,9 @@ public class Item : OgreeObject
         {
             Item childItem = child.GetComponent<Item>();
             if (childItem)
-            {
                 temps.Add((childItem.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childItem.name));
-            }
-            else
-            {
-                Sensor childSensor = child.GetComponent<Sensor>();
-                if (childSensor && childSensor.fromTemplate && !float.IsNaN(childSensor.temperature))
-                    sensorsTemps.Add((childSensor.temperature, childSensor.name));
-            }
+            else if (child.GetComponent<Sensor>() is Sensor childSensor && childSensor.fromTemplate && !float.IsNaN(childSensor.temperature))
+                sensorsTemps.Add((childSensor.temperature, childSensor.name));
         }
 
         float mean = float.NaN;

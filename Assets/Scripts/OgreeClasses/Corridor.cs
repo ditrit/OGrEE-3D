@@ -8,10 +8,9 @@ public class Corridor : Item
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public new void SetColor(string _hex)
     {
-        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor);
-        newColor.a = 0.5f;
-        if (validColor)
+        if (ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor))
         {
+            newColor.a = 0.5f;
             color = newColor;
             GetComponent<ObjectDisplayController>().ChangeColor(color);
         }
