@@ -221,7 +221,6 @@ public static class NonSquareBuildingGenerator
         meshFloor.RecalculateNormals();
 
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
-
         floor.GetComponent<MeshCollider>().convex = false;
 
         //For building only : roof

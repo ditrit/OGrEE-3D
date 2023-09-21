@@ -583,7 +583,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             return false;
 
-        if (focus[focus.Count - 1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
+        if (focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
             return true;
         return false;
     }

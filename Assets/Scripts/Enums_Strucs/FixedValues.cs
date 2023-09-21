@@ -222,7 +222,7 @@ public class DefaultValues
 #else
     public const string DefaultConfigPath = "../OGrEE-Core/config.toml";
 #endif
-    public static readonly SConfig Config = new SConfig
+    public static readonly SConfig Config = new()
     {
         verbose = false,
         fullscreen = false,
@@ -230,12 +230,12 @@ public class DefaultValues
         cacheLimitMo = 100,
         cliPort = 5500,
         alphaOnInteract = 50,
-        textures = new Dictionary<string, string>()
+        textures = new()
         {
             { "perf22", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png" },
             { "perf29", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf29.png" }
         },
-        colors = new Dictionary<string, string>()
+        colors = new()
         {
             { "selection", "#21FF00" },
             { "edit", "#C900FF" },

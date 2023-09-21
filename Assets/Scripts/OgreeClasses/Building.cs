@@ -35,13 +35,13 @@ public class Building : OgreeObject
         if (!GetComponentInChildren<Room>())
         {
             nameText.gameObject.SetActive(true);
-            nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, roof.localPosition.y + 0.005f, nameText.transform.localPosition.z);
+            nameText.transform.localPosition = new(nameText.transform.localPosition.x, roof.localPosition.y + 0.005f, nameText.transform.localPosition.z);
             roof.gameObject.SetActive(true);
         }
         else
         {
             nameText.gameObject.SetActive(false);
-            nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
+            nameText.transform.localPosition = new(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
             roof.gameObject.SetActive(false);
         }
     }
@@ -89,7 +89,7 @@ public class Building : OgreeObject
             return;
         }
 
-        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
+        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
 
         Color color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
 

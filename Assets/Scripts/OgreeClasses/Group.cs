@@ -9,7 +9,7 @@ public class Group : Item
     protected override void Start()
     {
         base.Start();
-        content = new List<GameObject>();
+        content = new();
 
         string[] names = attributes["content"].Split(',');
         foreach (string rn in names)

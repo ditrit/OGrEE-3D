@@ -18,7 +18,7 @@ public class TcpConnection : AConnection
     public override void StartConnection(int _receivePort)
     {
         cliPort = _receivePort;
-        comThread = new Thread(ConnexionLoop)
+        comThread = new(ConnexionLoop)
         {
             IsBackground = true
         };
@@ -31,7 +31,7 @@ public class TcpConnection : AConnection
     {
         try
         {
-            server = new TcpListener(IPAddress.Any, cliPort);
+            server = new(IPAddress.Any, cliPort);
             server.Start();
             while (threadRunning)
             {
@@ -118,7 +118,7 @@ public class TcpConnection : AConnection
         try
         {
             byte[] msgBuffer = Encoding.UTF8.GetBytes(_message);
-            Int32 size = msgBuffer.Length;
+            int size = msgBuffer.Length;
             byte[] sizeBuffer = BitConverter.GetBytes(size);
             netStream.Write(sizeBuffer, 0, 4);
             netStream.Write(msgBuffer, 0, size);

@@ -221,7 +221,7 @@ public class Item : OgreeObject
             max = tempsNoNaN.Max(v => v.temp);
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
-        return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
+        return new(mean, std, min, max, hottestChild, temperatureUnit);
     }
 
 }

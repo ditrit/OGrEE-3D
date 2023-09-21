@@ -12,9 +12,9 @@ public class PolyLabel
     /// Returns the most distant point inside a polygon from its exterior and its distance from the exterior
     /// </summary>
     /// <param name="_vertices">The vertices defining the exterior of a polygon</param>
-    /// <param name="precision">The precision needed of the pole of isolation</param>
+    /// <param name="_precision">The precision needed of the pole of isolation</param>
     /// <returns>The radius and the center of the biggest center entirely contained in the polygon</returns>
-    public static (float radius, Vector2 pole) FindPoleOfIsolation(List<Vector2> _vertices, float precision = 1)
+    public static (float radius, Vector2 pole) FindPoleOfIsolation(List<Vector2> _vertices, float _precision = 1)
     {
         float minX = float.MaxValue;
         float minY = float.MaxValue;
@@ -57,7 +57,7 @@ public class PolyLabel
             if (cell.distance > bestCell.distance)
                 bestCell = cell;
 
-            if (cell.maxDistance - bestCell.distance <= precision)
+            if (cell.maxDistance - bestCell.distance <= _precision)
                 continue;
 
             h = cell.halfSize / 2;
@@ -115,7 +115,7 @@ public class PolyLabel
         centroidX /= 6 * totalArea;
         centroidY /= 6 * totalArea;
 
-        return new Vector2(centroidX, centroidY);
+        return new(centroidX, centroidY);
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public class PolyLabel
 
         public PriorityQueue()
         {
-            list = new List<(Cell e, float p)>();
+            list = new();
         }
 
         /// <summary>

@@ -581,7 +581,7 @@ public class ObjectGenerator
         newSensor.name = "sensor";
 
         Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
-        newSensor.transform.localPosition = new Vector3(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
+        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
         if (parentOgree is Rack)
         {
             float uXSize = UnitValue.OU;

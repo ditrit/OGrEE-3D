@@ -190,7 +190,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_obj">The OgreeObject to delete</param>
     public void CreateDeleteRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest
+        SRequest request = new()
         {
             type = "delete",
             path = $"/{_obj.category}s/{_obj.id}"

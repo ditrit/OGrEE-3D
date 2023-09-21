@@ -29,7 +29,7 @@ public class CustomerGenerator
     ///<param name="_si">The site data to apply</param>
     ///<param name="_parent">The parent of the created site</param>
     ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SApiObject _si)
+    public Site CreateSite(SApiObject _si)
     {
         if (GameManager.instance.allItems.Contains(_si.id))
         {
@@ -39,7 +39,7 @@ public class CustomerGenerator
 
         GameObject newSite = new(_si.name);
 
-        OgreeObject site = newSite.AddComponent<Site>();
+        Site site = newSite.AddComponent<Site>();
         site.UpdateFromSApiObject(_si);
 
         GameManager.instance.allItems.Add(site.id, newSite);

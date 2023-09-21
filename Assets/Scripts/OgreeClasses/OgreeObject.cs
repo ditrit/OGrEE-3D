@@ -46,7 +46,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     public void OnAfterDeserialize()
     {
-        attributes = new Dictionary<string, string>();
+        attributes = new();
         for (int i = 0; i < attributesKeys.Count; i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
@@ -151,7 +151,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         {
             foreach (Transform child in transform)
             {
-                if (child.GetComponent<OgreeObject>() is OgreeObject obj)
+                if (child.TryGetComponent(out OgreeObject obj))
                     obj.SetCurrentLod(currentLod - 1);
             }
         }

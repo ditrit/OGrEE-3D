@@ -156,7 +156,7 @@ public class Room : Building
     ///</summary>
     private void BuildTilesName()
     {
-        GameObject root = new GameObject("tilesNameRoot");
+        GameObject root = new("tilesNameRoot");
         root.transform.parent = transform;
         root.transform.localPosition = usableZone.localPosition;
         root.transform.localPosition += new Vector3(UnitValue.Tile, 0.003f, UnitValue.Tile) / 2;
@@ -191,7 +191,7 @@ public class Room : Building
             Transform root = transform.Find("Floor");
             if (root)
             {
-                List<SColor> customColors = new List<SColor>();
+                List<SColor> customColors = new();
                 if (attributes.ContainsKey("colors"))
                     customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
                 foreach (Transform tileObj in root)
@@ -202,7 +202,7 @@ public class Room : Building
 
                     if (!_value)
                     {
-                        tile.GetComponent<Renderer>().material = new Material(tile.defaultMat);
+                        tile.GetComponent<Renderer>().material = new(tile.defaultMat);
                         tile.modified = false;
                         continue;
                     }
@@ -239,7 +239,7 @@ public class Room : Building
             Transform root = transform.Find("Floor");
             if (root)
             {
-                List<SColor> customColors = new List<SColor>();
+                List<SColor> customColors = new();
                 if (attributes.ContainsKey("colors"))
                     customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
                 foreach (Transform tileObj in root)
@@ -270,7 +270,7 @@ public class Room : Building
     ///</summary>
     private void BuildTilesColor()
     {
-        GameObject root = new GameObject("tilesColorRoot");
+        GameObject root = new("tilesColorRoot");
         root.transform.parent = transform;
         root.transform.localPosition = usableZone.localPosition;
         root.transform.localPosition += new Vector3(UnitValue.Tile, 0.002f, UnitValue.Tile) / 2;
@@ -293,14 +293,14 @@ public class Room : Building
         {
             case AxisOrientation.Default:
                 // Lower Left   
-                orient = new Vector2(1, 1);
+                orient = new(1, 1);
                 offsetX = (int)-reserved.left;
                 offsetY = (int)-reserved.bottom;
                 break;
 
             case AxisOrientation.XMinus:
                 // Lower Right
-                orient = new Vector2(-1, 1);
+                orient = new(-1, 1);
                 offsetX = (int)-reserved.right;
                 offsetY = (int)-reserved.bottom;
                 _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, 0);
@@ -308,7 +308,7 @@ public class Room : Building
 
             case AxisOrientation.YMinus:
                 // Upper Left
-                orient = new Vector2(1, -1);
+                orient = new(1, -1);
                 offsetX = (int)-reserved.left;
                 offsetY = (int)-reserved.top;
                 _root.transform.localPosition -= new Vector3(0, 0, UnitValue.Tile);
@@ -316,7 +316,7 @@ public class Room : Building
 
             case AxisOrientation.BothMinus:
                 // Upper Right
-                orient = new Vector2(-1, -1);
+                orient = new(-1, -1);
                 offsetX = (int)-reserved.right;
                 offsetY = (int)-reserved.top;
                 _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, UnitValue.Tile);
@@ -408,8 +408,8 @@ public class Room : Building
                 GameObject tile = Instantiate(GameManager.instance.tileModel);
                 tile.name = $"Color_{_id}";
                 tile.transform.parent = _root;
-                tile.transform.localPosition = new Vector3(_pos.x, 0, _pos.y);
-                tile.transform.localEulerAngles = new Vector3(0, 180, 0);
+                tile.transform.localPosition = new(_pos.x, 0, _pos.y);
+                tile.transform.localEulerAngles = new(0, 180, 0);
                 if (!string.IsNullOrEmpty(tileData.texture))
                 {
                     Renderer rend = tile.GetComponent<Renderer>();
@@ -496,7 +496,7 @@ public class Room : Building
         separator.transform.parent = walls;
 
         // Set textured box
-        separator.transform.GetChild(0).localScale = new Vector3(length, height, 0.001f);
+        separator.transform.GetChild(0).localScale = new(length, height, 0.001f);
         separator.transform.GetChild(0).localPosition = new Vector3(length, height, 0) / 2;
         Renderer rend = separator.transform.GetChild(0).GetComponent<Renderer>();
         if (_sep.type == "wireframe")
@@ -508,14 +508,14 @@ public class Room : Building
         if (technicalZone)
         {
             Vector3 roomScale = technicalZone.localScale * -5;
-            separator.transform.localPosition = new Vector3(roomScale.x, 0, roomScale.z);
+            separator.transform.localPosition = new(roomScale.x, 0, roomScale.z);
         }
         else
             separator.transform.localPosition = Vector3.zero;
 
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
-        separator.transform.localEulerAngles = new Vector3(0, -angle, 0);
+        separator.transform.localEulerAngles = new(0, -angle, 0);
     }
 
     ///<summary>
