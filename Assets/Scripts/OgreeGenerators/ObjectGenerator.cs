@@ -632,22 +632,16 @@ public class ObjectGenerator
                 case AxisOrientation.XMinus:
                     // Lower Right corner of the room
                     orient = new Vector2(-1, 1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
                     break;
 
                 case AxisOrientation.YMinus:
                     // Upper Left corner of the room
                     orient = new Vector2(1, -1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
                     break;
 
                 case AxisOrientation.BothMinus:
                     // Upper Right corner of the room
                     orient = new Vector2(-1, -1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
                     break;
             }
         }
