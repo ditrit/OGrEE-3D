@@ -892,8 +892,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        if (GameManager.instance.GetSelected()[0] is GameObject obj)
-            obj.GetComponent<OgreeObject>().ResetTransform();
+        GameManager.instance.GetSelected()[0]?.GetComponent<OgreeObject>().ResetTransform();
     }
 
     ///<summary>
@@ -904,10 +903,7 @@ public class UiManager : MonoBehaviour
         if (GameManager.instance.GetSelected()[0] is GameObject obj)
         {
             foreach (Transform child in obj.transform)
-            {
-                if (child.GetComponent<OgreeObject>() is OgreeObject childObj)
-                    childObj.ResetTransform();
-            }
+                child.GetComponent<OgreeObject>()?.ResetTransform();
         }
     }
 

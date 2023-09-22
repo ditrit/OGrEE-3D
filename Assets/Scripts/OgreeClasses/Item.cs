@@ -50,18 +50,11 @@ public class Item : OgreeObject
                 SetTemperature(_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
-                try
-                {
-                    List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
-                    if (lengths != null && lengths.Count == 5)
-                        clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
-                    else
-                        GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError(e);
-                }
+                List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
+                if (lengths != null && lengths.Count == 5)
+                    clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
+                else
+                    GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
             }
         }
 

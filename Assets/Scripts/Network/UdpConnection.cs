@@ -94,7 +94,7 @@ public class UdpConnection : AConnection
 
     public override void Send(string _message)
     {
-        Debug.Log(string.Format($"Send msg to ip:{senderIp}:{cliPort} msg: {_message}"));
+        Debug.Log($"Send msg to ip:{senderIp}:{cliPort} msg: {_message}");
         IPEndPoint serverEndpoint = new(IPAddress.Parse(senderIp), cliPort);
         byte[] sendBytes = Encoding.UTF8.GetBytes(_message);
         udpClient.Send(sendBytes, sendBytes.Length, serverEndpoint);
