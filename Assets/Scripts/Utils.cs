@@ -13,13 +13,9 @@ public static class Utils
     ///<returns>The parsed Vector2</returns>
     public static Vector2 ParseVector2(string _input)
     {
-        Vector2 res = new Vector2();
-
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = ParseDecFrac(parts[0]);
-        res.y = ParseDecFrac(parts[1]);
-        return res;
+        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]));
     }
 
     ///<summary>
@@ -30,22 +26,12 @@ public static class Utils
     ///<returns>The parsed Vector3</returns>
     public static Vector3 ParseVector3(string _input, bool _ZUp = true)
     {
-        Vector3 res = new Vector3();
-
         _input = _input.Trim('[', ']');
         string[] parts = _input.Split(',');
-        res.x = ParseDecFrac(parts[0]);
         if (_ZUp)
-        {
-            res.y = ParseDecFrac(parts[2]);
-            res.z = ParseDecFrac(parts[1]);
-        }
+            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[2]), ParseDecFrac(parts[1]));
         else
-        {
-            res.y = ParseDecFrac(parts[1]);
-            res.z = ParseDecFrac(parts[2]);
-        }
-        return res;
+            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]));
     }
 
     ///<summary>
@@ -129,7 +115,7 @@ public static class Utils
     {
         string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
 
-        List<GameObject> objects = new List<GameObject>();
+        List<GameObject> objects = new();
         foreach (string objId in ids)
         {
             if (GameManager.instance.allItems.Contains(objId))
@@ -157,7 +143,7 @@ public static class Utils
     public static Color InvertColor(Color _color)
     {
         float max = _color.maxColorComponent;
-        return new Color(max - _color.r / 3, max - _color.g / 3, max - _color.b / 3, _color.a);
+        return new(max - _color.r / 3, max - _color.g / 3, max - _color.b / 3, _color.a);
     }
 
     ///<summary>
@@ -232,7 +218,7 @@ public static class Utils
         float v213 = _p2.x * _p1.y * _p3.z;
         float v123 = _p1.x * _p2.y * _p3.z;
 
-        return (1.0f / 6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
+        return (-v321 + v231 + v312 - v132 - v213 + v123) / 6;
     }
 
     /// <summary>
@@ -348,6 +334,6 @@ public static class Utils
     /// <returns>A Z-Up oriented vector</returns>
     public static Vector3 ZAxisUp(this Vector3 _v)
     {
-        return new Vector3(_v.x, _v.z, _v.y);
+        return new(_v.x, _v.z, _v.y);
     }
 }

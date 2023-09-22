@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager instance;
     public Server server;
-    public ConfigHandler configHandler = new ConfigHandler();
+    public ConfigHandler configHandler = new();
 
     [Header("Materials")]
     public Material defaultMat;
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public Material highlightMat;
     public Material mouseHoverMat;
     public Material scatterPlotMat;
-    public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
+    public Dictionary<string, Texture> textures = new();
 
     [Header("Models")]
     public GameObject buildingModel;
@@ -47,13 +47,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
-    private List<GameObject> currentItems = new List<GameObject>();
-    private List<GameObject> previousItems = new List<GameObject>();
-    public Hashtable allItems = new Hashtable();
-    public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();
-    public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
-    public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    private readonly List<GameObject> focus = new List<GameObject>();
+    private List<GameObject> currentItems = new();
+    private List<GameObject> previousItems = new();
+    public Hashtable allItems = new();
+    public Dictionary<string, SBuildingFromJson> buildingTemplates = new();
+    public Dictionary<string, SRoomFromJson> roomTemplates = new();
+    public Dictionary<string, GameObject> objectTemplates = new();
+    private readonly List<GameObject> focus = new();
     public bool writeLogs = true;
     public CameraControl cameraControl;
 
@@ -144,7 +144,6 @@ public class GameManager : MonoBehaviour
                     }
 
                     Item previousSelected = previousObj.GetComponent<Item>();
-
                     //Are the previous and current selection part of the same referent ?
                     if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
                         continue;
@@ -222,7 +221,7 @@ public class GameManager : MonoBehaviour
             {
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (!(selectOgree is Group || selectOgree is Corridor) && selectOgree.currentLod == 0)
+                if (selectOgree is not Group && selectOgree is not Corridor && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
@@ -241,7 +240,7 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<Item>() || _obj.GetComponent<Corridor>()))
+        if (_obj && !(_obj.GetComponent<Rack>() || _obj.GetComponent<Device>()))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
@@ -267,7 +266,7 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
-            EventManager.instance.Raise(new OnFocusEvent(focus[focus.Count - 1]));
+            EventManager.instance.Raise(new OnFocusEvent(focus[^1]));
         }
         else
             await UnfocusItem();
@@ -278,14 +277,14 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UnfocusItem()
     {
-        GameObject obj = focus[focus.Count - 1];
+        GameObject obj = focus[^1];
         focus.Remove(obj);
 
         focusMode = focus.Count != 0;
         EventManager.instance.Raise(new OnUnFocusEvent(obj));
         if (focus.Count > 0)
         {
-            GameObject lastFocus = focus[focus.Count - 1];
+            GameObject lastFocus = focus[^1];
             EventManager.instance.Raise(new OnFocusEvent(lastFocus));
             AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
             if (!currentItems.Contains(lastFocus))
@@ -304,8 +303,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UnfocusAll()
     {
-        int count = focus.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < focus.Count; i++)
             await UnfocusItem();
     }
 
@@ -319,7 +317,7 @@ public class GameManager : MonoBehaviour
         if (!focusMode)
             return true;
 
-        Transform root = focus[focus.Count - 1].transform;
+        Transform root = focus[^1].transform;
         if (root.GetComponent<Group>())
         {
             foreach (GameObject go in root.GetComponent<Group>().GetContent())
@@ -367,7 +365,7 @@ public class GameManager : MonoBehaviour
     public async Task PurgeDomains(string _exception = null)
     {
         await SetCurrentItem(null);
-        List<GameObject> doToDel = new List<GameObject>();
+        List<GameObject> doToDel = new();
         foreach (DictionaryEntry de in allItems)
         {
             GameObject go = (GameObject)de.Value;
@@ -383,7 +381,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void PurgeTemplates()
     {
-        List<GameObject> templatesToDel = new List<GameObject>();
+        List<GameObject> templatesToDel = new();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
@@ -545,7 +543,7 @@ public class GameManager : MonoBehaviour
         try
         {
             fs = new FileStream(fileName, FileMode.Append);
-            using StreamWriter writer = new StreamWriter(fs);
+            using StreamWriter writer = new(fs);
             writer.Write($"{dateTime} | {type} : {_str}");
         }
         catch (Exception _e)
@@ -554,8 +552,7 @@ public class GameManager : MonoBehaviour
         }
         finally
         {
-            if (fs != null)
-                fs.Dispose();
+            fs?.Dispose();
         }
     }
 
@@ -586,7 +583,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             return false;
 
-        if (focus[focus.Count - 1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
+        if (focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
             return true;
         return false;
     }

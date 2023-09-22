@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ public class Server : MonoBehaviour
         tcp
     }
 
-    readonly CliParser parser = new CliParser();
+    readonly CliParser parser = new();
 
     [Header("Client config")]
     [SerializeField] private EConnectionType protocol;

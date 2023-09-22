@@ -19,9 +19,9 @@ public class CameraControl : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private bool humanMode = false;
 
-    [SerializeField] private List<Vector3> targetPos = new List<Vector3>();
-    [SerializeField] private List<Vector3> targetRot = new List<Vector3>();
-    [SerializeField] private List<SCameraTrans> labeledTransforms = new List<SCameraTrans>();
+    [SerializeField] private List<Vector3> targetPos = new();
+    [SerializeField] private List<Vector3> targetRot = new();
+    [SerializeField] private List<SCameraTrans> labeledTransforms = new();
     private bool isReady = true;
 
     private void Start()
@@ -60,7 +60,7 @@ public class CameraControl : MonoBehaviour
         if (humanMode)
         {
             UpdateHumanModeHeight();
-            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
+            transform.localEulerAngles = new(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
         }
         else
             transform.GetChild(0).localEulerAngles = Vector3.zero;//apply to wrapper and reset!
@@ -73,7 +73,7 @@ public class CameraControl : MonoBehaviour
     public void UpdateHumanModeHeight()
     {
         if (humanMode)
-            transform.localPosition = new Vector3(transform.localPosition.x, GameManager.instance.configHandler.GetHumanHeight(), transform.localPosition.z);
+            transform.localPosition = new(transform.localPosition.x, GameManager.instance.configHandler.GetHumanHeight(), transform.localPosition.z);
     }
 
     ///<summary>
@@ -86,7 +86,7 @@ public class CameraControl : MonoBehaviour
         if (humanMode)
             SwitchCameraMode(false);
         transform.localPosition = _pos;
-        transform.localEulerAngles = new Vector3(_rot.x, _rot.y, 0);
+        transform.localEulerAngles = new(_rot.x, _rot.y, 0);
     }
 
     ///<summary>
@@ -97,7 +97,7 @@ public class CameraControl : MonoBehaviour
     public void TranslateCamera(Vector3 _pos, Vector2 _rot)
     {
         targetPos.Add(_pos);
-        targetRot.Add(new Vector3(_rot.x, _rot.y, 0));
+        targetRot.Add(new(_rot.x, _rot.y, 0));
     }
 
     ///<summary>
@@ -106,7 +106,7 @@ public class CameraControl : MonoBehaviour
     ///<param name="_time">The time to wait</param>
     public void WaitCamera(float _time)
     {
-        targetRot.Add(new Vector3(999, _time, 0));
+        targetRot.Add(new(999, _time, 0));
     }
 
     ///<summary>
@@ -117,9 +117,9 @@ public class CameraControl : MonoBehaviour
         if (humanMode)
             SwitchCameraMode(false);
         float speed = 10f * Time.deltaTime;
-        transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetPos[0], speed);
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, Quaternion.Euler(targetRot[0]),
-                                                    speed / Vector3.Distance(transform.localPosition, targetPos[0]));
+        transform.SetLocalPositionAndRotation(Vector3.MoveTowards(transform.localPosition, targetPos[0], speed),
+                                                Quaternion.Slerp(transform.localRotation, Quaternion.Euler(targetRot[0]),
+                                                                speed / Vector3.Distance(transform.localPosition, targetPos[0])));
         if (Vector3.Distance(transform.localPosition, targetPos[0]) < 0.1f)
         {
             targetPos.RemoveAt(0);
@@ -158,10 +158,7 @@ public class CameraControl : MonoBehaviour
         float moveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
         float rotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
         if (GameManager.instance.focusMode)
-        {
-            moveSpeed = Vector3.Distance(Camera.main.transform.position,
-                                                GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].transform.position);
-        }
+            moveSpeed = Vector3.Distance(Camera.main.transform.position, GameManager.instance.GetFocused()[^1].transform.position);
 
         if (Input.GetAxis("Vertical") != 0)
         {
@@ -292,7 +289,7 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void RegisterTransform()
     {
-        SCameraTrans newTrans = new SCameraTrans();
+        SCameraTrans newTrans = new();
         if (labeledTransforms.Count == 0)
         {
             newTrans.label = "NoFocus";
@@ -321,7 +318,7 @@ public class CameraControl : MonoBehaviour
             if (ct.label.Equals(_label))
                 return ct;
         }
-        return new SCameraTrans();
+        return new();
     }
 
     ///<summary>
@@ -347,7 +344,7 @@ public class CameraControl : MonoBehaviour
                 break;
             default:
                 transform.position = _target.position + new Vector3(0, 25, -10);
-                transform.eulerAngles = new Vector3(45, 0, 0);
+                transform.eulerAngles = new(45, 0, 0);
                 break;
         }
         switch ((int)_target.eulerAngles.y)

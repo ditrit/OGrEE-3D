@@ -29,7 +29,7 @@ public class ModelLoader : MonoBehaviour
     {
         isLocked = true;
 
-        Uri filePath = new Uri($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
+        Uri filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
@@ -64,7 +64,7 @@ public class ModelLoader : MonoBehaviour
     ///<param name="_filePath">The path to write the file</param>
     private async Task DownloadFile(string _url, string _filePath)
     {
-        DirectoryInfo info = new DirectoryInfo(GameManager.instance.configHandler.GetCacheDir());
+        DirectoryInfo info = new(GameManager.instance.configHandler.GetCacheDir());
         float totalSize = 0;
         foreach (FileInfo file in info.EnumerateFiles())
             totalSize += file.Length;
@@ -80,7 +80,7 @@ public class ModelLoader : MonoBehaviour
         {
             try
             {
-                WebClient client = new WebClient();
+                WebClient client = new();
                 await client.DownloadFileTaskAsync(_url, _filePath);
             }
             catch (Exception _e)

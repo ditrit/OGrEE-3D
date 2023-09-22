@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
-using UnityEngine;
-using UnityEngine.Networking;
 using Tomlyn;
 using Tomlyn.Model;
+using UnityEngine;
+using UnityEngine.Networking;
 
 [Serializable]
 public class ConfigHandler
@@ -47,9 +47,7 @@ public class ConfigHandler
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == _name && args.Length > i + 1)
-            {
                 return args[i + 1];
-            }
         }
         return null;
     }
@@ -159,10 +157,10 @@ public class ConfigHandler
         config.temperatureMaxF = Convert.ToInt32(temperatureTable["maxF"]);
 
         config.useCustomGradient = (bool)temperatureTable["useCustomGradient"];
-        List<List<int>> tempGradient = new List<List<int>>();
+        List<List<int>> tempGradient = new();
         foreach (object colorDef in (TomlArray)temperatureTable["customTemperatureGradient"])
         {
-            List<int> tmp = new List<int>();
+            List<int> tmp = new();
             foreach (object i in (TomlArray)colorDef)
                 tmp.Add(Convert.ToInt32(i));
             if (tmp.Count == 4 && tempGradient.Count < 8)

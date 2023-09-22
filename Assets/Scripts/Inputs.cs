@@ -1,7 +1,5 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class Inputs : MonoBehaviour
@@ -125,11 +123,11 @@ public class Inputs : MonoBehaviour
                 clickTime = Time.time;
             }
             else if (Input.GetMouseButton(0) && target && !isDraggingObj && (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
-                && GameManager.instance.focusMode && GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1] == target.parent.gameObject)
+                && GameManager.instance.focusMode && GameManager.instance.GetFocused()[^1] == target.parent.gameObject)
             {
                 isDraggingObj = true;
                 screenSpace = Camera.main.WorldToScreenPoint(target.position);
-                offsetPos = target.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
+                offsetPos = target.position - Camera.main.ScreenToWorldPoint(new(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
             }
             else if (Input.GetMouseButtonUp(0))
             {
@@ -248,7 +246,7 @@ public class Inputs : MonoBehaviour
                 ClickOnU(_target);
         }
         else if (GameManager.instance.GetFocused().Count > 0)
-            await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1]);
+            await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[^1]);
         else
             await GameManager.instance.SetCurrentItem(null);
     }
@@ -310,10 +308,10 @@ public class Inputs : MonoBehaviour
     ///</summary>
     private void DragObject()
     {
-        Vector3 curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
+        Vector3 curScreenSpace = new(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
         Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenSpace) + offsetPos;
         if (target.GetComponent<Rack>())
-            target.position = new Vector3(target.position.x, curPosition.y, target.position.z);
+            target.position = new(target.position.x, curPosition.y, target.position.z);
         else if (target.GetComponent<Device>())
             target.position = curPosition;
     }
@@ -325,7 +323,7 @@ public class Inputs : MonoBehaviour
     {
         float sensitivity = 0.2f;
 
-        Vector3 mouseOffset = (Input.mousePosition - mouseRef);
+        Vector3 mouseOffset = Input.mousePosition - mouseRef;
         Vector3 rotation = Vector3.zero;
         if (target.GetComponent<Rack>())
         {
@@ -334,8 +332,8 @@ public class Inputs : MonoBehaviour
         }
         else if (target.GetComponent<Device>())
         {
-            rotation.y = -(mouseOffset.x) * sensitivity;
-            rotation.x = -(mouseOffset.y) * sensitivity;
+            rotation.y = -mouseOffset.x * sensitivity;
+            rotation.x = -mouseOffset.y * sensitivity;
             target.eulerAngles += rotation;
         }
         mouseRef = Input.mousePosition;

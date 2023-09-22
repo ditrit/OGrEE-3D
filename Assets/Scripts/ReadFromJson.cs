@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using UnityEngine;
 
 public class ReadFromJson
 {
@@ -47,10 +47,10 @@ public class ReadFromJson
         }
 
         // Build SApiObject
-        SApiObject obj = new SApiObject
+        SApiObject obj = new()
         {
-            description = new List<string>(),
-            attributes = new Dictionary<string, string>(),
+            description = new(),
+            attributes = new(),
 
             name = _data.slug,
             id = _data.slug,
@@ -73,7 +73,7 @@ public class ReadFromJson
             if (_data.attributes.ContainsKey("type")
                 && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / UnitValue.U);
+                int sizeU = Mathf.CeilToInt(_data.sizeWDHmm[2] / 1000 / UnitValue.U);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
@@ -117,7 +117,7 @@ public class ReadFromJson
         newItem.color = newItem.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
         // Retrieve custom colors
-        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        Dictionary<string, string> customColors = new();
         if (_data.colors != null)
         {
             foreach (SColor color in _data.colors)
@@ -187,7 +187,7 @@ public class ReadFromJson
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
-            go.transform.localEulerAngles = new Vector3(0, 0, 90);
+            go.transform.localEulerAngles = new(0, 0, 90);
         else
             go.transform.localEulerAngles = Vector3.zero;
         go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
@@ -209,8 +209,8 @@ public class ReadFromJson
             obj.parentId = _parent.id;
             obj.category = Category.Device;
             obj.domain = _parent.domain;
-            obj.description = new List<string>();
-            obj.attributes = new Dictionary<string, string>
+            obj.description = new();
+            obj.attributes = new()
             {
                 ["deviceType"] = _data.type
             };
@@ -240,11 +240,11 @@ public class ReadFromJson
         if (_isSlot)
         {
             rend.material = GameManager.instance.alphaMat;
-            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+            rend.material.color = new(myColor.r, myColor.g, myColor.b, 0.33f);
         }
         else
         {
-            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
+            rend.material.color = new(myColor.r, myColor.g, myColor.b, 1f);
             go.GetComponent<Item>().color = rend.material.color;
         }
     }

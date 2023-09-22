@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -57,10 +56,10 @@ public static class NonSquareBuildingGenerator
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
-            offset = new Vector2(_src.vertices[0][0], _src.vertices[0][1]);
-            vertices = new List<Vector2>();
+            offset = new(_src.vertices[0][0], _src.vertices[0][1]);
+            vertices = new();
             foreach (List<float> vertex in _src.vertices)
-                vertices.Add(new Vector2(vertex[0] - offset.x, vertex[1] - offset.y));
+                vertices.Add(new(vertex[0] - offset.x, vertex[1] - offset.y));
             (isolationPoleRadius, isolationPoleCenter) = PolyLabel.FindPoleOfIsolation(vertices, 0.1f);
             tiles = null;
             tileAngle = float.NaN;
@@ -70,10 +69,10 @@ public static class NonSquareBuildingGenerator
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
-            offset = new Vector2(_src.vertices[0][0], _src.vertices[0][1]);
-            vertices = new List<Vector2>();
+            offset = new(_src.vertices[0][0], _src.vertices[0][1]);
+            vertices = new();
             foreach (List<float> vertex in _src.vertices)
-                vertices.Add(new Vector2(vertex[0] - offset.x, vertex[1]-offset.y));
+                vertices.Add(new(vertex[0] - offset.x, vertex[1] - offset.y));
             (isolationPoleRadius, isolationPoleCenter) = PolyLabel.FindPoleOfIsolation(vertices, 0.1f);
             tiles = _src.tiles;
             tileAngle = _src.tileAngle;
@@ -88,13 +87,13 @@ public static class NonSquareBuildingGenerator
     public static void CreateShape(Transform _building, SBuildingFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
-        SCommonTemplate data = new SCommonTemplate(_template);
+        SCommonTemplate data = new(_template);
 
         BuildFloor(_building, data, Vector2.zero, false);
         BuildWalls(_building, data);
 
         TMPro.TextMeshPro nameText = _building.GetComponent<Building>().nameText;
-        nameText.transform.localPosition = new Vector3(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
+        nameText.transform.localPosition = new(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
         nameText.rectTransform.sizeDelta = Mathf.Sqrt(2) * data.isolationPoleRadius * Vector2.one;
     }
 
@@ -106,13 +105,13 @@ public static class NonSquareBuildingGenerator
     public static void CreateShape(Transform _room, SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
-        SCommonTemplate data = new SCommonTemplate(_template);
+        SCommonTemplate data = new(_template);
 
-        BuildFloor(_room, data, data.offset, (_template.floorUnit == LengthUnit.Tile));
+        BuildFloor(_room, data, data.offset, _template.floorUnit == LengthUnit.Tile);
         _room.GetChild(0).localPosition += new Vector3(0, 0.001f, 0);
         BuildWalls(_room, data);
         TMPro.TextMeshPro nameText = _room.GetComponent<Room>().nameText;
-        nameText.transform.localPosition = new Vector3(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
+        nameText.transform.localPosition = new(data.isolationPoleCenter.x, 0.003f, data.isolationPoleCenter.y);
         nameText.rectTransform.sizeDelta = Mathf.Sqrt(2) * data.isolationPoleRadius * Vector2.one;
     }
 
@@ -131,7 +130,7 @@ public static class NonSquareBuildingGenerator
         float[] zWalls = new float[vCount];
 
         Transform walls = _root.GetComponent<Building>().walls.GetChild(0);
-        Mesh meshWalls = new Mesh { name = "meshWalls" };
+        Mesh meshWalls = new() { name = "meshWalls" };
         walls.GetComponent<MeshFilter>().mesh = meshWalls;
         walls.GetComponent<MeshCollider>().sharedMesh = meshWalls;
 
@@ -178,14 +177,14 @@ public static class NonSquareBuildingGenerator
     /// <param name="_offset">Position of the first vertice</param>
     private static void BuildFloor(Transform _root, SCommonTemplate _template, Vector2 _offset, bool _tiles)
     {
-        List<int> trianglesRoom = new List<int>();
+        List<int> trianglesRoom = new();
 
         List<Vector3> walls = _template.vertices.Select(w => new Vector3(w.x, 0, w.y)).ToList();
         if (!MostlyClockWise(walls))
             walls.Reverse();
-        List<Vector3> shrinkingWalls = new List<Vector3>(walls);
+        List<Vector3> shrinkingWalls = new(walls);
         Transform floor = _root.GetChild(0);
-        Mesh meshFloor = new Mesh { name = "meshFloor" };
+        Mesh meshFloor = new() { name = "meshFloor" };
         floor.GetComponent<MeshFilter>().mesh = meshFloor;
         int index = 0;
         Vector3 A, B, C;
@@ -222,7 +221,6 @@ public static class NonSquareBuildingGenerator
         meshFloor.RecalculateNormals();
 
         floor.GetComponent<MeshCollider>().sharedMesh = meshFloor;
-
         floor.GetComponent<MeshCollider>().convex = false;
 
         //For building only : roof
@@ -253,17 +251,17 @@ public static class NonSquareBuildingGenerator
                 GameObject newTile = Object.Instantiate(GameManager.instance.tileModel, floor);
                 newTile.name = $"Tile_{_template.tiles[i].label}";
                 newTile.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = _template.tiles[i].label;
-                newTile.transform.localPosition = new Vector3(x - _offset.x, 0.001f, z - _offset.y);
+                newTile.transform.localPosition = new(x - _offset.x, 0.001f, z - _offset.y);
 
                 Tile tile = newTile.GetComponent<Tile>();
                 tile.color = _template.tiles[i].color;
                 tile.texture = _template.tiles[i].texture;
-                tile.coord = new Vector2(xCoord, zCoord);
+                tile.coord = new(xCoord, zCoord);
                 if (site && site.attributes.ContainsKey("usableColor"))
                     newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
                 else
                     newTile.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("usableZone"));
-                tile.defaultMat = new Material(newTile.GetComponent<Renderer>().material);
+                tile.defaultMat = new(newTile.GetComponent<Renderer>().material);
             }
 
         }

@@ -12,7 +12,7 @@ public class Building : OgreeObject
 
     private void Start()
     {
-        if (!(this is Room))
+        if (this is not Room)
             EventManager.instance.ImportFinished.Add(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
@@ -20,7 +20,7 @@ public class Building : OgreeObject
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        if (!(this is Room))
+        if (this is not Room)
             EventManager.instance.ImportFinished.Remove(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
     }
@@ -35,14 +35,14 @@ public class Building : OgreeObject
         if (!GetComponentInChildren<Room>())
         {
             nameText.gameObject.SetActive(true);
-            nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, roof.localPosition.y + 0.005f, nameText.transform.localPosition.z);
-            transform.Find("Roof").gameObject.SetActive(true);
+            nameText.transform.localPosition = new(nameText.transform.localPosition.x, roof.localPosition.y + 0.005f, nameText.transform.localPosition.z);
+            roof.gameObject.SetActive(true);
         }
         else
         {
             nameText.gameObject.SetActive(false);
-            nameText.transform.localPosition = new Vector3(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
-            transform.Find("Roof").gameObject.SetActive(false);
+            nameText.transform.localPosition = new(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
+            roof.gameObject.SetActive(false);
         }
     }
 
@@ -89,14 +89,13 @@ public class Building : OgreeObject
             return;
         }
 
-        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
+        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
 
         Color color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
 
         foreach (Transform child in walls)
         {
-            Renderer rend = child.GetComponent<Renderer>();
-            if (rend)
+            if (child.TryGetComponent(out Renderer rend))
                 rend.material.color = color;
         }
         Transform roof = transform.Find("Roof");

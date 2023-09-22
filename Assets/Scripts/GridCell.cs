@@ -77,7 +77,7 @@ public class GridCell : MonoBehaviour
 
         Vector2 size = new Vector2(transform.GetChild(0).localScale.x, transform.GetChild(0).localScale.z) / 10;
         size *= boxscale;
-        grid.transform.localScale = new Vector3(size.x, 1, size.y);
+        grid.transform.localScale = new(size.x, 1, size.y);
 
         Vector2 gridRatio;
         if (size.x < size.y)

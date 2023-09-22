@@ -1,8 +1,8 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using System.Linq;
-using Newtonsoft.Json;
 
 public class Item : OgreeObject
 {
@@ -17,7 +17,7 @@ public class Item : OgreeObject
     public string temperatureUnit;
     public bool hasSlotColor = false;
 
-    public ClearanceHandler clearanceHandler = new ClearanceHandler();
+    public ClearanceHandler clearanceHandler = new();
 
     protected virtual void Start()
     {
@@ -46,28 +46,21 @@ public class Item : OgreeObject
         foreach (string attribute in _src.attributes.Keys)
         {
             if (attribute.StartsWith("temperature_")
-                && (!attributes.ContainsKey(attribute)
-                    || attributes[attribute] != _src.attributes[attribute]))
+                && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
                 SetTemperature(_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
-                try
-                {
-                    List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
-                    if (lengths != null && lengths.Count == 5)
-                        clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
-                    else
-                        GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
-                } catch (System.Exception e)
-                {
-                    Debug.LogError(e);
-                }
+                List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
+                if (lengths != null && lengths.Count == 5)
+                    clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
+                else
+                    GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
             }
         }
 
         attributes = _src.attributes;
 
-        if (!transform.parent || transform.parent.GetComponent<OgreeObject>().category == Category.Room)
+        if (!transform.parent || transform.parent.GetComponent<Room>())
             referent = this;
         else if (transform.parent?.GetComponent<Item>().referent != null)
             referent = transform.parent.GetComponent<Item>().referent;
@@ -83,10 +76,11 @@ public class Item : OgreeObject
     ///<param name="_hex">The hexadecimal value, without '#'</param>
     public void SetColor(string _hex)
     {
-        color = new Color();
-        bool validColor = ColorUtility.TryParseHtmlString($"#{_hex}", out color);
-        if (validColor)
-            color = GetComponent<ObjectDisplayController>().ChangeColor(color);
+        if (ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor))
+        {
+            color = newColor;
+            GetComponent<ObjectDisplayController>().ChangeColor(color);
+        }
         else
         {
             UpdateColorByDomain();
@@ -118,11 +112,10 @@ public class Item : OgreeObject
             return;
         }
 
-        OgreeObject domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<OgreeObject>();
+        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
 
         color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
-
-        GetComponent<ObjectDisplayController>().ChangeColor(color.r, color.g, color.b);
+        GetComponent<ObjectDisplayController>().ChangeColor(color);
     }
 
     ///<summary>
@@ -131,12 +124,10 @@ public class Item : OgreeObject
     ///<param name="_value">True or false value</param>
     public void ToggleSlots(bool _value)
     {
-        Slot[] slots = GetComponentsInChildren<Slot>();
-
-        foreach (Slot s in slots)
+        foreach (Slot slot in GetComponentsInChildren<Slot>())
         {
-            if (s.transform.parent == transform && s.used == false)
-                s.GetComponent<ObjectDisplayController>().Display(_value, _value);
+            if (slot.transform.parent == transform && slot.used == false)
+                slot.GetComponent<ObjectDisplayController>().Display(_value, _value);
         }
     }
 
@@ -151,7 +142,7 @@ public class Item : OgreeObject
         {
             Transform sensorTransform = transform.Find(_sensorName);
             if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+                sensorTransform.GetComponent<Sensor>().SetTemperature(Utils.ParseDecFrac(_value));
             else
             {
                 GameManager.instance.AppendLogLine($"[{id}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
@@ -163,10 +154,10 @@ public class Item : OgreeObject
                 sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
             else
             {
-                SApiObject se = new SApiObject
+                SApiObject se = new()
                 {
-                    description = new List<string>(),
-                    attributes = new Dictionary<string, string>(),
+                    description = new(),
+                    attributes = new(),
 
                     name = "sensor", // ?
                     category = Category.Sensor,
@@ -189,21 +180,15 @@ public class Item : OgreeObject
     /// <returns>a STemp instance containg all temperature infos of the object</returns>
     public STemp GetTemperatureInfos()
     {
-        List<(float temp, float volume, string childName)> temps = new List<(float, float, string)>();
-        List<(float temp, string sensorName)> sensorsTemps = new List<(float, string)>();
+        List<(float temp, float volume, string childName)> temps = new();
+        List<(float temp, string sensorName)> sensorsTemps = new();
         foreach (Transform child in transform)
         {
             Item childItem = child.GetComponent<Item>();
             if (childItem)
-            {
                 temps.Add((childItem.GetTemperatureInfos().mean, Utils.VolumeOfMesh(child.GetChild(0).GetComponent<MeshFilter>()), childItem.name));
-            }
-            else
-            {
-                Sensor childSensor = child.GetComponent<Sensor>();
-                if (childSensor && childSensor.fromTemplate && !float.IsNaN(childSensor.temperature))
-                    sensorsTemps.Add((childSensor.temperature, childSensor.name));
-            }
+            else if (child.GetComponent<Sensor>() is Sensor childSensor && childSensor.fromTemplate && !float.IsNaN(childSensor.temperature))
+                sensorsTemps.Add((childSensor.temperature, childSensor.name));
         }
 
         float mean = float.NaN;
@@ -229,7 +214,7 @@ public class Item : OgreeObject
             max = tempsNoNaN.Max(v => v.temp);
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
-        return new STemp(mean, std, min, max, hottestChild, temperatureUnit);
+        return new(mean, std, min, max, hottestChild, temperatureUnit);
     }
 
 }

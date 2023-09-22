@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class OgreeGenerator : MonoBehaviour
 {
     public static OgreeGenerator instance;
-    private readonly CustomerGenerator customerGenerator = new CustomerGenerator();
-    private readonly BuildingGenerator buildingGenerator = new BuildingGenerator();
-    private readonly ObjectGenerator objectGenerator = new ObjectGenerator();
+    private readonly CustomerGenerator customerGenerator = new();
+    private readonly BuildingGenerator buildingGenerator = new();
+    private readonly ObjectGenerator objectGenerator = new();
     private Coroutine waitCoroutine = null;
 
     private void Awake()
@@ -131,7 +130,7 @@ public class OgreeGenerator : MonoBehaviour
         if (newObject)
         {
             newObject.SetBaseTransform();
-            if (!(newObject is Domain) && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
+            if (newObject is not Domain && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
                 GameManager.instance.objectRoot = newObject.gameObject;
@@ -149,9 +148,7 @@ public class OgreeGenerator : MonoBehaviour
                     item.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
             }
             if (newObject is Room newItemRoom)
-            {
                 newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
-            }
         }
         ResetCoroutine();
         return newObject;
