@@ -62,6 +62,9 @@ crashlytics-build.properties
 [Aa]ssets/TriLib
 [Aa]ssets/Trilib.meta
 
+# Unity Layout files
+UserSettings/Layouts
+
 .vsconfig
 Assets/Plugins/AssetUsageDetector/
 Assets/Plugins/AssetUsageDetector.meta
