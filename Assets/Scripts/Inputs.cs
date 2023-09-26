@@ -70,11 +70,10 @@ public class Inputs : MonoBehaviour
 
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
-        {
             UiManager.instance.MoveCSToHit(hit);
-            if (Input.GetMouseButtonDown(0))
-                AppendDistFromClick(hit);
-        }
+
+        if (Input.GetMouseButtonDown(0))
+            AppendDistFromClick();
     }
 
     ///<summary>
@@ -354,35 +353,33 @@ public class Inputs : MonoBehaviour
     ///<summary>
     /// Display the distance between the origin of the selected objet and the hit point in the logger
     ///</summary>
-    ///<param name="_clickPos">The hit data</param>
-    private void AppendDistFromClick(RaycastHit _hit)
+    private void AppendDistFromClick()
     {
-        Transform hitObject = _hit.collider.transform.parent;
-        Room hittedRoom = hitObject.GetComponent<Room>();
-        Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
+        Room targetRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
+        Vector3 localPos = targetRoom.transform.InverseTransformPoint(UiManager.instance.coordSystem.transform.position);
 
         List<string> distFromLocalCS = new()
         {
             // meters values
-            Utils.FloatToRefinedStr(localHit.x),
-            Utils.FloatToRefinedStr(localHit.z),
+            Utils.FloatToRefinedStr(localPos.x),
+            Utils.FloatToRefinedStr(localPos.z),
             // tiles values
-            Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile),
-            Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)
+            Utils.FloatToRefinedStr(localPos.x / UnitValue.Tile),
+            Utils.FloatToRefinedStr(localPos.z / UnitValue.Tile)
         };
-        GameManager.instance.AppendLogLine($"Distance from {hittedRoom.name}'s localCS: [{distFromLocalCS[0]},{distFromLocalCS[1]}] m / [{distFromLocalCS[2]},{distFromLocalCS[3]}] t", ELogTarget.logger, ELogtype.info);
+        GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s localCS: [{distFromLocalCS[0]},{distFromLocalCS[1]}] m / [{distFromLocalCS[2]},{distFromLocalCS[3]}] t", ELogTarget.logger, ELogtype.info);
 
-        if (hittedRoom.isSquare)
+        if (targetRoom.isSquare)
         {
             List<string> distFromOri = new();
             float minusX;
             float minusY;
-            switch (hittedRoom.attributes["axisOrientation"])
+            switch (targetRoom.attributes["axisOrientation"])
             {
                 case AxisOrientation.Default:
                     return;
                 case AxisOrientation.XMinus:
-                    minusX = hittedRoom.technicalZone.localScale.x * 10 - localHit.x;
+                    minusX = targetRoom.technicalZone.localScale.x * 10 - localPos.x;
                     // meters values
                     distFromOri.Add(Utils.FloatToRefinedStr(minusX));
                     distFromOri.Add(distFromLocalCS[1]);
@@ -391,7 +388,7 @@ public class Inputs : MonoBehaviour
                     distFromOri.Add(distFromLocalCS[3]);
                     break;
                 case AxisOrientation.YMinus:
-                    minusY = hittedRoom.technicalZone.localScale.z * 10 - localHit.z;
+                    minusY = targetRoom.technicalZone.localScale.z * 10 - localPos.z;
                     // meters values
                     distFromOri.Add(distFromLocalCS[0]);
                     distFromOri.Add(Utils.FloatToRefinedStr(minusY));
@@ -400,8 +397,8 @@ public class Inputs : MonoBehaviour
                     distFromOri.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
                     break;
                 case AxisOrientation.BothMinus:
-                    minusX = hittedRoom.technicalZone.localScale.x * 10 - localHit.x;
-                    minusY = hittedRoom.technicalZone.localScale.z * 10 - localHit.z;
+                    minusX = targetRoom.technicalZone.localScale.x * 10 - localPos.x;
+                    minusY = targetRoom.technicalZone.localScale.z * 10 - localPos.z;
                     // meters values
                     distFromOri.Add(Utils.FloatToRefinedStr(minusX));
                     distFromOri.Add(Utils.FloatToRefinedStr(minusY));
@@ -410,7 +407,7 @@ public class Inputs : MonoBehaviour
                     distFromOri.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
                     break;
             }
-            GameManager.instance.AppendLogLine($"Distance from {hittedRoom.name}'s origin: [{distFromOri[0]},{distFromOri[1]}] m / [{distFromOri[2]},{distFromOri[3]}] t", ELogTarget.logger, ELogtype.info);
+            GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s origin: [{distFromOri[0]},{distFromOri[1]}] m / [{distFromOri[2]},{distFromOri[3]}] t", ELogTarget.logger, ELogtype.info);
         }
     }
 
