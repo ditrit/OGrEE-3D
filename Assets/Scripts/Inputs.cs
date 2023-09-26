@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -55,7 +56,6 @@ public class Inputs : MonoBehaviour
                 MouseControls();
             MouseHover();
         }
-
 
         RightClickMenu();
     }
@@ -358,9 +358,60 @@ public class Inputs : MonoBehaviour
     private void AppendDistFromClick(RaycastHit _hit)
     {
         Transform hitObject = _hit.collider.transform.parent;
-        string objName = hitObject.GetComponent<OgreeObject>().id;
+        Room hittedRoom = hitObject.GetComponent<Room>();
         Vector3 localHit = hitObject.InverseTransformPoint(_hit.point);
-        GameManager.instance.AppendLogLine($"Distance from {objName}'s origin: [{Utils.FloatToRefinedStr(localHit.x)},{Utils.FloatToRefinedStr(localHit.z)}] m / [{Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile)},{Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)}] t", ELogTarget.logger, ELogtype.info);
+
+        List<string> distFromLocalCS = new()
+        {
+            // meters values
+            Utils.FloatToRefinedStr(localHit.x),
+            Utils.FloatToRefinedStr(localHit.z),
+            // tiles values
+            Utils.FloatToRefinedStr(localHit.x / UnitValue.Tile),
+            Utils.FloatToRefinedStr(localHit.z / UnitValue.Tile)
+        };
+        GameManager.instance.AppendLogLine($"Distance from {hittedRoom.name}'s localCS: [{distFromLocalCS[0]},{distFromLocalCS[1]}] m / [{distFromLocalCS[2]},{distFromLocalCS[3]}] t", ELogTarget.logger, ELogtype.info);
+
+        if (hittedRoom.isSquare)
+        {
+            List<string> distFromOri = new();
+            float minusX;
+            float minusY;
+            switch (hittedRoom.attributes["axisOrientation"])
+            {
+                case AxisOrientation.Default:
+                    return;
+                case AxisOrientation.XMinus:
+                    minusX = hittedRoom.technicalZone.localScale.x * 10 - localHit.x;
+                    // meters values
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusX));
+                    distFromOri.Add(distFromLocalCS[1]);
+                    // tiles values
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusX / UnitValue.Tile));
+                    distFromOri.Add(distFromLocalCS[3]);
+                    break;
+                case AxisOrientation.YMinus:
+                    minusY = hittedRoom.technicalZone.localScale.z * 10 - localHit.z;
+                    // meters values
+                    distFromOri.Add(distFromLocalCS[0]);
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusY));
+                    // tiles values
+                    distFromOri.Add(distFromLocalCS[2]);
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
+                    break;
+                case AxisOrientation.BothMinus:
+                    minusX = hittedRoom.technicalZone.localScale.x * 10 - localHit.x;
+                    minusY = hittedRoom.technicalZone.localScale.z * 10 - localHit.z;
+                    // meters values
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusX));
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusY));
+                    // tiles values
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusX / UnitValue.Tile));
+                    distFromOri.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
+                    break;
+            }
+            GameManager.instance.AppendLogLine($"Distance from {hittedRoom.name}'s origin: [{distFromOri[0]},{distFromOri[1]}] m / [{distFromOri[2]},{distFromOri[3]}] t", ELogTarget.logger, ELogtype.info);
+        }
     }
 
     ///<summary>
