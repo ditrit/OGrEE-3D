@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class CliParser
 {
@@ -35,7 +35,7 @@ public class CliParser
 
     #endregion
 
-    readonly ReadFromJson rfJson = new ReadFromJson();
+    readonly ReadFromJson rfJson = new();
     private bool canDraw = true;
 
     public CliParser()
@@ -63,7 +63,7 @@ public class CliParser
     ///<param name="_input">The json to deserialize</param>
     public async Task DeserializeInput(string _input)
     {
-        Hashtable command = new Hashtable();
+        Hashtable command = new();
         try
         {
             command = JsonConvert.DeserializeObject<Hashtable>(_input);
@@ -108,8 +108,7 @@ public class CliParser
                 }
                 else
                 {
-                    GameObject objToDel = Utils.GetObjectById(command["data"].ToString());
-                    if (objToDel)
+                    if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToDel)
                         await GameManager.instance.DeleteItem(objToDel, false);
                     else
                         GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
@@ -118,8 +117,7 @@ public class CliParser
             case CommandType.Focus:
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
-                GameObject objToFocus = Utils.GetObjectById(command["data"].ToString());
-                if (objToFocus)
+                if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToFocus)
                 {
                     await GameManager.instance.SetCurrentItem(objToFocus);
                     await GameManager.instance.FocusItem(objToFocus);
@@ -165,7 +163,7 @@ public class CliParser
     ///<param name="_input">The SApiObject to deserialize</param>
     private async Task CreateObjectFromData(string _input)
     {
-        SApiObject src = new SApiObject();
+        SApiObject src = new();
         try
         {
             src = JsonConvert.DeserializeObject<SApiObject>(_input);
@@ -175,11 +173,11 @@ public class CliParser
             GameManager.instance.AppendLogLine(e.Message, ELogTarget.both, ELogtype.errorCli);
         }
 
-        List<string> leafIds = new List<string>();
+        List<string> leafIds = new();
         if (!string.IsNullOrEmpty(src.category))
         {
-            List<SApiObject> physicalObjects = new List<SApiObject>();
-            List<SApiObject> logicalObjects = new List<SApiObject>();
+            List<SApiObject> physicalObjects = new();
+            List<SApiObject> logicalObjects = new();
             Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
@@ -196,9 +194,8 @@ public class CliParser
 
             foreach (string id in leafIds)
             {
-                Transform leaf = Utils.GetObjectById(id)?.transform;
-                if (leaf)
-                    Utils.RebuildLods(leaf);
+                if (Utils.GetObjectById(id) is GameObject leaf)
+                    Utils.RebuildLods(leaf.transform);
             }
 
             if (canDraw)
@@ -223,24 +220,22 @@ public class CliParser
             await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
 
         // Case domain for all OgreeObjects
-        bool domainColorChanged = (newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"]);
+        bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
 
         // Case color for racks & devices
-        if (obj is OObject item)
+        if (obj is Item item)
         {
             if (newData.category != Category.Corridor)
             {
                 if (newData.attributes.ContainsKey("color")
-                    && (!item.attributes.ContainsKey("color")
-                        || item.attributes["color"] != newData.attributes["color"]))
+                    && (!item.attributes.ContainsKey("color") || item.attributes["color"] != newData.attributes["color"]))
                     item.SetColor(newData.attributes["color"]);
             }
             // Case temperature for corridors
             else
             {
                 if (newData.attributes.ContainsKey("temperature")
-                    && (!item.attributes.ContainsKey("temperature")
-                        || item.attributes["temperature"] != newData.attributes["temperature"]))
+                    && (!item.attributes.ContainsKey("temperature") || item.attributes["temperature"] != newData.attributes["temperature"]))
                 {
                     if (newData.attributes["temperature"] == "cold")
                         item.SetColor("000099");
@@ -310,6 +305,17 @@ public class CliParser
         OgreeObject obj = Utils.GetObjectById(command.id).GetComponent<OgreeObject>();
         switch (obj)
         {
+            case Building building and not Room:
+                switch (command.param)
+                {
+                    case CommandParameter.LocalCS:
+                        building.ToggleCS(command.value == "true");
+                        break;
+                    default:
+                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        break;
+                }
+                break;
             case Room room:
                 switch (command.param)
                 {
@@ -324,17 +330,6 @@ public class CliParser
                         break;
                     default:
                         GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
-                        break;
-                }
-                break;
-            case Building building:
-                switch (command.param)
-                {
-                    case CommandParameter.LocalCS:
-                        building.ToggleCS(command.value == "true");
-                        break;
-                    default:
-                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -367,7 +362,7 @@ public class CliParser
                         break;
                 }
                 break;
-            case OObject device when device.category == Category.Device:
+            case Device device:
                 switch (command.param)
                 {
                     case CommandParameter.Label:
@@ -475,18 +470,17 @@ public class CliParser
     private void ManipulateCamera(string _input)
     {
         SCameraManip manip = JsonConvert.DeserializeObject<SCameraManip>(_input);
-        Vector3 refinedPos = new Vector3(manip.position.x, manip.position.z, manip.position.y);
-        CameraControl cc = GameObject.FindObjectOfType<CameraControl>();
+        Vector3 refinedPos = new(manip.position.x, manip.position.z, manip.position.y);
         switch (manip.command)
         {
             case Command.Move:
-                cc.MoveCamera(refinedPos, manip.rotation);
+                GameManager.instance.cameraControl.MoveCamera(refinedPos, manip.rotation);
                 break;
             case Command.Translate:
-                cc.TranslateCamera(refinedPos, manip.rotation);
+                GameManager.instance.cameraControl.TranslateCamera(refinedPos, manip.rotation);
                 break;
             case Command.Wait:
-                cc.WaitCamera(manip.rotation.y);
+                GameManager.instance.cameraControl.WaitCamera(manip.rotation.y);
                 break;
             default:
                 GameManager.instance.AppendLogLine("Unknown camera command", ELogTarget.both, ELogtype.errorCli);

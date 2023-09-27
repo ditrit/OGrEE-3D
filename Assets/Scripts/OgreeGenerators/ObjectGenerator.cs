@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -30,7 +29,7 @@ public class ObjectGenerator
                 height *= UnitValue.U;
             else if (_rk.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
-            Vector3 scale = new Vector3(size.x / 100, height, size.y / 100);
+            Vector3 scale = new(size.x / 100, height, size.y / 100);
 
             newRack.transform.GetChild(0).localScale = scale;
             foreach (Transform child in newRack.transform)
@@ -79,8 +78,8 @@ public class ObjectGenerator
 
         if (!string.IsNullOrEmpty(rack.attributes["template"]))
         {
-            OObject[] components = rack.transform.GetComponentsInChildren<OObject>();
-            foreach (OObject comp in components)
+            Device[] components = rack.transform.GetComponentsInChildren<Device>();
+            foreach (Device comp in components)
             {
                 if (comp.gameObject != rack.gameObject)
                 {
@@ -100,11 +99,11 @@ public class ObjectGenerator
     ///<param name="_dv">The device data to apply</param>
     ///<param name="_parent">The parent of the created device</param>
     ///<returns>The created Device</returns>
-    public OObject CreateDevice(SApiObject _dv, Transform _parent)
+    public Device CreateDevice(SApiObject _dv, Transform _parent)
     {
         if (_parent)
         {
-            if (_parent.GetComponent<OObject>() == null)
+            if (!(_parent.GetComponent<Rack>() || _parent.GetComponent<Device>()))
             {
                 GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", ELogTarget.both, ELogtype.error);
                 return null;
@@ -146,7 +145,7 @@ public class ObjectGenerator
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
-                List<Slot> takenSlots = new List<Slot>();
+                List<Slot> takenSlots = new();
                 int i = 0;
                 float max;
                 if (string.IsNullOrEmpty(_dv.attributes["template"]))
@@ -185,7 +184,7 @@ public class ObjectGenerator
         {
             newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
-            size = new Vector2(boxSize.x, boxSize.z);
+            size = new(boxSize.x, boxSize.z);
             height = boxSize.y;
         }
         else
@@ -196,7 +195,7 @@ public class ObjectGenerator
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
-        OObject dv = newDevice.GetComponent<OObject>();
+        Device dv = newDevice.GetComponent<Device>();
         dv.UpdateFromSApiObject(_dv);
         // Place the device
         if (_parent)
@@ -239,7 +238,7 @@ public class ObjectGenerator
                 {
                     // if slot, color
                     Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
-                    dv.color = new Color(slotColor.r, slotColor.g, slotColor.b);
+                    dv.color = new(slotColor.r, slotColor.g, slotColor.b);
                     newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
                     dv.hasSlotColor = true;
                 }
@@ -255,14 +254,14 @@ public class ObjectGenerator
                 float deltaX = parentShape.x - size.x;
                 float deltaZ = parentShape.z - size.y;
                 newDevice.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
-                newDevice.GetComponent<OObject>().color = Color.white;
+                newDevice.GetComponent<Device>().color = Color.white;
             }
         }
         else
         {
             newDevice.transform.localEulerAngles = Vector3.zero;
             newDevice.transform.localPosition = Vector3.zero;
-            newDevice.GetComponent<OObject>().color = Color.white;
+            newDevice.GetComponent<Device>().color = Color.white;
         }
 
         // Fill OObject class
@@ -286,8 +285,8 @@ public class ObjectGenerator
 
         if (!string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            OObject[] components = newDevice.transform.GetComponentsInChildren<OObject>();
-            foreach (OObject comp in components)
+            Device[] components = newDevice.transform.GetComponentsInChildren<Device>();
+            foreach (Device comp in components)
             {
                 if (comp.gameObject != newDevice)
                 {
@@ -310,13 +309,13 @@ public class ObjectGenerator
     private GameObject GenerateBasicDevice(Transform _parent, float _height, Transform _slot = null)
     {
         GameObject go = Object.Instantiate(GameManager.instance.labeledBoxModel);
-        go.AddComponent<OObject>();
+        go.AddComponent<Device>();
         go.transform.parent = _parent;
         Vector3 scale;
         if (_slot)
-            scale = new Vector3(_slot.GetChild(0).localScale.x, _height / 1000, _slot.GetChild(0).localScale.z);
+            scale = new(_slot.GetChild(0).localScale.x, _height / 1000, _slot.GetChild(0).localScale.z);
         else
-            scale = new Vector3(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
+            scale = new(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
         go.transform.GetChild(0).localScale = scale;
         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
@@ -375,15 +374,15 @@ public class ObjectGenerator
             return null;
         }
 
-        List<Transform> content = new List<Transform>();
+        List<Transform> content = new();
         string[] contentNames = _gr.attributes["content"].Split(',');
         foreach (string cn in contentNames)
         {
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
             {
-                if ((parentCategory == Category.Room && (go.GetComponent<OgreeObject>().category == Category.Rack || go.GetComponent<OgreeObject>().category == Category.Corridor))
-                    || parentCategory == Category.Rack && go.GetComponent<OgreeObject>().category == Category.Device)
+                if ((parentCategory == Category.Room && (go.GetComponent<Rack>() || go.GetComponent<Corridor>()))
+                    || parentCategory == Category.Rack && go.GetComponent<Device>())
                     content.Add(go.transform);
             }
             else
@@ -415,7 +414,10 @@ public class ObjectGenerator
         // Set Group component
         Group gr = newGr.AddComponent<Group>();
         gr.UpdateFromSApiObject(_gr);
-        gr.UpdateColorByDomain();
+        if (gr.attributes.ContainsKey("color"))
+            gr.SetColor(gr.attributes["color"]);
+        else
+            gr.UpdateColorByDomain();
 
         // Setup labels
         DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();
@@ -492,7 +494,7 @@ public class ObjectGenerator
         float height = upperDv.localPosition.y - lowerDv.localPosition.y;
         height += (upperDv.GetChild(0).localScale.y + lowerDv.GetChild(0).localScale.y) / 2;
 
-        _scale = new Vector3(maxWidth, height, maxLength);
+        _scale = new(maxWidth, height, maxLength);
 
         _pos = lowerDv.position;
         _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
@@ -505,7 +507,7 @@ public class ObjectGenerator
     ///<param name="_co">The corridor data to apply</param>
     ///<param name="_parent">The parent of the created corridor. Leave null if _co contains the parendId</param>
     ///<returns>The created corridor</returns>
-    public OObject CreateCorridor(SApiObject _co, Transform _parent = null)
+    public Corridor CreateCorridor(SApiObject _co, Transform _parent = null)
     {
         if (GameManager.instance.allItems.Contains(_co.id))
         {
@@ -526,7 +528,7 @@ public class ObjectGenerator
         foreach (Transform child in newCo.transform)
             child.localPosition += scale / 2;
 
-        OObject co = newCo.AddComponent<OObject>();
+        Corridor co = newCo.AddComponent<Corridor>();
         co.UpdateFromSApiObject(_co);
 
         // Apply position & rotation
@@ -541,7 +543,7 @@ public class ObjectGenerator
         // Set color according to attribute["temperature"]
         newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
         Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
-        mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, 0.5f);
+        mat.color = new(mat.color.r, mat.color.g, mat.color.b, 0.5f);
         if (_co.attributes["temperature"] == "cold")
             co.SetColor("000099");
         else
@@ -579,7 +581,7 @@ public class ObjectGenerator
         newSensor.name = "sensor";
 
         Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
-        newSensor.transform.localPosition = new Vector3(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
+        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
         if (parentOgree is Rack)
         {
             float uXSize = UnitValue.OU;
@@ -619,35 +621,29 @@ public class ObjectGenerator
             origin = parentRoom.usableZone.localScale / 0.2f;
         }
 
-        Vector2 orient = new Vector2();
+        Vector2 orient = new();
         if (parentRoom.attributes.ContainsKey("axisOrientation"))
         {
             switch (parentRoom.attributes["axisOrientation"])
             {
                 case AxisOrientation.Default:
                     // Lower Left corner of the room
-                    orient = new Vector2(1, 1);
+                    orient = new(1, 1);
                     break;
 
                 case AxisOrientation.XMinus:
                     // Lower Right corner of the room
-                    orient = new Vector2(-1, 1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, 0);
+                    orient = new(-1, 1);
                     break;
 
                 case AxisOrientation.YMinus:
                     // Upper Left corner of the room
-                    orient = new Vector2(1, -1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(0, 0, _obj.GetChild(0).localScale.z);
+                    orient = new(1, -1);
                     break;
 
                 case AxisOrientation.BothMinus:
                     // Upper Right corner of the room
-                    orient = new Vector2(-1, -1);
-                    if (_apiObj.category == Category.Rack)
-                        _obj.localPosition -= new Vector3(_obj.GetChild(0).localScale.x, 0, _obj.GetChild(0).localScale.z);
+                    orient = new(-1, -1);
                     break;
             }
         }
@@ -658,7 +654,7 @@ public class ObjectGenerator
         else
         {
             Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
-            pos = new Vector3(tmp.x, 0, tmp.y);
+            pos = new(tmp.x, 0, tmp.y);
         }
 
         Transform floor = _obj.parent.Find("Floor");

@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager instance;
     public Server server;
-    public ConfigHandler configHandler = new ConfigHandler();
+    public ConfigHandler configHandler = new();
 
     [Header("Materials")]
     public Material defaultMat;
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public Material highlightMat;
     public Material mouseHoverMat;
     public Material scatterPlotMat;
-    public Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
+    public Dictionary<string, Texture> textures = new();
 
     [Header("Models")]
     public GameObject buildingModel;
@@ -47,13 +47,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
-    private List<GameObject> currentItems = new List<GameObject>();
-    private List<GameObject> previousItems = new List<GameObject>();
-    public Hashtable allItems = new Hashtable();
-    public Dictionary<string, SBuildingFromJson> buildingTemplates = new Dictionary<string, SBuildingFromJson>();
-    public Dictionary<string, SRoomFromJson> roomTemplates = new Dictionary<string, SRoomFromJson>();
-    public Dictionary<string, GameObject> objectTemplates = new Dictionary<string, GameObject>();
-    private readonly List<GameObject> focus = new List<GameObject>();
+    private List<GameObject> currentItems = new();
+    private List<GameObject> previousItems = new();
+    public Hashtable allItems = new();
+    public Dictionary<string, SBuildingFromJson> buildingTemplates = new();
+    public Dictionary<string, SRoomFromJson> roomTemplates = new();
+    public Dictionary<string, GameObject> objectTemplates = new();
+    private readonly List<GameObject> focus = new();
     public bool writeLogs = true;
     public CameraControl cameraControl;
 
@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
             if (_obj)
             {
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
-                OObject currentSelected = _obj.GetComponent<OObject>();
+                Item currentSelected = _obj.GetComponent<Item>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in previousItemsTMP)
                 {
@@ -143,8 +143,7 @@ public class GameManager : MonoBehaviour
                         continue;
                     }
 
-                    OObject previousSelected = previousObj.GetComponent<OObject>();
-
+                    Item previousSelected = previousObj.GetComponent<Item>();
                     //Are the previous and current selection part of the same referent ?
                     if (!previousSelected || !previousSelected.referent || (currentSelected && currentSelected.referent == previousSelected.referent))
                         continue;
@@ -158,7 +157,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
+                if (!(selectOgree is Group || selectOgree is Corridor) && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
             }
             else // deselection => unload children if level of details is <=1
@@ -172,7 +171,7 @@ public class GameManager : MonoBehaviour
                         previousItems.Remove(previousObj);
                         continue;
                     }
-                    previousObj.GetComponent<OObject>()?.LoadChildren(0);
+                    previousObj.GetComponent<Item>()?.LoadChildren(0);
                 }
             }
             // add new item
@@ -211,9 +210,9 @@ public class GameManager : MonoBehaviour
                 // _obj was the last item in selection
                 if (currentItems.Count == 0)
                 {
-                    OObject oObject = _obj.GetComponent<OObject>();
-                    if (oObject && oObject.currentLod <= 1)
-                        await oObject.LoadChildren(0);
+                    Item item = _obj.GetComponent<Item>();
+                    if (item && item.currentLod <= 1)
+                        await item.LoadChildren(0);
                     if (focusMode)
                         currentItems.Add(focus[focus.Count - 1]);
                 }
@@ -222,7 +221,7 @@ public class GameManager : MonoBehaviour
             {
                 currentItems.Add(_obj);
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (selectOgree.category != Category.Group && selectOgree.category != Category.Corridor && selectOgree.currentLod == 0)
+                if (selectOgree is not Group && selectOgree is not Corridor && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
                 AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
             }
@@ -241,13 +240,13 @@ public class GameManager : MonoBehaviour
     ///<param name="_obj">The GameObject to add</param>
     public async Task FocusItem(GameObject _obj)
     {
-        if (_obj && (!_obj.GetComponent<OObject>() || _obj.GetComponent<OObject>().category == Category.Corridor))
+        if (_obj && !(_obj.GetComponent<Rack>() || _obj.GetComponent<Device>()))
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
             return;
         }
 
-        OObject[] children = _obj.GetComponentsInChildren<OObject>();
+        Item[] children = _obj.GetComponentsInChildren<Item>();
         if (children.Length == 1)
         {
             AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id}: no children found.", ELogTarget.both, ELogtype.warning);
@@ -267,7 +266,7 @@ public class GameManager : MonoBehaviour
             AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
-            EventManager.instance.Raise(new OnFocusEvent(focus[focus.Count - 1]));
+            EventManager.instance.Raise(new OnFocusEvent(focus[^1]));
         }
         else
             await UnfocusItem();
@@ -278,14 +277,14 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UnfocusItem()
     {
-        GameObject obj = focus[focus.Count - 1];
+        GameObject obj = focus[^1];
         focus.Remove(obj);
 
         focusMode = focus.Count != 0;
         EventManager.instance.Raise(new OnUnFocusEvent(obj));
         if (focus.Count > 0)
         {
-            GameObject lastFocus = focus[focus.Count - 1];
+            GameObject lastFocus = focus[^1];
             EventManager.instance.Raise(new OnFocusEvent(lastFocus));
             AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
             if (!currentItems.Contains(lastFocus))
@@ -304,8 +303,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public async Task UnfocusAll()
     {
-        int count = focus.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < focus.Count; i++)
             await UnfocusItem();
     }
 
@@ -319,7 +317,7 @@ public class GameManager : MonoBehaviour
         if (!focusMode)
             return true;
 
-        Transform root = focus[focus.Count - 1].transform;
+        Transform root = focus[^1].transform;
         if (root.GetComponent<Group>())
         {
             foreach (GameObject go in root.GetComponent<Group>().GetContent())
@@ -367,11 +365,11 @@ public class GameManager : MonoBehaviour
     public async Task PurgeDomains(string _exception = null)
     {
         await SetCurrentItem(null);
-        List<GameObject> doToDel = new List<GameObject>();
+        List<GameObject> doToDel = new();
         foreach (DictionaryEntry de in allItems)
         {
             GameObject go = (GameObject)de.Value;
-            if (go.GetComponent<OgreeObject>().category == Category.Domain && go.name != _exception)
+            if (go.GetComponent<Domain>() && go.name != _exception)
                 doToDel.Add(go);
         }
         for (int i = 0; i < doToDel.Count; i++)
@@ -383,7 +381,7 @@ public class GameManager : MonoBehaviour
     ///</summary>
     public void PurgeTemplates()
     {
-        List<GameObject> templatesToDel = new List<GameObject>();
+        List<GameObject> templatesToDel = new();
         foreach (KeyValuePair<string, GameObject> kvp in objectTemplates)
             templatesToDel.Add(kvp.Value);
         for (int i = 0; i < templatesToDel.Count; i++)
@@ -545,7 +543,7 @@ public class GameManager : MonoBehaviour
         try
         {
             fs = new FileStream(fileName, FileMode.Append);
-            using StreamWriter writer = new StreamWriter(fs);
+            using StreamWriter writer = new(fs);
             writer.Write($"{dateTime} | {type} : {_str}");
         }
         catch (Exception _e)
@@ -554,8 +552,7 @@ public class GameManager : MonoBehaviour
         }
         finally
         {
-            if (fs != null)
-                fs.Dispose();
+            fs?.Dispose();
         }
     }
 
@@ -581,12 +578,12 @@ public class GameManager : MonoBehaviour
     /// <typeparam name="T">The type of OObject you want to check</typeparam>
     /// <param name="_category">If you need to precise the category because <typeparamref name="T"/> is too broad, like "device" <br/> Leave empty if there is no need </param>
     /// <returns>False if the select list is empty or if the last focused object is not of right type and category </returns>
-    public bool FocusIs<T>(string _category = "") where T : OObject
+    public bool FocusIs<T>(string _category = "") where T : Item
     {
         if (focus.Count == 0)
             return false;
 
-        if (focus[focus.Count - 1].GetComponent<T>() && (_category == "" || _category == focus[focus.Count - 1].GetComponent<OgreeObject>().category))
+        if (focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
             return true;
         return false;
     }
@@ -604,11 +601,11 @@ public class GameManager : MonoBehaviour
     /// Create a copy of the currently selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of currently selected objects</returns>
-    public List<OObject> GetSelectedReferents()
+    public List<Item> GetSelectedReferents()
     {
         if (selectMode)
-            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
-        return new List<OObject>();
+            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
+        return new List<Item>();
     }
 
     /// <summary>
@@ -624,9 +621,9 @@ public class GameManager : MonoBehaviour
     /// Create a copy of the currently selected objects to be checked
     /// </summary>
     /// <returns>a copy of the list of currently selected objects</returns>
-    public List<OObject> GetPreviousReferents()
+    public List<Item> GetPreviousReferents()
     {
-        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<OObject>()?.referent).Where(oo => oo).ToList();
+        return previousItems.GetRange(0, previousItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
     }
 
     /// <summary>

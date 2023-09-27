@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
+using UnityEngine;
 
 public class ReadFromJson
 {
@@ -47,10 +47,10 @@ public class ReadFromJson
         }
 
         // Build SApiObject
-        SApiObject obj = new SApiObject
+        SApiObject obj = new()
         {
-            description = new List<string>(),
-            attributes = new Dictionary<string, string>(),
+            description = new(),
+            attributes = new(),
 
             name = _data.slug,
             id = _data.slug,
@@ -73,7 +73,7 @@ public class ReadFromJson
             if (_data.attributes.ContainsKey("type")
                 && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
             {
-                int sizeU = Mathf.CeilToInt((_data.sizeWDHmm[2] / 1000) / UnitValue.U);
+                int sizeU = Mathf.CeilToInt(_data.sizeWDHmm[2] / 1000 / UnitValue.U);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
             obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
@@ -91,33 +91,33 @@ public class ReadFromJson
         }
 
         // Generate the 3D object
-        OObject newObject;
+        Item newItem;
         if (obj.category == Category.Rack)
         {
-            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
+            newItem = (Item)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
 #if TRILIB
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
 #endif
         }
         else// if (obj.category == Category.Device)
         {
-            newObject = (OObject)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
+            newItem = (Item)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder.GetChild(0));
             Vector3 accurateScale = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[2], _data.sizeWDHmm[1]) / 1000;
-            newObject.transform.GetChild(0).localScale = accurateScale;
-            foreach (Transform comp in newObject.transform)
+            newItem.transform.GetChild(0).localScale = accurateScale;
+            foreach (Transform comp in newItem.transform)
                 comp.localPosition = accurateScale / 2;
 #if TRILIB
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                await ModelLoader.instance.ReplaceBox(newObject.gameObject, _data.fbxModel);
+                await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
 #endif
         }
-        newObject.GetComponent<ObjectDisplayController>().isTemplate = true;
+        newItem.GetComponent<ObjectDisplayController>().isTemplate = true;
 
-        newObject.color = newObject.transform.GetChild(0).GetComponent<Renderer>().material.color;
+        newItem.color = newItem.transform.GetChild(0).GetComponent<Renderer>().material.color;
 
         // Retrieve custom colors
-        Dictionary<string, string> customColors = new Dictionary<string, string>();
+        Dictionary<string, string> customColors = new();
         if (_data.colors != null)
         {
             foreach (SColor color in _data.colors)
@@ -128,24 +128,24 @@ public class ReadFromJson
         if (_data.components != null)
         {
             foreach (STemplateChild compData in _data.components)
-                PopulateSlot(false, compData, newObject, customColors);
+                PopulateSlot(false, compData, newItem, customColors);
         }
         if (_data.slots != null)
         {
             foreach (STemplateChild slotData in _data.slots)
-                PopulateSlot(true, slotData, newObject, customColors);
+                PopulateSlot(true, slotData, newItem, customColors);
         }
 
         if (_data.sensors != null)
         {
             foreach (STemplateSensor sensor in _data.sensors)
-                GenerateSensorTemplate(sensor, newObject.transform);
+                GenerateSensorTemplate(sensor, newItem.transform);
         }
 
         // For rack, update height counting
-        if (newObject.category == Category.Rack)
+        if (newItem.category == Category.Rack)
         {
-            Slot[] slots = newObject.GetComponentsInChildren<Slot>();
+            Slot[] slots = newItem.GetComponentsInChildren<Slot>();
             if (slots.Length > 0)
             {
                 int height = 0;
@@ -154,21 +154,21 @@ public class ReadFromJson
                     if (s.orient == "horizontal")
                         height++;
                 }
-                newObject.attributes["height"] = height.ToString();
-                newObject.attributes["heightUnit"] = LengthUnit.U;
+                newItem.attributes["height"] = height.ToString();
+                newItem.attributes["heightUnit"] = LengthUnit.U;
             }
         }
 
         // Toggle renderers & put newObj in GameManager.objectTemplates
 #if PROD
-        Renderer[] renderers = newObject.transform.GetComponentsInChildren<Renderer>();
+        Renderer[] renderers = newItem.transform.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
             r.enabled = false;
-        newObject.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-        newObject.referent = null;
+        newItem.transform.GetChild(0).GetComponent<Collider>().enabled = false;
+        newItem.referent = null;
 #endif
-        GameManager.instance.allItems.Remove(newObject.id);
-        GameManager.instance.objectTemplates.Add(newObject.name, newObject.gameObject);
+        GameManager.instance.allItems.Remove(newItem.id);
+        GameManager.instance.objectTemplates.Add(newItem.name, newItem.gameObject);
     }
 
     ///<summary>
@@ -187,7 +187,7 @@ public class ReadFromJson
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
         if (_data.elemOrient == "vertical")
-            go.transform.localEulerAngles = new Vector3(0, 0, 90);
+            go.transform.localEulerAngles = new(0, 0, 90);
         else
             go.transform.localEulerAngles = Vector3.zero;
         go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
@@ -203,14 +203,14 @@ public class ReadFromJson
         }
         else
         {
-            OObject obj = go.AddComponent<OObject>();
+            Device obj = go.AddComponent<Device>();
             obj.name = go.name;
             obj.id = $"{_parent.id}.{obj.name}";
             obj.parentId = _parent.id;
             obj.category = Category.Device;
             obj.domain = _parent.domain;
-            obj.description = new List<string>();
-            obj.attributes = new Dictionary<string, string>
+            obj.description = new();
+            obj.attributes = new()
             {
                 ["deviceType"] = _data.type
             };
@@ -240,12 +240,12 @@ public class ReadFromJson
         if (_isSlot)
         {
             rend.material = GameManager.instance.alphaMat;
-            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 0.33f);
+            rend.material.color = new(myColor.r, myColor.g, myColor.b, 0.33f);
         }
         else
         {
-            rend.material.color = new Color(myColor.r, myColor.g, myColor.b, 1f);
-            go.GetComponent<OObject>().color = rend.material.color;
+            rend.material.color = new(myColor.r, myColor.g, myColor.b, 1f);
+            go.GetComponent<Item>().color = rend.material.color;
         }
     }
 

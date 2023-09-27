@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -64,16 +63,16 @@ public class ApiManager : MonoBehaviour
 
     public static ApiManager instance;
 
-    private readonly HttpClient httpClient = new HttpClient();
+    private readonly HttpClient httpClient = new();
 
     public bool isInit = false;
 
     [SerializeField] private bool isReady = false;
     [SerializeField] private string server;
 
-    [SerializeField] private Queue<SRequest> requestsToSend = new Queue<SRequest>();
+    [SerializeField] private Queue<SRequest> requestsToSend = new();
 
-    private readonly ReadFromJson rfJson = new ReadFromJson();
+    private readonly ReadFromJson rfJson = new();
 
     private string url;
     private string token;
@@ -142,7 +141,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     public async Task Initialize()
     {
-        SVersionResp apiResp = new SVersionResp();
+        SVersionResp apiResp = new();
         if (string.IsNullOrEmpty(url))
             GameManager.instance.AppendLogLine("Failed to connect with API: no url", ELogTarget.both, ELogtype.errorApi);
         else if (string.IsNullOrEmpty(token))
@@ -150,7 +149,7 @@ public class ApiManager : MonoBehaviour
         else
         {
             server = url + "/api";
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+            httpClient.DefaultRequestHeaders.Authorization = new("bearer", token);
             try
             {
                 string response = await httpClient.GetStringAsync($"{server}/version");
@@ -175,8 +174,8 @@ public class ApiManager : MonoBehaviour
     ///<param name="_obj">The OgreeObject to put</param>
     public void CreatePutRequest(OgreeObject _obj)
     {
-        SApiObject apiObj = new SApiObject(_obj);
-        SRequest request = new SRequest
+        SApiObject apiObj = new(_obj);
+        SRequest request = new()
         {
             type = "put",
             path = $"/{apiObj.category}s/{apiObj.id}",
@@ -191,7 +190,7 @@ public class ApiManager : MonoBehaviour
     ///<param name="_obj">The OgreeObject to delete</param>
     public void CreateDeleteRequest(OgreeObject _obj)
     {
-        SRequest request = new SRequest
+        SRequest request = new()
         {
             type = "delete",
             path = $"/{_obj.category}s/{_obj.id}"
@@ -208,7 +207,7 @@ public class ApiManager : MonoBehaviour
 
         SRequest req = requestsToSend.Dequeue();
         string fullPath = server + req.path;
-        StringContent content = new StringContent(req.json, System.Text.Encoding.UTF8, "application/json");
+        StringContent content = new(req.json, System.Text.Encoding.UTF8, "application/json");
         try
         {
             HttpResponseMessage response = await httpClient.PutAsync(fullPath, content);
@@ -321,7 +320,7 @@ public class ApiManager : MonoBehaviour
         // Debug.Log(json);
         string fullPath = $"{server}/{_obj.category}s";
 
-        StringContent content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        StringContent content = new(json, System.Text.Encoding.UTF8, "application/json");
         try
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
@@ -352,10 +351,10 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
             return;
         }
-        Debug.Log(_json);
+        // Debug.Log(_json);
         string fullPath = $"{server}/{_type}-templates";
 
-        StringContent content = new StringContent(_json, System.Text.Encoding.UTF8, "application/json");
+        StringContent content = new(_json, System.Text.Encoding.UTF8, "application/json");
         try
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
@@ -408,7 +407,7 @@ public class ApiManager : MonoBehaviour
             else
                 await CreateItemFromJson(_input);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e);
         }
@@ -421,9 +420,9 @@ public class ApiManager : MonoBehaviour
     ///<param name="_json">The API response to use</param>
     private async Task CreateItemFromJson(string _json)
     {
-        List<SApiObject> physicalObjects = new List<SApiObject>();
-        List<SApiObject> logicalObjects = new List<SApiObject>();
-        List<string> leafIds = new List<string>();
+        List<SApiObject> physicalObjects = new();
+        List<SApiObject> logicalObjects = new();
+        List<string> leafIds = new();
 
         if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
         {
@@ -451,9 +450,8 @@ public class ApiManager : MonoBehaviour
 
         foreach (string id in leafIds)
         {
-            Transform leaf = Utils.GetObjectById(id)?.transform;
-            if (leaf)
-                Utils.RebuildLods(leaf);
+            if (Utils.GetObjectById(id) is GameObject leaf)
+                Utils.RebuildLods(leaf.transform);
         }
 
         if (canDraw)
@@ -461,7 +459,11 @@ public class ApiManager : MonoBehaviour
         canDraw = true;
     }
 
-    ///
+    /// <summary>
+    /// Use response from API to get a temperatureUnit.
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns>A temperature unit if correct response from API or an empty string</returns>
     public Task<string> TempUnitFromAPI(string _input)
     {
         if (_input.Contains("successfully got temperatureUnit from object's parent site"))

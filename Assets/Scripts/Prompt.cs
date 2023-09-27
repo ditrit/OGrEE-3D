@@ -25,7 +25,7 @@ public class Prompt : MonoBehaviour
         else
         {
             buttonB.gameObject.SetActive(false);
-            buttonA.transform.localPosition = new Vector3(0, buttonA.transform.localPosition.y, buttonA.transform.localPosition.z);
+            buttonA.transform.localPosition = new(0, buttonA.transform.localPosition.y, buttonA.transform.localPosition.z);
         }
     }
 

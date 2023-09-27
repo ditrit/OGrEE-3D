@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -66,7 +65,7 @@ public class GUIObjectInfos : MonoBehaviour
 
         // Set correct height for scroll view
         RectTransform rt = objList.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0, _objects.Count * 20);
+        rt.sizeDelta = new(0, _objects.Count * 20);
     }
 
     ///<summary>
@@ -93,9 +92,9 @@ public class GUIObjectInfos : MonoBehaviour
         // Display category
         tmpAttributes.text = $"<b><u>{_obj.category}</u></b>\n";
 
-        if (GameManager.instance.tempColorMode && _obj is OObject @object)
+        if (GameManager.instance.tempColorMode && _obj is Item item)
         {
-            STemp tempInfos = @object.GetTemperatureInfos();
+            STemp tempInfos = item.GetTemperatureInfos();
             tmpAttributes.text += $"<b>average:</b> {Utils.FloatToRefinedStr(tempInfos.mean)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";
@@ -118,13 +117,13 @@ public class GUIObjectInfos : MonoBehaviour
                 i++;
 
                 // If rack, display pos by tile name if available
-                if (_obj.category == Category.Rack && _obj.transform.parent)
+                if (_obj is Rack && _obj.transform.parent)
                 {
                     Room room = _obj.transform.parent.GetComponent<Room>();
                     if (room.attributes.ContainsKey("tiles"))
                     {
                         List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(room.attributes["tiles"]);
-                        STile tileData = new STile();
+                        STile tileData = new();
                         foreach (STile t in tiles)
                         {
                             if (t.location == $"{posXY.x:0}/{posXY.y:0}")
@@ -185,7 +184,7 @@ public class GUIObjectInfos : MonoBehaviour
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new Vector2(0, i * 30);
+        rt.sizeDelta = new(0, i * 30);
     }
 
     ///<summary>

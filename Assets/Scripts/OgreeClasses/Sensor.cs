@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Sensor : MonoBehaviour
@@ -22,27 +21,13 @@ public class Sensor : MonoBehaviour
 
     ///<summary>
     /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
-    /// Set this sensor's temperature to _value (converted to float)
-    ///</summary>
-    ///<param name="_value">The temperature value</param>
-    public void SetTemperature(string _value)
-    {
-        temperature = Utils.ParseDecFrac(_value);
-        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
-        if (!string.IsNullOrEmpty(temperatureUnit))
-            UpdateSensorColor();
-        GetComponent<DisplayObjectData>().UpdateLabels();
-    }
-
-    ///<summary>
-    /// Check for an attribute "temperatureUnit" of the site of this sensor and assign it to temperatureUnit.
-    /// Set this sensor's temperature to _value (converted to float)
+    /// Set this sensor's temperature to _value
     ///</summary>
     ///<param name="_value">The temperature value</param>
     public void SetTemperature(float _value)
     {
         temperature = _value;
-        temperatureUnit = transform.parent.GetComponent<OObject>().temperatureUnit;
+        temperatureUnit = transform.parent.GetComponent<Item>().temperatureUnit;
         if (!string.IsNullOrEmpty(temperatureUnit))
             UpdateSensorColor();
         GetComponent<DisplayObjectData>().UpdateLabels();
@@ -72,13 +57,15 @@ public class Sensor : MonoBehaviour
 
         importDone = true;
 
-        OObject parent = transform.parent.GetComponent<OObject>();
+        Item parent = transform.parent.GetComponent<Item>();
         if (parent)
+        {
             if (!fromTemplate)
                 SetTemperature(parent.GetTemperatureInfos().mean);
             else if (parent.attributes.ContainsKey($"temperature_{name}"))
-                SetTemperature(parent.attributes[$"temperature_{name}"]);
+                SetTemperature(Utils.ParseDecFrac(parent.attributes[$"temperature_{name}"]));
             else
                 SetTemperature(float.NaN);
+        }
     }
 }

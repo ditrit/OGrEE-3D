@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CustomerGenerator
 {
@@ -9,7 +7,7 @@ public class CustomerGenerator
     ///</summary>
     ///<param name="_do">The domain data to apply</param>
     ///<returns>The created domain</returns>
-    public OgreeObject CreateDomain(SApiObject _do)
+    public Domain CreateDomain(SApiObject _do)
     {
         if (GameManager.instance.allItems.Contains(_do.id))
         {
@@ -17,8 +15,8 @@ public class CustomerGenerator
             return null;
         }
 
-        GameObject newDomain = new GameObject(_do.name);
-        OgreeObject domain = newDomain.AddComponent<OgreeObject>();
+        GameObject newDomain = new(_do.name);
+        Domain domain = newDomain.AddComponent<Domain>();
         domain.UpdateFromSApiObject(_do);
 
         GameManager.instance.allItems.Add(_do.id, newDomain);
@@ -31,7 +29,7 @@ public class CustomerGenerator
     ///<param name="_si">The site data to apply</param>
     ///<param name="_parent">The parent of the created site</param>
     ///<returns>The created Site</returns>
-    public OgreeObject CreateSite(SApiObject _si)
+    public Site CreateSite(SApiObject _si)
     {
         if (GameManager.instance.allItems.Contains(_si.id))
         {
@@ -39,9 +37,9 @@ public class CustomerGenerator
             return null;
         }
 
-        GameObject newSite = new GameObject(_si.name);
+        GameObject newSite = new(_si.name);
 
-        OgreeObject site = newSite.AddComponent<OgreeObject>();
+        Site site = newSite.AddComponent<Site>();
         site.UpdateFromSApiObject(_si);
 
         GameManager.instance.allItems.Add(site.id, newSite);

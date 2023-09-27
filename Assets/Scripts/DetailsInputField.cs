@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Threading.Tasks;
 
 public class DetailsInputField : MonoBehaviour
 {
@@ -38,9 +35,9 @@ public class DetailsInputField : MonoBehaviour
         if (!GameManager.instance.selectMode)
             return;
 
-        bool value = !GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().LodLocked;
+        bool value = !GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().isLodLocked;
         foreach (GameObject go in GameManager.instance.GetSelected())
-            go.GetComponent<OgreeObject>().LodLocked = value;
+            go.GetComponent<OgreeObject>().isLodLocked = value;
         if (value)
         {
             lockICon.text = "🔒";
@@ -72,9 +69,9 @@ public class DetailsInputField : MonoBehaviour
             ActiveInputField(true);
             OgreeObject firstSelected = GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>();
             UpdateInputField(firstSelected.currentLod.ToString());
-            lockLodButton.gameObject.SetActive(firstSelected is OObject oObject && oObject.referent == oObject);
-            lockICon.text = firstSelected.LodLocked ? "🔒" : "🔓";
-            lockICon.color = firstSelected.LodLocked ? Color.red : Color.green;
+            lockLodButton.gameObject.SetActive(firstSelected is Item item && item.referent == item);
+            lockICon.text = firstSelected.isLodLocked ? "🔒" : "🔓";
+            lockICon.color = firstSelected.isLodLocked ? Color.red : Color.green;
         }
     }
 

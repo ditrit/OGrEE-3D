@@ -1,12 +1,12 @@
 # OGREE-3D
 OGREE 3D is a data-center viewer, using Unity 3D  
-- Build windows / macOS / Linux: v2.7
+- Build windows / macOS / Linux: 3.0.0
 - Build to come: Android
 - Gamer gpu needed
 - VR version to come  
 
 ## Work on OGrEE-3D
-- Install Unity version **2020.3.6f1**
+- Install Unity version **2022.3.9f1**
 - For loading fbx models at runtime, we are using a third party plugin: [**TriLib 2**](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548). You'll have to purchase it.
 - Open the project in Unity Editor. A warning message will ask you to enter into safe mode. Deny it and continue to open the project.
 - Import your TriLib2 package in the *Assets* folder.
@@ -48,12 +48,12 @@ You can override the config file parameters with command line arguments
 ```  
 
 # Build in CLI
-CLI langage documentation and example are available [on the wiki](https://github.com/ditrit/OGREE-3D/wiki/CLI-langage).
+CLI langage documentation and example are available [on the wiki](https://github.com/ditrit/OGREE-Core/wiki/CLI-langage).
 
 
 # Templates definition
 Templates are json files describing an object.  
-JSON template definitions are available [on the wiki](https://github.com/ditrit/OGREE-3D/wiki/JSON-template-definitions).
+JSON template definitions are available [on the wiki](https://github.com/ditrit/OGREE-Core/wiki/JSON-template-definitions).
 
 # Controls  
 - Left click: select an object (Room or Rack)

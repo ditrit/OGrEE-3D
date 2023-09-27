@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -33,7 +32,7 @@ public class UdpConnection : AConnection
 
     private void StartReceiveThread()
     {
-        receiveThread = new Thread(() => ListenForMessages(udpClient))
+        receiveThread = new(() => ListenForMessages(udpClient))
         {
             IsBackground = true
         };
@@ -43,7 +42,7 @@ public class UdpConnection : AConnection
 
     private void ListenForMessages(UdpClient _client)
     {
-        IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        IPEndPoint remoteIpEndPoint = new(IPAddress.Any, 0);
 
         while (threadRunning)
         {
@@ -95,9 +94,9 @@ public class UdpConnection : AConnection
 
     public override void Send(string _message)
     {
-        Debug.Log(String.Format($"Send msg to ip:{senderIp}:{cliPort} msg: {_message}"));
-        IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(senderIp), cliPort);
-        Byte[] sendBytes = Encoding.UTF8.GetBytes(_message);
+        Debug.Log($"Send msg to ip:{senderIp}:{cliPort} msg: {_message}");
+        IPEndPoint serverEndpoint = new(IPAddress.Parse(senderIp), cliPort);
+        byte[] sendBytes = Encoding.UTF8.GetBytes(_message);
         udpClient.Send(sendBytes, sendBytes.Length, serverEndpoint);
     }
 

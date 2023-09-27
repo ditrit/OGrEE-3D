@@ -52,7 +52,7 @@ public class Heatmap : MonoBehaviour
         pointTemp = transform.rotation * pointTemp;
         pointTemp += transform.position;
 
-        return new Vector4(pointTemp.x, pointTemp.y, pointTemp.z, 0);
+        return new(pointTemp.x, pointTemp.y, pointTemp.z, 0);
     }
 
     /// <summary>

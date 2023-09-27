@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +16,7 @@ public class Tile : MonoBehaviour
     public void SetColor(List<SColor> _customColors)
     {
         Material mat = GetComponent<Renderer>().material;
-        Color customColor = new Color();
+        Color customColor = new();
         if (color.StartsWith("@"))
         {
             foreach (SColor custColor in _customColors)
@@ -40,7 +39,7 @@ public class Tile : MonoBehaviour
         if (GameManager.instance.textures.ContainsKey(texture))
         {
             Renderer rend = GetComponent<Renderer>();
-            rend.material = new Material(defaultMat)
+            rend.material = new(defaultMat)
             {
                 mainTexture = GameManager.instance.textures[texture]
             };

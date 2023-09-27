@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Group : OObject
+public class Group : Item
 {
     private List<GameObject> content;
     public bool isDisplayed = true;
@@ -9,13 +9,12 @@ public class Group : OObject
     protected override void Start()
     {
         base.Start();
-        content = new List<GameObject>();
-        string[] names = attributes["content"].Split(',');
+        content = new();
 
+        string[] names = attributes["content"].Split(',');
         foreach (string rn in names)
         {
-            GameObject go = Utils.GetObjectById($"{parentId}.{rn}");
-            if (go)
+            if (Utils.GetObjectById($"{parentId}.{rn}") is GameObject go)
                 content.Add(go);
         }
         DisplayContent(false);
@@ -59,20 +58,22 @@ public class Group : OObject
     }
 
     ///<summary>
-    /// Enable or disable racks from attributes["content"].
+    /// Enable or disable GameObjects in <see cref="content"/>.
     ///</summary>
     ///<param name="_value">The bool value to apply</param>
     private void DisplayContent(bool _value)
     {
-        foreach (GameObject r in GetContent())
-            if (r && !r.GetComponent<OgreeObject>().isDoomed)
-                r.SetActive(_value);
+        foreach (GameObject go in content)
+        {
+            if (go && !go.GetComponent<OgreeObject>().isDoomed)
+                go.SetActive(_value);
+        }
     }
 
     ///<summary>
-    /// Get all GameObjects listed in attributes["content"].
+    /// Get all GameObjects listed in <see cref="content"/>.
     ///</summary>
-    ///<returns>The list of GameObject corresponding to attributes["content"]</returns>
+    ///<returns>The list of GameObject corresponding to <see cref="content"/></returns>
     public List<GameObject> GetContent()
     {
         return content;

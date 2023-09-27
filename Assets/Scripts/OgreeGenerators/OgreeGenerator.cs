@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class OgreeGenerator : MonoBehaviour
 {
     public static OgreeGenerator instance;
-    private readonly CustomerGenerator customerGenerator = new CustomerGenerator();
-    private readonly BuildingGenerator buildingGenerator = new BuildingGenerator();
-    private readonly ObjectGenerator objectGenerator = new ObjectGenerator();
+    private readonly CustomerGenerator customerGenerator = new();
+    private readonly BuildingGenerator buildingGenerator = new();
+    private readonly ObjectGenerator objectGenerator = new();
     private Coroutine waitCoroutine = null;
 
     private void Awake()
@@ -32,7 +31,7 @@ public class OgreeGenerator : MonoBehaviour
             return null;
         }
 
-        OgreeObject newItem;
+        OgreeObject newObject;
         // Get dependencies from API
         if (_obj.category != Category.Domain && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.instance.allItems.Contains(_obj.domain))
@@ -100,61 +99,59 @@ public class OgreeGenerator : MonoBehaviour
         switch (_obj.category)
         {
             case Category.Domain:
-                newItem = customerGenerator.CreateDomain(_obj);
+                newObject = customerGenerator.CreateDomain(_obj);
                 break;
             case Category.Site:
-                newItem = customerGenerator.CreateSite(_obj);
+                newObject = customerGenerator.CreateSite(_obj);
                 break;
             case Category.Building:
-                newItem = buildingGenerator.CreateBuilding(_obj, parent);
+                newObject = buildingGenerator.CreateBuilding(_obj, parent);
                 break;
             case Category.Room:
-                newItem = buildingGenerator.CreateRoom(_obj, parent);
+                newObject = buildingGenerator.CreateRoom(_obj, parent);
                 break;
             case Category.Rack:
-                newItem = objectGenerator.CreateRack(_obj, parent);
+                newObject = objectGenerator.CreateRack(_obj, parent);
                 break;
             case Category.Device:
-                newItem = objectGenerator.CreateDevice(_obj, parent);
+                newObject = objectGenerator.CreateDevice(_obj, parent);
                 break;
             case Category.Corridor:
-                newItem = objectGenerator.CreateCorridor(_obj, parent);
+                newObject = objectGenerator.CreateCorridor(_obj, parent);
                 break;
             case Category.Group:
-                newItem = objectGenerator.CreateGroup(_obj, parent);
+                newObject = objectGenerator.CreateGroup(_obj, parent);
                 break;
             default:
-                newItem = null;
+                newObject = null;
                 GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", ELogTarget.both, ELogtype.error);
                 break;
         }
-        if (newItem)
+        if (newObject)
         {
-            newItem.SetBaseTransform();
-            if (newItem.category != Category.Domain && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
+            newObject.SetBaseTransform();
+            if (newObject is not Domain && (!GameManager.instance.objectRoot || GameManager.instance.objectRoot.GetComponent<OgreeObject>().isDoomed)
                 && !(parent == GameManager.instance.templatePlaceholder || parent == GameManager.instance.templatePlaceholder.GetChild(0)))
             {
-                GameManager.instance.objectRoot = newItem.gameObject;
-                FindObjectOfType<CameraControl>().MoveToObject(newItem.transform);
+                GameManager.instance.objectRoot = newObject.gameObject;
+                FindObjectOfType<CameraControl>().MoveToObject(newObject.transform);
             }
-            if (newItem is OObject newItemOObject)
+            if (newObject is Item item)
             {
                 if (parent)
                 {
-                    newItemOObject.temperatureUnit = parent.GetComponent<Room>()?.temperatureUnit;
-                    if (string.IsNullOrEmpty(newItemOObject.temperatureUnit))
-                        newItemOObject.temperatureUnit = parent.GetComponent<OObject>()?.temperatureUnit;
+                    item.temperatureUnit = parent.GetComponent<Room>()?.temperatureUnit;
+                    if (string.IsNullOrEmpty(item.temperatureUnit))
+                        item.temperatureUnit = parent.GetComponent<Item>()?.temperatureUnit;
                 }
                 else
-                    newItemOObject.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
+                    item.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
             }
-            if (newItem is Room newItemRoom)
-            {
-                newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newItem.id}", ApiManager.instance.TempUnitFromAPI);
-            }
+            if (newObject is Room newItemRoom)
+                newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
         }
         ResetCoroutine();
-        return newItem;
+        return newObject;
     }
 
     ///<summary>

@@ -1,8 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEditor;
+using UnityEngine;
 
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DebugText : MonoBehaviour
@@ -50,6 +48,7 @@ public class DebugText : MonoBehaviour
         int roomsCount = 0;
         int racksCount = 0;
         int devicesCount = 0;
+        int componentCount = 0;
 
         ooCount = GameManager.instance.allItems.Count;
         goCount = FindObjectsOfType<GameObject>().Length;
@@ -57,22 +56,25 @@ public class DebugText : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
-            switch (obj.category)
+            switch (obj)
             {
-                case Category.Site:
+                case Site:
                     sitesCount++;
                     break;
-                case Category.Building:
+                case Building and not Room:
                     buildingsCount++;
                     break;
-                case Category.Room:
+                case Room:
                     roomsCount++;
                     break;
-                case Category.Rack:
+                case Rack:
                     racksCount++;
                     break;
-                case Category.Device:
-                    devicesCount++;
+                case Device device:
+                    if (device.isComponent)
+                        componentCount++;
+                    else
+                        devicesCount++;
                     break;
             }
         }
@@ -81,6 +83,7 @@ public class DebugText : MonoBehaviour
         GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", ELogTarget.both);
         GameManager.instance.AppendLogLine($"Racks: {racksCount}", ELogTarget.both);
         GameManager.instance.AppendLogLine($"Devices: {devicesCount}", ELogTarget.both);
+        GameManager.instance.AppendLogLine($"Components: {componentCount}", ELogTarget.both);
     }
 
     ///<summary>

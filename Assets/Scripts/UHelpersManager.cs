@@ -1,8 +1,8 @@
-using UnityEngine;
-using TMPro;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine;
 
 public class UHelpersManager : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class UHelpersManager : MonoBehaviour
     private readonly string cornerFrontLeft = "frontLeft";
     private readonly string cornerFrontRight = "frontRight";
     private bool wasEdited = false;
-    private List<OObject> lastSelectedReferent = new List<OObject>();
+    private List<Item> lastSelectedReferent = new List<Item>();
 
     private void Awake()
     {
@@ -63,18 +63,20 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<OObject>() && !GameManager.instance.SelectIs<OgreeObject>("tempBar"))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
         {
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
-        foreach (OObject oObject in lastSelectedReferent)
-            if (!GameManager.instance.GetSelectedReferents().Contains(oObject) && oObject is Rack rack)
+        foreach (Item item in lastSelectedReferent)
+        {
+            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
-                ToggleU(oObject.referent.gameObject, false);
+                ToggleU(item.referent.gameObject, false);
             }
+        }
         lastSelectedReferent = GameManager.instance.GetSelectedReferents();
     }
 
@@ -87,10 +89,10 @@ public class UHelpersManager : MonoBehaviour
         if (_selection.Count == 0)
             return;
         bool first = true;
-        Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<OObject>());
-        foreach (OObject oObject in _selection.Select(go => go.GetComponent<OObject>()))
+        Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<Item>());
+        foreach (Item item in _selection.Select(go => go.GetComponent<Item>()))
         {
-            if (oObject is Rack rack)
+            if (item is Rack rack)
             {
                 rack.uRoot.gameObject.SetActive(true);
                 for (int i = 0; i < rack.uRoot.GetChild(0).childCount; i++)
@@ -111,7 +113,7 @@ public class UHelpersManager : MonoBehaviour
                     first = false;
                 }
                 float difference;
-                Transform t = oObject.transform.GetChild(0);
+                Transform t = item.transform.GetChild(0);
                 float center = t.position.y;
 
                 BoxCollider boxCollider = t.GetComponent<BoxCollider>();
@@ -120,7 +122,7 @@ public class UHelpersManager : MonoBehaviour
                 difference = boxCollider.bounds.extents.y;
                 boxCollider.enabled = isEnabled;
 
-                t = oObject.transform;
+                t = item.transform;
                 float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
                 float lowerBound = center - difference - delta;
                 float upperBound = center + difference - delta;
@@ -162,7 +164,7 @@ public class UHelpersManager : MonoBehaviour
     {
         foreach (GameObject obj in _selection)
         {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
             if (!rack)
                 break;
 
@@ -181,7 +183,7 @@ public class UHelpersManager : MonoBehaviour
     {
         foreach (GameObject obj in _selection)
         {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<OObject>());
+            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
             if (!rack)
                 break;
 
@@ -220,19 +222,19 @@ public class UHelpersManager : MonoBehaviour
 
         Transform URearLeft = new GameObject(cornerRearLeft).transform;
         URearLeft.parent = _rack.uRoot;
-        URearLeft.localPosition = new Vector3(-boxSize.x / 2, 0, -boxSize.z / 2);
+        URearLeft.localPosition = new(-boxSize.x / 2, 0, -boxSize.z / 2);
         URearLeft.localEulerAngles = Vector3.zero;
         Transform URearRight = new GameObject(cornerRearRight).transform;
         URearRight.parent = _rack.uRoot;
-        URearRight.localPosition = new Vector3(boxSize.x / 2, 0, -boxSize.z / 2);
+        URearRight.localPosition = new(boxSize.x / 2, 0, -boxSize.z / 2);
         URearRight.localEulerAngles = Vector3.zero;
         Transform UFrontLeft = new GameObject(cornerFrontLeft).transform;
         UFrontLeft.parent = _rack.uRoot;
-        UFrontLeft.localPosition = new Vector3(-boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontLeft.localPosition = new(-boxSize.x / 2, 0, boxSize.z / 2);
         UFrontLeft.localEulerAngles = Vector3.zero;
         Transform UFrontRight = new GameObject(cornerFrontRight).transform;
         UFrontRight.parent = _rack.uRoot;
-        UFrontRight.localPosition = new Vector3(boxSize.x / 2, 0, boxSize.z / 2);
+        UFrontRight.localPosition = new(boxSize.x / 2, 0, boxSize.z / 2);
         UFrontRight.localEulerAngles = Vector3.zero;
 
         float scale = UnitValue.U;
@@ -284,7 +286,7 @@ public class UHelpersManager : MonoBehaviour
     {
         if (GameManager.instance.editMode)
             return;
-        if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[GameManager.instance.GetFocused().Count - 1].GetComponent<OgreeObject>()))
+        if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[^1].GetComponent<OgreeObject>()))
         {
             wasEdited = false;
             ToggleU(GameManager.instance.GetSelected()[0], true);

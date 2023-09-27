@@ -11,13 +11,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string id;
     public string parentId;
     public string category;
-    public List<string> description = new List<string>();
+    public List<string> description = new();
     public string domain;
 
     [Header("Specific attributes")]
-    [SerializeField] private List<string> attributesKeys = new List<string>();
-    [SerializeField] private List<string> attributesValues = new List<string>();
-    public Dictionary<string, string> attributes = new Dictionary<string, string>();
+    [SerializeField] private List<string> attributesKeys = new();
+    [SerializeField] private List<string> attributesValues = new();
+    public Dictionary<string, string> attributes = new();
 
     [Header("LOD")]
     public int currentLod = 0;
@@ -31,7 +31,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public bool scatterPlot = false;
     public GameObject localCS = null;
     public bool isDoomed = false;
-    public bool LodLocked = false;
+    public bool isLodLocked = false;
 
     public void OnBeforeSerialize()
     {
@@ -46,7 +46,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     public void OnAfterDeserialize()
     {
-        attributes = new Dictionary<string, string>();
+        attributes = new();
         for (int i = 0; i < attributesKeys.Count; i++)
             attributes.Add(attributesKeys[i], attributesValues[i]);
     }
@@ -124,7 +124,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_level">Wanted LOD to get</param>
     public async Task LoadChildren(int _level)
     {
-        if (!ApiManager.instance.isInit || LodLocked || (this is OObject obj && obj.isComponent))
+        if (!ApiManager.instance.isInit || isLodLocked || (this is Device dv && dv.isComponent))
             return;
 
         if (_level < 0)
@@ -151,8 +151,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         {
             foreach (Transform child in transform)
             {
-                OgreeObject obj = child.GetComponent<OgreeObject>();
-                if (obj)
+                if (child.TryGetComponent(out OgreeObject obj))
                     obj.SetCurrentLod(currentLod - 1);
             }
         }
@@ -164,11 +163,10 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_askedLevel">The LOD to switch on</param>
     protected async Task DeleteChildren(int _askedLevel)
     {
-        List<OgreeObject> objsToDel = new List<OgreeObject>();
+        List<OgreeObject> objsToDel = new();
         foreach (Transform child in transform)
         {
-            OgreeObject obj = child.GetComponent<OgreeObject>();
-            if (obj && obj.id != "") // Exclude components
+            if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj is Device dv && !dv.isComponent)
                 objsToDel.Add(obj);
         }
 
@@ -192,8 +190,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///</summary>
     public void ResetTransform()
     {
-        transform.localPosition = originalLocalPosition;
-        transform.localRotation = originalLocalRotation;
+        transform.SetLocalPositionAndRotation(originalLocalPosition, originalLocalRotation);
         transform.localScale = originalLocalScale;
     }
 
@@ -236,13 +233,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_name">The name of the local CS</param>
     protected void BuildLocalCS()
     {
-        float scale = this is OObject ? 1 : 7;
+        float scale = this is Item ? 1 : 7;
         localCS = Instantiate(GameManager.instance.coordinateSystemModel);
         localCS.name = "localCS";
         localCS.transform.parent = transform;
         localCS.transform.localScale = scale * Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
-        localCS.transform.localPosition = category == Category.Corridor || category == Category.Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
+        localCS.transform.localPosition = this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 }

@@ -21,6 +21,9 @@
 
 # Visual Studio cache directory
 .vs/
+.vsconfig
+.vscode/
+
 
 # Gradle cache directory
 .gradle/
@@ -62,7 +65,11 @@ crashlytics-build.properties
 [Aa]ssets/TriLib
 [Aa]ssets/Trilib.meta
 
-.vsconfig
-Assets/Plugins/AssetUsageDetector/
-Assets/Plugins/AssetUsageDetector.meta
+[Aa]ssets/Plugins/AssetUsageDetector/
+[Aa]ssets/Plugins/AssetUsageDetector.meta
+
+# Unity Layout files
+[Uu]serSettings/Layouts
+
+# OGrEE cache directory
 .ogreeCache
