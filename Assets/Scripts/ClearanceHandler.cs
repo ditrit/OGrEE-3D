@@ -123,7 +123,7 @@ public class ClearanceHandler
         clearanceWrapper.transform.localRotation = Quaternion.identity;
         Transform clearanceObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform).transform;
         clearanceObject.transform.localScale = new Vector3(size.x / 100, height, size.y / 100);
-        clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject.GetChild(0);
+        clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject;
         foreach (Clearance clearance in clearances)
         {
             //clearance.gameObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform);
@@ -133,5 +133,6 @@ public class ClearanceHandler
             clearanceObject.localScale += clearance.length * Vector3.Scale(clearance.direction, clearance.direction);
         }
         isCreated = true;
+        GameManager.instance.AppendLogLine($"Display local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
     }
 }
