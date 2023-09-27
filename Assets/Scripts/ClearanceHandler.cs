@@ -104,18 +104,18 @@ public class ClearanceHandler
             clearances.Add(top);
         clearanceWrapper = new GameObject("Clearance Wrapper");
         clearanceWrapper.transform.parent = clearedObject;
-        OObject oObject = clearedObject.GetComponent<OObject>();
+        Item item = clearedObject.GetComponent<Item>();
 
 
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = JsonUtility.FromJson<Vector2>(oObject.attributes["size"]);
-        float height = Utils.ParseDecFrac(oObject.attributes["height"]);
-        if (oObject.attributes["heightUnit"] == LengthUnit.U)
+        Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+        float height = Utils.ParseDecFrac(item.attributes["height"]);
+        if (item.attributes["heightUnit"] == LengthUnit.U)
             height *= UnitValue.U;
-        else if (oObject.attributes["heightUnit"] == LengthUnit.Centimeter)
+        else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
             height /= 100;
-        if (oObject.attributes["sizeUnit"] == LengthUnit.Millimeter)
+        if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
 
         clearanceWrapper.transform.localPosition = clearedObject.GetChild(0).localPosition;
