@@ -302,6 +302,7 @@ public class UHelpersManager : MonoBehaviour
     /// <param name="_UColumn">parent of the column</param>
     /// <param name="_cornerName">name of the column</param>
     /// <param name="_color">color of the column</param>
+    /// <param name="_exactHeight">true if the height of the U column is exactly a multiple of U height</param>
     private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _UColumn, string _cornerName, Color _color, bool _exactHeight = false)
     {
         int floorNumber = 0;
