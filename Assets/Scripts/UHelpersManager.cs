@@ -263,19 +263,19 @@ public class UHelpersManager : MonoBehaviour
         }
         else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == LengthUnit.U || _rack.attributes["heightUnit"] == LengthUnit.OU)
         {
-            int Unumber;
+            float Unumber;
             if (_rack.attributes.ContainsKey("sizeWDHu"))
                 Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHu"])[2];
             else if (_rack.attributes.ContainsKey("sizeWDHou"))
                 Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHou"])[2];
             else
-                Unumber = int.Parse(_rack.attributes["height"]);
+                Unumber = Utils.ParseDecFrac(_rack.attributes["height"]);
 
             float offset = scale / 2;
-            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearLeft, cornerRearLeft, Color.red);
-            BuildU(offset, offset + (Unumber - 1) * scale, scale, URearRight, cornerRearRight, Color.yellow);
-            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
-            BuildU(offset, offset + (Unumber - 1) * scale, scale, UFrontRight, cornerFrontRight, Color.green);
+            BuildU(offset, offset + Unumber * scale, scale, URearLeft, cornerRearLeft, Color.red);
+            BuildU(offset, offset + Unumber * scale, scale, URearRight, cornerRearRight, Color.yellow);
+            BuildU(offset, offset + Unumber * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
+            BuildU(offset, offset + Unumber * scale, scale, UFrontRight, cornerFrontRight, Color.green);
         }
     }
 
