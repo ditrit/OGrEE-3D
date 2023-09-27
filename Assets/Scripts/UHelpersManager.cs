@@ -249,8 +249,8 @@ public class UHelpersManager : MonoBehaviour
         {
             if (child.GetComponent<Slot>() is Slot slot && slot.isU)
             {
-                minY = Mathf.Min(child.localPosition.y - 0.5f * (child.GetChild(0).localScale.y - scale), minY);
-                maxY = Mathf.Max(child.localPosition.y + 0.5f * (child.GetChild(0).localScale.y - scale), maxY);
+                minY = Mathf.Min(child.localPosition.y + 0.5f * scale, minY);
+                maxY = Mathf.Max(child.localPosition.y + child.GetChild(0).localScale.y - 0.5f * scale, maxY);
             }
         }
 
@@ -270,12 +270,12 @@ public class UHelpersManager : MonoBehaviour
                 Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHou"])[2];
             else
                 Unumber = Utils.ParseDecFrac(_rack.attributes["height"]);
-
+            bool exactHeight = Mathf.Approximately((int)Unumber, Unumber);
             float offset = scale / 2;
-            BuildU(offset, offset + Unumber * scale, scale, URearLeft, cornerRearLeft, Color.red);
-            BuildU(offset, offset + Unumber * scale, scale, URearRight, cornerRearRight, Color.yellow);
-            BuildU(offset, offset + Unumber * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue);
-            BuildU(offset, offset + Unumber * scale, scale, UFrontRight, cornerFrontRight, Color.green);
+            BuildU(offset, offset + Unumber * scale, scale, URearLeft, cornerRearLeft, Color.red, exactHeight);
+            BuildU(offset, offset + Unumber * scale, scale, URearRight, cornerRearRight, Color.yellow, exactHeight);
+            BuildU(offset, offset + Unumber * scale, scale, UFrontLeft, cornerFrontLeft, Color.blue, exactHeight);
+            BuildU(offset, offset + Unumber * scale, scale, UFrontRight, cornerFrontRight, Color.green, exactHeight);
         }
     }
 
@@ -302,10 +302,10 @@ public class UHelpersManager : MonoBehaviour
     /// <param name="_UColumn">parent of the column</param>
     /// <param name="_cornerName">name of the column</param>
     /// <param name="_color">color of the column</param>
-    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _UColumn, string _cornerName, Color _color)
+    private void BuildU(float _firstPositionY, float _lastPositionY, float _scale, Transform _UColumn, string _cornerName, Color _color, bool _exactHeight = false)
     {
         int floorNumber = 0;
-        for (float positionY = _firstPositionY; positionY <= _lastPositionY; positionY += _scale)
+        for (float positionY = _firstPositionY; positionY <= _lastPositionY || (Mathf.Abs(positionY - _lastPositionY) <= 1e-5 && !_exactHeight); positionY += _scale)
         {
             floorNumber++;
             Transform helper = Instantiate(GameManager.instance.uLocationModel, _UColumn).transform;
@@ -315,6 +315,7 @@ public class UHelpersManager : MonoBehaviour
             helper.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
             helper.localScale = Vector3.one * _scale;
             helper.GetComponent<Renderer>().material.color = _color;
+            Debug.Log($"{positionY}/{positionY + _scale}/{_lastPositionY}");
         }
     }
 }
