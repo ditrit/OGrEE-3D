@@ -1017,6 +1017,7 @@ public class UiManager : MonoBehaviour
         await GameManager.instance.SetCurrentItem(menuTarget);
 
         GameManager.instance.getCoordsMode ^= true;
+        EventManager.instance.Raise(new GetCoordModeToggleEvent());
         Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
         if (GameManager.instance.getCoordsMode)
             GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);

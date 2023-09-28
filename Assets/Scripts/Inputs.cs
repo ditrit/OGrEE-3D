@@ -407,7 +407,7 @@ public class Inputs : MonoBehaviour
                     distFromOri.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
                     break;
             }
-            GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s origin: [{distFromOri[0]},{distFromOri[1]}] m / [{distFromOri[2]},{distFromOri[3]}] t", ELogTarget.logger, ELogtype.info);
+            GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s tiles origin: [{distFromOri[0]},{distFromOri[1]}] m / [{distFromOri[2]},{distFromOri[3]}] t", ELogTarget.logger, ELogtype.info);
         }
     }
 
