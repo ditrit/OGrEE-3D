@@ -82,6 +82,12 @@ public class CliParser
                 await rfJson.CreateObjectTemplate(data);
                 break;
             case CommandType.Select:
+                if (GameManager.instance.getCoordsMode)
+                    UiManager.instance.ToggleGetCoordsMode();
+                if (GameManager.instance.editMode)
+                    UiManager.instance.EditFocused();
+                if (GameManager.instance.focusMode)
+                    await GameManager.instance.UnfocusAll();
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
                 if (objsToSelect.Count == 0)
                     await GameManager.instance.SetCurrentItem(null);
