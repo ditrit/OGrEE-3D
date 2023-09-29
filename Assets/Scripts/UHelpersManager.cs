@@ -316,7 +316,6 @@ public class UHelpersManager : MonoBehaviour
             helper.GetChild(1).GetComponent<TextMeshPro>().text = floorNumber.ToString();
             helper.localScale = Vector3.one * _scale;
             helper.GetComponent<Renderer>().material.color = _color;
-            Debug.Log($"{positionY}/{positionY + _scale}/{_lastPositionY}");
         }
     }
 }
