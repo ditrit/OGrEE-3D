@@ -157,7 +157,7 @@ public class TempDiagram : MonoBehaviour
             float yBase = _item.transform.parent.position.y + 0.01f;
             sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
             sensorBar.name = _item.name + "TempBar";
-            sensorBar.transform.position = new(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
+            sensorBar.transform.position = new(_item.transform.GetChild(0).position.x, yBase + 0.5f * height, _item.transform.GetChild(0).position.z);
             sensorBar.transform.GetChild(0).localScale = new(0.1f, height, 0.1f);
             sensorBar.transform.GetChild(0).GetComponent<Renderer>().material.color = new(0.5f, 0.5f, 0.5f, 0.85f);
         }
