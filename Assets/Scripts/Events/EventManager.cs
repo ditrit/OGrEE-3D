@@ -56,6 +56,7 @@ public class EventManager
     public EventWrap<TemperatureScatterPlotEvent> TemperatureScatterPlot = new();
     public EventWrap<RightClickEvent> RightClick = new();
     public EventWrap<CancelGenerateEvent> CancelGenerate = new();
+    public EventWrap<GetCoordModeToggleEvent> GetCoordModeToggle = new();
 
     /// <summary>
     /// Raise the event to all the listeners
@@ -117,6 +118,9 @@ public class EventManager
                 break;
             case CancelGenerateEvent e:
                 CancelGenerate.Invoke(e);
+                break;
+            case GetCoordModeToggleEvent e:
+                GetCoordModeToggle.Invoke(e);
                 break;
             default:
                 Debug.LogError($"UNKNOWN EVENT :{typeof(T)}");

@@ -80,6 +80,8 @@ public class OgreeGenerator : MonoBehaviour
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
                 {
+                    if (GameManager.instance.getCoordsMode)
+                        UiManager.instance.ToggleGetCoordsMode();
                     if (GameManager.instance.editMode)
                         UiManager.instance.EditFocused();
                     await GameManager.instance.UnfocusAll();
