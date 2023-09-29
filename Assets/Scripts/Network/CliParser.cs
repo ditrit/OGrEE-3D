@@ -82,19 +82,35 @@ public class CliParser
                 await rfJson.CreateObjectTemplate(data);
                 break;
             case CommandType.Select:
+                //Disable coord mode
+                if (GameManager.instance.getCoordsMode)
+                    UiManager.instance.ToggleGetCoordsMode();
+                //Disable edit mode
+                if (GameManager.instance.editMode)
+                    UiManager.instance.EditFocused();
+                //Disable focus mode
+                if (GameManager.instance.focusMode)
+                    await GameManager.instance.UnfocusAll();
                 List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
                 if (objsToSelect.Count == 0)
                     await GameManager.instance.SetCurrentItem(null);
-                else if (objsToSelect.Count == 1)
-                    await GameManager.instance.SetCurrentItem(objsToSelect[0]);
                 else
                 {
+                    //Disable scatter plot
+                    if (objsToSelect[0].TryGetComponent(out ObjectDisplayController odc) && odc.scatterPlotOfOneParent)
+                    {
+                        Transform parent = objsToSelect[0].transform.parent;
+                        while (!parent.GetComponent<OgreeObject>().scatterPlot)
+                            parent = parent.parent;
+                        TempDiagram.instance.HandleScatterPlot(parent.GetComponent<OgreeObject>());
+                    }
+                    //Disable bar chart
+                    if (objsToSelect[0].TryGetComponent(out Item item) && item.referent.transform.parent?.GetComponent<Room>() is Room room && room.barChart)
+                        TempDiagram.instance.HandleTempBarChart(room);
+                    //Select the item(s)
                     await GameManager.instance.SetCurrentItem(objsToSelect[0]);
                     for (int i = 1; i < objsToSelect.Count; i++)
-                    {
-                        GameObject obj = objsToSelect[i];
-                        await GameManager.instance.UpdateCurrentItems(obj);
-                    }
+                        await GameManager.instance.UpdateCurrentItems(objsToSelect[i]);
                 }
                 break;
             case CommandType.Delete:

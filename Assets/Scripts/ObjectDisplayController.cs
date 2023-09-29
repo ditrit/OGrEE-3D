@@ -25,7 +25,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// This bool is on if a parent of this object has its scatter plot enabled, not if this one's scatter plot is enabled
     /// </summary>
-    private bool scatterPlotOfOneParent = false;
+    public bool scatterPlotOfOneParent = false;
 #pragma warning disable IDE1006 // Styles d'affectation de noms
     /// <summary>
     /// Check if the object should be listening to events, ie if it is an oobject or a sensor not from a template or an unused slot
