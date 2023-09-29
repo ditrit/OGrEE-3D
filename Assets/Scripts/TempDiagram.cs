@@ -129,7 +129,7 @@ public class TempDiagram : MonoBehaviour
 
             sensorBar = Instantiate(GameManager.instance.sensorBarModel, _item.transform);
             sensorBar.name = _item.name + "TempBar";
-            sensorBar.transform.position = new(_item.transform.position.x, yBase + 0.5f * height, _item.transform.position.z);
+            sensorBar.transform.position = new(_item.transform.GetChild(0).position.x, yBase + 0.5f * height, _item.transform.GetChild(0).position.z);
             sensorBar.transform.GetChild(0).localScale = new(0.1f, height, 0.1f);
 
             pixelX = Utils.MapAndClamp(tempInfos.mean, tempMin, tempMax, 0, heatMapGradient.width);
@@ -139,7 +139,7 @@ public class TempDiagram : MonoBehaviour
             if (tempInfos.std != 0)
             {
                 GameObject sensorBarStd = Instantiate(GameManager.instance.sensorBarStdModel, _item.transform);
-                sensorBarStd.transform.position = new(_item.transform.position.x, yBase + height, _item.transform.position.z);
+                sensorBarStd.transform.position = new(_item.transform.GetChild(0).position.x, yBase + height, _item.transform.GetChild(0).position.z);
                 sensorBarStd.transform.GetChild(0).localScale = new(1, heigthStd, 1);
                 sensorBarStd.transform.parent = sensorBar.transform;
 
