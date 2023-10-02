@@ -8,7 +8,7 @@ public class ClearanceHandler
     private class Clearance
     {
         public float length;
-        public GameObject gameObject;
+        //public GameObject gameObject;
         public Vector3 direction;
     }
 
@@ -16,7 +16,8 @@ public class ClearanceHandler
     [SerializeField] private Clearance rear = new();
     [SerializeField] private Clearance left = new();
     [SerializeField] private Clearance right = new();
-    [SerializeField] private Clearance top = new();
+    [SerializeField] private Clearance top = new
+    [SerializeField] private Clearance bottom = new();
     [SerializeField] private Transform clearedObject;
 
     private bool isCreated = false;
@@ -34,8 +35,10 @@ public class ClearanceHandler
     /// <param name="_right">right clearance length</param>
     /// <param name="_top">top clearance length</param>
     /// <param name="_clearedObject">object which has the clearance</param>
-    public void Initialize(float _front, float _rear, float _left, float _right, float _top, Transform _clearedObject)
+    public void Initialize(float _front, float _rear, float _left, float _right, float _top, float _bottom, Transform _clearedObject)
     {
+        if (_front == 0 && _rear == 0 && _left == 0 && _right == 0 && _top == 0)
+            return;
         clearances = new List<Clearance>();
         Object.Destroy(clearanceWrapper);
         front.length = _front / 1000;
@@ -48,6 +51,8 @@ public class ClearanceHandler
         right.direction = Vector3.right;
         top.length = _top / 1000;
         top.direction = Vector3.up;
+        bottom.length = _bottom / 1000;
+        bottom.direction = Vector3.down;
         clearedObject = _clearedObject;
         if (isToggled)
             BuildClearance();
@@ -69,8 +74,9 @@ public class ClearanceHandler
                 BuildClearance();
             return;
         }
-        foreach (Clearance clearance in clearances)
-            clearance.gameObject.SetActive(_toggle);
+        //foreach (Clearance clearance in clearances)
+        //    clearance.gameObject.SetActive(_toggle);
+        clearanceWrapper.transform.GetChild(0).gameObject.SetActive(_toggle);
         GameManager.instance.AppendLogLine($"{(_toggle ? "Display" : "Hide")} local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
     }
 
@@ -99,17 +105,38 @@ public class ClearanceHandler
             clearances.Add(right);
         if (top.length > 0)
             clearances.Add(top);
+        if (bottom.length > 0)
+            clearances.Add(bottom);
         clearanceWrapper = new GameObject("Clearance Wrapper");
-        clearanceWrapper.transform.parent = clearedObject.GetChild(0);
-        clearanceWrapper.transform.localPosition = Vector3.zero;
+        clearanceWrapper.transform.parent = clearedObject;
+        Item item = clearedObject.GetComponent<Item>();
+
+
+
+        // Apply scale and move all components to have the rack's pivot at the lower left corner
+        Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+        float height = Utils.ParseDecFrac(item.attributes["height"]);
+        if (item.attributes["heightUnit"] == LengthUnit.U)
+            height *= UnitValue.U;
+        else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
+            height /= 100;
+        if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
+            size /= 10;
+
+        clearanceWrapper.transform.localPosition = clearedObject.GetChild(0).localPosition;
         clearanceWrapper.transform.localRotation = Quaternion.identity;
-        clearanceWrapper.transform.localScale = Vector3.one;
+        Transform clearanceObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform).transform;
+        clearanceObject.transform.localScale = new Vector3(size.x / 100, height, size.y / 100);
+        clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject;
         foreach (Clearance clearance in clearances)
         {
-            clearance.gameObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform);
-            clearance.gameObject.transform.localPosition = (1 + clearance.length) / 2 * clearance.direction;
-            clearance.gameObject.transform.localScale = Vector3.one - (1 + clearance.length) * Vector3.Scale(clearance.direction, clearance.direction);
+            //clearance.gameObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform);
+            //clearance.gameObject.transform.localPosition = (1 + clearance.length) / 2 * clearance.direction;
+            //clearance.gameObject.transform.localScale = Vector3.one - (1 + clearance.length) * Vector3.Scale(clearance.direction, clearance.direction);
+            clearanceObject.localPosition += 0.5f * clearance.length * (clearance.direction);
+            clearanceObject.localScale += clearance.length * Vector3.Scale(clearance.direction, clearance.direction);
         }
         isCreated = true;
+        GameManager.instance.AppendLogLine($"Display local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
     }
 }
