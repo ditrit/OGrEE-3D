@@ -57,6 +57,7 @@ public class EventManager
     public EventWrap<RightClickEvent> RightClick = new();
     public EventWrap<CancelGenerateEvent> CancelGenerate = new();
     public EventWrap<GetCoordModeToggleEvent> GetCoordModeToggle = new();
+
     /// <summary>
     /// Raise the event to all the listeners
     /// </summary>
