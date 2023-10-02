@@ -25,7 +25,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// This bool is on if a parent of this object has its scatter plot enabled, not if this one's scatter plot is enabled
     /// </summary>
-    private bool scatterPlotOfOneParent = false;
+    public bool scatterPlotOfOneParent = false;
 #pragma warning disable IDE1006 // Styles d'affectation de noms
     /// <summary>
     /// Check if the object should be listening to events, ie if it is an oobject or a sensor not from a template or an unused slot
@@ -100,6 +100,7 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
         EventManager.instance.Highlight.Add(OnHighLight);
+        EventManager.instance.GetCoordModeToggle.Add(OnGetCoordModeToggle);
     }
 
     ///<summary>
@@ -134,12 +135,13 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
         EventManager.instance.Highlight.Remove(OnHighLight);
+        EventManager.instance.GetCoordModeToggle.Remove(OnGetCoordModeToggle);
     }
 
     /// <summary>
     /// When selected, toggles the renderer, the collider and the labels of the object depending on if it is selected, focused, a referent, its parent is selected, if focus mode is on and if it has a tempBar or scatterplot enabled, then call <see cref="HandleMaterial"/>
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnSelectBasic(OnSelectItemEvent _e)
     {
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
@@ -171,7 +173,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// Whenn seletec, toggles the renderer, the collider and the labels of the object depending on if it is listening, has a scatterPlot enabled, has its parent selected
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnSelectOther(OnSelectItemEvent _e)
     {
         if (!listening || scatterPlotOfOneParent)
@@ -186,7 +188,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, call <see cref="ToggleRoomsAndBuildings"/> and set its material to <see cref="GameManager.focusMat"/> if it is the object being focused, else toggles its renderer, labels and collider depending on if it is a refent,a sensor from a template, if its parent is focused, and if it is in focus
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnFocus(OnFocusEvent _e)
     {
         if (_e.obj == gameObject)
@@ -206,7 +208,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// Whenn called, call <see cref="ToggleRoomsAndBuildings"/> and <see cref="HandleMaterial"/> if it is the object being focused, else toggles its renderer, labels and collider depending on if it is a refent,a sensor from a template, if its parent is focused, and if it has a scatterPlot enabled
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnUnFocus(OnUnFocusEvent _e)
     {
         if (!listening)
@@ -231,7 +233,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, disables its collider and set its material to <see cref="GameManager.editMat"/> if it is the object being edited in
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnEditModeInBasic(EditModeInEvent _e)
     {
         if (GameManager.instance.GetSelected().Contains(gameObject))
@@ -244,7 +246,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, enables its collider and set its material to <see cref="GameManager.focusMat"/> if it is the object being edited out
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnEditModeOutBasic(EditModeOutEvent _e)
     {
         if (GameManager.instance.GetSelected().Contains(gameObject))
@@ -257,7 +259,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, toggles its renderer, labels and collider depending on if it is selected, has a tempBar or a scatterPlot enabled, has its parent selected or is a referent then call <see cref="HandleMaterial"/>
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnImportFinishedBasic(ImportFinishedEvent _e)
     {
         List<GameObject> selection = GameManager.instance.GetSelected();
@@ -279,7 +281,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, toggles its renderer, labels and collider depending of if it is selected, if is is displayed, if it is a referent or if focusMode is on
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnImportFinishedGroup(ImportFinishedEvent _e)
     {
         List<GameObject> selection = GameManager.instance.GetSelected();
@@ -397,7 +399,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, call <see cref="HandleMaterial"/> if it the object being unhovered and it is not selected
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnMouseUnHover(OnMouseUnHoverEvent _e)
     {
         if (_e.obj == gameObject && !GameManager.instance.GetSelected().Contains(gameObject))
@@ -410,11 +412,20 @@ public class ObjectDisplayController : MonoBehaviour
     /// <summary>
     /// When called, call <see cref="ToggleHighlight(bool)"/> if it the object being highlighted
     /// </summary>
-    /// <param name="_e">The event's intance</param>
+    /// <param name="_e">The event's instance</param>
     private void OnHighLight(HighlightEvent _e)
     {
         if (_e.obj == gameObject)
             ToggleHighlight(!isHighlighted);
+    }
+
+    /// <summary>
+    /// When called, set <see cref="cube.col"/> according to <see cref="GameManager.getCoordsMode"/> 
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
+    private void OnGetCoordModeToggle(GetCoordModeToggleEvent _e)
+    {
+        cube.col.enabled = !GameManager.instance.getCoordsMode;
     }
 
     ///<summary>

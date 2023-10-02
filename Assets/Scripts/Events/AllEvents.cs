@@ -158,3 +158,7 @@ public class RightClickEvent : CustomEvent
 public class CancelGenerateEvent : CustomEvent
 {
 }
+
+public class GetCoordModeToggleEvent : CustomEvent
+{
+}
