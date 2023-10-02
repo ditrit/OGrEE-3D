@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ClearanceCollisionHandler : MonoBehaviour
@@ -13,13 +11,13 @@ public class ClearanceCollisionHandler : MonoBehaviour
     /// if it hasn't got one already and set it to notify us should the other gameobject be disabled.<br/>
     /// Then add one to the collision count and set the clearance color to red.
     /// </summary>
-    /// <param name="other">the collider colliding with us</param>
-    private void OnTriggerEnter(Collider other)
+    /// <param name="_other">the collider colliding with us</param>
+    private void OnTriggerEnter(Collider _other)
     {
-        if (other.transform.IsChildOf(ownObject) || other.transform.parent?.GetComponent<Building>())
+        if (_other.transform.IsChildOf(ownObject) || _other.transform.parent?.GetComponent<Building>())
             return;
-        if (!other.TryGetComponent(out TriggerExitOnDisable trigger))
-            trigger = other.gameObject.AddComponent<TriggerExitOnDisable>();
+        if (!_other.TryGetComponent(out TriggerExitOnDisable trigger))
+            trigger = _other.gameObject.AddComponent<TriggerExitOnDisable>();
         trigger.shouldFire = true;
         trigger.collisionHandler = this;
         collisionCount++;
@@ -30,12 +28,12 @@ public class ClearanceCollisionHandler : MonoBehaviour
     /// Check if the other collider should be reacted to. If it is, deactivate its <see cref="TriggerExitOnDisable"/>
     /// and substract one to the collision count and set the clearance color to green if it reaches 0
     /// </summary>
-    /// <param name="other">the collider colliding with us</param>
-    private void OnTriggerExit(Collider other)
+    /// <param name="_other">the collider colliding with us</param>
+    private void OnTriggerExit(Collider _other)
     {
-        if (other.transform.IsChildOf(ownObject) || other.transform.parent?.GetComponent<Building>())
+        if (_other.transform.IsChildOf(ownObject) || _other.transform.parent?.GetComponent<Building>())
             return;
-        other.GetComponent<TriggerExitOnDisable>().shouldFire = false;
+        _other.GetComponent<TriggerExitOnDisable>().shouldFire = false;
         SubstractCollision();
     }
 
