@@ -17,6 +17,7 @@ public class ClearanceHandler
     [SerializeField] private Clearance left = new();
     [SerializeField] private Clearance right = new();
     [SerializeField] private Clearance top = new();
+    [SerializeField] private Clearance bottom = new();
     [SerializeField] private Transform clearedObject;
 
     private bool isCreated = false;
@@ -34,7 +35,7 @@ public class ClearanceHandler
     /// <param name="_right">right clearance length</param>
     /// <param name="_top">top clearance length</param>
     /// <param name="_clearedObject">object which has the clearance</param>
-    public void Initialize(float _front, float _rear, float _left, float _right, float _top, Transform _clearedObject)
+    public void Initialize(float _front, float _rear, float _left, float _right, float _top, float _bottom, Transform _clearedObject)
     {
         if (_front == 0 && _rear == 0 && _left == 0 && _right == 0 && _top == 0)
             return;
@@ -50,6 +51,8 @@ public class ClearanceHandler
         right.direction = Vector3.right;
         top.length = _top / 1000;
         top.direction = Vector3.up;
+        bottom.length = _bottom / 1000;
+        bottom.direction = Vector3.down;
         clearedObject = _clearedObject;
         if (isToggled)
             BuildClearance();
@@ -102,6 +105,8 @@ public class ClearanceHandler
             clearances.Add(right);
         if (top.length > 0)
             clearances.Add(top);
+        if (bottom.length > 0)
+            clearances.Add(bottom);
         clearanceWrapper = new GameObject("Clearance Wrapper");
         clearanceWrapper.transform.parent = clearedObject;
         Item item = clearedObject.GetComponent<Item>();
