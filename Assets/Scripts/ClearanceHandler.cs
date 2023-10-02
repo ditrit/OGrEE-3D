@@ -16,7 +16,7 @@ public class ClearanceHandler
     [SerializeField] private Clearance rear = new();
     [SerializeField] private Clearance left = new();
     [SerializeField] private Clearance right = new();
-    [SerializeField] private Clearance top = new
+    [SerializeField] private Clearance top = new();
     [SerializeField] private Clearance bottom = new();
     [SerializeField] private Transform clearedObject;
 
