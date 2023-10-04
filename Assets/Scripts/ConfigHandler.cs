@@ -127,6 +127,7 @@ public class ConfigHandler
         config.cliPort = Convert.ToInt32(table["cliPort"]);
         config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
         config.doubleClickDelay = Mathf.Clamp(Convert.ToSingle(table["doubleClickDelay"]), 0.01f, 1);
+        config.autoUHelpers = (bool)table["autoUHelpers"];
 
         config.moveSpeed = Mathf.Clamp(Convert.ToInt32(table["moveSpeed"]), 1, 50);
         config.rotationSpeed = Mathf.Clamp(Convert.ToInt32(table["rotationSpeed"]), 1, 100);
@@ -432,5 +433,23 @@ public class ConfigHandler
     public void SetHumanHeight(float _value)
     {
         config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
+    }
+
+    /// <summary>
+    /// Get the value of <see cref="config.autoUHelpers"/>
+    /// </summary>
+    /// <returns>The value of <see cref="config.autoUHelpers"/></returns>
+    public bool GetAutoUHelpers()
+    {
+        return config.autoUHelpers;
+    }
+
+    /// <summary>
+    /// Set the value of <see cref="config.autoUHelpers"/>
+    /// </summary>
+    /// <param name="_value">The value to set</param>
+    public void SetAutoUHelpers(bool _value)
+    {
+        config.autoUHelpers = _value;
     }
 }

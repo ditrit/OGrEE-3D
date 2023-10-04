@@ -181,6 +181,7 @@ public struct SConfig
     public int cacheLimitMo;
     public int cliPort;
     public float alphaOnInteract;
+    public bool autoUHelpers;
     public Dictionary<string, string> textures;
     public Dictionary<string, string> colors;
     public int temperatureMinC;
@@ -230,6 +231,7 @@ public class DefaultValues
         cacheLimitMo = 100,
         cliPort = 5500,
         alphaOnInteract = 50,
+        autoUHelpers = true,
         textures = new()
         {
             { "perf22", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png" },
