@@ -63,14 +63,16 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>()
+            && (GameManager.instance.configHandler.GetAutoUHelpers()
+                || (GameManager.instance.GetSelected()[0].GetComponent<Item>().referent is Rack selectedRack && selectedRack.areUHelpersToggled)))
         {
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
         foreach (Item item in lastSelectedReferent)
         {
-            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack)
+            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack && rack.areUHelpersToggled)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
