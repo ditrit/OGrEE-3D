@@ -1088,7 +1088,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveAutoUHelpers()
     {
-        GameManager.instance.configHandler.WritePreference("autoUHelpers", autoUHelpersToggle.isOn.ToString());
+        GameManager.instance.configHandler.WritePreference("autoUHelpers", autoUHelpersToggle.isOn ? "true" : "false");
     }
 
     /// <summary>
