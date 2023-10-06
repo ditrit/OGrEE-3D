@@ -64,7 +64,7 @@ public class UHelpersManager : MonoBehaviour
     private void OnSelect(OnSelectItemEvent _e)
     {
         if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>()
-            && (GameManager.instance.configHandler.GetAutoUHelpers()
+            && (GameManager.instance.configHandler.config.autoUHelpers
                 || (GameManager.instance.GetSelected()[0].GetComponent<Item>().referent is Rack selectedRack && selectedRack.areUHelpersToggled)))
         {
             ToggleU(GameManager.instance.GetSelected(), true);

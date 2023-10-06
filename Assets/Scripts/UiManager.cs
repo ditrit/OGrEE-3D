@@ -521,19 +521,19 @@ public class UiManager : MonoBehaviour
     /// </summary>
     private void SetupSettingsPanel()
     {
-        defaultAutoUHelpers = GameManager.instance.configHandler.GetAutoUHelpers();
+        defaultAutoUHelpers = GameManager.instance.configHandler.config.autoUHelpers;
         autoUHelpersToggle.isOn = defaultAutoUHelpers;
 
-        defaultDoubleClickDelay = GameManager.instance.configHandler.GetDoubleClickDelay();
+        defaultDoubleClickDelay = GameManager.instance.configHandler.config.DoubleClickDelay;
         doubleClickSlider.value = defaultDoubleClickDelay;
 
-        defaultMoveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
+        defaultMoveSpeed = GameManager.instance.configHandler.config.MoveSpeed;
         moveSpeedSlider.value = defaultMoveSpeed;
 
-        defaultRotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
+        defaultRotationSpeed = GameManager.instance.configHandler.config.RotationSpeed;
         rotationSpeedSlider.value = defaultRotationSpeed;
 
-        defaultHumanHeight = GameManager.instance.configHandler.GetHumanHeight();
+        defaultHumanHeight = GameManager.instance.configHandler.config.HumanHeight;
         humanHeightSlider.value = defaultHumanHeight;
     }
 
@@ -1072,7 +1072,7 @@ public class UiManager : MonoBehaviour
     /// <param name="_value"></param>
     public void UpdateAutoUHelpers(bool _value)
     {
-        GameManager.instance.configHandler.SetAutoUHelpers(_value);
+        GameManager.instance.configHandler.config.autoUHelpers = _value;
     }
 
     /// <summary>
@@ -1097,7 +1097,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateDoubleClickDelay(float _value)
     {
-        GameManager.instance.configHandler.SetDoubleClickDelay(_value);
+        GameManager.instance.configHandler.config.DoubleClickDelay = _value;
     }
 
     /// <summary>
@@ -1122,7 +1122,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateMoveSpeed(float _value)
     {
-        GameManager.instance.configHandler.SetMoveSpeed(_value);
+        GameManager.instance.configHandler.config.MoveSpeed = _value;
     }
 
     /// <summary>
@@ -1147,7 +1147,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateRotationSpeed(float _value)
     {
-        GameManager.instance.configHandler.SetRotationSpeed(_value);
+        GameManager.instance.configHandler.config.RotationSpeed = _value;
     }
 
     /// <summary>
@@ -1172,7 +1172,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateHumanHeight(float _value)
     {
-        GameManager.instance.configHandler.SetHumanHeight(_value);
+        GameManager.instance.configHandler.config.HumanHeight = _value;
         GameManager.instance.cameraControl.UpdateHumanModeHeight();
     }
 

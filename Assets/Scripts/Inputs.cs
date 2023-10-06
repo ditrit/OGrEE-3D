@@ -201,7 +201,7 @@ public class Inputs : MonoBehaviour
     {
         Transform savedTarget = target;
         coroutineAllowed = false;
-        while (Time.realtimeSinceStartup < _firstClickTime + GameManager.instance.configHandler.GetDoubleClickDelay())
+        while (Time.realtimeSinceStartup < _firstClickTime + GameManager.instance.configHandler.config.DoubleClickDelay)
         {
             if (clickCount == 2 && !GameManager.instance.editMode && Mathf.Abs(Vector3.Distance(savedMousePos, Input.mousePosition)) < authorizedDrag)
             {
