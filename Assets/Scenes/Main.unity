@@ -3599,6 +3599,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 399746240}
   m_CullTransparentMesh: 0
+--- !u!114 &424550259 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+    type: 3}
+  m_PrefabInstance: {fileID: 9063230909488905868}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &435509966
 GameObject:
   m_ObjectHideFlags: 0
@@ -7649,9 +7661,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-09-29
+  m_text: 'Build date: 2023-10-05
 
-    Commit #73f5f6f'
+    Commit #261aa21c'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -11982,7 +11994,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09996}
+  m_AnchoredPosition: {x: 0, y: 217.10013}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -15658,6 +15670,7 @@ MonoBehaviour:
       cacheLimitMo: 0
       cliPort: 0
       alphaOnInteract: 0
+      autoUHelpers: 0
       temperatureMinC: 0
       temperatureMaxC: 0
       temperatureMinF: 0
@@ -15946,6 +15959,8 @@ MonoBehaviour:
   groupBtnPrefab: {fileID: 6274554759583478845, guid: 5cf1028790e05d74b81a268fb996bf84,
     type: 3}
   openedGroups: []
+  autoUHelpersToggle: {fileID: 424550259}
+  defaultAutoUHelpers: 0
   doubleClickSlider: {fileID: 155907487}
   defaultDoubleClickDelay: 0
   moveSpeedSlider: {fileID: 1699817956}
@@ -22513,7 +22528,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0.00000028113848
+  m_Value: -0.0000007028462
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -23382,6 +23397,31 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1595579791}
+    - target: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateAutoUHelpers
+      objectReference: {fileID: 0}
+    - target: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UiManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1399430230503687507, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1930809788297861219, guid: ac18c11896bbaf8428707dc304261ae7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -23418,6 +23458,36 @@ PrefabInstance:
       value: ResetRotationSpeed
       objectReference: {fileID: 0}
     - target: {fileID: 3588678667937455377, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UiManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4163207381508734648, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1595579791}
+    - target: {fileID: 4163207381508734648, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SaveAutoUHelpers
+      objectReference: {fileID: 0}
+    - target: {fileID: 4163207381508734648, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UiManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390567524356044209, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1595579791}
+    - target: {fileID: 4390567524356044209, guid: ac18c11896bbaf8428707dc304261ae7,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResetAutoUHelpers
+      objectReference: {fileID: 0}
+    - target: {fileID: 4390567524356044209, guid: ac18c11896bbaf8428707dc304261ae7,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UiManager, Assembly-CSharp

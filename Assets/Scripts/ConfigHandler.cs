@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 [Serializable]
 public class ConfigHandler
 {
-    [SerializeField] private SConfig config;
+    [SerializeField] public SConfig config;
     [SerializeField] private string savedConfigPath;
 
     ///<summary>
@@ -125,12 +125,13 @@ public class ConfigHandler
         config.cachePath = (string)table["cachePath"];
         config.cacheLimitMo = Convert.ToInt32(table["cacheLimitMo"]);
         config.cliPort = Convert.ToInt32(table["cliPort"]);
-        config.alphaOnInteract = Mathf.Clamp(Convert.ToInt32(table["alphaOnInteract"]), 0, 100);
-        config.doubleClickDelay = Mathf.Clamp(Convert.ToSingle(table["doubleClickDelay"]), 0.01f, 1);
+        config.AlphaOnInteract = Convert.ToInt32(table["alphaOnInteract"]);
+        config.DoubleClickDelay = Convert.ToSingle(table["doubleClickDelay"]);
+        config.autoUHelpers = (bool)table["autoUHelpers"];
 
-        config.moveSpeed = Mathf.Clamp(Convert.ToInt32(table["moveSpeed"]), 1, 50);
-        config.rotationSpeed = Mathf.Clamp(Convert.ToInt32(table["rotationSpeed"]), 1, 100);
-        config.humanHeight = Mathf.Clamp(Convert.ToSingle(table["humanHeight"]), 1.5f, 1.8f);
+        config.MoveSpeed = Convert.ToInt32(table["moveSpeed"]);
+        config.RotationSpeed = Convert.ToInt32(table["rotationSpeed"]);
+        config.HumanHeight = Convert.ToSingle(table["humanHeight"]);
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
         {
@@ -255,7 +256,7 @@ public class ConfigHandler
         if (config.colors.ContainsKey(_key))
         {
             tmp = Utils.ParseHtmlColor(config.colors[_key]);
-            tmp.a = config.alphaOnInteract / 100;
+            tmp.a = config.AlphaOnInteract / 100;
             _mat.color = tmp;
         }
     }
@@ -267,15 +268,6 @@ public class ConfigHandler
     public string GetCacheDir()
     {
         return config.cachePath + DefaultValues.CacheDirName;
-    }
-
-    ///<summary>
-    /// Get the limit size in Mo of the cache from config.
-    ///</summary>
-    ///<returns>The limit size (Mo) of the cache</returns>
-    public int GetCacheLimit()
-    {
-        return config.cacheLimitMo;
     }
 
     ///<summary>
@@ -342,95 +334,5 @@ public class ConfigHandler
             return (config.temperatureMinF, config.temperatureMaxF);
         GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", ELogTarget.logger, ELogtype.error);
         return (0, 0);
-    }
-
-    /// <summary>
-    /// Get custom gradient colors to be used to represent temperatures
-    /// </summary>
-    /// <returns>the list of user-defined temperatures and their positions on a gradient</returns>
-    public List<List<int>> GetCustomGradientColors()
-    {
-        return config.customTemperatureGradient;
-    }
-
-    /// <summary>
-    /// Should the user-defined temperature color gradient be used ?
-    /// </summary>
-    /// <returns>True if yes, false if not </returns>
-    public bool IsUsingCustomGradient()
-    {
-        return config.useCustomGradient;
-    }
-
-    /// <summary>
-    /// Get the value of <see cref="config.doubleClickDelay"/>
-    /// </summary>
-    /// <returns>The value of <see cref="config.doubleClickDelay"/></returns>
-    public float GetDoubleClickDelay()
-    {
-        return config.doubleClickDelay;
-    }
-
-    /// <summary>
-    /// Set the value of <see cref="config.doubleClickDelay"/>
-    /// </summary>
-    /// <param name="_value">The value to set</param>
-    public void SetDoubleClickDelay(float _value)
-    {
-        config.doubleClickDelay = Mathf.Clamp(_value, 0.01f, 1);
-    }
-
-    /// <summary>
-    /// Get the value of <see cref="config.moveSpeed"/>
-    /// </summary>
-    /// <returns>The value of <see cref="config.moveSpeed"/></returns>
-    public float GetMoveSpeed()
-    {
-        return config.moveSpeed;
-    }
-
-    /// <summary>
-    /// Set the value of <see cref="config.moveSpeed"/>
-    /// </summary>
-    /// <param name="_value">The value to set</param>
-    public void SetMoveSpeed(float _value)
-    {
-        config.moveSpeed = Mathf.Clamp(_value, 1, 50);
-    }
-
-    /// <summary>
-    /// Get the value of <see cref="config.rotationSpeed"/>
-    /// </summary>
-    /// <returns>The value of <see cref="config.rotationSpeed"/></returns>
-    public float GetRotationSpeed()
-    {
-        return config.rotationSpeed;
-    }
-
-    /// <summary>
-    /// Set the value of <see cref="config.rotationSpeed"/>
-    /// </summary>
-    /// <param name="_value">The value to set</param>
-    public void SetRotationSpeed(float _value)
-    {
-        config.rotationSpeed = Mathf.Clamp(_value, 1, 100);
-    }
-
-    /// <summary>
-    /// Get the value of <see cref="config.humanHeight"/>
-    /// </summary>
-    /// <returns>The value of <see cref="config.humanHeight"/></returns>
-    public float GetHumanHeight()
-    {
-        return config.humanHeight;
-    }
-
-    /// <summary>
-    /// Set the value of <see cref="config.humanHeight"/>
-    /// </summary>
-    /// <param name="_value">The value to set</param>
-    public void SetHumanHeight(float _value)
-    {
-        config.humanHeight = Mathf.Clamp(_value, 1.5f, 1.8f);
     }
 }

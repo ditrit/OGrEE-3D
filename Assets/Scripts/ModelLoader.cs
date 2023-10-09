@@ -70,7 +70,7 @@ public class ModelLoader : MonoBehaviour
             totalSize += file.Length;
         float sizeMo = totalSize / 1000000;
 
-        if (sizeMo > GameManager.instance.configHandler.GetCacheLimit())
+        if (sizeMo > GameManager.instance.configHandler.config.cacheLimitMo)
         {
             GameManager.instance.AppendLogLine($"Local cache limit reached ({sizeMo}Mo)", ELogTarget.both, ELogtype.warning);
             return;
