@@ -10,8 +10,9 @@ public class Building : OgreeObject
     public TextMeshPro nameText;
     public bool displayWalls = true;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         if (this is not Room)
             EventManager.instance.ImportFinished.Add(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
@@ -73,6 +74,18 @@ public class Building : OgreeObject
         }
         description = _src.description;
         attributes = _src.attributes;
+
+        foreach (string newTag in _src.tags)
+        {
+            if (!tags.Contains(newTag))
+                GameManager.instance.AddToTag(newTag, id);
+        }
+        foreach (string oldTag in tags)
+        {
+            if (!_src.tags.Contains(oldTag))
+                GameManager.instance.RemoveFromTag(oldTag, id);
+        }
+        tags = _src.tags;
     }
 
     ///<summary>
