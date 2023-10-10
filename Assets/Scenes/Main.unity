@@ -7661,9 +7661,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-10-05
+  m_text: 'Build date: 2023-10-10
 
-    Commit #261aa21c'
+    Commit #902b820'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -11994,7 +11994,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10013}
+  m_AnchoredPosition: {x: 0, y: 217.10004}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -12757,6 +12757,7 @@ MonoBehaviour:
   category: room
   description: []
   domain: 
+  tags: []
   attributesKeys: []
   attributesValues: []
   currentLod: 0
@@ -15446,6 +15447,7 @@ MonoBehaviour:
   category: rack
   description: []
   domain: 
+  tags: []
   attributesKeys: []
   attributesValues: []
   currentLod: 0
@@ -15669,17 +15671,12 @@ MonoBehaviour:
       cachePath: 
       cacheLimitMo: 0
       cliPort: 0
-      alphaOnInteract: 0
       autoUHelpers: 0
       temperatureMinC: 0
       temperatureMaxC: 0
       temperatureMinF: 0
       temperatureMaxF: 0
       useCustomGradient: 0
-      doubleClickDelay: 0
-      moveSpeed: 0
-      rotationSpeed: 0
-      humanHeight: 0
     savedConfigPath: 
   defaultMat: {fileID: 2100000, guid: 0142c1713e441b04ca9b28bdda0528b1, type: 2}
   alphaMat: {fileID: 2100000, guid: fd47b8c3b6ff4fe4c917c6163fee83e1, type: 2}
@@ -15729,6 +15726,7 @@ MonoBehaviour:
   clearanceModel: {fileID: 7797544327846721278, guid: cfc30ef0ad946fb41baf1de28111066e,
     type: 3}
   templatePlaceholder: {fileID: 1332629501}
+  inspectTags: []
   writeLogs: 1
   cameraControl: {fileID: 211893428}
   tempColorMode: 0
@@ -20685,7 +20683,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22528,7 +22526,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000007028462
+  m_Value: 0
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:

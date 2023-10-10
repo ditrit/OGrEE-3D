@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,6 +59,12 @@ public class ApiManager : MonoBehaviour
     {
         public Dictionary<string, string> data;
         public bool status;
+    }
+
+    private struct STagResp
+    {
+        public string message;
+        public SApiTag data;
     }
 
     public static ApiManager instance;
@@ -473,5 +479,24 @@ public class ApiManager : MonoBehaviour
         }
         GameManager.instance.AppendLogLine("Unknown object received while retrieving temperature unit", ELogTarget.both, ELogtype.errorApi);
         return Task.FromResult("");
+    }
+
+    /// <summary>
+    /// Deserialize API response to <see cref="STagResp"/> and call <see cref="GameManager.CreateTag(SApiTag)"/>
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns></returns>
+    public Task CreateTag(string _input)
+    {
+        try
+        {
+            STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
+            GameManager.instance.CreateTag(resp.data);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+        return null;
     }
 }

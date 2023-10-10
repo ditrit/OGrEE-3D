@@ -13,6 +13,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string category;
     public List<string> description = new();
     public string domain;
+    public List<string> tags = new();
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new();
@@ -57,12 +58,20 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         if (_other == null)
             return 1;
         else
-            return this.id.CompareTo(_other.id);
+            return id.CompareTo(_other.id);
+    }
+
+    private void Start()
+    {
+        foreach (string tag in tags)
+            GameManager.instance.AddToTag(tag, id);
     }
 
     protected virtual void OnDestroy()
     {
         GameManager.instance.allItems.Remove(id);
+        foreach (string tag in tags)
+            GameManager.instance.RemoveFromTag(tag, id);
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
             GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
