@@ -18,6 +18,7 @@ public class UiManager : MonoBehaviour
     [Header("GetCoordsMode")]
     public GameObject coordSystem;
     public TMP_Text axisText;
+    public GameObject diagonal;
 
     [Header("Right Click Menu")]
     [SerializeField] private GameObject rightClickMenu;
@@ -1030,7 +1031,9 @@ public class UiManager : MonoBehaviour
         bd.ToggleCS(GameManager.instance.getCoordsMode);
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
         axisText.gameObject.SetActive(GameManager.instance.getCoordsMode);
-
+        diagonal.SetActive(GameManager.instance.getCoordsMode);
+        diagonal.GetComponent<Diagonal>().isActive = GameManager.instance.getCoordsMode;
+        diagonal.transform.localPosition = bd.transform.position;
         getCoordsBtn.Check();
         toggleLocalCSBtn.Check();
     }
