@@ -1202,6 +1202,8 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         else if (Utils.GetObjectById(_value.Replace("/", ".")) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
+        else if (GameManager.instance.GetTag(_value) is Tag tag)
+            await tag.SelectLinkedObjects();
         else if (!string.IsNullOrEmpty(_value))
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetCurrentItemText();

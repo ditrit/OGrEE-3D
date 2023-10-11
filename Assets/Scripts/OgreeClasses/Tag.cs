@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [Serializable]
@@ -28,5 +28,20 @@ public class Tag
         slug = _src.slug;
         colorCode = _src.color;
         color = Utils.ParseHtmlColor($"#{colorCode}");
+    }
+
+    /// <summary>
+    /// Select all objects listed in <see cref="linkedObjects"/>.
+    /// </summary>
+    /// <returns></returns>
+    public async Task SelectLinkedObjects()
+    {
+        if (linkedObjects.Count > 0)
+        {
+            List<GameObject> objsToSelect = Utils.GetObjectsById(linkedObjects);
+            await GameManager.instance.SetCurrentItem(objsToSelect[0]);
+            for (int i = 1; i < linkedObjects.Count; i++)
+                await GameManager.instance.UpdateCurrentItems(objsToSelect[i]);
+        }
     }
 }

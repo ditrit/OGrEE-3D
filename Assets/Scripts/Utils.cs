@@ -109,14 +109,12 @@ public static class Utils
     ///<summary>
     /// Get a list of objects from GameManager.allItems by their id.
     ///</summary>
-    ///<param name="_idArray">The array of ids to search</param>
+    ///<param name="_idList">The array of ids to search</param>
     ///<returns>the asked list of objects</returns>
-    public static List<GameObject> GetObjectsById(string _idArray)
+    public static List<GameObject> GetObjectsById(List<string> _idList)
     {
-        string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
-
         List<GameObject> objects = new();
-        foreach (string objId in ids)
+        foreach (string objId in _idList)
         {
             if (GameManager.instance.allItems.Contains(objId))
                 objects.Add((GameObject)GameManager.instance.allItems[objId]);

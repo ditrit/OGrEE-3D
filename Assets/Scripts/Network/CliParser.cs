@@ -91,7 +91,9 @@ public class CliParser
                 //Disable focus mode
                 if (GameManager.instance.focusMode)
                     await GameManager.instance.UnfocusAll();
-                List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
+
+                List<string> ids = JsonConvert.DeserializeObject<List<string>>(command["data"].ToString());
+                List<GameObject> objsToSelect = Utils.GetObjectsById(ids);
                 if (objsToSelect.Count == 0)
                     await GameManager.instance.SetCurrentItem(null);
                 else
