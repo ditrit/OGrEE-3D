@@ -7661,9 +7661,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2023-10-10
+  m_text: 'Build date: 2023-10-11
 
-    Commit #902b820'
+    Commit #0da518ff'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -11994,7 +11994,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10004}
+  m_AnchoredPosition: {x: 0, y: 217.10057}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -15726,7 +15726,7 @@ MonoBehaviour:
   clearanceModel: {fileID: 7797544327846721278, guid: cfc30ef0ad946fb41baf1de28111066e,
     type: 3}
   templatePlaceholder: {fileID: 1332629501}
-  inspectTags: []
+  inspectorTags: []
   writeLogs: 1
   cameraControl: {fileID: 211893428}
   tempColorMode: 0
@@ -22526,7 +22526,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 0
+  m_Value: -0.0000025302459
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:

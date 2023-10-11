@@ -50,8 +50,7 @@ public class GameManager : MonoBehaviour
     private List<GameObject> currentItems = new();
     private List<GameObject> previousItems = new();
     public Hashtable allItems = new();
-    public Dictionary<string, Tag> tags = new();
-    public List<Tag> inspectorTags = new();
+    public List<Tag> tags = new();
     public Dictionary<string, SBuildingFromJson> buildingTemplates = new();
     public Dictionary<string, SRoomFromJson> roomTemplates = new();
     public Dictionary<string, GameObject> objectTemplates = new();
@@ -639,47 +638,56 @@ public class GameManager : MonoBehaviour
 
     #region Tags
     /// <summary>
-    /// If given tag doesn't exist, create a new <see cref="Tag"/> and add it to <see cref="tags"/> and <see cref="inspectorTags"/>.
+    /// Get a tag in <see cref="tags"/> by it's slug.
+    /// </summary>
+    /// <param name="_tagName">The slug of the tag to search</param>
+    /// <returns>The asked tag or null otherwise</returns>
+    public Tag GetTag(string _tagName)
+    {
+        foreach (Tag tag in tags)
+        {
+            if (tag.slug == _tagName)
+                return tag;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// If given tag doesn't exist, create a new <see cref="Tag"/> and add it to <see cref="tags"/> and <see cref="tags"/>.
     /// </summary>
     /// <param name="_data">Data from API</param>
     public void CreateTag(SApiTag _data)
     {
-        if (!tags.ContainsKey(_data.slug))
-        {
-            Tag newTag = new(_data);
-            tags.Add(newTag.slug, newTag);
-            inspectorTags.Add(newTag);
-        }
+        if (GetTag(_data.slug) == null)
+            tags.Add(new Tag(_data));
     }
 
     /// <summary>
-    /// Add an ogreeObject (by it's <paramref name="_objId"/> ) to a given <paramref name="_tag"/>.
+    /// Add an ogreeObject (by it's <paramref name="_objId"/> ) to a given <paramref name="_tagName"/>.
     /// If the tag doesn't exists, create it.
     /// </summary>
-    /// <param name="_tag">The tag to modify</param>
+    /// <param name="_tagName">The tag to modify</param>
     /// <param name="_objId">The <see cref="OgreeObject.id"/> of the object to add</param>
-    public async void AddToTag(string _tag, string _objId)
-    {
-        if (!tags.ContainsKey(_tag))
+    public async void AddToTag(string _tagName, string _objId)
+    { 
+        if (GetTag(_tagName) == null)
             await ApiManager.instance.GetObject($"tags/{tag}", ApiManager.instance.CreateTag);
 
-        tags[_tag].linkedObjects.Add(_objId);
+        GetTag(_tagName).linkedObjects.Add(_objId);
     }
 
     /// <summary>
-    /// Remove an ogreeObject (by it's <paramref name="_objId"/> ) from a given <paramref name="_tag"/>.
+    /// Remove an ogreeObject (by it's <paramref name="_objId"/> ) from a given <paramref name="_tagName"/>.
     /// If the tag has no linked object, remove it.
     /// </summary>
-    /// <param name="_tag">The tag to modify</param>
+    /// <param name="_tagName">The tag to modify</param>
     /// <param name="_objId">The <see cref="OgreeObject.id"/> of the object to remove</param>
-    public void RemoveFromTag(string _tag, string _objId)
+    public void RemoveFromTag(string _tagName, string _objId)
     {
-        tags[_tag].linkedObjects.Remove(_objId);
-        if (tags[_tag].linkedObjects.Count == 0)
-        {
-            inspectorTags.Remove(tags[_tag]);
-            tags.Remove(_tag);
-        }
+        Tag targetedTag = GetTag(_tagName);
+        targetedTag.linkedObjects.Remove(_objId);
+        if (targetedTag.linkedObjects.Count == 0)
+            tags.Remove(targetedTag);
     }
     #endregion
 }
