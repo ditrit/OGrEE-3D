@@ -496,5 +496,6 @@ public class ApiManager : MonoBehaviour
         {
             Debug.LogError(e);
         }
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 }
