@@ -17,6 +17,7 @@ public class CustomerGenerator
 
         GameObject newDomain = new(_do.name);
         Domain domain = newDomain.AddComponent<Domain>();
+        _do.tags = new(); // Temporary fix
         domain.UpdateFromSApiObject(_do);
 
         GameManager.instance.allItems.Add(_do.id, newDomain);

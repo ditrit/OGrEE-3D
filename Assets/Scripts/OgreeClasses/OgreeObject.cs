@@ -61,12 +61,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
             return id.CompareTo(_other.id);
     }
 
-    protected virtual void Start()
-    {
-        foreach (string tag in tags)
-            GameManager.instance.AddToTag(tag, id);
-    }
-
     protected virtual void OnDestroy()
     {
         GameManager.instance.allItems.Remove(id);
@@ -106,7 +100,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
-        
+
         foreach (string newTag in _src.tags)
         {
             if (!tags.Contains(newTag))

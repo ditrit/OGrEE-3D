@@ -671,7 +671,7 @@ public class GameManager : MonoBehaviour
     public async void AddToTag(string _tagName, string _objId)
     { 
         if (GetTag(_tagName) == null)
-            await ApiManager.instance.GetObject($"tags/{tag}", ApiManager.instance.CreateTag);
+            await ApiManager.instance.GetObject($"tags/{_tagName}", ApiManager.instance.CreateTag);
 
         GetTag(_tagName).linkedObjects.Add(_objId);
     }

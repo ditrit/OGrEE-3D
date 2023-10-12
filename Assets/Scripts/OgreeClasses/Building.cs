@@ -10,9 +10,8 @@ public class Building : OgreeObject
     public TextMeshPro nameText;
     public bool displayWalls = true;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
         if (this is not Room)
             EventManager.instance.ImportFinished.Add(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);

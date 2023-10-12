@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -485,18 +485,16 @@ public class ApiManager : MonoBehaviour
     /// Deserialize API response to <see cref="STagResp"/> and call <see cref="GameManager.CreateTag(SApiTag)"/>
     /// </summary>
     /// <param name="_input">The API response</param>
-    /// <returns></returns>
-    public Task CreateTag(string _input)
+    public async Task CreateTag(string _input)
     {
         try
         {
             STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
-            GameManager.instance.CreateTag(resp.data);
+            await Task.Run(() => GameManager.instance.CreateTag(resp.data));
         }
         catch (Exception e)
         {
             Debug.LogError(e);
         }
-        return null;
     }
 }

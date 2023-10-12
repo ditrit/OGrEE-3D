@@ -19,9 +19,8 @@ public class Item : OgreeObject
 
     public ClearanceHandler clearanceHandler = new();
 
-    protected override void Start()
+    protected virtual void Start()
     {
-        base.Start();
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
     }
 
@@ -43,7 +42,7 @@ public class Item : OgreeObject
         category = _src.category;
         domain = _src.domain;
         description = _src.description;
-        
+
         foreach (string newTag in _src.tags)
         {
             if (!tags.Contains(newTag))

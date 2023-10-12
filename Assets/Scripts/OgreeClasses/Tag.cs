@@ -33,7 +33,6 @@ public class Tag
     /// <summary>
     /// Select all objects listed in <see cref="linkedObjects"/>.
     /// </summary>
-    /// <returns></returns>
     public async Task SelectLinkedObjects()
     {
         if (linkedObjects.Count > 0)
