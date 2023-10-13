@@ -25,9 +25,21 @@ public class Tag
     /// <param name="_src">Data from API</param>
     public void UpdateFromSApiTag(SApiTag _src)
     {
+        if (slug != _src.slug)
+        {
+            foreach (GameObject go in GetLinkedObjects())
+            {
+                OgreeObject obj = go.GetComponent<OgreeObject>();
+                obj.tags.Remove(slug);
+                obj.tags.Add(_src.slug);
+            }
+        }
         slug = _src.slug;
+
+        if (colorCode != _src.color)
+            color = Utils.ParseHtmlColor($"#{_src.color}");
         colorCode = _src.color;
-        color = Utils.ParseHtmlColor($"#{colorCode}");
+
     }
 
     /// <summary>

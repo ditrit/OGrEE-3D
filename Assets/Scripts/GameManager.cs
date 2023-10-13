@@ -686,6 +686,7 @@ public class GameManager : MonoBehaviour
     {
         Tag targetedTag = GetTag(_tagName);
         targetedTag.linkedObjects.Remove(_objId);
+        Utils.GetObjectById(_objId)?.GetComponent<OgreeObject>().tags.Remove(_tagName);
         if (targetedTag.linkedObjects.Count == 0)
             tags.Remove(targetedTag);
     }
