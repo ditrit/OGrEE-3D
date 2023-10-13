@@ -80,6 +80,12 @@ public class UiManager : MonoBehaviour
     [SerializeField] private GameObject groupBtnPrefab;
     public List<Group> openedGroups;
 
+    [Header("Tags")]
+    [SerializeField] private GameObject tagsMenu;
+    [SerializeField] private TMP_Text tagsMenuBtnText;
+    [SerializeField] private GameObject tagBtnPrefab;
+    private bool expendTagsMenu = false;
+
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
     [SerializeField] private bool defaultAutoUHelpers;
@@ -413,6 +419,7 @@ public class UiManager : MonoBehaviour
         axisText.gameObject.SetActive(false);
         rightClickMenu.SetActive(false);
         groupsMenu.SetActive(false);
+        tagsMenu.SetActive(false);
         mouseName.gameObject.SetActive(false);
         UpdateTimerValue(slider.value);
 
@@ -714,6 +721,68 @@ public class UiManager : MonoBehaviour
         float menuWidth = groupsMenu.GetComponent<RectTransform>().sizeDelta.x;
         float menuHeight = padding * 2 + (btnHeight + spacing) * count;
         groupsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+    }
+
+    /// <summary>
+    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="tagsMenuBtnText"/>.
+    /// </summary>
+    public void ToggleTagsMenu()
+    {
+        expendTagsMenu ^= true;
+        tagsMenuBtnText.text = expendTagsMenu ? "Hide Tags list" : "Display Tags list";
+
+        TagsMenuBackgroundSize();
+        foreach (Transform btn in tagsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                btn.gameObject.SetActive(expendTagsMenu);
+        }
+    }
+
+    ///<summary>
+    /// Active <see cref="tagsMenu"/> depending on <see cref="GameManager.instance.tags"/> count and re-generate a button for each <see cref="Tag"/> item.
+    ///</summary>
+    public void RebuildTagsMenu()
+    {
+        tagsMenu.SetActive(GameManager.instance.tags.Count > 0);
+
+        // Wipe previous buttons
+        foreach (Transform btn in tagsMenu.transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                Destroy(btn.gameObject);
+        }
+
+        // Create a button for each Tag
+        foreach (Tag tag in GameManager.instance.tags)
+        {
+            GameObject newButton = Instantiate(tagBtnPrefab, tagsMenu.transform);
+            newButton.name = $"ButtonTag_{tag.slug}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.slug;
+
+            Button btn = newButton.GetComponent<Button>();
+            btn.onClick.AddListener(async () => await tag.SelectLinkedObjects());
+            btn.GetComponent<Image>().color = tag.color;
+
+            newButton.SetActive(expendTagsMenu);
+        }
+        TagsMenuBackgroundSize();
+    }
+
+    ///<summary>
+    /// Set the <see cref="tagsMenu"/>'s background according to <see cref="expendTagsMenu"/>
+    ///</summary>
+    private void TagsMenuBackgroundSize()
+    {
+        int count = expendTagsMenu ? GameManager.instance.tags.Count + 1 : 1;
+
+        float btnHeight = tagsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+        float padding = tagsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+        float spacing = tagsMenu.GetComponent<VerticalLayoutGroup>().spacing;
+
+        float menuWidth = tagsMenu.GetComponent<RectTransform>().sizeDelta.x;
+        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
+        tagsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
     }
 
     ///<summary>

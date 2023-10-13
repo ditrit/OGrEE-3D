@@ -669,9 +669,12 @@ public class GameManager : MonoBehaviour
     /// <param name="_tagName">The tag to modify</param>
     /// <param name="_objId">The <see cref="OgreeObject.id"/> of the object to add</param>
     public async void AddToTag(string _tagName, string _objId)
-    { 
+    {
         if (GetTag(_tagName) == null)
+        {
             await ApiManager.instance.GetObject($"tags/{_tagName}", ApiManager.instance.CreateTag);
+            UiManager.instance.RebuildTagsMenu();
+        }
 
         GetTag(_tagName).linkedObjects.Add(_objId);
     }
@@ -688,7 +691,10 @@ public class GameManager : MonoBehaviour
         targetedTag.linkedObjects.Remove(_objId);
         Utils.GetObjectById(_objId)?.GetComponent<OgreeObject>().tags.Remove(_tagName);
         if (targetedTag.linkedObjects.Count == 0)
+        {
             tags.Remove(targetedTag);
+            UiManager.instance.RebuildTagsMenu();
+        }
     }
     #endregion
 }

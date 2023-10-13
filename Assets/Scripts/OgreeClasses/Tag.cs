@@ -40,6 +40,7 @@ public class Tag
             color = Utils.ParseHtmlColor($"#{_src.color}");
         colorCode = _src.color;
 
+        UiManager.instance.RebuildTagsMenu();
     }
 
     /// <summary>
@@ -54,5 +55,17 @@ public class Tag
             for (int i = 1; i < linkedObjects.Count; i++)
                 await GameManager.instance.UpdateCurrentItems(objsToSelect[i]);
         }
+    }
+
+    /// <summary>
+    /// Get a list of GameObjects corresponding to <see cref="linkedObjects"/>
+    /// </summary>
+    /// <returns>All GameObjects from linkedObjects</returns>
+    public List<GameObject> GetLinkedObjects()
+    {
+        List<GameObject> list = new();
+        foreach (string id in linkedObjects)
+            list.Add(Utils.GetObjectById(id));
+        return list;
     }
 }
