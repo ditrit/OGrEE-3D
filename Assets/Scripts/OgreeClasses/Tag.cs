@@ -7,6 +7,7 @@ using UnityEngine;
 public class Tag
 {
     public string slug;
+    public string name;
     public string colorCode;
     public Color color;
     public List<string> linkedObjects;
@@ -14,6 +15,7 @@ public class Tag
     public Tag(SApiTag _src)
     {
         slug = _src.slug;
+        name = _src.name;
         colorCode = _src.color;
         color = Utils.ParseHtmlColor($"#{colorCode}");
         linkedObjects = new();

@@ -682,7 +682,7 @@ public class UiManager : MonoBehaviour
         {
             GameObject newButton = Instantiate(tagsList.buttonPrefab, tagsList.transform);
             newButton.name = $"ButtonTag_{tag.slug}";
-            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.slug;
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.name;
 
             Button btn = newButton.GetComponent<Button>();
             btn.onClick.AddListener(async () => await tag.SelectLinkedObjects());
