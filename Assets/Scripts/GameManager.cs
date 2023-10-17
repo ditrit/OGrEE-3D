@@ -673,7 +673,7 @@ public class GameManager : MonoBehaviour
         if (GetTag(_tagName) == null)
         {
             await ApiManager.instance.GetObject($"tags/{_tagName}", ApiManager.instance.CreateTag);
-            UiManager.instance.RebuildTagsMenu();
+            UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         }
 
         GetTag(_tagName).linkedObjects.Add(_objId);
@@ -693,7 +693,7 @@ public class GameManager : MonoBehaviour
         if (targetedTag.linkedObjects.Count == 0)
         {
             tags.Remove(targetedTag);
-            UiManager.instance.RebuildTagsMenu();
+            UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         }
     }
     #endregion

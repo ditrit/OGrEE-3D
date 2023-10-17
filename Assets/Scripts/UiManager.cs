@@ -74,17 +74,11 @@ public class UiManager : MonoBehaviour
     private Queue<string> loggerQueue = new(loggerSize);
 
     [Header("Groups")]
-    [SerializeField] private GameObject groupsMenu;
-    [SerializeField] private TMP_Text groupsMenuBtnText;
-    private bool expendGroupsMenu = false;
-    [SerializeField] private GameObject groupBtnPrefab;
+    public DynamicButtonList groupsList;
     public List<Group> openedGroups;
 
     [Header("Tags")]
-    [SerializeField] private GameObject tagsMenu;
-    [SerializeField] private TMP_Text tagsMenuBtnText;
-    [SerializeField] private GameObject tagBtnPrefab;
-    private bool expendTagsMenu = false;
+    public DynamicButtonList tagsList;
 
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
@@ -418,8 +412,6 @@ public class UiManager : MonoBehaviour
         coordSystem.SetActive(false);
         axisText.gameObject.SetActive(false);
         rightClickMenu.SetActive(false);
-        groupsMenu.SetActive(false);
-        tagsMenu.SetActive(false);
         mouseName.gameObject.SetActive(false);
         UpdateTimerValue(slider.value);
 
@@ -661,128 +653,42 @@ public class UiManager : MonoBehaviour
         GetComponent<Inputs>().lockMouseInteract = false;
     }
 
-    ///<summary>
-    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="groupsMenuBtnText"/>.
-    ///</summary>
-    public void ToggleGroupsMenu()
+    /// <summary>
+    /// Generate buttons under <see cref="groupsList"/> from <see cref="openedGroups"/>
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildGroupButtons()
     {
-        expendGroupsMenu ^= true;
-        groupsMenuBtnText.text = expendGroupsMenu ? "Hide opened group list" : "Display opened group list";
-
-        GroupsMenuBackgroundSize();
-        foreach (Transform btn in groupsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                btn.gameObject.SetActive(expendGroupsMenu);
-        }
-    }
-
-    ///<summary>
-    /// Active <see cref="groupsMenu"/> depending on <see cref="openedGroups"/> count and re-generate a button for each <see cref="openedGroups"/> item.
-    ///</summary>
-    public void RebuildGroupsMenu()
-    {
-        groupsMenu.SetActive(openedGroups.Count > 0);
-
-        // Wipe previous buttons
-        foreach (Transform btn in groupsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                Destroy(btn.gameObject);
-        }
-
-        // Create a button for each opened group
         foreach (Group gr in openedGroups)
         {
-            GameObject newButton = Instantiate(groupBtnPrefab, groupsMenu.transform);
+            GameObject newButton = Instantiate(groupsList.buttonPrefab, groupsList.transform);
             newButton.name = $"ButtonOpenGr_{gr.name}";
             newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.id;
 
             Button btn = newButton.GetComponent<Button>();
             btn.onClick.AddListener(() => gr.ToggleContent(false));
             btn.onClick.AddListener(() => Destroy(newButton));
-
-            newButton.SetActive(expendGroupsMenu);
         }
-        GroupsMenuBackgroundSize();
-    }
-
-    ///<summary>
-    /// Set the <see cref="groupsMenu"/>'s background according to <see cref="expendGroupsMenu"/>
-    ///</summary>
-    private void GroupsMenuBackgroundSize()
-    {
-        int count = expendGroupsMenu ? openedGroups.Count + 1 : 1;
-
-        float btnHeight = groupsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-        float padding = groupsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
-        float spacing = groupsMenu.GetComponent<VerticalLayoutGroup>().spacing;
-
-        float menuWidth = groupsMenu.GetComponent<RectTransform>().sizeDelta.x;
-        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
-        groupsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+        return openedGroups.Count;
     }
 
     /// <summary>
-    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="tagsMenuBtnText"/>.
+    /// Generate buttons under <see cref="tagsList"/> from <see cref="GameManager.instance.tags"/>
     /// </summary>
-    public void ToggleTagsMenu()
+    /// <returns>The number of created buttons</returns>
+    public int BuildTagButtons()
     {
-        expendTagsMenu ^= true;
-        tagsMenuBtnText.text = expendTagsMenu ? "Hide Tags list" : "Display Tags list";
-
-        TagsMenuBackgroundSize();
-        foreach (Transform btn in tagsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                btn.gameObject.SetActive(expendTagsMenu);
-        }
-    }
-
-    ///<summary>
-    /// Active <see cref="tagsMenu"/> depending on <see cref="GameManager.instance.tags"/> count and re-generate a button for each <see cref="Tag"/> item.
-    ///</summary>
-    public void RebuildTagsMenu()
-    {
-        tagsMenu.SetActive(GameManager.instance.tags.Count > 0);
-
-        // Wipe previous buttons
-        foreach (Transform btn in tagsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                Destroy(btn.gameObject);
-        }
-
-        // Create a button for each Tag
         foreach (Tag tag in GameManager.instance.tags)
         {
-            GameObject newButton = Instantiate(tagBtnPrefab, tagsMenu.transform);
+            GameObject newButton = Instantiate(tagsList.buttonPrefab, tagsList.transform);
             newButton.name = $"ButtonTag_{tag.slug}";
             newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.slug;
 
             Button btn = newButton.GetComponent<Button>();
             btn.onClick.AddListener(async () => await tag.SelectLinkedObjects());
             btn.GetComponent<Image>().color = tag.color;
-
-            newButton.SetActive(expendTagsMenu);
         }
-        TagsMenuBackgroundSize();
-    }
-
-    ///<summary>
-    /// Set the <see cref="tagsMenu"/>'s background according to <see cref="expendTagsMenu"/>
-    ///</summary>
-    private void TagsMenuBackgroundSize()
-    {
-        int count = expendTagsMenu ? GameManager.instance.tags.Count + 1 : 1;
-
-        float btnHeight = tagsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-        float padding = tagsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
-        float spacing = tagsMenu.GetComponent<VerticalLayoutGroup>().spacing;
-
-        float menuWidth = tagsMenu.GetComponent<RectTransform>().sizeDelta.x;
-        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
-        tagsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+        return GameManager.instance.tags.Count;
     }
 
     ///<summary>

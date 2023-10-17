@@ -40,7 +40,7 @@ public class Tag
             color = Utils.ParseHtmlColor($"#{_src.color}");
         colorCode = _src.color;
 
-        UiManager.instance.RebuildTagsMenu();
+        UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
     }
 
     /// <summary>

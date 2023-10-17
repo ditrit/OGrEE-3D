@@ -24,7 +24,7 @@ public class Group : Item
     {
         ToggleContent(true);
         UiManager.instance.openedGroups.Remove(this);
-        UiManager.instance.RebuildGroupsMenu();
+        UiManager.instance.groupsList.RebuildMenu(UiManager.instance.BuildGroupButtons);
         base.OnDestroy();
     }
 
@@ -54,7 +54,7 @@ public class Group : Item
             if (UiManager.instance.openedGroups.Contains(this))
                 UiManager.instance.openedGroups.Remove(this);
         }
-        UiManager.instance.RebuildGroupsMenu();
+        UiManager.instance.groupsList.RebuildMenu(UiManager.instance.BuildGroupButtons);
     }
 
     ///<summary>
