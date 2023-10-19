@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 [Serializable]
-public class Tag
+public class Tag : IComparable<Tag>
 {
     public string slug;
     public string name;
@@ -19,6 +19,15 @@ public class Tag
         colorCode = _src.color;
         color = Utils.ParseHtmlColor($"#{colorCode}");
         linkedObjects = new();
+    }
+
+    public int CompareTo(Tag _other)
+    {
+        // A null value means that this object is greater.
+        if (_other == null)
+            return 1;
+        else
+            return name.CompareTo(_other.name);
     }
 
     /// <summary>

@@ -659,7 +659,10 @@ public class GameManager : MonoBehaviour
     public void CreateTag(SApiTag _data)
     {
         if (GetTag(_data.slug) == null)
+        {
             tags.Add(new Tag(_data));
+            tags.Sort();
+        }
     }
 
     /// <summary>
