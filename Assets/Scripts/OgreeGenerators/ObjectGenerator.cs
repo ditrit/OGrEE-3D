@@ -141,11 +141,11 @@ public class ObjectGenerator
 
         // Check slot
         Transform slot = null;
+        List<Slot> takenSlots = new();
         if (_parent)
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
-                List<Slot> takenSlots = new();
                 int i = 0;
                 float max;
                 if (string.IsNullOrEmpty(_dv.attributes["template"]))
@@ -197,6 +197,8 @@ public class ObjectGenerator
 
         Device dv = newDevice.GetComponent<Device>();
         dv.UpdateFromSApiObject(_dv);
+        dv.takenSlots = takenSlots;
+
         // Place the device
         if (_parent)
         {
