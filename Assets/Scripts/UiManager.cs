@@ -47,6 +47,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
+    [SerializeField] private ButtonHandler hideObjectBtn;
+    [SerializeField] private ButtonHandler displayObjectBtn;
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField selectionInputField;
@@ -79,6 +81,10 @@ public class UiManager : MonoBehaviour
 
     [Header("Tags")]
     public DynamicButtonList tagsList;
+
+    [Header("Hidden Object")]
+    public DynamicButtonList hiddenObjList;
+    public List<Item> hiddenObjects;
 
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
@@ -407,6 +413,26 @@ public class UiManager : MonoBehaviour
         };
         toggleClearanceBtn.Check();
 
+        hideObjectBtn = new(hideObjectBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.GetSelected().Count > 0
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            &&
+            !item.isHidden
+        };
+        hideObjectBtn.Check();
+
+        displayObjectBtn = new(displayObjectBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.GetSelected().Count > 0
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            &&
+            item.isHidden
+        };
+        displayObjectBtn.Check();
+
         SetupColors();
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
@@ -689,6 +715,32 @@ public class UiManager : MonoBehaviour
             btn.GetComponent<Image>().color = tag.color;
         }
         return GameManager.instance.tags.Count;
+    }
+
+    /// <summary>
+    /// Generate buttons under <see cref="hiddenObjList"/> from <see cref="hiddenObjects"/>
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildHiddenObjButtons()
+    {
+        foreach (Item item in hiddenObjects)
+        {
+            GameObject newButton = Instantiate(hiddenObjList.buttonPrefab, hiddenObjList.transform);
+            newButton.name = $"ButtonHiddenObj_{item.name}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = item.id;
+
+            Button btn = newButton.GetComponent<Button>();
+            btn.onClick.AddListener(() =>
+            {
+                // item.GetComponent<ObjectDisplayController>().ToggleAlpha(false);
+                item.GetComponent<ObjectDisplayController>().Display(true, true, true);
+                item.isHidden = false;
+                hiddenObjects.Remove(item);
+                hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+            });
+            btn.onClick.AddListener(() => Destroy(newButton));
+        }
+        return hiddenObjects.Count;
     }
 
     ///<summary>
@@ -1274,6 +1326,42 @@ public class UiManager : MonoBehaviour
     {
         menuTarget.GetComponent<Item>().clearanceHandler.ToggleClearance();
         toggleLocalCSBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI: Hide all selected objects
+    /// </summary>
+    public async void HideSelectedObjects()
+    {
+        foreach (GameObject obj in GameManager.instance.GetSelected())
+        {
+            Item item = obj.GetComponent<Item>();
+            // obj.GetComponent<ObjectDisplayController>().ToggleAlpha(true);
+            obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
+            item.isHidden = true;
+            await item.LoadChildren(0);
+            if (!hiddenObjects.Contains(item))
+            {
+                hiddenObjects.Add(item);
+                hiddenObjects.Sort();
+                hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called by GUI: Display all selected objects
+    /// </summary>
+    public void DisplaySelectedObjects()
+    {
+        foreach (GameObject obj in GameManager.instance.GetSelected())
+        {
+            // obj.GetComponent<ObjectDisplayController>().ToggleAlpha(false);
+            obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
+            obj.GetComponent<Item>().isHidden = false;
+            hiddenObjects.Remove(obj.GetComponent<Item>());
+            hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+        }
     }
     #endregion
 }

@@ -28,6 +28,11 @@ public class Item : OgreeObject
     {
         base.OnDestroy();
         EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
+        if (isHidden)
+        {
+            UiManager.instance.hiddenObjects.Remove(this);
+            UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
+        }
     }
 
     ///<summary>
