@@ -1033,12 +1033,10 @@ public class UiManager : MonoBehaviour
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
         axisText.gameObject.SetActive(GameManager.instance.getCoordsMode);
         diagonal.SetActive(GameManager.instance.getCoordsMode);
-        diagonal.GetComponent<Diagonal>().isActive = GameManager.instance.getCoordsMode;
         diagonal.transform.localPosition = bd.transform.position;
         if (bd is Room ro && ro.attributes["axisOrientation"] != AxisOrientation.Default)
         {
             diagonalForNonDefaultOrientations.SetActive(GameManager.instance.getCoordsMode);
-            diagonalForNonDefaultOrientations.GetComponent<Diagonal>().isActive = GameManager.instance.getCoordsMode;
             switch (ro.attributes["axisOrientation"])
             {
                 case AxisOrientation.XMinus:
@@ -1048,7 +1046,7 @@ public class UiManager : MonoBehaviour
                     diagonalForNonDefaultOrientations.transform.localPosition = ro.transform.position + ro.technicalZone.localScale.y * 10 * Vector3.forward;
                     break;
                 case AxisOrientation.BothMinus:
-                    diagonalForNonDefaultOrientations.transform.localPosition = ro.transform.position + 10* (ro.technicalZone.localScale.y * Vector3.forward + ro.technicalZone.localScale.x * Vector3.right);
+                    diagonalForNonDefaultOrientations.transform.localPosition = ro.transform.position + 10 * (ro.technicalZone.localScale.y * Vector3.forward + ro.technicalZone.localScale.x * Vector3.right);
                     break;
             }
         }

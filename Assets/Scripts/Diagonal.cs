@@ -1,20 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Diagonal : MonoBehaviour
 {
-    public Transform center;
-    public bool isActive;
-    // Update is called once per frame
-    void Update()
+    public Transform coordSystem;
+
+    private void Update()
     {
-        if (isActive)
-            FollowTheCenter();
+            FollowtheSystem();
     }
-    private void FollowTheCenter()
+    private void FollowtheSystem()
     {
-        transform.localScale = center.localPosition - transform.localPosition;
-        transform.localScale = Vector3.Scale(transform.localScale, Vector3.one - 2 * Vector3.forward);
+        transform.localScale = Vector3.Scale(coordSystem.localPosition - transform.localPosition, Vector3.one - 2 * Vector3.forward);
     }
 }
