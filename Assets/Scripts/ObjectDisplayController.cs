@@ -224,7 +224,8 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (_e.obj == transform.parent.gameObject)
             item?.ResetTransform();
-        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item)))
+        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) 
+            || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !GetComponent<Item>().isHidden))
             Display(true, true, true);
         if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
             rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
@@ -655,6 +656,14 @@ public class ObjectDisplayController : MonoBehaviour
     {
         Display(!_value, !_value);
         item.isHidden = _value;
+        // if (_value && !UiManager.instance.hiddenObjects.Contains(GetComponent<Item>()))
+        // {
+        //     UiManager.instance.hiddenObjects.Add(GetComponent<Item>());
+        //     UiManager.instance.hiddenObjects.Sort();
+        // }
+        // else if (!_value)
+        //     UiManager.instance.hiddenObjects.Remove(GetComponent<Item>());
+        // UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
     }
 
     ///<summary>
