@@ -491,6 +491,7 @@ public class ApiManager : MonoBehaviour
         {
             STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
             await Task.Run(() => GameManager.instance.CreateTag(resp.data));
+            UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         }
         catch (Exception e)
         {
