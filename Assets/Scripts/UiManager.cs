@@ -483,6 +483,7 @@ public class UiManager : MonoBehaviour
     {
         SetCurrentItemText();
         UpdateGuiInfos();
+        SetupRightClickMenu();
     }
 
     ///<summary>
@@ -647,27 +648,54 @@ public class UiManager : MonoBehaviour
         {
             // Setup the menu
             rightClickMenu.SetActive(true);
-            if (GameManager.instance.GetSelected().Count > 0)
-                rightClickMenu.GetComponent<Image>().color = selectColor;
-            else
-                rightClickMenu.GetComponent<Image>().color = defaultColor;
-
-            float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
-            float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
-            float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
-
-            float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
-            float menuHeight = padding * 2 + (btnHeight + spacing) * displayedButtons;
-            rightClickMenu.GetComponent<RectTransform>().sizeDelta = new(menuWidth, menuHeight);
+            Vector2 menuDim = SetupRightClickMenu(displayedButtons);
 
             // Move the menu at mouse position and prevent it to be out of the window
+            float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
             rightClickMenu.transform.position = Input.mousePosition;
-            if (Screen.width - Input.mousePosition.x < menuWidth * canvasScale)
-                rightClickMenu.transform.position -= new Vector3(menuWidth * canvasScale, 0, 0);
-            if (Input.mousePosition.y < menuHeight * canvasScale)
-                rightClickMenu.transform.position += new Vector3(0, menuHeight * canvasScale, 0);
+            if (Screen.width - Input.mousePosition.x < menuDim.x * canvasScale)
+                rightClickMenu.transform.position -= new Vector3(menuDim.x * canvasScale, 0, 0);
+            if (Input.mousePosition.y < menuDim.y * canvasScale)
+                rightClickMenu.transform.position += new Vector3(0, menuDim.y * canvasScale, 0);
         }
+    }
+
+    /// <summary>
+    /// Count displayed buttons in rightClickMenu and adjust its background size
+    /// </summary>
+    /// <returns>Width and height of rightClickMenu's background</returns>
+    public Vector2 SetupRightClickMenu()
+    {
+        int displayedButtons = 0;
+        foreach (Transform btn in rightClickMenu.transform)
+        {
+            if (btn.gameObject.activeSelf)
+                displayedButtons++;
+        }
+        return SetupRightClickMenu(displayedButtons);
+    }
+
+    /// <summary>
+    /// Adjust rightClickMenu's background size according to <paramref name="_displayedButtons"/>
+    /// </summary>
+    /// <param name="_displayedButtons">The number of displayed buttons in rightClickMenu</param>
+    /// <returns>Width and height of rightClickMenu's background</returns>
+    public Vector2 SetupRightClickMenu(int _displayedButtons)
+    {
+        if (GameManager.instance.GetSelected().Count > 0)
+            rightClickMenu.GetComponent<Image>().color = selectColor;
+        else
+            rightClickMenu.GetComponent<Image>().color = defaultColor;
+
+        float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+        float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+        float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
+
+        float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
+        float menuHeight = padding * 2 + (btnHeight + spacing) * _displayedButtons;
+        rightClickMenu.GetComponent<RectTransform>().sizeDelta = new(menuWidth, menuHeight);
+
+        return new(menuWidth, menuHeight);
     }
 
     ///<summary>
