@@ -1364,7 +1364,6 @@ public class UiManager : MonoBehaviour
         foreach (GameObject obj in GameManager.instance.GetSelected())
         {
             Item item = obj.GetComponent<Item>();
-            // obj.GetComponent<ObjectDisplayController>().ToggleAlpha(true);
             obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
             item.isHidden = true;
             await item.LoadChildren(0);
@@ -1384,7 +1383,6 @@ public class UiManager : MonoBehaviour
     {
         foreach (GameObject obj in GameManager.instance.GetSelected())
         {
-            // obj.GetComponent<ObjectDisplayController>().ToggleAlpha(false);
             obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
             obj.GetComponent<Item>().isHidden = false;
             hiddenObjects.Remove(obj.GetComponent<Item>());

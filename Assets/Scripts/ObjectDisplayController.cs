@@ -656,14 +656,6 @@ public class ObjectDisplayController : MonoBehaviour
     {
         Display(!_value, !_value);
         item.isHidden = _value;
-        // if (_value && !UiManager.instance.hiddenObjects.Contains(GetComponent<Item>()))
-        // {
-        //     UiManager.instance.hiddenObjects.Add(GetComponent<Item>());
-        //     UiManager.instance.hiddenObjects.Sort();
-        // }
-        // else if (!_value)
-        //     UiManager.instance.hiddenObjects.Remove(GetComponent<Item>());
-        // UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
     }
 
     ///<summary>
