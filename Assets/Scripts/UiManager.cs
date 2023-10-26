@@ -739,8 +739,12 @@ public class UiManager : MonoBehaviour
             newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.name;
 
             Button btn = newButton.GetComponent<Button>();
-            btn.onClick.AddListener(async () => await tag.SelectLinkedObjects());
             btn.GetComponent<Image>().color = tag.color;
+            btn.onClick.AddListener(() =>
+            {
+                foreach (GameObject obj in tag.GetLinkedObjects())
+                    HideObject(obj);
+            });
         }
         return GameManager.instance.tags.Count;
     }
@@ -758,14 +762,7 @@ public class UiManager : MonoBehaviour
             newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = item.id;
 
             Button btn = newButton.GetComponent<Button>();
-            btn.onClick.AddListener(() =>
-            {
-                // item.GetComponent<ObjectDisplayController>().ToggleAlpha(false);
-                item.GetComponent<ObjectDisplayController>().Display(true, true, true);
-                item.isHidden = false;
-                hiddenObjects.Remove(item);
-                hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
-            });
+            btn.onClick.AddListener(() => DisplayObject(item.gameObject));
             btn.onClick.AddListener(() => Destroy(newButton));
         }
         return hiddenObjects.Count;
@@ -1359,20 +1356,27 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Called by GUI: Hide all selected objects
     /// </summary>
-    public async void HideSelectedObjects()
+    public void HideSelectedObjects()
     {
         foreach (GameObject obj in GameManager.instance.GetSelected())
+            HideObject(obj);
+    }
+
+    /// <summary>
+    /// Hide given <paramref name="_obj"/>
+    /// </summary>
+    /// <param name="_obj">The GameObject to hide</param>
+    public async void HideObject(GameObject _obj)
+    {
+        Item item = _obj.GetComponent<Item>();
+        _obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
+        item.isHidden = true;
+        await item.LoadChildren(0);
+        if (!hiddenObjects.Contains(item))
         {
-            Item item = obj.GetComponent<Item>();
-            obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
-            item.isHidden = true;
-            await item.LoadChildren(0);
-            if (!hiddenObjects.Contains(item))
-            {
-                hiddenObjects.Add(item);
-                hiddenObjects.Sort();
-                hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
-            }
+            hiddenObjects.Add(item);
+            hiddenObjects.Sort();
+            hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
         }
     }
 
@@ -1382,12 +1386,19 @@ public class UiManager : MonoBehaviour
     public void DisplaySelectedObjects()
     {
         foreach (GameObject obj in GameManager.instance.GetSelected())
-        {
-            obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
-            obj.GetComponent<Item>().isHidden = false;
-            hiddenObjects.Remove(obj.GetComponent<Item>());
-            hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
-        }
+            DisplayObject(obj);
+    }
+
+    /// <summary>
+    /// Display given <paramref name="_obj"/>
+    /// </summary>
+    /// <param name="_obj">The GameObject to display</param>
+    public void DisplayObject(GameObject _obj)
+    {
+        _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
+        _obj.GetComponent<Item>().isHidden = false;
+        hiddenObjects.Remove(_obj.GetComponent<Item>());
+        hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }
     #endregion
 }
