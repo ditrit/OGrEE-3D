@@ -147,10 +147,11 @@ public class ObjectDisplayController : MonoBehaviour
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
         if (!item.tempBar && !scatterPlotOfOneParent)
         {
+            bool isHidden = GetComponent<Item>().isHidden;
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
-            bool colAndLabels = (isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject);
-            bool rend = isSelected || colAndLabels;
+            bool colAndLabels = !isHidden && ((isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject));
+            bool rend = !isHidden && (isSelected || colAndLabels);
 
             Display(rend, colAndLabels, colAndLabels);
 
@@ -224,7 +225,7 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (_e.obj == transform.parent.gameObject)
             item?.ResetTransform();
-        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) 
+        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent)
             || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !GetComponent<Item>().isHidden))
             Display(true, true, true);
         if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
@@ -272,9 +273,9 @@ public class ObjectDisplayController : MonoBehaviour
             Display(false, false, false);
             return;
         }
-
+        bool isHidden = GetComponent<Item>().isHidden;
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
+        bool RendColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         HandleMaterial();
     }
