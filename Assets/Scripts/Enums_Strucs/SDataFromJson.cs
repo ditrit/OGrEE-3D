@@ -146,6 +146,6 @@ public struct STempUnit
 public struct SApiTag
 {
     public string slug;
-    public string name;
+    public string description;
     public string color;
 }

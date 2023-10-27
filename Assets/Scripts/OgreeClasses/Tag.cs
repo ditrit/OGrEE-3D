@@ -7,7 +7,7 @@ using UnityEngine;
 public class Tag : IComparable<Tag>
 {
     public string slug;
-    public string name;
+    public string description;
     public string colorCode;
     public Color color;
     public List<string> linkedObjects;
@@ -15,7 +15,7 @@ public class Tag : IComparable<Tag>
     public Tag(SApiTag _src)
     {
         slug = _src.slug;
-        name = _src.name;
+        description = _src.description;
         colorCode = _src.color;
         color = Utils.ParseHtmlColor($"#{colorCode}");
         linkedObjects = new();
@@ -27,7 +27,7 @@ public class Tag : IComparable<Tag>
         if (_other == null)
             return 1;
         else
-            return name.CompareTo(_other.name);
+            return slug.CompareTo(_other.slug);
     }
 
     /// <summary>
@@ -46,6 +46,7 @@ public class Tag : IComparable<Tag>
             }
         }
         slug = _src.slug;
+        description = _src.description;
 
         if (colorCode != _src.color)
             color = Utils.ParseHtmlColor($"#{_src.color}");

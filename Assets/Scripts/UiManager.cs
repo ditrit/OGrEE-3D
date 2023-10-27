@@ -736,7 +736,7 @@ public class UiManager : MonoBehaviour
         {
             GameObject newButton = Instantiate(tagsList.buttonPrefab, tagsList.transform);
             newButton.name = $"ButtonTag_{tag.slug}";
-            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.name;
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.slug;
 
             Button btn = newButton.GetComponent<Button>();
             btn.GetComponent<Image>().color = tag.color;
