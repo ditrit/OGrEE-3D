@@ -743,7 +743,7 @@ public class UiManager : MonoBehaviour
             btn.onClick.AddListener(() =>
             {
                 foreach (GameObject obj in tag.GetLinkedObjects())
-                    HideObject(obj);
+                    EventManager.instance.Raise(new HighlightEvent(obj, tag.color));
             });
         }
         return GameManager.instance.tags.Count;

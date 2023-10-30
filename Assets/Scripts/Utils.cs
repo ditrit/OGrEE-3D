@@ -334,4 +334,16 @@ public static class Utils
     {
         return new(_v.x, _v.z, _v.y);
     }
+
+    /// <summary>
+    /// Set the alpha of a <paramref name="_color"/>
+    /// </summary>
+    /// <param name="_color">The color to modify</param>
+    /// <param name="_alpha">The alpha to apply</param>
+    /// <returns>This color with given <paramref name="_alpha"/></returns>
+    public static Color WithAlpha(this Color _color, float _alpha)
+    {
+        _color.a = _alpha;
+        return _color;
+    }
 }

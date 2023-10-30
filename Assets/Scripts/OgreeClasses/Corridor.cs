@@ -10,8 +10,7 @@ public class Corridor : Item
     {
         if (ColorUtility.TryParseHtmlString($"#{_hex}", out Color newColor))
         {
-            newColor.a = 0.5f;
-            color = newColor;
+            color = newColor.WithAlpha(0.5f);
             GetComponent<ObjectDisplayController>().ChangeColor(color);
         }
     }

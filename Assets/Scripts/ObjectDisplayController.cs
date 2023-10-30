@@ -35,6 +35,7 @@ public class ObjectDisplayController : MonoBehaviour
 
     private bool isHovered = false;
     private bool isHighlighted = false;
+    private Color highlightColor;
 
     private void Awake()
     {
@@ -417,6 +418,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnHighLight(HighlightEvent _e)
     {
+        highlightColor = _e.color;
         if (_e.obj == gameObject)
             ToggleHighlight(!isHighlighted);
     }
@@ -502,7 +504,11 @@ public class ObjectDisplayController : MonoBehaviour
         if (item && item.scatterPlot)
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
+        {
             SetMaterial(GameManager.instance.highlightMat);
+            if (highlightColor != Color.clear)
+                cube.rend.material.color = highlightColor.WithAlpha(cube.rend.material.color.a);
+        }
         else if (GameManager.instance.tempColorMode && !group && item && item.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
@@ -643,10 +649,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void ChangeColor(Color _color)
     {
         if (!isHovered && !isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject) && !GameManager.instance.GetFocused().Contains(gameObject))
-        {
-            _color.a = cube.rend.material.color.a;
-            cube.rend.material.color = _color;
-        }
+            cube.rend.material.color = _color.WithAlpha(cube.rend.material.color.a);
     }
 
     ///<summary>

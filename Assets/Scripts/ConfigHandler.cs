@@ -252,13 +252,9 @@ public class ConfigHandler
     ///<param name="_mat">The material to edit</param>
     private void SetMaterialColor(string _key, Material _mat)
     {
-        Color tmp;
         if (config.colors.ContainsKey(_key))
-        {
-            tmp = Utils.ParseHtmlColor(config.colors[_key]);
-            tmp.a = config.AlphaOnInteract / 100;
-            _mat.color = tmp;
-        }
+            _mat.color = Utils.ParseHtmlColor(config.colors[_key]).WithAlpha(config.AlphaOnInteract / 100);
+
     }
 
     ///<summary>
