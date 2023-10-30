@@ -2,6 +2,7 @@ Shader "Custom/Lines"
 {
 	Properties
 	{
+		[Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 0
 		[MaterialToggle] _FirstLineToggled("Toggled", Float) = 0
 		_FirstLineColor("First Line Color", Color) = (1,1,1,1)
 		_FirstLineThickness("First Line Thickness", float) = 0.2
@@ -27,7 +28,7 @@ Shader "Custom/Lines"
 		Tags { "RenderType" = "Transparent" "Queue" = "Transparent+1" }
 		Pass{ 
 			Blend SrcAlpha OneMinusSrcAlpha // Alpha blend
-				Cull false
+			Cull [_Cull]
 			CGPROGRAM
 
 			#pragma	vertex vert             

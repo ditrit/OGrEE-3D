@@ -12,6 +12,7 @@ public class Inputs : MonoBehaviour
     private CameraControl camControl;
     [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
+    [SerializeField] private CoordModeController coordModeController;
 
     // Drag
     private bool isDraggingObj = false;
@@ -70,7 +71,7 @@ public class Inputs : MonoBehaviour
 
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
-            UiManager.instance.MoveCSToHit(hit);
+            coordModeController.MoveCSToHit(hit);
 
         if (Input.GetMouseButtonDown(0))
             AppendDistFromClick();
