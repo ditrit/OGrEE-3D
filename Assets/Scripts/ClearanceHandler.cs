@@ -37,7 +37,7 @@ public class ClearanceHandler
     /// <param name="_clearedObject">object which has the clearance</param>
     public void Initialize(float _front, float _rear, float _left, float _right, float _top, float _bottom, Transform _clearedObject)
     {
-        if (_front == 0 && _rear == 0 && _left == 0 && _right == 0 && _top == 0)
+        if (_front == 0 && _rear == 0 && _left == 0 && _right == 0 && _top == 0 && _bottom == 0)
             return;
         clearances = new List<Clearance>();
         Object.Destroy(clearanceWrapper);

@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ClearanceCollisionHandler : MonoBehaviour
 {
-    [SerializeField] private new Renderer renderer;
+    [SerializeField] private List<Renderer> renderers;
     public Transform ownObject;
     [SerializeField] private int collisionCount = 0;
 
@@ -21,6 +22,7 @@ public class ClearanceCollisionHandler : MonoBehaviour
         trigger.shouldFire = true;
         trigger.collisionHandler = this;
         collisionCount++;
+        foreach (Renderer renderer in renderers)
         renderer.material.color = Color.red;
     }
 
@@ -44,7 +46,8 @@ public class ClearanceCollisionHandler : MonoBehaviour
     {
         collisionCount--;
         if (collisionCount == 0)
-            renderer.material.color = Color.green;
+            foreach (Renderer renderer in renderers)
+                renderer.material.color = Color.green;
     }
 
 
@@ -54,6 +57,7 @@ public class ClearanceCollisionHandler : MonoBehaviour
     private void OnDisable()
     {
         collisionCount = 0;
-        renderer.material.color = Color.green;
+        foreach (Renderer renderer in renderers)
+            renderer.material.color = Color.green;
     }
 }

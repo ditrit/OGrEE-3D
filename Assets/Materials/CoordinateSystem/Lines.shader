@@ -3,23 +3,22 @@ Shader "Custom/Lines"
 	Properties
 	{
 		[Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull", Float) = 0
+		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Float) = 4
+		_Color("First Line Color", Color) = (1,1,1,1)
+
 		[MaterialToggle] _FirstLineToggled("Toggled", Float) = 0
-		_FirstLineColor("First Line Color", Color) = (1,1,1,1)
 		_FirstLineThickness("First Line Thickness", float) = 0.2
 		_FirstLine("First Line", Vector) = (0,0,1,1) // (xa,ya,xb,yb)
 
 		[MaterialToggle] _SecondLineToggled("Toggled", Float) = 0
-		_SecondLineColor("Second Line Color", Color) = (1,1,1,1)
 		_SecondLineThickness("Second Line Thickness", float) = 0.2
 		_SecondLine("Second Line", Vector) = (0,1,1,0) // (xa,ya,xb,yb)
 
 		[MaterialToggle] _ThirdLineToggled("Toggled", Float) = 0
-		_ThirdLineColor("Third Line Color", Color) = (1,1,1,1)
 		_ThirdLineThickness("Third Line Thickness", float) = 0.2
 		_ThirdLine("Third Line", Vector) = (0,1,1,0) // (xa,ya,xb,yb)
 
 		[MaterialToggle] _FourthLineToggled("Toggled", Float) = 0
-		_FourthLineColor("Fourth Line Color", Color) = (1,1,1,1)
 		_FourthLineThickness("Fourth Line Thickness", float) = 0.2
 		_FourthLine("Fourth Line", Vector) = (0,1,1,0) // (xa,ya,xb,yb)
 	}
@@ -28,7 +27,8 @@ Shader "Custom/Lines"
 		Tags { "RenderType" = "Transparent" "Queue" = "Transparent+1" }
 		Pass{ 
 			Blend SrcAlpha OneMinusSrcAlpha // Alpha blend
-			Cull [_Cull]
+			Cull[_Cull]
+			ZTest [_ZTest]
 			CGPROGRAM
 
 			#pragma	vertex vert             
@@ -53,28 +53,25 @@ Shader "Custom/Lines"
 				return o;
 			}
 
-		fixed4 _FirstLineColor;
+		fixed4 _Color;
+
 		float _FirstLineThickness;
 		float4 _FirstLine;
 		float _FirstLineToggled;
 
 		float _SecondLineToggled;
-		fixed4 _SecondLineColor;
 		float _SecondLineThickness;
 		float4 _SecondLine;
 
 		float _ThirdLineToggled;
-		fixed4 _ThirdLineColor;
 		float _ThirdLineThickness;
 		float4 _ThirdLine;
 
 		float _FourthLineToggled;
-		fixed4 _FourthLineColor;
 		float _FourthLineThickness;
 		float4 _FourthLine;
 
 		static const float4 lines[4] = { _FirstLine, _SecondLine, _ThirdLine, _FourthLine };
-		static const fixed4 colors[4] = { _FirstLineColor, _SecondLineColor, _ThirdLineColor, _FourthLineColor };
 		static const float thicknesses[4] = {_FirstLineThickness, _SecondLineThickness, _ThirdLineThickness, _FourthLineThickness};
 		static const float toggles[4] = { _FirstLineToggled, _SecondLineToggled, _ThirdLineToggled, _FourthLineToggled };
 
@@ -112,7 +109,7 @@ Shader "Custom/Lines"
 				if (distance < thicknesses[i])
 				{
 					alpha = 1;
-					color += colors[i];
+					color = _Color;
 				}
 			}
 			return half4(color.xyz, alpha);
