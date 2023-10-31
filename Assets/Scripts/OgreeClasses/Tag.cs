@@ -75,9 +75,6 @@ public class Tag : IComparable<Tag>
     /// <returns>All GameObjects from linkedObjects</returns>
     public List<GameObject> GetLinkedObjects()
     {
-        List<GameObject> list = new();
-        foreach (string id in linkedObjects)
-            list.Add(Utils.GetObjectById(id));
-        return list;
+        return Utils.GetObjectsById(linkedObjects);
     }
 }

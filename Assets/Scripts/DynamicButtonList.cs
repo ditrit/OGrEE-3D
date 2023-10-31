@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,28 +25,37 @@ public class DynamicButtonList : MonoBehaviour
     }
 
     /// <summary>
+    /// Get all buttons except the hide/display one.
+    /// </summary>
+    /// <returns>A list with generated buttons</returns>
+    public List<Transform> GetButtons()
+    {
+        List<Transform> list = new();
+        foreach (Transform btn in transform)
+        {
+            if (btn.GetSiblingIndex() != 0)
+                list.Add(btn);
+        }
+        return list;
+    }
+
+    /// <summary>
     /// Rebuild buttons using <paramref name="_buildBtnsMethod"/>.
     /// </summary>
     /// <param name="_buildBtnsMethod"></param>
     public void RebuildMenu(Func<int> _buildBtnsMethod)
     {
         // Wipe previous buttons
-        foreach (Transform btn in transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                Destroy(btn.gameObject);
-        }
+        foreach (Transform btn in GetButtons())
+            Destroy(btn.gameObject);
 
         // Build buttons using given method
         int count = _buildBtnsMethod();
         gameObject.SetActive(count > 0);
 
         // Toggle buttons according to isExpended
-        foreach (Transform btn in transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                btn.gameObject.SetActive(isExpanded);
-        }
+        foreach (Transform btn in GetButtons())
+            btn.gameObject.SetActive(isExpanded);
         UpdateBackgroundSize(count + 1); // + 1 because of the hide/display button
     }
 
@@ -74,11 +84,8 @@ public class DynamicButtonList : MonoBehaviour
         isExpanded ^= true;
         buttonToggleText.text = isExpanded ? hideText : displayText;
 
-        foreach (Transform btn in transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                btn.gameObject.SetActive(isExpanded);
-        }
+        foreach (Transform btn in GetButtons())
+            btn.gameObject.SetActive(isExpanded);
 
         UpdateBackgroundSize(transform.childCount);
     }
