@@ -84,10 +84,7 @@ public class CoordModeController : MonoBehaviour
             textXLeft.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textXLeft.transform.parent.localPosition = 0.5f * raycastHit.distance * Vector3.forward + 0.002f * Vector3.up;
             textXLeft.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).x > 0)
-                textXLeft.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textXLeft.transform.parent.localEulerAngles = Vector3.zero;
+            textXLeft.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(-1 * GameManager.instance.cameraControl.transform.right).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
             textXLeft.transform.parent.localScale = Vector3.zero;
@@ -103,10 +100,7 @@ public class CoordModeController : MonoBehaviour
             textXRight.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textXRight.transform.parent.localPosition = 0.5f * raycastHit2.distance * Vector3.back + 0.002f * Vector3.up;
             textXRight.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit2.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).x > 0)
-                textXRight.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textXRight.transform.parent.localEulerAngles = Vector3.zero;
+            textXRight.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(-1 * GameManager.instance.cameraControl.transform.right).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
             textXRight.transform.parent.localScale = Vector3.zero;
@@ -118,12 +112,9 @@ public class CoordModeController : MonoBehaviour
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textXTotal.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
+            textXTotal.transform.parent.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textXTotal.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).x > 0)
-                textXTotal.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textXTotal.transform.parent.localEulerAngles = Vector3.zero;
+            textXTotal.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(-1 * GameManager.instance.cameraControl.transform.right).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
             textXTotal.transform.parent.localScale = Vector3.zero;
@@ -137,10 +128,7 @@ public class CoordModeController : MonoBehaviour
             textZUp.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textZUp.transform.parent.localPosition = 0.5f * raycastHit.distance * Vector3.right + 0.002f * Vector3.up;
             textZUp.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).z > 0)
-                textZUp.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textZUp.transform.parent.localEulerAngles = Vector3.zero;
+            textZUp.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
         {
@@ -158,10 +146,7 @@ public class CoordModeController : MonoBehaviour
             textZDown.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textZDown.transform.parent.localPosition = 0.5f * raycastHit2.distance * Vector3.left + 0.002f * Vector3.up;
             textZDown.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit2.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).z > 0)
-                textZDown.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textZDown.transform.parent.localEulerAngles = Vector3.zero;
+            textZDown.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
         {
@@ -173,12 +158,9 @@ public class CoordModeController : MonoBehaviour
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textZTotal.transform.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
+            textZTotal.transform.parent.parent.localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
             textZTotal.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
-            if (transform.InverseTransformPoint(GameManager.instance.cameraControl.transform.position).z > 0)
-                textZTotal.transform.parent.localEulerAngles = 180 * Vector3.up;
-            else
-                textZTotal.transform.parent.localEulerAngles = Vector3.zero;
+            textZTotal.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(-1 * GameManager.instance.cameraControl.transform.right).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
             textZTotal.transform.parent.localScale = Vector3.zero;
