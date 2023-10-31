@@ -63,6 +63,11 @@ public class CoordModeController : MonoBehaviour
     private bool hasNonDefaultOrientation = false;
     private Vector3 textSize;
 
+    private void Awake()
+    {
+        gameObject.SetActive(false);
+    }
+
     /// <summary>
     /// Initialize the data of the script according to the currently selected building/room
     /// </summary>
