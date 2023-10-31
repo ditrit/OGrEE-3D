@@ -6,16 +6,34 @@ using TMPro;
 //Leaving it there in case I think of a good way to use it
 public static class RectTransformExtensions
 {
-
-    public static bool Overlaps(this RectTransform a, RectTransform b)
+    /// <summary>
+    /// Check if two rect overlaps
+    /// </summary>
+    /// <param name="_a">first rect</param>
+    /// <param name="_b">second rect</param>
+    /// <returns></returns>
+    public static bool Overlaps(this RectTransform _a, RectTransform _b)
     {
-        return a.WorldRect().Overlaps(b.WorldRect());
+        return _a.WorldRect().Overlaps(_b.WorldRect());
     }
+
+    /// <summary>
+    /// Checks if two rect overlaps
+    /// </summary>
+    /// <param name="a">first rect</param>
+    /// <param name="b">second rect</param>
+    /// <param name="allowInverse">Does the test allow the widths and heights of the Rects to be negative?</param>
+    /// <returns></returns>
     public static bool Overlaps(this RectTransform a, RectTransform b, bool allowInverse)
     {
         return a.WorldRect().Overlaps(b.WorldRect(), allowInverse);
     }
 
+    /// <summary>
+    /// Make a Rect with no parent (at root) at the same place and with the same dimensions
+    /// </summary>
+    /// <param name="rectTransform">the rect to copy</param>
+    /// <returns></returns>
     public static Rect WorldRect(this RectTransform rectTransform)
     {
         Vector2 sizeDelta = rectTransform.sizeDelta;
