@@ -742,8 +742,22 @@ public class UiManager : MonoBehaviour
             btn.GetComponent<Image>().color = tag.color;
             btn.onClick.AddListener(() =>
             {
-                foreach (GameObject obj in tag.GetLinkedObjects())
-                    EventManager.instance.Raise(new HighlightEvent(obj, tag.color));
+                // Disable all other tags' highlight
+                foreach (Tag t in GameManager.instance.tags)
+                {
+                    if (t != tag)
+                        t.HighlightObjects(false);
+                }
+                // Highlight this tag
+                tag.HighlightObjects(!tag.objHightlighted);
+
+                // Set text color of tags buttons
+                foreach (Transform button in tagsList.GetButtons())
+                {
+                    TMP_Text buttonText = button.GetChild(0).GetComponent<TMP_Text>();
+                    Tag relatedTag = GameManager.instance.GetTag(buttonText.text);
+                    buttonText.color = relatedTag.objHightlighted ? Color.green : Color.white;
+                }
             });
         }
         return GameManager.instance.tags.Count;

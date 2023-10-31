@@ -34,7 +34,7 @@ public class ObjectDisplayController : MonoBehaviour
 #pragma warning restore IDE1006 // Styles d'affectation de noms
 
     private bool isHovered = false;
-    private bool isHighlighted = false;
+    public bool isHighlighted = false;
     private Color highlightColor;
 
     private void Awake()
