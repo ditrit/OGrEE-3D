@@ -7,19 +7,22 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CS_plane
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
+  m_Name: CS_planeX 1
+  m_Shader: {fileID: 4800000, guid: 51f30efecd1885040b4ae7b68f50577f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _FIRSTLINETOGGLED_ON
+  - _FOURTHLINETOGGLED_ON
+  - _SECONDLINETOGGLED_ON
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
+  - _THIRDLINETOGGLED_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: 3004
+  stringTagMap: {}
   disabledShaderPasses:
   - SHADOWCASTER
   - DepthOnly
@@ -92,34 +95,50 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
     - _DstBlendAlpha: 10
     - _EnvironmentReflections: 1
+    - _FirstLineThickness: 1.26
+    - _FirstLineToggled: 1
+    - _FourthLineThickness: 0.01
+    - _FourthLineToggled: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _QueueOffset: 0
+    - _QueueOffset: 3
     - _ReceiveShadows: 1
+    - _SecondLineThickness: 0.01
+    - _SecondLineToggled: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Surface: 1
+    - _ThirdLineThickness: 0.01
+    - _ThirdLineToggled: 1
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FirstLine: {r: 0, g: 0, b: 0, a: 1}
+    - _FirstLineColor: {r: 0, g: 1, b: 0, a: 1}
+    - _FourthLine: {r: 1, g: 1, b: 0, a: 1}
+    - _FourthLineColor: {r: 0, g: 1, b: 0, a: 1}
+    - _SecondLine: {r: 1, g: 0, b: 0, a: 0}
+    - _SecondLineColor: {r: 0, g: 1, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _ThirdLine: {r: 1, g: 0, b: 1, a: 1}
+    - _ThirdLineColor: {r: 0, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &6124807605098067330
 MonoBehaviour:

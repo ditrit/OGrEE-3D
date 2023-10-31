@@ -17,7 +17,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_Text mouseName;
     [Header("GetCoordsMode")]
     public GameObject coordSystem;
-    public TMP_Text axisText;
 
     [Header("Right Click Menu")]
     [SerializeField] private GameObject rightClickMenu;
@@ -410,7 +409,6 @@ public class UiManager : MonoBehaviour
         SetupColors();
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
-        axisText.gameObject.SetActive(false);
         rightClickMenu.SetActive(false);
         groupsMenu.SetActive(false);
         mouseName.gameObject.SetActive(false);
@@ -1049,8 +1047,6 @@ public class UiManager : MonoBehaviour
             GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
         bd.ToggleCS(GameManager.instance.getCoordsMode);
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
-        axisText.gameObject.SetActive(GameManager.instance.getCoordsMode);
-
         getCoordsBtn.Check();
         toggleLocalCSBtn.Check();
     }
@@ -1242,20 +1238,6 @@ public class UiManager : MonoBehaviour
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
         }
         return depth;
-    }
-
-    ///<summary>
-    /// Move the coordSystem plane to the hit point, aligned with the hitted object
-    ///</summary>
-    ///<param name="_hit">The hit data</param>
-    public void MoveCSToHit(RaycastHit _hit)
-    {
-        coordSystem.transform.position = _hit.point + new Vector3(0, 0.001f, 0);
-        coordSystem.transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
-        // Set axis texts
-        axisText.transform.position = Input.mousePosition;
-        Vector3 localPos = GameManager.instance.GetSelected()[0].transform.InverseTransformPoint(coordSystem.transform.position);
-        axisText.text = $"[<color=\"red\">{Utils.FloatToRefinedStr(localPos.x)}</color>,<color=\"green\">{Utils.FloatToRefinedStr(localPos.z)}</color>]";
     }
 
     ///<summary>
