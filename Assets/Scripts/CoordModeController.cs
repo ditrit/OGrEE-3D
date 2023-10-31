@@ -20,27 +20,27 @@ public static class RectTransformExtensions
     /// <summary>
     /// Checks if two rect overlaps
     /// </summary>
-    /// <param name="a">first rect</param>
-    /// <param name="b">second rect</param>
-    /// <param name="allowInverse">Does the test allow the widths and heights of the Rects to be negative?</param>
+    /// <param name="_a">first rect</param>
+    /// <param name="_b">second rect</param>
+    /// <param name="_allowInverse">Does the test allow the widths and heights of the Rects to be negative?</param>
     /// <returns></returns>
-    public static bool Overlaps(this RectTransform a, RectTransform b, bool allowInverse)
+    public static bool Overlaps(this RectTransform _a, RectTransform _b, bool _allowInverse)
     {
-        return a.WorldRect().Overlaps(b.WorldRect(), allowInverse);
+        return _a.WorldRect().Overlaps(_b.WorldRect(), _allowInverse);
     }
 
     /// <summary>
     /// Make a Rect with no parent (at root) at the same place and with the same dimensions
     /// </summary>
-    /// <param name="rectTransform">the rect to copy</param>
+    /// <param name="_rectTransform">the rect to copy</param>
     /// <returns></returns>
-    public static Rect WorldRect(this RectTransform rectTransform)
+    public static Rect WorldRect(this RectTransform _rectTransform)
     {
-        Vector2 sizeDelta = rectTransform.sizeDelta;
-        float rectTransformWidth = sizeDelta.x * rectTransform.lossyScale.x;
-        float rectTransformHeight = sizeDelta.y * rectTransform.lossyScale.y;
+        Vector2 sizeDelta = _rectTransform.sizeDelta;
+        float rectTransformWidth = sizeDelta.x * _rectTransform.lossyScale.x;
+        float rectTransformHeight = sizeDelta.y * _rectTransform.lossyScale.y;
 
-        Vector3 position = rectTransform.position;
+        Vector3 position = _rectTransform.position;
         return new Rect(position.x - rectTransformWidth / 2f, position.y - rectTransformHeight / 2f, rectTransformWidth, rectTransformHeight);
     }
 }
@@ -104,30 +104,30 @@ public class CoordModeController : MonoBehaviour
     /// <summary>
     /// Scale and place the half of an axis along with its text
     /// </summary>
-    /// <param name="text">the text of the axis</param>
-    /// <param name="axis">the axis</param>
-    /// <param name="hit">the RayCastHit which gives the length of the semi axis</param>
-    /// <param name="rayDirection">the direction of the hit</param>
-    /// <param name="cameraDirection">the direction of the camera used to rotate the text</param>
-    /// <param name="axisDirection">the direction to scale the axis</param>
-    /// <param name="color">the color of the text</param>
-    private void PlaceSemiAxisWithText(TextMeshPro text, Transform axis, RaycastHit hit, Vector3 rayDirection, Vector3 cameraDirection, Vector3 axisDirection, string color)
+    /// <param name="_text">the text of the axis</param>
+    /// <param name="_axis">the axis</param>
+    /// <param name="_hit">the RayCastHit which gives the length of the semi axis</param>
+    /// <param name="_rayDirection">the direction of the hit</param>
+    /// <param name="_cameraDirection">the direction of the camera used to rotate the text</param>
+    /// <param name="_axisDirection">the direction to scale the axis</param>
+    /// <param name="_color">the color of the text</param>
+    private void PlaceSemiAxisWithText(TextMeshPro _text, Transform _axis, RaycastHit _hit, Vector3 _rayDirection, Vector3 _cameraDirection, Vector3 _axisDirection, string _color)
     {
         float length = maxLength;
-        if (hit.collider)
+        if (_hit.collider)
         {
-            length = hit.distance;
-            text.transform.parent.localScale = textSize;
-            text.transform.parent.localPosition = 0.5f * hit.distance * rayDirection + 0.002f * Vector3.up;
-            text.text = $"<color=\"{color}\">{Utils.FloatToRefinedStr(hit.distance)}";
+            length = _hit.distance;
+            _text.transform.parent.localScale = textSize;
+            _text.transform.parent.localPosition = 0.5f * _hit.distance * _rayDirection + 0.002f * Vector3.up;
+            _text.text = $"<color=\"{_color}\">{Utils.FloatToRefinedStr(_hit.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
-            text.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(cameraDirection).eulerAngles.y / 180f) * 180 * Vector3.up;
+            _text.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(_cameraDirection).eulerAngles.y / 180f) * 180 * Vector3.up;
         }
         else
-            text.transform.parent.localScale = Vector3.zero;
+            _text.transform.parent.localScale = Vector3.zero;
 
-        axis.localPosition += 0.5f * length * rayDirection;
-        axis.localScale += Vector3.one + (length - 1) * axisDirection;
+        _axis.localPosition += 0.5f * length * _rayDirection;
+        _axis.localScale += Vector3.one + (length - 1) * _axisDirection;
     }
 
     /// <summary>
@@ -188,15 +188,15 @@ public class CoordModeController : MonoBehaviour
     /// <summary>
     /// Place and scale a diagonal along with its text
     /// </summary>
-    /// <param name="diagonal">the diagonal</param>
-    /// <param name="text">the text of the diagonal</param>
-    private void PlaceDiagonalWithText(Transform diagonal, TextMeshPro text)
+    /// <param name="_diagonal">the diagonal</param>
+    /// <param name="_text">the text of the diagonal</param>
+    private void PlaceDiagonalWithText(Transform _diagonal, TextMeshPro _text)
     {
-        diagonal.localScale = Vector3.Scale(transform.localPosition - diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
-        text.transform.parent.localPosition = diagonal.transform.GetChild(0).position;
-        text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(diagonal.localScale.z, diagonal.localScale.x) * Vector3.up;
-        text.transform.parent.localScale = textSize;
-        text.text = $"<color=\"red\">{Utils.FloatToRefinedStr(Mathf.Abs(diagonal.transform.localScale.x))}</color>|<color=\"green\">{Utils.FloatToRefinedStr(Mathf.Abs(diagonal.transform.localScale.z))}</color>";
+        _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
+        _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
+        _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
+        _text.transform.parent.localScale = textSize;
+        _text.text = $"<color=\"red\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color=\"green\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
     }
 
     ///<summary>
