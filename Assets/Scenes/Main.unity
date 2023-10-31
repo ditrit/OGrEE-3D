@@ -13835,7 +13835,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.09998}
+  m_AnchoredPosition: {x: 0, y: 217.09996}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -17984,6 +17984,7 @@ MonoBehaviour:
   target: {fileID: 0}
   coordModeController: {fileID: 1372162505}
   lockMouseInteract: 0
+  twoClics: 0
 --- !u!114 &1595579784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18070,6 +18071,7 @@ MonoBehaviour:
   menuPanel: {fileID: 1389592958}
   mouseName: {fileID: 239753154}
   coordSystem: {fileID: 1372162503}
+  previousClick: 0
   rightClickMenu: {fileID: 731465988}
   selectColor: {r: 0, g: 0, b: 0, a: 0}
   defaultColor: {r: 1, g: 1, b: 1, a: 0.42}
@@ -25128,7 +25130,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5658
+  m_Size: 0.5620089
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

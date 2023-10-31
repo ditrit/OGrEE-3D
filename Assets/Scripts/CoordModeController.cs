@@ -63,11 +63,6 @@ public class CoordModeController : MonoBehaviour
     private bool hasNonDefaultOrientation = false;
     private Vector3 textSize;
 
-    private void Awake()
-    {
-        gameObject.SetActive(false);
-    }
-
     /// <summary>
     /// Initialize the data of the script according to the currently selected building/room
     /// </summary>
@@ -104,6 +99,7 @@ public class CoordModeController : MonoBehaviour
         diagonalText.transform.parent.gameObject.SetActive(false);
         diagonalForNonDefaultOrientations.gameObject.SetActive(false);
         diagonalForNonDefaultOrientationsText.transform.parent.gameObject.SetActive(false);
+        UiManager.instance.previousClick = false;
     }
 
     /// <summary>
@@ -189,7 +185,7 @@ public class CoordModeController : MonoBehaviour
         if (hasNonDefaultOrientation)
             PlaceDiagonalWithText(diagonalForNonDefaultOrientations, diagonalForNonDefaultOrientationsText);
     }
-    
+
     /// <summary>
     /// Place and scale a diagonal along with its text
     /// </summary>

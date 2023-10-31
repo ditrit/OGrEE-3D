@@ -29,7 +29,8 @@ public class Inputs : MonoBehaviour
     private GameObject savedObjectThatWeHover;
     private Vector3 savedMousePos;
     public bool lockMouseInteract = false;
-
+    private Vector3 previousClic;
+    public bool twoClics = false;
     private void Start()
     {
         camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
@@ -358,6 +359,10 @@ public class Inputs : MonoBehaviour
     {
         Room targetRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         Vector3 localPos = targetRoom.transform.InverseTransformPoint(UiManager.instance.coordSystem.transform.position);
+        if (UiManager.instance.previousClick)
+            GameManager.instance.AppendLogLine($"Distance between last two clicks: {Vector3.Distance(localPos, previousClic)} m", ELogTarget.logger, ELogtype.info);
+        UiManager.instance.previousClick = true;
+        previousClic = localPos;
 
         List<string> distFromLocalCS = new()
         {

@@ -15,8 +15,10 @@ public class UiManager : MonoBehaviour
 
     [Header("Updated Canvas")]
     [SerializeField] private TMP_Text mouseName;
+
     [Header("GetCoordsMode")]
     public GameObject coordSystem;
+    public bool previousClick = false;
 
     [Header("Right Click Menu")]
     [SerializeField] private GameObject rightClickMenu;
