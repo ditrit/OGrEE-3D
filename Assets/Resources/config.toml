@@ -9,6 +9,8 @@ cliPort = 5500
 alphaOnInteract = 50
 # Value clamped from 0.01 to 1, 0.25 by default
 doubleClickDelay = 0.25
+# Enable or disable automatic U Helpers generation
+autoUHelpers = true
 
 # Camera settings
 # Value clamped from 1 to 50, 15 by default

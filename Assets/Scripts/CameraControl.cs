@@ -73,7 +73,7 @@ public class CameraControl : MonoBehaviour
     public void UpdateHumanModeHeight()
     {
         if (humanMode)
-            transform.localPosition = new(transform.localPosition.x, GameManager.instance.configHandler.GetHumanHeight(), transform.localPosition.z);
+            transform.localPosition = new(transform.localPosition.x, GameManager.instance.configHandler.config.HumanHeight, transform.localPosition.z);
     }
 
     ///<summary>
@@ -155,8 +155,8 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void FreeModeControls()
     {
-        float moveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
-        float rotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
+        float moveSpeed = GameManager.instance.configHandler.config.MoveSpeed;
+        float rotationSpeed = GameManager.instance.configHandler.config.RotationSpeed;
         if (GameManager.instance.focusMode)
             moveSpeed = Vector3.Distance(Camera.main.transform.position, GameManager.instance.GetFocused()[^1].transform.position);
 
@@ -200,8 +200,8 @@ public class CameraControl : MonoBehaviour
     ///</summary>
     private void FPSControls()
     {
-        float moveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
-        float rotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
+        float moveSpeed = GameManager.instance.configHandler.config.MoveSpeed;
+        float rotationSpeed = GameManager.instance.configHandler.config.RotationSpeed;
 
         if (Input.GetAxis("Vertical") != 0)
         {

@@ -80,6 +80,8 @@ public class UiManager : MonoBehaviour
     public List<Group> openedGroups;
 
     [Header("Settings Panel")]
+    [SerializeField] private Toggle autoUHelpersToggle;
+    [SerializeField] private bool defaultAutoUHelpers;
     [SerializeField] private Slider doubleClickSlider;
     [SerializeField] private float defaultDoubleClickDelay;
     [SerializeField] private Slider moveSpeedSlider;
@@ -412,10 +414,7 @@ public class UiManager : MonoBehaviour
         mouseName.gameObject.SetActive(false);
         UpdateTimerValue(slider.value);
 
-        defaultDoubleClickDelay = GameManager.instance.configHandler.GetDoubleClickDelay();
-        defaultMoveSpeed = GameManager.instance.configHandler.GetMoveSpeed();
-        defaultRotationSpeed = GameManager.instance.configHandler.GetRotationSpeed();
-        defaultHumanHeight = GameManager.instance.configHandler.GetHumanHeight();
+        SetupSettingsPanel();
 
         EventManager.instance.OnSelectItem.Add(OnSelectItem);
 
@@ -513,6 +512,27 @@ public class UiManager : MonoBehaviour
         }
         else
             detailsInputField.UpdateInputField("0");
+    }
+
+    /// <summary>
+    /// Save values given by config.toml file and initialize UI elements of Settings panel
+    /// </summary>
+    private void SetupSettingsPanel()
+    {
+        defaultAutoUHelpers = GameManager.instance.configHandler.config.autoUHelpers;
+        autoUHelpersToggle.isOn = defaultAutoUHelpers;
+
+        defaultDoubleClickDelay = GameManager.instance.configHandler.config.DoubleClickDelay;
+        doubleClickSlider.value = defaultDoubleClickDelay;
+
+        defaultMoveSpeed = GameManager.instance.configHandler.config.MoveSpeed;
+        moveSpeedSlider.value = defaultMoveSpeed;
+
+        defaultRotationSpeed = GameManager.instance.configHandler.config.RotationSpeed;
+        rotationSpeedSlider.value = defaultRotationSpeed;
+
+        defaultHumanHeight = GameManager.instance.configHandler.config.HumanHeight;
+        humanHeightSlider.value = defaultHumanHeight;
     }
 
     ///<summary>
@@ -1043,12 +1063,37 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Attached to GUI Toggle. Change value of <see cref="GameManager.configHandler.config.autoUHelpers"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateAutoUHelpers(bool _value)
+    {
+        GameManager.instance.configHandler.config.autoUHelpers = _value;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="autoUHelpersToggle"/> using what was given by config.toml
+    /// </summary>
+    public void ResetAutoUHelpers()
+    {
+        autoUHelpersToggle.isOn = defaultAutoUHelpers;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Write the value of <see cref="autoUHelpersToggle"/> in used config.toml file
+    /// </summary>
+    public void SaveAutoUHelpers()
+    {
+        GameManager.instance.configHandler.WritePreference("autoUHelpers", autoUHelpersToggle.isOn ? "true" : "false");
+    }
+
+    /// <summary>
     /// Attached to GUI Slider. Change value of <see cref="GameManager.configLoader.config.doubleClickDelay"/>
     /// </summary>
     ///<param name="_value">Value given by the slider</param>
     public void UpdateDoubleClickDelay(float _value)
     {
-        GameManager.instance.configHandler.SetDoubleClickDelay(_value);
+        GameManager.instance.configHandler.config.DoubleClickDelay = _value;
     }
 
     /// <summary>
@@ -1060,7 +1105,7 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Write the value of <see cref="doubleClickSlider"/> in used config.toml file
+    /// Called by GUI button. Write the value of <see cref="doubleClickSlider"/> in used config.toml file
     /// </summary>
     public void SaveDoubleClickDelay()
     {
@@ -1073,7 +1118,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateMoveSpeed(float _value)
     {
-        GameManager.instance.configHandler.SetMoveSpeed(_value);
+        GameManager.instance.configHandler.config.MoveSpeed = _value;
     }
 
     /// <summary>
@@ -1085,7 +1130,7 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Write the value of <see cref="moveSpeedSlider"/> in used config.toml file
+    /// Called by GUI button. Write the value of <see cref="moveSpeedSlider"/> in used config.toml file
     /// </summary>
     public void SaveMoveSpeed()
     {
@@ -1098,7 +1143,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateRotationSpeed(float _value)
     {
-        GameManager.instance.configHandler.SetRotationSpeed(_value);
+        GameManager.instance.configHandler.config.RotationSpeed = _value;
     }
 
     /// <summary>
@@ -1110,7 +1155,7 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Write the value of <see cref="rotationSpeedSlider"/> in used config.toml file
+    /// Called by GUI button. Write the value of <see cref="rotationSpeedSlider"/> in used config.toml file
     /// </summary>
     public void SaveRotationSpeed()
     {
@@ -1123,7 +1168,7 @@ public class UiManager : MonoBehaviour
     ///<param name="_value">Value given by the slider</param>
     public void UpdateHumanHeight(float _value)
     {
-        GameManager.instance.configHandler.SetHumanHeight(_value);
+        GameManager.instance.configHandler.config.HumanHeight = _value;
         GameManager.instance.cameraControl.UpdateHumanModeHeight();
     }
 
@@ -1136,7 +1181,7 @@ public class UiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Write the value of <see cref="humanHeightSlider"/> in used config.toml file
+    /// Called by GUI button. Write the value of <see cref="humanHeightSlider"/> in used config.toml file
     /// </summary>
     public void SaveHumanHeight()
     {

@@ -175,12 +175,24 @@ public class LaunchArgs
 [Serializable]
 public struct SConfig
 {
+    // private members to define custom setters
+    private float alphaOnInteract;
+    private float doubleClickDelay;
+    private float moveSpeed;
+    private float rotationSpeed;
+    private float humanHeight;
+
     public bool verbose;
     public bool fullscreen;
     public string cachePath;
     public int cacheLimitMo;
     public int cliPort;
-    public float alphaOnInteract;
+    public float AlphaOnInteract
+    {
+        readonly get => alphaOnInteract;
+        set => alphaOnInteract = Mathf.Clamp(value, 0, 100);
+    }
+    public bool autoUHelpers;
     public Dictionary<string, string> textures;
     public Dictionary<string, string> colors;
     public int temperatureMinC;
@@ -189,10 +201,26 @@ public struct SConfig
     public int temperatureMaxF;
     public List<List<int>> customTemperatureGradient;
     public bool useCustomGradient;
-    public float doubleClickDelay;
-    public float moveSpeed;
-    public float rotationSpeed;
-    public float humanHeight;
+    public float DoubleClickDelay
+    {
+        readonly get => doubleClickDelay;
+        set => doubleClickDelay = Mathf.Clamp(value, 0.01f, 1);
+    }
+    public float MoveSpeed
+    {
+        readonly get => moveSpeed;
+        set => moveSpeed = Mathf.Clamp(value, 1, 50);
+    }
+    public float RotationSpeed
+    {
+        readonly get => rotationSpeed;
+        set => rotationSpeed = Mathf.Clamp(value, 1, 100);
+    }
+    public float HumanHeight
+    {
+        readonly get => humanHeight;
+        set => humanHeight = Mathf.Clamp(value, 1.5f, 1.8f);
+    }
 
     /// <summary>
     /// Deep copy
@@ -229,7 +257,8 @@ public class DefaultValues
         cachePath = $"{Application.dataPath}/",
         cacheLimitMo = 100,
         cliPort = 5500,
-        alphaOnInteract = 50,
+        AlphaOnInteract = 50,
+        autoUHelpers = true,
         textures = new()
         {
             { "perf22", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png" },
@@ -255,10 +284,10 @@ public class DefaultValues
             new List<int>() { 255,0,0,100 },
             new List<int>() { 255,255,0,50 }
         },
-        doubleClickDelay = 0.25f,
-        moveSpeed = 15,
-        rotationSpeed = 50,
-        humanHeight = 1.62f
+        DoubleClickDelay = 0.25f,
+        MoveSpeed = 15,
+        RotationSpeed = 50,
+        HumanHeight = 1.62f
     };
 }
 
