@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         configHandler.LoadConfig();
         server.StartServer();
         StartCoroutine(configHandler.LoadTextures());
-        TempDiagram.instance.SetGradient(configHandler.GetCustomGradientColors(), configHandler.IsUsingCustomGradient());
+        TempDiagram.instance.SetGradient(configHandler.config.customTemperatureGradient, configHandler.config.useCustomGradient);
     }
 
     private void OnDestroy()

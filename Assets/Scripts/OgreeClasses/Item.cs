@@ -51,10 +51,17 @@ public class Item : OgreeObject
             if (attribute == "clearance")
             {
                 List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
-                if (lengths != null && lengths.Count == 5)
-                    clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], transform);
-                else
-                    GameManager.instance.AppendLogLine("wrong vector cardinalty for clearance", ELogTarget.both, ELogtype.error);
+                if (lengths == null)
+                {
+                    GameManager.instance.AppendLogLine($"{name} : can't deserialize clearance attribute", ELogTarget.both, ELogtype.error);
+                    break;
+                }
+                if (lengths.Count != 6)
+                {
+                    GameManager.instance.AppendLogLine($"{name} : wrong vector cardinality for clearance", ELogTarget.both, ELogtype.error);
+                    break;
+                }
+                clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], lengths[5], transform);
             }
         }
 

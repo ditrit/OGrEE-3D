@@ -63,14 +63,16 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>()
+            && (GameManager.instance.configHandler.config.autoUHelpers
+                || (GameManager.instance.GetSelected()[0].GetComponent<Item>().referent is Rack selectedRack && selectedRack.areUHelpersToggled)))
         {
             ToggleU(GameManager.instance.GetSelected(), true);
             HighlightULocation(GameManager.instance.GetSelected());
         }
         foreach (Item item in lastSelectedReferent)
         {
-            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack)
+            if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack && rack.areUHelpersToggled)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
@@ -156,52 +158,58 @@ public class UHelpersManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
+    /// Toggle U helpers of <paramref name="_target"/> if it is a rack or of its parent rack otherwise
     ///</summary>
-    ///<param name="_transform">The transform of a rack or a device</param>
+    ///<param name="_target">A rack or a device</param>
     ///<param name="_active">Should the U helpers be visible ?</param>
-    public void ToggleU(List<GameObject> _selection, bool _active)
+    public void ToggleU(GameObject _target, bool _active)
     {
-        foreach (GameObject obj in _selection)
-        {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
-            if (!rack)
-                break;
+        Rack rack = Utils.GetRackReferent(_target.GetComponent<Item>());
+        if (!rack)
+            return;
 
-            if (_active && !rack.uRoot)
-                GenerateUHelpers(rack);
-            rack.areUHelpersToggled = _active;
-            rack.uRoot?.gameObject.SetActive(rack.areUHelpersToggled);
-        }
+        if (_active && !rack.uRoot)
+            GenerateUHelpers(rack);
+        rack.areUHelpersToggled = _active;
+        rack.uRoot?.gameObject.SetActive(rack.areUHelpersToggled);
     }
 
     ///<summary>
-    /// Toggle U helpers of <paramref name="_transform"/> if it is a rack or of its parent rack otherwise
+    /// Toggle U helpers of each GameObject in <paramref name="_targets"/> if it is a rack or of its parent rack otherwise
     ///</summary>
-    ///<param name="_transform">The transform of a rack or a device</param>
-    public void ToggleU(List<GameObject> _selection)
+    ///<param name="_targets">A list of racks or devices</param>
+    ///<param name="_active">Should the U helpers be visible ?</param>
+    public void ToggleU(List<GameObject> _targets, bool _active)
     {
-        foreach (GameObject obj in _selection)
-        {
-            Rack rack = Utils.GetRackReferent(obj.GetComponent<Item>());
-            if (!rack)
-                break;
-
-            if (!rack.areUHelpersToggled && !rack.uRoot)
-                GenerateUHelpers(rack);
-            rack.areUHelpersToggled = !rack.areUHelpersToggled;
-            rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
-            GameManager.instance.AppendLogLine($"U helpers {(rack.areUHelpersToggled ? "ON" : "OFF")} for {obj.name}.", ELogTarget.logger, ELogtype.info);
-        }
+        foreach (GameObject obj in _targets)
+            ToggleU(obj, _active);
     }
 
-    public void ToggleU(GameObject _selected)
+    ///<summary>
+    /// Toggle U helpers of <paramref name="_target"/> if it is a rack or of its parent rack otherwise
+    ///</summary>
+    ///<param name="_target">A rack or a device</param>
+    public void ToggleU(GameObject _target)
     {
-        ToggleU(new List<GameObject> { _selected });
+        Rack rack = Utils.GetRackReferent(_target.GetComponent<Item>());
+        if (!rack)
+            return;
+
+        if (!rack.areUHelpersToggled && !rack.uRoot)
+            GenerateUHelpers(rack);
+        rack.areUHelpersToggled = !rack.areUHelpersToggled;
+        rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
+        GameManager.instance.AppendLogLine($"U helpers {(rack.areUHelpersToggled ? "ON" : "OFF")} for {_target.name}.", ELogTarget.logger, ELogtype.info);
     }
-    public void ToggleU(GameObject _selected, bool _active)
+
+    ///<summary>
+    /// Toggle U helpers of <paramref name="_selected"/> if it is a rack or of its parent rack otherwise
+    ///</summary>
+    ///<param name="_targets">A list of racks or devices</param>
+    public void ToggleU(List<GameObject> _targets)
     {
-        ToggleU(new List<GameObject> { _selected }, _active);
+        foreach (GameObject obj in _targets)
+            ToggleU(obj);
     }
 
     ///<summary>
