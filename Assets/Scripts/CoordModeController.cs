@@ -122,7 +122,7 @@ public class CoordModeController : MonoBehaviour
             _text.transform.parent.localPosition = 0.5f * _hit.distance * _rayDirection + 0.002f * Vector3.up;
             _text.text = $"<color=\"{_color}\">{Utils.FloatToRefinedStr(_hit.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
-            _text.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(_cameraDirection).eulerAngles.y / 180f) * 180 * Vector3.up;
+            _text.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * _cameraDirection).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
             _text.transform.parent.localScale = Vector3.zero;
@@ -154,7 +154,7 @@ public class CoordModeController : MonoBehaviour
             textXTotal.transform.parent.parent.localScale = textSize;
             textXTotal.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
-            textXTotal.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(-1 * GameManager.instance.cameraControl.transform.right).eulerAngles.y / 180f) * 180 * Vector3.up;
+            textXTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.right * -1).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
             textXTotal.transform.parent.localScale = Vector3.zero;
@@ -170,7 +170,7 @@ public class CoordModeController : MonoBehaviour
             textZTotal.transform.parent.parent.localScale = textSize;
             textZTotal.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
-            textZTotal.transform.parent.eulerAngles = Mathf.Round(Quaternion.LookRotation(GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 * Vector3.up;
+            textZTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
             textZTotal.transform.parent.localScale = Vector3.zero;
