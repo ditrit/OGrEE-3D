@@ -359,10 +359,6 @@ public class Inputs : MonoBehaviour
     {
         Room targetRoom = GameManager.instance.GetSelected()[0].GetComponent<Room>();
         Vector3 localPos = targetRoom.transform.InverseTransformPoint(UiManager.instance.coordSystem.transform.position);
-        if (UiManager.instance.previousClick)
-            GameManager.instance.AppendLogLine($"Distance between last two clicks: {Vector3.Distance(localPos, previousClic)} m", ELogTarget.logger, ELogtype.info);
-        UiManager.instance.previousClick = true;
-        previousClic = localPos;
 
         List<string> distFromLocalCS = new()
         {
@@ -374,6 +370,11 @@ public class Inputs : MonoBehaviour
             Utils.FloatToRefinedStr(localPos.z / UnitValue.Tile)
         };
         GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s localCS: [{distFromLocalCS[0]},{distFromLocalCS[1]}] m / [{distFromLocalCS[2]},{distFromLocalCS[3]}] t", ELogTarget.logger, ELogtype.info);
+
+        if (UiManager.instance.previousClick)
+            GameManager.instance.AppendLogLine($"Distance between last two clicks: {Utils.FloatToRefinedStr(Vector3.Distance(localPos, previousClic))} m", ELogTarget.logger, ELogtype.info);
+        UiManager.instance.previousClick = true;
+        previousClic = localPos;
 
         if (targetRoom.isSquare)
         {
