@@ -12,6 +12,7 @@ public class Inputs : MonoBehaviour
     private CameraControl camControl;
     [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
+    [SerializeField] private CoordModeController coordModeController;
 
     // Drag
     private bool isDraggingObj = false;
@@ -28,7 +29,8 @@ public class Inputs : MonoBehaviour
     private GameObject savedObjectThatWeHover;
     private Vector3 savedMousePos;
     public bool lockMouseInteract = false;
-
+    private Vector3 previousClic;
+    public bool twoClics = false;
     private void Start()
     {
         camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
@@ -70,7 +72,7 @@ public class Inputs : MonoBehaviour
 
         Physics.Raycast(Camera.main.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).direction, out RaycastHit hit);
         if (hit.collider && hit.collider.transform.parent == GameManager.instance.GetSelected()[0].transform)
-            UiManager.instance.MoveCSToHit(hit);
+            coordModeController.MoveCSToHit(hit);
 
         if (Input.GetMouseButtonDown(0))
             AppendDistFromClick();
@@ -368,6 +370,11 @@ public class Inputs : MonoBehaviour
             Utils.FloatToRefinedStr(localPos.z / UnitValue.Tile)
         };
         GameManager.instance.AppendLogLine($"Distance from {targetRoom.name}'s localCS: [{distFromLocalCS[0]},{distFromLocalCS[1]}] m / [{distFromLocalCS[2]},{distFromLocalCS[3]}] t", ELogTarget.logger, ELogtype.info);
+
+        if (UiManager.instance.previousClick)
+            GameManager.instance.AppendLogLine($"Distance between last two clicks: {Utils.FloatToRefinedStr(Vector3.Distance(localPos, previousClic))} m", ELogTarget.logger, ELogtype.info);
+        UiManager.instance.previousClick = true;
+        previousClic = localPos;
 
         if (targetRoom.isSquare)
         {

@@ -66,7 +66,7 @@ MonoBehaviour:
   scatterPlot: 0
   localCS: {fileID: 0}
   isDoomed: 0
-  LodLocked: 0
+  isLodLocked: 0
   isSquare: 1
   walls: {fileID: 2447770562802736307}
   nameText: {fileID: 1070277913875691498}
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 242284506942257203}
   - component: {fileID: 7708351798833328396}
   - component: {fileID: 3471810081836724425}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: WallBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +519,7 @@ GameObject:
   - component: {fileID: 1929187354686808558}
   - component: {fileID: 9056470987056043149}
   - component: {fileID: 1308270758738705897}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: WallFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -624,7 +624,7 @@ GameObject:
   - component: {fileID: 5437607689402005017}
   - component: {fileID: 2237391720910239568}
   - component: {fileID: 420249738805503412}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: WallLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -835,7 +835,7 @@ GameObject:
   - component: {fileID: 2724232468795436489}
   - component: {fileID: 8927800679417718819}
   - component: {fileID: 5539480369655972155}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: WallRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
