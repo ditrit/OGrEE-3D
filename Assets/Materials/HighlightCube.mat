@@ -137,8 +137,8 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _AlbedoColor: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 0, g: 0.8352941, b: 1, a: 0.5}
-    - _Color: {r: 0, g: 0.8352941, b: 1, a: 0.5}
+    - _BaseColor: {r: 0, g: 0.8352941, b: 1, a: 0.32941177}
+    - _Color: {r: 0, g: 0.8352941, b: 1, a: 0.32941177}
     - _EmissionColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _WireColor: {r: 0, g: 0, b: 0, a: 1}

@@ -527,23 +527,25 @@ public class ObjectDisplayController : MonoBehaviour
     private void HighlightObject()
     {
         SetMaterial(GameManager.instance.highlightMat);
-        if (!item.isHidden)
+        if (!highlightCube)
         {
-            if (!highlightCube)
-            {
-                highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
-                highlightCube.transform.localScale = Vector3.one * 1.1f;
-            }
-            else
-                highlightCube.SetActive(true);
+            highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
+            highlightCube.transform.localScale = Vector3.one * 1.1f;
         }
+        highlightCube.SetActive(cube.rend.enabled);
 
+        Material highlightMat = highlightCube.GetComponent<Renderer>().material;
         if (highlightColor != Color.clear)
         {
             cube.rend.material.color = highlightColor;
-            Material highlightMat = highlightCube.GetComponent<Renderer>().material;
             highlightMat.color = highlightColor.WithAlpha(highlightMat.color.a);
             highlightMat.SetColor("_EmissionColor", highlightColor);
+        }
+        else
+        {
+            Color defaultColor = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("highlight"));
+            highlightMat.color = defaultColor.WithAlpha(highlightMat.color.a);
+            highlightMat.SetColor("_EmissionColor", defaultColor);
         }
     }
 

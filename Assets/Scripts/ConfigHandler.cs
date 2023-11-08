@@ -190,7 +190,7 @@ public class ConfigHandler
         SetMaterialColor("focus", GameManager.instance.focusMat);
         SetMaterialColor("edit", GameManager.instance.editMat);
         SetMaterialColor("highlight", GameManager.instance.highlightMat);
-        SetMaterialColor("highlight", GameManager.instance.highlightCubeMat);
+        SetMaterialColor("highlight", GameManager.instance.highlightCubeMat, true);
         SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
     }
 
@@ -251,10 +251,11 @@ public class ConfigHandler
     ///</summary>
     ///<param name="_key">The value to get</param>
     ///<param name="_mat">The material to edit</param>
-    private void SetMaterialColor(string _key, Material _mat)
+    ///<param name="_KeepAlpha">Keep the material's alpha ? False by default</param>
+    private void SetMaterialColor(string _key, Material _mat, bool _KeepAlpha = false)
     {
         if (config.colors.ContainsKey(_key))
-            _mat.color = Utils.ParseHtmlColor(config.colors[_key]).WithAlpha(config.AlphaOnInteract / 100);
+            _mat.color = Utils.ParseHtmlColor(config.colors[_key]).WithAlpha(_KeepAlpha ? _mat.color.a : config.AlphaOnInteract / 100);
 
     }
 
