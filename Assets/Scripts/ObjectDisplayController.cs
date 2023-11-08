@@ -35,6 +35,7 @@ public class ObjectDisplayController : MonoBehaviour
 
     private bool isHovered = false;
     public bool isHighlighted = false;
+    private GameObject highlightCube;
     private Color highlightColor;
 
     private void Awake()
@@ -300,7 +301,7 @@ public class ObjectDisplayController : MonoBehaviour
         bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         if (isHighlighted)
-            SetMaterial(GameManager.instance.highlightMat);
+            HighlightObject();
         else
         {
             SetMaterial(GameManager.instance.defaultMat);
@@ -508,11 +509,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (item && item.scatterPlot)
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
-        {
-            SetMaterial(GameManager.instance.highlightMat);
-            if (highlightColor != Color.clear)
-                cube.rend.material.color = highlightColor.WithAlpha(cube.rend.material.color.a);
-        }
+            HighlightObject();
         else if (GameManager.instance.tempColorMode && !group && item && item.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
@@ -525,8 +522,34 @@ public class ObjectDisplayController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set material to <see cref="GameManager.highlightMat"/>, generate or activate <see cref="highlightCube"/> and change their color using <see cref="highlightColor"/> if needed.
+    /// </summary>
+    private void HighlightObject()
+    {
+        SetMaterial(GameManager.instance.highlightMat);
+        if (!item.isHidden)
+        {
+            if (!highlightCube)
+            {
+                highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
+                highlightCube.transform.localScale = Vector3.one * 1.1f;
+            }
+            else
+                highlightCube.SetActive(true);
+        }
+
+        if (highlightColor != Color.clear)
+        {
+            cube.rend.material.color = highlightColor;
+            Material highlightMat = highlightCube.GetComponent<Renderer>().material;
+            highlightMat.color = highlightColor.WithAlpha(highlightMat.color.a);
+            highlightMat.SetColor("_EmissionColor", highlightColor);
+        }
+    }
+
     ///<summary>
-    /// Assign a Material to given Renderer keeping textures.
+    /// Assign a Material to <see cref="cube.rend"/> keeping textures. Then hide cube & highlightCube if needed.
     ///</summary>
     ///<param name="_newMat">The Material to assign</param>
     private void SetMaterial(Material _newMat)
@@ -544,6 +567,8 @@ public class ObjectDisplayController : MonoBehaviour
             cube.rend.enabled = false;
             displayObjectData.ToggleLabel(false);
         }
+        if (highlightCube)
+            highlightCube.SetActive(cube.rend.enabled && _newMat == GameManager.instance.highlightMat);
     }
 
     ///<summary>
@@ -674,6 +699,8 @@ public class ObjectDisplayController : MonoBehaviour
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
+        if (highlightCube)
+            highlightCube.SetActive(_rend && isHighlighted);
         displayObjectData.ToggleLabel(_label);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;

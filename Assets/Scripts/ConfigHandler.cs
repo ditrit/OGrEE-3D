@@ -190,6 +190,7 @@ public class ConfigHandler
         SetMaterialColor("focus", GameManager.instance.focusMat);
         SetMaterialColor("edit", GameManager.instance.editMat);
         SetMaterialColor("highlight", GameManager.instance.highlightMat);
+        SetMaterialColor("highlight", GameManager.instance.highlightCubeMat);
         SetMaterialColor("scatterPlot", GameManager.instance.scatterPlotMat);
     }
 

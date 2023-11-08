@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Material focusMat;
     public Material editMat;
     public Material highlightMat;
+    public Material highlightCubeMat;
     public Material mouseHoverMat;
     public Material scatterPlotMat;
     public Dictionary<string, Texture> textures = new();
@@ -44,6 +45,7 @@ public class GameManager : MonoBehaviour
     public GameObject labelModel;
     public GameObject floatingLabelModel;
     public GameObject clearanceModel;
+    public GameObject highlightCubeModel;
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
