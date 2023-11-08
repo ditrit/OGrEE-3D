@@ -532,7 +532,7 @@ public class ObjectDisplayController : MonoBehaviour
             highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
             highlightCube.transform.localScale = Vector3.one * 1.1f;
         }
-        highlightCube.SetActive(cube.rend.enabled);
+        highlightCube.SetActive(GameManager.instance.focusMode ? cube.rend.enabled : !item.isHidden);
 
         Material highlightMat = highlightCube.GetComponent<Renderer>().material;
         if (highlightColor != Color.clear)
