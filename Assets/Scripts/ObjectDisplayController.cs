@@ -453,7 +453,6 @@ public class ObjectDisplayController : MonoBehaviour
     private void ToggleHighlight(bool _highlighted)
     {
         isHighlighted = _highlighted;
-        transform.parent?.GetComponent<ObjectDisplayController>()?.ToggleHighlight(_highlighted);
         if (GameManager.instance.GetSelected().Contains(gameObject))
             return;
         HandleMaterial();
