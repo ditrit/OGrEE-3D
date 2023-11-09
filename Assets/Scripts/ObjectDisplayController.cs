@@ -230,6 +230,8 @@ public class ObjectDisplayController : MonoBehaviour
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent)
             || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !GetComponent<Item>().isHidden))
             Display(true, true, true);
+        else if (isHighlighted && !item.isHidden)
+            highlightCube?.SetActive(true);
         if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
             rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
     }
@@ -568,8 +570,7 @@ public class ObjectDisplayController : MonoBehaviour
             cube.rend.enabled = false;
             displayObjectData.ToggleLabel(false);
         }
-        if (highlightCube)
-            highlightCube.SetActive(cube.rend.enabled && _newMat == GameManager.instance.highlightMat);
+        highlightCube?.SetActive(cube.rend.enabled && _newMat == GameManager.instance.highlightMat);
     }
 
     ///<summary>
@@ -700,8 +701,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
-        if (highlightCube)
-            highlightCube.SetActive(GameManager.instance.focusMode ? _rend : _rend || isHighlighted);
+        highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted);
         displayObjectData.ToggleLabel(_label);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
