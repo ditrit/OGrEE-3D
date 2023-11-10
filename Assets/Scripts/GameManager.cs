@@ -678,7 +678,10 @@ public class GameManager : MonoBehaviour
         if (GetTag(_tagName) == null)
             await ApiManager.instance.GetObject($"tags/{_tagName}", ApiManager.instance.CreateTag);
 
-        GetTag(_tagName).linkedObjects.Add(_objId);
+        Tag tag = GetTag(_tagName);
+        tag.linkedObjects.Add(_objId);
+        if (tag.objHightlighted)
+            EventManager.instance.Raise(new HighlightEvent(Utils.GetObjectById(_objId), tag.color));
     }
 
     /// <summary>
