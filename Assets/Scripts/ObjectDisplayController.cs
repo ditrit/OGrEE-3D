@@ -281,6 +281,16 @@ public class ObjectDisplayController : MonoBehaviour
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
         bool RendColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
+
+        foreach (string tagName in item.tags)
+        {
+            if (GameManager.instance.GetTag(tagName) is Tag tag && tag.objHightlighted)
+            {
+                isHighlighted = true;
+                highlightColor = tag.color;
+            }
+        }
+
         HandleMaterial();
     }
 
