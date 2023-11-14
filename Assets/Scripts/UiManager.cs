@@ -420,7 +420,7 @@ public class UiManager : MonoBehaviour
             &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
-            !item.isHidden
+            !item.GetComponent<ObjectDisplayController>().isHidden
         };
         hideObjectBtn.Check();
 
@@ -430,7 +430,7 @@ public class UiManager : MonoBehaviour
             &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
-            item.isHidden
+            item.GetComponent<ObjectDisplayController>().isHidden
         };
         displayObjectBtn.Check();
 
@@ -1368,7 +1368,7 @@ public class UiManager : MonoBehaviour
     {
         Item item = _obj.GetComponent<Item>();
         _obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
-        item.isHidden = true;
+        _obj.GetComponent<ObjectDisplayController>().isHidden = true;
         await item.LoadChildren(0);
         if (!hiddenObjects.Contains(item))
         {
@@ -1394,7 +1394,7 @@ public class UiManager : MonoBehaviour
     public void DisplayObject(GameObject _obj)
     {
         _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
-        _obj.GetComponent<Item>().isHidden = false;
+        _obj.GetComponent<ObjectDisplayController>().isHidden = false;
         hiddenObjects.Remove(_obj.GetComponent<Item>());
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }

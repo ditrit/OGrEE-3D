@@ -33,6 +33,8 @@ public class ObjectDisplayController : MonoBehaviour
     private bool listening => item || (sensor && !sensor.fromTemplate) || (slot && !slot.used);
 #pragma warning restore IDE1006 // Styles d'affectation de noms
 
+    public bool isHidden = false;
+
     private bool isHovered = false;
     public bool isHighlighted = false;
     private GameObject highlightCube;
@@ -149,7 +151,6 @@ public class ObjectDisplayController : MonoBehaviour
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
         if (!item.tempBar && !scatterPlotOfOneParent)
         {
-            bool isHidden = GetComponent<Item>().isHidden;
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
             bool colAndLabels = !isHidden && ((isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject));
@@ -228,9 +229,9 @@ public class ObjectDisplayController : MonoBehaviour
         else if (_e.obj == transform.parent.gameObject)
             item?.ResetTransform();
         else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent)
-            || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !GetComponent<Item>().isHidden))
+            || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !isHidden))
             Display(true, true, true);
-        else if (isHighlighted && !item.isHidden)
+        else if (isHighlighted && !isHidden)
             highlightCube?.SetActive(true);
         if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
             rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
@@ -277,7 +278,6 @@ public class ObjectDisplayController : MonoBehaviour
             Display(false, false, false);
             return;
         }
-        bool isHidden = GetComponent<Item>().isHidden;
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
         bool RendColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
@@ -454,6 +454,7 @@ public class ObjectDisplayController : MonoBehaviour
     ///</summary>
     public void Initialize()
     {
+        item = GetComponent<Item>();
         cube = (transform.GetChild(0).GetComponent<Collider>(), transform.GetChild(0).GetComponent<MeshRenderer>());
         displayObjectData = GetComponent<DisplayObjectData>();
     }
@@ -544,7 +545,7 @@ public class ObjectDisplayController : MonoBehaviour
             highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
             highlightCube.transform.localScale = Vector3.one * 1.1f;
         }
-        highlightCube.SetActive(GameManager.instance.focusMode ? cube.rend.enabled : !item.isHidden);
+        highlightCube.SetActive(GameManager.instance.focusMode ? cube.rend.enabled : !isHidden);
 
         Material highlightMat = highlightCube.GetComponent<Renderer>().material;
         if (highlightColor != Color.clear)
@@ -575,7 +576,7 @@ public class ObjectDisplayController : MonoBehaviour
         cube.rend.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
         cube.rend.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
 
-        if (item && item.isHidden)
+        if (isHidden)
         {
             cube.rend.enabled = false;
             displayObjectData.ToggleLabel(false);
@@ -700,7 +701,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void ToggleAlpha(bool _value)
     {
         Display(!_value, !_value);
-        item.isHidden = _value;
+        isHidden = _value;
     }
 
     ///<summary>

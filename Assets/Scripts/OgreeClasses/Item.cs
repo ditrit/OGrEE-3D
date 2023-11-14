@@ -7,7 +7,6 @@ using UnityEngine;
 public class Item : OgreeObject
 {
     public Color color;
-    public bool isHidden = false;
 
     /// <summary>
     /// The direct child of a room which is a parent of this object or which is this object
@@ -28,7 +27,7 @@ public class Item : OgreeObject
     {
         base.OnDestroy();
         EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
-        if (isHidden)
+        if (GetComponent<ObjectDisplayController>().isHidden)
         {
             UiManager.instance.hiddenObjects.Remove(this);
             UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
