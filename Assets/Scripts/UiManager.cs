@@ -1369,7 +1369,7 @@ public class UiManager : MonoBehaviour
         Item item = _obj.GetComponent<Item>();
         _obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
         _obj.GetComponent<ObjectDisplayController>().isHidden = true;
-        await item.LoadChildren(0);
+        await item.LoadChildren(0, true);
         if (!hiddenObjects.Contains(item))
         {
             hiddenObjects.Add(item);
