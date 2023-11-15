@@ -487,16 +487,9 @@ public class ApiManager : MonoBehaviour
     /// <param name="_input">The API response</param>
     public async Task CreateTag(string _input)
     {
-        try
-        {
-            STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
-            await Task.Run(() => GameManager.instance.CreateTag(resp.data));
-            UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-        }
+        STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
+        await Task.Run(() => GameManager.instance.CreateTag(resp.data));
+        UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 }
