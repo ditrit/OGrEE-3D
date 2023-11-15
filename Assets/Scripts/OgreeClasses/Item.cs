@@ -40,25 +40,6 @@ public class Item : OgreeObject
     ///<param name="_src">The SApiObject used to update attributes</param>
     public override void UpdateFromSApiObject(SApiObject _src)
     {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
-        domain = _src.domain;
-        description = _src.description;
-
-        foreach (string newTag in _src.tags)
-        {
-            if (!tags.Contains(newTag))
-                GameManager.instance.AddToTag(newTag, id);
-        }
-        foreach (string oldTag in tags)
-        {
-            if (!_src.tags.Contains(oldTag))
-                GameManager.instance.RemoveFromTag(oldTag, id);
-        }
-        tags = _src.tags;
-
         foreach (string attribute in _src.attributes.Keys)
         {
             if (attribute.StartsWith("temperature_")
@@ -69,19 +50,18 @@ public class Item : OgreeObject
                 List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
                 if (lengths == null)
                 {
-                    GameManager.instance.AppendLogLine($"{name} : can't deserialize clearance attribute", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine($"{_src.name} : can't deserialize clearance attribute", ELogTarget.both, ELogtype.error);
                     break;
                 }
                 if (lengths.Count != 6)
                 {
-                    GameManager.instance.AppendLogLine($"{name} : wrong vector cardinality for clearance", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine($"{_src.name} : wrong vector cardinality for clearance", ELogTarget.both, ELogtype.error);
                     break;
                 }
                 clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], lengths[5], transform);
             }
         }
-
-        attributes = _src.attributes;
+        base.UpdateFromSApiObject(_src);
 
         if (!transform.parent || transform.parent.GetComponent<Room>())
             referent = this;

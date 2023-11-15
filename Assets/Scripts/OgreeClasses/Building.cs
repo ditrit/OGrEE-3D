@@ -62,29 +62,12 @@ public class Building : OgreeObject
     ///<param name="_src">The SApiObject used to update attributes</param>
     public override void UpdateFromSApiObject(SApiObject _src)
     {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
         if (domain != _src.domain)
         {
             domain = _src.domain;
             UpdateColorByDomain();
         }
-        description = _src.description;
-        attributes = _src.attributes;
-
-        foreach (string newTag in _src.tags)
-        {
-            if (!tags.Contains(newTag))
-                GameManager.instance.AddToTag(newTag, id);
-        }
-        foreach (string oldTag in tags)
-        {
-            if (!_src.tags.Contains(oldTag))
-                GameManager.instance.RemoveFromTag(oldTag, id);
-        }
-        tags = _src.tags;
+        base.UpdateFromSApiObject(_src);
     }
 
     ///<summary>
