@@ -1391,9 +1391,16 @@ public class UiManager : MonoBehaviour
     /// Display given <paramref name="_obj"/>
     /// </summary>
     /// <param name="_obj">The GameObject to display</param>
-    public void DisplayObject(GameObject _obj)
+    public async void DisplayObject(GameObject _obj)
     {
-        _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
+        if (GameManager.instance.GetSelected().Contains(_obj))
+        {
+            _obj.GetComponent<ObjectDisplayController>().Display(true, false, false);
+            if (_obj.GetComponent<Item>() is Item item && item.currentLod == 0)
+                await item.LoadChildren(1);
+        }
+        else
+            _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
         _obj.GetComponent<ObjectDisplayController>().isHidden = false;
         hiddenObjects.Remove(_obj.GetComponent<Item>());
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
