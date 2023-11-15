@@ -416,7 +416,7 @@ public class UiManager : MonoBehaviour
 
         hideObjectBtn = new(hideObjectBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.GetSelected().Count > 0
+            interactCondition = () => GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
@@ -426,7 +426,7 @@ public class UiManager : MonoBehaviour
 
         displayObjectBtn = new(displayObjectBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.GetSelected().Count > 0
+            interactCondition = () => GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
