@@ -712,7 +712,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
-        highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted);
+        highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject));
         displayObjectData.ToggleLabel(_label);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
