@@ -3215,6 +3215,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
+      propertyPath: listName
+      value: hidden objects
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
+        type: 3}
       propertyPath: buttonPrefab
       value: 
       objectReference: {fileID: 6274554759583478845, guid: 5cf1028790e05d74b81a268fb996bf84,
@@ -9113,7 +9118,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Build date: 2023-11-15
 
-    Commit #82a46972'
+    Commit #4afed810'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -24599,6 +24604,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
+      propertyPath: listName
+      value: opened groups
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
+        type: 3}
       propertyPath: buttonPrefab
       value: 
       objectReference: {fileID: 6274554759583478845, guid: 5cf1028790e05d74b81a268fb996bf84,
@@ -25773,7 +25783,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5658
+  m_Size: 0.56571335
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -26123,6 +26133,11 @@ PrefabInstance:
     - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
       propertyPath: ListName
+      value: tags
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
+        type: 3}
+      propertyPath: listName
       value: tags
       objectReference: {fileID: 0}
     - target: {fileID: 8382605300558286626, guid: 9216b4be3b0ea174daa8412abb1c075c,
