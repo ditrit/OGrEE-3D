@@ -86,18 +86,18 @@ public class Tag : IComparable<Tag>
     public void HighlightObjects(bool _value)
     {
         objHightlighted = _value;
-        if (linkedObjects.Count > 0)
+        if (linkedObjects.Count == 0)
+            return;
+
+        List<GameObject> list = Utils.GetObjectsById(linkedObjects);
+        foreach (GameObject obj in list)
         {
-            List<GameObject> list = Utils.GetObjectsById(linkedObjects);
-            foreach (GameObject obj in list)
+            if (obj.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
             {
-                if (obj.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
-                {
-                    if (odc.isHighlighted)
-                        EventManager.instance.Raise(new HighlightEvent(obj));
-                    if (objHightlighted)
-                        EventManager.instance.Raise(new HighlightEvent(obj, color));
-                }
+                if (odc.isHighlighted)
+                    EventManager.instance.Raise(new HighlightEvent(obj));
+                if (objHightlighted)
+                    EventManager.instance.Raise(new HighlightEvent(obj, color));
             }
         }
     }
