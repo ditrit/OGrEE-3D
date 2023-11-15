@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DynamicButtonList : MonoBehaviour
 {
     [Header("Setup before use")]
-    [SerializeField] private string ListName;
+    [SerializeField] private string listName;
     public GameObject buttonPrefab;
     [Header("Setup in prefab")]
     [SerializeField] private TMP_Text buttonToggleText;
@@ -18,8 +18,8 @@ public class DynamicButtonList : MonoBehaviour
 
     private void Start()
     {
-        displayText = $"Display {ListName} list";
-        hideText = $"Hide {ListName} list";
+        displayText = $"Display {listName} list";
+        hideText = $"Hide {listName} list";
         buttonToggleText.text = displayText;
         gameObject.SetActive(false);
     }
