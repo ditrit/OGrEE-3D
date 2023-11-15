@@ -140,7 +140,7 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
             &&
-            GameManager.instance.GetSelected().Count > 0
+            GameManager.instance.selectMode
             &&
             menuTarget.GetComponent<OgreeObject>()
             &&
@@ -682,7 +682,7 @@ public class UiManager : MonoBehaviour
     /// <returns>Width and height of rightClickMenu's background</returns>
     public Vector2 SetupRightClickMenu(int _displayedButtons)
     {
-        if (GameManager.instance.GetSelected().Count > 0)
+        if (GameManager.instance.selectMode)
             rightClickMenu.GetComponent<Image>().color = selectColor;
         else
             rightClickMenu.GetComponent<Image>().color = defaultColor;

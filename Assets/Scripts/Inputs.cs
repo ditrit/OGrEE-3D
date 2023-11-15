@@ -41,7 +41,7 @@ public class Inputs : MonoBehaviour
         if (!Application.isFocused)
             return;
 #if !PROD
-        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.GetSelected().Count > 0)
+        if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.selectMode)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
         if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
