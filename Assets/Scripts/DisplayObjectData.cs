@@ -39,7 +39,10 @@ public class DisplayObjectData : MonoBehaviour
 
         if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
-            floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
+            if (item is Group)
+                floatingLabel.transform.localPosition = (boxSize.y + floatingLabel.textBounds.size.y + 0.1f) / 2 * Vector3.up;
+            else
+                floatingLabel.transform.localPosition = new(boxSize.x / 2, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, boxSize.z / 2);
             floatingLabel.transform.LookAt(GameManager.instance.cameraControl.transform);
             floatingLabel.transform.rotation = Quaternion.LookRotation(GameManager.instance.cameraControl.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
