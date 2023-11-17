@@ -25,7 +25,6 @@ public class DisplayObjectData : MonoBehaviour
 
     private void Start()
     {
-        item = GetComponent<Item>();
         EventManager.instance.SwitchLabel.Add(OnSwitchLabelEvent);
     }
 
@@ -39,7 +38,6 @@ public class DisplayObjectData : MonoBehaviour
 
         if (hasFloatingLabel && currentLabelMode == ELabelMode.FloatingOnTop)
         {
-            floatingLabel.transform.localPosition = new Vector3(0, boxSize.y + floatingLabel.textBounds.size.y + 0.1f, 0) / 2;
             floatingLabel.transform.LookAt(GameManager.instance.cameraControl.transform);
             floatingLabel.transform.rotation = Quaternion.LookRotation(GameManager.instance.cameraControl.transform.forward);
             floatingLabel.transform.GetChild(0).localScale = Vector2.ClampMagnitude(floatingLabel.textBounds.size, 20);
@@ -54,24 +52,23 @@ public class DisplayObjectData : MonoBehaviour
     public void PlaceTexts(string _labelPos)
     {
         usedLabels.Clear();
-        OgreeObject oObj = GetComponent<OgreeObject>();
+        item = GetComponent<Item>();
         Transform shape = transform.GetChild(0);
 
-        if (oObj && oObj.attributes.ContainsKey("template")
-            && !string.IsNullOrEmpty(oObj.attributes["template"]))
+        if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
         {
-            Vector2 size = JsonUtility.FromJson<Vector2>(oObj.attributes["size"]);
-            if (oObj.attributes["sizeUnit"] == LengthUnit.Millimeter)
+            Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+            if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
-            else if (oObj.attributes["sizeUnit"] == LengthUnit.Centimeter)
+            else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)
                 size /= 100;
 
-            float height = Utils.ParseDecFrac(oObj.attributes["height"]);
-            if (oObj.attributes["heightUnit"] == LengthUnit.U)
+            float height = Utils.ParseDecFrac(item.attributes["height"]);
+            if (item.attributes["heightUnit"] == LengthUnit.U)
                 height *= UnitValue.U;
-            else if (oObj.attributes["heightUnit"] == LengthUnit.Millimeter)
+            else if (item.attributes["heightUnit"] == LengthUnit.Millimeter)
                 height /= 1000;
-            else if (oObj.attributes["heightUnit"] == LengthUnit.Centimeter)
+            else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
                 height /= 100;
             boxSize = new(size.x, height, size.y);
         }
@@ -86,6 +83,11 @@ public class DisplayObjectData : MonoBehaviour
                 floatingLabel.rectTransform.sizeDelta = new(boxSize.z, boxSize.z);
             else
                 floatingLabel.rectTransform.sizeDelta = new(boxSize.x, boxSize.x);
+
+            if (item is Group)
+                floatingLabel.transform.localPosition = (boxSize.y / 2 + floatingLabel.rectTransform.sizeDelta.y / 4) * Vector3.up;
+            else
+                floatingLabel.transform.localPosition = new(boxSize.x / 2, boxSize.y + floatingLabel.rectTransform.sizeDelta.y / 4, boxSize.z / 2);
         }
 
         switch (_labelPos)
