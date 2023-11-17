@@ -61,6 +61,12 @@ public class ApiManager : MonoBehaviour
         public bool status;
     }
 
+    private struct STagResp
+    {
+        public string message;
+        public SApiTag data;
+    }
+
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
@@ -473,5 +479,17 @@ public class ApiManager : MonoBehaviour
         }
         GameManager.instance.AppendLogLine("Unknown object received while retrieving temperature unit", ELogTarget.both, ELogtype.errorApi);
         return Task.FromResult("");
+    }
+
+    /// <summary>
+    /// Deserialize API response to <see cref="STagResp"/> and call <see cref="GameManager.CreateTag(SApiTag)"/>
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    public async Task CreateTag(string _input)
+    {
+        STagResp resp = JsonConvert.DeserializeObject<STagResp>(_input);
+        await Task.Run(() => GameManager.instance.CreateTag(resp.data));
+        UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 }

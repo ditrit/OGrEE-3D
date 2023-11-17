@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 [System.Serializable]
 public struct SApiObject
@@ -11,6 +9,7 @@ public struct SApiObject
     public string category;
     public List<string> description;
     public string domain;
+    public List<string> tags;
     public Dictionary<string, string> attributes;
     public SApiObject[] children;
 
@@ -22,6 +21,7 @@ public struct SApiObject
         category = _src.category;
         description = _src.description;
         domain = _src.domain;
+        tags = _src.tags;
         attributes = _src.attributes;
         children = null;
     }
@@ -142,3 +142,10 @@ public struct STempUnit
 }
 
 #endregion
+
+public struct SApiTag
+{
+    public string slug;
+    public string description;
+    public string color;
+}

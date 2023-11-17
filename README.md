@@ -6,7 +6,7 @@ OGREE 3D is a data-center viewer, using Unity 3D
 - VR version to come  
 
 ## Work on OGrEE-3D
-- Install Unity version **2022.3.9f1**
+- Install Unity version **2022.3.12f1**
 - For loading fbx models at runtime, we are using a third party plugin: [**TriLib 2**](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548). You'll have to purchase it.
 - Open the project in Unity Editor. A warning message will ask you to enter into safe mode. Deny it and continue to open the project.
 - Import your TriLib2 package in the *Assets* folder.

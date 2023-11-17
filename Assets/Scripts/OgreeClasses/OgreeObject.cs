@@ -13,6 +13,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string category;
     public List<string> description = new();
     public string domain;
+    public List<string> tags = new();
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new();
@@ -57,12 +58,14 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         if (_other == null)
             return 1;
         else
-            return this.id.CompareTo(_other.id);
+            return id.CompareTo(_other.id);
     }
 
     protected virtual void OnDestroy()
     {
         GameManager.instance.allItems.Remove(id);
+        foreach (string tag in tags)
+            GameManager.instance.RemoveFromTag(tag, id);
 
         if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
             GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
@@ -97,6 +100,18 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
+
+        foreach (string newTag in _src.tags)
+        {
+            if (!tags.Contains(newTag))
+                GameManager.instance.AddToTag(newTag, id);
+        }
+        foreach (string oldTag in tags)
+        {
+            if (!_src.tags.Contains(oldTag))
+                GameManager.instance.RemoveFromTag(oldTag, id);
+        }
+        tags = _src.tags;
     }
 
     ///<summary>
@@ -122,10 +137,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
-    public async Task LoadChildren(int _level)
+    public async Task LoadChildren(int _level, bool _forceLod = false)
     {
-        if (!ApiManager.instance.isInit || isLodLocked || (this is Device dv && dv.isComponent))
+        if (!ApiManager.instance.isInit || (!_forceLod && isLodLocked) || (this is Device dv && dv.isComponent))
             return;
+
+        if (_forceLod)
+            isLodLocked = false;
 
         if (_level < 0)
             _level = 0;

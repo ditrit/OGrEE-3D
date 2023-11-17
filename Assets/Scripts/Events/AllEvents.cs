@@ -57,10 +57,16 @@ public class OnMouseUnHoverEvent : CustomEvent
 public class HighlightEvent : CustomEvent
 {
     public GameObject obj;
+    public Color color = Color.clear;
 
     public HighlightEvent(GameObject _obj)
     {
         obj = _obj;
+    }
+    public HighlightEvent(GameObject _obj, Color _color)
+    {
+        obj = _obj;
+        color = _color;
     }
 }
 

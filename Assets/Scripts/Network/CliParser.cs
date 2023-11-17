@@ -91,7 +91,9 @@ public class CliParser
                 //Disable focus mode
                 if (GameManager.instance.focusMode)
                     await GameManager.instance.UnfocusAll();
-                List<GameObject> objsToSelect = Utils.GetObjectsById(command["data"].ToString());
+
+                List<string> ids = JsonConvert.DeserializeObject<List<string>>(command["data"].ToString());
+                List<GameObject> objsToSelect = Utils.GetObjectsById(ids);
                 if (objsToSelect.Count == 0)
                     await GameManager.instance.SetCurrentItem(null);
                 else
@@ -130,6 +132,9 @@ public class CliParser
                         GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
                 }
                 break;
+            case CommandType.DeleteTag:
+                DeleteTag(command["data"].ToString());
+                break;
             case CommandType.Focus:
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
@@ -146,6 +151,9 @@ public class CliParser
                 break;
             case CommandType.Modify:
                 ModifyObject(command["data"].ToString());
+                break;
+            case CommandType.ModifyTag:
+                ModifyTag(command["data"].ToString());
                 break;
             case CommandType.Interact:
                 InteractWithObject(command["data"].ToString());
@@ -171,6 +179,17 @@ public class CliParser
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         ApiManager.instance.RegisterApi(logData.api_url, logData.api_token);
         await ApiManager.instance.Initialize();
+    }
+
+    /// <summary>
+    /// Remove all objets from given tag. The tag will delete himself when "empty".
+    /// </summary>
+    /// <param name="_input">The tag slug to delete</param>
+    private void DeleteTag(string _input)
+    {
+        Tag tagToDel = GameManager.instance.GetTag(_input);
+        foreach (string id in tagToDel.linkedObjects)
+            GameManager.instance.RemoveFromTag(tagToDel.slug, id);
     }
 
     ///<summary>
@@ -309,6 +328,18 @@ public class CliParser
 
         if (domainColorChanged)
             EventManager.instance.Raise(new UpdateDomainEvent(newData.name));
+    }
+
+    /// <summary>
+    /// Deserialize given old-slug / SApiTag pair and apply modification to corresponding tag.
+    /// </summary>
+    /// <param name="_input">The old-slug / SApiTag to deserialize</param>
+    private void ModifyTag(string _input)
+    {
+        Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
+        Tag tagToUpdate = GameManager.instance.GetTag(data["old-slug"].ToString());
+        SApiTag newData = JsonConvert.DeserializeObject<SApiTag>(data["tag"].ToString());
+        tagToUpdate.UpdateFromSApiTag(newData);
     }
 
     ///<summary>

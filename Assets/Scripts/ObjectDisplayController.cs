@@ -33,8 +33,12 @@ public class ObjectDisplayController : MonoBehaviour
     private bool listening => item || (sensor && !sensor.fromTemplate) || (slot && !slot.used);
 #pragma warning restore IDE1006 // Styles d'affectation de noms
 
+    public bool isHidden = false;
+
     private bool isHovered = false;
-    private bool isHighlighted = false;
+    public bool isHighlighted = false;
+    private GameObject highlightCube;
+    private Color highlightColor;
 
     private void Awake()
     {
@@ -149,8 +153,8 @@ public class ObjectDisplayController : MonoBehaviour
         {
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
-            bool colAndLabels = (isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject);
-            bool rend = isSelected || colAndLabels;
+            bool colAndLabels = !isHidden && ((isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject));
+            bool rend = !isHidden && (isSelected || colAndLabels);
 
             Display(rend, colAndLabels, colAndLabels);
 
@@ -224,8 +228,11 @@ public class ObjectDisplayController : MonoBehaviour
         }
         else if (_e.obj == transform.parent.gameObject)
             item?.ResetTransform();
-        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent) || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item)))
+        else if ((sensor && sensor.fromTemplate && scatterPlotOfOneParent)
+            || (isReferent && !GameManager.instance.GetSelectedReferents().Contains(item) && !isHidden))
             Display(true, true, true);
+        else if (isHighlighted && !isHidden)
+            highlightCube?.SetActive(true);
         if (item is Rack rack && rack.uRoot && rack.uRoot.gameObject.activeSelf != rack.areUHelpersToggled)
             rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
     }
@@ -271,10 +278,19 @@ public class ObjectDisplayController : MonoBehaviour
             Display(false, false, false);
             return;
         }
-
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
+        bool RendColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
+
+        foreach (string tagName in item.tags)
+        {
+            if (GameManager.instance.GetTag(tagName) is Tag tag && tag.objHightlighted)
+            {
+                isHighlighted = true;
+                highlightColor = tag.color;
+            }
+        }
+
         HandleMaterial();
     }
 
@@ -297,7 +313,7 @@ public class ObjectDisplayController : MonoBehaviour
         bool RendColAndLabels = (isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject);
         Display(RendColAndLabels, RendColAndLabels, RendColAndLabels);
         if (isHighlighted)
-            SetMaterial(GameManager.instance.highlightMat);
+            HighlightObject();
         else
         {
             SetMaterial(GameManager.instance.defaultMat);
@@ -415,6 +431,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnHighLight(HighlightEvent _e)
     {
+        highlightColor = _e.color;
         if (_e.obj == gameObject)
             ToggleHighlight(!isHighlighted);
     }
@@ -437,6 +454,7 @@ public class ObjectDisplayController : MonoBehaviour
     ///</summary>
     public void Initialize()
     {
+        item = GetComponent<Item>();
         cube = (transform.GetChild(0).GetComponent<Collider>(), transform.GetChild(0).GetComponent<MeshRenderer>());
         displayObjectData = GetComponent<DisplayObjectData>();
     }
@@ -448,7 +466,6 @@ public class ObjectDisplayController : MonoBehaviour
     private void ToggleHighlight(bool _highlighted)
     {
         isHighlighted = _highlighted;
-        transform.parent?.GetComponent<ObjectDisplayController>()?.ToggleHighlight(_highlighted);
         if (GameManager.instance.GetSelected().Contains(gameObject))
             return;
         HandleMaterial();
@@ -504,7 +521,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (item && item.scatterPlot)
             SetMaterial(GameManager.instance.scatterPlotMat);
         else if (isHighlighted)
-            SetMaterial(GameManager.instance.highlightMat);
+            HighlightObject();
         else if (GameManager.instance.tempColorMode && !group && item && item.category != Category.Corridor)
             SetMaterial(GetTemperatureMaterial());
         else
@@ -517,8 +534,36 @@ public class ObjectDisplayController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set material to <see cref="GameManager.highlightMat"/>, generate or activate <see cref="highlightCube"/> and change their color using <see cref="highlightColor"/> if needed.
+    /// </summary>
+    private void HighlightObject()
+    {
+        SetMaterial(GameManager.instance.highlightMat);
+        if (!highlightCube)
+        {
+            highlightCube = Instantiate(GameManager.instance.highlightCubeModel, transform.GetChild(0));
+            highlightCube.transform.localScale = Vector3.one * 1.1f;
+        }
+        highlightCube.SetActive(GameManager.instance.focusMode ? cube.rend.enabled : !isHidden);
+
+        Material highlightMat = highlightCube.GetComponent<Renderer>().material;
+        if (highlightColor != Color.clear)
+        {
+            cube.rend.material.color = highlightColor;
+            highlightMat.color = highlightColor.WithAlpha(highlightMat.color.a);
+            highlightMat.SetColor("_EmissionColor", highlightColor);
+        }
+        else
+        {
+            Color defaultColor = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("highlight"));
+            highlightMat.color = defaultColor.WithAlpha(highlightMat.color.a);
+            highlightMat.SetColor("_EmissionColor", defaultColor);
+        }
+    }
+
     ///<summary>
-    /// Assign a Material to given Renderer keeping textures.
+    /// Assign a Material to <see cref="cube.rend"/> keeping textures. Then hide cube & highlightCube if needed.
     ///</summary>
     ///<param name="_newMat">The Material to assign</param>
     private void SetMaterial(Material _newMat)
@@ -531,11 +576,12 @@ public class ObjectDisplayController : MonoBehaviour
         cube.rend.material.SetTexture("_MetallicGlossMap", mat.GetTexture("_MetallicGlossMap"));
         cube.rend.material.SetTexture("_OcclusionMap", mat.GetTexture("_OcclusionMap"));
 
-        if (item && item.isHidden)
+        if (isHidden)
         {
             cube.rend.enabled = false;
             displayObjectData.ToggleLabel(false);
         }
+        highlightCube?.SetActive(cube.rend.enabled && _newMat == GameManager.instance.highlightMat);
     }
 
     ///<summary>
@@ -645,10 +691,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void ChangeColor(Color _color)
     {
         if (!isHovered && !isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject) && !GameManager.instance.GetFocused().Contains(gameObject))
-        {
-            _color.a = cube.rend.material.color.a;
-            cube.rend.material.color = _color;
-        }
+            cube.rend.material.color = _color.WithAlpha(cube.rend.material.color.a);
     }
 
     ///<summary>
@@ -658,7 +701,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void ToggleAlpha(bool _value)
     {
         Display(!_value, !_value);
-        item.isHidden = _value;
+        isHidden = _value;
     }
 
     ///<summary>
@@ -669,6 +712,7 @@ public class ObjectDisplayController : MonoBehaviour
     public void Display(bool _rend, bool _label)
     {
         cube.rend.enabled = _rend;
+        highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject));
         displayObjectData.ToggleLabel(_label);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;

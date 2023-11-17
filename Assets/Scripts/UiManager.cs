@@ -48,6 +48,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
+    [SerializeField] private ButtonHandler hideObjectBtn;
+    [SerializeField] private ButtonHandler displayObjectBtn;
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField selectionInputField;
@@ -75,11 +77,15 @@ public class UiManager : MonoBehaviour
     private Queue<string> loggerQueue = new(loggerSize);
 
     [Header("Groups")]
-    [SerializeField] private GameObject groupsMenu;
-    [SerializeField] private TMP_Text groupsMenuBtnText;
-    private bool expendGroupsMenu = false;
-    [SerializeField] private GameObject groupBtnPrefab;
+    public DynamicButtonList groupsList;
     public List<Group> openedGroups;
+
+    [Header("Tags")]
+    public DynamicButtonList tagsList;
+
+    [Header("Hidden Object")]
+    public DynamicButtonList hiddenObjList;
+    public List<Item> hiddenObjects;
 
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
@@ -134,7 +140,7 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
             &&
-            GameManager.instance.GetSelected().Count > 0
+            GameManager.instance.selectMode
             &&
             menuTarget.GetComponent<OgreeObject>()
             &&
@@ -408,11 +414,30 @@ public class UiManager : MonoBehaviour
         };
         toggleClearanceBtn.Check();
 
+        hideObjectBtn = new(hideObjectBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            &&
+            !item.GetComponent<ObjectDisplayController>().isHidden
+        };
+        hideObjectBtn.Check();
+
+        displayObjectBtn = new(displayObjectBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            &&
+            item.GetComponent<ObjectDisplayController>().isHidden
+        };
+        displayObjectBtn.Check();
+
         SetupColors();
         menuPanel.SetActive(false);
         coordSystem.SetActive(false);
         rightClickMenu.SetActive(false);
-        groupsMenu.SetActive(false);
         mouseName.gameObject.SetActive(false);
         UpdateTimerValue(slider.value);
 
@@ -458,6 +483,7 @@ public class UiManager : MonoBehaviour
     {
         SetCurrentItemText();
         UpdateGuiInfos();
+        SetupRightClickMenu();
     }
 
     ///<summary>
@@ -622,27 +648,54 @@ public class UiManager : MonoBehaviour
         {
             // Setup the menu
             rightClickMenu.SetActive(true);
-            if (GameManager.instance.GetSelected().Count > 0)
-                rightClickMenu.GetComponent<Image>().color = selectColor;
-            else
-                rightClickMenu.GetComponent<Image>().color = defaultColor;
-
-            float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
-            float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-            float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
-            float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
-
-            float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
-            float menuHeight = padding * 2 + (btnHeight + spacing) * displayedButtons;
-            rightClickMenu.GetComponent<RectTransform>().sizeDelta = new(menuWidth, menuHeight);
+            Vector2 menuDim = SetupRightClickMenu(displayedButtons);
 
             // Move the menu at mouse position and prevent it to be out of the window
+            float canvasScale = canvas.GetComponent<RectTransform>().localScale.x;
             rightClickMenu.transform.position = Input.mousePosition;
-            if (Screen.width - Input.mousePosition.x < menuWidth * canvasScale)
-                rightClickMenu.transform.position -= new Vector3(menuWidth * canvasScale, 0, 0);
-            if (Input.mousePosition.y < menuHeight * canvasScale)
-                rightClickMenu.transform.position += new Vector3(0, menuHeight * canvasScale, 0);
+            if (Screen.width - Input.mousePosition.x < menuDim.x * canvasScale)
+                rightClickMenu.transform.position -= new Vector3(menuDim.x * canvasScale, 0, 0);
+            if (Input.mousePosition.y < menuDim.y * canvasScale)
+                rightClickMenu.transform.position += new Vector3(0, menuDim.y * canvasScale, 0);
         }
+    }
+
+    /// <summary>
+    /// Count displayed buttons in rightClickMenu and adjust its background size
+    /// </summary>
+    /// <returns>Width and height of rightClickMenu's background</returns>
+    public Vector2 SetupRightClickMenu()
+    {
+        int displayedButtons = 0;
+        foreach (Transform btn in rightClickMenu.transform)
+        {
+            if (btn.gameObject.activeSelf)
+                displayedButtons++;
+        }
+        return SetupRightClickMenu(displayedButtons);
+    }
+
+    /// <summary>
+    /// Adjust rightClickMenu's background size according to <paramref name="_displayedButtons"/>
+    /// </summary>
+    /// <param name="_displayedButtons">The number of displayed buttons in rightClickMenu</param>
+    /// <returns>Width and height of rightClickMenu's background</returns>
+    public Vector2 SetupRightClickMenu(int _displayedButtons)
+    {
+        if (GameManager.instance.selectMode)
+            rightClickMenu.GetComponent<Image>().color = selectColor;
+        else
+            rightClickMenu.GetComponent<Image>().color = defaultColor;
+
+        float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
+        float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
+        float spacing = rightClickMenu.GetComponent<VerticalLayoutGroup>().spacing;
+
+        float menuWidth = rightClickMenu.GetComponent<RectTransform>().sizeDelta.x;
+        float menuHeight = padding * 2 + (btnHeight + spacing) * _displayedButtons;
+        rightClickMenu.GetComponent<RectTransform>().sizeDelta = new(menuWidth, menuHeight);
+
+        return new(menuWidth, menuHeight);
     }
 
     ///<summary>
@@ -654,66 +707,79 @@ public class UiManager : MonoBehaviour
         GetComponent<Inputs>().lockMouseInteract = false;
     }
 
-    ///<summary>
-    /// Called by GUI Button: Toggle opened groups buttons and change text of <see cref="groupsMenuBtnText"/>.
-    ///</summary>
-    public void ToggleGroupsMenu()
+    /// <summary>
+    /// Generate buttons under <see cref="groupsList"/> from <see cref="openedGroups"/>
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildGroupButtons()
     {
-        expendGroupsMenu ^= true;
-        groupsMenuBtnText.text = expendGroupsMenu ? "Hide opened group list" : "Display opened group list";
-
-        GroupsMenuBackgroundSize();
-        foreach (Transform btn in groupsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                btn.gameObject.SetActive(expendGroupsMenu);
-        }
-    }
-
-    ///<summary>
-    /// Active <see cref="groupsMenu"/> depending on <see cref="openedGroups"/> count and re-generate a button for each <see cref="openedGroups"/> item.
-    ///</summary>
-    public void RebuildGroupsMenu()
-    {
-        groupsMenu.SetActive(openedGroups.Count > 0);
-
-        // Wipe previous buttons
-        foreach (Transform btn in groupsMenu.transform)
-        {
-            if (btn.GetSiblingIndex() != 0)
-                Destroy(btn.gameObject);
-        }
-
-        // Create a button for each opened group
         foreach (Group gr in openedGroups)
         {
-            GameObject newButton = Instantiate(groupBtnPrefab, groupsMenu.transform);
+            GameObject newButton = Instantiate(groupsList.buttonPrefab, groupsList.transform);
             newButton.name = $"ButtonOpenGr_{gr.name}";
             newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = gr.id;
 
             Button btn = newButton.GetComponent<Button>();
             btn.onClick.AddListener(() => gr.ToggleContent(false));
             btn.onClick.AddListener(() => Destroy(newButton));
-
-            newButton.SetActive(expendGroupsMenu);
         }
-        GroupsMenuBackgroundSize();
+        return openedGroups.Count;
     }
 
-    ///<summary>
-    /// Set the <see cref="groupsMenu"/>'s background according to <see cref="expendGroupsMenu"/>
-    ///</summary>
-    private void GroupsMenuBackgroundSize()
+    /// <summary>
+    /// Generate buttons under <see cref="tagsList"/> from <see cref="GameManager.instance.tags"/>
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildTagButtons()
     {
-        int count = expendGroupsMenu ? openedGroups.Count + 1 : 1;
+        foreach (Tag tag in GameManager.instance.tags)
+        {
+            GameObject newButton = Instantiate(tagsList.buttonPrefab, tagsList.transform);
+            newButton.name = $"ButtonTag_{tag.slug}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = tag.slug;
 
-        float btnHeight = groupsMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
-        float padding = groupsMenu.GetComponent<VerticalLayoutGroup>().padding.top;
-        float spacing = groupsMenu.GetComponent<VerticalLayoutGroup>().spacing;
+            Button btn = newButton.GetComponent<Button>();
+            btn.GetComponent<Image>().color = tag.color;
+            btn.onClick.AddListener(() =>
+            {
+                // Disable all other tags' highlight
+                foreach (Tag t in GameManager.instance.tags)
+                {
+                    if (t != tag)
+                        t.HighlightObjects(false);
+                }
+                // Highlight this tag
+                tag.HighlightObjects(!tag.objHightlighted);
 
-        float menuWidth = groupsMenu.GetComponent<RectTransform>().sizeDelta.x;
-        float menuHeight = padding * 2 + (btnHeight + spacing) * count;
-        groupsMenu.GetComponent<RectTransform>().sizeDelta = new Vector2(menuWidth, menuHeight);
+                // Set text color of tags buttons
+                foreach (Transform button in tagsList.GetButtons())
+                {
+                    TMP_Text buttonText = button.GetChild(0).GetComponent<TMP_Text>();
+                    Tag relatedTag = GameManager.instance.GetTag(buttonText.text);
+                    buttonText.color = relatedTag.objHightlighted ? Color.green : Color.white;
+                }
+            });
+        }
+        return GameManager.instance.tags.Count;
+    }
+
+    /// <summary>
+    /// Generate buttons under <see cref="hiddenObjList"/> from <see cref="hiddenObjects"/>
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildHiddenObjButtons()
+    {
+        foreach (Item item in hiddenObjects)
+        {
+            GameObject newButton = Instantiate(hiddenObjList.buttonPrefab, hiddenObjList.transform);
+            newButton.name = $"ButtonHiddenObj_{item.name}";
+            newButton.transform.GetChild(0).GetComponent<TMP_Text>().text = item.id;
+
+            Button btn = newButton.GetComponent<Button>();
+            btn.onClick.AddListener(() => DisplayObject(item.gameObject));
+            btn.onClick.AddListener(() => Destroy(newButton));
+        }
+        return hiddenObjects.Count;
     }
 
     ///<summary>
@@ -1200,7 +1266,9 @@ public class UiManager : MonoBehaviour
             await GameManager.instance.SetCurrentItem(null);
         else if (Utils.GetObjectById(_value.Replace("/", ".")) is GameObject obj)
             await GameManager.instance.SetCurrentItem(obj);
-        else if (!string.IsNullOrEmpty(_value))
+        else if (GameManager.instance.GetTag(_value) is Tag tag)
+            await tag.SelectLinkedObjects();
+        else
             GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
         SetCurrentItemText();
     }
@@ -1281,6 +1349,62 @@ public class UiManager : MonoBehaviour
     {
         menuTarget.GetComponent<Item>().clearanceHandler.ToggleClearance();
         toggleLocalCSBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI: Hide all selected objects
+    /// </summary>
+    public async void HideSelectedObjects()
+    {
+        foreach (GameObject obj in GameManager.instance.GetSelected())
+            HideObject(obj);
+        await GameManager.instance.SetCurrentItem(null);
+    }
+
+    /// <summary>
+    /// Hide given <paramref name="_obj"/>
+    /// </summary>
+    /// <param name="_obj">The GameObject to hide</param>
+    public async void HideObject(GameObject _obj)
+    {
+        Item item = _obj.GetComponent<Item>();
+        _obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
+        _obj.GetComponent<ObjectDisplayController>().isHidden = true;
+        await item.LoadChildren(0, true);
+        if (!hiddenObjects.Contains(item))
+        {
+            hiddenObjects.Add(item);
+            hiddenObjects.Sort();
+            hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+        }
+    }
+
+    /// <summary>
+    /// Called by GUI: Display all selected objects
+    /// </summary>
+    public void DisplaySelectedObjects()
+    {
+        foreach (GameObject obj in GameManager.instance.GetSelected())
+            DisplayObject(obj);
+    }
+
+    /// <summary>
+    /// Display given <paramref name="_obj"/>
+    /// </summary>
+    /// <param name="_obj">The GameObject to display</param>
+    public async void DisplayObject(GameObject _obj)
+    {
+        if (GameManager.instance.GetSelected().Contains(_obj))
+        {
+            _obj.GetComponent<ObjectDisplayController>().Display(true, false, false);
+            if (_obj.GetComponent<Item>() is Item item && item.currentLod == 0)
+                await item.LoadChildren(1);
+        }
+        else
+            _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
+        _obj.GetComponent<ObjectDisplayController>().isHidden = false;
+        hiddenObjects.Remove(_obj.GetComponent<Item>());
+        hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }
     #endregion
 }

@@ -32,11 +32,13 @@ public class OgreeGenerator : MonoBehaviour
         }
 
         OgreeObject newObject;
-        // Get dependencies from API
+        // Get dependencies from API:
+        // Domains
         if (_obj.category != Category.Domain && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.instance.allItems.Contains(_obj.domain))
             await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.DrawObject);
 
+        // Templates
         if (_obj.category == Category.Building && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
         {
@@ -56,6 +58,16 @@ public class OgreeGenerator : MonoBehaviour
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+        }
+
+        // Tags
+        if (_obj.category != Category.Domain)
+        {
+            foreach (string tagName in _obj.tags)
+            {
+                if (GameManager.instance.GetTag(tagName) == null)
+                    await ApiManager.instance.GetObject($"tags/{tagName}", ApiManager.instance.CreateTag);
+            }
         }
 
         // Find parent

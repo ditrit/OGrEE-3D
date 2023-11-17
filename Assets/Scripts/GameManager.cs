@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Material focusMat;
     public Material editMat;
     public Material highlightMat;
+    public Material highlightCubeMat;
     public Material mouseHoverMat;
     public Material scatterPlotMat;
     public Dictionary<string, Texture> textures = new();
@@ -44,12 +45,14 @@ public class GameManager : MonoBehaviour
     public GameObject labelModel;
     public GameObject floatingLabelModel;
     public GameObject clearanceModel;
+    public GameObject highlightCubeModel;
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
     private List<GameObject> currentItems = new();
     private List<GameObject> previousItems = new();
     public Hashtable allItems = new();
+    public List<Tag> tags = new();
     public Dictionary<string, SBuildingFromJson> buildingTemplates = new();
     public Dictionary<string, SRoomFromJson> roomTemplates = new();
     public Dictionary<string, GameObject> objectTemplates = new();
@@ -634,4 +637,69 @@ public class GameManager : MonoBehaviour
     {
         return focus.GetRange(0, focus.Count);
     }
+
+    #region Tags
+    /// <summary>
+    /// Get a tag in <see cref="tags"/> by it's slug.
+    /// </summary>
+    /// <param name="_tagName">The slug of the tag to search</param>
+    /// <returns>The asked tag or null otherwise</returns>
+    public Tag GetTag(string _tagName)
+    {
+        foreach (Tag tag in tags)
+        {
+            if (tag.slug == _tagName)
+                return tag;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// If given tag doesn't exist, create a new <see cref="Tag"/> and add it to <see cref="tags"/> and <see cref="tags"/>.
+    /// </summary>
+    /// <param name="_data">Data from API</param>
+    public void CreateTag(SApiTag _data)
+    {
+        if (GetTag(_data.slug) == null)
+        {
+            tags.Add(new Tag(_data));
+            tags.Sort();
+        }
+    }
+
+    /// <summary>
+    /// Add an ogreeObject (by it's <paramref name="_objId"/> ) to a given <paramref name="_tagName"/>.
+    /// If the tag doesn't exists, create it.
+    /// </summary>
+    /// <param name="_tagName">The tag to modify</param>
+    /// <param name="_objId">The <see cref="OgreeObject.id"/> of the object to add</param>
+    public async void AddToTag(string _tagName, string _objId)
+    {
+        if (GetTag(_tagName) == null)
+            await ApiManager.instance.GetObject($"tags/{_tagName}", ApiManager.instance.CreateTag);
+
+        Tag tag = GetTag(_tagName);
+        tag.linkedObjects.Add(_objId);
+        if (tag.objHightlighted)
+            EventManager.instance.Raise(new HighlightEvent(Utils.GetObjectById(_objId), tag.color));
+    }
+
+    /// <summary>
+    /// Remove an ogreeObject (by it's <paramref name="_objId"/> ) from a given <paramref name="_tagName"/>.
+    /// If the tag has no linked object, remove it.
+    /// </summary>
+    /// <param name="_tagName">The tag to modify</param>
+    /// <param name="_objId">The <see cref="OgreeObject.id"/> of the object to remove</param>
+    public void RemoveFromTag(string _tagName, string _objId)
+    {
+        Tag targetedTag = GetTag(_tagName);
+        targetedTag.linkedObjects.Remove(_objId);
+        Utils.GetObjectById(_objId)?.GetComponent<OgreeObject>().tags.Remove(_tagName);
+        if (targetedTag.linkedObjects.Count == 0)
+        {
+            tags.Remove(targetedTag);
+            UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
+        }
+    }
+    #endregion
 }

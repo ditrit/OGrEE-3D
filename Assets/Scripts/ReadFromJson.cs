@@ -51,6 +51,7 @@ public class ReadFromJson
         {
             description = new(),
             attributes = new(),
+            tags = new(),
 
             name = _data.slug,
             id = _data.slug,

@@ -62,17 +62,12 @@ public class Building : OgreeObject
     ///<param name="_src">The SApiObject used to update attributes</param>
     public override void UpdateFromSApiObject(SApiObject _src)
     {
-        name = _src.name;
-        id = _src.id;
-        parentId = _src.parentId;
-        category = _src.category;
         if (domain != _src.domain)
         {
             domain = _src.domain;
             UpdateColorByDomain();
         }
-        description = _src.description;
-        attributes = _src.attributes;
+        base.UpdateFromSApiObject(_src);
     }
 
     ///<summary>

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -109,14 +108,12 @@ public static class Utils
     ///<summary>
     /// Get a list of objects from GameManager.allItems by their id.
     ///</summary>
-    ///<param name="_idArray">The array of ids to search</param>
+    ///<param name="_idList">The array of ids to search</param>
     ///<returns>the asked list of objects</returns>
-    public static List<GameObject> GetObjectsById(string _idArray)
+    public static List<GameObject> GetObjectsById(List<string> _idList)
     {
-        string[] ids = JsonConvert.DeserializeObject<string[]>(_idArray);
-
         List<GameObject> objects = new();
-        foreach (string objId in ids)
+        foreach (string objId in _idList)
         {
             if (GameManager.instance.allItems.Contains(objId))
                 objects.Add((GameObject)GameManager.instance.allItems[objId]);
@@ -335,5 +332,17 @@ public static class Utils
     public static Vector3 ZAxisUp(this Vector3 _v)
     {
         return new(_v.x, _v.z, _v.y);
+    }
+
+    /// <summary>
+    /// Set the alpha of a <paramref name="_color"/>
+    /// </summary>
+    /// <param name="_color">The color to modify</param>
+    /// <param name="_alpha">The alpha to apply</param>
+    /// <returns>This color with given <paramref name="_alpha"/></returns>
+    public static Color WithAlpha(this Color _color, float _alpha)
+    {
+        _color.a = _alpha;
+        return _color;
     }
 }
