@@ -69,6 +69,7 @@ public class Group : Item
             {
                 ObjectDisplayController itemsOdc = go.GetComponent<ObjectDisplayController>();
                 itemsOdc.Display(_value, _value, _value);
+                itemsOdc.ForceHighlightCube();
                 if (_value)
                     itemsOdc.SubscribeEvents();
                 else

@@ -56,7 +56,10 @@ public class ObjectDisplayController : MonoBehaviour
         sensor = GetComponent<Sensor>();
         group = GetComponent<Group>();
         if (!isTemplate)
+        {
+            EventManager.instance.Highlight.Add(OnHighLight);
             SubscribeEvents();
+        }
         if (scatterPlotOfOneParent && sensor && sensor.fromTemplate)
             Display(true, true);
     }
@@ -64,6 +67,7 @@ public class ObjectDisplayController : MonoBehaviour
     private void OnDestroy()
     {
         UnsubscribeEvents();
+        EventManager.instance.Highlight.Remove(OnHighLight);
     }
 
     ///<summary>
@@ -103,7 +107,7 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.OnUnFocus.Add(OnUnFocus);
         EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
-        EventManager.instance.Highlight.Add(OnHighLight);
+        // EventManager.instance.Highlight.Add(OnHighLight);
         EventManager.instance.GetCoordModeToggle.Add(OnGetCoordModeToggle);
     }
 
@@ -138,7 +142,7 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.OnUnFocus.Remove(OnUnFocus);
         EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
-        EventManager.instance.Highlight.Remove(OnHighLight);
+        // EventManager.instance.Highlight.Remove(OnHighLight);
         EventManager.instance.GetCoordModeToggle.Remove(OnGetCoordModeToggle);
     }
 
@@ -716,6 +720,11 @@ public class ObjectDisplayController : MonoBehaviour
         displayObjectData.ToggleLabel(_label);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
+    }
+
+    public void ForceHighlightCube()
+    {
+        highlightCube?.SetActive(isHighlighted);
     }
 
     ///<summary>
