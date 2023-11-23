@@ -118,6 +118,7 @@ public class CoordModeController : MonoBehaviour
         if (_hit.collider)
         {
             length = _hit.distance;
+            _text.transform.parent.localScale = textSize;
             _text.transform.parent.localPosition = 0.5f * _hit.distance * _rayDirection + 0.002f * Vector3.up;
             _text.text = $"<color=\"{_color}\">{Utils.FloatToRefinedStr(_hit.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
@@ -141,42 +142,38 @@ public class CoordModeController : MonoBehaviour
         axisZ.localScale = Vector3.zero;
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit raycastHit, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward), Color.yellow);
         PlaceSemiAxisWithText(textXLeft, axisX, raycastHit, Vector3.forward, -1 * GameManager.instance.cameraControl.transform.right, Vector3.right, "green");
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.back), out RaycastHit raycastHit2, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.back), Color.yellow);
         PlaceSemiAxisWithText(textXRight, axisX, raycastHit2, Vector3.back, -1 * GameManager.instance.cameraControl.transform.right, Vector3.right, "green");
 
         axisX.localPosition += 0.001f * Vector3.up;
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textXTotal.gameObject.SetActive(true);
+            textXTotal.transform.parent.parent.localScale = textSize;
             textXTotal.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textXTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.right * -1).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
-            textXTotal.gameObject.SetActive(false);
+            textXTotal.transform.parent.localScale = Vector3.zero;
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out raycastHit, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right), Color.yellow);
         PlaceSemiAxisWithText(textZUp, axisZ, raycastHit, Vector3.right, GameManager.instance.cameraControl.transform.up, Vector3.up, "red");
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out raycastHit2, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left), Color.yellow);
         PlaceSemiAxisWithText(textZDown, axisZ, raycastHit2, Vector3.left, GameManager.instance.cameraControl.transform.up, Vector3.up, "red");
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textZTotal.gameObject.SetActive(true);
+            textZTotal.transform.parent.parent.localScale = textSize;
             textZTotal.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textZTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
-            textZTotal.gameObject.SetActive(false);
+            textZTotal.transform.parent.localScale = Vector3.zero;
     }
 
     /// <summary>
@@ -199,6 +196,7 @@ public class CoordModeController : MonoBehaviour
         _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
         _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
         _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
+        _text.transform.parent.localScale = textSize;
         _text.text = $"<color=\"red\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color=\"green\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
     }
 
@@ -208,22 +206,10 @@ public class CoordModeController : MonoBehaviour
     ///<param name="_hit">The hit data</param>
     public void MoveCSToHit(RaycastHit _hit)
     {
+        textSize = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
         transform.position = _hit.point + new Vector3(0, 0.001f, 0);
         transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
         HandleAxis();
         HandleDiagonals();
-    }
-
-    public void RescaleTexts()
-    {
-        textSize = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
-        textXLeft.transform.parent.localScale = textSize;
-        textXRight.transform.parent.localScale = textSize;
-        textXTotal.transform.parent.parent.localScale = textSize;
-        textZTotal.transform.parent.parent.localScale = textSize;
-        textZDown.transform.parent.localScale = textSize;
-        textZUp.transform.parent.localScale = textSize;
-        diagonalText.transform.parent.localScale = textSize;
-        diagonalForNonDefaultOrientationsText.transform.parent.localScale = textSize;
     }
 }

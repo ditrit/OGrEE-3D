@@ -73,10 +73,6 @@ public static class NonSquareBuildingGenerator
             vertices = new();
             foreach (List<float> vertex in _src.vertices)
                 vertices.Add(new(vertex[0] - offset.x, vertex[1] - offset.y));
-
-            List<Vector3> walls = vertices.Select(w => new Vector3(w.x, 0, w.y)).ToList();
-            if (!MostlyClockWise(walls))
-                vertices.Reverse();
             (isolationPoleRadius, isolationPoleCenter) = PolyLabel.FindPoleOfIsolation(vertices, 0.1f);
             tiles = _src.tiles;
             tileAngle = _src.tileAngle;
@@ -184,6 +180,8 @@ public static class NonSquareBuildingGenerator
         List<int> trianglesRoom = new();
 
         List<Vector3> walls = _template.vertices.Select(w => new Vector3(w.x, 0, w.y)).ToList();
+        if (!MostlyClockWise(walls))
+            walls.Reverse();
         List<Vector3> shrinkingWalls = new(walls);
         Transform floor = _root.GetChild(0);
         Mesh meshFloor = new() { name = "meshFloor" };

@@ -67,7 +67,6 @@ public class Inputs : MonoBehaviour
     ///</summary>
     private void GetCoordsModeControls()
     {
-        coordModeController.RescaleTexts();
         if (EventSystem.current.IsPointerOverGameObject())
             return;
 
