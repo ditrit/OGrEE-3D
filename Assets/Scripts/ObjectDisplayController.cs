@@ -107,7 +107,6 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.OnUnFocus.Add(OnUnFocus);
         EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
-        // EventManager.instance.Highlight.Add(OnHighLight);
         EventManager.instance.GetCoordModeToggle.Add(OnGetCoordModeToggle);
     }
 
@@ -142,7 +141,6 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.OnUnFocus.Remove(OnUnFocus);
         EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
-        // EventManager.instance.Highlight.Remove(OnHighLight);
         EventManager.instance.GetCoordModeToggle.Remove(OnGetCoordModeToggle);
     }
 
@@ -722,6 +720,9 @@ public class ObjectDisplayController : MonoBehaviour
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
     }
 
+    /// <summary>
+    /// Force <see cref="highlightCube"/> to enable itself according to <see cref="isHighlighted"/> value.
+    /// </summary>
     public void ForceHighlightCube()
     {
         highlightCube?.SetActive(isHighlighted);
