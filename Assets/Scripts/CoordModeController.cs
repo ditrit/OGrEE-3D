@@ -118,7 +118,6 @@ public class CoordModeController : MonoBehaviour
         if (_hit.collider)
         {
             length = _hit.distance;
-            _text.transform.parent.localScale = textSize;
             _text.transform.parent.localPosition = 0.5f * _hit.distance * _rayDirection + 0.002f * Vector3.up;
             _text.text = $"<color=\"{_color}\">{Utils.FloatToRefinedStr(_hit.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
@@ -151,13 +150,13 @@ public class CoordModeController : MonoBehaviour
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textXTotal.transform.parent.parent.localScale = textSize;
+            textXTotal.gameObject.SetActive(true);
             textXTotal.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textXTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.right * -1).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
-            textXTotal.transform.parent.localScale = Vector3.zero;
+            textXTotal.gameObject.SetActive(false);
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out raycastHit, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
         PlaceSemiAxisWithText(textZUp, axisZ, raycastHit, Vector3.right, GameManager.instance.cameraControl.transform.up, Vector3.up, "red");
@@ -167,13 +166,13 @@ public class CoordModeController : MonoBehaviour
 
         if (raycastHit.collider && raycastHit2.collider)
         {
-            textZTotal.transform.parent.parent.localScale = textSize;
+            textZTotal.gameObject.SetActive(true);
             textZTotal.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textZTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
         else
-            textZTotal.transform.parent.localScale = Vector3.zero;
+            textZTotal.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -196,7 +195,6 @@ public class CoordModeController : MonoBehaviour
         _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
         _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
         _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
-        _text.transform.parent.localScale = textSize;
         _text.text = $"<color=\"red\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color=\"green\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
     }
 
@@ -206,10 +204,25 @@ public class CoordModeController : MonoBehaviour
     ///<param name="_hit">The hit data</param>
     public void MoveCSToHit(RaycastHit _hit)
     {
-        textSize = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
         transform.position = _hit.point + new Vector3(0, 0.001f, 0);
         transform.eulerAngles = _hit.collider.transform.parent.eulerAngles;
         HandleAxis();
         HandleDiagonals();
+    }
+
+    /// <summary>
+    /// Resize all the texts of the coord mode depending on the distance of the coord mode object from the camera
+    /// </summary>
+    public void RescaleTexts()
+    {
+        textSize = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
+        textXLeft.transform.parent.localScale = textSize;
+        textXRight.transform.parent.localScale = textSize;
+        textXTotal.transform.parent.parent.localScale = textSize;
+        textZTotal.transform.parent.parent.localScale = textSize;
+        textZDown.transform.parent.localScale = textSize;
+        textZUp.transform.parent.localScale = textSize;
+        diagonalText.transform.parent.localScale = textSize;
+        diagonalForNonDefaultOrientationsText.transform.parent.localScale = textSize;
     }
 }
