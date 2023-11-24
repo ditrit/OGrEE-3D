@@ -66,7 +66,15 @@ public class Group : Item
         foreach (GameObject go in content)
         {
             if (go && !go.GetComponent<OgreeObject>().isDoomed)
-                go.SetActive(_value);
+            {
+                ObjectDisplayController itemsOdc = go.GetComponent<ObjectDisplayController>();
+                itemsOdc.Display(_value, _value, _value);
+                itemsOdc.ForceHighlightCube();
+                if (_value)
+                    itemsOdc.SubscribeEvents();
+                else
+                    itemsOdc.UnsubscribeEvents();
+            }
         }
     }
 
