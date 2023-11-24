@@ -141,11 +141,9 @@ public class CoordModeController : MonoBehaviour
         axisZ.localScale = Vector3.zero;
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit raycastHit, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward), Color.yellow);
         PlaceSemiAxisWithText(textXLeft, axisX, raycastHit, Vector3.forward, -1 * GameManager.instance.cameraControl.transform.right, Vector3.right, "green");
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.back), out RaycastHit raycastHit2, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.back), Color.yellow);
         PlaceSemiAxisWithText(textXRight, axisX, raycastHit2, Vector3.back, -1 * GameManager.instance.cameraControl.transform.right, Vector3.right, "green");
 
         axisX.localPosition += 0.001f * Vector3.up;
@@ -161,11 +159,9 @@ public class CoordModeController : MonoBehaviour
             textXTotal.gameObject.SetActive(false);
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out raycastHit, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right), Color.yellow);
         PlaceSemiAxisWithText(textZUp, axisZ, raycastHit, Vector3.right, GameManager.instance.cameraControl.transform.up, Vector3.up, "red");
 
         Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out raycastHit2, float.MaxValue, ~LayerMask.NameToLayer("Ignore Raycast"));
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left), Color.yellow);
         PlaceSemiAxisWithText(textZDown, axisZ, raycastHit2, Vector3.left, GameManager.instance.cameraControl.transform.up, Vector3.up, "red");
 
         if (raycastHit.collider && raycastHit2.collider)
