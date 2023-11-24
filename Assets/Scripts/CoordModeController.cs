@@ -214,6 +214,9 @@ public class CoordModeController : MonoBehaviour
         HandleDiagonals();
     }
 
+    /// <summary>
+    /// Resize all the texts of the coord mode depending on the distance of the coord mode object from the camera
+    /// </summary>
     public void RescaleTexts()
     {
         textSize = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * (Vector3.one - Vector3.up) + Vector3.up;
