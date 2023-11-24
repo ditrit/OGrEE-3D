@@ -660,7 +660,7 @@ public class ObjectGenerator
         }
 
         Transform floor = _obj.parent.Find("Floor");
-        if (!parentRoom.isSquare && _apiObj.category == Category.Rack && parentRoom.attributes["floorUnit"] == LengthUnit.Tile && floor)
+        if (!parentRoom.isSquare && posXYUnit == UnitValue.Tile && floor)
         {
             int trunkedX = (int)pos.x;
             int trunkedZ = (int)pos.z;
