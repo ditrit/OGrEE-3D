@@ -288,14 +288,13 @@ public class CliParser
                 if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
                     || !room.attributes.ContainsKey("separators"))
                 {
-                    foreach (Transform wall in room.walls)
-                    {
-                        if (wall.name.Contains("Separator"))
-                            Object.Destroy(wall.gameObject);
-                    }
+                    foreach (GameObject sep in room.separators)
+                        Object.Destroy(sep);
+                    room.separators.Clear();
+
                     Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
                     foreach (KeyValuePair<string, SSeparator> sep in separators)
-                        room.BuildSeparator(sep.Value);
+                        room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
                 }
             }
             if (newData.attributes.ContainsKey("pillars"))
@@ -310,7 +309,7 @@ public class CliParser
                     }
                     Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
                     foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                        room.BuildPillar(pillar.Value);
+                        room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
                 }
             }
             if (newData.attributes.ContainsKey("reserved"))

@@ -59,17 +59,45 @@ public struct SRoomFromJson
 [System.Serializable]
 public struct SSeparator
 {
+    public string name;
     public float[] startPosXYm;
     public float[] endPosXYm;
     public string type;
+
+    /// <summary>
+    /// Custom constructor for adding a name in a SSeparator
+    /// </summary>
+    /// <param name="_name">The name to use</param>
+    /// <param name="_values">The other values of the SSeparator</param>
+    public SSeparator(string _name, SSeparator _values)
+    {
+        name = _name;
+        startPosXYm = _values.startPosXYm;
+        endPosXYm = _values.endPosXYm;
+        type = _values.type;
+    }
 }
 
 [System.Serializable]
 public struct SPillar
 {
+    public string name;
     public float[] centerXY;
     public float[] sizeXY;
     public float rotation;
+
+    /// <summary>
+    /// Custom constructor for adding a name in a SPillar
+    /// </summary>
+    /// <param name="_name">The name to use</param>
+    /// <param name="_values">The other values of the SPillar</param>
+    public SPillar(string _name, SPillar _values)
+    {
+        name = _name;
+        centerXY = _values.centerXY;
+        sizeXY = _values.sizeXY;
+        rotation = _values.rotation;
+    }
 }
 
 [System.Serializable]

@@ -21,6 +21,7 @@ public class Room : Building
 
     public bool barChart = false;
     public List<Group> openedGroups = new();
+    public List<GameObject> separators = new();
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -493,6 +494,7 @@ public class Room : Building
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.instance.separatorModel);
+        separator.name = _sep.name;
         separator.transform.parent = walls;
 
         // Set textured box
@@ -516,6 +518,8 @@ public class Room : Building
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new(0, -angle, 0);
+
+        separators.Add(separator);
     }
 
     ///<summary>
@@ -527,6 +531,7 @@ public class Room : Building
         float height = Utils.ParseDecFrac(attributes["height"]);
 
         GameObject pillar = Instantiate(GameManager.instance.pillarModel);
+        pillar.name += $"_{_pil.name}";
         pillar.transform.parent = walls;
 
         pillar.transform.localScale = new(_pil.sizeXY[0], height, _pil.sizeXY[1]);

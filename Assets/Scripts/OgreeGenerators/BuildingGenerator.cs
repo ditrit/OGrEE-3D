@@ -199,14 +199,14 @@ public class BuildingGenerator
         {
             Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(room.attributes["separators"]);
             foreach (KeyValuePair<string, SSeparator> sep in separators)
-                room.BuildSeparator(sep.Value);
+                room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
         }
 
         if (room.attributes.ContainsKey("pillars"))
         {
             Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(room.attributes["pillars"]);
             foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                room.BuildPillar(pillar.Value);
+                room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
         }
 
         return room;
