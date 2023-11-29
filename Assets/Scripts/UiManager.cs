@@ -42,6 +42,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleTilesNameBtn;
     [SerializeField] private ButtonHandler toggleTilesColorBtn;
     [SerializeField] private ButtonHandler toggleWallsBtn;
+    [SerializeField] private ButtonHandler toggleSepNamesBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
     [SerializeField] private ButtonHandler toggleClearanceBtn;
@@ -345,6 +346,22 @@ public class UiManager : MonoBehaviour
             building.displayWalls
         };
         toggleWallsBtn.Check();
+
+        toggleSepNamesBtn = new(toggleSepNamesBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room room
+            &&
+            room.separators.Count > 0,
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room room
+            &&
+            room.sepNamesDisplayed
+        };
+        toggleSepNamesBtn.Check();
 
         toggleUHelpersBtn = new(toggleUHelpersBtn.button, true)
         {
@@ -901,10 +918,22 @@ public class UiManager : MonoBehaviour
         toggleTilesColorBtn.Check();
     }
 
+    /// <summary>
+    /// Called by GUI button: Toggle walls of targeted building
+    /// </summary>
     public void ToggleWalls()
     {
         menuTarget.GetComponent<Building>().ToggleWalls();
         toggleWallsBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI button: Toggle separators name of targeted room
+    /// </summary>
+    public void ToggleSeparatorsName()
+    {
+        menuTarget.GetComponent<Room>().ToggleSeparatorText();
+        toggleSepNamesBtn.Check();
     }
 
     ///<summary>

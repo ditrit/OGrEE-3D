@@ -22,6 +22,7 @@ public class Room : Building
     public bool barChart = false;
     public List<Group> openedGroups = new();
     public List<GameObject> separators = new();
+    public bool sepNamesDisplayed = false;
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -548,4 +549,15 @@ public class Room : Building
         pillar.transform.localPosition += new Vector3(_pil.centerXY[0], height / 2, _pil.centerXY[1]);
         pillar.transform.localEulerAngles = new(0, _pil.rotation, 0);
     }
+
+    /// <summary>
+    /// Toggle texts of each separator in <see cref="separators"/>.
+    /// </summary>
+    public void ToggleSeparatorText()
+    {
+        sepNamesDisplayed ^= true;
+        foreach (GameObject obj in separators)
+            obj.GetComponent<Separator>().ToggleTexts(sepNamesDisplayed);
+    }
+    
 }
