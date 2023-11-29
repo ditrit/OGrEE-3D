@@ -21,7 +21,7 @@ public class Room : Building
 
     public bool barChart = false;
     public List<Group> openedGroups = new();
-    public List<GameObject> separators = new();
+    public List<Separator> separators = new();
     public bool sepNamesDisplayed = false;
 
     ///<summary>
@@ -520,7 +520,7 @@ public class Room : Building
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new(0, -angle, 0);
 
-        separators.Add(separator);
+        separators.Add(separator.GetComponent<Separator>());
     }
 
     ///<summary>
@@ -556,8 +556,18 @@ public class Room : Building
     public void ToggleSeparatorText()
     {
         sepNamesDisplayed ^= true;
-        foreach (GameObject obj in separators)
-            obj.GetComponent<Separator>().ToggleTexts(sepNamesDisplayed);
+        foreach (Separator sep in separators)
+            sep.ToggleTexts(sepNamesDisplayed);
     }
-    
+
+    /// <summary>
+    /// Toggle walls, separators and pillars Renderer & Collider according to <see cref="displayWalls"/>.
+    /// </summary>
+    public override void ToggleWalls()
+    {
+        base.ToggleWalls();
+        foreach (Separator sep in separators)
+            sep.ToggleTexts(displayWalls && sepNamesDisplayed);
+    }
+
 }

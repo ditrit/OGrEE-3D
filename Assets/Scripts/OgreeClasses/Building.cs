@@ -101,7 +101,7 @@ public class Building : OgreeObject
     /// <summary>
     /// Toggle walls, separators and pillars Renderer & Collider according to <see cref="displayWalls"/>.
     /// </summary>
-    public void ToggleWalls()
+    public virtual void ToggleWalls()
     {
         displayWalls = !displayWalls;
         foreach (Transform wall in walls)

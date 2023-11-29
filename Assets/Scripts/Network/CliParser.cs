@@ -288,8 +288,8 @@ public class CliParser
                 if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
                     || !room.attributes.ContainsKey("separators"))
                 {
-                    foreach (GameObject sep in room.separators)
-                        Object.Destroy(sep);
+                    foreach (Separator sep in room.separators)
+                        Object.Destroy(sep.gameObject);
                     room.separators.Clear();
 
                     Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);

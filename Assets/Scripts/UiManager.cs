@@ -353,6 +353,8 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<Room>() is Room room
             &&
+            room.displayWalls
+            &&
             room.separators.Count > 0,
 
             toggledCondition = () => menuTarget
