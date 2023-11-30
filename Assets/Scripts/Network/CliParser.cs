@@ -288,13 +288,23 @@ public class CliParser
                 if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
                     || !room.attributes.ContainsKey("separators"))
                 {
-                    foreach (Separator sep in room.separators)
-                        Object.Destroy(sep.gameObject);
-                    room.separators.Clear();
-
-                    Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
-                    foreach (KeyValuePair<string, SSeparator> sep in separators)
-                        room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
+                    Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
+                    // Delete old separators
+                    for (int i = 0; i < room.separators.Count; i++)
+                    {
+                        Separator sep = room.separators[i];
+                        if (!newSeparators.ContainsKey(sep.name))
+                        {
+                            Object.Destroy(sep.gameObject);
+                            room.separators.Remove(sep);
+                        }
+                    }
+                    // Add new separators
+                    foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
+                    {
+                        if (!room.HasSeparator(sep.Key))
+                            room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
+                    }
                 }
             }
             if (newData.attributes.ContainsKey("pillars"))

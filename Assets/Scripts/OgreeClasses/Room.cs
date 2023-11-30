@@ -520,7 +520,10 @@ public class Room : Building
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new(0, -angle, 0);
 
-        separators.Add(separator.GetComponent<Separator>());
+        Separator sep = separator.GetComponent<Separator>();
+        sep.Initialize();
+        sep.ToggleTexts(sepNamesDisplayed);
+        separators.Add(sep);
     }
 
     ///<summary>
@@ -570,4 +573,18 @@ public class Room : Building
             sep.ToggleTexts(displayWalls && sepNamesDisplayed);
     }
 
+    /// <summary>
+    /// Tell if a separator is in this room.
+    /// </summary>
+    /// <param name="_name">The name to search for</param>
+    /// <returns>True if a separator has wanted name</returns>
+    public bool HasSeparator(string _name)
+    {
+        foreach (Separator sep in separators)
+        {
+            if (sep.name == _name)
+                return true;
+        }
+        return false;
+    }
 }

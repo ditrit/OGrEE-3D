@@ -7,7 +7,10 @@ public class Separator : MonoBehaviour
     [SerializeField] private TMP_Text textA;
     [SerializeField] private TMP_Text textB;
 
-    private void Start()
+    /// <summary>
+    /// Setup all texts
+    /// </summary>
+    public void Initialize()
     {
         SetupText(textA);
         SetupText(textB);
