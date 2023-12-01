@@ -288,14 +288,23 @@ public class CliParser
                 if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
                     || !room.attributes.ContainsKey("separators"))
                 {
-                    foreach (Transform wall in room.walls)
+                    Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
+                    // Delete old separators
+                    for (int i = 0; i < room.separators.Count; i++)
                     {
-                        if (wall.name.Contains("Separator"))
-                            Object.Destroy(wall.gameObject);
+                        Separator sep = room.separators[i];
+                        if (!newSeparators.ContainsKey(sep.name))
+                        {
+                            Object.Destroy(sep.gameObject);
+                            room.separators.Remove(sep);
+                        }
                     }
-                    Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
-                    foreach (KeyValuePair<string, SSeparator> sep in separators)
-                        room.BuildSeparator(sep.Value);
+                    // Add new separators
+                    foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
+                    {
+                        if (!room.HasSeparator(sep.Key))
+                            room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
+                    }
                 }
             }
             if (newData.attributes.ContainsKey("pillars"))
@@ -310,7 +319,7 @@ public class CliParser
                     }
                     Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
                     foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                        room.BuildPillar(pillar.Value);
+                        room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
                 }
             }
             if (newData.attributes.ContainsKey("reserved"))

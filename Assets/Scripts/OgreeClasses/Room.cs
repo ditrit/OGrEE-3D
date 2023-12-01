@@ -21,6 +21,8 @@ public class Room : Building
 
     public bool barChart = false;
     public List<Group> openedGroups = new();
+    public List<Separator> separators = new();
+    public bool sepNamesDisplayed = false;
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -488,11 +490,15 @@ public class Room : Building
         Vector2 startPos = new(_sep.startPosXYm[0], _sep.startPosXYm[1]);
         Vector2 endPos = new(_sep.endPosXYm[0], _sep.endPosXYm[1]);
 
+        if (startPos.x < endPos.x)
+            (startPos, endPos) = (endPos, startPos);
+
         float length = Vector2.Distance(startPos, endPos);
         float height = Utils.ParseDecFrac(attributes["height"]);
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.instance.separatorModel);
+        separator.name = _sep.name;
         separator.transform.parent = walls;
 
         // Set textured box
@@ -516,6 +522,11 @@ public class Room : Building
         // Apply wanted transform
         separator.transform.localPosition += new Vector3(startPos.x, 0, startPos.y);
         separator.transform.localEulerAngles = new(0, -angle, 0);
+
+        Separator sep = separator.GetComponent<Separator>();
+        sep.Initialize();
+        sep.ToggleTexts(sepNamesDisplayed);
+        separators.Add(sep);
     }
 
     ///<summary>
@@ -527,6 +538,7 @@ public class Room : Building
         float height = Utils.ParseDecFrac(attributes["height"]);
 
         GameObject pillar = Instantiate(GameManager.instance.pillarModel);
+        pillar.name += $"_{_pil.name}";
         pillar.transform.parent = walls;
 
         pillar.transform.localScale = new(_pil.sizeXY[0], height, _pil.sizeXY[1]);
@@ -542,5 +554,40 @@ public class Room : Building
 
         pillar.transform.localPosition += new Vector3(_pil.centerXY[0], height / 2, _pil.centerXY[1]);
         pillar.transform.localEulerAngles = new(0, _pil.rotation, 0);
+    }
+
+    /// <summary>
+    /// Toggle texts of each separator in <see cref="separators"/>.
+    /// </summary>
+    public void ToggleSeparatorText()
+    {
+        sepNamesDisplayed ^= true;
+        foreach (Separator sep in separators)
+            sep.ToggleTexts(sepNamesDisplayed);
+    }
+
+    /// <summary>
+    /// Toggle walls, separators and pillars Renderer & Collider according to <see cref="displayWalls"/>.
+    /// </summary>
+    public override void ToggleWalls()
+    {
+        base.ToggleWalls();
+        foreach (Separator sep in separators)
+            sep.ToggleTexts(displayWalls && sepNamesDisplayed);
+    }
+
+    /// <summary>
+    /// Tell if a separator is in this room.
+    /// </summary>
+    /// <param name="_name">The name to search for</param>
+    /// <returns>True if a separator has wanted name</returns>
+    public bool HasSeparator(string _name)
+    {
+        foreach (Separator sep in separators)
+        {
+            if (sep.name == _name)
+                return true;
+        }
+        return false;
     }
 }
