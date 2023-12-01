@@ -34,7 +34,7 @@ public class Separator : MonoBehaviour
     {
         Vector3 scale = transform.GetChild(0).localScale / 2;
         _text.text = name;
-        _text.transform.localPosition += new Vector3(scale.x, scale.y, 0);
+        _text.transform.localPosition = new Vector3(scale.x, scale.y, _text.transform.localPosition.z);
         _text.gameObject.SetActive(false);
     }
 
