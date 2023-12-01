@@ -490,6 +490,9 @@ public class Room : Building
         Vector2 startPos = new(_sep.startPosXYm[0], _sep.startPosXYm[1]);
         Vector2 endPos = new(_sep.endPosXYm[0], _sep.endPosXYm[1]);
 
+        if (startPos.x < endPos.x)
+            (startPos, endPos) = (endPos, startPos);
+
         float length = Vector2.Distance(startPos, endPos);
         float height = Utils.ParseDecFrac(attributes["height"]);
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
