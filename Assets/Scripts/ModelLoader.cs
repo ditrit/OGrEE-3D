@@ -32,7 +32,7 @@ public class ModelLoader : MonoBehaviour
         Uri filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
-        AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
+        AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions(false, true);
 
         // BoxCollider added later
         assetLoaderOptions.GenerateColliders = false;
