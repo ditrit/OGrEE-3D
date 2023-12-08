@@ -67,6 +67,17 @@ public class ApiManager : MonoBehaviour
         public SApiTag data;
     }
 
+    private struct SLayerResp
+    {
+        public List<SApiLayer> objects;
+    }
+
+    private struct SLayerContentResp
+    {
+        public string message;
+        public List<SApiObject> data;
+    }
+
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
@@ -164,6 +175,7 @@ public class ApiManager : MonoBehaviour
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
+                await GetObject("layers", CreateLayer);
             }
             catch (HttpRequestException e)
             {
@@ -491,5 +503,37 @@ public class ApiManager : MonoBehaviour
         await Task.Run(() => GameManager.instance.CreateTag(resp.data));
         UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+    }
+
+
+    public Task CreateLayer(string _input)
+    {
+        try
+        {
+            string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+            SLayerResp resp = JsonConvert.DeserializeObject<SLayerResp>(dataStr);
+            foreach (SApiLayer al in resp.objects)
+            {
+                Layer layer = new(al);
+                if (!LayerManager.instance.layers.Contains(layer))
+                    LayerManager.instance.layers.Add(layer);
+            }
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+        return null;
+    }
+
+
+    public Task<List<GameObject>>GetLayerContent(string _input)
+    {
+        List<GameObject> list = new();
+        SLayerContentResp resp = JsonConvert.DeserializeObject<SLayerContentResp>(_input);
+        foreach (SApiObject obj in resp.data)
+            list.Add(Utils.GetObjectById(obj.id));
+        return Task.FromResult(list);
     }
 }
