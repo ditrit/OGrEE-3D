@@ -505,7 +505,10 @@ public class ApiManager : MonoBehaviour
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
-
+    /// <summary>
+    /// Deserialize API response to <see cref="SLayerResp"/>, create a Layer & add it to <see cref="LayerManager.layers"/>.
+    /// </summary>
+    /// <param name="_input">The API response</param>
     public Task CreateLayer(string _input)
     {
         try
@@ -527,13 +530,18 @@ public class ApiManager : MonoBehaviour
         return null;
     }
 
-
-    public Task<List<GameObject>>GetLayerContent(string _input)
+    /// <summary>
+    /// Deserialize API response to <see cref="SLayerContentResp"/> and return a list of corresponding GameObjects
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns>The list of GameObjects correponding to the API response</returns>
+    public Task<List<GameObject>> GetLayerContent(string _input)
     {
         List<GameObject> list = new();
         SLayerContentResp resp = JsonConvert.DeserializeObject<SLayerContentResp>(_input);
         foreach (SApiObject obj in resp.data)
             list.Add(Utils.GetObjectById(obj.id));
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         return Task.FromResult(list);
     }
 }

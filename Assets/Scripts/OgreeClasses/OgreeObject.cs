@@ -34,6 +34,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public bool isDoomed = false;
     public bool isLodLocked = false;
 
+    [Header("Layers")]
+    public Dictionary<Layer, bool> layers = new();
+
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();

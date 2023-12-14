@@ -756,4 +756,30 @@ public class ObjectDisplayController : MonoBehaviour
         }
         return false;
     }
+
+    /// <summary>
+    /// Hide this object, unload children
+    /// </summary>
+    public async void HideObject()
+    {
+        Display(false, false, false);
+        isHidden = true;
+        await GetComponent<Item>().LoadChildren(0, true);
+    }
+
+    /// <summary>
+    /// Display this object, load children if selected
+    /// </summary>
+    public async void DisplayObject()
+    {
+        if (GameManager.instance.GetSelected().Contains(gameObject))
+        {
+            Display(true, false, false);
+            if (GetComponent<Item>() is Item item && item.currentLod == 0)
+                await item.LoadChildren(1);
+        }
+        else
+            Display(true, true, true);
+        isHidden = false;
+    }
 }

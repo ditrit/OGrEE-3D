@@ -88,6 +88,9 @@ public class UiManager : MonoBehaviour
     public DynamicButtonList hiddenObjList;
     public List<Item> hiddenObjects;
 
+    [Header("Layers")]
+    public DynamicButtonList layersList;
+
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
     [SerializeField] private bool defaultAutoUHelpers;
@@ -503,6 +506,7 @@ public class UiManager : MonoBehaviour
         SetCurrentItemText();
         UpdateGuiInfos();
         SetupRightClickMenu();
+        layersList.RebuildMenu(BuildLayersList);
     }
 
     ///<summary>
@@ -799,6 +803,48 @@ public class UiManager : MonoBehaviour
             btn.onClick.AddListener(() => Destroy(newButton));
         }
         return hiddenObjects.Count;
+    }
+
+    /// <summary>
+    /// Generate buttons under <see cref="layersList"/> from first selected object's layers list.
+    /// </summary>
+    /// <returns>The number of created buttons</returns>
+    public int BuildLayersList()
+    {
+        if (GameManager.instance.selectMode
+            && GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>() is OgreeObject obj)
+        {
+            foreach (KeyValuePair<Layer, bool> kvp in obj.layers)
+            {
+                Layer layer = kvp.Key;
+                GameObject newButton = Instantiate(layersList.buttonPrefab, layersList.transform);
+                newButton.name = $"ButtonLayer_{layer.slug}";
+                TMP_Text btnText = newButton.transform.GetChild(0).GetComponent<TMP_Text>();
+                btnText.text = layer.slug;
+                btnText.color = kvp.Value ? Color.green : Color.red;
+
+                Button btn = newButton.GetComponent<Button>();
+                btn.onClick.AddListener(async () =>
+                {
+                    obj.layers[kvp.Key] ^= true;
+                    List<GameObject> relatedObjects = await layer.GetRelatedObjects(obj.id);
+                    foreach (GameObject go in relatedObjects)
+                    {
+                        if (go.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
+                        {
+                            if (obj.layers[kvp.Key])
+                                odc.DisplayObject();
+                            else
+                                odc.HideObject();
+                        }
+                    }
+                    btnText.color = obj.layers[kvp.Key] ? Color.green : Color.red;
+                });
+            }
+            return obj.layers.Count;
+        }
+        else
+            return 0;
     }
 
     ///<summary>
@@ -1396,12 +1442,10 @@ public class UiManager : MonoBehaviour
     /// Hide given <paramref name="_obj"/>
     /// </summary>
     /// <param name="_obj">The GameObject to hide</param>
-    public async void HideObject(GameObject _obj)
+    public void HideObject(GameObject _obj)
     {
         Item item = _obj.GetComponent<Item>();
-        _obj.GetComponent<ObjectDisplayController>().Display(false, false, false);
-        _obj.GetComponent<ObjectDisplayController>().isHidden = true;
-        await item.LoadChildren(0, true);
+        _obj.GetComponent<ObjectDisplayController>().HideObject();
         if (!hiddenObjects.Contains(item))
         {
             hiddenObjects.Add(item);
@@ -1423,17 +1467,9 @@ public class UiManager : MonoBehaviour
     /// Display given <paramref name="_obj"/>
     /// </summary>
     /// <param name="_obj">The GameObject to display</param>
-    public async void DisplayObject(GameObject _obj)
+    public void DisplayObject(GameObject _obj)
     {
-        if (GameManager.instance.GetSelected().Contains(_obj))
-        {
-            _obj.GetComponent<ObjectDisplayController>().Display(true, false, false);
-            if (_obj.GetComponent<Item>() is Item item && item.currentLod == 0)
-                await item.LoadChildren(1);
-        }
-        else
-            _obj.GetComponent<ObjectDisplayController>().Display(true, true, true);
-        _obj.GetComponent<ObjectDisplayController>().isHidden = false;
+        _obj.GetComponent<ObjectDisplayController>().DisplayObject();
         hiddenObjects.Remove(_obj.GetComponent<Item>());
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }
