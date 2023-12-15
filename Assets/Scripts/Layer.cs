@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -25,23 +26,34 @@ public class Layer
         filters = _apiLayer.filters;
     }
 
+    /// <summary>
+    /// Fill <see cref="targetObjects"/> from <see cref="applicability"/> and register this layer in each <see cref="targetObjects"/>
+    /// </summary>
     public void FindObjects()
     {
         targetObjects.Clear();
-        // resultObjects.Clear();
 
-        // Apply applicability
-        if (applicability.EndsWith("**"))
+        // Fill targetObjects
+        if (applicability.EndsWith(".**"))
         {
+            // Remove ".**" from applicability
+            string pattern = applicability.Remove(applicability.Length - 3);
             foreach (DictionaryEntry de in GameManager.instance.allItems)
             {
-                if (((string)de.Key).StartsWith(applicability.Remove(applicability.Length - 3)))
+                if (((string)de.Key).StartsWith(pattern))
                     targetObjects.Add((GameObject)de.Value);
             }
         }
-        else if (applicability.EndsWith("*"))
+        else if (applicability.EndsWith(".*"))
         {
-
+            // Remove ".*" from applicability
+            string pattern = applicability.Remove(applicability.Length - 2);
+            foreach (DictionaryEntry de in GameManager.instance.allItems)
+            {
+                string key = (string)de.Key;
+                if (key.StartsWith(pattern) && key.Count(x => x == '.') <= pattern.Count(x => x == '.') + 1)
+                    targetObjects.Add((GameObject)de.Value);
+            }
         }
         else
         {
@@ -49,13 +61,13 @@ public class Layer
                 targetObjects.Add(go);
         }
 
+        // Register the layer in each OgreeObject
         foreach (GameObject go in targetObjects)
         {
             OgreeObject obj = go.GetComponent<OgreeObject>();
             if (!obj.layers.ContainsKey(this))
                 obj.layers.Add(this, true);
         }
-
     }
 
 
@@ -69,7 +81,7 @@ public class Layer
 
         List<GameObject> apiResultObjects = await ApiManager.instance.GetObject(apiCall, ApiManager.instance.GetLayerContent);
         Debug.Log($"Got {apiResultObjects.Count} objects");
-        
+
         await Task.Delay(10);
         foreach (GameObject go in apiResultObjects)
         {
