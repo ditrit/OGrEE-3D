@@ -26,6 +26,16 @@ public class Layer
         filters = _apiLayer.filters;
     }
 
+    ~Layer()
+    {
+        foreach (GameObject go in targetObjects)
+        {
+            OgreeObject obj = go.GetComponent<OgreeObject>();
+            if (obj.layers.ContainsKey(this))
+                obj.layers.Remove(this);
+        }
+    }
+
     /// <summary>
     /// Fill <see cref="targetObjects"/> from <see cref="applicability"/> and register this layer in each <see cref="targetObjects"/>
     /// </summary>
@@ -70,27 +80,20 @@ public class Layer
         }
     }
 
-
+    /// <summary>
+    /// Ask the API for objects corresponding to this layer in <paramref name="_rootId"/>
+    /// </summary>
+    /// <param name="_rootId">The OgreeObject's id in which we use this layer</param>
+    /// <returns>All related GameObjects</returns>
     public async Task<List<GameObject>> GetRelatedObjects(string _rootId)
     {
-        List<GameObject> relatedObjects = new();
-
-        string apiCall = $"objects?id={applicability}.%2A&namespace=physical.hierarchy";
-        foreach (KeyValuePair<string, string> kvp in filters)
-            apiCall += $"&{kvp.Key}={kvp.Value}";
+        string apiCall = $"layers/{slug}/objects?root={_rootId}&recursive=true";
 
         List<GameObject> apiResultObjects = await ApiManager.instance.GetObject(apiCall, ApiManager.instance.GetLayerContent);
-        Debug.Log($"Got {apiResultObjects.Count} objects");
+        Debug.Log($"Got {apiResultObjects.Count} objects for {slug} in {_rootId}");
+        // foreach (GameObject go in apiResultObjects)
+        //     Debug.Log($"°{go.name}");
 
-        await Task.Delay(10);
-        foreach (GameObject go in apiResultObjects)
-        {
-            if (go.GetComponent<OgreeObject>().id.Contains(_rootId))
-                relatedObjects.Add(go);
-        }
-
-        // foreach (GameObject go in relatedObjects)
-        //     Debug.Log($"[] {go.name}");
-        return relatedObjects;
+        return apiResultObjects;
     }
 }

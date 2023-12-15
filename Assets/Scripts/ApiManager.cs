@@ -540,7 +540,10 @@ public class ApiManager : MonoBehaviour
         List<GameObject> list = new();
         SLayerContentResp resp = JsonConvert.DeserializeObject<SLayerContentResp>(_input);
         foreach (SApiObject obj in resp.data)
-            list.Add(Utils.GetObjectById(obj.id));
+        {
+            if (Utils.GetObjectById(obj.id) is GameObject go)
+                list.Add(go);
+        }
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         return Task.FromResult(list);
     }
