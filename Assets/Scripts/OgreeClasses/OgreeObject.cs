@@ -36,6 +36,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     [Header("Layers")]
     public Dictionary<Layer, bool> layers = new();
+    public List<string> layerSlugs = new(); // Keep ?
 
     public void OnBeforeSerialize()
     {
@@ -46,6 +47,10 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
         }
+
+        layerSlugs.Clear();
+        foreach (KeyValuePair<Layer, bool> kvp in layers)
+            layerSlugs.Add(kvp.Key.slug);
     }
 
     public void OnAfterDeserialize()
@@ -262,5 +267,15 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
+    }
+
+    public Layer GetLayer(string _slug)
+    {
+        foreach (KeyValuePair<Layer, bool> kvp in layers)
+        {
+            if (kvp.Key.slug == _slug)
+                return kvp.Key;
+        }
+        return null;
     }
 }

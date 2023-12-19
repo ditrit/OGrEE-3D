@@ -15,6 +15,11 @@ public class Layer
     [Header("Refs for 3D")]
     public List<GameObject> targetObjects = new();
 
+    public Layer()
+    {
+
+    }
+    
     /// <summary>
     /// Custom constructor from a <see cref="SApiLayer"/>
     /// </summary>
@@ -39,7 +44,7 @@ public class Layer
     /// <summary>
     /// Fill <see cref="targetObjects"/> from <see cref="applicability"/> and register this layer in each <see cref="targetObjects"/>
     /// </summary>
-    public void FindObjects()
+    public virtual void FindObjects()
     {
         targetObjects.Clear();
 
