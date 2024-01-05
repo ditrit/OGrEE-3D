@@ -534,10 +534,15 @@ public class UiManager : MonoBehaviour
             apiText.text = $"Connected to {_e.apiData["Customer"]}";
             apiText.color = Color.green;
         }
-        else
+        else if (!string.IsNullOrEmpty(ApiManager.instance.GetApiUrl()))
         {
             apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
             apiText.color = Color.red;
+        }
+        else
+        {
+            apiText.text = "Not connected to API";
+            apiText.color = Color.white;
         }
         apiInfos.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
         apiInfos.text += $"\nAPI build date:\t\t{_e.apiData["BuildDate"]}";
