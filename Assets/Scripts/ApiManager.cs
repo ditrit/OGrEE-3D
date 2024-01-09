@@ -175,7 +175,6 @@ public class ApiManager : MonoBehaviour
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
-                await GetObject("layers", CreateLayer);
             }
             catch (HttpRequestException e)
             {
@@ -527,7 +526,7 @@ public class ApiManager : MonoBehaviour
         {
             Debug.LogError(e);
         }
-        return null;
+        return Task.CompletedTask;
     }
 
     /// <summary>

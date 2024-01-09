@@ -19,12 +19,19 @@ public class LayerManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        EventManager.instance.ConnectApi.Add(OnApiConnect);
         EventManager.instance.ImportFinished.Add(OnImportFinished);
     }
 
     private void OnDestroy()
     {
         EventManager.instance.ImportFinished.Remove(OnImportFinished);
+        EventManager.instance.ConnectApi.Remove(OnApiConnect);
+    }
+
+    private async void OnApiConnect(ConnectApiEvent _e)
+    {
+        await ApiManager.instance.GetObject("layers", ApiManager.instance.CreateLayer);
     }
 
     private void OnImportFinished(ImportFinishedEvent _e)
