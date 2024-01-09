@@ -128,6 +128,15 @@ public class ConnectApiEvent : CustomEvent
 {
     public Dictionary<string, string> apiData;
 
+    public ConnectApiEvent()
+    {
+        apiData = new();
+        apiData["BuildDate"] = "";
+        apiData["BuildHash"] = "";
+        apiData["BuildTree"] = "";
+        apiData["CommitDate"] = "";
+    }
+
     public ConnectApiEvent(Dictionary<string, string> _data)
     {
         apiData = _data;

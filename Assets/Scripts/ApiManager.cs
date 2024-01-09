@@ -142,13 +142,7 @@ public class ApiManager : MonoBehaviour
         url = null;
         token = null;
         server = null;
-        EventManager.instance.Raise(new ConnectApiEvent(new Dictionary<string, string>
-        {
-            ["BuildDate"] = "",
-            ["BuildHash"] = "",
-            ["BuildTree"] = "",
-            ["CommitDate"] = ""
-        }));
+        EventManager.instance.Raise(new ConnectApiEvent());
     }
 
     ///<summary>
