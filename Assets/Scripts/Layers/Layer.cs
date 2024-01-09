@@ -19,7 +19,7 @@ public class Layer
     {
 
     }
-    
+
     /// <summary>
     /// Custom constructor from a <see cref="SApiLayer"/>
     /// </summary>

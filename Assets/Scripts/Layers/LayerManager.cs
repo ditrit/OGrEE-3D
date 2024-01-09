@@ -43,7 +43,6 @@ public class LayerManager : MonoBehaviour
             switch (obj.category)
             {
                 case Category.Room:
-                    // if (!obj.layerSlugs.Contains("racks"))
                     if (obj.GetLayer("racks") == null)
                         layers.Add(AutoLayerByCategory("rack", obj));
                     if (obj.GetLayer("corridors") == null)
@@ -53,20 +52,31 @@ public class LayerManager : MonoBehaviour
                     break;
                 case Category.Rack:
                 case Category.Device:
+                    CreateAutoLayersItem((Item)obj);
                     break;
             }
 
         }
 
         // Link each layer to related object(s)
-        foreach (Layer l in layers)
-            l.FindObjects();
+        for (int i = 0; i < layers.Count; i++)
+            layers[i].FindObjects();
     }
 
-    public void CreateAutoLayersItem(Item _item, List<string> _deviceTypes)
+    public void CreateAutoLayersItem(Item _item)
     {
-        foreach (string type in _deviceTypes)
-            layers.Add(AutoLayerByDeviceType(type, _item));
+        List<string> deviceTypes = new();
+        foreach (Transform child in _item.transform)
+        {
+            if (child.GetComponent<Device>() is Device dv && dv.attributes.ContainsKey("type") && !deviceTypes.Contains(dv.attributes["type"]))
+                deviceTypes.Add(dv.attributes["type"]);
+        }
+
+        foreach (string type in deviceTypes)
+        {
+            if (_item.GetLayer(type.EndsWith("s") ? type : $"{type}s") == null)
+                layers.Add(AutoLayerByDeviceType(type, _item));
+        }
     }
 
     private Layer AutoLayerByCategory(string _cat, OgreeObject _obj)
@@ -78,7 +88,7 @@ public class LayerManager : MonoBehaviour
 
     private Layer AutoLayerByDeviceType(string _type, OgreeObject _obj)
     {
-        AutoLayer newLayer = new($"{_type}s", _obj.id);
+        AutoLayer newLayer = new(_type.EndsWith("s") ? _type : $"{_type}s", _obj.id);
         newLayer.filters.Add("category", "device");
         newLayer.filters.Add("type", _type);
         return newLayer;

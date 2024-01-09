@@ -827,7 +827,7 @@ public class UiManager : MonoBehaviour
                 btn.onClick.AddListener(async () =>
                 {
                     obj.layers[kvp.Key] ^= true;
-                    List<GameObject> relatedObjects = await layer.GetRelatedObjects(obj.id);
+                    List<GameObject> relatedObjects = layer is AutoLayer autoLayer ? await autoLayer.GetRelatedObjects(obj.transform) : await layer.GetRelatedObjects(obj.id);
                     foreach (GameObject go in relatedObjects)
                     {
                         if (go.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)

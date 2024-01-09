@@ -36,7 +36,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     [Header("Layers")]
     public Dictionary<Layer, bool> layers = new();
-    public List<string> layerSlugs = new(); // Keep ?
 
     public void OnBeforeSerialize()
     {
@@ -47,10 +46,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
         }
-
-        layerSlugs.Clear();
-        foreach (KeyValuePair<Layer, bool> kvp in layers)
-            layerSlugs.Add(kvp.Key.slug);
     }
 
     public void OnAfterDeserialize()
