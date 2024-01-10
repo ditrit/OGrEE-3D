@@ -55,12 +55,19 @@ public class LayerManager : MonoBehaviour
                     CreateAutoLayersItem((Item)obj);
                     break;
             }
-
         }
 
         // Link each layer to related object(s)
         for (int i = 0; i < layers.Count; i++)
             layers[i].FindObjects();
+
+        StartCoroutine(WaitAndRebuildLayersMenu());
+    }
+
+    private IEnumerator WaitAndRebuildLayersMenu()
+    {
+        yield return new WaitForEndOfFrame();
+        UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
 
     public void CreateAutoLayersItem(Item _item)
