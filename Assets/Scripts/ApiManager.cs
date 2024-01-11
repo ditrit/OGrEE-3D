@@ -515,11 +515,7 @@ public class ApiManager : MonoBehaviour
             string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
             SLayerResp resp = JsonConvert.DeserializeObject<SLayerResp>(dataStr);
             foreach (SApiLayer al in resp.objects)
-            {
-                Layer layer = new(al);
-                if (!LayerManager.instance.layers.Contains(layer))
-                    LayerManager.instance.layers.Add(layer);
-            }
+                LayerManager.instance.CreateLayerFromSApiLayer(al);
             EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         }
         catch (Exception e)

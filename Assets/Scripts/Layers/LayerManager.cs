@@ -16,7 +16,7 @@ public class LayerManager : MonoBehaviour
         else
             Destroy(this);
     }
-    // Start is called before the first frame update
+
     private void Start()
     {
         EventManager.instance.ConnectApi.Add(OnApiConnect);
@@ -101,4 +101,20 @@ public class LayerManager : MonoBehaviour
         return newLayer;
     }
 
+    public void CreateLayerFromSApiLayer(SApiLayer _apiLayer)
+    {
+        Layer layer = new(_apiLayer);
+        if (!layers.Contains(layer))
+            layers.Add(layer);
+    }
+
+    public Layer GetLayer(string _slug)
+    {
+        foreach (Layer l in layers)
+        {
+            if (l.slug == _slug)
+                return l;
+        }
+        return null;
+    }
 }

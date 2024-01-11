@@ -60,14 +60,17 @@ public class CommandType
     public const string LoadTemplate = "load template";
     public const string Select = "select";
     public const string Delete = "delete";
-    public const string DeleteTag = "delete-tag";
     public const string Focus = "focus";
     public const string Create = "create";
     public const string Modify = "modify";
-    public const string ModifyTag = "modify-tag";
     public const string Interact = "interact";
     public const string UI = "ui";
     public const string Camera = "camera";
+    public const string ModifyTag = "modify-tag";
+    public const string DeleteTag = "delete-tag";
+    public const string CreateLayer = "create-layer";
+    public const string ModifyLayer = "modify-layer";
+    public const string DeleteLayer = "delete-layer";
 }
 
 public class CommandParameter

@@ -41,6 +41,14 @@ public class Layer
         }
     }
 
+    public void UpdateFromSApiLayer(SApiLayer _apiLayer)
+    {
+        slug = _apiLayer.slug;
+        applicability = _apiLayer.applicability.Replace("/", ".");
+        filters = _apiLayer.filters;
+        FindObjects();
+    }
+
     /// <summary>
     /// Fill <see cref="targetObjects"/> from <see cref="applicability"/> and register this layer in each <see cref="targetObjects"/>
     /// </summary>
