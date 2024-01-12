@@ -43,11 +43,11 @@ public class LayerManager : MonoBehaviour
             switch (obj.category)
             {
                 case Category.Room:
-                    if (obj.GetLayer("racks") == null)
+                    if (obj.GetComponentInChildren<Rack>() && obj.GetLayer("racks") == null)
                         layers.Add(AutoLayerByCategory("rack", obj));
-                    if (obj.GetLayer("corridors") == null)
+                    if (obj.GetComponentInChildren<Corridor>() && obj.GetLayer("corridors") == null)
                         layers.Add(AutoLayerByCategory("corridor", obj));
-                    if (obj.GetLayer("groups") == null)
+                    if (obj.GetComponentInChildren<Group>() && obj.GetLayer("groups") == null)
                         layers.Add(AutoLayerByCategory("group", obj));
                     break;
                 case Category.Rack:
