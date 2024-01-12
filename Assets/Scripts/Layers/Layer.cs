@@ -49,12 +49,19 @@ public class Layer
         FindObjects();
     }
 
+    public void ClearObjects()
+    {
+        foreach (GameObject go in targetObjects)
+            go.GetComponent<OgreeObject>().layers.Remove(this);
+        targetObjects.Clear();
+    }
+
     /// <summary>
     /// Fill <see cref="targetObjects"/> from <see cref="applicability"/> and register this layer in each <see cref="targetObjects"/>
     /// </summary>
     public virtual void FindObjects()
     {
-        targetObjects.Clear();
+        ClearObjects();
 
         // Fill targetObjects
         if (applicability.EndsWith(".**"))

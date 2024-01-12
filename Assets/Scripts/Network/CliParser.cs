@@ -572,6 +572,7 @@ public class CliParser
     private void DeleteLayer(string _input)
     {
         Layer layerToDel = LayerManager.instance.GetLayer(_input);
+        layerToDel.ClearObjects();
         LayerManager.instance.layers.Remove(layerToDel);
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
