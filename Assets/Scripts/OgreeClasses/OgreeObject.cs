@@ -264,6 +264,11 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
     }
 
+    /// <summary>
+    /// Get a Layer using its slug
+    /// </summary>
+    /// <param name="_slug">The slug to look for</param>
+    /// <returns>The asked Layer or null</returns>
     public Layer GetLayer(string _slug)
     {
         foreach (KeyValuePair<Layer, bool> kvp in layers)
