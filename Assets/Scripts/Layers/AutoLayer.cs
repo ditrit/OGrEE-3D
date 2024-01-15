@@ -26,15 +26,14 @@ public class AutoLayer : Layer
     /// <summary>
     /// Get objects corresponding to this layer, using <see cref="filters"/>
     /// </summary>
-    /// <param name="_target">The object in which we search the related objects</param>
     /// <returns>All related GameObjects</returns>
-    public Task<List<GameObject>> GetRelatedObjects(Transform _target)
+    public Task<List<GameObject>> GetRelatedObjects()
     {
         List<GameObject> objects = new();
         // Case for catching Devices (only one with type key)
         if (filters.ContainsKey("type"))
         {
-            foreach (Transform child in _target)
+            foreach (Transform child in targetObjects[0].transform)
             {
                 if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"]
                                                                         && obj.attributes["type"] == filters["type"])
@@ -44,7 +43,7 @@ public class AutoLayer : Layer
         // Case for Racks, Corridors or Groups
         else
         {
-            foreach (Transform child in _target)
+            foreach (Transform child in targetObjects[0].transform)
             {
                 if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"])
                     objects.Add(child.gameObject);
