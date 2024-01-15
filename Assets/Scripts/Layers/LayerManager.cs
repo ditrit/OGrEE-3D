@@ -64,12 +64,20 @@ public class LayerManager : MonoBehaviour
         StartCoroutine(WaitAndRebuildLayersMenu());
     }
 
+    /// <summary>
+    /// Wait until the end of current frame and call <see cref="UiManager.layerList.RebuildMenu"/>
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator WaitAndRebuildLayersMenu()
     {
         yield return new WaitForEndOfFrame();
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
 
+    /// <summary>
+    /// Get a list of all devices types in an <paramref name="_item"/> and generate corresponding <see cref="AutoLayer"/>
+    /// </summary>
+    /// <param name="_item">The root Item</param>
     public void CreateAutoLayersItem(Item _item)
     {
         List<string> deviceTypes = new();
@@ -86,6 +94,12 @@ public class LayerManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Create an <see cref="AutoLayer"/> for given category
+    /// </summary>
+    /// <param name="_cat">The value of the "category" filter</param>
+    /// <param name="_obj">The object targeted by the Layer</param>
+    /// <returns>The newly created Layer</returns>
     private Layer AutoLayerByCategory(string _cat, OgreeObject _obj)
     {
         AutoLayer newLayer = new($"{_cat}s", _obj.id);
@@ -93,6 +107,12 @@ public class LayerManager : MonoBehaviour
         return newLayer;
     }
 
+    /// <summary>
+    /// Create an <see cref="AutoLayer"/> for given device type
+    /// </summary>
+    /// <param name="_type">The value of the "type" filter</param>
+    /// <param name="_obj">The object targeted by the Layer</param>
+    /// <returns>The newly created Layer</returns>
     private Layer AutoLayerByDeviceType(string _type, OgreeObject _obj)
     {
         AutoLayer newLayer = new(_type.EndsWith("s") ? _type : $"{_type}s", _obj.id);
@@ -101,6 +121,10 @@ public class LayerManager : MonoBehaviour
         return newLayer;
     }
 
+    /// <summary>
+    /// Create a <see cref="Layer"/> from given <see cref="SApiLayer"/>
+    /// </summary>
+    /// <param name="_apiLayer">The <see cref="SApiLayer"/> used for creation</param>
     public void CreateLayerFromSApiLayer(SApiLayer _apiLayer)
     {
         Layer layer = new(_apiLayer);
@@ -108,6 +132,11 @@ public class LayerManager : MonoBehaviour
             layers.Add(layer);
     }
 
+    /// <summary>
+    /// Get a Layer using its slug
+    /// </summary>
+    /// <param name="_slug">The slug to look for</param>
+    /// <returns>The asked Layer or null</returns>
     public Layer GetLayer(string _slug)
     {
         foreach (Layer l in layers)

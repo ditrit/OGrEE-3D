@@ -12,6 +12,9 @@ public class AutoLayer : Layer
         filters = new();
     }
 
+    /// <summary>
+    /// Use <see cref="Layer.FindObjects"/>, then if <see cref="targetObjects"/> is empty, delete this layer.
+    /// </summary>
     public async override void FindObjects()
     {
         await Task.Delay(10);
@@ -20,6 +23,11 @@ public class AutoLayer : Layer
             LayerManager.instance.layers.Remove(this);
     }
 
+    /// <summary>
+    /// Get objects corresponding to this layer, using <see cref="filters"/>
+    /// </summary>
+    /// <param name="_target">The object in which we search the related objects</param>
+    /// <returns>All related GameObjects</returns>
     public Task<List<GameObject>> GetRelatedObjects(Transform _target)
     {
         List<GameObject> objects = new();

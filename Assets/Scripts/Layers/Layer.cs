@@ -41,6 +41,10 @@ public class Layer
         }
     }
 
+    /// <summary>
+    /// Update the layer data from a <see cref="SApiLayer"/>
+    /// </summary>
+    /// <param name="_apiLayer">The SApiLayer used to update the layer</param>
     public void UpdateFromSApiLayer(SApiLayer _apiLayer)
     {
         slug = _apiLayer.slug;
@@ -49,6 +53,9 @@ public class Layer
         FindObjects();
     }
 
+    /// <summary>
+    /// Remove this layer from every OgreeObject <see cref="targetObjects"/> and then, clear targetObjects.
+    /// </summary>
     public void ClearObjects()
     {
         foreach (GameObject go in targetObjects)
@@ -111,8 +118,6 @@ public class Layer
 
         List<GameObject> apiResultObjects = await ApiManager.instance.GetObject(apiCall, ApiManager.instance.GetLayerContent);
         Debug.Log($"Got {apiResultObjects.Count} objects for {slug} in {_rootId}");
-        // foreach (GameObject go in apiResultObjects)
-        //     Debug.Log($"°{go.name}");
 
         return apiResultObjects;
     }
