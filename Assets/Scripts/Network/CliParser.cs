@@ -553,6 +553,10 @@ public class CliParser
         }
     }
 
+    /// <summary>
+    /// Deserialize given <see cref="SApiLayer"/> and create a Layer from it
+    /// </summary>
+    /// <param name="_input">The SApiLayer tp deserialize</param>
     private void CreateLayer(string _input)
     {
         SApiLayer apiLayer = JsonConvert.DeserializeObject<SApiLayer>(_input);
@@ -560,6 +564,10 @@ public class CliParser
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
 
+    /// <summary>
+    /// Deserialize given old-slug / SApiLayer pair and apply modification to corresponding layer.
+    /// </summary>
+    /// <param name="_input">The old-slug / SApiLayer to deserialize</param>
     private void ModifyLayer(string _input)
     {
         Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
@@ -569,6 +577,10 @@ public class CliParser
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
 
+    /// <summary>
+    /// Call <see cref="Layer.ClearObjects"/> and remove the slug from <see cref="LayerManager.layers"/>
+    /// </summary>
+    /// <param name="_input">The layer slug to delete</param>
     private void DeleteLayer(string _input)
     {
         Layer layerToDel = LayerManager.instance.GetLayer(_input);
