@@ -59,7 +59,10 @@ public class Layer
     public void ClearObjects()
     {
         foreach (GameObject go in targetObjects)
-            go.GetComponent<OgreeObject>().layers.Remove(this);
+        {
+            if (go)
+                go.GetComponent<OgreeObject>().layers.Remove(this);
+        }
         targetObjects.Clear();
     }
 
