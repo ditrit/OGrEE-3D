@@ -40,21 +40,17 @@ public class LayerManager : MonoBehaviour
         foreach (DictionaryEntry de in GameManager.instance.allItems)
         {
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
-            switch (obj.category)
+            if (obj is Room)
             {
-                case Category.Room:
-                    if (obj.GetComponentInChildren<Rack>() && obj.GetLayer("racks") == null)
-                        layers.Add(AutoLayerByCategory("rack", obj));
-                    if (obj.GetComponentInChildren<Corridor>() && obj.GetLayer("corridors") == null)
-                        layers.Add(AutoLayerByCategory("corridor", obj));
-                    if (obj.GetComponentInChildren<Group>() && obj.GetLayer("groups") == null)
-                        layers.Add(AutoLayerByCategory("group", obj));
-                    break;
-                case Category.Rack:
-                case Category.Device:
-                    CreateAutoLayersItem((Item)obj);
-                    break;
+                if (obj.GetComponentInChildren<Rack>() && obj.GetLayer("racks") == null)
+                    layers.Add(AutoLayerByCategory("rack", obj));
+                if (obj.GetComponentInChildren<Corridor>() && obj.GetLayer("corridors") == null)
+                    layers.Add(AutoLayerByCategory("corridor", obj));
+                if (obj.GetComponentInChildren<Group>() && obj.GetLayer("groups") == null)
+                    layers.Add(AutoLayerByCategory("group", obj));
             }
+            else if (obj is Rack || obj is Device)
+                CreateAutoLayersItem((Item)obj);
         }
 
         // Link each layer to related object(s)
