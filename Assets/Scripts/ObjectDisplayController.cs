@@ -762,9 +762,11 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public async void HideObject()
     {
+        if (GetComponent<Group>() is Group gr && !gr.isDisplayed)
+            return;
         Display(false, false, false);
         isHidden = true;
-        await GetComponent<Item>().LoadChildren(0, true);
+        await item.LoadChildren(0, true);
     }
 
     /// <summary>
@@ -772,10 +774,12 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public async void DisplayObject()
     {
+        if (GetComponent<Group>() is Group gr && !gr.isDisplayed)
+            return;
         if (GameManager.instance.GetSelected().Contains(gameObject))
         {
             Display(true, false, false);
-            if (GetComponent<Item>() is Item item && item.currentLod == 0)
+            if (item && item.currentLod == 0)
                 await item.LoadChildren(1);
         }
         else
