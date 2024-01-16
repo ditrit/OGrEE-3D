@@ -140,6 +140,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
+    ///<param name="_forceLod">Ignore isLodLocked and set it to false</param>
     public async Task LoadChildren(int _level, bool _forceLod = false)
     {
         if (!ApiManager.instance.isInit || (!_forceLod && isLodLocked) || (this is Device dv && dv.isComponent))

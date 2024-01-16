@@ -78,7 +78,7 @@ public class LayerManager : MonoBehaviour
     /// Get a list of all devices types in an <paramref name="_item"/> and generate corresponding <see cref="AutoLayer"/>
     /// </summary>
     /// <param name="_item">The root Item</param>
-    public void CreateAutoLayersItem(Item _item)
+    private void CreateAutoLayersItem(Item _item)
     {
         List<string> deviceTypes = new();
         foreach (Transform child in _item.transform)
