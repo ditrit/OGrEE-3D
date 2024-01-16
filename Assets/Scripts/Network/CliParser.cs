@@ -132,9 +132,6 @@ public class CliParser
                         GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
                 }
                 break;
-            case CommandType.DeleteTag:
-                DeleteTag(command["data"].ToString());
-                break;
             case CommandType.Focus:
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
@@ -152,9 +149,6 @@ public class CliParser
             case CommandType.Modify:
                 ModifyObject(command["data"].ToString());
                 break;
-            case CommandType.ModifyTag:
-                ModifyTag(command["data"].ToString());
-                break;
             case CommandType.Interact:
                 InteractWithObject(command["data"].ToString());
                 break;
@@ -163,6 +157,21 @@ public class CliParser
                 break;
             case CommandType.Camera:
                 ManipulateCamera(command["data"].ToString());
+                break;
+            case CommandType.ModifyTag:
+                ModifyTag(command["data"].ToString());
+                break;
+            case CommandType.DeleteTag:
+                DeleteTag(command["data"].ToString());
+                break;
+            case CommandType.CreateLayer:
+                CreateLayer(command["data"].ToString());
+                break;
+            case CommandType.ModifyLayer:
+                ModifyLayer(command["data"].ToString());
+                break;
+            case CommandType.DeleteLayer:
+                DeleteLayer(command["data"].ToString());
                 break;
             default:
                 GameManager.instance.AppendLogLine("Command received with unknown type", ELogTarget.both, ELogtype.errorCli);
@@ -542,6 +551,41 @@ public class CliParser
                 GameManager.instance.AppendLogLine("Unknown camera command", ELogTarget.both, ELogtype.errorCli);
                 break;
         }
+    }
 
+    /// <summary>
+    /// Deserialize given <see cref="SApiLayer"/> and create a Layer from it
+    /// </summary>
+    /// <param name="_input">The SApiLayer tp deserialize</param>
+    private void CreateLayer(string _input)
+    {
+        SApiLayer apiLayer = JsonConvert.DeserializeObject<SApiLayer>(_input);
+        LayerManager.instance.CreateLayerFromSApiLayer(apiLayer);
+        UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
+    }
+
+    /// <summary>
+    /// Deserialize given old-slug / SApiLayer pair and apply modification to corresponding layer.
+    /// </summary>
+    /// <param name="_input">The old-slug / SApiLayer to deserialize</param>
+    private void ModifyLayer(string _input)
+    {
+        Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
+        Layer layerToUpdate = LayerManager.instance.GetLayer(data["old-slug"].ToString());
+        SApiLayer newData = JsonConvert.DeserializeObject<SApiLayer>(data["layer"].ToString());
+        layerToUpdate.UpdateFromSApiLayer(newData);
+        UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
+    }
+
+    /// <summary>
+    /// Call <see cref="Layer.ClearObjects"/> and remove the slug from <see cref="LayerManager.layers"/>
+    /// </summary>
+    /// <param name="_input">The layer slug to delete</param>
+    private void DeleteLayer(string _input)
+    {
+        Layer layerToDel = LayerManager.instance.GetLayer(_input);
+        layerToDel.ClearObjects();
+        LayerManager.instance.layers.Remove(layerToDel);
+        UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
     }
 }
