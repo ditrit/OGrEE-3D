@@ -34,6 +34,7 @@ public class ObjectDisplayController : MonoBehaviour
 #pragma warning restore IDE1006 // Styles d'affectation de noms
 
     public bool isHidden = false;
+    public bool isHiddenInGroup = false;
 
     private bool isHovered = false;
     public bool isHighlighted = false;
@@ -762,7 +763,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public async void HideObject()
     {
-        if (GetComponent<Group>() is Group gr && !gr.isDisplayed)
+        if ((group && !group.isDisplayed) || isHiddenInGroup)
             return;
         Display(false, false, false);
         isHidden = true;
@@ -774,7 +775,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public async void DisplayObject()
     {
-        if (GetComponent<Group>() is Group gr && !gr.isDisplayed)
+        if ((group && !group.isDisplayed) || isHiddenInGroup)
             return;
         if (GameManager.instance.GetSelected().Contains(gameObject))
         {
