@@ -352,6 +352,7 @@ public class DisplayObjectData : MonoBehaviour
                 string[] data = _value.Split('@');
                 color = data[1];
             }
+            UpdateLabels();
         }
         else
             GameManager.instance.AppendLogLine("Unknown labelFont attribute", ELogTarget.both, ELogtype.warning);
