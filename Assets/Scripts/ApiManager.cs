@@ -67,6 +67,17 @@ public class ApiManager : MonoBehaviour
         public SApiTag data;
     }
 
+    private struct SLayerResp
+    {
+        public List<SApiLayer> objects;
+    }
+
+    private struct SLayerContentResp
+    {
+        public string message;
+        public List<SApiObject> data;
+    }
+
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
@@ -503,5 +514,44 @@ public class ApiManager : MonoBehaviour
         await Task.Run(() => GameManager.instance.CreateTag(resp.data));
         UiManager.instance.tagsList.RebuildMenu(UiManager.instance.BuildTagButtons);
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+    }
+
+    /// <summary>
+    /// Deserialize API response to <see cref="SLayerResp"/>, create a Layer & add it to <see cref="LayerManager.layers"/>.
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    public Task CreateLayer(string _input)
+    {
+        try
+        {
+            string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+            SLayerResp resp = JsonConvert.DeserializeObject<SLayerResp>(dataStr);
+            foreach (SApiLayer al in resp.objects)
+                LayerManager.instance.CreateLayerFromSApiLayer(al);
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Deserialize API response to <see cref="SLayerContentResp"/> and return a list of corresponding GameObjects
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns>The list of GameObjects correponding to the API response</returns>
+    public Task<List<GameObject>> GetLayerContent(string _input)
+    {
+        List<GameObject> list = new();
+        SLayerContentResp resp = JsonConvert.DeserializeObject<SLayerContentResp>(_input);
+        foreach (SApiObject obj in resp.data)
+        {
+            if (Utils.GetObjectById(obj.id) is GameObject go)
+                list.Add(go);
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        return Task.FromResult(list);
     }
 }

@@ -177,3 +177,10 @@ public struct SApiTag
     public string description;
     public string color;
 }
+
+public struct SApiLayer
+{
+    public string slug;
+    public string applicability;
+    public Dictionary<string, string> filters;
+}

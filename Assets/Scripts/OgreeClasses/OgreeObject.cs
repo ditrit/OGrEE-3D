@@ -34,6 +34,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public bool isDoomed = false;
     public bool isLodLocked = false;
 
+    [Header("Layers")]
+    public Dictionary<Layer, bool> layers = new();
+
     public void OnBeforeSerialize()
     {
         attributesKeys.Clear();
@@ -137,6 +140,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     /// Get children from API according to wanted LOD
     ///</summary>
     ///<param name="_level">Wanted LOD to get</param>
+    ///<param name="_forceLod">Ignore isLodLocked and set it to false</param>
     public async Task LoadChildren(int _level, bool _forceLod = false)
     {
         if (!ApiManager.instance.isInit || (!_forceLod && isLodLocked) || (this is Device dv && dv.isComponent))
@@ -259,5 +263,20 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
         GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
+    }
+
+    /// <summary>
+    /// Get a Layer using its slug
+    /// </summary>
+    /// <param name="_slug">The slug to look for</param>
+    /// <returns>The asked Layer or null</returns>
+    public Layer GetLayer(string _slug)
+    {
+        foreach (KeyValuePair<Layer, bool> kvp in layers)
+        {
+            if (kvp.Key.slug == _slug)
+                return kvp.Key;
+        }
+        return null;
     }
 }
