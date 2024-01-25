@@ -366,7 +366,10 @@ public class DisplayObjectData : MonoBehaviour
     {
         string pattern = "[0-9a-fA-F]{6}$";
         if (Regex.IsMatch(_value, pattern))
+        {
             backgroundColor = _value;
+            UpdateLabels();
+        }
         else
             GameManager.instance.AppendLogLine("Unknown color", ELogTarget.both, ELogtype.warning);
     }
