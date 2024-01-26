@@ -77,6 +77,10 @@ public class CliParser
             case CommandType.Login:
                 await Login(command["data"].ToString());
                 break;
+            case CommandType.Logout:
+                GameManager.instance.server.ResetConnection();
+                ApiManager.instance.ResetApi();
+                break;
             case CommandType.LoadTemplate:
                 STemplate data = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
                 await rfJson.CreateObjectTemplate(data);

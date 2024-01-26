@@ -144,6 +144,18 @@ public class ApiManager : MonoBehaviour
         token = _token;
     }
 
+    /// <summary>
+    /// Unregister <see cref="url"/>, <see cref="token"/>  & <see cref="server"/> and set <see cref="isInit"/> to false.
+    /// </summary>
+    public void ResetApi()
+    {
+        isInit = false;
+        url = null;
+        token = null;
+        server = null;
+        EventManager.instance.Raise(new ConnectApiEvent());
+    }
+
     ///<summary>
     /// Get registered API url.
     ///</summary>

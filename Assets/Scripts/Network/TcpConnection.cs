@@ -65,6 +65,7 @@ public class TcpConnection : AConnection
         }
         catch (System.IO.IOException e)
         {
+            mainThreadQueue.Enqueue(() => ApiManager.instance.ResetApi());
             GameManager.instance.AppendLogLine(e.Message, ELogTarget.none, ELogtype.errorCli);
         }
     }

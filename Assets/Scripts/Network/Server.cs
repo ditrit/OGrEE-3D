@@ -93,4 +93,13 @@ public class Server : MonoBehaviour
         connection.Send(_msg);
     }
 
+    /// <summary>
+    /// Stop <see cref="connection"/> and start a new one.
+    /// </summary>
+    public void ResetConnection()
+    {
+        connection.Stop();
+        StartServer();
+    }
+
 }
