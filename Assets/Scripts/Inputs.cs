@@ -278,7 +278,7 @@ public class Inputs : MonoBehaviour
     private void ClickOnU(Transform _target)
     {
         Rack rack = _target.GetComponentInParent<Rack>();
-        rack.GetComponent<GridCell>().ToggleGrid(_target.position.y, _target.name);
+        rack.GetComponent<GridCell>().ToggleGrid(_target);
     }
 
     ///<summary>
