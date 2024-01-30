@@ -41,18 +41,17 @@ public class GridCell : MonoBehaviour
     ///<summary>
     /// Handle removing of current grid and creation of new grid.
     ///</summary>
-    ///<param name="_height">World position y to place the grid</param>
-    ///<param name="_location">Name of the ULocation where the new grid should be created</param>
-    public void ToggleGrid(float _height, string _location)
+    ///<param name="_clickedU">The transform of the ULocation where the new grid should be created</param>
+    public void ToggleGrid(Transform _clickedU)
     {
         GameObject previousGrid = GetComponent<Rack>().gridForULocation;
         if (previousGrid)
             Destroy(previousGrid);
 
-        if (_location != currentGridLocation)
+        if (_clickedU.name != currentGridLocation)
         {
-            GetComponent<Rack>().gridForULocation = InstantiateGrid(_height);
-            currentGridLocation = _location;
+            GetComponent<Rack>().gridForULocation = InstantiateGrid(_clickedU.localPosition.y);
+            currentGridLocation = _clickedU.name;
         }
         else
             currentGridLocation = "";
@@ -61,14 +60,14 @@ public class GridCell : MonoBehaviour
     ///<summary>
     /// Instantiate a new grid and adjust its scale, texture and height.
     ///</summary>
-    ///<param name="_height">World position y to place the grid</param>
+    ///<param name="_height">The local height of the related U helper</param>
     ///<returns>The created grid</returns>
     private GameObject InstantiateGrid(float _height)
     {
         GameObject grid = Instantiate(gridCellPrefab, transform);
         grid.name = "GridForULocation";
 
-        Vector3 newPosition = transform.GetChild(0).localPosition;
+        Vector3 newPosition = transform.GetChild(0).localScale / 2;
         if (GetComponent<Rack>().attributes["heightUnit"] == LengthUnit.OU)
             newPosition.y = _height - UnitValue.OU / 2;
         else
