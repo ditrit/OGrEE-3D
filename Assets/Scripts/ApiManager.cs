@@ -2,8 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -81,6 +83,7 @@ public class ApiManager : MonoBehaviour
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
+    private Thread sseThread;
 
     public bool isInit = false;
 
@@ -153,6 +156,8 @@ public class ApiManager : MonoBehaviour
         url = null;
         token = null;
         server = null;
+        if (sseThread.IsAlive)
+            sseThread.Abort();
         EventManager.instance.Raise(new ConnectApiEvent());
     }
 
@@ -187,6 +192,11 @@ public class ApiManager : MonoBehaviour
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
+                sseThread = new(GetStream)
+                {
+                    IsBackground = true
+                };
+                sseThread.Start();
             }
             catch (HttpRequestException e)
             {
@@ -272,6 +282,27 @@ public class ApiManager : MonoBehaviour
         }
 
         isReady = true;
+    }
+
+
+    public async void GetStream()
+    {
+        while (isInit)
+        {
+            try
+            {
+                using StreamReader reader = new(await httpClient.GetStreamAsync($"{server}/events"));
+                while (!reader.EndOfStream)
+                {
+                    string message = await reader.ReadLineAsync();
+                    Debug.Log($"Received message: {message}");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                GameManager.instance.AppendLogLine($"{e.Message}", ELogTarget.logger, ELogtype.errorApi);
+            }
+        }
     }
 
     ///<summary>
