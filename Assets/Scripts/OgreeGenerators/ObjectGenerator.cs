@@ -237,7 +237,7 @@ public class ObjectGenerator
                         break;
                 }
                 // align device to right side of the slot if invertOffset == true
-                if (_dv.attributes["invertOffset"] == "true")
+                if (_dv.attributes.ContainsKey("invertOffset") && _dv.attributes["invertOffset"] == "true")
                     newDevice.transform.localPosition += new Vector3(slotScale.x - size.x, 0, 0);
 
                 if (!dv.attributes.ContainsKey("color"))
