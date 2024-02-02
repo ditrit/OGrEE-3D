@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CliParser
+public class CommandParser
 {
     #region Structures
     struct SLogin
@@ -38,12 +38,12 @@ public class CliParser
     readonly ReadFromJson rfJson = new();
     private bool canDraw = true;
 
-    public CliParser()
+    public CommandParser()
     {
         EventManager.instance.CancelGenerate.Add(OnCancelGenenerate);
     }
 
-    ~CliParser()
+    ~CommandParser()
     {
         EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
     }
@@ -58,7 +58,7 @@ public class CliParser
     }
 
     ///<summary>
-    /// Deserialize CLI input and parse it. 
+    /// Deserialize input and parse it. 
     ///</summary>
     ///<param name="_input">The json to deserialize</param>
     public async Task DeserializeInput(string _input)

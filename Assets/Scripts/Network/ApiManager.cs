@@ -93,7 +93,7 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new();
 
     private readonly ReadFromJson rfJson = new();
-    private readonly CliParser parser = new();
+    private readonly CommandParser parser = new();
 
     private string url;
     private string token;
@@ -287,7 +287,7 @@ public class ApiManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Subscribe to stream from the API. For each received message, call <see cref="CliParser.DeserializeInput(string)"/>
+    /// Subscribe to stream from the API. For each received message, call <see cref="CommandParser.DeserializeInput(string)"/>
     /// </summary>
     public async void GetStream()
     {
