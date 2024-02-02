@@ -23,7 +23,7 @@ public class ObjectGenerator
             newRack = Object.Instantiate(GameManager.instance.rackModel);
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
-            Vector2 size = JsonUtility.FromJson<Vector2>(_rk.attributes["size"]);
+            Vector2 size = Utils.ParseVector2(_rk.attributes["size"]);
             float height = Utils.ParseDecFrac(_rk.attributes["height"]);
             if (_rk.attributes["heightUnit"] == LengthUnit.U)
                 height *= UnitValue.U;
@@ -58,7 +58,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newRack.transform, _rk);
-            newRack.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(rack.attributes["rotation"]).ZAxisUp();
+            newRack.transform.localEulerAngles = Utils.ParseVector3(rack.attributes["rotation"], true);
         }
         else
             newRack.transform.localPosition = Vector3.zero;
@@ -191,7 +191,7 @@ public class ObjectGenerator
         {
             newDevice = GenerateTemplatedDevice(_parent, _dv.attributes["template"]);
             OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
-            size = JsonUtility.FromJson<Vector2>(tmp.attributes["size"]) / 1000;
+            size = Utils.ParseVector2(tmp.attributes["size"]) / 1000;
             height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
         }
 
@@ -526,7 +526,7 @@ public class ObjectGenerator
         newCo.transform.parent = _parent;
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = JsonUtility.FromJson<Vector2>(_co.attributes["size"]);
+        Vector2 size = Utils.ParseVector2(_co.attributes["size"]);
         float height = Utils.ParseDecFrac(_co.attributes["height"]);
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
@@ -541,7 +541,7 @@ public class ObjectGenerator
         if (_parent)
         {
             PlaceInRoom(newCo.transform, _co);
-            newCo.transform.localEulerAngles = JsonUtility.FromJson<Vector3>(co.attributes["rotation"]).ZAxisUp();
+            newCo.transform.localEulerAngles = Utils.ParseVector3(co.attributes["rotation"], true);
         }
         else
             newCo.transform.localPosition = Vector3.zero;
@@ -656,10 +656,10 @@ public class ObjectGenerator
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor) && _apiObj.attributes.ContainsKey("posXYZ"))
-            pos = JsonUtility.FromJson<Vector3>(_apiObj.attributes["posXYZ"]).ZAxisUp();
+            pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
         else
         {
-            Vector2 tmp = JsonUtility.FromJson<Vector2>(_apiObj.attributes["posXY"]);
+            Vector2 tmp = Utils.ParseVector2(_apiObj.attributes["posXY"]);
             pos = new(tmp.x, 0, tmp.y);
         }
 

@@ -61,13 +61,13 @@ public class ReadFromJson
         if (obj.category == Category.Rack)
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
-            obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+            obj.attributes["posXY"] = "[0,0]";
             obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
-            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+            obj.attributes["size"] = $"[{tmp.x},{tmp.y}";
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
             obj.attributes["heightUnit"] = LengthUnit.Centimeter;
-            obj.attributes["rotation"] = JsonUtility.ToJson(Vector3.zero);
+            obj.attributes["rotation"] = "[0,0,0]";
         }
         else if (obj.category == Category.Device)
         {
@@ -77,7 +77,7 @@ public class ReadFromJson
                 int sizeU = Mathf.CeilToInt(_data.sizeWDHmm[2] / 1000 / UnitValue.U);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
-            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
