@@ -93,6 +93,7 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new();
 
     private readonly ReadFromJson rfJson = new();
+    private readonly CliParser parser = new();
 
     private string url;
     private string token;
@@ -125,6 +126,7 @@ public class ApiManager : MonoBehaviour
     private void OnDestroy()
     {
         EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
+        ResetApi();
     }
 
     ///<summary>
@@ -284,23 +286,38 @@ public class ApiManager : MonoBehaviour
         isReady = true;
     }
 
-
+    /// <summary>
+    /// Subscribe to stream from the API. For each received message, call <see cref="CliParser.DeserializeInput(string)"/>
+    /// </summary>
     public async void GetStream()
     {
         while (isInit)
         {
             try
             {
-                using StreamReader reader = new(await httpClient.GetStreamAsync($"{server}/events"));
+                Debug.Log($"Getting Stream at {server}/events...");
+                Stream stream = await httpClient.GetStreamAsync($"{server}/events");
+                using StreamReader reader = new(stream);
                 while (!reader.EndOfStream)
                 {
                     string message = await reader.ReadLineAsync();
-                    Debug.Log($"Received message: {message}");
+                    Debug.Log($"Received msg from SSE (raw): {message}");
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        // Remove "data: " from SSE msg
+                        message = message[6..];
+                        await parser.DeserializeInput(message);
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 GameManager.instance.AppendLogLine($"{e.Message}", ELogTarget.logger, ELogtype.errorApi);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
         }
     }
