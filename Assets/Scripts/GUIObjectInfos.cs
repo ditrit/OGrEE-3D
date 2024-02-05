@@ -181,6 +181,13 @@ public class GUIObjectInfos : MonoBehaviour
                     i++;
                 }
             }
+            if (_obj.tags.Count > 0)
+            {
+                tmpAttributes.text += "<b>tags: </b>";
+                i++;
+                foreach (string tagName in _obj.tags)
+                    tmpAttributes.text += $"<b><color=#{GameManager.instance.GetTag(tagName).colorCode}>{tagName}</b></color> ";
+            }
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
