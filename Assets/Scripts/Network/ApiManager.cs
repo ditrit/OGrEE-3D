@@ -83,6 +83,7 @@ public class ApiManager : MonoBehaviour
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
+    private readonly HttpClient sseHttpClient = new();
     private Thread sseThread;
 
     public bool isInit = false;
@@ -94,6 +95,7 @@ public class ApiManager : MonoBehaviour
 
     private readonly ReadFromJson rfJson = new();
     private readonly CommandParser parser = new();
+    public readonly Queue<Action> mainThreadQueue = new();
 
     private string url;
     private string token;
@@ -121,6 +123,8 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
+        while (mainThreadQueue.Count > 0)
+            mainThreadQueue.Dequeue().Invoke();
     }
 
     private void OnDestroy()
@@ -295,9 +299,10 @@ public class ApiManager : MonoBehaviour
         {
             try
             {
+                sseHttpClient.DefaultRequestHeaders.Authorization = new("bearer", token);
+                sseHttpClient.Timeout = Timeout.InfiniteTimeSpan;
                 Debug.Log($"Getting Stream at {server}/events...");
-                Stream stream = await httpClient.GetStreamAsync($"{server}/events");
-                using StreamReader reader = new(stream);
+                using StreamReader reader = new(await sseHttpClient.GetStreamAsync($"{server}/events"));
                 while (!reader.EndOfStream)
                 {
                     string message = await reader.ReadLineAsync();
@@ -306,18 +311,20 @@ public class ApiManager : MonoBehaviour
                     {
                         // Remove "data: " from SSE msg
                         message = message[6..];
-                        await parser.DeserializeInput(message);
+                        mainThreadQueue.Enqueue(async () => await parser.DeserializeInput(message));
                     }
                 }
             }
             catch (HttpRequestException e)
             {
-                GameManager.instance.AppendLogLine($"{e.Message}", ELogTarget.logger, ELogtype.errorApi);
+                Debug.LogError(e);
+                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) {e.Message}", ELogTarget.logger, ELogtype.errorApi));
+                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) Reconnecting...", ELogTarget.logger, ELogtype.infoApi));
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(10));
             }
         }
     }
