@@ -201,6 +201,8 @@ public class CommandParser
     private void DeleteTag(string _input)
     {
         Tag tagToDel = GameManager.instance.GetTag(_input);
+        if (tagToDel == null)
+            return;
         foreach (string id in tagToDel.linkedObjects)
             GameManager.instance.RemoveFromTag(tagToDel.slug, id);
     }
@@ -360,6 +362,8 @@ public class CommandParser
     {
         Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
         Tag tagToUpdate = GameManager.instance.GetTag(data["old-slug"].ToString());
+        if (tagToUpdate == null)
+            return;
         SApiTag newData = JsonConvert.DeserializeObject<SApiTag>(data["tag"].ToString());
         tagToUpdate.UpdateFromSApiTag(newData);
     }
@@ -576,6 +580,8 @@ public class CommandParser
     {
         Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
         Layer layerToUpdate = LayerManager.instance.GetLayer(data["old-slug"].ToString());
+        if (layerToUpdate == null)
+            return;
         SApiLayer newData = JsonConvert.DeserializeObject<SApiLayer>(data["layer"].ToString());
         layerToUpdate.UpdateFromSApiLayer(newData);
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
@@ -588,6 +594,8 @@ public class CommandParser
     private void DeleteLayer(string _input)
     {
         Layer layerToDel = LayerManager.instance.GetLayer(_input);
+        if (layerToDel == null)
+            return;
         layerToDel.ClearObjects();
         LayerManager.instance.layers.Remove(layerToDel);
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);

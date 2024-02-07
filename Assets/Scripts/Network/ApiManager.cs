@@ -302,10 +302,10 @@ public class ApiManager : MonoBehaviour
                 sseHttpClient.DefaultRequestHeaders.Authorization = new("bearer", token);
                 sseHttpClient.Timeout = Timeout.InfiniteTimeSpan;
                 Debug.Log($"Getting Stream at {server}/events...");
-                Stream stream = await sseHttpClient.GetStreamAsync($"{server}/events");
+                using Stream stream = await sseHttpClient.GetStreamAsync($"{server}/events");
                 stream.ReadTimeout = Timeout.Infinite;
                 using StreamReader reader = new(stream);
-                while (!reader.EndOfStream)
+                while (isInit && !reader.EndOfStream)
                 {
                     string message = await reader.ReadLineAsync();
                     if (!string.IsNullOrEmpty(message))
