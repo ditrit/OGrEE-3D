@@ -302,15 +302,17 @@ public class ApiManager : MonoBehaviour
                 sseHttpClient.DefaultRequestHeaders.Authorization = new("bearer", token);
                 sseHttpClient.Timeout = Timeout.InfiniteTimeSpan;
                 Debug.Log($"Getting Stream at {server}/events...");
-                using StreamReader reader = new(await sseHttpClient.GetStreamAsync($"{server}/events"));
+                Stream stream = await sseHttpClient.GetStreamAsync($"{server}/events");
+                stream.ReadTimeout = Timeout.Infinite;
+                using StreamReader reader = new(stream);
                 while (!reader.EndOfStream)
                 {
                     string message = await reader.ReadLineAsync();
-                    Debug.Log($"Received msg from SSE (raw): {message}");
                     if (!string.IsNullOrEmpty(message))
                     {
                         // Remove "data: " from SSE msg
                         message = message[6..];
+                        mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) {message}", ELogTarget.none, ELogtype.infoApi));
                         mainThreadQueue.Enqueue(async () => await parser.DeserializeInput(message));
                     }
                 }
