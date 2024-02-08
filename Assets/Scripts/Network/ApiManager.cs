@@ -312,16 +312,22 @@ public class ApiManager : MonoBehaviour
                     {
                         // Remove "data: " from SSE msg
                         message = message[6..];
-                        mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) {message}", ELogTarget.none, ELogtype.infoApi));
-                        mainThreadQueue.Enqueue(async () => await parser.DeserializeInput(message));
+                        mainThreadQueue.Enqueue(async () =>
+                        {
+                            GameManager.instance.AppendLogLine($"(SSE) {message}", ELogTarget.none, ELogtype.infoApi);
+                            await parser.DeserializeInput(message);
+                        });
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 Debug.LogError(e);
-                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) {e.Message}", ELogTarget.logger, ELogtype.errorApi));
-                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine($"(SSE) Reconnecting...", ELogTarget.logger, ELogtype.infoApi));
+                mainThreadQueue.Enqueue(() =>
+                {
+                    GameManager.instance.AppendLogLine($"(SSE) {e.Message}", ELogTarget.logger, ELogtype.errorApi);
+                    GameManager.instance.AppendLogLine($"(SSE) Reconnecting...", ELogTarget.logger, ELogtype.infoApi);
+                });
             }
             catch (Exception e)
             {
