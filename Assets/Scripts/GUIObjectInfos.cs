@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -112,7 +112,7 @@ public class GUIObjectInfos : MonoBehaviour
             if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
                 && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
             {
-                Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
+                Vector2 posXY = Utils.ParseVector2(_obj.attributes["posXY"]);
                 tmpAttributes.text += $"<b>posXY:</b> {posXY.x:0.##}/{posXY.y:0.##} ({_obj.attributes["posXYUnit"]})\n";
                 i++;
 

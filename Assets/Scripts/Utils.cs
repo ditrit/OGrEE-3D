@@ -40,6 +40,7 @@ public static class Utils
     ///<returns>The parsed float</returns>
     public static float ParseDecFrac(string _input)
     {
+        _input = _input.Replace(" ", "");
         _input = _input.Replace(",", ".");
         if (_input.Contains("/"))
         {
