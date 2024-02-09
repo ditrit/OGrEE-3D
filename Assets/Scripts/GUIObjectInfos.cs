@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -161,7 +162,7 @@ public class GUIObjectInfos : MonoBehaviour
             }
 
             // Display all other attributes
-            List<string> excludeAttr = new List<string> { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "colors" };
+            List<string> excludeAttr = new() { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "colors" };
             foreach (KeyValuePair<string, string> kvp in _obj.attributes)
             {
                 if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
@@ -171,15 +172,13 @@ public class GUIObjectInfos : MonoBehaviour
                 }
             }
 
-            // Display all descriptions
-            if (_obj.description.Count != 0)
+            // Display description with multiple lines
+            if (!string.IsNullOrEmpty(_obj.description))
             {
                 tmpAttributes.text += "<b>description:</b>\n";
-                for (int j = 0; j < _obj.description.Count; j++)
-                {
-                    tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
-                    i++;
-                }
+                i++;
+                tmpAttributes.text += $"{_obj.description}\n";
+                i += _obj.description.Count(c => c == '\n');
             }
             if (_obj.tags.Count > 0)
             {
