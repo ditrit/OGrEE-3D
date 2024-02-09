@@ -49,15 +49,14 @@ public class ReadFromJson
         // Build SApiObject
         SApiObject obj = new()
         {
-            description = new(),
             attributes = new(),
             tags = new(),
 
             name = _data.slug,
             id = _data.slug,
-            category = _data.category
+            category = _data.category,
+            description = _data.description
         };
-        obj.description.Add(_data.description);
         if (obj.category == Category.Rack)
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
@@ -210,7 +209,6 @@ public class ReadFromJson
             obj.parentId = _parent.id;
             obj.category = Category.Device;
             obj.domain = _parent.domain;
-            obj.description = new();
             obj.attributes = new()
             {
                 ["deviceType"] = _data.type

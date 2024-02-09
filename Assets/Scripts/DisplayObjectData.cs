@@ -198,15 +198,8 @@ public class DisplayObjectData : MonoBehaviour
                 string attr = _str.Substring(1);
                 if (attr == "name")
                     WriteLabels(obj.name, true);
-                else if (attr.Contains("description"))
-                {
-                    if (attr == "description")
-                        WriteLabels(string.Join("\n", obj.description));
-                    else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
-                        WriteLabels(obj.description[i - 1]);
-                    else
-                        GameManager.instance.AppendLogLine("Wrong description index", ELogTarget.both, ELogtype.warning);
-                }
+                else if (attr == "description")
+                    WriteLabels(obj.description);
                 else if (obj.attributes.ContainsKey(attr))
                     WriteLabels(obj.attributes[attr]);
                 else

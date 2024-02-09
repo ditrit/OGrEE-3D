@@ -11,7 +11,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string id;
     public string parentId;
     public string category;
-    public List<string> description = new();
+    public string description;
     public string domain;
     public List<string> tags = new();
 
