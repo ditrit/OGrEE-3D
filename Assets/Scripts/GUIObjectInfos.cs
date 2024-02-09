@@ -75,7 +75,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_obj">The object whose information are displayed</param>
     private void UpdateFields(OgreeObject _obj)
     {
-        int i = 1;
+        int textHeight = 1;
         tmpName.text = _obj.id.Replace(".", "/");
         if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
@@ -100,11 +100,11 @@ public class GUIObjectInfos : MonoBehaviour
             tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>maximum:</b> {Utils.FloatToRefinedStr(tempInfos.max)} {tempInfos.unit}\n";
-            i += 4;
+            textHeight += 4;
             if (!string.IsNullOrEmpty(tempInfos.hottestChild))
             {
                 tmpAttributes.text += $"<b>hottest child:</b> {tempInfos.hottestChild}\n";
-                i++;
+                textHeight++;
             }
         }
         else
@@ -113,30 +113,29 @@ public class GUIObjectInfos : MonoBehaviour
             if (!string.IsNullOrEmpty(_obj.description))
             {
                 tmpAttributes.text += "<b>description:</b>\n";
-                i++;
                 tmpAttributes.text += $"{_obj.description}\n";
-                i += _obj.description.Count(c => c == '\n');
+                textHeight += _obj.description.Count(c => c == '\n') + 1;
             }
 
             // Display all other attributes
             foreach (KeyValuePair<string, string> kvp in _obj.attributes)
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
-                i++;
+                textHeight++;
             }
 
             // Display tags using their color
             if (_obj.tags.Count > 0)
             {
                 tmpAttributes.text += "<b>tags: </b>";
-                i++;
+                textHeight++;
                 foreach (string tagName in _obj.tags)
                     tmpAttributes.text += $"<b><color=#{GameManager.instance.GetTag(tagName).colorCode}>{tagName}</b></color> ";
             }
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new(0, i * 30);
+        rt.sizeDelta = new(0, textHeight * 30);
     }
 
     ///<summary>
