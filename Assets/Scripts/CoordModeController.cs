@@ -74,22 +74,11 @@ public class CoordModeController : MonoBehaviour
         diagonal.localPosition = bd.transform.position;
         Room ro = (Room)bd;
         hasNonDefaultOrientation = ro && ro.attributes["axisOrientation"] != AxisOrientation.Default;
-        if (hasNonDefaultOrientation)
+        if (hasNonDefaultOrientation && ro.isSquare)
         {
             diagonalForNonDefaultOrientations.gameObject.SetActive(true);
             diagonalForNonDefaultOrientationsText.transform.parent.gameObject.SetActive(true);
-            switch (ro.attributes["axisOrientation"])
-            {
-                case AxisOrientation.XMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + ro.technicalZone.localScale.x * 10 * ro.transform.TransformDirection(Vector3.right);
-                    break;
-                case AxisOrientation.YMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + ro.technicalZone.localScale.z * 10 * ro.transform.TransformDirection(Vector3.forward);
-                    break;
-                case AxisOrientation.BothMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + 10 * (ro.technicalZone.localScale.z * ro.transform.TransformDirection(Vector3.forward) + ro.technicalZone.localScale.x * ro.transform.TransformDirection(Vector3.right));
-                    break;
-            }
+            diagonalForNonDefaultOrientations.localPosition = ro.childrenOrigin.transform.position;
         }
     }
 

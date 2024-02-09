@@ -23,6 +23,7 @@ public class Room : Building
     public List<Group> openedGroups = new();
     public List<Separator> separators = new();
     public bool sepNamesDisplayed = false;
+    public GameObject childrenOrigin;
 
     ///<summary>
     /// Set usable/reserved/technical areas.
@@ -589,5 +590,33 @@ public class Room : Building
                 return true;
         }
         return false;
+    }
+
+    public void ComputeChildrenOrigin()
+    {
+        childrenOrigin = Instantiate(GameManager.instance.coordinateSystemModel, gameObject.transform);
+        switch (attributes["axisOrientation"])
+        {
+            case AxisOrientation.XMinus:
+                childrenOrigin.transform.GetChild(0).GetChild(0).localPosition *= -1;
+                if (isSquare)
+                    childrenOrigin.transform.position += technicalZone.localScale.x * 10 * transform.TransformDirection(Vector3.right);
+                break;
+            case AxisOrientation.YMinus:
+                childrenOrigin.transform.GetChild(0).GetChild(1).localPosition *= -1;
+                if (isSquare)
+                    childrenOrigin.transform.position += technicalZone.localScale.z * 10 * transform.TransformDirection(Vector3.forward);
+                break;
+            case AxisOrientation.BothMinus:
+                childrenOrigin.transform.GetChild(0).GetChild(0).localPosition *= -1;
+                childrenOrigin.transform.GetChild(0).GetChild(1).localPosition *= -1;
+                if (isSquare)
+                    childrenOrigin.transform.position += 10 * (technicalZone.localScale.z * transform.TransformDirection(Vector3.forward) + technicalZone.localScale.x * transform.TransformDirection(Vector3.right));
+                break;
+            default:
+                break;
+        }
+        childrenOrigin.transform.localScale *= 7;
+        childrenOrigin.SetActive(false);
     }
 }
