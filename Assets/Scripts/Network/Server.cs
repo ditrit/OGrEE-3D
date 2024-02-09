@@ -10,7 +10,7 @@ public class Server : MonoBehaviour
         tcp
     }
 
-    readonly CliParser parser = new();
+    private readonly CommandParser parser = new();
 
     [Header("Client config")]
     [SerializeField] private EConnectionType protocol;

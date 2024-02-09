@@ -2,8 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -81,6 +83,8 @@ public class ApiManager : MonoBehaviour
     public static ApiManager instance;
 
     private readonly HttpClient httpClient = new();
+    private readonly HttpClient sseHttpClient = new();
+    private Thread sseThread;
 
     public bool isInit = false;
 
@@ -90,6 +94,8 @@ public class ApiManager : MonoBehaviour
     [SerializeField] private Queue<SRequest> requestsToSend = new();
 
     private readonly ReadFromJson rfJson = new();
+    private readonly CommandParser parser = new();
+    public readonly Queue<Action> mainThreadQueue = new();
 
     private string url;
     private string token;
@@ -117,11 +123,14 @@ public class ApiManager : MonoBehaviour
             else if (requestsToSend.Peek().type == "delete")
                 DeleteHttpData();
         }
+        while (mainThreadQueue.Count > 0)
+            mainThreadQueue.Dequeue().Invoke();
     }
 
     private void OnDestroy()
     {
         EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
+        ResetApi();
     }
 
     ///<summary>
@@ -153,6 +162,8 @@ public class ApiManager : MonoBehaviour
         url = null;
         token = null;
         server = null;
+        if (sseThread.IsAlive)
+            sseThread.Abort();
         EventManager.instance.Raise(new ConnectApiEvent());
     }
 
@@ -187,6 +198,11 @@ public class ApiManager : MonoBehaviour
                 isReady = true;
                 isInit = true;
                 GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
+                sseThread = new(GetStream)
+                {
+                    IsBackground = true
+                };
+                sseThread.Start();
             }
             catch (HttpRequestException e)
             {
@@ -272,6 +288,53 @@ public class ApiManager : MonoBehaviour
         }
 
         isReady = true;
+    }
+
+    /// <summary>
+    /// Subscribe to stream from the API. For each received message, call <see cref="CommandParser.DeserializeInput(string)"/>
+    /// </summary>
+    public async void GetStream()
+    {
+        while (isInit)
+        {
+            try
+            {
+                sseHttpClient.DefaultRequestHeaders.Authorization = new("bearer", token);
+                sseHttpClient.Timeout = Timeout.InfiniteTimeSpan;
+                Debug.Log($"Getting Stream at {server}/events...");
+                using Stream stream = await sseHttpClient.GetStreamAsync($"{server}/events");
+                stream.ReadTimeout = Timeout.Infinite;
+                using StreamReader reader = new(stream);
+                while (isInit && !reader.EndOfStream)
+                {
+                    string message = await reader.ReadLineAsync();
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        // Remove "data: " from SSE msg
+                        message = message[6..];
+                        mainThreadQueue.Enqueue(async () =>
+                        {
+                            GameManager.instance.AppendLogLine($"(SSE) {message}", ELogTarget.none, ELogtype.infoApi);
+                            await parser.DeserializeInput(message);
+                        });
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Debug.LogError(e);
+                mainThreadQueue.Enqueue(() =>
+                {
+                    GameManager.instance.AppendLogLine($"(SSE) {e.Message}", ELogTarget.logger, ELogtype.errorApi);
+                    GameManager.instance.AppendLogLine($"(SSE) Reconnecting...", ELogTarget.logger, ELogtype.infoApi);
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
+        }
     }
 
     ///<summary>
