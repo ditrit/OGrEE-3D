@@ -109,69 +109,6 @@ public class GUIObjectInfos : MonoBehaviour
         }
         else
         {
-            // Display posXY if available
-            if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
-                && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
-            {
-                Vector2 posXY = Utils.ParseVector2(_obj.attributes["posXY"]);
-                tmpAttributes.text += $"<b>posXY:</b> {posXY.x:0.##}/{posXY.y:0.##} ({_obj.attributes["posXYUnit"]})\n";
-                i++;
-
-                // If rack, display pos by tile name if available
-                if (_obj is Rack && _obj.transform.parent)
-                {
-                    Room room = _obj.transform.parent.GetComponent<Room>();
-                    if (room.attributes.ContainsKey("tiles"))
-                    {
-                        List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(room.attributes["tiles"]);
-                        STile tileData = new();
-                        foreach (STile t in tiles)
-                        {
-                            if (t.location == $"{posXY.x:0}/{posXY.y:0}")
-                                tileData = t;
-                        }
-                        if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
-                        {
-                            tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
-                            i++;
-                        }
-                    }
-                }
-            }
-
-            // Display orientation if available
-            if (_obj.attributes.ContainsKey("orientation"))
-            {
-                tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
-                i++;
-            }
-
-            // Display size if available
-            if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
-            {
-                Vector2 size = Utils.ParseVector2(_obj.attributes["size"]);
-                tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
-                i++;
-            }
-
-            // Display template if available
-            if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
-            {
-                tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
-                i++;
-            }
-
-            // Display all other attributes
-            List<string> excludeAttr = new() { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "colors" };
-            foreach (KeyValuePair<string, string> kvp in _obj.attributes)
-            {
-                if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
-                {
-                    tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
-                    i++;
-                }
-            }
-
             // Display description with multiple lines
             if (!string.IsNullOrEmpty(_obj.description))
             {
@@ -180,6 +117,15 @@ public class GUIObjectInfos : MonoBehaviour
                 tmpAttributes.text += $"{_obj.description}\n";
                 i += _obj.description.Count(c => c == '\n');
             }
+
+            // Display all other attributes
+            foreach (KeyValuePair<string, string> kvp in _obj.attributes)
+            {
+                tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+                i++;
+            }
+
+            // Display tags using their color
             if (_obj.tags.Count > 0)
             {
                 tmpAttributes.text += "<b>tags: </b>";
