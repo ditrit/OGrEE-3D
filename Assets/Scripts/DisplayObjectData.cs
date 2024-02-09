@@ -57,7 +57,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
         {
-            Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+            Vector2 size = Utils.ParseVector2(item.attributes["size"]);
             if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
             else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)

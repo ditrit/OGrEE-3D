@@ -149,7 +149,7 @@ public class GUIObjectInfos : MonoBehaviour
             // Display size if available
             if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
             {
-                Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
+                Vector2 size = Utils.ParseVector2(_obj.attributes["size"]);
                 tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
                 i++;
             }
