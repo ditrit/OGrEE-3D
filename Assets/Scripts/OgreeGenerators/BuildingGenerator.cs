@@ -189,8 +189,8 @@ public class BuildingGenerator
             if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
                 && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
             {
-                SMargin reserved = JsonUtility.FromJson<SMargin>(_ro.attributes["reserved"]);
-                SMargin technical = JsonUtility.FromJson<SMargin>(_ro.attributes["technical"]);
+                SMargin reserved = new(Utils.ParseVector4(_ro.attributes["reserved"]));
+                SMargin technical = new(Utils.ParseVector4(_ro.attributes["technical"]));
                 room.SetAreas(reserved, technical);
             }
         }
