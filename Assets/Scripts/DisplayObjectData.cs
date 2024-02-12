@@ -192,25 +192,8 @@ public class DisplayObjectData : MonoBehaviour
     {
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
-        {
-            if (_str[0] == '#')
-            {
-                string attr = _str.Substring(1);
-                if (attr == "name")
-                    WriteLabels(obj.name, true);
-                else if (attr == "description")
-                    WriteLabels(obj.description);
-                else if (obj.attributes.ContainsKey(attr))
-                    WriteLabels(obj.attributes[attr]);
-                else
-                {
-                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", ELogTarget.both, ELogtype.warning);
-                    return;
-                }
-            }
-            else
-                WriteLabels(_str);
-        }
+            WriteLabels(_str);
+
         Slot s = GetComponent<Slot>();
         if (s)
             WriteLabels(name);
