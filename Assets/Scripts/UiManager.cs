@@ -45,6 +45,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleSepNamesBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
+    [SerializeField] private ButtonHandler toggleChildrenOriginBtn;
     [SerializeField] private ButtonHandler toggleClearanceBtn;
     [SerializeField] private ButtonHandler barChartBtn;
     [SerializeField] private ButtonHandler scatterPlotBtn;
@@ -405,6 +406,21 @@ public class UiManager : MonoBehaviour
             obj.localCS
         };
         toggleLocalCSBtn.Check();
+
+        toggleChildrenOriginBtn = new(toggleChildrenOriginBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>()
+            ,
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room ro
+            &&
+            ro.childrenOrigin.activeSelf
+        };
+        toggleChildrenOriginBtn.Check();
 
         getCoordsBtn = new(getCoordsBtn.button, true)
         {
@@ -1021,6 +1037,16 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
+    /// Called by GUI: toggle children origin of the room targeted by right click menu.
+    ///</summary>
+    public void ToggleChildrenOrigin()
+    {
+        Room ro = menuTarget.GetComponent<Room>();
+        ro.childrenOrigin.SetActive(!ro.childrenOrigin.activeSelf);
+        toggleChildrenOriginBtn.Check();
+    }
+
+    ///<summary>
     /// Called by GUI button: Focus object targeted by right click menu.
     ///</summary>
     public async void FocusItem()
@@ -1199,6 +1225,9 @@ public class UiManager : MonoBehaviour
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
         getCoordsBtn.Check();
         toggleLocalCSBtn.Check();
+        if (bd is Room ro)
+            ro.childrenOrigin.SetActive(GameManager.instance.getCoordsMode);
+        toggleChildrenOriginBtn.Check();
     }
 
     ///<summary>
@@ -1405,6 +1434,9 @@ public class UiManager : MonoBehaviour
             coordSystem.SetActive(false);
             getCoordsBtn.Check();
             toggleLocalCSBtn.Check();
+            if (bd is Room ro)
+                ro.childrenOrigin.SetActive(false);
+            toggleChildrenOriginBtn.Check();
         }
     }
 

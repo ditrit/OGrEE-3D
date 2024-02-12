@@ -74,22 +74,11 @@ public class CoordModeController : MonoBehaviour
         diagonal.localPosition = bd.transform.position;
         Room ro = (Room)bd;
         hasNonDefaultOrientation = ro && ro.attributes["axisOrientation"] != AxisOrientation.Default;
-        if (hasNonDefaultOrientation)
+        if (hasNonDefaultOrientation && ro.isSquare)
         {
             diagonalForNonDefaultOrientations.gameObject.SetActive(true);
             diagonalForNonDefaultOrientationsText.transform.parent.gameObject.SetActive(true);
-            switch (ro.attributes["axisOrientation"])
-            {
-                case AxisOrientation.XMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + ro.technicalZone.localScale.x * 10 * ro.transform.TransformDirection(Vector3.right);
-                    break;
-                case AxisOrientation.YMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + ro.technicalZone.localScale.z * 10 * ro.transform.TransformDirection(Vector3.forward);
-                    break;
-                case AxisOrientation.BothMinus:
-                    diagonalForNonDefaultOrientations.localPosition = ro.transform.position + 10 * (ro.technicalZone.localScale.z * ro.transform.TransformDirection(Vector3.forward) + ro.technicalZone.localScale.x * ro.transform.TransformDirection(Vector3.right));
-                    break;
-            }
+            diagonalForNonDefaultOrientations.localPosition = ro.childrenOrigin.transform.position;
         }
     }
 
@@ -182,7 +171,7 @@ public class CoordModeController : MonoBehaviour
     {
         PlaceDiagonalWithText(diagonal, diagonalText);
         if (hasNonDefaultOrientation)
-            PlaceDiagonalWithText(diagonalForNonDefaultOrientations, diagonalForNonDefaultOrientationsText);
+            PlaceDiagonalWithText(diagonalForNonDefaultOrientations, diagonalForNonDefaultOrientationsText,true);
     }
 
     /// <summary>
@@ -190,12 +179,12 @@ public class CoordModeController : MonoBehaviour
     /// </summary>
     /// <param name="_diagonal">the diagonal</param>
     /// <param name="_text">the text of the diagonal</param>
-    private void PlaceDiagonalWithText(Transform _diagonal, TextMeshPro _text)
+    private void PlaceDiagonalWithText(Transform _diagonal, TextMeshPro _text, bool cym = false)
     {
         _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
         _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
         _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
-        _text.text = $"<color=\"red\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color=\"green\">{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
+        _text.text = $"<color={(cym ? "yellow" : "red")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color={(cym ? "#ff00ff" : "green")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
     }
 
     ///<summary>
