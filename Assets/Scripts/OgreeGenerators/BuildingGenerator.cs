@@ -208,7 +208,7 @@ public class BuildingGenerator
             foreach (KeyValuePair<string, SPillar> pillar in pillars)
                 room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
         }
-
+        room.ComputeChildrenOrigin();
         return room;
     }
 
