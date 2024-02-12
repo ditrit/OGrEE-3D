@@ -184,7 +184,7 @@ public class CoordModeController : MonoBehaviour
         _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
         _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
         _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
-        _text.text = $"<color={(cym ? "#ff00ff" : "red")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color={(cym ? "#ffff00" : "green")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
+        _text.text = $"<color={(cym ? "yellow" : "red")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color={(cym ? "#ff00ff" : "green")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
     }
 
     ///<summary>
