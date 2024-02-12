@@ -594,7 +594,7 @@ public class Room : Building
 
     public void ComputeChildrenOrigin()
     {
-        childrenOrigin = Instantiate(GameManager.instance.coordinateSystemModel, gameObject.transform);
+        childrenOrigin = Instantiate(GameManager.instance.childOriginModel, gameObject.transform);
         switch (attributes["axisOrientation"])
         {
             case AxisOrientation.XMinus:
