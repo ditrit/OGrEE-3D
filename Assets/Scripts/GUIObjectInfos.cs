@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GUIObjectInfos : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private TMP_Text tmpDomainName = null;
     [SerializeField] private TMP_Text tmpDomainAttrs = null;
     [SerializeField] private TMP_Text tmpAttributes = null;
+    [SerializeField] private Scrollbar verticalScrollbar = null;
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
@@ -136,6 +137,7 @@ public class GUIObjectInfos : MonoBehaviour
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
         rt.sizeDelta = new(0, textHeight * 30);
+        verticalScrollbar.value = 1;
     }
 
     ///<summary>
