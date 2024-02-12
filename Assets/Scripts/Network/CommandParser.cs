@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class CliParser
+public class CommandParser
 {
     #region Structures
     struct SLogin
@@ -38,12 +38,12 @@ public class CliParser
     readonly ReadFromJson rfJson = new();
     private bool canDraw = true;
 
-    public CliParser()
+    public CommandParser()
     {
         EventManager.instance.CancelGenerate.Add(OnCancelGenenerate);
     }
 
-    ~CliParser()
+    ~CommandParser()
     {
         EventManager.instance.CancelGenerate.Remove(OnCancelGenenerate);
     }
@@ -58,7 +58,7 @@ public class CliParser
     }
 
     ///<summary>
-    /// Deserialize CLI input and parse it. 
+    /// Deserialize input and parse it. 
     ///</summary>
     ///<param name="_input">The json to deserialize</param>
     public async Task DeserializeInput(string _input)
@@ -201,6 +201,8 @@ public class CliParser
     private void DeleteTag(string _input)
     {
         Tag tagToDel = GameManager.instance.GetTag(_input);
+        if (tagToDel == null)
+            return;
         foreach (string id in tagToDel.linkedObjects)
             GameManager.instance.RemoveFromTag(tagToDel.slug, id);
     }
@@ -360,6 +362,8 @@ public class CliParser
     {
         Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
         Tag tagToUpdate = GameManager.instance.GetTag(data["old-slug"].ToString());
+        if (tagToUpdate == null)
+            return;
         SApiTag newData = JsonConvert.DeserializeObject<SApiTag>(data["tag"].ToString());
         tagToUpdate.UpdateFromSApiTag(newData);
     }
@@ -576,6 +580,8 @@ public class CliParser
     {
         Hashtable data = JsonConvert.DeserializeObject<Hashtable>(_input);
         Layer layerToUpdate = LayerManager.instance.GetLayer(data["old-slug"].ToString());
+        if (layerToUpdate == null)
+            return;
         SApiLayer newData = JsonConvert.DeserializeObject<SApiLayer>(data["layer"].ToString());
         layerToUpdate.UpdateFromSApiLayer(newData);
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
@@ -588,6 +594,8 @@ public class CliParser
     private void DeleteLayer(string _input)
     {
         Layer layerToDel = LayerManager.instance.GetLayer(_input);
+        if (layerToDel == null)
+            return;
         layerToDel.ClearObjects();
         LayerManager.instance.layers.Remove(layerToDel);
         UiManager.instance.layersList.RebuildMenu(UiManager.instance.BuildLayersList);
