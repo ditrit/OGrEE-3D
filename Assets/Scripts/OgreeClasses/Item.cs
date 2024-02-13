@@ -159,7 +159,6 @@ public class Item : OgreeObject
             {
                 SApiObject se = new()
                 {
-                    description = new(),
                     attributes = new(),
 
                     name = "sensor", // ?

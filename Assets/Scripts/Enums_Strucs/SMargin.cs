@@ -1,19 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine;
 
 [System.Serializable]
 public struct SMargin
 {
     public float left;
     public float right;
-    public float top;
-    public float bottom;
+    public float front;
+    public float back;
 
     public SMargin(SMargin _data)
     {
-        top = _data.top;
-        bottom = _data.bottom;
+        front = _data.front;
+        back = _data.back;
         right = _data.right;
         left = _data.left;
+    }
+
+    public SMargin(Vector4 _data)
+    {
+        front = _data.x;
+        back = _data.y;
+        right = _data.z;
+        left = _data.z;
     }
 }

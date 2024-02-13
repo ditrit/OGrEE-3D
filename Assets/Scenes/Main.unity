@@ -9254,7 +9254,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Build date: 2024-02-12
 
-    Commit #87a84205'
+    Commit #0f464a78'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -10197,6 +10197,7 @@ MonoBehaviour:
   tmpDomainName: {fileID: 230592175}
   tmpDomainAttrs: {fileID: 1441350295}
   tmpAttributes: {fileID: 1036111023}
+  verticalScrollbar: {fileID: 2080815147}
   multiPanel: {fileID: 107050141}
   objList: {fileID: 336462793}
 --- !u!95 &879283142
@@ -14233,7 +14234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 217.10045}
+  m_AnchoredPosition: {x: 0, y: -0.000015258789}
   m_SizeDelta: {x: 0, y: 500}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1278892172
@@ -15160,7 +15161,7 @@ MonoBehaviour:
   id: 
   parentId: 
   category: room
-  description: []
+  description: 
   domain: 
   tags: []
   attributesKeys: []
@@ -15181,13 +15182,13 @@ MonoBehaviour:
   reserved:
     left: 0
     right: 0
-    top: 0
-    bottom: 0
+    front: 0
+    back: 0
   technical:
     left: 0
     right: 0
-    top: 0
-    bottom: 0
+    front: 0
+    back: 0
   usableZone: {fileID: 1332629501}
   reservedZone: {fileID: 0}
   technicalZone: {fileID: 0}
@@ -18381,7 +18382,7 @@ MonoBehaviour:
   id: 
   parentId: 
   category: rack
-  description: []
+  description: 
   domain: 
   tags: []
   attributesKeys: []
@@ -26585,7 +26586,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: -0.0000021085382
+  m_Value: 1
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:

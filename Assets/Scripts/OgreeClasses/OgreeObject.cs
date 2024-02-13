@@ -11,7 +11,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string id;
     public string parentId;
     public string category;
-    public List<string> description = new();
+    public string description;
     public string domain;
     public List<string> tags = new();
 
@@ -101,7 +101,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         parentId = _src.parentId;
         category = _src.category;
         domain = _src.domain;
-        description = _src.description;
+        description = _src.description.Replace("\\n", "\n");
         attributes = _src.attributes;
 
         foreach (string newTag in _src.tags)

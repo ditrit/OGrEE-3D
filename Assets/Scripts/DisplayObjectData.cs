@@ -57,7 +57,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
         {
-            Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+            Vector2 size = Utils.ParseVector2(item.attributes["size"]);
             if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
             else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)
@@ -192,32 +192,8 @@ public class DisplayObjectData : MonoBehaviour
     {
         OgreeObject obj = GetComponent<OgreeObject>();
         if (obj)
-        {
-            if (_str[0] == '#')
-            {
-                string attr = _str.Substring(1);
-                if (attr == "name")
-                    WriteLabels(obj.name, true);
-                else if (attr.Contains("description"))
-                {
-                    if (attr == "description")
-                        WriteLabels(string.Join("\n", obj.description));
-                    else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
-                        WriteLabels(obj.description[i - 1]);
-                    else
-                        GameManager.instance.AppendLogLine("Wrong description index", ELogTarget.both, ELogtype.warning);
-                }
-                else if (obj.attributes.ContainsKey(attr))
-                    WriteLabels(obj.attributes[attr]);
-                else
-                {
-                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", ELogTarget.both, ELogtype.warning);
-                    return;
-                }
-            }
-            else
-                WriteLabels(_str);
-        }
+            WriteLabels(_str);
+
         Slot s = GetComponent<Slot>();
         if (s)
             WriteLabels(name);

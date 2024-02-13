@@ -298,14 +298,14 @@ public class Room : Building
                 // Lower Left   
                 orient = new(1, 1);
                 offsetX = (int)-reserved.left;
-                offsetY = (int)-reserved.bottom;
+                offsetY = (int)-reserved.back;
                 break;
 
             case AxisOrientation.XMinus:
                 // Lower Right
                 orient = new(-1, 1);
                 offsetX = (int)-reserved.right;
-                offsetY = (int)-reserved.bottom;
+                offsetY = (int)-reserved.back;
                 _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, 0);
                 break;
 
@@ -313,7 +313,7 @@ public class Room : Building
                 // Upper Left
                 orient = new(1, -1);
                 offsetX = (int)-reserved.left;
-                offsetY = (int)-reserved.top;
+                offsetY = (int)-reserved.front;
                 _root.transform.localPosition -= new Vector3(0, 0, UnitValue.Tile);
                 break;
 
@@ -321,14 +321,14 @@ public class Room : Building
                 // Upper Right
                 orient = new(-1, -1);
                 offsetX = (int)-reserved.right;
-                offsetY = (int)-reserved.top;
+                offsetY = (int)-reserved.front;
                 _root.transform.localPosition -= new Vector3(UnitValue.Tile, 0, UnitValue.Tile);
                 break;
         }
 
         Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
         float x = size.x / UnitValue.Tile - technical.right - technical.left + offsetX;
-        float y = size.y / UnitValue.Tile - technical.top - technical.bottom + offsetY;
+        float y = size.y / UnitValue.Tile - technical.front - technical.back + offsetY;
         Vector3 origin = usableZone.localScale / 0.2f;
         _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
@@ -453,8 +453,8 @@ public class Room : Building
     ///<param name="_dim">The dimensions of the reduction</param>
     private void ReduceZone(Transform _zone, SMargin _dim)
     {
-        _zone.localScale -= UnitValue.Tile * 0.1f * new Vector3(_dim.right + _dim.left, 0, _dim.top + _dim.bottom);
-        _zone.localPosition -= UnitValue.Tile * 0.5f * new Vector3(_dim.right - _dim.left, 0, _dim.top - _dim.bottom);
+        _zone.localScale -= UnitValue.Tile * 0.1f * new Vector3(_dim.right + _dim.left, 0, _dim.front + _dim.back);
+        _zone.localPosition -= UnitValue.Tile * 0.5f * new Vector3(_dim.right - _dim.left, 0, _dim.front - _dim.back);
     }
 
     ///<summary>
