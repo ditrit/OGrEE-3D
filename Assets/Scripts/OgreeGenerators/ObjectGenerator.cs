@@ -146,31 +146,39 @@ public class ObjectGenerator
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
-                int i = 0;
-                float max;
-                if (string.IsNullOrEmpty(_dv.attributes["template"]))
-                    max = Utils.ParseDecFrac(_dv.attributes["sizeU"]);
-                else
-                    max = Utils.ParseDecFrac(GameManager.instance.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / UnitValue.U;
-                foreach (Transform child in _parent)
+                try
                 {
-                    if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
+                    // Debug.Log($"[{_dv.name}]");
+                    string slots = _dv.attributes["slot"].Trim('[', ']');
+                    string[] slotsArray = slots.Split(",");
+                    // foreach (string str in slotsArray)
+                    //     Debug.Log($"=> {str}");
+                        
+                    foreach (Transform child in _parent)
                     {
-                        takenSlots.Add(child.GetComponent<Slot>());
-                        i++;
+                        foreach (string slotName in slotsArray)
+                        {
+                            if (child.name == slotName && child.TryGetComponent(out Slot s))
+                                takenSlots.Add(s);
+                        }
+                    }
+
+                    if (takenSlots.Count > 0)
+                    {
+                        foreach (Slot s in takenSlots)
+                            s.SlotTaken(true);
+
+                        slot = takenSlots[0].transform;
+                    }
+                    else
+                    {
+                        GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
+                        return null;
                     }
                 }
-
-                if (takenSlots.Count > 0)
+                catch (System.Exception e)
                 {
-                    foreach (Slot s in takenSlots)
-                        s.SlotTaken(true);
-                    slot = takenSlots[0].transform;
-                }
-                else
-                {
-                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
-                    return null;
+                    Debug.LogError(e);
                 }
             }
         }
