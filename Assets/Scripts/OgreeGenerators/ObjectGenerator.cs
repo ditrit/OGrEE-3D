@@ -655,7 +655,7 @@ public class ObjectGenerator
         }
 
         Vector3 pos;
-        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor) && _apiObj.attributes.ContainsKey("posXYZ"))
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor ||_apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
             pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
         else
         {
@@ -702,5 +702,82 @@ public class ObjectGenerator
             LengthUnit.Feet => UnitValue.Foot,
             _ => UnitValue.Tile,
         };
+    }
+
+    public GenericObject CreateGeneric(SApiObject _go, Transform _parent)
+    {
+        if (GameManager.instance.allItems.Contains(_go.id))
+        {
+            GameManager.instance.AppendLogLine($"{_go.id} already exists.", ELogTarget.both, ELogtype.warning);
+            return null;
+        }
+
+        GameObject newGeneric;
+        if (string.IsNullOrEmpty(_go.attributes["template"]))
+        {
+            switch (_go.attributes["shape"])
+            {
+                case "cube":
+                    newGeneric = Object.Instantiate(GameManager.instance.genericCubeModel);
+                    Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
+                    newGeneric.transform.localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
+                    break;
+                case "sphere":
+                    newGeneric = Object.Instantiate(GameManager.instance.genericSphereModel);
+                    float diameter = Utils.ParseDecFrac(_go.attributes["diameter"]);
+                    newGeneric.transform.localScale *= diameter;
+                    break;
+                case "cylinder":
+                    newGeneric = Object.Instantiate(GameManager.instance.genericCylinderModel);
+                    diameter = Utils.ParseDecFrac(_go.attributes["diameter"]);
+                    newGeneric.transform.localScale = new(diameter, Utils.ParseDecFrac(_go.attributes["height"]), diameter);
+                    break;
+                default:
+                    GameManager.instance.AppendLogLine($"Unknown generic object shape \"{_go.attributes["shape"]}\"", ELogTarget.both, ELogtype.error);
+                    return null;
+            }
+            newGeneric.transform.localScale /= 100;
+        }
+        else
+        {
+            if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+            {
+                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+                newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
+            }
+            else
+            {
+                GameManager.instance.AppendLogLine($"Unknown template \"{_go.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                return null;
+            }
+        }
+
+        newGeneric.name = _go.name;
+        newGeneric.transform.parent = _parent;
+
+        GenericObject genericObject = newGeneric.GetComponent<GenericObject>();
+        genericObject.UpdateFromSApiObject(_go);
+
+        if (_parent)
+        {
+            PlaceInRoom(newGeneric.transform, _go);
+            newGeneric.transform.localEulerAngles = Utils.ParseVector3(genericObject.attributes["rotation"], true);
+        }
+        else
+            newGeneric.transform.localPosition = Vector3.zero;
+
+        DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts(LabelPos.FrontRear);
+        dod.SetLabel("#name");
+        dod.hasFloatingLabel = true;
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
+        if (genericObject.attributes.ContainsKey("color"))
+            genericObject.SetColor(genericObject.attributes["color"]);
+        else
+            genericObject.UpdateColorByDomain();
+
+        GameManager.instance.allItems.Add(genericObject.id, newGeneric);
+        return genericObject;
     }
 }

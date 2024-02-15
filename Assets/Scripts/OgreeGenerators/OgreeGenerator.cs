@@ -136,6 +136,16 @@ public class OgreeGenerator : MonoBehaviour
             case Category.Group:
                 newObject = objectGenerator.CreateGroup(_obj, parent);
                 break;
+            case Category.Generic:
+                try
+                {
+                    newObject = objectGenerator.CreateGeneric(_obj, parent);
+                }catch (System.Exception e)
+                {
+                    Debug.LogError(e);
+                    newObject = null;
+                }
+                break;
             default:
                 newObject = null;
                 GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", ELogTarget.both, ELogtype.error);
