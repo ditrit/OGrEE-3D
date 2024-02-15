@@ -49,25 +49,24 @@ public class ReadFromJson
         // Build SApiObject
         SApiObject obj = new()
         {
-            description = new(),
             attributes = new(),
             tags = new(),
 
             name = _data.slug,
             id = _data.slug,
-            category = _data.category
+            category = _data.category,
+            description = _data.description
         };
-        obj.description.Add(_data.description);
         if (obj.category == Category.Rack)
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
-            obj.attributes["posXY"] = JsonUtility.ToJson(Vector2.zero);
+            obj.attributes["posXY"] = "[0,0]";
             obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
-            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(tmp.x, tmp.y));
+            obj.attributes["size"] = $"[{tmp.x},{tmp.y}";
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
             obj.attributes["heightUnit"] = LengthUnit.Centimeter;
-            obj.attributes["rotation"] = JsonUtility.ToJson(Vector3.zero);
+            obj.attributes["rotation"] = "[0,0,0]";
         }
         else if (obj.category == Category.Device)
         {
@@ -77,7 +76,7 @@ public class ReadFromJson
                 int sizeU = Mathf.CeilToInt(_data.sizeWDHmm[2] / 1000 / UnitValue.U);
                 obj.attributes["sizeU"] = sizeU.ToString();
             }
-            obj.attributes["size"] = JsonUtility.ToJson(new Vector2(_data.sizeWDHmm[0], _data.sizeWDHmm[1]));
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
@@ -210,7 +209,6 @@ public class ReadFromJson
             obj.parentId = _parent.id;
             obj.category = Category.Device;
             obj.domain = _parent.domain;
-            obj.description = new();
             obj.attributes = new()
             {
                 ["deviceType"] = _data.type
@@ -228,7 +226,7 @@ public class ReadFromJson
         dod.PlaceTexts(_data.labelPos);
         if (_isSlot)
             dod.SetLabelFont("color@888888");
-        dod.SetLabel("#name");
+        dod.SetLabel(go.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.defaultMat;
@@ -339,7 +337,7 @@ public class ReadFromJson
         sensor.fromTemplate = true;
         DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(_sensor.elemPos[1]);
-        dod.SetLabel("#temperature");
+        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
     }
 }

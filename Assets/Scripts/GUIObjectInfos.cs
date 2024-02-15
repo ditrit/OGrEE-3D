@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GUIObjectInfos : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GUIObjectInfos : MonoBehaviour
     [SerializeField] private TMP_Text tmpDomainName = null;
     [SerializeField] private TMP_Text tmpDomainAttrs = null;
     [SerializeField] private TMP_Text tmpAttributes = null;
+    [SerializeField] private Scrollbar verticalScrollbar = null;
 
     [Header("Multi objects")]
     [SerializeField] private GameObject multiPanel = null;
@@ -74,7 +76,7 @@ public class GUIObjectInfos : MonoBehaviour
     ///<param name="_obj">The object whose information are displayed</param>
     private void UpdateFields(OgreeObject _obj)
     {
-        int i = 1;
+        int textHeight = 1;
         tmpName.text = _obj.id.Replace(".", "/");
         if (!string.IsNullOrEmpty(_obj.domain) && GameManager.instance.allItems.Contains(_obj.domain))
         {
@@ -99,99 +101,43 @@ public class GUIObjectInfos : MonoBehaviour
             tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";
             tmpAttributes.text += $"<b>maximum:</b> {Utils.FloatToRefinedStr(tempInfos.max)} {tempInfos.unit}\n";
-            i += 4;
+            textHeight += 4;
             if (!string.IsNullOrEmpty(tempInfos.hottestChild))
             {
                 tmpAttributes.text += $"<b>hottest child:</b> {tempInfos.hottestChild}\n";
-                i++;
+                textHeight++;
             }
         }
         else
         {
-            // Display posXY if available
-            if (_obj.attributes.ContainsKey("posXY") && _obj.attributes.ContainsKey("posXYUnit")
-                && !string.IsNullOrEmpty(_obj.attributes["posXY"]) && !string.IsNullOrEmpty(_obj.attributes["posXYUnit"]))
+            // Display description with multiple lines
+            if (!string.IsNullOrEmpty(_obj.description))
             {
-                Vector2 posXY = JsonUtility.FromJson<Vector2>(_obj.attributes["posXY"]);
-                tmpAttributes.text += $"<b>posXY:</b> {posXY.x:0.##}/{posXY.y:0.##} ({_obj.attributes["posXYUnit"]})\n";
-                i++;
-
-                // If rack, display pos by tile name if available
-                if (_obj is Rack && _obj.transform.parent)
-                {
-                    Room room = _obj.transform.parent.GetComponent<Room>();
-                    if (room.attributes.ContainsKey("tiles"))
-                    {
-                        List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(room.attributes["tiles"]);
-                        STile tileData = new();
-                        foreach (STile t in tiles)
-                        {
-                            if (t.location == $"{posXY.x:0}/{posXY.y:0}")
-                                tileData = t;
-                        }
-                        if (!string.IsNullOrEmpty(tileData.location) && !string.IsNullOrEmpty(tileData.label))
-                        {
-                            tmpAttributes.text += $"<b>tile's label:</b> {tileData.label}\n";
-                            i++;
-                        }
-                    }
-                }
-            }
-
-            // Display orientation if available
-            if (_obj.attributes.ContainsKey("orientation"))
-            {
-                tmpAttributes.text += $"<b>orientation:</b> {_obj.attributes["orientation"]}\n";
-                i++;
-            }
-
-            // Display size if available
-            if (_obj.attributes.ContainsKey("size") && _obj.attributes.ContainsKey("sizeUnit"))
-            {
-                Vector2 size = JsonUtility.FromJson<Vector2>(_obj.attributes["size"]);
-                tmpAttributes.text += $"<b>size:</b> {size.x}{_obj.attributes["sizeUnit"]} x {size.y}{_obj.attributes["sizeUnit"]} x {_obj.attributes["height"]}{_obj.attributes["heightUnit"]}\n";
-                i++;
-            }
-
-            // Display template if available
-            if (_obj.attributes.ContainsKey("template") && !string.IsNullOrEmpty(_obj.attributes["template"]))
-            {
-                tmpAttributes.text += $"<b>template:</b> {_obj.attributes["template"]}\n";
-                i++;
+                tmpAttributes.text += "<b>description:</b>\n";
+                tmpAttributes.text += $"{_obj.description}\n";
+                textHeight += _obj.description.Count(c => c == '\n') + 1;
             }
 
             // Display all other attributes
-            List<string> excludeAttr = new List<string> { "posXY", "posXYUnit", "orientation", "size", "sizeUnit", "template", "separators", "tiles", "colors" };
             foreach (KeyValuePair<string, string> kvp in _obj.attributes)
             {
-                if (!string.IsNullOrEmpty(kvp.Value) && !excludeAttr.Contains(kvp.Key))
-                {
-                    tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
-                    i++;
-                }
+                tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+                textHeight++;
             }
 
-            // Display all descriptions
-            if (_obj.description.Count != 0)
-            {
-                tmpAttributes.text += "<b>description:</b>\n";
-                for (int j = 0; j < _obj.description.Count; j++)
-                {
-                    tmpAttributes.text += $"<b>{j + 1}:</b> {_obj.description[j]}\n";
-                    i++;
-                }
-            }
+            // Display tags using their color
             if (_obj.tags.Count > 0)
             {
                 tmpAttributes.text += "<b>tags: </b>";
-                i++;
+                textHeight++;
                 foreach (string tagName in _obj.tags)
                     tmpAttributes.text += $"<b><color=#{GameManager.instance.GetTag(tagName).colorCode}>{tagName}</b></color> ";
             }
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();
-        rt.sizeDelta = new(0, i * 30);
+        rt.sizeDelta = new(0, textHeight * 30);
+        verticalScrollbar.value = 1;
     }
 
     ///<summary>

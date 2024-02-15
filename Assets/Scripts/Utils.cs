@@ -34,12 +34,25 @@ public static class Utils
     }
 
     ///<summary>
+    /// Parse a string with format "[x,y,z,w]" into a Vector4.
+    ///</summary>
+    ///<param name="_input">String with format "[x,y,z,w]"</param>
+    ///<returns>The parsed Vector4</returns>
+    public static Vector4 ParseVector4(string _input)
+    {
+        _input = _input.Trim('[', ']');
+        string[] parts = _input.Split(',');
+        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]), ParseDecFrac(parts[3]));
+    }
+
+    ///<summary>
     /// Parse a string into a float. Can be decimal, a fraction and/or negative.
     ///</summary>
     ///<param name="_input">The string which contains the float</param>
     ///<returns>The parsed float</returns>
     public static float ParseDecFrac(string _input)
     {
+        _input = _input.Replace(" ", "");
         _input = _input.Replace(",", ".");
         if (_input.Contains("/"))
         {

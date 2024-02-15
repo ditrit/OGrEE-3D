@@ -342,8 +342,8 @@ public class CommandParser
                 if ((room.attributes.ContainsKey("reserved") && room.attributes["reserved"] != newData.attributes["reserved"])
                     || !room.attributes.ContainsKey("reserved"))
                 {
-                    SMargin reserved = JsonUtility.FromJson<SMargin>(newData.attributes["reserved"]);
-                    SMargin technical = JsonUtility.FromJson<SMargin>(newData.attributes["technical"]);
+                    SMargin reserved = new(Utils.ParseVector4(newData.attributes["reserved"]));
+                    SMargin technical = new(Utils.ParseVector4(newData.attributes["technical"]));
                     room.SetAreas(reserved, technical);
                 }
             }

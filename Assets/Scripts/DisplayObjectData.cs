@@ -57,7 +57,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
         {
-            Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+            Vector2 size = Utils.ParseVector2(item.attributes["size"]);
             if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 size /= 1000;
             else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)
@@ -190,67 +190,25 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_str">The attribute to set</param>
     public void SetLabel(string _str)
     {
-        OgreeObject obj = GetComponent<OgreeObject>();
-        if (obj)
-        {
-            if (_str[0] == '#')
-            {
-                string attr = _str.Substring(1);
-                if (attr == "name")
-                    WriteLabels(obj.name, true);
-                else if (attr.Contains("description"))
-                {
-                    if (attr == "description")
-                        WriteLabels(string.Join("\n", obj.description));
-                    else if (int.TryParse(attr.Substring(11), out int i) && i > 0 && obj.description.Count >= i)
-                        WriteLabels(obj.description[i - 1]);
-                    else
-                        GameManager.instance.AppendLogLine("Wrong description index", ELogTarget.both, ELogtype.warning);
-                }
-                else if (obj.attributes.ContainsKey(attr))
-                    WriteLabels(obj.attributes[attr]);
-                else
-                {
-                    GameManager.instance.AppendLogLine($"{name} doesn't contain {attr} attribute.", ELogTarget.both, ELogtype.warning);
-                    return;
-                }
-            }
-            else
-                WriteLabels(_str);
-        }
-        Slot s = GetComponent<Slot>();
-        if (s)
-            WriteLabels(name);
+        WriteLabels(_str);
         attrToDisplay = _str;
-        Sensor sensor = GetComponent<Sensor>();
-        if (sensor)
-        {
-            if (_str == "#temperature")
-                WriteLabels($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
-            else
-                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", ELogTarget.both, ELogtype.warning);
-        }
     }
 
     ///<summary>
     /// Set displayed texts with given string.
     ///</summary>
     ///<param name="_str">The string to display</param>
-    ///<param name="_face">If set to true, add referential to front and rear labels</param>
-    private void WriteLabels(string _str, bool _face = false)
+    private void WriteLabels(string _str)
     {
         foreach (TextMeshPro tmp in usedLabels)
         {
             tmp.text = _str;
-            if (_face)
+            if (TryGetComponent(out Rack rack) && rack.name == _str)
             {
-                if (TryGetComponent(out Rack _))
-                {
-                    if (tmp == labelFront)
-                        tmp.text += " (F)";
-                    if (tmp == labelRear)
-                        tmp.text += " (R)";
-                }
+                if (tmp == labelFront)
+                    tmp.text += " (F)";
+                if (tmp == labelRear)
+                    tmp.text += " (R)";
             }
             tmp.text = $"<color=#{color}>{tmp.text}</color>";
 
