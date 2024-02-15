@@ -190,43 +190,25 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_str">The attribute to set</param>
     public void SetLabel(string _str)
     {
-        OgreeObject obj = GetComponent<OgreeObject>();
-        if (obj)
-            WriteLabels(_str);
-
-        Slot s = GetComponent<Slot>();
-        if (s)
-            WriteLabels(name);
+        WriteLabels(_str);
         attrToDisplay = _str;
-        Sensor sensor = GetComponent<Sensor>();
-        if (sensor)
-        {
-            if (_str == "#temperature")
-                WriteLabels($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
-            else
-                GameManager.instance.AppendLogLine($"Sensor can only show temperature (for now)", ELogTarget.both, ELogtype.warning);
-        }
     }
 
     ///<summary>
     /// Set displayed texts with given string.
     ///</summary>
     ///<param name="_str">The string to display</param>
-    ///<param name="_face">If set to true, add referential to front and rear labels</param>
-    private void WriteLabels(string _str, bool _face = false)
+    private void WriteLabels(string _str)
     {
         foreach (TextMeshPro tmp in usedLabels)
         {
             tmp.text = _str;
-            if (_face)
+            if (TryGetComponent(out Rack rack) && rack.name == _str)
             {
-                if (TryGetComponent(out Rack _))
-                {
-                    if (tmp == labelFront)
-                        tmp.text += " (F)";
-                    if (tmp == labelRear)
-                        tmp.text += " (R)";
-                }
+                if (tmp == labelFront)
+                    tmp.text += " (F)";
+                if (tmp == labelRear)
+                    tmp.text += " (R)";
             }
             tmp.text = $"<color=#{color}>{tmp.text}</color>";
 

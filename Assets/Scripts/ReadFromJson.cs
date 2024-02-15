@@ -226,7 +226,7 @@ public class ReadFromJson
         dod.PlaceTexts(_data.labelPos);
         if (_isSlot)
             dod.SetLabelFont("color@888888");
-        dod.SetLabel("#name");
+        dod.SetLabel(go.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         go.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.defaultMat;
@@ -337,7 +337,7 @@ public class ReadFromJson
         sensor.fromTemplate = true;
         DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(_sensor.elemPos[1]);
-        dod.SetLabel("#temperature");
+        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
     }
 }

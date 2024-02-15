@@ -11,6 +11,7 @@ using UnityEngine;
 
 public class ApiManager : MonoBehaviour
 {
+    #region Structures from API
     public struct SRequest
     {
         public string type;
@@ -79,6 +80,7 @@ public class ApiManager : MonoBehaviour
         public string message;
         public List<SApiObject> data;
     }
+    #endregion
 
     public static ApiManager instance;
 

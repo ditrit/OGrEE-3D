@@ -65,7 +65,7 @@ public class ObjectGenerator
 
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel("#name");
+        dod.SetLabel(rack.name);
         dod.hasFloatingLabel = true;
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
@@ -279,7 +279,7 @@ public class ObjectGenerator
             dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
         else
             dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel("#name");
+        dod.SetLabel(dv.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (dv.attributes.ContainsKey("color"))
@@ -432,7 +432,7 @@ public class ObjectGenerator
             dod.PlaceTexts(LabelPos.Top);
         else if (parentCategory == Category.Rack)
             dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel("#name");
+        dod.SetLabel(gr.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         GameManager.instance.allItems.Add(gr.id, newGr);
@@ -558,7 +558,7 @@ public class ObjectGenerator
         DisplayObjectData dod = newCo.GetComponent<DisplayObjectData>();
         dod.hasFloatingLabel = true;
         dod.PlaceTexts(LabelPos.Top);
-        dod.SetLabel("#name");
+        dod.SetLabel(co.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         GameManager.instance.allItems.Add(co.id, newCo);
@@ -600,7 +600,7 @@ public class ObjectGenerator
         sensor.fromTemplate = false;
         DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.Front);
-        dod.SetLabel("#temperature");
+        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         return sensor;
