@@ -140,45 +140,47 @@ public class ObjectGenerator
         }
 
         // Check slot
-        Transform slot = null;
+        Transform primarySlot = null;
+        Vector3 slotsPivot = new();
+        Vector3 slotsScale = new();
         List<Slot> takenSlots = new();
         if (_parent)
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
-                try
+                string slots = _dv.attributes["slot"].Trim('[', ']');
+                string[] slotsArray = slots.Split(",");
+
+                foreach (Transform child in _parent)
                 {
-                    // Debug.Log($"[{_dv.name}]");
-                    string slots = _dv.attributes["slot"].Trim('[', ']');
-                    string[] slotsArray = slots.Split(",");
-                    // foreach (string str in slotsArray)
-                    //     Debug.Log($"=> {str}");
-                        
-                    foreach (Transform child in _parent)
+                    foreach (string slotName in slotsArray)
                     {
-                        foreach (string slotName in slotsArray)
-                        {
-                            if (child.name == slotName && child.TryGetComponent(out Slot s))
-                                takenSlots.Add(s);
-                        }
-                    }
-
-                    if (takenSlots.Count > 0)
-                    {
-                        foreach (Slot s in takenSlots)
-                            s.SlotTaken(true);
-
-                        slot = takenSlots[0].transform;
-                    }
-                    else
-                    {
-                        GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
-                        return null;
+                        if (child.name == slotName && child.TryGetComponent(out Slot s))
+                            takenSlots.Add(s);
                     }
                 }
-                catch (System.Exception e)
+
+                if (takenSlots.Count > 0)
                 {
-                    Debug.LogError(e);
+                    List<Transform> slotsTransform = new();
+                    foreach (Slot s in takenSlots)
+                    {
+                        s.SlotTaken(true);
+                        slotsTransform.Add(s.transform);
+                    }
+
+                    SlotsShape(slotsTransform, out slotsPivot, out slotsScale);
+                    primarySlot = slotsTransform[0];
+                    foreach (Transform t in slotsTransform)
+                    {
+                        if (Vector3.Distance(slotsPivot, t.position) < Vector3.Distance(slotsPivot, primarySlot.position))
+                            primarySlot = t;
+                    }
+                }
+                else
+                {
+                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
+                    return null;
                 }
             }
         }
@@ -190,7 +192,7 @@ public class ObjectGenerator
 
         if (string.IsNullOrEmpty(_dv.attributes["template"]))
         {
-            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
+            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), primarySlot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new(boxSize.x, boxSize.z);
             height = boxSize.y;
@@ -212,11 +214,12 @@ public class ObjectGenerator
         {
             if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
             {
-                Vector3 slotScale = slot.GetChild(0).localScale;
-                newDevice.transform.localEulerAngles = slot.localEulerAngles;
-                newDevice.transform.localPosition = slot.localPosition;
+                newDevice.transform.localEulerAngles = primarySlot.localEulerAngles;
+                newDevice.transform.position = slotsPivot;
+                // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
+                //     newDevice.transform.localPosition += new Vector3(size.x, height, size.y) / -2;
 
-                float deltaZ = slotScale.z - size.y;
+                float deltaZ = slotsScale.z - size.y;
                 switch (_dv.attributes["orientation"])
                 {
                     case Orientation.Front:
@@ -224,21 +227,21 @@ public class ObjectGenerator
                         break;
                     case Orientation.Rear:
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
                         else
                             newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
                         break;
                     case Orientation.FrontFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
                         else
                             newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
                         break;
                     case Orientation.RearFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
+                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(0, height, size.y);
                         else
                             newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
@@ -246,12 +249,12 @@ public class ObjectGenerator
                 }
                 // align device to right side of the slot if invertOffset == true
                 if (_dv.attributes.ContainsKey("invertOffset") && _dv.attributes["invertOffset"] == "true")
-                    newDevice.transform.localPosition += new Vector3(slotScale.x - size.x, 0, 0);
+                    newDevice.transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
 
                 if (!dv.attributes.ContainsKey("color"))
                 {
                     // if slot, color
-                    Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+                    Color slotColor = primarySlot.GetChild(0).GetComponent<Renderer>().material.color;
                     dv.color = new(slotColor.r, slotColor.g, slotColor.b);
                     newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
                     dv.hasSlotColor = true;
@@ -283,8 +286,8 @@ public class ObjectGenerator
 
         // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
-        if (slot?.GetComponent<Slot>())
-            dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
+        if (primarySlot?.GetComponent<Slot>())
+            dod.PlaceTexts(primarySlot?.GetComponent<Slot>().labelPos);
         else
             dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(dv.name);
@@ -359,6 +362,33 @@ public class ObjectGenerator
             GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
+    }
+
+    private void SlotsShape(List<Transform> _content, out Vector3 _pivot, out Vector3 _scale)
+    {
+        // x axis
+        float left = float.PositiveInfinity;
+        float right = float.NegativeInfinity;
+        // y axis
+        float bottom = float.PositiveInfinity;
+        float top = float.NegativeInfinity;
+        // z axis
+        float rear = float.PositiveInfinity;
+        float front = float.NegativeInfinity;
+
+        foreach (Transform obj in _content)
+        {
+            Bounds bounds = obj.GetChild(0).GetComponent<Renderer>().bounds;
+            left = Mathf.Min(bounds.min.x, left);
+            right = Mathf.Max(bounds.max.x, right);
+            bottom = Mathf.Min(bounds.min.y, bottom);
+            top = Mathf.Max(bounds.max.y, top);
+            rear = Mathf.Min(bounds.min.z, rear);
+            front = Mathf.Max(bounds.max.z, front);
+        }
+
+        _scale = new Vector3(right - left, top - bottom, front - rear);
+        _pivot = new(left, bottom, rear);
     }
 
     ///<summary>
