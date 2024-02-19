@@ -80,9 +80,7 @@ public class ReadFromJson
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
-            obj.attributes["slot"] = "";
         }
-        obj.attributes["template"] = "";
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
         if (_data.attributes != null)
         {

@@ -18,7 +18,7 @@ public class ObjectGenerator
         }
 
         GameObject newRack;
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        if (!Utils.IsInDict(_rk.attributes, "template"))
         {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
 
@@ -76,7 +76,7 @@ public class ObjectGenerator
 
         GameManager.instance.allItems.Add(rack.id, newRack);
 
-        if (!string.IsNullOrEmpty(rack.attributes["template"]))
+        if (Utils.IsInDict(rack.attributes, "template"))
         {
             Device[] components = rack.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)
@@ -133,7 +133,7 @@ public class ObjectGenerator
         }
 
         // Check template
-        if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
+        if (Utils.IsInDict(_dv.attributes, "template") && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
             GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
             return null;
@@ -146,7 +146,7 @@ public class ObjectGenerator
         List<Slot> takenSlots = new();
         if (_parent)
         {
-            if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
+            if (Utils.IsInDict(_dv.attributes, "slot"))
             {
                 string slots = _dv.attributes["slot"].Trim('[', ']');
                 string[] slotsArray = slots.Split(",");
@@ -190,7 +190,7 @@ public class ObjectGenerator
         Vector2 size;
         float height;
 
-        if (string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (!Utils.IsInDict(_dv.attributes, "template"))
         {
             newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), primarySlot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
@@ -212,7 +212,7 @@ public class ObjectGenerator
         // Place the device
         if (_parent)
         {
-            if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
+            if (Utils.IsInDict(_dv.attributes, "slot"))
             {
                 newDevice.transform.localEulerAngles = primarySlot.localEulerAngles;
                 newDevice.transform.position = slotsPivot;
@@ -300,7 +300,7 @@ public class ObjectGenerator
 
         GameManager.instance.allItems.Add(dv.id, newDevice);
 
-        if (!string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (Utils.IsInDict(_dv.attributes, "template"))
         {
             Device[] components = newDevice.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)

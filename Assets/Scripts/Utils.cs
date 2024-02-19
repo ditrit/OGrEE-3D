@@ -358,4 +358,9 @@ public static class Utils
         _color.a = _alpha;
         return _color;
     }
+
+    public static bool IsInDict(Dictionary<string, string> _dict, string _key)
+    {
+        return _dict.ContainsKey(_key) && !string.IsNullOrEmpty(_dict[_key]);
+    }
 }
