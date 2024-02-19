@@ -703,6 +703,12 @@ public class ObjectGenerator
         };
     }
 
+    ///<summary>
+    /// Instantiate a genericCubeModel, a genericCubeModel, a genericCylinderModel or a rackTemplate (from GameManager) and apply the given data to it.
+    ///</summary>
+    ///<param name="_go">The generic object data to apply</param>
+    ///<param name="_parent">The parent of the created generic object</param>
+    ///<returns>The created generic object</returns>
     public GenericObject CreateGeneric(SApiObject _go, Transform _parent)
     {
         if (GameManager.instance.allItems.Contains(_go.id))
