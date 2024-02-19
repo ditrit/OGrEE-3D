@@ -183,6 +183,8 @@ public class UiManager : MonoBehaviour
             &&
             item is not Corridor
             &&
+            item is not GenericObject
+            &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
             &&
             !menuTarget.GetComponent<Group>()
@@ -279,6 +281,8 @@ public class UiManager : MonoBehaviour
                     menuTarget.GetComponent<Item>() is Item item
                     &&
                     item is not Corridor
+                    && 
+                    item is not GenericObject
                 )
                 ||
                 menuTarget.GetComponent<Room>()
