@@ -61,7 +61,7 @@ public class ReadFromJson
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = "[0,0]";
-            obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
+            obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["size"] = $"[{tmp.x},{tmp.y}";
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
@@ -85,7 +85,7 @@ public class ReadFromJson
         else if (obj.category == Category.Generic)
         {
             obj.attributes["posXY"] = "[0,0]";
-            obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
+            obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["rotation"] = "[0,0,0]";
             obj.attributes["shape"] = _data.shape;
             obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
