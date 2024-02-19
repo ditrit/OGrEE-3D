@@ -56,7 +56,7 @@ MonoBehaviour:
   labelLeft: {fileID: 0}
   labelRight: {fileID: 0}
   floatingLabel: {fileID: 0}
-  hasFloatingLabel: 0
+  hasFloatingLabel: 1
   usedLabels: []
   attrToDisplay: 
 --- !u!205 &530606338633814678

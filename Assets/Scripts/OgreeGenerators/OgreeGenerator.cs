@@ -53,7 +53,7 @@ public class OgreeGenerator : MonoBehaviour
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if ((_obj.category == Category.Rack || _obj.category == Category.Device) && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && !string.IsNullOrEmpty(_obj.attributes["template"])
             && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");

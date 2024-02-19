@@ -66,7 +66,6 @@ public class ObjectGenerator
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(rack.name);
-        dod.hasFloatingLabel = true;
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (rack.attributes.ContainsKey("color"))
@@ -655,7 +654,7 @@ public class ObjectGenerator
         }
 
         Vector3 pos;
-        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor ||_apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
             pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
         else
         {
@@ -715,28 +714,26 @@ public class ObjectGenerator
         GameObject newGeneric;
         if (string.IsNullOrEmpty(_go.attributes["template"]))
         {
-            switch (_go.attributes["shape"])
+            newGeneric = _go.attributes["shape"] switch
             {
-                case "cube":
-                    newGeneric = Object.Instantiate(GameManager.instance.genericCubeModel);
-                    Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
-                    newGeneric.transform.localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
-                    break;
-                case "sphere":
-                    newGeneric = Object.Instantiate(GameManager.instance.genericSphereModel);
-                    float diameter = Utils.ParseDecFrac(_go.attributes["diameter"]);
-                    newGeneric.transform.localScale *= diameter;
-                    break;
-                case "cylinder":
-                    newGeneric = Object.Instantiate(GameManager.instance.genericCylinderModel);
-                    diameter = Utils.ParseDecFrac(_go.attributes["diameter"]);
-                    newGeneric.transform.localScale = new(diameter, Utils.ParseDecFrac(_go.attributes["height"]), diameter);
-                    break;
-                default:
-                    GameManager.instance.AppendLogLine($"Unknown generic object shape \"{_go.attributes["shape"]}\"", ELogTarget.both, ELogtype.error);
-                    return null;
+                "cube" => Object.Instantiate(GameManager.instance.genericCubeModel),
+                "sphere" => Object.Instantiate(GameManager.instance.genericSphereModel),
+                "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
+                _ => null
+            };
+            if (!newGeneric)
+            {
+                GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
+                return null;
             }
-            newGeneric.transform.localScale /= 100;
+            Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
+            newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
+
+            newGeneric.transform.GetChild(0).localScale /= 100;
+            if (_go.attributes["sizeUnit"] == LengthUnit.Millimeter)
+                newGeneric.transform.GetChild(0).localScale /= 10;
+            foreach (Transform child in newGeneric.transform)
+                child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
         }
         else
         {
@@ -768,8 +765,7 @@ public class ObjectGenerator
 
         DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel("#name");
-        dod.hasFloatingLabel = true;
+        dod.SetLabel(genericObject.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (genericObject.attributes.ContainsKey("color"))
