@@ -35,8 +35,7 @@ public class AutoLayer : Layer
         {
             foreach (Transform child in targetObjects[0].transform)
             {
-                if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"]
-                                                                        && obj.attributes["type"] == filters["type"])
+                if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"] && obj.attributes.ContainsKey("type") && obj.attributes["type"] == filters["type"])
                     objects.Add(child.gameObject);
             }
         }
