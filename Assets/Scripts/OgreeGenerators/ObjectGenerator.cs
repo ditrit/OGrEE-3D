@@ -215,9 +215,7 @@ public class ObjectGenerator
             if (Utils.IsInDict(_dv.attributes, "slot"))
             {
                 newDevice.transform.localEulerAngles = primarySlot.localEulerAngles;
-                newDevice.transform.position = slotsPivot;
-                // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
-                //     newDevice.transform.localPosition += new Vector3(size.x, height, size.y) / -2;
+                newDevice.transform.localPosition = primarySlot.localPosition;
 
                 float deltaZ = slotsScale.z - size.y;
                 switch (_dv.attributes["orientation"])
@@ -227,24 +225,24 @@ public class ObjectGenerator
                         break;
                     case Orientation.Rear:
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
+                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
-                        else
-                            newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
+                        // else
+                        //     newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
                         break;
                     case Orientation.FrontFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
+                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
-                        else
-                            newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
+                        // else
+                        //     newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
                         break;
                     case Orientation.RearFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        if (primarySlot.GetComponent<Slot>().orient == "horizontal")
+                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
                             newDevice.transform.localPosition += new Vector3(0, height, size.y);
-                        else
-                            newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
+                        // else
+                        //     newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
                         break;
                 }
                 // align device to right side of the slot if invertOffset == true

@@ -149,7 +149,7 @@ public class ReadFromJson
                 int height = 0;
                 foreach (Slot s in slots)
                 {
-                    if (s.orient == "horizontal")
+                    if (s.orient == new float[] { 0, 0, 0 })
                         height++;
                 }
                 newItem.attributes["height"] = height.ToString();
@@ -184,10 +184,7 @@ public class ReadFromJson
         go.transform.parent = _parent.transform;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
-        if (_data.elemOrient == "vertical")
-            go.transform.localEulerAngles = new(0, 0, 90);
-        else
-            go.transform.localEulerAngles = Vector3.zero;
+        go.transform.localEulerAngles = new(_data.elemOrient[0], _data.elemOrient[2], _data.elemOrient[1]);
         go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
         if (_isSlot)
         {

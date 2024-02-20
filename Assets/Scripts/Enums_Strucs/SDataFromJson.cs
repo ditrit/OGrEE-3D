@@ -140,7 +140,7 @@ public struct STemplateChild
 {
     public string location;
     public string type;
-    public string elemOrient;
+    public float[] elemOrient;
     public float[] elemPos;
     public float[] elemSize;
     public string labelPos;
