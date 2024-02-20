@@ -52,6 +52,7 @@ public class Category
     public const string Group = "group";
     public const string Corridor = "corridor";
     public const string Sensor = "sensor";
+    public const string Generic = "generic";
 }
 
 public class CommandType

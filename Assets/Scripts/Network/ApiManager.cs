@@ -492,6 +492,7 @@ public class ApiManager : MonoBehaviour
                         break;
                     case Category.Rack:
                     case Category.Device:
+                    case Category.Generic:
                         STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
                         await rfJson.CreateObjectTemplate(deviceData);
                         break;

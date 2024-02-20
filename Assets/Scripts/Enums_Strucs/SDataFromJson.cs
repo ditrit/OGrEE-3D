@@ -124,6 +124,7 @@ public struct SRow
 public struct STemplate
 {
     public string slug;
+    public string shape;
     public string description;
     public string category;
     public float[] sizeWDHmm;

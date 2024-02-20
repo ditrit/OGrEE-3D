@@ -66,7 +66,6 @@ public class ObjectGenerator
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(rack.name);
-        dod.hasFloatingLabel = true;
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (rack.attributes.ContainsKey("color"))
@@ -655,7 +654,7 @@ public class ObjectGenerator
         }
 
         Vector3 pos;
-        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor) && _apiObj.attributes.ContainsKey("posXYZ"))
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
             pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
         else
         {
@@ -702,5 +701,85 @@ public class ObjectGenerator
             LengthUnit.Feet => UnitValue.Foot,
             _ => UnitValue.Tile,
         };
+    }
+
+    ///<summary>
+    /// Instantiate a genericCubeModel, a genericSphereModel, a genericCylinderModel or a rackTemplate (from GameManager) and apply the given data to it.
+    ///</summary>
+    ///<param name="_go">The generic object data to apply</param>
+    ///<param name="_parent">The parent of the created generic object</param>
+    ///<returns>The created generic object</returns>
+    public GenericObject CreateGeneric(SApiObject _go, Transform _parent)
+    {
+        if (GameManager.instance.allItems.Contains(_go.id))
+        {
+            GameManager.instance.AppendLogLine($"{_go.id} already exists.", ELogTarget.both, ELogtype.warning);
+            return null;
+        }
+
+        GameObject newGeneric;
+        if (string.IsNullOrEmpty(_go.attributes["template"]))
+        {
+            newGeneric = _go.attributes["shape"] switch
+            {
+                "cube" => Object.Instantiate(GameManager.instance.genericCubeModel),
+                "sphere" => Object.Instantiate(GameManager.instance.genericSphereModel),
+                "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
+                _ => null
+            };
+            if (!newGeneric)
+            {
+                GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
+                return null;
+            }
+            Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
+            newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
+
+            newGeneric.transform.GetChild(0).localScale /= 100;
+            if (_go.attributes["sizeUnit"] == LengthUnit.Millimeter)
+                newGeneric.transform.GetChild(0).localScale /= 10;
+            foreach (Transform child in newGeneric.transform)
+                child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
+        }
+        else
+        {
+            if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+            {
+                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+                newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
+            }
+            else
+            {
+                GameManager.instance.AppendLogLine($"Unknown template \"{_go.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                return null;
+            }
+        }
+
+        newGeneric.name = _go.name;
+        newGeneric.transform.parent = _parent;
+
+        GenericObject genericObject = newGeneric.GetComponent<GenericObject>();
+        genericObject.UpdateFromSApiObject(_go);
+
+        if (_parent)
+        {
+            PlaceInRoom(newGeneric.transform, _go);
+            newGeneric.transform.localEulerAngles = Utils.ParseVector3(genericObject.attributes["rotation"], true);
+        }
+        else
+            newGeneric.transform.localPosition = Vector3.zero;
+
+        DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts(LabelPos.FrontRear);
+        dod.SetLabel(genericObject.name);
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
+        if (genericObject.attributes.ContainsKey("color"))
+            genericObject.SetColor(genericObject.attributes["color"]);
+        else
+            genericObject.UpdateColorByDomain();
+
+        GameManager.instance.allItems.Add(genericObject.id, newGeneric);
+        return genericObject;
     }
 }

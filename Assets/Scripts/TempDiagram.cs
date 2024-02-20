@@ -78,7 +78,7 @@ public class TempDiagram : MonoBehaviour
             foreach (Transform childTransform in _room.transform)
             {
                 Item childOgreeObject = childTransform.GetComponent<Item>();
-                if (childOgreeObject)
+                if (childOgreeObject && childOgreeObject is not GenericObject)
                 {
                     if (childOgreeObject is Group childGroup && childGroup.isDisplayed)
                     {
