@@ -35,7 +35,7 @@ public class ReadFromJson
     ///<param name="_data">The data template</param>
     public async Task CreateObjectTemplate(STemplate _data)
     {
-        if (_data.category != Category.Rack && _data.category != Category.Device)
+        if (_data.category != Category.Rack && _data.category != Category.Device && _data.category != Category.Generic)
         {
             GameManager.instance.AppendLogLine($"Unknown category for {_data.slug} template.", ELogTarget.both, ELogtype.error);
             return;
@@ -61,7 +61,7 @@ public class ReadFromJson
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
             obj.attributes["posXY"] = "[0,0]";
-            obj.attributes["posXYUnit"] = "tile"; //needs to be the default value of LenghtUnit.Tile, waiting for back change
+            obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["size"] = $"[{tmp.x},{tmp.y}";
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
             obj.attributes["height"] = ((int)tmp.z).ToString();
@@ -81,6 +81,17 @@ public class ReadFromJson
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
+        else if (obj.category == Category.Generic)
+        {
+            obj.attributes["posXY"] = "[0,0]";
+            obj.attributes["posXYUnit"] = LengthUnit.Tile;
+            obj.attributes["rotation"] = "[0,0,0]";
+            obj.attributes["shape"] = _data.shape;
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
+            obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
+            obj.attributes["heightUnit"] = LengthUnit.Millimeter;
+        }
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
         if (_data.attributes != null)
         {
@@ -90,7 +101,7 @@ public class ReadFromJson
 
         // Generate the 3D object
         Item newItem;
-        if (obj.category == Category.Rack)
+        if (obj.category == Category.Rack || obj.category == Category.Generic)
         {
             newItem = (Item)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
 #if TRILIB

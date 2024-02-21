@@ -53,7 +53,7 @@ public class OgreeGenerator : MonoBehaviour
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if ((_obj.category == Category.Rack || _obj.category == Category.Device) && Utils.IsInDict(_obj.attributes, "template")
+        if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && Utils.IsInDict(_obj.attributes, "template")
             && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
@@ -135,6 +135,17 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             case Category.Group:
                 newObject = objectGenerator.CreateGroup(_obj, parent);
+                break;
+            case Category.Generic:
+                try
+                {
+                    newObject = objectGenerator.CreateGeneric(_obj, parent);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError(e);
+                    newObject = null;
+                }
                 break;
             default:
                 newObject = null;
