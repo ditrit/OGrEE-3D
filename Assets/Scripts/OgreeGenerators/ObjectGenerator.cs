@@ -141,7 +141,6 @@ public class ObjectGenerator
 
         // Check slot
         Transform primarySlot = null;
-        Vector3 slotsPivot = new();
         Vector3 slotsScale = new();
         List<Slot> takenSlots = new();
         if (_parent)
@@ -153,28 +152,26 @@ public class ObjectGenerator
 
                 foreach (Transform child in _parent)
                 {
-                    foreach (string slotName in slotsArray)
+                    if (child.TryGetComponent(out Slot slot))
                     {
-                        if (child.name == slotName && child.TryGetComponent(out Slot s))
-                            takenSlots.Add(s);
+                        foreach (string slotName in slotsArray)
+                        {
+                            if (child.name == slotName)
+                            {
+                                takenSlots.Add(slot);
+                                slot.SlotTaken(true);
+                            }
+                        }
                     }
                 }
-
                 if (takenSlots.Count > 0)
                 {
-                    List<Transform> slotsTransform = new();
-                    foreach (Slot s in takenSlots)
+                    SlotsShape(takenSlots, out Vector3 slotsPivot, out slotsScale);
+                    primarySlot = takenSlots[0].transform;
+                    foreach (Slot slot in takenSlots)
                     {
-                        s.SlotTaken(true);
-                        slotsTransform.Add(s.transform);
-                    }
-
-                    SlotsShape(slotsTransform, out slotsPivot, out slotsScale);
-                    primarySlot = slotsTransform[0];
-                    foreach (Transform t in slotsTransform)
-                    {
-                        if (Vector3.Distance(slotsPivot, t.position) < Vector3.Distance(slotsPivot, primarySlot.position))
-                            primarySlot = t;
+                        if (Vector3.Distance(slotsPivot, slot.transform.position) < Vector3.Distance(slotsPivot, primarySlot.position))
+                            primarySlot = slot.transform;
                     }
                 }
                 else
@@ -214,8 +211,10 @@ public class ObjectGenerator
         {
             if (Utils.IsInDict(_dv.attributes, "slot"))
             {
-                newDevice.transform.localEulerAngles = primarySlot.localEulerAngles;
-                newDevice.transform.localPosition = primarySlot.localPosition;
+                // parent to slot for applying orientation
+                newDevice.transform.parent = primarySlot;
+                newDevice.transform.localEulerAngles = Vector3.zero;
+                newDevice.transform.localPosition = Vector3.zero;
 
                 float deltaZ = slotsScale.z - size.y;
                 switch (_dv.attributes["orientation"])
@@ -225,29 +224,22 @@ public class ObjectGenerator
                         break;
                     case Orientation.Rear:
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
-                        // else
-                        //     newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
+                        newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
                         break;
                     case Orientation.FrontFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
-                        // else
-                        //     newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
+                        newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
                         break;
                     case Orientation.RearFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        // if (primarySlot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(0, height, size.y);
-                        // else
-                        //     newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
+                        newDevice.transform.localPosition += new Vector3(0, height, size.y);
                         break;
                 }
                 // align device to right side of the slot if invertOffset == true
                 if (_dv.attributes.ContainsKey("invertOffset") && _dv.attributes["invertOffset"] == "true")
                     newDevice.transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
+                // parent back to _parent for good hierarchy 
+                newDevice.transform.parent = _parent;
 
                 if (!dv.attributes.ContainsKey("color"))
                 {
@@ -362,7 +354,13 @@ public class ObjectGenerator
         }
     }
 
-    private void SlotsShape(List<Transform> _content, out Vector3 _pivot, out Vector3 _scale)
+    /// <summary>
+    /// Get <paramref name="_pivot"/> and <paramref name="_scale"/> of all slots combined
+    /// </summary>
+    /// <param name="_slotsList">The list of slots to look in</param>
+    /// <param name="_pivot">The pivot of the combined slots</param>
+    /// <param name="_scale">The scale of the combined slots</param>
+    private void SlotsShape(List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
     {
         // x axis
         float left = float.PositiveInfinity;
@@ -374,9 +372,9 @@ public class ObjectGenerator
         float rear = float.PositiveInfinity;
         float front = float.NegativeInfinity;
 
-        foreach (Transform obj in _content)
+        foreach (Slot slot in _slotsList)
         {
-            Bounds bounds = obj.GetChild(0).GetComponent<Renderer>().bounds;
+            Bounds bounds = slot.transform.GetChild(0).GetComponent<Renderer>().bounds;
             left = Mathf.Min(bounds.min.x, left);
             right = Mathf.Max(bounds.max.x, right);
             bottom = Mathf.Min(bounds.min.y, bottom);
