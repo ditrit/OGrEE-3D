@@ -752,7 +752,7 @@ public class ObjectGenerator
         }
 
         GameObject newGeneric;
-        if (string.IsNullOrEmpty(_go.attributes["template"]))
+        if (!Utils.IsInDict(_go.attributes, "template"))
         {
             newGeneric = _go.attributes["shape"] switch
             {
