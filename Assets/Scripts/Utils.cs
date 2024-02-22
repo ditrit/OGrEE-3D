@@ -359,6 +359,12 @@ public static class Utils
         return _color;
     }
 
+    /// <summary>
+    /// Check if a <paramref name="_key"/> exists in <paramref name="_dict"/> and if it is neither null or empty 
+    /// </summary>
+    /// <param name="_dict">The dictionnary to look in</param>
+    /// <param name="_key">The key to look for</param>
+    /// <returns>True if the key is in the dictionnary and it has a non empty value, otherweise false</returns>
     public static bool IsInDict(Dictionary<string, string> _dict, string _key)
     {
         return _dict.ContainsKey(_key) && !string.IsNullOrEmpty(_dict[_key]);

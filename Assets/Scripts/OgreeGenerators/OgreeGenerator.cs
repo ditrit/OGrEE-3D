@@ -137,15 +137,7 @@ public class OgreeGenerator : MonoBehaviour
                 newObject = objectGenerator.CreateGroup(_obj, parent);
                 break;
             case Category.Generic:
-                try
-                {
-                    newObject = objectGenerator.CreateGeneric(_obj, parent);
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError(e);
-                    newObject = null;
-                }
+                newObject = objectGenerator.CreateGeneric(_obj, parent);
                 break;
             default:
                 newObject = null;
