@@ -151,23 +151,6 @@ public class ReadFromJson
                 GenerateSensorTemplate(sensor, newItem.transform);
         }
 
-        // For rack, update height counting
-        if (newItem.category == Category.Rack)
-        {
-            Slot[] slots = newItem.GetComponentsInChildren<Slot>();
-            if (slots.Length > 0)
-            {
-                int height = 0;
-                foreach (Slot s in slots)
-                {
-                    if (s.orient == new float[] { 0, 0, 0 })
-                        height++;
-                }
-                newItem.attributes["height"] = height.ToString();
-                newItem.attributes["heightUnit"] = LengthUnit.U;
-            }
-        }
-
         // Toggle renderers & put newObj in GameManager.objectTemplates
 #if PROD
         Renderer[] renderers = newItem.transform.GetComponentsInChildren<Renderer>();
