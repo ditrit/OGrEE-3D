@@ -365,7 +365,7 @@ public static class Utils
     /// <param name="_dict">The dictionnary to look in</param>
     /// <param name="_key">The key to look for</param>
     /// <returns>True if the key is in the dictionnary and it has a non empty value, otherweise false</returns>
-    public static bool IsInDict(Dictionary<string, string> _dict, string _key)
+    public static bool HasKeyAndValue(this Dictionary<string, string> _dict, string _key)
     {
         return _dict.ContainsKey(_key) && !string.IsNullOrEmpty(_dict[_key]);
     }
