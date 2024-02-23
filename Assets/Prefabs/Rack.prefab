@@ -29,13 +29,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382823270839367371}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4012234162031736588}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!205 &7128627431715475119
 LODGroup:
@@ -66,10 +67,21 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382823270839367371}
-  serializedVersion: 2
+  serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
@@ -91,8 +103,9 @@ MonoBehaviour:
   id: 0
   parentId: 0
   category: 
-  description: []
+  description: 
   domain: 
+  tags: []
   attributesKeys: []
   attributesValues: []
   currentLod: 0
@@ -103,15 +116,39 @@ MonoBehaviour:
   scatterPlot: 0
   localCS: {fileID: 0}
   isDoomed: 0
-  LodLocked: 0
+  isLodLocked: 0
   color: {r: 0, g: 0, b: 0, a: 0}
-  isHidden: 0
-  isComponent: 0
   referent: {fileID: 0}
   tempBar: {fileID: 0}
   temperatureUnit: 
+  hasSlotColor: 0
+  clearanceHandler:
+    front:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    rear:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    left:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    right:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    top:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    bottom:
+      length: 0
+      direction: {x: 0, y: 0, z: 0}
+    clearedObject: {fileID: 0}
+    isToggled: 0
+    isInitialized: 0
+    clearanceWrapper: {fileID: 0}
+    clearances: []
   uRoot: {fileID: 0}
   gridForULocation: {fileID: 0}
+  areUHelpersToggled: 0
 --- !u!114 &5666233796082005944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +199,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11599482bb3741f4b890d546eeba923f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTemplate: 0
+  scatterPlotOfOneParent: 0
+  isHidden: 0
+  isHiddenInGroup: 0
+  isHighlighted: 0
 --- !u!1 &4012234162031736584
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,12 +230,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4012234162031736584}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.6, y: 1.8, z: 1.2}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5362207936512041789}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4012234162031736587
 MeshFilter:
@@ -214,6 +257,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -252,8 +296,16 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4012234162031736584}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}

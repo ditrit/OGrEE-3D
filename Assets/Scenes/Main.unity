@@ -9252,9 +9252,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2024-02-15
+  m_text: 'Build date: 2024-02-23
 
-    Commit #8d4cecc'
+    Commit #592a236b'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -24037,8 +24037,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741869394}
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 0.99999964
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

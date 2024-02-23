@@ -18,7 +18,7 @@ public class ObjectGenerator
         }
 
         GameObject newRack;
-        if (string.IsNullOrEmpty(_rk.attributes["template"]))
+        if (!_rk.attributes.HasKeyAndValue("template"))
         {
             newRack = Object.Instantiate(GameManager.instance.rackModel);
 
@@ -75,7 +75,7 @@ public class ObjectGenerator
 
         GameManager.instance.allItems.Add(rack.id, newRack);
 
-        if (!string.IsNullOrEmpty(rack.attributes["template"]))
+        if (rack.attributes.HasKeyAndValue("template"))
         {
             Device[] components = rack.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)
@@ -132,39 +132,46 @@ public class ObjectGenerator
         }
 
         // Check template
-        if (!string.IsNullOrEmpty(_dv.attributes["template"]) && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
+        if (_dv.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
         {
             GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
 
         // Check slot
-        Transform slot = null;
+        Transform primarySlot = null;
+        Vector3 slotsScale = new();
         List<Slot> takenSlots = new();
         if (_parent)
         {
-            if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
+            if (_dv.attributes.HasKeyAndValue("slot"))
             {
-                int i = 0;
-                float max;
-                if (string.IsNullOrEmpty(_dv.attributes["template"]))
-                    max = Utils.ParseDecFrac(_dv.attributes["sizeU"]);
-                else
-                    max = Utils.ParseDecFrac(GameManager.instance.objectTemplates[_dv.attributes["template"]].GetComponent<OgreeObject>().attributes["height"]) / 1000 / UnitValue.U;
+                string slots = _dv.attributes["slot"].Trim('[', ']');
+                string[] slotsArray = slots.Split(",");
+
                 foreach (Transform child in _parent)
                 {
-                    if ((child.name == _dv.attributes["slot"] || (i > 0 && i < max)) && child.GetComponent<Slot>())
+                    if (child.TryGetComponent(out Slot slot))
                     {
-                        takenSlots.Add(child.GetComponent<Slot>());
-                        i++;
+                        foreach (string slotName in slotsArray)
+                        {
+                            if (child.name == slotName)
+                            {
+                                takenSlots.Add(slot);
+                                slot.SlotTaken(true);
+                            }
+                        }
                     }
                 }
-
                 if (takenSlots.Count > 0)
                 {
-                    foreach (Slot s in takenSlots)
-                        s.SlotTaken(true);
-                    slot = takenSlots[0].transform;
+                    SlotsShape(_parent, takenSlots, out Vector3 slotsPivot, out slotsScale);
+                    primarySlot = takenSlots[0].transform;
+                    foreach (Slot slot in takenSlots)
+                    {
+                        if (Vector3.Distance(slotsPivot, slot.transform.position) < Vector3.Distance(slotsPivot, primarySlot.position))
+                            primarySlot = slot.transform;
+                    }
                 }
                 else
                 {
@@ -179,9 +186,9 @@ public class ObjectGenerator
         Vector2 size;
         float height;
 
-        if (string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (!_dv.attributes.HasKeyAndValue("template"))
         {
-            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), slot);
+            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), primarySlot);
             Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
             size = new(boxSize.x, boxSize.z);
             height = boxSize.y;
@@ -201,13 +208,14 @@ public class ObjectGenerator
         // Place the device
         if (_parent)
         {
-            if (!string.IsNullOrEmpty(_dv.attributes["slot"]))
+            if (_dv.attributes.HasKeyAndValue("slot"))
             {
-                Vector3 slotScale = slot.GetChild(0).localScale;
-                newDevice.transform.localEulerAngles = slot.localEulerAngles;
-                newDevice.transform.localPosition = slot.localPosition;
+                // parent to slot for applying orientation
+                newDevice.transform.parent = primarySlot;
+                newDevice.transform.localEulerAngles = Vector3.zero;
+                newDevice.transform.localPosition = Vector3.zero;
 
-                float deltaZ = slotScale.z - size.y;
+                float deltaZ = slotsScale.z - size.y;
                 switch (_dv.attributes["orientation"])
                 {
                     case Orientation.Front:
@@ -215,34 +223,27 @@ public class ObjectGenerator
                         break;
                     case Orientation.Rear:
                         newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
-                        else
-                            newDevice.transform.localPosition += new Vector3(-height, 0, size.y);
+                        newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
                         break;
                     case Orientation.FrontFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
-                        else
-                            newDevice.transform.localPosition += new Vector3(-height, size.x, deltaZ);
+                        newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
                         break;
                     case Orientation.RearFlipped:
                         newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        if (slot.GetComponent<Slot>().orient == "horizontal")
-                            newDevice.transform.localPosition += new Vector3(0, height, size.y);
-                        else
-                            newDevice.transform.localPosition += new Vector3(0, size.x, size.y);
+                        newDevice.transform.localPosition += new Vector3(0, height, size.y);
                         break;
                 }
                 // align device to right side of the slot if invertOffset == true
                 if (_dv.attributes.ContainsKey("invertOffset") && _dv.attributes["invertOffset"] == "true")
-                    newDevice.transform.localPosition += new Vector3(slotScale.x - size.x, 0, 0);
+                    newDevice.transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
+                // parent back to _parent for good hierarchy 
+                newDevice.transform.parent = _parent;
 
                 if (!dv.attributes.ContainsKey("color"))
                 {
                     // if slot, color
-                    Color slotColor = slot.GetChild(0).GetComponent<Renderer>().material.color;
+                    Color slotColor = primarySlot.GetChild(0).GetComponent<Renderer>().material.color;
                     dv.color = new(slotColor.r, slotColor.g, slotColor.b);
                     newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
                     dv.hasSlotColor = true;
@@ -274,8 +275,8 @@ public class ObjectGenerator
 
         // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
-        if (slot?.GetComponent<Slot>())
-            dod.PlaceTexts(slot?.GetComponent<Slot>().labelPos);
+        if (primarySlot)
+            dod.PlaceTexts(primarySlot.GetComponent<Slot>().labelPos);
         else
             dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(dv.name);
@@ -288,7 +289,7 @@ public class ObjectGenerator
 
         GameManager.instance.allItems.Add(dv.id, newDevice);
 
-        if (!string.IsNullOrEmpty(_dv.attributes["template"]))
+        if (_dv.attributes.HasKeyAndValue("template"))
         {
             Device[] components = newDevice.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)
@@ -350,6 +351,40 @@ public class ObjectGenerator
             GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
+    }
+
+    /// <summary>
+    /// Get <paramref name="_pivot"/> and <paramref name="_scale"/> of all slots combined
+    /// </summary>
+    /// <param name="_parent">The parent of the device</param>
+    /// <param name="_slotsList">The list of slots to look in</param>
+    /// <param name="_pivot">The pivot of the combined slots</param>
+    /// <param name="_scale">The scale of the combined slots</param>
+    private void SlotsShape(Transform _parent, List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
+    {
+        // x axis
+        float left = float.PositiveInfinity;
+        float right = float.NegativeInfinity;
+        // y axis
+        float bottom = float.PositiveInfinity;
+        float top = float.NegativeInfinity;
+        // z axis
+        float rear = float.PositiveInfinity;
+        float front = float.NegativeInfinity;
+
+        foreach (Slot slot in _slotsList)
+        {
+            Bounds bounds = slot.transform.GetChild(0).GetComponent<Renderer>().bounds;
+            left = Mathf.Min(bounds.min.x, left);
+            right = Mathf.Max(bounds.max.x, right);
+            bottom = Mathf.Min(bounds.min.y, bottom);
+            top = Mathf.Max(bounds.max.y, top);
+            rear = Mathf.Min(bounds.min.z, rear);
+            front = Mathf.Max(bounds.max.z, front);
+        }
+
+        _scale = _parent.InverseTransformVector(new Vector3(right - left, top - bottom, front - rear));
+        _pivot = new(left, bottom, rear);
     }
 
     ///<summary>
@@ -718,7 +753,7 @@ public class ObjectGenerator
         }
 
         GameObject newGeneric;
-        if (string.IsNullOrEmpty(_go.attributes["template"]))
+        if (!_go.attributes.HasKeyAndValue("template"))
         {
             newGeneric = _go.attributes["shape"] switch
             {

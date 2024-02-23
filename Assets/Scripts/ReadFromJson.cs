@@ -80,7 +80,6 @@ public class ReadFromJson
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
-            obj.attributes["slot"] = "";
         }
         else if (obj.category == Category.Generic)
         {
@@ -93,7 +92,6 @@ public class ReadFromJson
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
-        obj.attributes["template"] = "";
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
         if (_data.attributes != null)
         {
@@ -153,23 +151,6 @@ public class ReadFromJson
                 GenerateSensorTemplate(sensor, newItem.transform);
         }
 
-        // For rack, update height counting
-        if (newItem.category == Category.Rack)
-        {
-            Slot[] slots = newItem.GetComponentsInChildren<Slot>();
-            if (slots.Length > 0)
-            {
-                int height = 0;
-                foreach (Slot s in slots)
-                {
-                    if (s.orient == "horizontal")
-                        height++;
-                }
-                newItem.attributes["height"] = height.ToString();
-                newItem.attributes["heightUnit"] = LengthUnit.U;
-            }
-        }
-
         // Toggle renderers & put newObj in GameManager.objectTemplates
 #if PROD
         Renderer[] renderers = newItem.transform.GetComponentsInChildren<Renderer>();
@@ -197,10 +178,7 @@ public class ReadFromJson
         go.transform.parent = _parent.transform;
         go.transform.GetChild(0).localScale = new Vector3(_data.elemSize[0], _data.elemSize[2], _data.elemSize[1]) / 1000;
         go.transform.localPosition = new Vector3(_data.elemPos[0], _data.elemPos[2], _data.elemPos[1]) / 1000;
-        if (_data.elemOrient == "vertical")
-            go.transform.localEulerAngles = new(0, 0, 90);
-        else
-            go.transform.localEulerAngles = Vector3.zero;
+        go.transform.localEulerAngles = new(_data.elemOrient[0], _data.elemOrient[2], _data.elemOrient[1]);
         go.transform.GetChild(0).localPosition += go.transform.GetChild(0).localScale / 2;
         if (_isSlot)
         {

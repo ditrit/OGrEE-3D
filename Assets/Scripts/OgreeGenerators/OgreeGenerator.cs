@@ -39,21 +39,21 @@ public class OgreeGenerator : MonoBehaviour
             await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.DrawObject);
 
         // Templates
-        if (_obj.category == Category.Building && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if (_obj.category == Category.Building && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if (_obj.category == Category.Room && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if (_obj.category == Category.Room && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
-        if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && !string.IsNullOrEmpty(_obj.attributes["template"])
+        if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
@@ -137,14 +137,7 @@ public class OgreeGenerator : MonoBehaviour
                 newObject = objectGenerator.CreateGroup(_obj, parent);
                 break;
             case Category.Generic:
-                try
-                {
-                    newObject = objectGenerator.CreateGeneric(_obj, parent);
-                }catch (System.Exception e)
-                {
-                    Debug.LogError(e);
-                    newObject = null;
-                }
+                newObject = objectGenerator.CreateGeneric(_obj, parent);
                 break;
             default:
                 newObject = null;
