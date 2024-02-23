@@ -165,7 +165,7 @@ public class ObjectGenerator
                 }
                 if (takenSlots.Count > 0)
                 {
-                    SlotsShape(takenSlots, out Vector3 slotsPivot, out slotsScale);
+                    SlotsShape(_parent, takenSlots, out Vector3 slotsPivot, out slotsScale);
                     primarySlot = takenSlots[0].transform;
                     foreach (Slot slot in takenSlots)
                     {
@@ -356,10 +356,11 @@ public class ObjectGenerator
     /// <summary>
     /// Get <paramref name="_pivot"/> and <paramref name="_scale"/> of all slots combined
     /// </summary>
+    /// <param name="_parent">The parent of the device</param>
     /// <param name="_slotsList">The list of slots to look in</param>
     /// <param name="_pivot">The pivot of the combined slots</param>
     /// <param name="_scale">The scale of the combined slots</param>
-    private void SlotsShape(List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
+    private void SlotsShape(Transform _parent, List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
     {
         // x axis
         float left = float.PositiveInfinity;
@@ -382,7 +383,7 @@ public class ObjectGenerator
             front = Mathf.Max(bounds.max.z, front);
         }
 
-        _scale = new Vector3(right - left, top - bottom, front - rear);
+        _scale = _parent.InverseTransformVector(new Vector3(right - left, top - bottom, front - rear));
         _pivot = new(left, bottom, rear);
     }
 
