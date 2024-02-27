@@ -49,7 +49,7 @@ public class Room : Building
         reservedZone.localPosition = new(technicalZone.localPosition.x, reservedZone.localPosition.y, technicalZone.localPosition.z);
 
         // If tileOffset in template, apply it
-        if (!string.IsNullOrEmpty(attributes["template"]) && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
+        if (attributes.HasKeyAndValue("template") && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
             SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
             if (template.tileOffset != null && template.tileOffset.Count != 0)
