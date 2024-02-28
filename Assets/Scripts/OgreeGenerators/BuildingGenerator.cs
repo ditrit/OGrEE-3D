@@ -19,7 +19,7 @@ public class BuildingGenerator
         }
 
         SBuildingFromJson template = new();
-        if (!string.IsNullOrEmpty(_bd.attributes["template"]))
+        if (_bd.attributes.HasKeyAndValue("template"))
         {
             if (GameManager.instance.buildingTemplates.ContainsKey(_bd.attributes["template"]))
                 template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
@@ -108,7 +108,7 @@ public class BuildingGenerator
         }
 
         SRoomFromJson template = new();
-        if (!string.IsNullOrEmpty(_ro.attributes["template"]))
+        if (_ro.attributes.HasKeyAndValue("template"))
         {
             if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
