@@ -23,6 +23,7 @@ public class Room : Building
     public List<Group> openedGroups = new();
     public List<Separator> separators = new();
     public bool sepNamesDisplayed = false;
+    public bool genNamesDisplayed = false;
     public GameObject childrenOrigin;
 
     ///<summary>
@@ -565,6 +566,17 @@ public class Room : Building
         sepNamesDisplayed ^= true;
         foreach (Separator sep in separators)
             sep.ToggleTexts(sepNamesDisplayed);
+    }
+
+    /// <summary>
+    /// Toggle texts of each generic object in the room>.
+    /// </summary>
+    public void ToggleGenericText()
+    {
+        genNamesDisplayed ^= true;
+        foreach (Transform child in transform)
+            if (child.TryGetComponent(out GenericObject _))
+                child.GetComponent<DisplayObjectData>().ToggleLabel(genNamesDisplayed);
     }
 
     /// <summary>
