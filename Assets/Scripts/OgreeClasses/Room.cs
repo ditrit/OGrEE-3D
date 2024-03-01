@@ -23,7 +23,7 @@ public class Room : Building
     public List<Group> openedGroups = new();
     public List<Separator> separators = new();
     public bool sepNamesDisplayed = false;
-    public bool genNamesDisplayed = true;
+    public bool genNamesDisplayed = false;
     public GameObject childrenOrigin;
 
     ///<summary>

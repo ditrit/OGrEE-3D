@@ -796,21 +796,18 @@ public class ObjectGenerator
         GenericObject genericObject = newGeneric.GetComponent<GenericObject>();
         genericObject.UpdateFromSApiObject(_go);
 
-        DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
-        dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel(genericObject.name);
-        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
         if (_parent)
         {
             PlaceInRoom(newGeneric.transform, _go);
             newGeneric.transform.localEulerAngles = Utils.ParseVector3(genericObject.attributes["rotation"], true);
-            if (_parent.TryGetComponent(out Room room))
-                dod.ToggleLabel(room.genNamesDisplayed);
         }
         else
             newGeneric.transform.localPosition = Vector3.zero;
 
+        DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts(LabelPos.FrontRear);
+        dod.SetLabel(genericObject.name);
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         if (genericObject.attributes.ContainsKey("color"))
             genericObject.SetColor(genericObject.attributes["color"]);
