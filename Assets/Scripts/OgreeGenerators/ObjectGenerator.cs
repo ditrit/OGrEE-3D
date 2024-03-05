@@ -25,10 +25,21 @@ public class ObjectGenerator
             // Apply scale and move all components to have the rack's pivot at the lower left corner
             Vector2 size = Utils.ParseVector2(_rk.attributes["size"]);
             float height = Utils.ParseDecFrac(_rk.attributes["height"]);
-            if (_rk.attributes["heightUnit"] == LengthUnit.U)
-                height *= UnitValue.U;
-            else if (_rk.attributes["heightUnit"] == LengthUnit.Centimeter)
-                height /= 100;
+            switch (_rk.attributes["heightUnit"])
+            {
+                case LengthUnit.U:
+                    height *= UnitValue.U;
+                    break;
+                case LengthUnit.Centimeter:
+                    height /= 100;
+                    break;
+                case LengthUnit.Millimeter:
+                    height /= 1000;
+                    break;
+                default:
+                    GameManager.instance.AppendLogLine($"Unknown {_rk.attributes["heightUnit"]} unit at {_rk.name} creation.", ELogTarget.both, ELogtype.error);
+                    return null;
+            }
             Vector3 scale = new(size.x / 100, height, size.y / 100);
 
             newRack.transform.GetChild(0).localScale = scale;
