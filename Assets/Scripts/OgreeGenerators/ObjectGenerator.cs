@@ -373,6 +373,9 @@ public class ObjectGenerator
     /// <param name="_scale">The scale of the combined slots</param>
     private void SlotsShape(Transform _parent, List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
     {
+        Quaternion parentRot = _parent.rotation;
+        _parent.rotation = Quaternion.identity;
+
         // x axis
         float left = float.PositiveInfinity;
         float right = float.NegativeInfinity;
@@ -394,8 +397,10 @@ public class ObjectGenerator
             front = Mathf.Max(bounds.max.z, front);
         }
 
-        _scale = _parent.InverseTransformVector(new Vector3(right - left, top - bottom, front - rear));
+        _scale = new(right - left, top - bottom, front - rear);
         _pivot = new(left, bottom, rear);
+
+        _parent.rotation = parentRot;
     }
 
     ///<summary>
