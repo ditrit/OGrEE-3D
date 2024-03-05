@@ -60,22 +60,16 @@ public class ReadFromJson
         if (obj.category == Category.Rack)
         {
             Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
-            obj.attributes["posXY"] = "[0,0]";
+            obj.attributes["posXYZ"] = "[0,0,0]";
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
-            obj.attributes["size"] = $"[{tmp.x},{tmp.y}";
-            obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
-            obj.attributes["height"] = ((int)tmp.z).ToString();
-            obj.attributes["heightUnit"] = LengthUnit.Centimeter;
             obj.attributes["rotation"] = "[0,0,0]";
+            obj.attributes["size"] = $"[{tmp.x},{tmp.y}]";
+            obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
+            obj.attributes["height"] = tmp.z.ToString();
+            obj.attributes["heightUnit"] = LengthUnit.Centimeter;
         }
         else if (obj.category == Category.Device)
         {
-            if (_data.attributes.ContainsKey("type")
-                && (_data.attributes["type"] == "chassis" || _data.attributes["type"] == "server"))
-            {
-                int sizeU = Mathf.CeilToInt(_data.sizeWDHmm[2] / 1000 / UnitValue.U);
-                obj.attributes["sizeU"] = sizeU.ToString();
-            }
             obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
@@ -83,7 +77,7 @@ public class ReadFromJson
         }
         else if (obj.category == Category.Generic)
         {
-            obj.attributes["posXY"] = "[0,0]";
+            obj.attributes["posXYZ"] = "[0,0,0]";
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["rotation"] = "[0,0,0]";
             obj.attributes["shape"] = _data.shape;
