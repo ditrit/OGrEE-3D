@@ -157,10 +157,9 @@ public class ObjectDisplayController : MonoBehaviour
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
             bool colAndLabels = !isHidden && ((isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject));
-            bool hidelabel = item is GenericObject && transform.parent.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
             bool rend = !isHidden && (isSelected || colAndLabels);
 
-            Display(rend, colAndLabels && (item is not GenericObject || !hidelabel), colAndLabels);
+            Display(rend, colAndLabels, colAndLabels);
 
             if (isSelected)
             {
@@ -283,9 +282,8 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         }
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool rendAndCol = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
-        bool hideLabels = item.transform.parent?.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
-        Display(rendAndCol, rendAndCol && (item is not GenericObject || ( item is GenericObject && !hideLabels)), rendAndCol);
+        bool rendAndColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
+        Display(rendAndColAndLabels, rendAndColAndLabels, rendAndColAndLabels);
         foreach (string tagName in item.tags)
         {
             if (GameManager.instance.GetTag(tagName) is Tag tag && tag.objHightlighted)
@@ -717,7 +715,8 @@ public class ObjectDisplayController : MonoBehaviour
     {
         cube.rend.enabled = _rend;
         highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject));
-        displayObjectData.ToggleLabel(_label);
+        bool overrideLabel = item is GenericObject && transform.parent?.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
+        displayObjectData.ToggleLabel(_label && !overrideLabel);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
     }
