@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
@@ -58,6 +59,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField focusInputField;
     [SerializeField] private TMP_Text apiText;
     [SerializeField] private TMP_Text apiInfos;
+    public string apiCustomer;
+    public string apiBuildDate;
+    public string apiBuildHash;
+    public string apiBuildTree;
+    public string apiCommitDate;
     public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Debug")]
@@ -553,26 +559,27 @@ public class UiManager : MonoBehaviour
     ///<param name="_e">The event's instance</param>
     private void OnApiConnected(ConnectApiEvent _e)
     {
+        apiCustomer = _e.apiData["Customer"];
+        apiBuildDate = _e.apiData["BuildDate"];
+        apiBuildHash = _e.apiData["BuildHash"];
+        apiBuildTree = _e.apiData["BuildTree"];
+        apiCommitDate = _e.apiData["CommitDate"];
         if (ApiManager.instance.isInit)
         {
-            apiText.text = $"Connected to {_e.apiData["Customer"]}";
+            apiText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Connected to API";
             apiText.color = Color.green;
         }
         else if (!string.IsNullOrEmpty(ApiManager.instance.GetApiUrl()))
         {
-            apiText.text = $"Fail to connected to {ApiManager.instance.GetApiUrl()}";
+            apiText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Fail to connected to API";
             apiText.color = Color.red;
         }
         else
         {
-            apiText.text = "Not connected to API";
+            apiText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Not connected to API";
             apiText.color = Color.white;
         }
-        apiInfos.text = $"API URL:\t\t\t{ApiManager.instance.GetApiUrl()}";
-        apiInfos.text += $"\nAPI build date:\t\t{_e.apiData["BuildDate"]}";
-        apiInfos.text += $"\nAPI build hash:\t\t{_e.apiData["BuildHash"]}";
-        apiInfos.text += $"\nAPI build tree:\t\t{_e.apiData["BuildTree"]}";
-        apiInfos.text += $"\nAPI commit date:\t{_e.apiData["CommitDate"]}";
+        apiInfos.GetComponent<LocalizeStringEvent>().RefreshString();
     }
 
     ///<summary>

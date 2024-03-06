@@ -99,7 +99,7 @@ public class ApiManager : MonoBehaviour
     private readonly CommandParser parser = new();
     public readonly Queue<Action> mainThreadQueue = new();
 
-    private string url;
+    public string url { get; private set; }
     private string token;
     private bool canDraw = true;
 

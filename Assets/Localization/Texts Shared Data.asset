@@ -15,28 +15,84 @@ MonoBehaviour:
   m_TableCollectionName: Texts
   m_TableCollectionNameGuidString: 0ddcf4eeba13f914cb3df74b9222d758
   m_Entries:
-  - m_Id: 142615121920
-    m_Key: Not connected to API
-    m_Metadata:
-      m_Items: []
-  - m_Id: 381417820160
-    m_Key: Resume
-    m_Metadata:
-      m_Items: []
   - m_Id: 468277661696
     m_Key: About
     m_Metadata:
       m_Items: []
-  - m_Id: 518718361600
-    m_Key: Settings
+  - m_Id: 32671850172416
+    m_Key: Automatically enable U helpers
     m_Metadata:
       m_Items: []
   - m_Id: 569834344448
     m_Key: Clear cache
     m_Metadata:
       m_Items: []
+  - m_Id: 32929661456384
+    m_Key: Double-click delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Key: Human mode height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Key: Human mode movement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Key: Move speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 142615121920
+    m_Key: Not connected to API
+    m_Metadata:
+      m_Items: []
   - m_Id: 740819341312
     m_Key: Quit OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Key: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Key: Reset all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381417820160
+    m_Key: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Key: Rotation speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Key: Save all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Key: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Key: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1795366375002112
+    m_Key: API infos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1799418030723072
+    m_Key: Fail to connected to API
     m_Metadata:
       m_Items: []
   m_Metadata:

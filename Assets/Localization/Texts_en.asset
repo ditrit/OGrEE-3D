@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 0ddcf4eeba13f914cb3df74b9222d758, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 5456595978176167939
   m_TableData:
   - m_Id: 142615121920
     m_Localized: Not connected to API
@@ -42,6 +43,71 @@ MonoBehaviour:
     m_Localized: Quit OGrEE 3D
     m_Metadata:
       m_Items: []
+  - m_Id: 29490281844736
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Localized: Automatically enable U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Localized: Double-click delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Localized: Move speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Localized: Rotation speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Localized: Human mode height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Localized: Reset all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Localized: Save all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Localized: Human mode movement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Localized: Connected to {UiManager.apiCustomer}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1795366375002112
+    m_Localized: "API URL:\t\t\t{ApiManager.url}\nAPI build date:\t\t{UiManager.apiBuildDate}\nAPI
+      build hash:\t\t{UiManager.apiBuildHash}\nAPI build tree:\t\t{UiManager.apiBuildTree}\nAPI
+      Commit Date:\t{UiManager.apiCommitDate}\n"
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1799418030723072
+    m_Localized: Fail to connected to {ApiManager.url}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 5456595978176167939
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f640600
