@@ -54,8 +54,9 @@ MonoBehaviour:
   id: 
   parentId: 
   category: 
-  description: []
+  description: 
   domain: 
+  tags: []
   attributesKeys: []
   attributesValues: []
   currentLod: 0
@@ -74,13 +75,13 @@ MonoBehaviour:
   reserved:
     left: 0
     right: 0
-    top: 0
-    bottom: 0
+    front: 0
+    back: 0
   technical:
     left: 0
     right: 0
-    top: 0
-    bottom: 0
+    front: 0
+    back: 0
   usableZone: {fileID: 1754386266534505231}
   reservedZone: {fileID: 18736379438063463}
   technicalZone: {fileID: 2859817786028861529}
@@ -90,6 +91,10 @@ MonoBehaviour:
   tileColor: 0
   barChart: 0
   openedGroups: []
+  separators: []
+  sepNamesDisplayed: 0
+  genNamesDisplayed: 0
+  childrenOrigin: {fileID: 0}
 --- !u!1 &760801759331240274
 GameObject:
   m_ObjectHideFlags: 0

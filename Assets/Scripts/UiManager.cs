@@ -44,6 +44,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleTilesColorBtn;
     [SerializeField] private ButtonHandler toggleWallsBtn;
     [SerializeField] private ButtonHandler toggleSepNamesBtn;
+    [SerializeField] private ButtonHandler toggleGenNamesBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
     [SerializeField] private ButtonHandler toggleChildrenOriginBtn;
@@ -378,6 +379,24 @@ public class UiManager : MonoBehaviour
             room.sepNamesDisplayed
         };
         toggleSepNamesBtn.Check();
+
+        toggleGenNamesBtn = new(toggleGenNamesBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room room
+            &&
+            room.displayWalls
+            &&
+            room.GetComponentsInChildren<GenericObject>().Length > 0,
+
+            toggledCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Room>() is Room room
+            &&
+            room.genNamesDisplayed
+        };
+        toggleGenNamesBtn.Check();
 
         toggleUHelpersBtn = new(toggleUHelpersBtn.button, true)
         {
@@ -1014,6 +1033,15 @@ public class UiManager : MonoBehaviour
     {
         menuTarget.GetComponent<Room>().ToggleSeparatorText();
         toggleSepNamesBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI button: Toggle generics name of targeted room
+    /// </summary>
+    public void ToggleGenericsName()
+    {
+        menuTarget.GetComponent<Room>().ToggleGenericText();
+        toggleGenNamesBtn.Check();
     }
 
     ///<summary>

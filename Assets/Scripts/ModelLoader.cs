@@ -28,7 +28,7 @@ public class ModelLoader : MonoBehaviour
     public async Task ReplaceBox(GameObject _object, string _modelPath)
     {
         isLocked = true;
-
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         Uri filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
 
@@ -53,8 +53,12 @@ public class ModelLoader : MonoBehaviour
                                                 _object, assetLoaderOptions, null, "fbx");
         }
         while (isLocked)
+        {
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
             await Task.Delay(100);
+        }
         _object.GetComponent<ObjectDisplayController>().Initialize();
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
     }
 
     ///<summary>
