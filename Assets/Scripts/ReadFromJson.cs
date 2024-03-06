@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -72,7 +73,7 @@ public class ReadFromJson
         {
             obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString(CultureInfo.InvariantCulture);
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         else if (obj.category == Category.Generic)
@@ -81,9 +82,9 @@ public class ReadFromJson
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["rotation"] = "[0,0,0]";
             obj.attributes["shape"] = _data.shape;
-            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0].ToString(CultureInfo.InvariantCulture)},{_data.sizeWDHmm[1].ToString(CultureInfo.InvariantCulture)}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString(CultureInfo.InvariantCulture);
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
@@ -98,10 +99,26 @@ public class ReadFromJson
         if (obj.category == Category.Rack || obj.category == Category.Generic)
         {
             newItem = (Item)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
-#if TRILIB
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
+            {
+                bool precompiled = false;
+                foreach (GameObject fbxModel in GameManager.instance.FBX)
+                    if (fbxModel.name == _data.slug)
+                    {
+                        Vector3 boxScale = newItem.transform.GetChild(0).localScale;
+                        GameObject model = UnityEngine.Object.Instantiate(fbxModel);
+                        model.transform.parent = newItem.transform;
+                        model.transform.localPosition = newItem.transform.GetChild(0).localPosition;
+                        model.transform.SetAsFirstSibling();
+                        UnityEngine.Object.Destroy(newItem.transform.GetChild(1).gameObject);
+                        precompiled = true;
+                        break;
+                    }
+#if TRILIB
+                if (!precompiled)
+                    await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
 #endif
+            }
         }
         else// if (obj.category == Category.Device)
         {
