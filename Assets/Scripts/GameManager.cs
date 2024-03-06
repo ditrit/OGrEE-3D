@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -101,6 +102,7 @@ public class GameManager : MonoBehaviour
             instance = this;
         else
             Destroy(this);
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     }
 
     private void Start()

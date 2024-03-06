@@ -64,14 +64,14 @@ public class ReadFromJson
             obj.attributes["posXYZ"] = "[0,0,0]";
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["rotation"] = "[0,0,0]";
-            obj.attributes["size"] = $"[{tmp.x.ToString(CultureInfo.InvariantCulture)},{tmp.y.ToString(CultureInfo.InvariantCulture)}]";
+            obj.attributes["size"] = $"[{tmp.x},{tmp.y}]";
             obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
-            obj.attributes["height"] = tmp.z.ToString(CultureInfo.InvariantCulture);
+            obj.attributes["height"] = tmp.z.ToString();
             obj.attributes["heightUnit"] = LengthUnit.Centimeter;
         }
         else if (obj.category == Category.Device)
         {
-            obj.attributes["size"] = $"[{_data.sizeWDHmm[0].ToString(CultureInfo.InvariantCulture)},{_data.sizeWDHmm[1].ToString(CultureInfo.InvariantCulture)}]";
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
             obj.attributes["height"] = _data.sizeWDHmm[2].ToString(CultureInfo.InvariantCulture);
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
