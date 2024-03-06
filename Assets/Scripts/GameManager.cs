@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     public GameObject genericCubeModel;
     public GameObject genericSphereModel;
     public GameObject genericCylinderModel;
-    public List<GameObject> FBX;
+    public List<GameObject> fbxModels;
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;

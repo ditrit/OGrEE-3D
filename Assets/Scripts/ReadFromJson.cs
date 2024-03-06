@@ -73,7 +73,7 @@ public class ReadFromJson
         {
             obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString(CultureInfo.InvariantCulture);
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         else if (obj.category == Category.Generic)
@@ -82,9 +82,9 @@ public class ReadFromJson
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
             obj.attributes["rotation"] = "[0,0,0]";
             obj.attributes["shape"] = _data.shape;
-            obj.attributes["size"] = $"[{_data.sizeWDHmm[0].ToString(CultureInfo.InvariantCulture)},{_data.sizeWDHmm[1].ToString(CultureInfo.InvariantCulture)}]";
+            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString(CultureInfo.InvariantCulture);
+            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
@@ -102,7 +102,7 @@ public class ReadFromJson
             if (!string.IsNullOrEmpty(_data.fbxModel))
             {
                 bool precompiled = false;
-                foreach (GameObject fbxModel in GameManager.instance.FBX)
+                foreach (GameObject fbxModel in GameManager.instance.fbxModels)
                     if (fbxModel.name == _data.slug)
                     {
                         Vector3 boxScale = newItem.transform.GetChild(0).localScale;
