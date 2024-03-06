@@ -157,9 +157,10 @@ public class ObjectDisplayController : MonoBehaviour
             List<GameObject> selection = GameManager.instance.GetSelected();
             bool isSelected = selection.Contains(gameObject);
             bool colAndLabels = !isHidden && ((isReferent && !(selectionrefs.Contains(item) || GameManager.instance.focusMode)) || selection.Contains(transform.parent?.gameObject));
+            bool hidelabel = item is GenericObject && transform.parent.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
             bool rend = !isHidden && (isSelected || colAndLabels);
 
-            Display(rend, colAndLabels, colAndLabels);
+            Display(rend, colAndLabels && (item is not GenericObject || !hidelabel), colAndLabels);
 
             if (isSelected)
             {
