@@ -327,7 +327,7 @@ public class Room : Building
                 break;
         }
 
-        Vector2 size = JsonUtility.FromJson<Vector2>(attributes["size"]);
+        Vector2 size = Utils.ParseVector2(attributes["size"]);
         float x = size.x / UnitValue.Tile - technical.right - technical.left + offsetX;
         float y = size.y / UnitValue.Tile - technical.front - technical.back + offsetY;
         Vector3 origin = usableZone.localScale / 0.2f;
