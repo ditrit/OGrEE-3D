@@ -150,6 +150,14 @@ MonoBehaviour:
     m_Localized: calques
     m_Metadata:
       m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "Le projet OGrEE est un ensemble de projets OpenSource d\xE9velopp\xE9s
+      par la communaut\xE9 DitRit.\nLicense: MPL 2.0\n\nVoici OGrEE-3D, un visualisateur
+      pour les objets stock\xE9s dans des bases de donn\xE9es OGrEE. \nLien GitHub
+      : https://github.com/ditrit/OGREE-3D\n\nLes autres modules se trouvent dans
+      https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

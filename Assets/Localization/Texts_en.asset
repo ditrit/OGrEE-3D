@@ -150,6 +150,13 @@ MonoBehaviour:
     m_Localized: layers
     m_Metadata:
       m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "The OGrEE project is a set of OpenSource projects by DitRit community\r.\nLicense:
+      MPL 2.0\n\nThis is OGrEE-3D, a viewer for items stored in OGrEE databases.
+      \nGitHub repository: https://github.com/ditrit/OGREE-3D\n\nOther modules can
+      be found at https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
