@@ -114,7 +114,7 @@ public class ClearanceHandler
 
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = JsonUtility.FromJson<Vector2>(item.attributes["size"]);
+        Vector2 size = Utils.ParseVector2(item.attributes["size"]);
         float height = Utils.ParseDecFrac(item.attributes["height"]);
         if (item.attributes["heightUnit"] == LengthUnit.U)
             height *= UnitValue.U;
