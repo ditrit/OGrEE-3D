@@ -104,10 +104,56 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456595978176167941
+  - m_Id: 1887873809125376
+    m_Localized: Masquer la liste des {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1888215670067200
+    m_Localized: Afficher la liste des {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1898842950078464
+    m_Localized: "Mode couleur de temp\xE9rature"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Localized: "Etiquettes par d\xE9faut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Localized: Etiquettes flottantes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Localized: "Etiquettes cach\xE9es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Localized: Etiquettes toujours visibles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Localized: groupes ouverts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Localized: tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Localized: "objets cach\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Localized: calques
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
     - rid: 5456595978176167941
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c60f905c06000010064fe0600600001086a88f640600
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b50600

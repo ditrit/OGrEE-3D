@@ -2,26 +2,33 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(VerticalLayoutGroup))]
 public class DynamicButtonList : MonoBehaviour
 {
     [Header("Setup before use")]
-    [SerializeField] private string listName;
+    public string listName;
+    [SerializeField] private LocalizedString localizedName;
     public GameObject buttonPrefab;
     [Header("Setup in prefab")]
     [SerializeField] private TMP_Text buttonToggleText;
     private bool isExpanded;
-    private string displayText;
-    private string hideText;
 
     private void Start()
     {
-        displayText = $"Display {listName} list";
-        hideText = $"Hide {listName} list";
-        buttonToggleText.text = displayText;
+        buttonToggleText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Display Dynamic Button List";
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+        OnLocaleChanged(LocalizationSettings.SelectedLocale);
         gameObject.SetActive(false);
+    }
+
+    private void OnLocaleChanged(Locale _newLocale)
+    {
+        listName = localizedName.GetLocalizedString(_newLocale);
     }
 
     /// <summary>
@@ -82,7 +89,7 @@ public class DynamicButtonList : MonoBehaviour
     public void ToggleMenu()
     {
         isExpanded ^= true;
-        buttonToggleText.text = isExpanded ? hideText : displayText;
+        buttonToggleText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = isExpanded ? "Hide Dynamic Button List" : "Display Dynamic Button List";
 
         foreach (Transform btn in GetButtons())
             btn.gameObject.SetActive(isExpanded);
