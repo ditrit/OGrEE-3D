@@ -98,10 +98,26 @@ public class ReadFromJson
         if (obj.category == Category.Rack || obj.category == Category.Generic)
         {
             newItem = (Item)await OgreeGenerator.instance.CreateItemFromSApiObject(obj, GameManager.instance.templatePlaceholder);
-#if TRILIB
             if (!string.IsNullOrEmpty(_data.fbxModel))
-                await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
+            {
+                bool precompiled = false;
+                foreach (GameObject fbxModel in GameManager.instance.fbxModels)
+                    if (fbxModel.name == _data.slug)
+                    {
+                        Vector3 boxScale = newItem.transform.GetChild(0).localScale;
+                        GameObject model = UnityEngine.Object.Instantiate(fbxModel);
+                        model.transform.parent = newItem.transform;
+                        model.transform.localPosition = newItem.transform.GetChild(0).localPosition;
+                        model.transform.SetAsFirstSibling();
+                        UnityEngine.Object.Destroy(newItem.transform.GetChild(1).gameObject);
+                        precompiled = true;
+                        break;
+                    }
+#if TRILIB
+                if (!precompiled)
+                    await ModelLoader.instance.ReplaceBox(newItem.gameObject, _data.fbxModel);
 #endif
+            }
         }
         else// if (obj.category == Category.Device)
         {

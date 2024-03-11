@@ -282,10 +282,8 @@ public class ObjectDisplayController : MonoBehaviour
             return;
         }
         List<Item> selectionrefs = GameManager.instance.GetSelectedReferents();
-        bool rendAndCol = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
-        bool hideLabels = item.transform.parent?.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
-        Display(rendAndCol, rendAndCol || (item is GenericObject && hideLabels), rendAndCol);
-
+        bool rendAndColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
+        Display(rendAndColAndLabels, rendAndColAndLabels, rendAndColAndLabels);
         foreach (string tagName in item.tags)
         {
             if (GameManager.instance.GetTag(tagName) is Tag tag && tag.objHightlighted)
@@ -717,7 +715,8 @@ public class ObjectDisplayController : MonoBehaviour
     {
         cube.rend.enabled = _rend;
         highlightCube?.SetActive(GameManager.instance.focusMode ? _rend : _rend && isHighlighted && !GameManager.instance.GetSelected().Contains(gameObject));
-        displayObjectData.ToggleLabel(_label);
+        bool overrideLabel = item is GenericObject && transform.parent?.GetComponent<Room>() is Room room && !room.genNamesDisplayed;
+        displayObjectData.ToggleLabel(_label && !overrideLabel);
         if (item && item.heatMap)
             item.heatMap.GetComponent<Renderer>().enabled = _rend;
     }
