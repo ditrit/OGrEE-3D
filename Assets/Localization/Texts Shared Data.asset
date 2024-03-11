@@ -19,6 +19,14 @@ MonoBehaviour:
     m_Key: About
     m_Metadata:
       m_Items: []
+  - m_Id: 2165461618135040
+    m_Key: About OGrEE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1795366375002112
+    m_Key: API infos
+    m_Metadata:
+      m_Items: []
   - m_Id: 32671850172416
     m_Key: Automatically enable U helpers
     m_Metadata:
@@ -27,8 +35,44 @@ MonoBehaviour:
     m_Key: Clear cache
     m_Metadata:
       m_Items: []
+  - m_Id: 1790623669948416
+    m_Key: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Key: Default labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1888215670067200
+    m_Key: Display Dynamic Button List
+    m_Metadata:
+      m_Items: []
   - m_Id: 32929661456384
     m_Key: Double-click delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1799418030723072
+    m_Key: Fail to connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Key: Floating labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Key: Forced labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Key: Hidden labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Key: hidden objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1887873809125376
+    m_Key: Hide Dynamic Button List
     m_Metadata:
       m_Items: []
   - m_Id: 33479996084224
@@ -43,12 +87,24 @@ MonoBehaviour:
     m_Key: Language
     m_Metadata:
       m_Items: []
+  - m_Id: 2147760040448000
+    m_Key: layers
+    m_Metadata:
+      m_Items: []
   - m_Id: 33132305059840
     m_Key: Move speed
     m_Metadata:
       m_Items: []
   - m_Id: 142615121920
     m_Key: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Key: opened groups
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Key: Prompt clear cache
     m_Metadata:
       m_Items: []
   - m_Id: 740819341312
@@ -83,64 +139,24 @@ MonoBehaviour:
     m_Key: Settings
     m_Metadata:
       m_Items: []
-  - m_Id: 1790623669948416
-    m_Key: Connected to API
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1795366375002112
-    m_Key: API infos
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1799418030723072
-    m_Key: Fail to connected to API
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1887873809125376
-    m_Key: Hide Dynamic Button List
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1888215670067200
-    m_Key: Display Dynamic Button List
+  - m_Id: 2147545552130048
+    m_Key: tags
     m_Metadata:
       m_Items: []
   - m_Id: 1898842950078464
     m_Key: Temperature Color Mode
     m_Metadata:
       m_Items: []
-  - m_Id: 2135889463873536
-    m_Key: Default labels
+  - m_Id: 3670325896548352
+    m_Key: Continue
     m_Metadata:
       m_Items: []
-  - m_Id: 2135950935592960
-    m_Key: Floating labels
+  - m_Id: 3670405089202176
+    m_Key: Cancel
     m_Metadata:
       m_Items: []
-  - m_Id: 2135966748119040
-    m_Key: Hidden labels
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2135991830056960
-    m_Key: Forced labels
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2145930501820416
-    m_Key: opened groups
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2147066101239808
-    m_Key: hidden objects
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2147545552130048
-    m_Key: tags
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2147760040448000
-    m_Key: layers
-    m_Metadata:
-      m_Items: []
-  - m_Id: 2165461618135040
-    m_Key: About OGrEE
+  - m_Id: 3679797016662016
+    m_Key: Drawing will erase scene
     m_Metadata:
       m_Items: []
   m_Metadata:

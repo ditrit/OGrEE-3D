@@ -514,7 +514,7 @@ public class CommandParser
             case Command.ClearCache:
                 if (GameManager.instance.objectRoot)
                 {
-                    Prompt prompt = UiManager.instance.GeneratePrompt("Clearing cache will erase current scene", "Continue", "Cancel");
+                    Prompt prompt = UiManager.instance.GeneratePrompt("Clear cache warning", "Continue", "Cancel");
                     while (prompt.state == EPromptStatus.wait)
                         await Task.Delay(10);
                     if (prompt.state == EPromptStatus.accept)

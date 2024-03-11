@@ -689,11 +689,12 @@ public class UiManager : MonoBehaviour
     ///<param name="_mainText">Message to display</param>
     ///<param name="_buttonAText">Custom text for "accept" button</param>
     ///<param name="_buttonBText">Custom text for "refuse" button. The button will be hidden if empty</param>
+    ///<param name="_strVariable">A string variable to be used in Localization Table</param>
     ///<returns>The Prompt class of the generated item</returns>
-    public Prompt GeneratePrompt(string _mainText, string _buttonAText, string _buttonBText)
+    public Prompt GeneratePrompt(string _mainText, string _buttonAText, string _buttonBText, string _strVariable = null)
     {
         Prompt prompt = Instantiate(promptPrefab, canvas).GetComponent<Prompt>();
-        prompt.Setup(_mainText, _buttonAText, _buttonBText);
+        prompt.Setup(_mainText, _buttonAText, _buttonBText, _strVariable);
         return prompt;
     }
 

@@ -157,10 +157,27 @@ MonoBehaviour:
       be found at https://github.com/ditrit/OGREE-Core"
     m_Metadata:
       m_Items: []
+  - m_Id: 3669309859958784
+    m_Localized: Clearing cache will erase current scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Localized: Drawing {str} will erase current scene.
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
   references:
     version: 2
     RefIds:
     - rid: 5456595978176167939
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b50600
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00
