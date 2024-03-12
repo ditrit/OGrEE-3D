@@ -180,11 +180,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3701267306516480
-    m_Localized: "Ajouter \xE0 la S\xE9lection"
+    m_Localized: "Ajouter \xE0 la s\xE9lection"
     m_Metadata:
       m_Items: []
   - m_Id: 3701452136910848
-    m_Localized: "Retirer de la S\xE9lection"
+    m_Localized: "Retirer de la s\xE9lection"
     m_Metadata:
       m_Items: []
   - m_Id: 3701587097030656
@@ -192,7 +192,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3701756391723008
-    m_Localized: Ouvrir le Groupe
+    m_Localized: Ouvrir le groupe
     m_Metadata:
       m_Items: []
   - m_Id: 3702691637628928
@@ -212,11 +212,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3706658505494528
-    m_Localized: "Cacher la S\xE9lection"
+    m_Localized: "Cacher la s\xE9lection"
     m_Metadata:
       m_Items: []
   - m_Id: 3706955525132288
-    m_Localized: "Afficher la S\xE9lection"
+    m_Localized: "Afficher la s\xE9lection"
     m_Metadata:
       m_Items: []
   - m_Id: 3703045297147904

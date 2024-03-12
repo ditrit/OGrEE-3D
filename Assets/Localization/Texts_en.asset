@@ -179,19 +179,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3701267306516480
-    m_Localized: Add to Selection
+    m_Localized: Add to selection
     m_Metadata:
       m_Items: []
   - m_Id: 3701452136910848
-    m_Localized: Remove from Selection
+    m_Localized: Remove from selection
     m_Metadata:
       m_Items: []
   - m_Id: 3701587097030656
-    m_Localized: Select Parent
+    m_Localized: Select parent
     m_Metadata:
       m_Items: []
   - m_Id: 3701756391723008
-    m_Localized: Open Group
+    m_Localized: Open group
     m_Metadata:
       m_Items: []
   - m_Id: 3702691637628928
