@@ -256,11 +256,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3969350671667200
-    m_Localized: "Objet s\xE9lectionn\xE9:"
+    m_Localized: "Objet s\xE9lectionn\xE9 :"
     m_Metadata:
       m_Items: []
   - m_Id: 3969453092376576
-    m_Localized: "Objet isol\xE9:"
+    m_Localized: "Objet isol\xE9 : "
     m_Metadata:
       m_Items: []
   - m_Id: 3708234733326336
@@ -281,6 +281,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3705586839851008
     m_Localized: Basculer l'aide aux U
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Localized: "Niveau de d\xE9tails :"
     m_Metadata:
       m_Items: []
   references:

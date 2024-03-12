@@ -267,6 +267,10 @@ MonoBehaviour:
     m_Key: Focused object
     m_Metadata:
       m_Items: []
+  - m_Id: 4049178569609216
+    m_Key: Details level
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
