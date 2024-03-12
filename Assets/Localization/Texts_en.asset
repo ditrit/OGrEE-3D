@@ -174,6 +174,114 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456595978176167939
+  - m_Id: 3701066881699840
+    m_Localized: Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: Add to Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: Remove from Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: Select Parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Open Group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: Unfocus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Edit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: Reset modifications
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: Reset children's modifications
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Toggle tiles name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Toggle tiles color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Toggle walls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: Toggle separators name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: Toggle generics name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Toggle local CS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: Toggle U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Toggle children origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: Toggle clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: Temperatures Bar Chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: Temperatures Scatter Plot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: HeatMap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: Hide selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: Display selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: 'Selected object:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: 'Focused object: '
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

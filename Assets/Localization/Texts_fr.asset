@@ -175,6 +175,114 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456595978176167941
+  - m_Id: 3701066881699840
+    m_Localized: "S\xE9lectionner"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: "Ajouter \xE0 la S\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: "Retirer de la S\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: "S\xE9lectionner le parent"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Ouvrir le Groupe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Isoler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: "R\xE9initialiser les modifications"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: "R\xE9initialiser les modifications des enfants"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: "Cacher la S\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: "Afficher la S\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: "R\xE9unir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Basculer le nom des dalles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Basculer la couleur des dalles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Basculer les murs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: "Basculer le nom des s\xE9parateurs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: "Basculer le nom des g\xE9n\xE9riques"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Basculer l'origine de l'objet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Basculer l'ogirine des enfants
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: "Basculer le d\xE9gagement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: "Objet s\xE9lectionn\xE9:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: "Objet isol\xE9:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: "Obtenir les coordonn\xE9es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: "Diagramme en b\xE2tons des temp\xE9ratures"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: "Nuage de points des temp\xE9ratures"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: Carte de chaleur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: Basculer l'aide aux U
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

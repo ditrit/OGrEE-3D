@@ -104,7 +104,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3669309859958784
-    m_Key: Prompt clear cache
+    m_Key: Clear cache warning
     m_Metadata:
       m_Items: []
   - m_Id: 740819341312
@@ -157,6 +157,114 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3679797016662016
     m_Key: Drawing will erase scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701066881699840
+    m_Key: Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Key: Add to Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Key: Remove from Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Key: Select Parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Key: Open Group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Key: Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Key: Unfocus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Key: Edit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Key: Reset Transform
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Key: Reset Children
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Key: Toggle tiles name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Key: Toggle tiles color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Key: Toggle walls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Key: Toggle separators name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Key: Toggle generics name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Key: Toggle U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Key: Toggle local CS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Key: Toggle children origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Key: Toggle clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Key: Sensors Bar Chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Key: Sensors Scatter Plot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Key: HeatMap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Key: Hide selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Key: Display selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Key: Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Key: Selected object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Key: Focused object
     m_Metadata:
       m_Items: []
   m_Metadata:
