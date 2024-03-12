@@ -287,10 +287,33 @@ MonoBehaviour:
     m_Localized: "Niveau de d\xE9tails :"
     m_Metadata:
       m_Items: []
+  - m_Id: 4051772406894592
+    m_Localized: 'Objets: {DebugText.ooCount}/{DebugText.goCount}
+
+      IPS: {DebugText.averageFPS}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 4052776477134848
+    m_Localized: Compter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Localized: "D\xE9clencher manuellement l'\xE9v\xE9nement de fin d'importation"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Localized: "Commandes retard\xE9es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Localized: Ecrire les journaux
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
     - rid: 5456595978176167941
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00001006c710650e00
