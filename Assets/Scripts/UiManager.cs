@@ -60,11 +60,13 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField focusInputField;
     [SerializeField] private TMP_Text apiText;
     [SerializeField] private TMP_Text apiInfos;
-    public string apiCustomer;
-    public string apiBuildDate;
-    public string apiBuildHash;
-    public string apiBuildTree;
-    public string apiCommitDate;
+#pragma warning disable IDE1006 // Name assignment styles
+    public string apiCustomer { get; private set; }
+    public string apiBuildDate { get; private set; }
+    public string apiBuildHash { get; private set; }
+    public string apiBuildTree { get; private set; }
+    public string apiCommitDate { get; private set; }
+#pragma warning restore IDE1006 // Name assignment styles 
     public TMP_Dropdown labelsDropdown;
 
     [Header("Panel Debug")]
@@ -288,7 +290,7 @@ public class UiManager : MonoBehaviour
                     menuTarget.GetComponent<Item>() is Item item
                     &&
                     item is not Corridor
-                    && 
+                    &&
                     item is not GenericObject
                 )
                 ||

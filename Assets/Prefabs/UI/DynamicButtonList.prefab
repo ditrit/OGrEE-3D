@@ -270,7 +270,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 454e54fbb8701274c86d70ca3111821f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listName:
+  listName: 
+  localizedName:
     m_TableReference:
       m_TableCollectionName: 
     m_TableEntryReference:

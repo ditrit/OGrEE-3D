@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
 public class LocaleDropdown : MonoBehaviour
@@ -14,11 +15,11 @@ public class LocaleDropdown : MonoBehaviour
         yield return LocalizationSettings.InitializationOperation;
 
         // Generate list of available Locales
-        var options = new List<TMP_Dropdown.OptionData>();
+        List<TMP_Dropdown.OptionData> options = new();
         int selected = 0;
         for (int i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; ++i)
         {
-            var locale = LocalizationSettings.AvailableLocales.Locales[i];
+            Locale locale = LocalizationSettings.AvailableLocales.Locales[i];
             if (LocalizationSettings.SelectedLocale == locale)
                 selected = i;
             options.Add(new TMP_Dropdown.OptionData(locale.name));

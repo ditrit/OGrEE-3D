@@ -99,7 +99,9 @@ public class ApiManager : MonoBehaviour
     private readonly CommandParser parser = new();
     public readonly Queue<Action> mainThreadQueue = new();
 
+#pragma warning disable IDE1006 // Name assignment styles
     public string url { get; private set; }
+#pragma warning restore IDE1006 // Name assignment styles
     private string token;
     private bool canDraw = true;
 
