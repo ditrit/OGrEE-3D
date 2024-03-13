@@ -130,11 +130,14 @@ public class ConnectApiEvent : CustomEvent
 
     public ConnectApiEvent()
     {
-        apiData = new();
-        apiData["BuildDate"] = "";
-        apiData["BuildHash"] = "";
-        apiData["BuildTree"] = "";
-        apiData["CommitDate"] = "";
+        apiData = new()
+        {
+            ["Customer"] = "",
+            ["BuildDate"] = "",
+            ["BuildHash"] = "",
+            ["BuildTree"] = "",
+            ["CommitDate"] = ""
+        };
     }
 
     public ConnectApiEvent(Dictionary<string, string> _data)

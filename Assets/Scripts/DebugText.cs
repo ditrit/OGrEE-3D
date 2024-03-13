@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DebugText : MonoBehaviour
 {
-    private TextMeshProUGUI txt;
+    [SerializeField] private LocalizeStringEvent localizedStr;
     private readonly int[] last100FPS = new int[100];
     private int currentIndex = 0;
 #pragma warning disable IDE1006 // Name assignment styles
@@ -13,11 +14,6 @@ public class DebugText : MonoBehaviour
     public int goCount { get; private set; }
     public int ooCount { get; private set; }
 #pragma warning restore IDE1006 // Name assignment styles
-
-    private void Start()
-    {
-        txt = GetComponent<TextMeshProUGUI>();
-    }
 
     private void Update()
     {
@@ -33,8 +29,7 @@ public class DebugText : MonoBehaviour
             last100FPS[currentIndex] = currentFPS;
         }
         averageFPS = Average(last100FPS);
-
-        txt.text = $"Objs: {ooCount}/{goCount}\nFPS: {averageFPS}";
+        localizedStr.RefreshString();
     }
 
     ///<summary>

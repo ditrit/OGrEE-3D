@@ -1,0 +1,318 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Texts_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 0ddcf4eeba13f914cb3df74b9222d758, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456595978176167939
+  m_TableData:
+  - m_Id: 142615121920
+    m_Localized: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381417820160
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 468277661696
+    m_Localized: About
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 569834344448
+    m_Localized: Clear cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740819341312
+    m_Localized: Quit OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Localized: Automatically enable U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Localized: Double-click delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Localized: Move speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Localized: Rotation speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Localized: Human mode height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Localized: Reset all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Localized: Save all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Localized: Human mode movement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Localized: Connected to {UiManager.apiCustomer}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1795366375002112
+    m_Localized: "API URL:\t\t\t{ApiManager.url}\nAPI build date:\t\t{UiManager.apiBuildDate}\nAPI
+      build hash:\t\t{UiManager.apiBuildHash}\nAPI build tree:\t\t{UiManager.apiBuildTree}\nAPI
+      Commit Date:\t{UiManager.apiCommitDate}\n"
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1799418030723072
+    m_Localized: Failed to connect to {ApiManager.url}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1887873809125376
+    m_Localized: Hide {DynamicButtonList.listName} List
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1888215670067200
+    m_Localized: Display {DynamicButtonList.listName} List
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 1898842950078464
+    m_Localized: Temperature Color Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Localized: Default labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Localized: Floating labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Localized: Hidden labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Localized: Forced labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Localized: opened groups
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Localized: tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Localized: hidden objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Localized: layers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "The OGrEE project is a set of OpenSource projects by DitRit community\r.\nLicense:
+      MPL 2.0\n\nThis is OGrEE-3D, a viewer for items stored in OGrEE databases.
+      \nGitHub repository: https://github.com/ditrit/OGREE-3D\n\nOther modules can
+      be found at https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Localized: Clearing cache will erase current scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Localized: Drawing {str} will erase current scene.
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 3701066881699840
+    m_Localized: Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: Add to selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: Remove from selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: Select parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Open group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: Unfocus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Edit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: Reset modifications
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: Reset children's modifications
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Tiles name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Tiles color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Walls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: Separators name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: Generics name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Object origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Children origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: Clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: Temperatures Bar Chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: Temperatures Scatter Plot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: HeatMap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: Hide selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: Display selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: Coordinates System
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: 'Selected object:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: 'Focused object: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Localized: 'Details level:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4051772406894592
+    m_Localized: 'Objects: {DebugText.ooCount}/{DebugText.goCount}
+
+      FPS: {DebugText.averageFPS}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167939
+  - m_Id: 4052776477134848
+    m_Localized: Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Localized: Manually trigger import finished event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Localized: Delayed commands
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Localized: Write logs
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456595978176167939
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00001006c710650e00

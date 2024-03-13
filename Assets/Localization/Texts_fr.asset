@@ -1,0 +1,319 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Texts_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 0ddcf4eeba13f914cb3df74b9222d758, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456595978176167941
+  m_TableData:
+  - m_Id: 142615121920
+    m_Localized: "Non connect\xE9 \xE0 l'API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381417820160
+    m_Localized: Retour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 468277661696
+    m_Localized: "\xC0 propos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Localized: "Param\xE8tres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 569834344448
+    m_Localized: Vider le cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740819341312
+    m_Localized: Quitter OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Localized: Langage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Localized: Activation automatique des U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Localized: "D\xE9lais du double clic"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Localized: Vitesse de mouvement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Localized: Vitesse de rotation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Localized: Hauteur du mode humain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Localized: "R\xE9initialiser"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Localized: Sauvegarder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Localized: "Tout r\xE9initialiser"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Localized: Tout sauvegarder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Localized: "D\xE9placement en mode humain"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Localized: "Connect\xE9 \xE0 {UiManager.apiCustomer}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1795366375002112
+    m_Localized: "API URL:\t\t\t{ApiManager.url}\nAPI build date:\t\t{UiManager.apiBuildDate}\nAPI
+      build hash:\t\t{UiManager.apiBuildHash}\nAPI build tree:\t\t{UiManager.apiBuildTree}\nAPI
+      Commit Date:\t{UiManager.apiCommitDate}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1799418030723072
+    m_Localized: "Echec de la connexion \xE0 {ApiManager.url}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1887873809125376
+    m_Localized: Masquer la liste des {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1888215670067200
+    m_Localized: Afficher la liste des {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 1898842950078464
+    m_Localized: "Mode couleur de temp\xE9rature"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Localized: "Label par d\xE9faut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Localized: Label flottants
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Localized: "Label cach\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Localized: Label toujours visibles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Localized: groupes ouverts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Localized: "\xE9tiquettes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Localized: "objets cach\xE9s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Localized: calques
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "Le projet OGrEE est un ensemble de projets OpenSource d\xE9velopp\xE9s
+      par la communaut\xE9 DitRit.\nLicense: MPL 2.0\n\nVoici OGrEE-3D, un visualisateur
+      pour les objets stock\xE9s dans des bases de donn\xE9es OGrEE. \nLien GitHub
+      : https://github.com/ditrit/OGREE-3D\n\nLes autres modules se trouvent dans
+      https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Localized: "Vider le cache va vider la sc\xE8ne actuelle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Localized: Continuer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Localized: Annuler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Localized: "Dessiner {str} va effacer la sc\xE8ne actuelle."
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 3701066881699840
+    m_Localized: "S\xE9lectionner"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: "Ajouter \xE0 la s\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: "Retirer de la s\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: "S\xE9lectionner le parent"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Ouvrir le groupe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Isoler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Modifier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: "R\xE9initialiser les modifications"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: "R\xE9initialiser les modifications des enfants"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: "Cacher la s\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: "Afficher la s\xE9lection"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: "R\xE9unir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Nom des dalles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Couleur des dalles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Murs
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: "Nom des s\xE9parateurs"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: "Nom des g\xE9n\xE9riques"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Origine de l'objet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Ogirine des enfants
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: "D\xE9gagement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: "Objet s\xE9lectionn\xE9 :"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: "Objet isol\xE9 : "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: "Syst\xE8me de coordonn\xE9es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: "Diagramme en b\xE2tons des temp\xE9ratures"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: "Nuage de points des temp\xE9ratures"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: Carte de chaleur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: Aide aux U
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Localized: "Niveau de d\xE9tails :"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4051772406894592
+    m_Localized: 'Objets: {DebugText.ooCount}/{DebugText.goCount}
+
+      IPS: {DebugText.averageFPS}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456595978176167941
+  - m_Id: 4052776477134848
+    m_Localized: Compter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Localized: "D\xE9clencher manuellement l'\xE9v\xE9nement de fin d'importation"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Localized: "Commandes retard\xE9es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Localized: Ecrire les journaux
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456595978176167941
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00001006c710650e00

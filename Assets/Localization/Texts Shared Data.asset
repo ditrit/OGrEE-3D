@@ -1,0 +1,305 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Texts Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Texts
+  m_TableCollectionNameGuidString: 0ddcf4eeba13f914cb3df74b9222d758
+  m_Entries:
+  - m_Id: 468277661696
+    m_Key: About
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165461618135040
+    m_Key: About OGrEE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1795366375002112
+    m_Key: API infos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Key: Automatically enable U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 569834344448
+    m_Key: Clear cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Key: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Key: Default labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1888215670067200
+    m_Key: Display Dynamic Button List
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Key: Double-click delay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1799418030723072
+    m_Key: Failed to connect to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Key: Floating labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Key: Forced labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Key: Hidden labels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Key: hidden objects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1887873809125376
+    m_Key: Hide Dynamic Button List
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Key: Human mode height
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Key: Human mode movement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Key: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Key: layers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Key: Move speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 142615121920
+    m_Key: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Key: opened groups
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Key: Clear cache warning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740819341312
+    m_Key: Quit OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Key: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Key: Reset all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381417820160
+    m_Key: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Key: Rotation speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Key: Save all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Key: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Key: tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1898842950078464
+    m_Key: Temperature Color Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Key: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Key: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Key: Drawing will erase scene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701066881699840
+    m_Key: Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Key: Add to Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Key: Remove from Selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Key: Select Parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Key: Open Group
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Key: Focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Key: Unfocus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Key: Edit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Key: Reset Transform
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Key: Reset Children
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Key: Toggle tiles name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Key: Toggle tiles color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Key: Toggle walls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Key: Toggle separators name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Key: Toggle generics name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Key: Toggle U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Key: Toggle local CS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Key: Toggle children origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Key: Toggle clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Key: Sensors Bar Chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Key: Sensors Scatter Plot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Key: HeatMap
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Key: Hide selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Key: Display selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Key: Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Key: Selected object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Key: Focused object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Key: Details level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4051772406894592
+    m_Key: Object count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4052776477134848
+    m_Key: Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Key: Manually trigger import finished event
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Key: Delayed commands
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Key: Write logs
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 5456595865842221084
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456595865842221084
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1709291202652

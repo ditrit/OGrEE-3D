@@ -87,7 +87,7 @@ public class OgreeGenerator : MonoBehaviour
 
             if (_obj.category != Category.Domain && GameManager.instance.objectRoot)
             {
-                Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing {_obj.name} will erase current scene.", "Ok", "Cancel");
+                Prompt prompt = UiManager.instance.GeneratePrompt($"Drawing will erase scene", "Continue", "Cancel", _obj.name);
                 while (prompt.state == EPromptStatus.wait)
                     await Task.Delay(10);
                 if (prompt.state == EPromptStatus.accept)
