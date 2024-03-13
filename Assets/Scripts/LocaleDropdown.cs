@@ -28,6 +28,10 @@ public class LocaleDropdown : MonoBehaviour
         dropdown.value = selected;
     }
 
+    /// <summary>
+    /// Assigned to dropdown.OnValueChanged(). Change SelectedLocale to the selected one
+    /// </summary>
+    /// <param name="index">The choosen option of the dropdown</param>
     public void LocaleSelected(int index)
     {
         LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];

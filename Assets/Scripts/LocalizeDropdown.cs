@@ -21,6 +21,10 @@ public class LocalizeDropdown : MonoBehaviour
         ChangedLocale(LocalizationSettings.SelectedLocale);
     }
 
+    /// <summary>
+    /// Called when the current Locale is changed. Translate options according to used Locale
+    /// </summary>
+    /// <param name="_newLocale">The new Locale</param>
     private void ChangedLocale(Locale _newLocale)
     {
         List<TMP_Dropdown.OptionData> tmpDropdownOptions = new();
