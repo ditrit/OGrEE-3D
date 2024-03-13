@@ -29,7 +29,7 @@ public class DynamicButtonList : MonoBehaviour
     /// <summary>
     /// Called when used Locale is changed. Change <see cref="listName"/> according to <paramref name="_newLocale"/> to be used in buttonToggleText translation
     /// </summary>
-    /// <param name="_newLocale"></param>
+    /// <param name="_newLocale">The new used Locale</param>
     private void OnLocaleChanged(Locale _newLocale)
     {
         listName = localizedName.GetLocalizedString(_newLocale);
