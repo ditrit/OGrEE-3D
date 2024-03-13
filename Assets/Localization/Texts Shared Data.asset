@@ -52,7 +52,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1799418030723072
-    m_Key: Fail to connected to API
+    m_Key: Failed to connect to API
     m_Metadata:
       m_Items: []
   - m_Id: 2135950935592960

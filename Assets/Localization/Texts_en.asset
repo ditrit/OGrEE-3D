@@ -100,7 +100,7 @@ MonoBehaviour:
       m_Items:
       - rid: 5456595978176167939
   - m_Id: 1799418030723072
-    m_Localized: Fail to connected to {ApiManager.url}
+    m_Localized: Failed to connect to {ApiManager.url}
     m_Metadata:
       m_Items:
       - rid: 5456595978176167939
@@ -215,39 +215,39 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3704557385682944
-    m_Localized: Toggle tiles name
+    m_Localized: Tiles name
     m_Metadata:
       m_Items: []
   - m_Id: 3704654022447104
-    m_Localized: Toggle tiles color
+    m_Localized: Tiles color
     m_Metadata:
       m_Items: []
   - m_Id: 3704751724564480
-    m_Localized: Toggle walls
+    m_Localized: Walls
     m_Metadata:
       m_Items: []
   - m_Id: 3704978032431104
-    m_Localized: Toggle separators name
+    m_Localized: Separators name
     m_Metadata:
       m_Items: []
   - m_Id: 3705280366252032
-    m_Localized: Toggle generics name
+    m_Localized: Generics name
     m_Metadata:
       m_Items: []
   - m_Id: 3705755677364224
-    m_Localized: Toggle local CS
+    m_Localized: Object origin
     m_Metadata:
       m_Items: []
   - m_Id: 3705586839851008
-    m_Localized: Toggle U helpers
+    m_Localized: U helpers
     m_Metadata:
       m_Items: []
   - m_Id: 3705948820869120
-    m_Localized: Toggle children origin
+    m_Localized: Children origin
     m_Metadata:
       m_Items: []
   - m_Id: 3706125078106112
-    m_Localized: Toggle clearance
+    m_Localized: Clearance
     m_Metadata:
       m_Items: []
   - m_Id: 3706194376396800
@@ -271,7 +271,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3708234733326336
-    m_Localized: Get Coordinates
+    m_Localized: Coordinates System
     m_Metadata:
       m_Items: []
   - m_Id: 3969350671667200

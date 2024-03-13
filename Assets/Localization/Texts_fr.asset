@@ -88,7 +88,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1790623669948416
-    m_Localized: "Connect\xE9 \xE0 {UiManager.instance.apiCustomer}"
+    m_Localized: "Connect\xE9 \xE0 {UiManager.apiCustomer}"
     m_Metadata:
       m_Items:
       - rid: 5456595978176167941
@@ -119,19 +119,19 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2135889463873536
-    m_Localized: "Etiquettes par d\xE9faut"
+    m_Localized: "Label par d\xE9faut"
     m_Metadata:
       m_Items: []
   - m_Id: 2135950935592960
-    m_Localized: Etiquettes flottantes
+    m_Localized: Label flottants
     m_Metadata:
       m_Items: []
   - m_Id: 2135966748119040
-    m_Localized: "Etiquettes cach\xE9es"
+    m_Localized: "Label cach\xE9s"
     m_Metadata:
       m_Items: []
   - m_Id: 2135991830056960
-    m_Localized: Etiquettes toujours visibles
+    m_Localized: Label toujours visibles
     m_Metadata:
       m_Items: []
   - m_Id: 2145930501820416
@@ -139,7 +139,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2147545552130048
-    m_Localized: tags
+    m_Localized: "\xE9tiquettes"
     m_Metadata:
       m_Items: []
   - m_Id: 2147066101239808
@@ -224,35 +224,35 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3704557385682944
-    m_Localized: Basculer le nom des dalles
+    m_Localized: Nom des dalles
     m_Metadata:
       m_Items: []
   - m_Id: 3704654022447104
-    m_Localized: Basculer la couleur des dalles
+    m_Localized: Couleur des dalles
     m_Metadata:
       m_Items: []
   - m_Id: 3704751724564480
-    m_Localized: Basculer les murs
+    m_Localized: Murs
     m_Metadata:
       m_Items: []
   - m_Id: 3704978032431104
-    m_Localized: "Basculer le nom des s\xE9parateurs"
+    m_Localized: "Nom des s\xE9parateurs"
     m_Metadata:
       m_Items: []
   - m_Id: 3705280366252032
-    m_Localized: "Basculer le nom des g\xE9n\xE9riques"
+    m_Localized: "Nom des g\xE9n\xE9riques"
     m_Metadata:
       m_Items: []
   - m_Id: 3705755677364224
-    m_Localized: Basculer l'origine de l'objet
+    m_Localized: Origine de l'objet
     m_Metadata:
       m_Items: []
   - m_Id: 3705948820869120
-    m_Localized: Basculer l'ogirine des enfants
+    m_Localized: Ogirine des enfants
     m_Metadata:
       m_Items: []
   - m_Id: 3706125078106112
-    m_Localized: "Basculer le d\xE9gagement"
+    m_Localized: "D\xE9gagement"
     m_Metadata:
       m_Items: []
   - m_Id: 3969350671667200
@@ -264,7 +264,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3708234733326336
-    m_Localized: "Obtenir les coordonn\xE9es"
+    m_Localized: "Syst\xE8me de coordonn\xE9es"
     m_Metadata:
       m_Items: []
   - m_Id: 3706194376396800
@@ -280,7 +280,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3705586839851008
-    m_Localized: Basculer l'aide aux U
+    m_Localized: Aide aux U
     m_Metadata:
       m_Items: []
   - m_Id: 4049178569609216

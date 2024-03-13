@@ -592,7 +592,7 @@ public class UiManager : MonoBehaviour
         }
         else if (!string.IsNullOrEmpty(ApiManager.instance.GetApiUrl()))
         {
-            apiText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Fail to connected to API";
+            apiText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Failed to connect to API";
             apiText.color = Color.red;
         }
         else

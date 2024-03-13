@@ -2465,7 +2465,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.75
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2871,7 +2871,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.05
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3361,7 +3361,7 @@ PrefabInstance:
     - target: {fileID: 3063822795624751441, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
       propertyPath: m_fontSize
-      value: 10.3
+      value: 13.2
       objectReference: {fileID: 0}
     - target: {fileID: 4211851984322265589, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
@@ -4171,7 +4171,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -8711,7 +8711,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.95
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -20260,7 +20260,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13.2
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -22800,7 +22800,7 @@ PrefabInstance:
     - target: {fileID: 3063822795624751441, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
       propertyPath: m_fontSize
-      value: 13.8
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4211851984322265589, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
@@ -26389,7 +26389,7 @@ PrefabInstance:
     - target: {fileID: 3063822795624751441, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
       propertyPath: m_fontSize
-      value: 10.15
+      value: 12.95
       objectReference: {fileID: 0}
     - target: {fileID: 3347054403525151515, guid: 9216b4be3b0ea174daa8412abb1c075c,
         type: 3}
@@ -27496,7 +27496,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11
+  m_fontSize: 14
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
