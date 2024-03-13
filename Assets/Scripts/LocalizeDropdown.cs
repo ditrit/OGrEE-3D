@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
@@ -28,16 +27,5 @@ public class LocalizeDropdown : MonoBehaviour
         foreach (LocalizedString dropdownOption in dropdownOptions)
             tmpDropdownOptions.Add(new TMP_Dropdown.OptionData(dropdownOption.GetLocalizedString()));
         tmpDropdown.options = tmpDropdownOptions;
-    }
-}
-
-public abstract class AddLocalizeDropdown
-{
-    [MenuItem("CONTEXT/TMP_Dropdown/Localize", false, 1)]
-    private static void AddLocalizeComponent()
-    {
-        // add localize dropdown component to selected gameobject
-        if (Selection.activeGameObject is GameObject selected)
-            selected.AddComponent<LocalizeDropdown>();
     }
 }
