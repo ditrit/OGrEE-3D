@@ -26,6 +26,10 @@ public class DynamicButtonList : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Called when used Locale is changed. Change <see cref="listName"/> according to <paramref name="_newLocale"/> to be used in buttonToggleText translation
+    /// </summary>
+    /// <param name="_newLocale"></param>
     private void OnLocaleChanged(Locale _newLocale)
     {
         listName = localizedName.GetLocalizedString(_newLocale);
