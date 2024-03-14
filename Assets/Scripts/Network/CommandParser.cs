@@ -254,6 +254,11 @@ public class CommandParser
         canDraw = true;
     }
 
+    private bool HasAttributeChanged(SApiObject _newData, OgreeObject _ogreeObject, string _attrKey)
+    {
+        return _newData.attributes.ContainsKey(_attrKey) && (!_ogreeObject.attributes.ContainsKey(_attrKey) || _ogreeObject.attributes[_attrKey] != _newData.attributes[_attrKey]);
+    }
+
     ///<summary>
     /// Deserialize given SApiObject and apply modification to corresponding object.
     ///</summary>
@@ -272,81 +277,61 @@ public class CommandParser
         // Case domain for all OgreeObjects
         bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
 
-        // Case color for racks & devices
+        // Case color/position for racks & devices
         if (obj is Item item)
         {
-            if (newData.category != Category.Corridor)
-            {
-                if (newData.attributes.ContainsKey("color")
-                    && (!item.attributes.ContainsKey("color") || item.attributes["color"] != newData.attributes["color"]))
+            if (HasAttributeChanged(newData, item, "temperature"))
+                if (newData.category != Category.Corridor)
                     item.SetColor(newData.attributes["color"]);
-            }
-            // Case temperature for corridors
-            else
-            {
-                if (newData.attributes.ContainsKey("temperature")
-                    && (!item.attributes.ContainsKey("temperature") || item.attributes["temperature"] != newData.attributes["temperature"]))
-                {
-                    if (newData.attributes["temperature"] == "cold")
-                        item.SetColor("000099");
-                    else
-                        item.SetColor("990000");
-                }
-            }
+                else // Case temperature for corridors
+                    item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
+
+            if ((HasAttributeChanged(newData, item, "posXYUnit") || HasAttributeChanged(newData, item, "posXY") || HasAttributeChanged(newData, item, "posXYZ")))
+                if (newData.category == Category.Device)
+                    ;
+                else
+                    Utils.PlaceInRoom(item.transform, newData);
         }
 
         // Case of a separators/pillars/areas modification in a room
         if (obj is Room room)
         {
-            if (newData.attributes.ContainsKey("separators"))
+            if (HasAttributeChanged(newData, room, "separators"))
             {
-                if ((room.attributes.ContainsKey("separators") && room.attributes["separators"] != newData.attributes["separators"])
-                    || !room.attributes.ContainsKey("separators"))
+                Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
+                // Delete old separators
+                for (int i = 0; i < room.separators.Count; i++)
                 {
-                    Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
-                    // Delete old separators
-                    for (int i = 0; i < room.separators.Count; i++)
+                    Separator sep = room.separators[i];
+                    if (!newSeparators.ContainsKey(sep.name))
                     {
-                        Separator sep = room.separators[i];
-                        if (!newSeparators.ContainsKey(sep.name))
-                        {
-                            Object.Destroy(sep.gameObject);
-                            room.separators.Remove(sep);
-                        }
-                    }
-                    // Add new separators
-                    foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
-                    {
-                        if (!room.HasSeparator(sep.Key))
-                            room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
+                        Object.Destroy(sep.gameObject);
+                        room.separators.Remove(sep);
                     }
                 }
+                // Add new separators
+                foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
+                    if (!room.HasSeparator(sep.Key))
+                        room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
             }
-            if (newData.attributes.ContainsKey("pillars"))
+
+            if (HasAttributeChanged(newData, room, "pillars"))
             {
-                if ((room.attributes.ContainsKey("pillars") && room.attributes["pillars"] != newData.attributes["pillars"])
-                    || !room.attributes.ContainsKey("pillars"))
-                {
-                    foreach (Transform wall in room.walls)
-                    {
-                        if (wall.name.Contains("Pillar"))
-                            Object.Destroy(wall.gameObject);
-                    }
-                    Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
-                    foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                        room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
-                }
+                foreach (Transform wall in room.walls)
+                    if (wall.name.Contains("Pillar"))
+                        Object.Destroy(wall.gameObject);
+                Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
+                foreach (KeyValuePair<string, SPillar> pillar in pillars)
+                    room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
             }
-            if (newData.attributes.ContainsKey("reserved"))
+
+            if (HasAttributeChanged(newData, room, "reserved"))
             {
-                if ((room.attributes.ContainsKey("reserved") && room.attributes["reserved"] != newData.attributes["reserved"])
-                    || !room.attributes.ContainsKey("reserved"))
-                {
-                    SMargin reserved = new(Utils.ParseVector4(newData.attributes["reserved"]));
-                    SMargin technical = new(Utils.ParseVector4(newData.attributes["technical"]));
-                    room.SetAreas(reserved, technical);
-                }
+                SMargin reserved = new(Utils.ParseVector4(newData.attributes["reserved"]));
+                SMargin technical = new(Utils.ParseVector4(newData.attributes["technical"]));
+                room.SetAreas(reserved, technical);
             }
+
         }
         obj.UpdateFromSApiObject(newData);
 
