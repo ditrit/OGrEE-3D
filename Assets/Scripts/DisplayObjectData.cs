@@ -22,6 +22,7 @@ public class DisplayObjectData : MonoBehaviour
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
     private Item item;
+    private LODGroup lodGroup;
 
     private void Start()
     {
@@ -53,6 +54,7 @@ public class DisplayObjectData : MonoBehaviour
     {
         usedLabels.Clear();
         item = GetComponent<Item>();
+        lodGroup = GetComponent<LODGroup>();
         Transform shape = transform.GetChild(0);
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
@@ -168,11 +170,17 @@ public class DisplayObjectData : MonoBehaviour
                 usedLabels.Add(labelBottom);
                 break;
         }
+        List<Renderer> renderers = new();
         foreach (TextMeshPro tmp in usedLabels)
         {
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
+            renderers.Add(tmp.GetComponent<Renderer>());
         }
+        LOD withLabels = new(0.1f, renderers.ToArray());
+        LOD withoutLabels = new(0, new Renderer[0]);
+        lodGroup.SetLODs(new LOD[] { withLabels, withoutLabels });
+        lodGroup.RecalculateBounds();
     }
 
     ///<summary>
