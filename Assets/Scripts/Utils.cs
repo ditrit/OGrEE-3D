@@ -372,10 +372,10 @@ public static class Utils
     }
 
     ///<summary>
-    /// Move the given Transform to given position in tiles in a room.
+    /// Move the given Transform to its position in a room according to the API data.
     ///</summary>
     ///<param name="_obj">The object to move</param>
-    ///<param name="_apiObj">The SApiObject with posXY and posU data</param>
+    ///<param name="_apiObj">The SApiObject containing relevant positionning data</param>
     public static void PlaceInRoom(Transform _obj, SApiObject _apiObj)
     {
         Room parentRoom = _obj.parent.GetComponent<Room>();
@@ -470,15 +470,21 @@ public static class Utils
         };
     }
 
-    public static void PlaceDevice(Transform _parent, Device _device, SApiObject _data)
+    /// <summary>
+    /// Move the given device to its position in a rack according to the API data.
+    /// </summary>
+    /// <param name="_parent">The parent object of the device</param>
+    /// <param name="_device">The device to be moved</param>
+    /// <param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public static void PlaceDevice(Transform _parent, Device _device, SApiObject _apiObj)
     {
         // Check slot
         Transform primarySlot = null;
         Vector3 slotsScale = new();
         List<Slot> takenSlots = new();
-        if (_parent && _data.attributes.HasKeyAndValue("slot"))
+        if (_parent && _apiObj.attributes.HasKeyAndValue("slot"))
         {
-            string slots = _data.attributes["slot"].Trim('[', ']');
+            string slots = _apiObj.attributes["slot"].Trim('[', ']');
             string[] slotsArray = slots.Split(",");
 
             foreach (Transform child in _parent)
@@ -507,7 +513,7 @@ public static class Utils
             }
             else
             {
-                GameManager.instance.AppendLogLine($"One or more slots from {_data.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine($"One or more slots from {_apiObj.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
                 return;
             }
         }
@@ -518,13 +524,13 @@ public static class Utils
 
         Vector2 size;
         float height;
-        if (!_data.attributes.HasKeyAndValue("template"))//Rescale according to slot or parent if basic object
+        if (!_apiObj.attributes.HasKeyAndValue("template"))//Rescale according to slot or parent if basic object
         {
             Vector3 scale;
             if (takenSlots.Count > 0)
-                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, ParseDecFrac(_data.attributes["height"]) / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
+                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, ParseDecFrac(_apiObj.attributes["height"]) / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
             else
-                scale = new(_parent.GetChild(0).localScale.x, ParseDecFrac(_data.attributes["height"]) / 1000, _parent.GetChild(0).localScale.z);
+                scale = new(_parent.GetChild(0).localScale.x, ParseDecFrac(_apiObj.attributes["height"]) / 1000, _parent.GetChild(0).localScale.z);
             _device.transform.GetChild(0).localScale = scale;
             _device.transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
@@ -535,14 +541,14 @@ public static class Utils
         }
         else
         {
-            size = ParseVector2(_data.attributes["size"]) / 1000;
-            height = ParseDecFrac(_data.attributes["height"]) / 1000;
+            size = ParseVector2(_apiObj.attributes["size"]) / 1000;
+            height = ParseDecFrac(_apiObj.attributes["height"]) / 1000;
         }
 
         // Place the device
         if (_parent)
         {
-            if (_data.attributes.HasKeyAndValue("slot"))
+            if (_apiObj.attributes.HasKeyAndValue("slot"))
             {
                 // parent to slot for applying orientation
                 _device.transform.parent = primarySlot;
@@ -550,7 +556,7 @@ public static class Utils
                 _device.transform.localPosition = Vector3.zero;
 
                 float deltaZ = slotsScale.z - size.y;
-                switch (_data.attributes["orientation"])
+                switch (_apiObj.attributes["orientation"])
                 {
                     case Orientation.Front:
                         _device.transform.localPosition += new Vector3(0, 0, deltaZ);
@@ -569,12 +575,12 @@ public static class Utils
                         break;
                 }
                 // align device to right side of the slot if invertOffset == true
-                if (_data.attributes.ContainsKey("invertOffset") && _data.attributes["invertOffset"] == "true")
+                if (_apiObj.attributes.ContainsKey("invertOffset") && _apiObj.attributes["invertOffset"] == "true")
                     _device.transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
                 // parent back to _parent for good hierarchy 
                 _device.transform.parent = _parent;
 
-                if (!_data.attributes.ContainsKey("color"))
+                if (!_apiObj.attributes.ContainsKey("color"))
                 {
                     // if slot, color
                     Color slotColor = primarySlot.GetChild(0).GetComponent<Renderer>().material.color;
@@ -588,8 +594,8 @@ public static class Utils
                 Vector3 parentShape = _parent.GetChild(0).localScale;
                 _device.transform.localEulerAngles = Vector3.zero;
                 _device.transform.localPosition = Vector3.zero;
-                if (_data.attributes.ContainsKey("posU"))
-                    _device.transform.localPosition += new Vector3(0, (ParseDecFrac(_data.attributes["posU"]) - 1) * UnitValue.U, 0);
+                if (_apiObj.attributes.ContainsKey("posU"))
+                    _device.transform.localPosition += new Vector3(0, (ParseDecFrac(_apiObj.attributes["posU"]) - 1) * UnitValue.U, 0);
 
                 float deltaX = parentShape.x - size.x;
                 float deltaZ = parentShape.z - size.y;
@@ -611,6 +617,13 @@ public static class Utils
             dod.PlaceTexts(LabelPos.FrontRear);
     }
 
+    /// <summary>
+    /// Get <paramref name="_pivot"/> and <paramref name="_scale"/> of all slots combined
+    /// </summary>
+    /// <param name="_parent">The parent of the device</param>
+    /// <param name="_slotsList">The list of slots to look in</param>
+    /// <param name="_pivot">The pivot of the combined slots</param>
+    /// <param name="_scale">The scale of the combined slots</param>
     private static void SlotsShape(Transform _parent, List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
     {
         Quaternion parentRot = _parent.rotation;
@@ -643,6 +656,12 @@ public static class Utils
         _parent.rotation = parentRot;
     }
 
+    /// <summary>
+    /// Reshape a group according to its content
+    /// </summary>
+    /// <param name="_content">The content of the group</param>
+    /// <param name="_group">The group</param>
+    /// <param name="_parentCategory">The category of the parent of the group (rack or room)</param>
     public static void ShapeGroup(IEnumerable<Transform> _content, Group _group, string _parentCategory)
     {
 
@@ -699,7 +718,7 @@ public static class Utils
     ///<summary>
     /// For a group of devices, set _pos and _scale
     ///</summary>
-    ///<param name="_racks">The list of devices in the group</param>
+    ///<param name="_devices">The list of devices in the group</param>
     ///<param name="_pos">The localPosition to apply to the group</param>
     ///<param name="_scale">The localScale to apply to the group</param>
     private static void DeviceGroupPosScale(IEnumerable<Transform> _devices, out Vector3 _pos, out Vector3 _scale)

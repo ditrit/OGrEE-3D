@@ -255,6 +255,13 @@ public class CommandParser
         canDraw = true;
     }
 
+    /// <summary>
+    /// Check if an attribute has changed between old object and new data
+    /// </summary>
+    /// <param name="_newData">The new data</param>
+    /// <param name="_ogreeObject">The old object</param>
+    /// <param name="_attrKey">The name of the attribute</param>
+    /// <returns>True if the attribute has been added or has had its value modified</returns>
     private bool HasAttributeChanged(SApiObject _newData, OgreeObject _ogreeObject, string _attrKey)
     {
         return _newData.attributes.ContainsKey(_attrKey) && (!_ogreeObject.attributes.ContainsKey(_attrKey) || _ogreeObject.attributes[_attrKey] != _newData.attributes[_attrKey]);
@@ -287,6 +294,7 @@ public class CommandParser
                 else // Case temperature for corridors
                     item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
 
+            // Checking all attributes related to object positionning
             if (item.transform.parent && (
                 HasAttributeChanged(newData, item, "posXYUnit") ||
                 HasAttributeChanged(newData, item, "posXY") ||
