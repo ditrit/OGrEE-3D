@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -286,11 +287,25 @@ public class CommandParser
                 else // Case temperature for corridors
                     item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
 
-            if ((HasAttributeChanged(newData, item, "posXYUnit") || HasAttributeChanged(newData, item, "posXY") || HasAttributeChanged(newData, item, "posXYZ")))
-                if (newData.category == Category.Device)
-                    ;
+            if (item.transform.parent && (
+                HasAttributeChanged(newData, item, "posXYUnit") ||
+                HasAttributeChanged(newData, item, "posXY") ||
+                HasAttributeChanged(newData, item, "posXYZ") ||
+                HasAttributeChanged(newData, item, "posU") ||
+                HasAttributeChanged(newData, item, "slot") ||
+                HasAttributeChanged(newData, item, "rotation") ||
+                HasAttributeChanged(newData, item, "orientation") ||
+                HasAttributeChanged(newData, item, "invertOffset")))
+            {
+                if (item is Device device)
+                    Utils.PlaceDevice(item.transform.parent, device, newData);
                 else
                     Utils.PlaceInRoom(item.transform, newData);
+                if (item.group)
+                {
+                    Utils.ShapeGroup(item.group.GetContent().Select(go=>go.transform), item.group, item.group.transform.parent.GetComponent<OgreeObject>().category);
+                }
+            }
         }
 
         // Case of a separators/pillars/areas modification in a room

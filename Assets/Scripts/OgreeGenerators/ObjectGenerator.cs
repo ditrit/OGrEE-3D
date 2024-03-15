@@ -67,10 +67,7 @@ public class ObjectGenerator
         rack.UpdateFromSApiObject(_rk);
 
         if (_parent)
-        {
             Utils.PlaceInRoom(newRack.transform, _rk);
-            newRack.transform.localEulerAngles = Utils.ParseVector3(rack.attributes["rotation"], true);
-        }
         else
             newRack.transform.localPosition = Vector3.zero;
 
@@ -106,10 +103,10 @@ public class ObjectGenerator
     ///<summary>
     /// Instantiate a deviceModel or a deviceTemplate (from GameManager) and apply given data to it.
     ///</summary>
-    ///<param name="_dv">The device data to apply</param>
+    ///<param name="_deviceData">The device data to apply</param>
     ///<param name="_parent">The parent of the created device</param>
     ///<returns>The created Device</returns>
-    public Device CreateDevice(SApiObject _dv, Transform _parent)
+    public Device CreateDevice(SApiObject _deviceData, Transform _parent)
     {
         if (_parent)
         {
@@ -121,7 +118,7 @@ public class ObjectGenerator
 
             // Check parent for subdevice
             if (_parent.GetComponent<Rack>() == null
-                && (string.IsNullOrEmpty(_dv.attributes["slot"]) || string.IsNullOrEmpty(_dv.attributes["template"])))
+                && (string.IsNullOrEmpty(_deviceData.attributes["slot"]) || string.IsNullOrEmpty(_deviceData.attributes["template"])))
             {
                 GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", ELogTarget.both, ELogtype.error);
                 return null;
@@ -136,209 +133,60 @@ public class ObjectGenerator
         }
 
         // Check if unique hierarchyName
-        if (GameManager.instance.allItems.Contains(_dv.id))
+        if (GameManager.instance.allItems.Contains(_deviceData.id))
         {
-            GameManager.instance.AppendLogLine($"{_dv.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine($"{_deviceData.id} already exists.", ELogTarget.both, ELogtype.warning);
             return null;
         }
 
         // Check template
-        if (_dv.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_dv.attributes["template"]))
+        if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_deviceData.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_dv.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Unknown template \"{_deviceData.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
             return null;
         }
 
-        // Check slot
-        Transform primarySlot = null;
-        Vector3 slotsScale = new();
-        List<Slot> takenSlots = new();
-        if (_parent)
-        {
-            if (_dv.attributes.HasKeyAndValue("slot"))
-            {
-                string slots = _dv.attributes["slot"].Trim('[', ']');
-                string[] slotsArray = slots.Split(",");
-
-                foreach (Transform child in _parent)
-                {
-                    if (child.TryGetComponent(out Slot slot))
-                    {
-                        foreach (string slotName in slotsArray)
-                        {
-                            if (child.name == slotName)
-                            {
-                                takenSlots.Add(slot);
-                                slot.SlotTaken(true);
-                            }
-                        }
-                    }
-                }
-                if (takenSlots.Count > 0)
-                {
-                    SlotsShape(_parent, takenSlots, out Vector3 slotsPivot, out slotsScale);
-                    primarySlot = takenSlots[0].transform;
-                    foreach (Slot slot in takenSlots)
-                    {
-                        if (Vector3.Distance(slotsPivot, slot.transform.position) < Vector3.Distance(slotsPivot, primarySlot.position))
-                            primarySlot = slot.transform;
-                    }
-                }
-                else
-                {
-                    GameManager.instance.AppendLogLine($"Slot {_dv.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
-                    return null;
-                }
-            }
-        }
-
         // Generate device
-        GameObject newDevice;
-        Vector2 size;
-        float height;
+        GameObject newDevice = _deviceData.attributes.HasKeyAndValue("template") ? GenerateTemplatedDevice(_parent, _deviceData.attributes["template"]) : GenerateBasicDevice(_parent);
+        Device device = newDevice.GetComponent<Device>();
+        newDevice.name = _deviceData.name;
+        Utils.PlaceDevice(_parent, device, _deviceData);
+        device.UpdateFromSApiObject(_deviceData);
 
-        if (!_dv.attributes.HasKeyAndValue("template"))
-        {
-            newDevice = GenerateBasicDevice(_parent, Utils.ParseDecFrac(_dv.attributes["height"]), primarySlot);
-            Vector3 boxSize = newDevice.transform.GetChild(0).localScale;
-            size = new(boxSize.x, boxSize.z);
-            height = boxSize.y;
-        }
-        else
-        {
-            newDevice = GenerateTemplatedDevice(_parent, _dv.attributes["template"]);
-            OgreeObject tmp = newDevice.GetComponent<OgreeObject>();
-            size = Utils.ParseVector2(tmp.attributes["size"]) / 1000;
-            height = Utils.ParseDecFrac(tmp.attributes["height"]) / 1000;
-        }
-
-        Device dv = newDevice.GetComponent<Device>();
-        dv.UpdateFromSApiObject(_dv);
-        dv.takenSlots = takenSlots;
-
-        // Place the device
-        if (_parent)
-        {
-            if (_dv.attributes.HasKeyAndValue("slot"))
-            {
-                // parent to slot for applying orientation
-                newDevice.transform.parent = primarySlot;
-                newDevice.transform.localEulerAngles = Vector3.zero;
-                newDevice.transform.localPosition = Vector3.zero;
-
-                float deltaZ = slotsScale.z - size.y;
-                switch (_dv.attributes["orientation"])
-                {
-                    case Orientation.Front:
-                        newDevice.transform.localPosition += new Vector3(0, 0, deltaZ);
-                        break;
-                    case Orientation.Rear:
-                        newDevice.transform.localEulerAngles += new Vector3(0, 180, 0);
-                        newDevice.transform.localPosition += new Vector3(size.x, 0, size.y);
-                        break;
-                    case Orientation.FrontFlipped:
-                        newDevice.transform.localEulerAngles += new Vector3(0, 0, 180);
-                        newDevice.transform.localPosition += new Vector3(size.x, height, deltaZ);
-                        break;
-                    case Orientation.RearFlipped:
-                        newDevice.transform.localEulerAngles += new Vector3(180, 0, 0);
-                        newDevice.transform.localPosition += new Vector3(0, height, size.y);
-                        break;
-                }
-                // align device to right side of the slot if invertOffset == true
-                if (_dv.attributes.ContainsKey("invertOffset") && _dv.attributes["invertOffset"] == "true")
-                    newDevice.transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
-                // parent back to _parent for good hierarchy 
-                newDevice.transform.parent = _parent;
-
-                if (!dv.attributes.ContainsKey("color"))
-                {
-                    // if slot, color
-                    Color slotColor = primarySlot.GetChild(0).GetComponent<Renderer>().material.color;
-                    dv.color = new(slotColor.r, slotColor.g, slotColor.b);
-                    newDevice.GetComponent<ObjectDisplayController>().ChangeColor(slotColor);
-                    dv.hasSlotColor = true;
-                }
-            }
-            else
-            {
-                Vector3 parentShape = _parent.GetChild(0).localScale;
-                newDevice.transform.localEulerAngles = Vector3.zero;
-                newDevice.transform.localPosition = Vector3.zero;
-                if (_dv.attributes.ContainsKey("posU"))
-                    newDevice.transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_dv.attributes["posU"]) - 1) * UnitValue.U, 0);
-
-                float deltaX = parentShape.x - size.x;
-                float deltaZ = parentShape.z - size.y;
-                newDevice.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
-                newDevice.GetComponent<Device>().color = Color.white;
-            }
-        }
-        else
-        {
-            newDevice.transform.localEulerAngles = Vector3.zero;
-            newDevice.transform.localPosition = Vector3.zero;
-            newDevice.GetComponent<Device>().color = Color.white;
-        }
-
-        // Fill OObject class
-        newDevice.name = _dv.name;
-
-        // Set labels
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
-        if (primarySlot)
-            dod.PlaceTexts(primarySlot.GetComponent<Slot>().labelPos);
-        else
-            dod.PlaceTexts(LabelPos.FrontRear);
-        dod.SetLabel(dv.name);
+        dod.SetLabel(device.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
-        if (dv.attributes.ContainsKey("color"))
-            dv.SetColor(dv.attributes["color"]);
-        else if (!dv.hasSlotColor)
-            dv.UpdateColorByDomain();
+        if (device.attributes.ContainsKey("color"))
+            device.SetColor(device.attributes["color"]);
+        else if (!device.hasSlotColor)
+            device.UpdateColorByDomain();
 
-        GameManager.instance.allItems.Add(dv.id, newDevice);
+        GameManager.instance.allItems.Add(device.id, newDevice);
 
-        if (_dv.attributes.HasKeyAndValue("template"))
-        {
-            Device[] components = newDevice.transform.GetComponentsInChildren<Device>();
-            foreach (Device comp in components)
-            {
+        if (_deviceData.attributes.HasKeyAndValue("template"))
+            foreach (Device comp in newDevice.transform.GetComponentsInChildren<Device>())
                 if (comp.gameObject != newDevice)
                 {
-                    comp.id = $"{dv.id}.{comp.name}";
-                    comp.domain = dv.domain;
+                    comp.id = $"{device.id}.{comp.name}";
+                    comp.domain = device.domain;
                     GameManager.instance.allItems.Add(comp.id, comp.gameObject);
-                    comp.referent = dv.referent;
+                    comp.referent = device.referent;
                 }
-            }
-        }
-        return dv;
+
+        return device;
     }
 
     ///<summary>
     /// Generate a basic device.
     ///</summary>
     ///<param name="_parent">The parent of the generated device</param>
-    ///<param name="_height">The height in mm of the device</param>
     ///<returns>The generated device</returns>
-    private GameObject GenerateBasicDevice(Transform _parent, float _height, Transform _slot = null)
+    private GameObject GenerateBasicDevice(Transform _parent)
     {
         GameObject go = Object.Instantiate(GameManager.instance.labeledBoxModel);
         go.AddComponent<Device>();
         go.transform.parent = _parent;
-        Vector3 scale;
-        if (_slot)
-            scale = new(_slot.GetChild(0).localScale.x, _height / 1000, _slot.GetChild(0).localScale.z);
-        else
-            scale = new(_parent.GetChild(0).localScale.x, _height / 1000, _parent.GetChild(0).localScale.z);
-        go.transform.GetChild(0).localScale = scale;
-        go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-
-        foreach (Transform child in go.transform)
-            child.localPosition = scale / 2;
-
         return go;
     }
 
@@ -357,50 +205,8 @@ public class ObjectGenerator
             go.GetComponent<ObjectDisplayController>().isTemplate = false;
             return go;
         }
-        else
-        {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Get <paramref name="_pivot"/> and <paramref name="_scale"/> of all slots combined
-    /// </summary>
-    /// <param name="_parent">The parent of the device</param>
-    /// <param name="_slotsList">The list of slots to look in</param>
-    /// <param name="_pivot">The pivot of the combined slots</param>
-    /// <param name="_scale">The scale of the combined slots</param>
-    private void SlotsShape(Transform _parent, List<Slot> _slotsList, out Vector3 _pivot, out Vector3 _scale)
-    {
-        Quaternion parentRot = _parent.rotation;
-        _parent.rotation = Quaternion.identity;
-
-        // x axis
-        float left = float.PositiveInfinity;
-        float right = float.NegativeInfinity;
-        // y axis
-        float bottom = float.PositiveInfinity;
-        float top = float.NegativeInfinity;
-        // z axis
-        float rear = float.PositiveInfinity;
-        float front = float.NegativeInfinity;
-
-        foreach (Slot slot in _slotsList)
-        {
-            Bounds bounds = slot.transform.GetChild(0).GetComponent<Renderer>().bounds;
-            left = Mathf.Min(bounds.min.x, left);
-            right = Mathf.Max(bounds.max.x, right);
-            bottom = Mathf.Min(bounds.min.y, bottom);
-            top = Mathf.Max(bounds.max.y, top);
-            rear = Mathf.Min(bounds.min.z, rear);
-            front = Mathf.Max(bounds.max.z, front);
-        }
-
-        _scale = new(right - left, top - bottom, front - rear);
-        _pivot = new(left, bottom, rear);
-
-        _parent.rotation = parentRot;
+        GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
+        return null;
     }
 
     ///<summary>
@@ -451,25 +257,11 @@ public class ObjectGenerator
         newGr.name = _gr.name;
         newGr.transform.parent = parent;
 
-        // According to group type, set pos, rot & scale
-        Vector3 pos = Vector3.zero;
-        Vector3 scale = Vector3.zero;
-        if (parentCategory == Category.Room)
-        {
-            RackGroupPosScale(content, out pos, out scale);
-            newGr.transform.localEulerAngles += new Vector3(0, 180, 0);
-        }
-        else if (parentCategory == Category.Rack)
-        {
-            DeviceGroupPosScale(content, out pos, out scale);
-            newGr.transform.localEulerAngles = Vector3.zero;
-        }
-        newGr.transform.position = pos;
-        newGr.transform.GetChild(0).localScale = scale;
+        Group gr = newGr.AddComponent<Group>();
+        Utils.ShapeGroup(content, gr, parentCategory);
+        gr.UpdateFromSApiObject(_gr);
 
         // Set Group component
-        Group gr = newGr.AddComponent<Group>();
-        gr.UpdateFromSApiObject(_gr);
         if (gr.attributes.ContainsKey("color"))
             gr.SetColor(gr.attributes["color"]);
         else
@@ -488,73 +280,6 @@ public class ObjectGenerator
         GameManager.instance.allItems.Add(gr.id, newGr);
 
         return gr;
-    }
-
-    ///<summary>
-    /// For a group of Racks, set _pos and _scale
-    ///</summary>
-    ///<param name="_content">The list of racks or corridors in the group</param>
-    ///<param name="_pos">The position to apply to the group</param>
-    ///<param name="_scale">The localScale to apply to the group</param>
-    private void RackGroupPosScale(List<Transform> _content, out Vector3 _pos, out Vector3 _scale)
-    {
-        // x axis
-        float left = float.PositiveInfinity;
-        float right = float.NegativeInfinity;
-        // y axis
-        float bottom = float.PositiveInfinity;
-        float top = float.NegativeInfinity;
-        // z axis
-        float rear = float.PositiveInfinity;
-        float front = float.NegativeInfinity;
-
-        foreach (Transform obj in _content)
-        {
-            Bounds bounds = obj.GetChild(0).GetComponent<Renderer>().bounds;
-            left = Mathf.Min(bounds.min.x, left);
-            right = Mathf.Max(bounds.max.x, right);
-            bottom = Mathf.Min(bounds.min.y, bottom);
-            top = Mathf.Max(bounds.max.y, top);
-            rear = Mathf.Min(bounds.min.z, rear);
-            front = Mathf.Max(bounds.max.z, front);
-        }
-
-        _scale = new Vector3(right - left, top - bottom, front - rear);
-        _pos = 0.5f * new Vector3(left + right, bottom + top, rear + front);
-    }
-
-    ///<summary>
-    /// For a group of devices, set _pos and _scale
-    ///</summary>
-    ///<param name="_racks">The list of devices in the group</param>
-    ///<param name="_pos">The localPosition to apply to the group</param>
-    ///<param name="_scale">The localScale to apply to the group</param>
-    private void DeviceGroupPosScale(List<Transform> _devices, out Vector3 _pos, out Vector3 _scale)
-    {
-        Transform lowerDv = _devices[0];
-        Transform upperDv = _devices[0];
-        float maxWidth = 0;
-        float maxLength = 0;
-        foreach (Transform dv in _devices)
-        {
-            if (dv.localPosition.y < lowerDv.localPosition.y)
-                lowerDv = dv;
-            if (dv.localPosition.y > upperDv.localPosition.y)
-                upperDv = dv;
-
-            if (dv.GetChild(0).localScale.x > maxWidth)
-                maxWidth = dv.GetChild(0).localScale.x;
-            if (dv.GetChild(0).localScale.z > maxLength)
-                maxLength = dv.GetChild(0).localScale.z;
-        }
-        float height = upperDv.localPosition.y - lowerDv.localPosition.y;
-        height += (upperDv.GetChild(0).localScale.y + lowerDv.GetChild(0).localScale.y) / 2;
-
-        _scale = new(maxWidth, height, maxLength);
-
-        _pos = lowerDv.position;
-        _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
-
     }
 
     ///<summary>
@@ -589,10 +314,7 @@ public class ObjectGenerator
 
         // Apply position & rotation
         if (_parent)
-        {
             Utils.PlaceInRoom(newCo.transform, _co);
-            newCo.transform.localEulerAngles = Utils.ParseVector3(co.attributes["rotation"], true);
-        }
         else
             newCo.transform.localPosition = Vector3.zero;
 
@@ -715,10 +437,7 @@ public class ObjectGenerator
         genericObject.UpdateFromSApiObject(_go);
 
         if (_parent)
-        {
             Utils.PlaceInRoom(newGeneric.transform, _go);
-            newGeneric.transform.localEulerAngles = Utils.ParseVector3(genericObject.attributes["rotation"], true);
-        }
         else
             newGeneric.transform.localPosition = Vector3.zero;
 
