@@ -267,6 +267,7 @@ public class CommandParser
         return _newData.attributes.ContainsKey(_attrKey) && (!_ogreeObject.attributes.ContainsKey(_attrKey) || _ogreeObject.attributes[_attrKey] != _newData.attributes[_attrKey]);
     }
 
+
     ///<summary>
     /// Deserialize given SApiObject and apply modification to corresponding object.
     ///</summary>
@@ -285,7 +286,38 @@ public class CommandParser
         // Case domain for all OgreeObjects
         bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
 
-        // Case color/position for racks & devices
+        //Case position
+        // Checking all attributes related to object positionning
+        if (obj.transform.parent && (
+            HasAttributeChanged(newData, obj, "posXYUnit") ||
+            HasAttributeChanged(newData, obj, "posXY") ||
+            HasAttributeChanged(newData, obj, "posXYZ") ||
+            HasAttributeChanged(newData, obj, "posU") ||
+            HasAttributeChanged(newData, obj, "slot") ||
+            HasAttributeChanged(newData, obj, "rotation") ||
+            HasAttributeChanged(newData, obj, "orientation") ||
+            HasAttributeChanged(newData, obj, "invertOffset")))
+        {
+            switch (obj.category)
+            {
+                case Category.Building:
+                case Category.Room:
+                    Utils.PlaceBuilding(obj.transform, newData);
+                    break;
+                case Category.Device:
+                    Utils.PlaceDevice(obj.transform.parent, (Device)obj, newData);
+                    break;
+                case Category.Rack:
+                case Category.Generic:
+                    Utils.PlaceInRoom(obj.transform, newData);
+                    break;
+                default:
+                    break;
+            }
+            if (obj is Item ogreeItem && ogreeItem.group)
+                Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);        
+        }
+        // Case temperature for item and corridors
         if (obj is Item item)
         {
             if (HasAttributeChanged(newData, item, "temperature"))
@@ -293,27 +325,6 @@ public class CommandParser
                     item.SetColor(newData.attributes["color"]);
                 else // Case temperature for corridors
                     item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
-
-            // Checking all attributes related to object positionning
-            if (item.transform.parent && (
-                HasAttributeChanged(newData, item, "posXYUnit") ||
-                HasAttributeChanged(newData, item, "posXY") ||
-                HasAttributeChanged(newData, item, "posXYZ") ||
-                HasAttributeChanged(newData, item, "posU") ||
-                HasAttributeChanged(newData, item, "slot") ||
-                HasAttributeChanged(newData, item, "rotation") ||
-                HasAttributeChanged(newData, item, "orientation") ||
-                HasAttributeChanged(newData, item, "invertOffset")))
-            {
-                if (item is Device device)
-                    Utils.PlaceDevice(item.transform.parent, device, newData);
-                else
-                    Utils.PlaceInRoom(item.transform, newData);
-                if (item.group)
-                {
-                    Utils.ShapeGroup(item.group.GetContent().Select(go=>go.transform), item.group, item.group.transform.parent.GetComponent<OgreeObject>().category);
-                }
-            }
         }
 
         // Case of a separators/pillars/areas modification in a room

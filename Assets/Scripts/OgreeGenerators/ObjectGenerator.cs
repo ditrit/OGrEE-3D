@@ -69,7 +69,10 @@ public class ObjectGenerator
         if (_parent)
             Utils.PlaceInRoom(newRack.transform, _rk);
         else
+        {
             newRack.transform.localPosition = Vector3.zero;
+            newRack.transform.localEulerAngles = Vector3.zero;
+        }
 
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
@@ -157,6 +160,7 @@ public class ObjectGenerator
         dod.SetLabel(device.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
+        device.GetComponent<Device>().color = Color.white;
         if (device.attributes.ContainsKey("color"))
             device.SetColor(device.attributes["color"]);
         else if (!device.hasSlotColor)
@@ -316,7 +320,10 @@ public class ObjectGenerator
         if (_parent)
             Utils.PlaceInRoom(newCo.transform, _co);
         else
+        {
             newCo.transform.localPosition = Vector3.zero;
+            newCo.transform.localEulerAngles = Vector3.zero;
+        }
 
         // Set color according to attribute["temperature"]
         newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
@@ -439,7 +446,10 @@ public class ObjectGenerator
         if (_parent)
             Utils.PlaceInRoom(newGeneric.transform, _go);
         else
+        {
             newGeneric.transform.localPosition = Vector3.zero;
+            newGeneric.transform.localEulerAngles = Vector3.zero;
+        }
 
         DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);

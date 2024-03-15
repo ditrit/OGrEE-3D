@@ -157,7 +157,7 @@ public class UnitValue
     public const float U = 0.04445f;
     public const float OU = 0.048f;
     public const float Tile = 0.6f;
-    public const float Foot = 3.28084f;
+    public const float Foot = 0.3048f;
 }
 
 public class LaunchArgs

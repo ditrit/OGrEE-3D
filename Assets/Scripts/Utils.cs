@@ -394,7 +394,6 @@ public static class Utils
 
         Vector2 orient = new();
         if (parentRoom.attributes.ContainsKey("axisOrientation"))
-        {
             switch (parentRoom.attributes["axisOrientation"])
             {
                 case AxisOrientation.Default:
@@ -417,7 +416,6 @@ public static class Utils
                     orient = new(-1, -1);
                     break;
             }
-        }
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
@@ -600,14 +598,12 @@ public static class Utils
                 float deltaX = parentShape.x - size.x;
                 float deltaZ = parentShape.z - size.y;
                 _device.transform.localPosition += new Vector3(deltaX / 2, 0, deltaZ);
-                _device.GetComponent<Device>().color = Color.white;
             }
         }
         else
         {
-            _device.transform.localEulerAngles = Vector3.zero;
             _device.transform.localPosition = Vector3.zero;
-            _device.GetComponent<Device>().color = Color.white;
+            _device.transform.localEulerAngles = Vector3.zero;
         }
         // Set labels
         DisplayObjectData dod = _device.GetComponent<DisplayObjectData>();
@@ -746,5 +742,25 @@ public static class Utils
 
         _pos = lowerDv.position;
         _pos += new Vector3(0, (_scale.y - lowerDv.GetChild(0).localScale.y) / 2, 0);
+    }
+
+    /// <summary>
+    /// Move the given building/room to its position in a site/building according to the API data.
+    /// </summary>
+    /// <param name="building">The building/room to be moved</param>
+    /// <param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public static void PlaceBuilding(Transform building, SApiObject _apiObj)
+    {
+        Vector2 posXY = ParseVector2(_apiObj.attributes["posXY"]);
+        posXY *= _apiObj.attributes["posXYUnit"] switch
+        {
+            LengthUnit.Centimeter => 0.01f,
+            LengthUnit.Millimeter => 0.001f,
+            LengthUnit.Feet => UnitValue.Foot,
+            _ => 1
+        };
+        building.transform.localPosition = new(posXY.x, 0, posXY.y);
+        building.transform.localEulerAngles = new(0, Utils.ParseDecFrac(_apiObj.attributes["rotation"]), 0);
+
     }
 }
