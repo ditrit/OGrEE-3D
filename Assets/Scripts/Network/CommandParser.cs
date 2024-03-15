@@ -315,7 +315,7 @@ public class CommandParser
                     break;
             }
             if (obj is Item ogreeItem && ogreeItem.group)
-                Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);        
+                Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);
         }
         // Case temperature for item and corridors
         if (obj is Item item)

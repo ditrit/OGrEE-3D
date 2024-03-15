@@ -286,10 +286,11 @@ public class DefaultValues
         temperatureMaxC = 100,
         temperatureMinF = 32,
         temperatureMaxF = 212,
-        customTemperatureGradient = new() {
-            new List<int>() { 0,0,255,0 },
-            new List<int>() { 255,0,0,100 },
-            new List<int>() { 255,255,0,50 }
+        customTemperatureGradient = new()
+        {
+            new List<int>() { 0, 0, 255, 0 },
+            new List<int>() { 255, 0, 0, 100 },
+            new List<int>() { 255, 255, 0, 50 }
         },
         DoubleClickDelay = 0.25f,
         MoveSpeed = 15,
