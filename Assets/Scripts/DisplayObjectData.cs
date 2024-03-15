@@ -22,6 +22,7 @@ public class DisplayObjectData : MonoBehaviour
     private ELabelMode currentLabelMode;
     private Vector3 boxSize;
     private Item item;
+    private LODGroup lodGroup;
 
     private void Start()
     {
@@ -53,6 +54,7 @@ public class DisplayObjectData : MonoBehaviour
     {
         usedLabels.Clear();
         item = GetComponent<Item>();
+        lodGroup = GetComponent<LODGroup>();
         Transform shape = transform.GetChild(0);
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
@@ -168,11 +170,17 @@ public class DisplayObjectData : MonoBehaviour
                 usedLabels.Add(labelBottom);
                 break;
         }
+        List<Renderer> renderers = new();
         foreach (TextMeshPro tmp in usedLabels)
         {
             tmp.gameObject.SetActive(true);
             tmp.margin = new Vector4(tmp.rectTransform.sizeDelta.x, 0, tmp.rectTransform.sizeDelta.x, 0) / 20;
+            renderers.Add(tmp.GetComponent<Renderer>());
         }
+        LOD withLabels = new(0.1f, renderers.ToArray());
+        LOD withoutLabels = new(0, new Renderer[0]);
+        lodGroup.SetLODs(new LOD[] { withLabels, withoutLabels });
+        lodGroup.RecalculateBounds();
     }
 
     ///<summary>
@@ -224,22 +232,22 @@ public class DisplayObjectData : MonoBehaviour
                 floatingLabel.text = $"<b>{floatingLabel.text}</b>";
             if (isItalic)
                 floatingLabel.text = $"<i>{floatingLabel.text}</i>";
-            floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor("#" + backgroundColor);
+            floatingLabel.transform.GetChild(0).GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{backgroundColor}");
         }
     }
 
     ///<summary>
-    /// Display or hide labels.
+    /// Activate or deactivate labels depending on given <paramref name="_labelType"/>
     ///</summary>
-    ///<param name="_value">The value to assign</param>
-    public void SwitchLabel(ELabelMode _value)
+    ///<param name="_labelType">The ELabelMode to use</param>
+    public void SwitchLabel(ELabelMode _labelType)
     {
-        switch (_value)
+        switch (_labelType)
         {
             case ELabelMode.Default:
                 GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.GetComponent<MeshRenderer>().enabled = true;
+                    tmp.gameObject.SetActive(true);
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
@@ -248,48 +256,55 @@ public class DisplayObjectData : MonoBehaviour
                 if (hasFloatingLabel)
                 {
                     foreach (TextMeshPro tmp in usedLabels)
-                        tmp.GetComponent<MeshRenderer>().enabled = false;
+                        tmp.gameObject.SetActive(false);
                     floatingLabel.gameObject.SetActive(true);
                 }
                 break;
             case ELabelMode.Hidden:
                 GetComponent<LODGroup>().enabled = true;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.GetComponent<MeshRenderer>().enabled = false;
+                    tmp.gameObject.SetActive(false);
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
             case ELabelMode.Forced:
                 GetComponent<LODGroup>().enabled = false;
                 foreach (TextMeshPro tmp in usedLabels)
-                    tmp.GetComponent<MeshRenderer>().enabled = true;
+                    tmp.gameObject.SetActive(true);
                 if (hasFloatingLabel)
                     floatingLabel.gameObject.SetActive(false);
                 break;
             default: break;
         }
-        currentLabelMode = _value;
+        currentLabelMode = _labelType;
     }
 
+    /// <summary>
+    /// Toggle all labels MeshRenderer 
+    /// </summary>
+    /// <param name="_value"></param>
     public void ToggleLabel(bool _value)
     {
-        if (currentLabelMode == ELabelMode.Default || currentLabelMode == ELabelMode.Forced || !hasFloatingLabel)
-            foreach (TextMeshPro tmp in usedLabels)
-                tmp.GetComponent<MeshRenderer>().enabled = _value;
-        else if (currentLabelMode == ELabelMode.FloatingOnTop)
-            floatingLabel.gameObject.SetActive(_value);
+        foreach (TextMeshPro tmp in usedLabels)
+            tmp.GetComponent<MeshRenderer>().enabled = _value;
+        if (hasFloatingLabel)
+        {
+            floatingLabel.GetComponent<MeshRenderer>().enabled = _value;
+            floatingLabel.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = _value;
+        }
     }
 
+    /// <summary>
+    /// Called when receiving a SwitchLavelEvent, call SwitchLabel with given <see cref="ELabelMode"/>.
+    /// </summary>
+    /// <param name="_e"></param>
     private void OnSwitchLabelEvent(SwitchLabelEvent _e)
     {
-        // Ignore slots and opened groups
-        if (GetComponent<Slot>() || (item is Group group && !group.isDisplayed))
+        // Ignore slots
+        if (GetComponent<Slot>())
             return;
 
-        if ((item && item.referent == item && !GameManager.instance.GetSelected().Contains(gameObject)) ||
-            GameManager.instance.GetSelected().Contains(transform.parent.gameObject) ||
-            GameManager.instance.GetFocused().Contains(transform.parent.gameObject))
-            SwitchLabel(_e.value);
+        SwitchLabel(_e.value);
     }
 
     ///<summary>
