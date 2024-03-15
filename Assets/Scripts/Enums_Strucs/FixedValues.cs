@@ -157,7 +157,7 @@ public class UnitValue
     public const float U = 0.04445f;
     public const float OU = 0.048f;
     public const float Tile = 0.6f;
-    public const float Foot = 3.28084f;
+    public const float Foot = 0.3048f;
 }
 
 public class LaunchArgs
@@ -286,10 +286,11 @@ public class DefaultValues
         temperatureMaxC = 100,
         temperatureMinF = 32,
         temperatureMaxF = 212,
-        customTemperatureGradient = new() {
-            new List<int>() { 0,0,255,0 },
-            new List<int>() { 255,0,0,100 },
-            new List<int>() { 255,255,0,50 }
+        customTemperatureGradient = new()
+        {
+            new List<int>() { 0, 0, 255, 0 },
+            new List<int>() { 255, 0, 0, 100 },
+            new List<int>() { 255, 255, 0, 50 }
         },
         DoubleClickDelay = 0.25f,
         MoveSpeed = 15,
