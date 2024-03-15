@@ -74,7 +74,8 @@ public class BuildingGenerator
         // Apply position
         if (_parent)
             Utils.PlaceBuilding(newBD.transform, _bd);
-        else { 
+        else
+        {
             newBD.transform.localPosition = Vector3.zero;
             newBD.transform.localEulerAngles = Vector3.zero;
         }
