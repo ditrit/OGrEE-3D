@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Components;
+using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.UI;
 
 public class Prompt : MonoBehaviour
@@ -16,12 +18,15 @@ public class Prompt : MonoBehaviour
     ///<param name="_mainText">Message to display</param>
     ///<param name="_buttonAText">Custom text for "accept" button</param>
     ///<param name="_buttonBText">Custom text for "refuse" button. The button will be hidden if empty</param>
-    public void Setup(string _mainText, string _buttonAText, string _buttonBText)
+    ///<param name="_strVariable">A string variable to be used in Localization Table</param>
+    public void Setup(string _mainText, string _buttonAText, string _buttonBText, string _strVariable = null)
     {
-        mainText.text = _mainText;
-        buttonA.GetComponentInChildren<TMP_Text>().text = _buttonAText;
+        if (!string.IsNullOrEmpty(_strVariable))
+            mainText.GetComponent<LocalizeStringEvent>().StringReference.Add("str", new StringVariable { Value = _strVariable });
+        mainText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = _mainText;
+        buttonA.GetComponentInChildren<LocalizeStringEvent>().StringReference.TableEntryReference = _buttonAText;
         if (!string.IsNullOrEmpty(_buttonBText))
-            buttonB.GetComponentInChildren<TMP_Text>().text = _buttonBText;
+            buttonB.GetComponentInChildren<LocalizeStringEvent>().StringReference.TableEntryReference = _buttonBText;
         else
         {
             buttonB.gameObject.SetActive(false);

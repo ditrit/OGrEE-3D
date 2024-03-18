@@ -31,10 +31,8 @@ public class BuildingGenerator
         }
 
         // Get data from _bd.attributes
-        Vector2 posXY = Utils.ParseVector2(_bd.attributes["posXY"]);
         Vector2 size = Utils.ParseVector2(_bd.attributes["size"]);
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
-        float rotation = Utils.ParseDecFrac(_bd.attributes["rotation"]);
 
         // Instantiate the good prefab and setup the Buiding component
         GameObject newBD;
@@ -48,8 +46,6 @@ public class BuildingGenerator
         Building building = newBD.GetComponent<Building>();
         building.UpdateFromSApiObject(_bd);
 
-        // Apply rotation
-        newBD.transform.localEulerAngles = new(0, rotation, 0);
 
         Transform roof = newBD.transform.Find("Roof");
         if (template.vertices != null)
@@ -75,11 +71,14 @@ public class BuildingGenerator
 
             BuildWalls(building.walls, new(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
-        // Apply posXY
+        // Apply position
         if (_parent)
-            newBD.transform.localPosition = new(posXY.x, 0, posXY.y);
+            Utils.PlaceBuilding(newBD.transform, _bd);
         else
+        {
             newBD.transform.localPosition = Vector3.zero;
+            newBD.transform.localEulerAngles = Vector3.zero;
+        }
 
         // Setup nameText
         building.nameText.text = _bd.name;
@@ -120,10 +119,8 @@ public class BuildingGenerator
         }
 
         // Get data from _ro.attributes
-        Vector2 posXY = Utils.ParseVector2(_ro.attributes["posXY"]);
         Vector2 size = Utils.ParseVector2(_ro.attributes["size"]);
         float height = Utils.ParseDecFrac(_ro.attributes["height"]);
-        float rotation = Utils.ParseDecFrac(_ro.attributes["rotation"]);
 
         // Instantiate the good prefab and setup the Room component
         GameObject newRoom;
@@ -137,8 +134,6 @@ public class BuildingGenerator
         Room room = newRoom.GetComponent<Room>();
         room.UpdateFromSApiObject(_ro);
 
-        // Apply rotation
-        newRoom.transform.localEulerAngles = new(0, rotation, 0);
 
         if (template.vertices != null)
         {
@@ -171,11 +166,14 @@ public class BuildingGenerator
 
             room.UpdateZonesColor();
         }
-        // Apply posXY
+        // Apply position
         if (_parent)
-            newRoom.transform.localPosition = new(posXY.x, 0, posXY.y);
+            Utils.PlaceBuilding(newRoom.transform, _ro);
         else
+        {
             newRoom.transform.localPosition = Vector3.zero;
+            newRoom.transform.localEulerAngles = Vector3.zero;
+        }
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
