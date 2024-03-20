@@ -1,0 +1,318 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Texts_es
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: es
+  m_SharedData: {fileID: 11400000, guid: 0ddcf4eeba13f914cb3df74b9222d758, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456596301333921798
+  m_TableData:
+  - m_Id: 142615121920
+    m_Localized: No conectado a la API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4051772406894592
+    m_Localized: 'Objetos: {DebugText.ooCount}/{DebugText.goCount}
+
+      IPS: {DebugText.averageFPS}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 381417820160
+    m_Localized: Reanudar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 468277661696
+    m_Localized: Acerca de
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Localized: Ajustes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 569834344448
+    m_Localized: Limpiar el cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740819341312
+    m_Localized: Salir de OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Localized: Idioma
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Localized: "Activaci\xF3n autom\xE1tica de U helpers"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Localized: Retraso de doble clic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Localized: Velocidad de movimiento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Localized: "Velocidad de rotaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Localized: Altura de modo humano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Localized: Reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Localized: Reiniciar todo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Localized: Guardar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Localized: Guardar todo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Localized: Movimiento en modo humano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Localized: Conectado a {UiManager.apiCustomer}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 1795366375002112
+    m_Localized: "API URL:\t\t\t{ApiManager.url}\nAPI build date:\t\t{UiManager.apiBuildDate}\nAPI
+      build hash:\t\t{UiManager.apiBuildHash}\nAPI build tree:\t\t{UiManager.apiBuildTree}\nAPI
+      Commit Date:\t{UiManager.apiCommitDate}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 1799418030723072
+    m_Localized: No se pudo conectar a {ApiManager.url}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 1887873809125376
+    m_Localized: Ocultar la lista de {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 1888215670067200
+    m_Localized: Mostrar la lista de {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 1898842950078464
+    m_Localized: Modo color de temperatura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Localized: Etiquetas predeterminados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Localized: Etiquetas flotantes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Localized: Etiquetas ocultas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Localized: Etiquetas siempre visibles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Localized: grupos abiertos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Localized: tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Localized: objetos ocultos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Localized: capas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "El proyecto OGrEE es un conjunto de proyectos OpenSource desarrollados
+      por la comunidad DitRit.\r\nLicencia: MPL 2.0\r\nEste es OGrEE-3D, un visualizador
+      de los objetos guardados en la base de datos OGrEE.\r\nEnlace de GitHub: https://github.com/ditrit/OGREE-3D\r\n\r\nLos
+      otros m\xF3dulos se encuentran en https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Localized: "Limpiar el cache borrar\xE1 la escena actual"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Localized: Continuar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Localized: Dibujar {str} va a borrar la escena actual.
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921798
+  - m_Id: 3701066881699840
+    m_Localized: Seleccionar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: "Agregar a la selecci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: "Retirar de la selecci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: Seleccionar padre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Abrir el grupo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Enfocar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Modificar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: Descartar las modificaciones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: Descartar las modificaciones de los hijos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: Desenfocar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: "Ocultar la selecci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: "Mostrar la selecci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Nombre de los mosaicos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Color de los mosaicos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Muros
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: Nombre de los separadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: "Nombre de los gen\xE9ricos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Origen del objeto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Origen de los hijos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: Margen libre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: 'Objeto seleccionado:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: 'Objeto enfocado: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: Sistema de coordenadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: "Gr\xE1fico de barras de temperaturas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: "Diagrama de dispersi\xF3n de temperaturas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: Mapa de calor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Localized: 'Nivel de detalles:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Localized: "Activar evento de importaci\xF3n concluida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Localized: Comandos retrasados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4052776477134848
+    m_Localized: Contar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Localized: Escribir logs
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456596301333921798
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00001006c710650e00
