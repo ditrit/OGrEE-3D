@@ -152,9 +152,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2165461618135040
     m_Localized: "O projeto OGrEE \xE9 um conjunto de projetos Open Source desenvolvidos
-      pela comunidade DitRit.\nLicen\xE7a: MPL 2.0\n\nEste \xE9 OGrEE-3D, um visualizador\r
-      de objetos salvos na base de dados OGrEE.\nLink do GitHub\r : https://github.com/ditrit/OGREE-3D\n\nOs
-      outros m\xF3dulos s\xE3o encontrados em\r https://github.com/ditrit/OGREE-Core"
+      pela comunidade DitRit.\r\nLicen\xE7a: MPL 2.0\r\n\r\nEste \xE9 OGrEE-3D, um
+      visualizador de objetos salvos na base de dados OGrEE.\r\nLink do GitHub :
+      https://github.com/ditrit/OGREE-3D\r\n\r\nOs outros m\xF3dulos s\xE3o encontrados
+      em https://github.com/ditrit/OGREE-Core"
     m_Metadata:
       m_Items: []
   - m_Id: 3669309859958784
