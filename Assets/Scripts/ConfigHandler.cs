@@ -6,6 +6,7 @@ using Tomlyn;
 using Tomlyn.Model;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Localization;
 
 [Serializable]
 public class ConfigHandler
@@ -101,13 +102,13 @@ public class ConfigHandler
 #endif
             TomlTable tomlConfig = Toml.ToModel(loadedConfig.ReadToEnd());
             ModifyConfig(tomlConfig);
-            GameManager.instance.AppendLogLine($"Load custom config file ({_path})", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", $"Load custom config file", _path), ELogTarget.logger, ELogtype.success);
         }
         catch (Exception _e)
         {
             Debug.LogWarning(_e);
             GameManager.instance.AppendLogLine(_e.Message, ELogTarget.none, ELogtype.warning);
-            GameManager.instance.AppendLogLine($"Load default config file", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Load default config file"), ELogTarget.logger, ELogtype.success);
         }
     }
 
@@ -146,7 +147,7 @@ public class ConfigHandler
             if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
             else
-                GameManager.instance.AppendLogLine($"\"{kvp.Key}\" value cannot be used as a color", ELogTarget.logger, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Value cannot be used as a color", kvp.Key), ELogTarget.logger, ELogtype.error);
         }
         // foreach (KeyValuePair<string, string> kvp in config.colors)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
@@ -220,7 +221,7 @@ public class ConfigHandler
     private void FullScreenMode(bool _value)
     {
         if (config.verbose)
-            GameManager.instance.AppendLogLine($"Fullscreen: {_value}", ELogTarget.none);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "FullScreen value", _value.ToString()), ELogTarget.none);
         Screen.fullScreen = _value;
     }
 
@@ -237,7 +238,7 @@ public class ConfigHandler
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                GameManager.instance.AppendLogLine($"Cache folder created at {fullPath}", ELogTarget.logger, ELogtype.success);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Cache folder created at path", fullPath), ELogTarget.logger, ELogtype.success);
             }
         }
         catch (IOException ex)
@@ -283,18 +284,18 @@ public class ConfigHandler
                 www = UnityWebRequestTexture.GetTexture("file://" + kvp.Value);
             yield return www.SendWebRequest();
             if (www.result == UnityWebRequest.Result.ProtocolError || www.result == UnityWebRequest.Result.ConnectionError)
-                GameManager.instance.AppendLogLine($"{kvp.Key} not found at {kvp.Value}", ELogTarget.logger, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Key not found at Value", new List<string>() { kvp.Key, kvp.Value }), ELogTarget.logger, ELogtype.error);
             else
                 GameManager.instance.textures.Add(kvp.Key, DownloadHandlerTexture.GetContent(www));
         }
         if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf22", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Load default texture for perf22"), ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.instance.AppendLogLine("Load default texture for perf29", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Load default texture for perf29"), ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
@@ -323,14 +324,14 @@ public class ConfigHandler
     {
         if (_unit is null)
         {
-            GameManager.instance.AppendLogLine("Null temperature unit", ELogTarget.logger, ELogtype.error);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Null temperature unit"), ELogTarget.logger, ELogtype.error);
             return (0, 0);
         }
         if (_unit == TemperatureUnits.Celsius)
             return (config.temperatureMinC, config.temperatureMaxC);
         if (_unit == TemperatureUnits.Fahrenheit)
             return (config.temperatureMinF, config.temperatureMaxF);
-        GameManager.instance.AppendLogLine($"Unrecognised temperature unit : {_unit}", ELogTarget.logger, ELogtype.error);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unrecognised temperature unit", _unit), ELogTarget.logger, ELogtype.error);
         return (0, 0);
     }
 }

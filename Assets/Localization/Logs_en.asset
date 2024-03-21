@@ -28,10 +28,127 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
+  - m_Id: 40177636872192
+    m_Localized: '--- Client closed ---
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Localized: Multiple selection should be same type of objects and belong to
+      the same parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Localized: Remove {str} from selection
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 41794385874944
+    m_Localized: Add {str} to selection
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 42276936355840
+    m_Localized: 'Unable to focus {str}: it should be a rack or a device'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 42752058724352
+    m_Localized: 'Unable to focus {str}: no children found'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 43518869770240
+    m_Localized: Focus {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 44285567569920
+    m_Localized: No focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Localized: Display local clearance for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 46801948643328
+    m_Localized: Hide local clearance for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 48109283840000
+    m_Localized: Load custom config file ({str})
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 48324065759232
+    m_Localized: Load default config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Localized: 'FullScreen: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 49650547953664
+    m_Localized: Cache folder created at {str}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49985878364160
+    m_Localized: '{str0} not found at {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 52485280894976
+    m_Localized: Load default texture for perf22
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52560191164416
+    m_Localized: Load default texture for perf29
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53212464156672
+    m_Localized: Null temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Localized: 'Unrecognised temperature unit: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 53935725744128
+    m_Localized: '"{str}" value cannot be used as a color'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 55284987203584
+    m_Localized: 'Sites: {str0}
+
+      Buildings: {str1}
+
+      Rooms: {str2}
+
+      Racks:
+      {str3}
+
+      Devices: {str4}
+
+      Components: {str5}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 56973567856640
+    m_Localized: Number of sensors should be equal or less than {str0}, {str1} of
+      them have been ignored
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
   references:
     version: 2
     RefIds:
     - rid: 5456596318824431623
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c6d51e010000
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d3100000010060a4832000000104631d1330000

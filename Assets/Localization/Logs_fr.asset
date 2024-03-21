@@ -28,10 +28,113 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456596318824431624
+  - m_Id: 40177636872192
+    m_Localized: "--- Client ferm\xE9 ---"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Localized: "La s\xE9lection multiple doit porter sur le m\xEAme type d'objets
+      et appartenir au m\xEAme parent"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Localized: "{str} retir\xE9 de la s\xE9lection"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 41794385874944
+    m_Localized: "{str} ajout\xE9 \xE0 la s\xE9lection"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 42276936355840
+    m_Localized: "Impossible d'isoler {str} : il doit \xEAtre un rack ou un device"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 42752058724352
+    m_Localized: "Impossible d'isoler {str} : aucun enfant trouv\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 43518869770240
+    m_Localized: "{str} isol\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 44285567569920
+    m_Localized: "Aucun objet isol\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Localized: "D\xE9gagement de {str} affich\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 46801948643328
+    m_Localized: "D\xE9gagement de {str} masqu\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 48109283840000
+    m_Localized: "Chargement du fichier de configuration personnalis\xE9 ({str})"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 48324065759232
+    m_Localized: "Chargement du fichier de configuration par d\xE9faut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Localized: "Plein \xE9cran : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 49650547953664
+    m_Localized: "Dossier de cache cr\xE9\xE9 \xE0 {str}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49985878364160
+    m_Localized: "{str0} non trouv\xE9 \xE0 {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 52485280894976
+    m_Localized: "Chargement de la texture par d\xE9faut pour perf22"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52560191164416
+    m_Localized: "Chargement de la texture par d\xE9faut pour perf29"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53212464156672
+    m_Localized: "Unit\xE9 de temp\xE9rature nulle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Localized: "Unit\xE9 de temp\xE9rature non reconnue : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 53935725744128
+    m_Localized: "La valeur \"{str}\" ne peut pas \xEAtre utilis\xE9e comme couleur"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 55284987203584
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56973567856640
+    m_Localized: "Le nombre de capteur devrait \xEAtre \xE9gal ou moins que {str0},
+      {str1} d'entre eux ont \xE9t\xE9 ignor\xE9s"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
   references:
     version: 2
     RefIds:
     - rid: 5456596318824431624
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c6d51e010000
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d1330000

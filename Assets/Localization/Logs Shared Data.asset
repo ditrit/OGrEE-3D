@@ -23,6 +23,94 @@ MonoBehaviour:
     m_Key: Select object
     m_Metadata:
       m_Items: []
+  - m_Id: 40177636872192
+    m_Key: Client closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Key: Multiple selection error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Key: Remove object from selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41794385874944
+    m_Key: Add object to selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42276936355840
+    m_Key: Focus warning type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42752058724352
+    m_Key: Focus warning children
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43518869770240
+    m_Key: Focus object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44285567569920
+    m_Key: No focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Key: Display clearance for object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46801948643328
+    m_Key: Hide clearance for object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48109283840000
+    m_Key: Load custom config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48324065759232
+    m_Key: Load default config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Key: FullScreen value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49650547953664
+    m_Key: Cache folder created at path
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49985878364160
+    m_Key: Key not found at Value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52485280894976
+    m_Key: Load default texture for perf22
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52560191164416
+    m_Key: Load default texture for perf29
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53212464156672
+    m_Key: Null temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Key: Unrecognised temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53935725744128
+    m_Key: Value cannot be used as a color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55284987203584
+    m_Key: Objects count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56973567856640
+    m_Key: Number of sensors warning
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
