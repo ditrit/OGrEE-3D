@@ -638,6 +638,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Standalone: PROD;TRILIB;TRILIB_DISABLE_VALIDATIONS
+    WebGL: PROD;TRILIB;TRILIB_DISABLE_VALIDATIONS
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

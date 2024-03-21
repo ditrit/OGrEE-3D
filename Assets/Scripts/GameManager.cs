@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class GameManager : MonoBehaviour
 {
@@ -142,7 +143,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same referent as the selected object
             if (_obj)
             {
-                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new ExtendedLocalizedString("Logs", "Select object", _obj.name), ELogTarget.both, ELogtype.success);
                 Item currentSelected = _obj.GetComponent<Item>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in previousItemsTMP)
@@ -172,7 +173,7 @@ public class GameManager : MonoBehaviour
             }
             else // deselection => unload children if level of details is <=1
             {
-                AppendLogLine("Empty selection.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new LocalizedString("Logs", "Empty selection"), ELogTarget.both, ELogtype.success);
                 foreach (GameObject previousObj in previousItemsTMP)
                 {
                     //There could be missing references due to scene changes and other edge cases
@@ -439,6 +440,13 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+
+    public void AppendLogLine(LocalizedString _line, ELogTarget _target, ELogtype _type = ELogtype.info)
+    {
+        string str = _line.GetLocalizedString();
+        AppendLogLine(str, _target, _type);
     }
 
     ///<summary>
