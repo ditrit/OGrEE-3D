@@ -15,7 +15,7 @@ public class Item : OgreeObject
     public GameObject tempBar;
     public string temperatureUnit;
     public bool hasSlotColor = false;
-
+    public Group group = null;
     public ClearanceHandler clearanceHandler = new();
 
     protected virtual void Start()

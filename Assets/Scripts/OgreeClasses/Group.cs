@@ -15,7 +15,10 @@ public class Group : Item
         foreach (string rn in names)
         {
             if (Utils.GetObjectById($"{parentId}.{rn}") is GameObject go)
+            {
                 content.Add(go);
+                go.GetComponent<Item>().group = this;
+            }
         }
         DisplayContent(false);
     }
@@ -23,6 +26,8 @@ public class Group : Item
     protected override void OnDestroy()
     {
         ToggleContent(true);
+        foreach (GameObject gameObject in content)
+            gameObject.GetComponent<Item>().group = null;
         UiManager.instance.openedGroups.Remove(this);
         UiManager.instance.groupsList.RebuildMenu(UiManager.instance.BuildGroupButtons);
         base.OnDestroy();
