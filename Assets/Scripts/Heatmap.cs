@@ -70,7 +70,7 @@ public class Heatmap : MonoBehaviour
         }
         catch (ArgumentException)
         {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Number of sensors warning", new List<string>() { count.ToString(), (_positions.Length - count).ToString() }), ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Number of sensors warning", new List<int>() { count, _positions.Length - count }), ELogTarget.both, ELogtype.warning);
             Array.Copy(_positions, positions, count);
             Array.Copy(_properties, properties, count);
         }

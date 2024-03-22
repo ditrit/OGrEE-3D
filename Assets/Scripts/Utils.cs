@@ -317,15 +317,17 @@ public static class Utils
     }
 
     ///<summary>
-    /// Disable _target, destroy it and display given _msg to logger
+    /// Disable _target, destroy it and display given message (using a Localization Table) to logger (ELogTarget.logger, ELogtype.success)
     ///</summary>
     ///<param name="_target">The object to destroy</param>
-    ///<param name="_msg">The message to display (ELogTarget.logger, ELogtype.success)</param>
-    public static void CleanDestroy(this GameObject _target, string _msg)
+    ///<param name="_localizationTable">The Localization Table to use</param>
+    ///<param name="_localizationKey">The Key to use in given Localization Table</param>
+    ///<param name="_strVariable">A string variable to use il the Localization Table message</param>
+    public static void CleanDestroy(this GameObject _target, string _localizationTable, string _localizationKey, string _strVariable)
     {
         _target.SetActive(false); //for UI
         Object.Destroy(_target);
-        GameManager.instance.AppendLogLine(_msg, ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString(_localizationTable, _localizationKey, _strVariable), ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>

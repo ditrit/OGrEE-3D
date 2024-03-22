@@ -74,14 +74,14 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        List<string> countList = new()
+        List<int> countList = new()
         {
-            sitesCount.ToString(),
-            buildingsCount.ToString(),
-            roomsCount.ToString(),
-            racksCount.ToString(),
-            devicesCount.ToString(),
-            componentCount.ToString()
+            sitesCount,
+            buildingsCount,
+            roomsCount,
+            racksCount,
+            devicesCount,
+            componentCount
         };
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Objects count", countList), ELogTarget.both);
     }

@@ -124,24 +124,181 @@ MonoBehaviour:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 55284987203584
-    m_Localized: 'Sites: {str0}
+    m_Localized: 'Sites: {int0}
 
-      Buildings: {str1}
+      Buildings: {int1}
 
-      Rooms: {str2}
+      Rooms: {int2}
 
       Racks:
-      {str3}
+      {int3}
 
-      Devices: {str4}
+      Devices: {int4}
 
-      Components: {str5}'
+      Components: {int5}'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 56973567856640
-    m_Localized: Number of sensors should be equal or less than {str0}, {str1} of
+    m_Localized: Number of sensors should be equal or less than {int0}, {int1} of
       them have been ignored
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 79673497620480
+    m_Localized: 'Distance from {str0} origin: [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 81448644513792
+    m_Localized: 'Distance from {str0} tiles origin: [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 82933142917120
+    m_Localized: 'Distance between last two clicks: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 83634078224384
+    m_Localized: Local cache limit reached ({str}Mo)
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 83849342488576
+    m_Localized: 'Error while downloading file at "{str0}": {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 85286663360512
+    m_Localized: 'Failed to connect with API: no url'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Localized: 'Failed to connect with API: no token'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Localized: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Localized: 'Error while connecting to API: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 87527084396544
+    m_Localized: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88342473871360
+    m_Localized: 'From API: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 89286666227712
+    m_Localized: Fail to post on server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94024887570432
+    m_Localized: '{int:plural:1 object|{} objects} created'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 345545285963776
+    m_Localized: Unknown object received while retrieving temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347743726211072
+    m_Localized: Received data with unknow format
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348431260717056
+    m_Localized: Error on delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Localized: Command received with unknown type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 349166903889920
+    m_Localized: Incorrect {str} interaction
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 351198473752576
+    m_Localized: Unknown category to interact with
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Localized: Error on highlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351843675148288
+    m_Localized: Unknown UI command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351870648717312
+    m_Localized: Unknown camera command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Localized: TCP server will listen at port {int}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 353114524094464
+    m_Localized: Connection with client lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353357227495424
+    m_Localized: TCP client is closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353708823416832
+    m_Localized: Domain "{str}" doesn't exist
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 368159408656384
+    m_Localized: '{str}: can''t deserialize "clearance" attribute'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 368330188132352
+    m_Localized: '{str}: wrong vector cardinality for clearance'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 369809695313920
+    m_Localized: '{str}: Unknown color to display'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 369996216012800
+    m_Localized: '{str0}: Sensor "{str1}" does not exist'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 371025540157440
+    m_Localized: '{str}: Temperature must be a numerical value'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 399082057502720
+    m_Localized: Set {str0} details level to {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 399184461434880
+    m_Localized: Display {str} origin
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 400297516470272
+    m_Localized: Hide {str} origin
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -151,4 +308,4 @@ MonoBehaviour:
     - rid: 5456596318824431623
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d3100000010060a4832000000104631d1330000
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d3100000010060a4832000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d7251010000104688f66a0100001006600e6b010000104687116c0100

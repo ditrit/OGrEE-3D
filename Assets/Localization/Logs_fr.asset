@@ -126,8 +126,165 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 56973567856640
-    m_Localized: "Le nombre de capteur devrait \xEAtre \xE9gal ou moins que {str0},
-      {str1} d'entre eux ont \xE9t\xE9 ignor\xE9s"
+    m_Localized: "Le nombre de capteur devrait \xEAtre \xE9gal ou moins que {int0},
+      {int1} d'entre eux ont \xE9t\xE9 ignor\xE9s"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 79673497620480
+    m_Localized: 'Distance depuis l''origine de {str0} : [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 81448644513792
+    m_Localized: 'Distance depuis l''origine des dalles de {str0} : [{str1},{str2}]
+      m / [{str3},{str4}] t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 82933142917120
+    m_Localized: 'Distance entre les deux derniers clics : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 83634078224384
+    m_Localized: Limite du cache local atteinte ({str}Mo)
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 83849342488576
+    m_Localized: "Erreur lors du t\xE9l\xE9chargement du fichier \xE0 {str0} : {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 85286663360512
+    m_Localized: "Echec de connexion \xE0 l'API : pas d'url"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Localized: "Echec de connexion \xE0 l'API : pas de token"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Localized: "Connect\xE9 \xE0 l'API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Localized: "Erreur lors de la connexion \xE0 l'API : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 87527084396544
+    m_Localized: "Non connect\xE9 \xE0 une API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88342473871360
+    m_Localized: 'De l''API : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 89286666227712
+    m_Localized: Echec du post sur le serveur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94024887570432
+    m_Localized: "{int:plural:1 objet cr\xE9\xE9|{} objets cr\xE9\xE9s}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 345545285963776
+    m_Localized: "Objet inconnu re\xE7u lors de l'obtention de l'unit\xE9 de temp\xE9rature"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347743726211072
+    m_Localized: "Donn\xE9es re\xE7ues avec un format inconnu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348431260717056
+    m_Localized: Erreur lors de la suppression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Localized: "Commande re\xE7ue avec un type inconnu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 349166903889920
+    m_Localized: Interaction de {str} incorrecte
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 351198473752576
+    m_Localized: "Cat\xE9gorie inconnue avec laquelle interagir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Localized: Erreur lors de la mise en avant
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351843675148288
+    m_Localized: Commande d'UI inconnue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351870648717312
+    m_Localized: Commande de camera inconnue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Localized: "Le serveur TCP va \xE9couter sur le port {int}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 353114524094464
+    m_Localized: Connexion avec le client perdue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353357227495424
+    m_Localized: "Le client TCP est ferm\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353708823416832
+    m_Localized: Le domain "{str}" n'existe pas
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 368159408656384
+    m_Localized: "{str} : impossible de d\xE9s\xE9rialiser l'attribut \"clearance\""
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 368330188132352
+    m_Localized: "{str}\_: cardinalit\xE9 vectorielle incorrecte pour le d\xE9gagement"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 369809695313920
+    m_Localized: "{str} : Couleur inconnue \xE0 afficher"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 369996216012800
+    m_Localized: '{str0} : Le capteur "{str1}" n''existe pas'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 371025540157440
+    m_Localized: "{str} : La temp\xE9rature doit \xEAtre une valeur num\xE9rique"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 399184461434880
+    m_Localized: "Origine de {str} affich\xE9e"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 400297516470272
+    m_Localized: "Origine de {str} cach\xE9e"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 399082057502720
+    m_Localized: "Niveau de d\xE9tail de {str} r\xE9gl\xE9 \xE0 {str1}"
     m_Metadata:
       m_Items:
       - rid: 5456596318824431624
@@ -137,4 +294,4 @@ MonoBehaviour:
     - rid: 5456596318824431624
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d1330000
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d72510100001006600e6b010000104687116c010000104688f66a0100

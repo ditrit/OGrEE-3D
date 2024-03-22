@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine.Localization;
 
 public class TcpConnection : AConnection
 {
@@ -23,7 +24,7 @@ public class TcpConnection : AConnection
             IsBackground = true
         };
         threadRunning = true;
-        GameManager.instance.AppendLogLine($"Tcp Server will listen at port {cliPort}", ELogTarget.logger, ELogtype.info);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Tcp server will listen", cliPort), ELogTarget.logger, ELogtype.info);
         comThread.Start();
     }
 
@@ -39,7 +40,7 @@ public class TcpConnection : AConnection
                 netStream = client.GetStream();
                 await ReceiveLoop();
                 client.Close();
-                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine("Connection with client lost.", ELogTarget.logger, ELogtype.errorCli));
+                mainThreadQueue.Enqueue(() => GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Connection with client lost"), ELogTarget.logger, ELogtype.errorCli));
             }
         }
         catch (SocketException socketException)
@@ -113,7 +114,7 @@ public class TcpConnection : AConnection
     {
         if (client == null || !client.Connected)
         {
-            GameManager.instance.AppendLogLine("TCP client is closed.", ELogTarget.none, ELogtype.errorCli);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "TCP client is closed"), ELogTarget.none, ELogtype.errorCli);
             return;
         }
         try
