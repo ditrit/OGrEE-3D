@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -13,7 +13,7 @@ public class ObjectGenerator
     {
         if (GameManager.instance.allItems.Contains(_rk.id))
         {
-            GameManager.instance.AppendLogLine($"{_rk.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _rk.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -37,7 +37,7 @@ public class ObjectGenerator
                     height /= 1000;
                     break;
                 default:
-                    GameManager.instance.AppendLogLine($"Unknown {_rk.attributes["heightUnit"]} unit at {_rk.name} creation.", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, _rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
                     return null;
             }
             Vector3 scale = new(size.x / 100, height, size.y / 100);
@@ -55,7 +55,7 @@ public class ObjectGenerator
             }
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -138,14 +138,14 @@ public class ObjectGenerator
         // Check if unique hierarchyName
         if (GameManager.instance.allItems.Contains(_deviceData.id))
         {
-            GameManager.instance.AppendLogLine($"{_deviceData.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _deviceData.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
         // Check template
         if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_deviceData.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_deviceData.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _deviceData.attributes["template"], _deviceData.name }), ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -224,7 +224,7 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _gr.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine("Parent not found", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _gr.name), ELogTarget.both, ELogtype.error);
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
@@ -236,7 +236,7 @@ public class ObjectGenerator
 
         if (GameManager.instance.allItems.Contains(_gr.id))
         {
-            GameManager.instance.AppendLogLine($"{_gr.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _gr.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -252,7 +252,7 @@ public class ObjectGenerator
                     content.Add(go.transform);
             }
             else
-                GameManager.instance.AppendLogLine($"{_gr.parentId}.{cn} doesn't exists.", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object doesn't exist", $"{_gr.parentId}.{cn}"), ELogTarget.both, ELogtype.warning);
         }
         if (content.Count == 0)
             return null;
@@ -296,7 +296,7 @@ public class ObjectGenerator
     {
         if (GameManager.instance.allItems.Contains(_co.id))
         {
-            GameManager.instance.AppendLogLine($"{_co.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _co.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -356,7 +356,7 @@ public class ObjectGenerator
         Transform parent = Utils.FindParent(_parent, _se.parentId);
         if (!parent)
         {
-            GameManager.instance.AppendLogLine($"Parent not found", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _se.name), ELogTarget.both, ELogtype.error);
             return null;
         }
         OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
@@ -395,7 +395,7 @@ public class ObjectGenerator
     {
         if (GameManager.instance.allItems.Contains(_go.id))
         {
-            GameManager.instance.AppendLogLine($"{_go.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _go.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -432,7 +432,7 @@ public class ObjectGenerator
             }
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_go.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

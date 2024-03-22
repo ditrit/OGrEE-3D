@@ -219,7 +219,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 351452111704064
-    m_Localized: Erreur lors de la mise en avant
+    m_Localized: Erreur lors de l'acctentuation
     m_Metadata:
       m_Items: []
   - m_Id: 351843675148288
@@ -288,10 +288,72 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 5456596318824431624
+  - m_Id: 401462878670848
+    m_Localized: "Nom des dalles cach\xE9s pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 401902429147136
+    m_Localized: "Couleur des dalles cach\xE9s pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 402538147221504
+    m_Localized: "Nom des dalles affich\xE9s pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 402598457118720
+    m_Localized: "Couleur des dalles affich\xE9s pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 403384293527552
+    m_Localized: "{str} : Impossible de modifier les zones d'une room si des enfants
+      sont dessin\xE9s dedans"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 404037640261632
+    m_Localized: Il n'y a pas de template pour {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 404875465068544
+    m_Localized: '{str0}: Texture de dalle "{str1}" inconnue'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 412829622865920
+    m_Localized: "{str} existe d\xE9j\xE0"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 432542763585536
+    m_Localized: Template "{str0}" inconnu. Abandon du dessin de {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 444654990790656
+    m_Localized: "{str0}: Unit\xE9 \"{str1}\" inconnue lors de la cr\xE9ation"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 451722313338880
+    m_Localized: "{str}\_: Parent introuvable, cet objet ne peut pas \xEAtre dessin\xE9
+      de mani\xE8re autonome"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 458382108921856
+    m_Localized: '{str} n''existe pas'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
   references:
     version: 2
     RefIds:
     - rid: 5456596318824431624
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d72510100001006600e6b010000104687116c010000104688f66a0100
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d72510100001006600e6b010000104687116c010000104688f66a0100001046dc206d010000108633876d0100001046371b6e010000100642296e010000108639e06e010000100658786f01000010466a3b70010000100663777701000010c635658901000010c64e69940100001006ccd69a01000010c666e5a00100

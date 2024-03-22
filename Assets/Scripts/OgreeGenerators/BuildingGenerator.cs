@@ -14,7 +14,7 @@ public class BuildingGenerator
     {
         if (GameManager.instance.allItems.Contains(_bd.id))
         {
-            GameManager.instance.AppendLogLine($"{_bd.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _bd.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -25,7 +25,7 @@ public class BuildingGenerator
                 template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -102,7 +102,7 @@ public class BuildingGenerator
     {
         if (GameManager.instance.allItems.Contains(_ro.id))
         {
-            GameManager.instance.AppendLogLine($"{_ro.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _ro.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -113,7 +113,7 @@ public class BuildingGenerator
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

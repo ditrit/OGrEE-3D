@@ -11,7 +11,7 @@ public class CustomerGenerator
     {
         if (GameManager.instance.allItems.Contains(_do.id))
         {
-            GameManager.instance.AppendLogLine($"{_do.id} already exists.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _do.id), ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -33,7 +33,7 @@ public class CustomerGenerator
     {
         if (GameManager.instance.allItems.Contains(_si.id))
         {
-            GameManager.instance.AppendLogLine($"{_si.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _si.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 

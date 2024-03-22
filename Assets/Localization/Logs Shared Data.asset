@@ -247,6 +247,54 @@ MonoBehaviour:
     m_Key: Hide local CS
     m_Metadata:
       m_Items: []
+  - m_Id: 401462878670848
+    m_Key: Hide tiles name for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401902429147136
+    m_Key: Hide tiles color for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 402538147221504
+    m_Key: Display tiles name for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 402598457118720
+    m_Key: Display tiles color for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 403384293527552
+    m_Key: Can't modify areas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404037640261632
+    m_Key: There is no template for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404875465068544
+    m_Key: Unknow tile texture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412829622865920
+    m_Key: Object already exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432542763585536
+    m_Key: Unknown template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 444654990790656
+    m_Key: Unknown unit at creation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 451722313338880
+    m_Key: Parent not found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 458382108921856
+    m_Key: Object doesn't exist
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
