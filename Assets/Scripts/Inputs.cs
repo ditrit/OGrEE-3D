@@ -249,7 +249,7 @@ public class Inputs : MonoBehaviour
         }
         else if (GameManager.instance.GetFocused().Count > 0)
             await GameManager.instance.SetCurrentItem(GameManager.instance.GetFocused()[^1]);
-        else
+        else if (!GameManager.instance.positionMode)
             await GameManager.instance.SetCurrentItem(null);
     }
 

@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     public GameObject genericSphereModel;
     public GameObject genericCylinderModel;
     public List<GameObject> fbxModels;
+    public GameObject positionTransform;
 
     [Header("Runtime data")]
     public Transform templatePlaceholder;
@@ -93,6 +94,11 @@ public class GameManager : MonoBehaviour
     /// True if getCoords mode is on
     /// </summary>
     public bool getCoordsMode = false;
+
+    /// <summary>
+    /// True if position mode is on
+    /// </summary>
+    public bool positionMode = false;
 
     #region UnityMethods
 

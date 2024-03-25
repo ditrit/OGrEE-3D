@@ -109,6 +109,7 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
         EventManager.instance.GetCoordModeToggle.Add(OnGetCoordModeToggle);
+        EventManager.instance.PositionMode.Add(OnPositionMode);
     }
 
     ///<summary>
@@ -143,6 +144,7 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
         EventManager.instance.GetCoordModeToggle.Remove(OnGetCoordModeToggle);
+        EventManager.instance.PositionMode.Remove(OnPositionMode);
     }
 
     /// <summary>
@@ -471,6 +473,11 @@ public class ObjectDisplayController : MonoBehaviour
         if (GameManager.instance.GetSelected().Contains(gameObject))
             return;
         HandleMaterial();
+    }
+
+    private void OnPositionMode(PositionModeEvent _e)
+    {
+        cube.col.enabled = !_e.toggled;
     }
 
     /// <summary>

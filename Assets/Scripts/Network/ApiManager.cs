@@ -622,4 +622,38 @@ public class ApiManager : MonoBehaviour
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         return Task.FromResult(list);
     }
+
+    ///<summary>
+    /// Avoid requestsToSend 
+    /// Get an Object from the api. Call a Task callback with the response.
+    ///</summary>
+    ///<param name="_input">The path to add a base server for API GET request</param>
+    ///<param name="_callback">Function to call to use GET response</param>
+    public async Task ModifyObject(string _input, Dictionary<string,object> _data)
+    {
+        if (!isInit)
+        {
+            GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warning);
+            return;
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
+
+        string fullPath = $"{server}/{_input}";
+        StringContent content = new(JsonConvert.SerializeObject(_data), System.Text.Encoding.UTF8, "application/json");
+        try
+        {
+            HttpRequestMessage request = new(new HttpMethod("PATCH"), fullPath)
+            {
+                Content = content
+            };
+            HttpResponseMessage response = await httpClient.SendAsync(request);
+            GameManager.instance.AppendLogLine($"{response}", ELogTarget.logger, ELogtype.infoApi);
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        }
+        catch (HttpRequestException e)
+        {
+            GameManager.instance.AppendLogLine($"{fullPath}: {e.Message}", ELogTarget.logger, ELogtype.errorApi);
+            EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        }
+    }
 }

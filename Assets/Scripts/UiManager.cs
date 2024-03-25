@@ -54,6 +54,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler heatMapBtn;
     [SerializeField] private ButtonHandler hideObjectBtn;
     [SerializeField] private ButtonHandler displayObjectBtn;
+    [SerializeField] private ButtonHandler positionModeBtn;
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField selectionInputField;
@@ -251,9 +252,11 @@ public class UiManager : MonoBehaviour
 
         resetTransBtn = new(resetTransBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.editMode
+            interactCondition = () => (GameManager.instance.editMode
             &&
-            GameManager.instance.GetFocused()[^1] == menuTarget
+            GameManager.instance.GetFocused()[^1] == menuTarget)
+            ||
+            GameManager.instance.positionMode
         };
         resetTransBtn.Check();
 
@@ -502,6 +505,19 @@ public class UiManager : MonoBehaviour
             item.GetComponent<ObjectDisplayController>().isHidden
         };
         displayObjectBtn.Check();
+
+        positionModeBtn = new(positionModeBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.selectMode
+            &&
+            !GameManager.instance.focusMode
+            &&
+            GameManager.instance.GetSelected()[0].GetComponent<Rack>()
+            &&
+            GameManager.instance.GetSelected()[0].transform.parent,
+            toggledCondition = () => GameManager.instance.positionMode
+        };
+        positionModeBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -1551,6 +1567,14 @@ public class UiManager : MonoBehaviour
         _obj.GetComponent<ObjectDisplayController>().DisplayObject();
         hiddenObjects.Remove(_obj.GetComponent<Item>());
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+    }
+
+    public void TogglePositionMode()
+    {
+        GameManager.instance.positionMode ^= true;
+        EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
+        if (GameManager.instance.positionTransform)
+            Instantiate(GameManager.instance.positionTransform, GameManager.instance.GetSelected()[0].transform);
     }
     #endregion
 }

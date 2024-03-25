@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6184891675702935749}
-  m_Layer: 0
+  - component: {fileID: 2951713072071638440}
+  m_Layer: 5
   m_Name: Transform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,6 +38,21 @@ Transform:
   - {fileID: 396642493584510966}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2951713072071638440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997511627258932884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55d3a4bf1d232674a987b4280619dd69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position: 
+  initialPosition: {x: 0, y: 0, z: 0}
+  scale: 3
 --- !u!1001 &49262049137422807
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -119,6 +135,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: X arc
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bc3435d74a25cd846a186f3f443936f0,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -265,6 +286,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Z arc
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bc3435d74a25cd846a186f3f443936f0,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -409,6 +435,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Y arrow
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9b49bead8d186364f8f90a3cfb6388a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -555,6 +586,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: X arrow
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9b49bead8d186364f8f90a3cfb6388a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -700,6 +736,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Y arc
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bc3435d74a25cd846a186f3f443936f0,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -844,6 +885,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Z arrow
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9b49bead8d186364f8f90a3cfb6388a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

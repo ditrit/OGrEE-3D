@@ -292,7 +292,7 @@ public class UHelpersManager : MonoBehaviour
     ///</summary>
     public void ResetUHelpers()
     {
-        if (GameManager.instance.editMode)
+        if (GameManager.instance.editMode || GameManager.instance.positionMode)
             return;
         if (!Utils.IsObjectMoved(GameManager.instance.GetFocused()[^1].GetComponent<OgreeObject>()))
         {
