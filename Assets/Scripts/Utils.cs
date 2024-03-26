@@ -513,7 +513,7 @@ public static class Utils
             }
             else
             {
-                GameManager.instance.AppendLogLine($"One or more slots from {_apiObj.attributes["slot"]} not found in {_parent.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "One or more slots not found", new List<string>() { _apiObj.attributes["slot"], _parent.name }), ELogTarget.both, ELogtype.error);
                 return;
             }
         }

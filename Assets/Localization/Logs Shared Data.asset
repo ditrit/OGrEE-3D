@@ -295,6 +295,74 @@ MonoBehaviour:
     m_Key: Object doesn't exist
     m_Metadata:
       m_Items: []
+  - m_Id: 1430718052175872
+    m_Key: Unable to draw a basic device without its parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1431154700193792
+    m_Key: Unable to draw a category without its parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1439873802571776
+    m_Key: Unknown object category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1444100285272064
+    m_Key: Invalid vertex array in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1444961623347200
+    m_Key: Unknown category in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1505563637059584
+    m_Key: Wrong pos value for sensor in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507883787620352
+    m_Key: Room height unit not supported
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1509428906299392
+    m_Key: U helpers Toggled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1513512988184576
+    m_Key: Edit in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518979999207424
+    m_Key: Edit out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520636518600704
+    m_Key: Enable CLI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520685491294208
+    m_Key: Disable CLI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521319737167872
+    m_Key: Cache cleared at
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521913482842112
+    m_Key: Enable Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1522042591907840
+    m_Key: Disable Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1524506409963520
+    m_Key: Cannot focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1530884805496832
+    m_Key: One or more slots not found
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

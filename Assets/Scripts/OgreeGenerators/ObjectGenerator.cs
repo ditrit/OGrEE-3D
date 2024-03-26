@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -111,30 +111,6 @@ public class ObjectGenerator
     ///<returns>The created Device</returns>
     public Device CreateDevice(SApiObject _deviceData, Transform _parent)
     {
-        if (_parent)
-        {
-            if (!(_parent.GetComponent<Rack>() || _parent.GetComponent<Device>()))
-            {
-                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-
-            // Check parent for subdevice
-            if (_parent.GetComponent<Rack>() == null
-                && (string.IsNullOrEmpty(_deviceData.attributes["slot"]) || string.IsNullOrEmpty(_deviceData.attributes["template"])))
-            {
-                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-
-            // Check if parent not hidden in a group
-            if (_parent.gameObject.activeSelf == false)
-            {
-                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-        }
-
         // Check if unique hierarchyName
         if (GameManager.instance.allItems.Contains(_deviceData.id))
         {
@@ -202,15 +178,10 @@ public class ObjectGenerator
     ///<returns>The generated device</returns>
     private GameObject GenerateTemplatedDevice(Transform _parent, string _template)
     {
-        if (GameManager.instance.objectTemplates.ContainsKey(_template))
-        {
-            GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
-            go.transform.parent = _parent;
-            go.GetComponent<ObjectDisplayController>().isTemplate = false;
-            return go;
-        }
-        GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
-        return null;
+        GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
+        go.transform.parent = _parent;
+        go.GetComponent<ObjectDisplayController>().isTemplate = false;
+        return go;
     }
 
     ///<summary>
@@ -228,11 +199,11 @@ public class ObjectGenerator
             return null;
         }
         string parentCategory = parent.GetComponent<OgreeObject>().category;
-        if (parentCategory != Category.Room && parentCategory != Category.Rack)
-        {
-            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", ELogTarget.both, ELogtype.error);
-            return null;
-        }
+        // if (parentCategory != Category.Room && parentCategory != Category.Rack)
+        // {
+        //     GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", ELogTarget.both, ELogtype.error);
+        //     return null;
+        // }
 
         if (GameManager.instance.allItems.Contains(_gr.id))
         {
@@ -409,11 +380,11 @@ public class ObjectGenerator
                 "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
                 _ => null
             };
-            if (!newGeneric)
-            {
-                GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
-                return null;
-            }
+            // if (!newGeneric)
+            // {
+            //     GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
+            //     return null;
+            // }
             Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
             newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
 
