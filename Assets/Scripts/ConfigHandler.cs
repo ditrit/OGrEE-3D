@@ -290,12 +290,12 @@ public class ConfigHandler
         }
         if (!GameManager.instance.textures.ContainsKey("perf22"))
         {
-            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Load default texture for perf22"), ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Load default texture for", "perf22"), ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf22", Resources.Load<Texture>("Textures/TilePerf22"));
         }
         if (!GameManager.instance.textures.ContainsKey("perf29"))
         {
-            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Load default texture for perf29"), ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Load default texture for", "perf29"), ELogTarget.logger, ELogtype.warning);
             GameManager.instance.textures.Add("perf29", Resources.Load<Texture>("Textures/TilePerf29"));
         }
     }
