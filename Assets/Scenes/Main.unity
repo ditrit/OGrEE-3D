@@ -9741,9 +9741,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2024-03-15
+  m_text: 'Build date: 2024-03-29
 
-    Commit #9eb6ff5'
+    Commit #ffdd1cd8'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -19413,6 +19413,7 @@ MonoBehaviour:
   tempBar: {fileID: 0}
   temperatureUnit: 
   hasSlotColor: 0
+  group: {fileID: 0}
   clearanceHandler:
     front:
       length: 0
@@ -25232,7 +25233,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -28063,7 +28064,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1513977461}
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 1.0000001
   m_Size: 0.5658
   m_NumberOfSteps: 0
   m_OnValueChanged:

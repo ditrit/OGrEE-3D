@@ -198,12 +198,6 @@ public class ObjectGenerator
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _gr.name), ELogTarget.both, ELogtype.error);
             return null;
         }
-        string parentCategory = parent.GetComponent<OgreeObject>().category;
-        // if (parentCategory != Category.Room && parentCategory != Category.Rack)
-        // {
-        //     GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", ELogTarget.both, ELogtype.error);
-        //     return null;
-        // }
 
         if (GameManager.instance.allItems.Contains(_gr.id))
         {
@@ -217,11 +211,7 @@ public class ObjectGenerator
         {
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
-            {
-                if ((parentCategory == Category.Room && (go.GetComponent<Rack>() || go.GetComponent<Corridor>()))
-                    || parentCategory == Category.Rack && go.GetComponent<Device>())
-                    content.Add(go.transform);
-            }
+                content.Add(go.transform);
             else
                 GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object doesn't exist", $"{_gr.parentId}.{cn}"), ELogTarget.both, ELogtype.warning);
         }
@@ -232,6 +222,7 @@ public class ObjectGenerator
         newGr.name = _gr.name;
         newGr.transform.parent = parent;
 
+        string parentCategory = parent.GetComponent<OgreeObject>().category;
         Group gr = newGr.AddComponent<Group>();
         Utils.ShapeGroup(content, gr, parentCategory);
         gr.UpdateFromSApiObject(_gr);
@@ -380,11 +371,6 @@ public class ObjectGenerator
                 "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
                 _ => null
             };
-            // if (!newGeneric)
-            // {
-            //     GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
-            //     return null;
-            // }
             Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
             newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
 
