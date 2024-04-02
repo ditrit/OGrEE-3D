@@ -21,6 +21,6 @@ public struct SMargin
         front = _data.x;
         back = _data.y;
         right = _data.z;
-        left = _data.z;
+        left = _data.w;
     }
 }
