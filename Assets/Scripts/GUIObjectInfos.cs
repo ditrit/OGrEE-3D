@@ -82,7 +82,7 @@ public class GUIObjectInfos : MonoBehaviour
         {
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpDomainName.text = domain.name;
-            tmpDomainAttrs.text = "";
+            tmpDomainAttrs.text = (domain.name == domain.id) ? "" : $"({domain.id})\n";
             foreach (KeyValuePair<string, string> kvp in domain.attributes)
                 tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
         }

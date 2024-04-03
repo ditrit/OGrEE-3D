@@ -115,6 +115,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
                 GameManager.instance.RemoveFromTag(oldTag, id);
         }
         tags = _src.tags;
+        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
