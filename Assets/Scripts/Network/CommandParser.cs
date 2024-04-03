@@ -317,14 +317,28 @@ public class CommandParser
             if (obj is Item ogreeItem && ogreeItem.group)
                 Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);
         }
-        // Case temperature for item and corridors
+
         if (obj is Item item)
         {
+            // Case temperature for item and corridors
             if (HasAttributeChanged(newData, item, "temperature"))
                 if (newData.category != Category.Corridor)
                     item.SetColor(newData.attributes["color"]);
-                else // Case temperature for corridors
+                else
                     item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
+
+            // Case domain & color change for racks, devices, generics & groups 
+            if (item is not Corridor)
+            {
+                if (newData.domain != item.domain && item.color.Equals(((GameObject)GameManager.instance.allItems[item.domain]).GetComponent<Domain>().GetColor()))
+                {
+                    obj.domain = newData.domain;
+                    item.UpdateColorByDomain();
+                }
+
+                if (HasAttributeChanged(newData, item, "color"))
+                    item.SetColor(newData.attributes["color"]);
+            }
         }
 
         // Case of a separators/pillars/areas modification in a room

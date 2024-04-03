@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class Domain : OgreeObject
 {
     public override void UpdateFromSApiObject(SApiObject _src)
@@ -9,5 +11,14 @@ public class Domain : OgreeObject
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
+    }
+
+    /// <summary>
+    /// Get the color stored in attributes["color"]
+    /// </summary>
+    /// <returns>The Color value</returns>
+    public Color GetColor()
+    {
+        return Utils.ParseHtmlColor($"#{attributes["color"]}");
     }
 }
