@@ -96,7 +96,8 @@ public class Building : OgreeObject
 
         foreach (Transform child in walls)
         {
-            if (child.TryGetComponent(out Renderer rend))
+            // walls & pillars || separators
+            if (child.TryGetComponent(out Renderer rend) || child.GetChild(0).TryGetComponent(out rend))
                 rend.material.color = color;
         }
         Transform roof = transform.Find("Roof");
