@@ -106,18 +106,18 @@ public class Item : OgreeObject
     ///</summary>
     public void UpdateColorByDomain()
     {
-        if (string.IsNullOrEmpty(base.domain))
+        if (string.IsNullOrEmpty(domain) || attributes.ContainsKey("color"))
             return;
 
-        if (!GameManager.instance.allItems.Contains(base.domain))
+        if (!GameManager.instance.allItems.Contains(domain))
         {
-            GameManager.instance.AppendLogLine($"Domain \"{base.domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine($"Domain \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
             return;
         }
 
-        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
+        Domain domainObject = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<Domain>();
 
-        color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
+        color = Utils.ParseHtmlColor($"#{domainObject.attributes["color"]}");
         GetComponent<ObjectDisplayController>().ChangeColor(color);
     }
 
