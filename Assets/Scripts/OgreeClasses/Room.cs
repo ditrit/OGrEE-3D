@@ -26,6 +26,48 @@ public class Room : Building
     public bool genNamesDisplayed = false;
     public GameObject childrenOrigin;
 
+    public override void UpdateFromSApiObject(SApiObject _src)
+    {
+        if (HasAttributeChanged(_src, "separators"))
+        {
+            Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(_src.attributes["separators"]);
+            // Delete old separators
+            for (int i = 0; i < separators.Count; i++)
+            {
+                Separator sep = separators[i];
+                if (!newSeparators.ContainsKey(sep.name))
+                {
+                    Destroy(sep.gameObject);
+                    separators.Remove(sep);
+                }
+            }
+            // Add new separators
+            foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
+                if (!HasSeparator(sep.Key))
+                    BuildSeparator(new SSeparator(sep.Key, sep.Value));
+        }
+
+        if (HasAttributeChanged(_src, "pillars"))
+        {
+            foreach (Transform wall in walls)
+                if (wall.name.Contains("Pillar"))
+                    Destroy(wall.gameObject);
+            Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(_src.attributes["pillars"]);
+            foreach (KeyValuePair<string, SPillar> pillar in pillars)
+                BuildPillar(new SPillar(pillar.Key, pillar.Value));
+        }
+
+        if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))
+            && HasAttributeChanged(_src, "reserved") && HasAttributeChanged(_src, "technical"))
+        {
+            SMargin reserved = new(Utils.ParseVector4(_src.attributes["reserved"]));
+            SMargin technical = new(Utils.ParseVector4(_src.attributes["technical"]));
+            SetAreas(reserved, technical);
+        }
+
+        base.UpdateFromSApiObject(_src);
+    }
+
     ///<summary>
     /// Set usable/reserved/technical areas.
     ///</summary>
@@ -496,7 +538,7 @@ public class Room : Building
             (startPos, endPos) = (endPos, startPos);
 
         float length = Vector2.Distance(startPos, endPos);
-        float height = Utils.ParseDecFrac(attributes["height"]);
+        float height = walls.GetChild(0).localScale.y;
         float angle = Vector3.SignedAngle(Vector3.right, endPos - startPos, Vector3.up);
 
         GameObject separator = Instantiate(GameManager.instance.separatorModel);
@@ -537,7 +579,7 @@ public class Room : Building
     ///<param name="_pil">The pillar to draw</param>
     public void BuildPillar(SPillar _pil)
     {
-        float height = Utils.ParseDecFrac(attributes["height"]);
+        float height = walls.GetChild(0).localScale.y;
 
         GameObject pillar = Instantiate(GameManager.instance.pillarModel);
         pillar.name += $"_{_pil.name}";

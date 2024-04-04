@@ -67,6 +67,12 @@ public class Building : OgreeObject
             domain = _src.domain;
             UpdateColorByDomain();
         }
+        if ((HasAttributeChanged(_src, "posXY")
+            || HasAttributeChanged(_src, "posXYUnit")
+            || HasAttributeChanged(_src, "rotation"))
+            && transform.parent)
+            PlaceBuilding(_src);
+
         base.UpdateFromSApiObject(_src);
     }
 
@@ -109,5 +115,23 @@ public class Building : OgreeObject
             wall.GetComponentInChildren<Renderer>().enabled = displayWalls;
             wall.GetComponentInChildren<Collider>().enabled = displayWalls;
         }
+    }
+
+    /// <summary>
+    /// Move the given building/room to its position in a site/building according to the API data.
+    /// </summary>
+    /// <param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public void PlaceBuilding(SApiObject _apiObj)
+    {
+        Vector2 posXY = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+        posXY *= _apiObj.attributes["posXYUnit"] switch
+        {
+            LengthUnit.Centimeter => 0.01f,
+            LengthUnit.Millimeter => 0.001f,
+            LengthUnit.Feet => UnitValue.Foot,
+            _ => 1
+        };
+        transform.localPosition = new(posXY.x, 0, posXY.y);
+        transform.localEulerAngles = new(0, Utils.ParseDecFrac(_apiObj.attributes["rotation"]), 0);
     }
 }

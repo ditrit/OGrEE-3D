@@ -219,4 +219,100 @@ public class Item : OgreeObject
         return new(mean, std, min, max, hottestChild, temperatureUnit);
     }
 
+    ///<summary>
+    /// Move this object to its position in a room according to the API data.
+    ///</summary>
+    ///<param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public void PlaceInRoom(SApiObject _apiObj)
+    {
+        Room parentRoom = transform.parent.GetComponent<Room>();
+        float posXYUnit = GetUnitFromAttributes(_apiObj);
+        Vector3 origin;
+        if (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) // technicalZone is null for a nonSquareRoom
+        {
+            transform.position = parentRoom.technicalZone.position;
+            origin = parentRoom.technicalZone.localScale / 0.2f;
+        }
+        else
+        {
+            transform.position = parentRoom.usableZone.position;
+            origin = parentRoom.usableZone.localScale / 0.2f;
+        }
+
+        Vector2 orient = new();
+        if (parentRoom.attributes.ContainsKey("axisOrientation"))
+            switch (parentRoom.attributes["axisOrientation"])
+            {
+                case AxisOrientation.Default:
+                    // Lower Left corner of the room
+                    orient = new(1, 1);
+                    break;
+
+                case AxisOrientation.XMinus:
+                    // Lower Right corner of the room
+                    orient = new(-1, 1);
+                    break;
+
+                case AxisOrientation.YMinus:
+                    // Upper Left corner of the room
+                    orient = new(1, -1);
+                    break;
+
+                case AxisOrientation.BothMinus:
+                    // Upper Right corner of the room
+                    orient = new(-1, -1);
+                    break;
+            }
+
+        Vector3 pos;
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
+            pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
+        else
+        {
+            Vector2 tmp = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+            pos = new(tmp.x, 0, tmp.y);
+        }
+
+        Transform floor = transform.parent.Find("Floor");
+        if (!parentRoom.isSquare && posXYUnit == UnitValue.Tile && floor)
+        {
+            int trunkedX = (int)pos.x;
+            int trunkedZ = (int)pos.z;
+            foreach (Transform tileObj in floor)
+            {
+                Tile tile = tileObj.GetComponent<Tile>();
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedZ)
+                {
+                    transform.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.y / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    transform.localPosition += UnitValue.Tile * new Vector3(orient.x * (pos.x - trunkedX), 0, orient.y * (pos.z - trunkedZ));
+                    return;
+                }
+            }
+        }
+
+        // Go to the right corner of the room & apply pos
+        if (parentRoom.isSquare)
+            transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+
+        transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
+        transform.transform.localEulerAngles = Utils.ParseVector3(_apiObj.attributes["rotation"], true);
+    }
+
+    ///<summary>
+    /// Get a posXYUnit regarding given object's attributes.
+    ///</summary>
+    ///<param name="_obj">The object to parse</param>
+    ///<returns>The posXYUnit, <see cref="UnitValue.Tile"/> by default</returns>
+    private float GetUnitFromAttributes(SApiObject _obj)
+    {
+        if (!_obj.attributes.ContainsKey("posXYUnit"))
+            return UnitValue.Tile;
+        return _obj.attributes["posXYUnit"] switch
+        {
+            LengthUnit.Meter => 1.0f,
+            LengthUnit.Feet => UnitValue.Foot,
+            _ => UnitValue.Tile,
+        };
+    }
+
 }

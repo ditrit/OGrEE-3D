@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -255,19 +254,6 @@ public class CommandParser
         canDraw = true;
     }
 
-    /// <summary>
-    /// Check if an attribute has changed between old object and new data
-    /// </summary>
-    /// <param name="_newData">The new data</param>
-    /// <param name="_ogreeObject">The old object</param>
-    /// <param name="_attrKey">The name of the attribute</param>
-    /// <returns>True if the attribute has been added or has had its value modified</returns>
-    private bool HasAttributeChanged(SApiObject _newData, OgreeObject _ogreeObject, string _attrKey)
-    {
-        return _newData.attributes.ContainsKey(_attrKey) && (!_ogreeObject.attributes.ContainsKey(_attrKey) || _ogreeObject.attributes[_attrKey] != _newData.attributes[_attrKey]);
-    }
-
-
     ///<summary>
     /// Deserialize given SApiObject and apply modification to corresponding object.
     ///</summary>
@@ -286,101 +272,6 @@ public class CommandParser
         // Case domain for all OgreeObjects
         bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
 
-        //Case position
-        // Checking all attributes related to object positionning
-        if (obj.transform.parent && (
-            HasAttributeChanged(newData, obj, "posXYUnit") ||
-            HasAttributeChanged(newData, obj, "posXY") ||
-            HasAttributeChanged(newData, obj, "posXYZ") ||
-            HasAttributeChanged(newData, obj, "posU") ||
-            HasAttributeChanged(newData, obj, "slot") ||
-            HasAttributeChanged(newData, obj, "rotation") ||
-            HasAttributeChanged(newData, obj, "orientation") ||
-            HasAttributeChanged(newData, obj, "invertOffset")))
-        {
-            switch (obj.category)
-            {
-                case Category.Building:
-                case Category.Room:
-                    Utils.PlaceBuilding(obj.transform, newData);
-                    break;
-                case Category.Device:
-                    Utils.PlaceDevice(obj.transform.parent, (Device)obj, newData);
-                    break;
-                case Category.Rack:
-                case Category.Generic:
-                    Utils.PlaceInRoom(obj.transform, newData);
-                    break;
-                default:
-                    break;
-            }
-            if (obj is Item ogreeItem && ogreeItem.group)
-                Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);
-        }
-
-        if (obj is Item item)
-        {
-            // Case temperature for item and corridors
-            if (HasAttributeChanged(newData, item, "temperature"))
-                if (newData.category != Category.Corridor)
-                    item.SetColor(newData.attributes["color"]);
-                else
-                    item.SetColor(newData.attributes["temperature"] == "cold" ? "000099" : "990000");
-
-            // Case domain & color change for racks, devices, generics & groups 
-            if (item is not Corridor)
-            {
-                if (newData.domain != item.domain && item.color.Equals(((GameObject)GameManager.instance.allItems[item.domain]).GetComponent<Domain>().GetColor()))
-                {
-                    obj.domain = newData.domain;
-                    item.UpdateColorByDomain();
-                }
-
-                if (HasAttributeChanged(newData, item, "color"))
-                    item.SetColor(newData.attributes["color"]);
-            }
-        }
-
-        // Case of a separators/pillars/areas modification in a room
-        if (obj is Room room)
-        {
-            if (HasAttributeChanged(newData, room, "separators"))
-            {
-                Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(newData.attributes["separators"]);
-                // Delete old separators
-                for (int i = 0; i < room.separators.Count; i++)
-                {
-                    Separator sep = room.separators[i];
-                    if (!newSeparators.ContainsKey(sep.name))
-                    {
-                        Object.Destroy(sep.gameObject);
-                        room.separators.Remove(sep);
-                    }
-                }
-                // Add new separators
-                foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
-                    if (!room.HasSeparator(sep.Key))
-                        room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
-            }
-
-            if (HasAttributeChanged(newData, room, "pillars"))
-            {
-                foreach (Transform wall in room.walls)
-                    if (wall.name.Contains("Pillar"))
-                        Object.Destroy(wall.gameObject);
-                Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(newData.attributes["pillars"]);
-                foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                    room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
-            }
-
-            if (HasAttributeChanged(newData, room, "reserved"))
-            {
-                SMargin reserved = new(Utils.ParseVector4(newData.attributes["reserved"]));
-                SMargin technical = new(Utils.ParseVector4(newData.attributes["technical"]));
-                room.SetAreas(reserved, technical);
-            }
-
-        }
         obj.UpdateFromSApiObject(newData);
 
         if (domainColorChanged)

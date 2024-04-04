@@ -280,4 +280,15 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         }
         return null;
     }
+
+    /// <summary>
+    /// Check if an attribute has changed between old object and new data
+    /// </summary>
+    /// <param name="_newData">The new data</param>
+    /// <param name="_attrKey">The name of the attribute</param>
+    /// <returns>True if the attribute has been added or has had its value modified</returns>
+    public bool HasAttributeChanged(SApiObject _newData, string _attrKey)
+    {
+        return _newData.attributes.ContainsKey(_attrKey) && (!attributes.ContainsKey(_attrKey) || attributes[_attrKey] != _newData.attributes[_attrKey]);
+    }
 }
