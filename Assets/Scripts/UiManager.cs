@@ -55,6 +55,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler hideObjectBtn;
     [SerializeField] private ButtonHandler displayObjectBtn;
     [SerializeField] private ButtonHandler positionModeBtn;
+    [SerializeField] private ButtonHandler SnappingBtn;
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField selectionInputField;
@@ -171,6 +172,8 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.editMode
             &&
+            !GameManager.instance.positionMode
+            &&
             GameManager.instance.GetSelected().Contains(menuTarget)
             &&
             (
@@ -186,6 +189,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
             !GameManager.instance.editMode
+            &&
+            !GameManager.instance.positionMode
             &&
             menuTarget
             &&
@@ -214,6 +219,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
             GameManager.instance.selectMode
+            &&
+            !GameManager.instance.positionMode
             &&
             GameManager.instance.GetSelected()[0] == menuTarget
             &&
@@ -490,6 +497,8 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => GameManager.instance.selectMode
             &&
+            !GameManager.instance.positionMode
+            &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
             !item.GetComponent<ObjectDisplayController>().isHidden
@@ -518,6 +527,13 @@ public class UiManager : MonoBehaviour
             toggledCondition = () => GameManager.instance.positionMode
         };
         positionModeBtn.Check();
+
+        SnappingBtn = new(SnappingBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.positionMode,
+            toggledCondition = () => Rescaler.instance.snapping
+        };
+        SnappingBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -1149,6 +1165,7 @@ public class UiManager : MonoBehaviour
     public void ResetTransform()
     {
         GameManager.instance.GetSelected()[0]?.GetComponent<OgreeObject>().ResetTransform();
+        Rescaler.instance.realDisplacement.SetLocalPositionAndRotation(Rescaler.instance.initialPosition, Rescaler.instance.initialRotation);
     }
 
     ///<summary>
@@ -1573,8 +1590,17 @@ public class UiManager : MonoBehaviour
     {
         GameManager.instance.positionMode ^= true;
         EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
-        if (GameManager.instance.positionTransform)
-            Instantiate(GameManager.instance.positionTransform, GameManager.instance.GetSelected()[0].transform);
+        if (GameManager.instance.positionMode)
+        {
+            GameManager.instance.positionTransform.transform.parent = GameManager.instance.GetSelected()[0].transform;
+            GameManager.instance.positionTransform.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            GameManager.instance.positionTransform.SetActive(true);
+        }
+    }
+
+    public void ToggleSnapping()
+    {
+        Rescaler.instance.snapping ^= true;
     }
     #endregion
 }
