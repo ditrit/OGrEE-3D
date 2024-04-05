@@ -24,7 +24,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1231947173888
-    m_Localized: Select {str}
+    m_Localized: '{str} selected'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -40,7 +40,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 41761787744256
-    m_Localized: Remove {str} from selection
+    m_Localized: '{str} removed from selection'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -60,7 +60,7 @@ MonoBehaviour:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 43518869770240
-    m_Localized: Focus {str}
+    m_Localized: '{str} focused'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -69,12 +69,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 46758722146304
-    m_Localized: Display clearance for {str}
+    m_Localized: Clearance for {str} displayed
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 46801948643328
-    m_Localized: Hide local clearance for {str}
+    m_Localized: Local clearance for {str} hidden
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -291,32 +291,32 @@ MonoBehaviour:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 399184461434880
-    m_Localized: Display {str} origin
+    m_Localized: '{str} origin displayed'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 400297516470272
-    m_Localized: Hide {str} origin
+    m_Localized: '{str} origin hidden'
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 401462878670848
-    m_Localized: Hide tiles name for {str}
+    m_Localized: Tiles name for {str} hidden
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 401902429147136
-    m_Localized: Hide tiles color for {str}
+    m_Localized: Tiles color for {str} hidden
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 402538147221504
-    m_Localized: Display tiles name for {str}
+    m_Localized: Tiles name for {str} displayed
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 402598457118720
-    m_Localized: Display tiles color for {str}
+    m_Localized: Tiles color for {str} displayed
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
@@ -428,7 +428,7 @@ MonoBehaviour:
       m_Items:
       - rid: 5456596318824431623
   - m_Id: 1522042591907840
-    m_Localized: Disable Coordinates System for {str}
+    m_Localized: Coordinates System disabled for {str}
     m_Metadata:
       m_Items:
       - rid: 5456596318824431623
