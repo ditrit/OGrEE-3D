@@ -477,7 +477,12 @@ public class ObjectDisplayController : MonoBehaviour
 
     private void OnPositionMode(PositionModeEvent _e)
     {
-        cube.col.enabled = !_e.toggled;
+        if (_e.toggled)
+            cube.col.enabled = false;
+        else if (!GameManager.instance.GetSelected().Contains(gameObject))
+        {
+            cube.col.enabled = cube.rend.enabled;
+        }
     }
 
     /// <summary>
