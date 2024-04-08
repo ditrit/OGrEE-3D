@@ -45,6 +45,6 @@ public class Tile : MonoBehaviour
             };
         }
         else
-            GameManager.instance.AppendLogLine($"[{_hierarchyName}] Unknow tile texture: {texture}", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknow tile texture", new List<string>() { _hierarchyName, texture }), ELogTarget.logger, ELogtype.warning);
     }
 }

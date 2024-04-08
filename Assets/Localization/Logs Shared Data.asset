@@ -1,0 +1,373 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Logs Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Logs
+  m_TableCollectionNameGuidString: 5b2c7883f37690540b08c77e8befbd8e
+  m_Entries:
+  - m_Id: 41794385874944
+    m_Key: Add object to selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521319737167872
+    m_Key: Cache cleared at
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49650547953664
+    m_Key: Cache folder created at path
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1524506409963520
+    m_Key: Cannot focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 368159408656384
+    m_Key: Can't deserialize clearance attribute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 403384293527552
+    m_Key: Can't modify areas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40177636872192
+    m_Key: Client closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Key: Command received with unknown type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Key: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353114524094464
+    m_Key: Connection with client lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520685491294208
+    m_Key: Disable CLI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1522042591907840
+    m_Key: Disable Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Key: Display clearance for object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 399184461434880
+    m_Key: Display local CS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 402598457118720
+    m_Key: Display tiles color for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 402538147221504
+    m_Key: Display tiles name for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 82933142917120
+    m_Key: Distance between last two clicks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 79673497620480
+    m_Key: Distance from object origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81448644513792
+    m_Key: Distance from object tiles origin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353708823416832
+    m_Key: Domain doesn't exist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1513512988184576
+    m_Key: Edit in
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518979999207424
+    m_Key: Edit out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 59676954624
+    m_Key: Empty selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520636518600704
+    m_Key: Enable CLI
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521913482842112
+    m_Key: Enable Get Coordinates
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348431260717056
+    m_Key: Error on delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Key: Error on highlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Key: Error while connecting to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83849342488576
+    m_Key: Error while downloading file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89286666227712
+    m_Key: Fail to post on server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Key: 'Failed to connect with API: no token'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85286663360512
+    m_Key: 'Failed to connect with API: no url'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43518869770240
+    m_Key: Focus object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42752058724352
+    m_Key: Focus warning children
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42276936355840
+    m_Key: Focus warning type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88342473871360
+    m_Key: From API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Key: FullScreen value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46801948643328
+    m_Key: Hide clearance for object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 400297516470272
+    m_Key: Hide local CS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401902429147136
+    m_Key: Hide tiles color for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 401462878670848
+    m_Key: Hide tiles name for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 349166903889920
+    m_Key: Incorrect object interaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1444100285272064
+    m_Key: Invalid vertex array in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49985878364160
+    m_Key: Key not found at Value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48109283840000
+    m_Key: Load custom config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48324065759232
+    m_Key: Load default config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52485280894976
+    m_Key: Load default texture for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 83634078224384
+    m_Key: Local cache limit reached
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Key: Multiple selection error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44285567569920
+    m_Key: No focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87527084396544
+    m_Key: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53212464156672
+    m_Key: Null temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56973567856640
+    m_Key: Number of sensors warning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412829622865920
+    m_Key: Object already exists
+    m_Metadata:
+      m_Items: []
+  - m_Id: 458382108921856
+    m_Key: Object doesn't exist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55284987203584
+    m_Key: Objects count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1530884805496832
+    m_Key: One or more slots not found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 451722313338880
+    m_Key: Parent not found
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347743726211072
+    m_Key: Received data with unknow format
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Key: Remove object from selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 345545285963776
+    m_Key: Retrieving temperature unit error
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507883787620352
+    m_Key: Room height unit not supported
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1231947173888
+    m_Key: Select object
+    m_Metadata:
+      m_Items: []
+  - m_Id: 369996216012800
+    m_Key: Sensor doesn't exist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 399082057502720
+    m_Key: Set details level to
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353357227495424
+    m_Key: TCP client is closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Key: Tcp server will listen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 371025540157440
+    m_Key: Temperature must be a numerical value
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404037640261632
+    m_Key: There is no template for
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1509428906299392
+    m_Key: U helpers Toggled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1430718052175872
+    m_Key: Unable to draw a basic device without its parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1431154700193792
+    m_Key: Unable to draw a category without its parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404875465068544
+    m_Key: Unknow tile texture
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351870648717312
+    m_Key: Unknown camera command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1444961623347200
+    m_Key: Unknown category in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351198473752576
+    m_Key: Unknown category to interact with
+    m_Metadata:
+      m_Items: []
+  - m_Id: 369809695313920
+    m_Key: Unknown color to display
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1439873802571776
+    m_Key: Unknown object category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432542763585536
+    m_Key: Unknown template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351843675148288
+    m_Key: Unknown ui command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 444654990790656
+    m_Key: Unknown unit at creation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Key: Unrecognised temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53935725744128
+    m_Key: Value cannot be used as a color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1505563637059584
+    m_Key: Wrong pos value for sensor in template
+    m_Metadata:
+      m_Items: []
+  - m_Id: 368330188132352
+    m_Key: Wrong vector cardinality for clearance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94024887570432
+    m_Key: X objects created
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 5456596318824431616
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456596318824431616
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1711017359561

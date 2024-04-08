@@ -1,0 +1,437 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Logs_es
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: es
+  m_SharedData: {fileID: 11400000, guid: 5b2c7883f37690540b08c77e8befbd8e, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 3691382812341436417
+  m_TableData:
+  - m_Id: 41794385874944
+    m_Localized: "{str} adicionado a la selecci\xF3n\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1521319737167872
+    m_Localized: "Cache removido en \"{str}\" \r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 49650547953664
+    m_Localized: "Carpeta de cache creada en {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1524506409963520
+    m_Localized: "No se puede focalizar {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 368159408656384
+    m_Localized: "{str} : imposible de deserializar el atributo \"clearance\"\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 403384293527552
+    m_Localized: "{str} : Imposible de modificar \xE1reas de una room si hay hijos
+      dibujados dentro\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 40177636872192
+    m_Localized: "--- Cliente cerrado ---\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Localized: Comando recibido con un tipo desconocido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Localized: "Conectado a la API\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353114524094464
+    m_Localized: "Conexi\xF3n perdida con el cliente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520685491294208
+    m_Localized: "Desactivaci\xF3n de logs\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1522042591907840
+    m_Localized: Sistema de coordenadas desactivado para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 46758722146304
+    m_Localized: "M\xE1rgenes de {str} mostrados\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 399184461434880
+    m_Localized: "Origen de {str} mostrado\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 402598457118720
+    m_Localized: "Color de los mosaicos mostrado para {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 402538147221504
+    m_Localized: "Nombre de los mosaicos mostrado para {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 82933142917120
+    m_Localized: "Distancia entre los dos \xFAltimos clicks: {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 79673497620480
+    m_Localized: "Distancia del origen de {str0} : [{str1},{str2}] m / [{str3},{str4}]
+      t\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 81448644513792
+    m_Localized: "Distancia del origen de los mosaicos de {str0} : [{str1},{str2}]
+      m / [{str3},{str4}] t\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 353708823416832
+    m_Localized: "El dominio \"{str}\" no existe\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1513512988184576
+    m_Localized: "Inicio de la modificaci\xF3n de {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1518979999207424
+    m_Localized: "Fin de la modificaci\xF3n de {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 59676954624
+    m_Localized: "Selecci\xF3n vacia\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520636518600704
+    m_Localized: "Activaci\xF3n de logs\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521913482842112
+    m_Localized: Sistema de coordenadas activado para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 348431260717056
+    m_Localized: Error al remover
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Localized: Error al destacar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Localized: 'Error al conectar a la API : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 83849342488576
+    m_Localized: 'Error al descargar archivo en {str0} : {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 89286666227712
+    m_Localized: "Post fall\xF3 en el servidor"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85286663360512
+    m_Localized: "Error de conexi\xF3n con la API : url ausente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Localized: "Error de conexi\xF3n con la API : token ausente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43518869770240
+    m_Localized: '{str} enfocado'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 42752058724352
+    m_Localized: "Imposible focalizar {str} : ning\xFAn hijo encontrado"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 42276936355840
+    m_Localized: 'Imposible focalizar {str} : hay que ser un rack o device'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 88342473871360
+    m_Localized: 'De la API : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 49147051118592
+    m_Localized: 'Pantalla completa: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 46801948643328
+    m_Localized: "M\xE1rgenes de {str} ocultos"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 400297516470272
+    m_Localized: Origen de {str} oculto
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 401902429147136
+    m_Localized: Color de los mosaicos oculto para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 401462878670848
+    m_Localized: Nombre de los mosaicos oculto para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 349166903889920
+    m_Localized: "Interacci\xF3n de {str} incorrecta"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1444100285272064
+    m_Localized: "Array de v\xE9rtices inv\xE1lido en el template {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 49985878364160
+    m_Localized: '{str0} no encontrado en {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 48109283840000
+    m_Localized: "Cargando el archivo personalizado de configuraci\xF3n ({str})"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 48324065759232
+    m_Localized: "Cargando el archivo de configuraci\xF3n por defecto"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52485280894976
+    m_Localized: Cargando la textura por defecto para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 83634078224384
+    m_Localized: Limite del cache local alcanzado ({str}Mo)
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 41482233188352
+    m_Localized: "La selecci\xF3n m\xFAltiple es solamente para objetos del mismo
+      tipo y con el mismo padre"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44285567569920
+    m_Localized: "Ning\xFAn objeto focalizado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87527084396544
+    m_Localized: No conectado a una API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53212464156672
+    m_Localized: Sin unidad de temperatura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56973567856640
+    m_Localized: La cantidad de sensores debe ser igual o menor que {int0}, {int1}
+      fueron ignorados
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 412829622865920
+    m_Localized: '{str} ya existe'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 458382108921856
+    m_Localized: '{str} no existe'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1530884805496832
+    m_Localized: "Uno o m\xE1s slots de {str0} no encontrados en {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 451722313338880
+    m_Localized: "{str}\_: Padre no encontrado, este objeto no puede ser dibujado
+      de manera aut\xF3noma"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 347743726211072
+    m_Localized: Datos recibidos con un formato desconocido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Localized: "{str} retirado de la selecci\xF3n"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 345545285963776
+    m_Localized: "Objeto desconocido recibido durante la obtenci\xF3n de la unidad
+      de temperatura"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1507883787620352
+    m_Localized: 'Unidad de altura de room no soportada: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1231947173888
+    m_Localized: '{str} seleccionado'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 369996216012800
+    m_Localized: '{str0} : El sensor "{str1}" no existe'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 399082057502720
+    m_Localized: Nivel de detalle de {str0} ajustado a {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 353357227495424
+    m_Localized: "El cliente TCP est\xE1 cerrado"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Localized: El servidor TCP va a escuchar en el puerto {int}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 371025540157440
+    m_Localized: "{str}: La temperatura debe ser un valor num\xE9rico"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 404037640261632
+    m_Localized: No hay un template para {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1509428906299392
+    m_Localized: Ayuda U {str0} para {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1430718052175872
+    m_Localized: "Imposible dise\xF1ar un device b\xE1sico sin su padre"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1431154700193792
+    m_Localized: "Imposible dise\xF1ar un {str} sin su padre"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 404875465068544
+    m_Localized: '{str0}: Textura del mosaico "{str1}" desconocida'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 351870648717312
+    m_Localized: Comando de la camara desconocido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1444961623347200
+    m_Localized: Categoria desconocida en el template {str}
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 351198473752576
+    m_Localized: Categoria desconocida para interactuar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 369809695313920
+    m_Localized: '{str}: Color desconocido a mostrar'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1439873802571776
+    m_Localized: 'Categoria del objeto desconocida: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 432542763585536
+    m_Localized: "Template \"{str0}\" desconocido. Cancelando el dise\xF1o de {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 351843675148288
+    m_Localized: Comando de UI desconocido
+    m_Metadata:
+      m_Items: []
+  - m_Id: 444654990790656
+    m_Localized: "{str0}: Unidad \"{str1}\" desconocida durante la creaci\xF3n"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 53240142368768
+    m_Localized: 'Unidad de temperatura desconocida: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 53935725744128
+    m_Localized: El valor "{str}" no puede ser utilizado como color
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 1505563637059584
+    m_Localized: "Valor inv\xE1lido de posici\xF3n {str0} para el sensor {str1} en
+      el template {str2}"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 368330188132352
+    m_Localized: "{str}: cardinalidad vectorial incorrecta para los m\xE1rgenes"
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  - m_Id: 94024887570432
+    m_Localized: '{int:plural:1 objeto creado|{} objetos creados}'
+    m_Metadata:
+      m_Items:
+      - rid: 3691382812341436417
+  references:
+    version: 2
+    RefIds:
+    - rid: 3691382812341436417
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010860303260000001086daa16705000010462b282d0000001006cf876a05000010c6cad64e010000108639e06e0100001006284a680500001006dd862a0000001006600e6b010000100642296e0100001046371b6e0100001086606d4b00000010866e76480000001086bd134a00000010c640b241010000100634886005000010461781650500001086182c6805000010062c1c4e0000001046b2424c00000010c68694270000001046fde12600000010c65d732600000010c6d558500000001086f0b22c0000001086ed902a000000104687116c010000108633876d0100001046dc206d0100001046c1903d0100001086cc662105000010863e762d00000010c650c12b00000010862ebc2f000000108693104c000000104631d133000000100663777701000010c666e5a00100001006e554700500001006ccd69a01000010866cfb2500000010868d695b05000010c6d51e010000001006758250010000104688f66a010000100694944001000010861d7251010000100658786f01000010c64dd15c0500001086aba01505000010466a3b700100001046582f2205000010860757500100001086be8e1d05000010c635658901000010c64e699401000010c6ef6b3000000010c6e30d3100000010c6594d5905000010068efe4e0100001006e083550000

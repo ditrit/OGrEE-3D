@@ -11,12 +11,6 @@ public class ObjectGenerator
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_rk.id))
-        {
-            GameManager.instance.AppendLogLine($"{_rk.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newRack;
         if (!_rk.attributes.HasKeyAndValue("template"))
         {
@@ -37,7 +31,7 @@ public class ObjectGenerator
                     height /= 1000;
                     break;
                 default:
-                    GameManager.instance.AppendLogLine($"Unknown {_rk.attributes["heightUnit"]} unit at {_rk.name} creation.", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, _rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
                     return null;
             }
             Vector3 scale = new(size.x / 100, height, size.y / 100);
@@ -55,7 +49,7 @@ public class ObjectGenerator
             }
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_rk.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -111,41 +105,10 @@ public class ObjectGenerator
     ///<returns>The created Device</returns>
     public Device CreateDevice(SApiObject _deviceData, Transform _parent)
     {
-        if (_parent)
-        {
-            if (!(_parent.GetComponent<Rack>() || _parent.GetComponent<Device>()))
-            {
-                GameManager.instance.AppendLogLine($"Device must be child of a Rack or another Device", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-
-            // Check parent for subdevice
-            if (_parent.GetComponent<Rack>() == null
-                && (string.IsNullOrEmpty(_deviceData.attributes["slot"]) || string.IsNullOrEmpty(_deviceData.attributes["template"])))
-            {
-                GameManager.instance.AppendLogLine("A sub-device needs to be declared with a parent's slot and a template", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-
-            // Check if parent not hidden in a group
-            if (_parent.gameObject.activeSelf == false)
-            {
-                GameManager.instance.AppendLogLine("The parent object must be active (not hidden in a group)", ELogTarget.both, ELogtype.error);
-                return null;
-            }
-        }
-
-        // Check if unique hierarchyName
-        if (GameManager.instance.allItems.Contains(_deviceData.id))
-        {
-            GameManager.instance.AppendLogLine($"{_deviceData.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         // Check template
         if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_deviceData.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"Unknown template \"{_deviceData.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _deviceData.attributes["template"], _deviceData.name }), ELogTarget.both, ELogtype.error);
             return null;
         }
 
@@ -202,15 +165,10 @@ public class ObjectGenerator
     ///<returns>The generated device</returns>
     private GameObject GenerateTemplatedDevice(Transform _parent, string _template)
     {
-        if (GameManager.instance.objectTemplates.ContainsKey(_template))
-        {
-            GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
-            go.transform.parent = _parent;
-            go.GetComponent<ObjectDisplayController>().isTemplate = false;
-            return go;
-        }
-        GameManager.instance.AppendLogLine($"Unknown template \"{_template}\"", ELogTarget.both, ELogtype.error);
-        return null;
+        GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
+        go.transform.parent = _parent;
+        go.GetComponent<ObjectDisplayController>().isTemplate = false;
+        return go;
     }
 
     ///<summary>
@@ -221,46 +179,24 @@ public class ObjectGenerator
     ///<returns>The created rackGroup</returns>
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _gr.parentId);
-        if (!parent)
-        {
-            GameManager.instance.AppendLogLine("Parent not found", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-        string parentCategory = parent.GetComponent<OgreeObject>().category;
-        if (parentCategory != Category.Room && parentCategory != Category.Rack)
-        {
-            GameManager.instance.AppendLogLine("A group must be a child of a room or a rack", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-
-        if (GameManager.instance.allItems.Contains(_gr.id))
-        {
-            GameManager.instance.AppendLogLine($"{_gr.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         List<Transform> content = new();
         string[] contentNames = _gr.attributes["content"].Split(',');
         foreach (string cn in contentNames)
         {
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
             if (go && go.GetComponent<OgreeObject>())
-            {
-                if ((parentCategory == Category.Room && (go.GetComponent<Rack>() || go.GetComponent<Corridor>()))
-                    || parentCategory == Category.Rack && go.GetComponent<Device>())
-                    content.Add(go.transform);
-            }
+                content.Add(go.transform);
             else
-                GameManager.instance.AppendLogLine($"{_gr.parentId}.{cn} doesn't exists.", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object doesn't exist", $"{_gr.parentId}.{cn}"), ELogTarget.both, ELogtype.warning);
         }
         if (content.Count == 0)
             return null;
 
         GameObject newGr = Object.Instantiate(GameManager.instance.labeledBoxModel);
         newGr.name = _gr.name;
-        newGr.transform.parent = parent;
+        newGr.transform.parent = _parent;
 
+        string parentCategory = _parent.GetComponent<OgreeObject>().category;
         Group gr = newGr.AddComponent<Group>();
         Utils.ShapeGroup(content, gr, parentCategory);
         gr.UpdateFromSApiObject(_gr);
@@ -294,12 +230,6 @@ public class ObjectGenerator
     ///<returns>The created corridor</returns>
     public Corridor CreateCorridor(SApiObject _co, Transform _parent = null)
     {
-        if (GameManager.instance.allItems.Contains(_co.id))
-        {
-            GameManager.instance.AppendLogLine($"{_co.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newCo = Object.Instantiate(GameManager.instance.labeledBoxModel);
         newCo.name = _co.name;
         newCo.transform.parent = _parent;
@@ -353,13 +283,7 @@ public class ObjectGenerator
     ///<returns>The created sensor</returns>
     public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _se.parentId);
-        if (!parent)
-        {
-            GameManager.instance.AppendLogLine($"Parent not found", ELogTarget.both, ELogtype.error);
-            return null;
-        }
-        OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
+        OgreeObject parentOgree = _parent.GetComponent<OgreeObject>();
         Vector3 parentSize = _parent.GetChild(0).localScale;
 
         GameObject newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
@@ -395,7 +319,7 @@ public class ObjectGenerator
     {
         if (GameManager.instance.allItems.Contains(_go.id))
         {
-            GameManager.instance.AppendLogLine($"{_go.id} already exists.", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _go.id), ELogTarget.both, ELogtype.warning);
             return null;
         }
 
@@ -409,11 +333,6 @@ public class ObjectGenerator
                 "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
                 _ => null
             };
-            if (!newGeneric)
-            {
-                GameManager.instance.AppendLogLine($"Incorrect generic shape {_go.attributes["shape"]}", ELogTarget.both, ELogtype.error);
-                return null;
-            }
             Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
             newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
 
@@ -432,7 +351,7 @@ public class ObjectGenerator
             }
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template \"{_go.attributes["template"]}\"", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

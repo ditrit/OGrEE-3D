@@ -199,7 +199,7 @@ public class UHelpersManager : MonoBehaviour
             GenerateUHelpers(rack);
         rack.areUHelpersToggled = !rack.areUHelpersToggled;
         rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
-        GameManager.instance.AppendLogLine($"U helpers {(rack.areUHelpersToggled ? "ON" : "OFF")} for {_target.name}.", ELogTarget.logger, ELogtype.info);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "U helpers Toggled", new List<string>() { rack.areUHelpersToggled ? "ON" : "OFF", _target.name }), ELogTarget.logger, ELogtype.info);
     }
 
     ///<summary>

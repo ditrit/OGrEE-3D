@@ -1,0 +1,451 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Logs_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 5b2c7883f37690540b08c77e8befbd8e, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456596318824431623
+  m_TableData:
+  - m_Id: 59676954624
+    m_Localized: Empty selection
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1231947173888
+    m_Localized: '{str} selected'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 40177636872192
+    m_Localized: '--- Client closed ---
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Localized: Multiple selection should be same type of objects and belong to
+      the same parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Localized: '{str} removed from selection'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 41794385874944
+    m_Localized: "{str} added to selection\r"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 42276936355840
+    m_Localized: 'Unable to focus {str}: it should be a rack or a device'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 42752058724352
+    m_Localized: 'Unable to focus {str}: no children found'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 43518869770240
+    m_Localized: '{str} focused'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 44285567569920
+    m_Localized: No focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Localized: Clearance for {str} displayed
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 46801948643328
+    m_Localized: Local clearance for {str} hidden
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 48109283840000
+    m_Localized: Load custom config file ({str})
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 48324065759232
+    m_Localized: Load default config file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Localized: 'FullScreen: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 49650547953664
+    m_Localized: Cache folder created at {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 49985878364160
+    m_Localized: '{str0} not found at {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 52485280894976
+    m_Localized: Load default texture for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 53212464156672
+    m_Localized: Null temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Localized: 'Unrecognised temperature unit: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 53935725744128
+    m_Localized: '"{str}" value cannot be used as a color'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 55284987203584
+    m_Localized: 'Sites: {int0}
+
+      Buildings: {int1}
+
+      Rooms: {int2}
+
+      Racks:
+      {int3}
+
+      Devices: {int4}
+
+      Components: {int5}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 56973567856640
+    m_Localized: Number of sensors should be equal or less than {int0}, {int1} of
+      them have been ignored
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 79673497620480
+    m_Localized: 'Distance from {str0} origin: [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 81448644513792
+    m_Localized: 'Distance from {str0} tiles origin: [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 82933142917120
+    m_Localized: 'Distance between last two clicks: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 83634078224384
+    m_Localized: Local cache limit reached ({str}Mo)
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 83849342488576
+    m_Localized: 'Error while downloading file at "{str0}": {str1}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 85286663360512
+    m_Localized: 'Failed to connect with API: no url'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Localized: 'Failed to connect with API: no token'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Localized: Connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Localized: 'Error while connecting to API: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 87527084396544
+    m_Localized: Not connected to API
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88342473871360
+    m_Localized: 'From API: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 89286666227712
+    m_Localized: Fail to post on server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94024887570432
+    m_Localized: '{int:plural:1 object|{} objects} created'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 345545285963776
+    m_Localized: Unknown object received while retrieving temperature unit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347743726211072
+    m_Localized: Received data with unknow format
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348431260717056
+    m_Localized: Error on delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Localized: Command received with unknown type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 349166903889920
+    m_Localized: Incorrect {str} interaction
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 351198473752576
+    m_Localized: Unknown category to interact with
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Localized: Error on highlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351843675148288
+    m_Localized: Unknown UI command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351870648717312
+    m_Localized: Unknown camera command
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Localized: TCP server will listen at port {int}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 353114524094464
+    m_Localized: Connection with client lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353357227495424
+    m_Localized: TCP client is closed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353708823416832
+    m_Localized: Domain "{str}" doesn't exist
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 368159408656384
+    m_Localized: '{str}: can''t deserialize "clearance" attribute'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 368330188132352
+    m_Localized: '{str}: wrong vector cardinality for clearance'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 369809695313920
+    m_Localized: '{str}: Unknown color to display'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 369996216012800
+    m_Localized: '{str0}: Sensor "{str1}" does not exist'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 371025540157440
+    m_Localized: '{str}: Temperature must be a numerical value'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 399082057502720
+    m_Localized: Set {str0} details level to {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 399184461434880
+    m_Localized: '{str} origin displayed'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 400297516470272
+    m_Localized: '{str} origin hidden'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 401462878670848
+    m_Localized: Tiles name for {str} hidden
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 401902429147136
+    m_Localized: Tiles color for {str} hidden
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 402538147221504
+    m_Localized: Tiles name for {str} displayed
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 402598457118720
+    m_Localized: Tiles color for {str} displayed
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 403384293527552
+    m_Localized: '{str}: Can''t modify areas if room has children drawn in it'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 404037640261632
+    m_Localized: There is no template for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 404875465068544
+    m_Localized: '{str0}: Unknow tile texture "{str1}"'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 412829622865920
+    m_Localized: '{str} already exists'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 432542763585536
+    m_Localized: Unknown template "{str0}". Abord drawing {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 444654990790656
+    m_Localized: '{str0}: Unknown "{str1}" unit at creation'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 451722313338880
+    m_Localized: '{str}: Parent not found, this object can''t be drawn as a standalone'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 458382108921856
+    m_Localized: '{str} doesn''t exist'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1430718052175872
+    m_Localized: Unable to draw a basic device without its parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1431154700193792
+    m_Localized: Unable to draw a {str} without its parent
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1439873802571776
+    m_Localized: 'Unknown object category: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1444100285272064
+    m_Localized: Invalid vertex array in template {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1444961623347200
+    m_Localized: Unknown category in template {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1505563637059584
+    m_Localized: Wrong {str0} pos value for sensor {str1} in template {str2}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1507883787620352
+    m_Localized: 'Room height unit not supported: {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1509428906299392
+    m_Localized: U helpers {str0} for {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1513512988184576
+    m_Localized: "Start of editing of {str}\r"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1518979999207424
+    m_Localized: End of editing of {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1520636518600704
+    m_Localized: Enable logs writing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520685491294208
+    m_Localized: Disable logs writing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521319737167872
+    m_Localized: Cache cleared at "{str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1521913482842112
+    m_Localized: Enable Coordinates System for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1522042591907840
+    m_Localized: Coordinates System disabled for {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1524506409963520
+    m_Localized: Cannot focus {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  - m_Id: 1530884805496832
+    m_Localized: One or more slots from {str0} not found in {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431623
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456596318824431623
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d3100000010060a4832000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d7251010000104688f66a0100001006600e6b010000104687116c0100001046dc206d010000108633876d0100001046371b6e010000100642296e010000108639e06e010000100658786f01000010466a3b70010000100663777701000010c635658901000010c64e69940100001006ccd69a01000010c666e5a00100001086aba0150500001086be8e1d0500001086cc66210500001046582f2205000010c6594d5905000010868d695b05000010c64dd15c050000100634886005000010461781650500001086daa1670500001086182c680500001006284a680500001006cf876a0500001006e5547005000010862ebc2f00000010462b282d0000

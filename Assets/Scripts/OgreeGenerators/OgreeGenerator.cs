@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class OgreeGenerator : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (Utils.GetObjectById(_obj.id))
         {
-            GameManager.instance.AppendLogLine($"{_obj.name} already exists.", ELogTarget.none, ELogtype.info);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _obj.name), ELogTarget.none, ELogtype.info);
             ResetCoroutine();
             return null;
         }
@@ -76,12 +77,12 @@ public class OgreeGenerator : MonoBehaviour
         {
             if (_obj.category == Category.Device && string.IsNullOrEmpty(_obj.attributes["template"]))
             {
-                GameManager.instance.AppendLogLine("Unable to draw a basic device without its parent.", ELogTarget.both, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unable to draw a basic device without its parent"), ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
             if (_obj.category == Category.Corridor || _obj.category == Category.Group)
             {
-                GameManager.instance.AppendLogLine($"Unable to draw a {_obj.category} without its parent.", ELogTarget.both, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unable to draw a category without its parent.", _obj.category), ELogTarget.both, ELogtype.errorCli);
                 return null;
             }
 
@@ -141,7 +142,7 @@ public class OgreeGenerator : MonoBehaviour
                 break;
             default:
                 newObject = null;
-                GameManager.instance.AppendLogLine($"Unknown object type ({_obj.category})", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown object category", _obj.category), ELogTarget.both, ELogtype.error);
                 break;
         }
         if (newObject)
@@ -179,6 +180,12 @@ public class OgreeGenerator : MonoBehaviour
     ///<returns>The created sensor</returns>
     public Sensor CreateSensorFromSApiObject(SApiObject _obj, Transform _parent = null)
     {
+        if (!Utils.FindParent(_parent, _obj.parentId))
+        {
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _obj.name), ELogTarget.both, ELogtype.error);
+            ResetCoroutine();
+            return null;
+        }
         ResetCoroutine();
         return objectGenerator.CreateSensor(_obj, _parent);
     }

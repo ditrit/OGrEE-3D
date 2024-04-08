@@ -313,22 +313,16 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_value">The attribute to set, with its value if needed</param>
     public void SetLabelFont(string _value)
     {
-        string pattern = "^(bold|italic|color@[0-9a-fA-F]{6})$";
-        if (Regex.IsMatch(_value, pattern))
+        if (_value == "bold")
+            isBold = !isBold;
+        else if (_value == "italic")
+            isItalic = !isItalic;
+        else if (_value.Contains("color"))
         {
-            if (_value == "bold")
-                isBold = !isBold;
-            else if (_value == "italic")
-                isItalic = !isItalic;
-            else if (_value.Contains("color"))
-            {
-                string[] data = _value.Split('@');
-                color = data[1];
-            }
-            UpdateLabels();
+            string[] data = _value.Split('@');
+            color = data[1];
         }
-        else
-            GameManager.instance.AppendLogLine("Unknown labelFont attribute", ELogTarget.both, ELogtype.warning);
+        UpdateLabels();
     }
 
     ///<summary>
@@ -337,13 +331,7 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_value">The color to set</param>
     public void SetLabelBackgroundColor(string _value)
     {
-        string pattern = "[0-9a-fA-F]{6}$";
-        if (Regex.IsMatch(_value, pattern))
-        {
-            backgroundColor = _value;
-            UpdateLabels();
-        }
-        else
-            GameManager.instance.AppendLogLine("Unknown color", ELogTarget.both, ELogtype.warning);
+        backgroundColor = _value;
+        UpdateLabels();
     }
 }
