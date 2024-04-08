@@ -10,25 +10,33 @@ public class ObjectMover : MonoBehaviour
         Y,
         Z
     }
-    [SerializeField]
-    private WhichOne axis;
-    [SerializeField]
-    private bool isRotation;
-    [SerializeField]
-    private new MeshCollider collider;
-    private bool active = false;
+    [SerializeField] Color baseColor;
+    [SerializeField] new Renderer renderer;
+    [SerializeField] private WhichOne axis;
+    [SerializeField] private bool isRotation;
+    [SerializeField] private new MeshCollider collider;
+    public bool active = false;
     private Vector3 previousMousePositionScreen;
     private Vector3 offset;
     public void Move()
     {
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(Camera.main.transform.position, ray.direction, out RaycastHit hit);
+
+        if (hit.collider == collider)
+            renderer.material.color = Color.white;
+        else if (!active)
+        {
+            renderer.material.color = baseColor;
+            return;
+        }
+
         if (!Input.GetMouseButton(0))
         {
             active = false;
             return;
         }
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(Camera.main.transform.position, ray.direction, out RaycastHit hit);
 
         Vector3 axisAlong = axis switch
         {
@@ -40,19 +48,16 @@ public class ObjectMover : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (hit.collider == collider)
-                {
-                    active = true;
-                    previousMousePositionScreen = Input.mousePosition;
-                }
+                active = true;
+                previousMousePositionScreen = Input.mousePosition;
             }
             if (!active)
                 return;
             Vector3 aaah = Camera.main.transform.InverseTransformVector(Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward));
-            float distance =Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(aaah, Input.mousePosition - previousMousePositionScreen, Camera.main.transform.forward)) *(Input.mousePosition - previousMousePositionScreen).magnitude;
+            float distance = Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(aaah, Input.mousePosition - previousMousePositionScreen, Camera.main.transform.forward)) * (Input.mousePosition - previousMousePositionScreen).magnitude;
             Rescaler.instance.realDisplacement.Rotate(distance * Rescaler.instance.realDisplacement.InverseTransformVector(axisAlong));
             previousMousePositionScreen = Input.mousePosition;
-        }            
+        }
         else
         {
             // https://fr.wikipedia.org/wiki/Plan_(math%C3%A9matiques)#Dans_un_cadre_affine
@@ -79,11 +84,8 @@ public class ObjectMover : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (hit.collider == collider)
-                {
-                    active = true;
-                    offset = Vector3.Project(mousePosition - Rescaler.instance.realDisplacement.position, axisAlong);
-                }
+                active = true;
+                offset = Vector3.Project(mousePosition - Rescaler.instance.realDisplacement.position, axisAlong);
             }
             if (!active)
                 return;

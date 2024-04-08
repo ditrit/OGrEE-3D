@@ -66,8 +66,17 @@ public class Rescaler : MonoBehaviour
     void Update()
     {
         transform.GetChild(0).localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * Vector3.one;
+        bool alreadyActive = false;
         foreach (ObjectMover objectMover in objectMovers)
-            objectMover.Move();
+            if (objectMover.active)
+            {
+                objectMover.Move();
+                alreadyActive = true;
+                break;
+            }
+        if (!alreadyActive)
+            foreach (ObjectMover objectMover in objectMovers)
+                objectMover.Move();
         if (snapping)
         {
             Vector3 move = (realDisplacement.localPosition - initialPosition[0]) / posXYUnit[0];
