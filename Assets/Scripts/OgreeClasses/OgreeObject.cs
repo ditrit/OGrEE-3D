@@ -168,7 +168,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     protected void SetCurrentLod(int _level)
     {
         currentLod = _level;
-        GameManager.instance.AppendLogLine($"Set {name}'s details level to {currentLod}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Set details level to", new List<string>() { name, currentLod.ToString() }), ELogTarget.logger, ELogtype.success);
 
         if (_level != 0)
         {
@@ -233,7 +233,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public void ToggleCS()
     {
         if (localCS)
-            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
+            localCS.CleanDestroy("Logs", "Hide local CS", name);
         else
             BuildLocalCS();
     }
@@ -245,7 +245,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public void ToggleCS(bool _value)
     {
         if (localCS && !_value)
-            localCS.CleanDestroy($"Hide local Coordinate System for {name}");
+            localCS.CleanDestroy("Logs", "Hide local CS", name);
         else if (!localCS && _value)
             BuildLocalCS();
     }
@@ -263,7 +263,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         localCS.transform.localScale = scale * Vector3.one;
         localCS.transform.localEulerAngles = Vector3.zero;
         localCS.transform.localPosition = this is Group ? transform.GetChild(0).localScale / -2f : Vector3.zero;
-        GameManager.instance.AppendLogLine($"Display local Coordinate System for {name}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Display local CS", name), ELogTarget.logger, ELogtype.success);
     }
 
     /// <summary>

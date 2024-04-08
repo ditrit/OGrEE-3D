@@ -1,5 +1,6 @@
 ﻿#if TRILIB
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -76,7 +77,7 @@ public class ModelLoader : MonoBehaviour
 
         if (sizeMo > GameManager.instance.configHandler.config.cacheLimitMo)
         {
-            GameManager.instance.AppendLogLine($"Local cache limit reached ({sizeMo}Mo)", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Local cache limit reached", sizeMo.ToString()), ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -89,7 +90,7 @@ public class ModelLoader : MonoBehaviour
             }
             catch (Exception _e)
             {
-                GameManager.instance.AppendLogLine($"Error while downloading file at \"{_url}\": {_e.Message}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Error while downloading file", new List<string>() { _url, _e.Message }), ELogTarget.both, ELogtype.error);
                 File.Delete(_filePath);
             }
         }

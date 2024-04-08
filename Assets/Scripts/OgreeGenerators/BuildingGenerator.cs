@@ -12,12 +12,6 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_bd.id))
-        {
-            GameManager.instance.AppendLogLine($"{_bd.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         SBuildingFromJson template = new();
         if (_bd.attributes.HasKeyAndValue("template"))
         {
@@ -25,7 +19,7 @@ public class BuildingGenerator
                 template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_bd.attributes["template"]}. Abord drawing {_bd.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -90,12 +84,6 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_ro.id))
-        {
-            GameManager.instance.AppendLogLine($"{_ro.id} already exists.", ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         SRoomFromJson template = new();
         if (_ro.attributes.HasKeyAndValue("template"))
         {
@@ -103,7 +91,7 @@ public class BuildingGenerator
                 template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine($"Unknown template {_ro.attributes["template"]}. Abort drawing {_ro.name}", ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

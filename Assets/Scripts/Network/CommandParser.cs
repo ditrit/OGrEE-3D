@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class CommandParser
 {
@@ -70,7 +71,7 @@ public class CommandParser
         }
         catch (System.Exception)
         {
-            GameManager.instance.AppendLogLine("Received data with unknow format.", ELogTarget.both, ELogtype.errorCli);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Received data with unknow format"), ELogTarget.both, ELogtype.errorCli);
         }
         switch (command["type"])
         {
@@ -133,7 +134,7 @@ public class CommandParser
                     if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToDel)
                         await GameManager.instance.DeleteItem(objToDel, false);
                     else
-                        GameManager.instance.AppendLogLine("Error on delete", ELogTarget.both, ELogtype.errorCli);
+                        GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Error on delete"), ELogTarget.both, ELogtype.errorCli);
                 }
                 break;
             case CommandType.Focus:
@@ -178,7 +179,7 @@ public class CommandParser
                 DeleteLayer(command["data"].ToString());
                 break;
             default:
-                GameManager.instance.AppendLogLine("Command received with unknown type", ELogTarget.both, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Command received with unknown type"), ELogTarget.both, ELogtype.errorCli);
                 break;
         }
     }
@@ -249,7 +250,7 @@ public class CommandParser
             }
 
             if (canDraw)
-                GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.both, ELogtype.infoCli);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "X objects created", physicalObjects.Count + logicalObjects.Count), ELogTarget.logger, ELogtype.successApi);
         }
         canDraw = true;
     }
@@ -309,7 +310,7 @@ public class CommandParser
                         building.ToggleCS(command.value == "true");
                         break;
                     default:
-                        GameManager.instance.AppendLogLine("Incorrect building interaction", ELogTarget.both, ELogtype.warningCli);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Incorrect object interaction", "building"), ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -326,7 +327,7 @@ public class CommandParser
                         room.ToggleCS(command.value == "true");
                         break;
                     default:
-                        GameManager.instance.AppendLogLine("Incorrect room interaction", ELogTarget.both, ELogtype.warningCli);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Incorrect object interaction", "room"), ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -355,7 +356,7 @@ public class CommandParser
                         UHelpersManager.instance.ToggleU(rack.gameObject, command.value == "true");
                         break;
                     default:
-                        GameManager.instance.AppendLogLine("Incorrect rack interaction", ELogTarget.both, ELogtype.warningCli);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Incorrect object interaction", "rack"), ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -381,7 +382,7 @@ public class CommandParser
                         device.ToggleCS(command.value == "true");
                         break;
                     default:
-                        GameManager.instance.AppendLogLine("Incorrect device interaction", ELogTarget.both, ELogtype.warningCli);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Incorrect object interaction", "device"), ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
@@ -401,12 +402,12 @@ public class CommandParser
                         group.ToggleContent(command.value == "true");
                         break;
                     default:
-                        GameManager.instance.AppendLogLine("Incorrect group interaction", ELogTarget.both, ELogtype.warningCli);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Incorrect object interaction", "group"), ELogTarget.both, ELogtype.warningCli);
                         break;
                 }
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown category to interact with", ELogTarget.both, ELogtype.warningCli);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unknown category to interact with"), ELogTarget.both, ELogtype.warningCli);
                 break;
         }
     }
@@ -433,7 +434,7 @@ public class CommandParser
                 if (obj)
                     EventManager.instance.Raise(new HighlightEvent(obj));
                 else
-                    GameManager.instance.AppendLogLine("Error on highlight", ELogTarget.both, ELogtype.errorCli);
+                    GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Error on highlight"), ELogTarget.both, ELogtype.errorCli);
                 break;
             case Command.ClearCache:
                 if (GameManager.instance.objectRoot)
@@ -455,7 +456,7 @@ public class CommandParser
                     UiManager.instance.ClearCache();
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown ui command", ELogTarget.both, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unknown ui command"), ELogTarget.both, ELogtype.errorCli);
                 break;
         }
     }
@@ -480,7 +481,7 @@ public class CommandParser
                 GameManager.instance.cameraControl.WaitCamera(manip.rotation.y);
                 break;
             default:
-                GameManager.instance.AppendLogLine("Unknown camera command", ELogTarget.both, ELogtype.errorCli);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unknown camera command"), ELogTarget.both, ELogtype.errorCli);
                 break;
         }
     }

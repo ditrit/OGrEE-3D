@@ -50,12 +50,12 @@ public class Item : OgreeObject
                 List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
                 if (lengths == null)
                 {
-                    GameManager.instance.AppendLogLine($"{_src.name} : can't deserialize clearance attribute", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Can't deserialize clearance attribute", _src.name), ELogTarget.both, ELogtype.error);
                     break;
                 }
                 if (lengths.Count != 6)
                 {
-                    GameManager.instance.AppendLogLine($"{_src.name} : wrong vector cardinality for clearance", ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Wrong vector cardinality for clearance", _src.name), ELogTarget.both, ELogtype.error);
                     break;
                 }
                 clearanceHandler.Initialize(lengths[0], lengths[1], lengths[2], lengths[3], lengths[4], lengths[5], transform);
@@ -87,7 +87,7 @@ public class Item : OgreeObject
         else
         {
             UpdateColorByDomain();
-            GameManager.instance.AppendLogLine($"[{id}] Unknown color to display", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown color to display", id), ELogTarget.both, ELogtype.warning);
         }
     }
 
@@ -111,7 +111,7 @@ public class Item : OgreeObject
 
         if (!GameManager.instance.allItems.Contains(domain))
         {
-            GameManager.instance.AppendLogLine($"Domain \"{domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", base.domain), ELogTarget.both, ELogtype.error);
             return;
         }
 
@@ -148,7 +148,7 @@ public class Item : OgreeObject
                 sensorTransform.GetComponent<Sensor>().SetTemperature(Utils.ParseDecFrac(_value));
             else
             {
-                GameManager.instance.AppendLogLine($"[{id}] Sensor {_sensorName} does not exist", ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
                 return;
             }
 
@@ -173,7 +173,7 @@ public class Item : OgreeObject
             }
         }
         else
-            GameManager.instance.AppendLogLine($"[{id}] Temperature must be a numerical value", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Temperature must be a numerical value", id), ELogTarget.both, ELogtype.warning);
     }
 
     /// <summary>

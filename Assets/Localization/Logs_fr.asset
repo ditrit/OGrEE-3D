@@ -1,0 +1,440 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Logs_fr
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 5b2c7883f37690540b08c77e8befbd8e, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456596318824431624
+  m_TableData:
+  - m_Id: 59676954624
+    m_Localized: "S\xE9lection vide"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1231947173888
+    m_Localized: "{str} s\xE9lectionn\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 40177636872192
+    m_Localized: "--- Client ferm\xE9 ---"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41482233188352
+    m_Localized: "La s\xE9lection multiple doit porter sur le m\xEAme type d'objets
+      et appartenir au m\xEAme parent"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41761787744256
+    m_Localized: "{str} retir\xE9 de la s\xE9lection"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 41794385874944
+    m_Localized: "{str} ajout\xE9 \xE0 la s\xE9lection"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 42276936355840
+    m_Localized: "Impossible d'isoler {str} : il doit \xEAtre un rack ou un device"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 42752058724352
+    m_Localized: "Impossible d'isoler {str} : aucun enfant trouv\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 43518869770240
+    m_Localized: "{str} isol\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 44285567569920
+    m_Localized: "Aucun objet isol\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46758722146304
+    m_Localized: "D\xE9gagement de {str} affich\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 46801948643328
+    m_Localized: "D\xE9gagement de {str} masqu\xE9"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 48109283840000
+    m_Localized: "Chargement du fichier de configuration personnalis\xE9 ({str})"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 48324065759232
+    m_Localized: "Chargement du fichier de configuration par d\xE9faut"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49147051118592
+    m_Localized: "Plein \xE9cran : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 49650547953664
+    m_Localized: "Dossier de cache cr\xE9\xE9 \xE0 {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 49985878364160
+    m_Localized: "{str0} non trouv\xE9 \xE0 {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 52485280894976
+    m_Localized: "Chargement de la texture par d\xE9faut pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 53212464156672
+    m_Localized: "Unit\xE9 de temp\xE9rature nulle"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53240142368768
+    m_Localized: "Unit\xE9 de temp\xE9rature non reconnue : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 53935725744128
+    m_Localized: "La valeur \"{str}\" ne peut pas \xEAtre utilis\xE9e comme couleur"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 55284987203584
+    m_Localized: 
+    m_Metadata:
+      m_Items: []
+  - m_Id: 56973567856640
+    m_Localized: "Le nombre de capteur devrait \xEAtre \xE9gal ou moins que {int0},
+      {int1} d'entre eux ont \xE9t\xE9 ignor\xE9s"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 79673497620480
+    m_Localized: 'Distance depuis l''origine de {str0} : [{str1},{str2}] m / [{str3},{str4}]
+      t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 81448644513792
+    m_Localized: 'Distance depuis l''origine des dalles de {str0} : [{str1},{str2}]
+      m / [{str3},{str4}] t'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 82933142917120
+    m_Localized: 'Distance entre les deux derniers clics : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 83634078224384
+    m_Localized: Limite du cache local atteinte ({str}Mo)
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 83849342488576
+    m_Localized: "Erreur lors du t\xE9l\xE9chargement du fichier \xE0 {str0} : {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 85286663360512
+    m_Localized: "Echec de connexion \xE0 l'API : pas d'url"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85398206681088
+    m_Localized: "Echec de connexion \xE0 l'API : pas de token"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85845789249536
+    m_Localized: "Connect\xE9 \xE0 l'API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 85882904645632
+    m_Localized: "Erreur lors de la connexion \xE0 l'API : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 87527084396544
+    m_Localized: "Non connect\xE9 \xE0 une API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88342473871360
+    m_Localized: 'De l''API : {str}'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 89286666227712
+    m_Localized: Echec du post sur le serveur
+    m_Metadata:
+      m_Items: []
+  - m_Id: 94024887570432
+    m_Localized: "{int:plural:1 objet cr\xE9\xE9|{} objets cr\xE9\xE9s}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 345545285963776
+    m_Localized: "Objet inconnu re\xE7u lors de l'obtention de l'unit\xE9 de temp\xE9rature"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347743726211072
+    m_Localized: "Donn\xE9es re\xE7ues avec un format inconnu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348431260717056
+    m_Localized: Erreur lors de la suppression
+    m_Metadata:
+      m_Items: []
+  - m_Id: 348643597357056
+    m_Localized: "Commande re\xE7ue avec un type inconnu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 349166903889920
+    m_Localized: Interaction de {str} incorrecte
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 351198473752576
+    m_Localized: "Cat\xE9gorie inconnue avec laquelle interagir"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351452111704064
+    m_Localized: Erreur lors de l'accentuation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351843675148288
+    m_Localized: Commande d'UI inconnue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351870648717312
+    m_Localized: Commande de camera inconnue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 352481859473408
+    m_Localized: "Le serveur TCP va \xE9couter sur le port {int}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 353114524094464
+    m_Localized: Connexion avec le client perdue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353357227495424
+    m_Localized: "Le client TCP est ferm\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 353708823416832
+    m_Localized: Le domain "{str}" n'existe pas
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 368159408656384
+    m_Localized: "{str} : impossible de d\xE9s\xE9rialiser l'attribut \"clearance\""
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 368330188132352
+    m_Localized: "{str}\_: cardinalit\xE9 vectorielle incorrecte pour le d\xE9gagement"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 369809695313920
+    m_Localized: "{str} : Couleur inconnue \xE0 afficher"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 369996216012800
+    m_Localized: '{str0} : Le capteur "{str1}" n''existe pas'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 371025540157440
+    m_Localized: "{str} : La temp\xE9rature doit \xEAtre une valeur num\xE9rique"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 399184461434880
+    m_Localized: "Origine de {str} affich\xE9e"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 400297516470272
+    m_Localized: "Origine de {str} cach\xE9e"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 399082057502720
+    m_Localized: "Niveau de d\xE9tail de {str0} r\xE9gl\xE9 \xE0 {str1}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 401462878670848
+    m_Localized: "Nom des dalles cach\xE9 pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 401902429147136
+    m_Localized: "Couleur des dalles cach\xE9e pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 402538147221504
+    m_Localized: "Nom des dalles affich\xE9 pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 402598457118720
+    m_Localized: "Couleur des dalles affich\xE9e pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 403384293527552
+    m_Localized: "{str} : Impossible de modifier les zones d'une room si des enfants
+      sont dessin\xE9s dedans"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 404037640261632
+    m_Localized: Il n'y a pas de template pour {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 404875465068544
+    m_Localized: '{str0}: Texture de dalle "{str1}" inconnue'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 412829622865920
+    m_Localized: "{str} existe d\xE9j\xE0"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 432542763585536
+    m_Localized: Template "{str0}" inconnu. Abandon du dessin de {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 444654990790656
+    m_Localized: "{str0}: Unit\xE9 \"{str1}\" inconnue lors de la cr\xE9ation"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 451722313338880
+    m_Localized: "{str}\_: Parent introuvable, cet objet ne peut pas \xEAtre dessin\xE9
+      de mani\xE8re autonome"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 458382108921856
+    m_Localized: '{str} n''existe pas'
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1430718052175872
+    m_Localized: Impossible de dessiner un device basique sans son parent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1431154700193792
+    m_Localized: Impossible de dessiner un {str} sans son parent
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1439873802571776
+    m_Localized: "Cat\xE9gorie d'object inconnue : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1444100285272064
+    m_Localized: Tableau de sommets invalide dans le template {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1444961623347200
+    m_Localized: "Cat\xE9gorie inconnue dans le template {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1505563637059584
+    m_Localized: Mauvaise valeur de position {str0} pour le capteur {str1} dans le
+      template {str2}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1507883787620352
+    m_Localized: "Unit\xE9 de hauteur de room non suppor\xE9e : {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1509428906299392
+    m_Localized: Aide aux U {str0} pour {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1513512988184576
+    m_Localized: "D\xE9but de la modification de {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1518979999207424
+    m_Localized: Fin de la modification de {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1520636518600704
+    m_Localized: "Activation de l'\xE9criture des journaux"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1520685491294208
+    m_Localized: "D\xE9sactivation de l'\xE9criture des journaux"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1521319737167872
+    m_Localized: "Cache vid\xE9 \xE0 \"{str}\""
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1521913482842112
+    m_Localized: "Syst\xE8me de coordonn\xE9es activ\xE9 pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1522042591907840
+    m_Localized: "Syst\xE8me de coordonn\xE9es d\xE9sactiv\xE9 pour {str}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1524506409963520
+    m_Localized: Impossible d'isoler {str}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  - m_Id: 1530884805496832
+    m_Localized: Un ou plusieurs slots de {str0} introuvables dans {str1}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596318824431624
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456596318824431624
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c6d51e0100000010866cfb25000000108603032600000010c65d73260000001046fde12600000010c68694270000001006dd862a0000001086ed902a00000010c650c12b0000001086f0b22c00000010863e762d00000010c6ef6b3000000010c6e30d31000000104631d13300000010866e76480000001086bd134a0000001086606d4b000000108693104c0000001046b2424c00000010062c1c4e00000010c6d558500000001006e083550000001046c1903d010000100694944001000010c640b24101000010c6cad64e01000010068efe4e0100001086075750010000100675825001000010861d72510100001006600e6b010000104687116c010000104688f66a0100001046dc206d010000108633876d0100001046371b6e010000100642296e010000108639e06e010000100658786f01000010466a3b70010000100663777701000010c635658901000010c64e69940100001006ccd69a01000010c666e5a00100001086aba0150500001086be8e1d0500001086cc66210500001046582f2205000010c6594d5905000010868d695b05000010c64dd15c050000100634886005000010461781650500001086daa1670500001086182c680500001006284a680500001006cf876a0500001006e5547005000010862ebc2f00000010462b282d0000

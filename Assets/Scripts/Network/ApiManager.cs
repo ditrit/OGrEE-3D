@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class ApiManager : MonoBehaviour
 {
@@ -187,9 +188,9 @@ public class ApiManager : MonoBehaviour
     {
         SVersionResp apiResp = new();
         if (string.IsNullOrEmpty(url))
-            GameManager.instance.AppendLogLine("Failed to connect with API: no url", ELogTarget.both, ELogtype.errorApi);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Failed to connect with API: no url"), ELogTarget.both, ELogtype.errorApi);
         else if (string.IsNullOrEmpty(token))
-            GameManager.instance.AppendLogLine("Failed to connect with API: no token", ELogTarget.both, ELogtype.errorApi);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Failed to connect with API: no token"), ELogTarget.both, ELogtype.errorApi);
         else
         {
             server = url + "/api";
@@ -201,7 +202,7 @@ public class ApiManager : MonoBehaviour
                 apiResp = JsonConvert.DeserializeObject<SVersionResp>(response);
                 isReady = true;
                 isInit = true;
-                GameManager.instance.AppendLogLine("Connected to API", ELogTarget.both, ELogtype.successApi);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Connected to API"), ELogTarget.both, ELogtype.successApi);
                 sseThread = new(GetStream)
                 {
                     IsBackground = true
@@ -210,7 +211,7 @@ public class ApiManager : MonoBehaviour
             }
             catch (HttpRequestException e)
             {
-                GameManager.instance.AppendLogLine($"Error while connecting to API: {e.Message}", ELogTarget.both, ELogtype.errorApi);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString($"Logs", "Error while connecting to API", e.Message), ELogTarget.both, ELogtype.errorApi);
             }
         }
         if (!string.IsNullOrEmpty(apiResp.data["Customer"]))
@@ -351,7 +352,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Not connected to API"), ELogTarget.both, ELogtype.warning);
             return;
         }
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
@@ -360,7 +361,7 @@ public class ApiManager : MonoBehaviour
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.instance.AppendLogLine($"{response}", ELogTarget.none, ELogtype.infoApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", response), ELogTarget.none, ELogtype.infoApi);
             await _callback(response);
         }
         catch (HttpRequestException e)
@@ -380,7 +381,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Not connected to API"), ELogTarget.both, ELogtype.warning);
             return default;
         }
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
@@ -389,7 +390,7 @@ public class ApiManager : MonoBehaviour
         try
         {
             string response = await httpClient.GetStringAsync(fullPath);
-            GameManager.instance.AppendLogLine($"From API: {response}", ELogTarget.none, ELogtype.infoApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", response), ELogTarget.none, ELogtype.infoApi);
             return await _callback(response);
         }
         catch (HttpRequestException e)
@@ -409,7 +410,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Not connected to API"), ELogTarget.both, ELogtype.warning);
             return;
         }
         string json = JsonConvert.SerializeObject(_obj);
@@ -421,12 +422,12 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.instance.AppendLogLine(responseStr, ELogTarget.none, ELogtype.infoApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", responseStr), ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
                 await CreateItemFromJson(responseStr);
             else
-                GameManager.instance.AppendLogLine($"Fail to post on server", ELogTarget.logger, ELogtype.errorApi);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Fail to post on server"), ELogTarget.logger, ELogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
@@ -444,7 +445,7 @@ public class ApiManager : MonoBehaviour
     {
         if (!isInit)
         {
-            GameManager.instance.AppendLogLine("Not connected to API", ELogTarget.both, ELogtype.warningApi);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Not connected to API"), ELogTarget.both, ELogtype.warning);
             return;
         }
         // Debug.Log(_json);
@@ -455,12 +456,12 @@ public class ApiManager : MonoBehaviour
         {
             HttpResponseMessage response = await httpClient.PostAsync(fullPath, content);
             string responseStr = response.Content.ReadAsStringAsync().Result;
-            GameManager.instance.AppendLogLine(responseStr, ELogTarget.none, ELogtype.infoApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", responseStr), ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
                 await DrawObject(responseStr);
             else
-                GameManager.instance.AppendLogLine($"Fail to post on server", ELogTarget.logger, ELogtype.errorApi);
+                GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Fail to post on server"), ELogTarget.logger, ELogtype.errorApi);
         }
         catch (HttpRequestException e)
         {
@@ -552,7 +553,7 @@ public class ApiManager : MonoBehaviour
         }
 
         if (canDraw)
-            GameManager.instance.AppendLogLine($"{physicalObjects.Count + logicalObjects.Count} object(s) created", ELogTarget.logger, ELogtype.successApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "X objects created", physicalObjects.Count + logicalObjects.Count), ELogTarget.logger, ELogtype.successApi);
         canDraw = true;
     }
 
@@ -568,7 +569,7 @@ public class ApiManager : MonoBehaviour
             STempUnitResp resp = JsonConvert.DeserializeObject<STempUnitResp>(_input);
             return Task.FromResult(resp.data.temperatureUnit);
         }
-        GameManager.instance.AppendLogLine("Unknown object received while retrieving temperature unit", ELogTarget.both, ELogtype.errorApi);
+        GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving temperature unit error"), ELogTarget.both, ELogtype.errorApi);
         return Task.FromResult("");
     }
 
