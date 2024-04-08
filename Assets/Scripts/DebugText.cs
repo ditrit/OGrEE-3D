@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Components;
@@ -73,12 +74,16 @@ public class DebugText : MonoBehaviour
                     break;
             }
         }
-        GameManager.instance.AppendLogLine($"Sites: {sitesCount}", ELogTarget.both);
-        GameManager.instance.AppendLogLine($"Buildings: {buildingsCount}", ELogTarget.both);
-        GameManager.instance.AppendLogLine($"Rooms: {roomsCount}", ELogTarget.both);
-        GameManager.instance.AppendLogLine($"Racks: {racksCount}", ELogTarget.both);
-        GameManager.instance.AppendLogLine($"Devices: {devicesCount}", ELogTarget.both);
-        GameManager.instance.AppendLogLine($"Components: {componentCount}", ELogTarget.both);
+        List<int> countList = new()
+        {
+            sitesCount,
+            buildingsCount,
+            roomsCount,
+            racksCount,
+            devicesCount,
+            componentCount
+        };
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Objects count", countList), ELogTarget.both);
     }
 
     ///<summary>

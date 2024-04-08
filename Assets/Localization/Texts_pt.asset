@@ -1,0 +1,317 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Texts_pt
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: pt
+  m_SharedData: {fileID: 11400000, guid: 0ddcf4eeba13f914cb3df74b9222d758, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 5456596301333921796
+  m_TableData:
+  - m_Id: 142615121920
+    m_Localized: "N\xE3o conectado \xE0 API"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 381417820160
+    m_Localized: Retomar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 468277661696
+    m_Localized: Sobre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 518718361600
+    m_Localized: "Configura\xE7\xF5es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 569834344448
+    m_Localized: Limpar cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 740819341312
+    m_Localized: Sair de OGrEE 3D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 29490281844736
+    m_Localized: Linguagem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32671850172416
+    m_Localized: "Ativa\xE7\xE3o autom\xE1tica de U helpers"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32929661456384
+    m_Localized: Atraso de clique duplo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33132305059840
+    m_Localized: Velocidade de movimento
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33272822632448
+    m_Localized: "Velocidade de rota\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33479996084224
+    m_Localized: Altura do modo humano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34211440758784
+    m_Localized: Reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34327832694784
+    m_Localized: Salvar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34487694397440
+    m_Localized: Reiniciar tudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 34541691867136
+    m_Localized: Salvar tudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1518093822464000
+    m_Localized: Movimento no modo humano
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1790623669948416
+    m_Localized: Conectado a {UiManager.apiCustomer}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 1795366375002112
+    m_Localized: "API URL:\t\t\t{ApiManager.url}\nAPI build date:\t\t{UiManager.apiBuildDate}\nAPI
+      build hash:\t\t{UiManager.apiBuildHash}\nAPI build tree:\t\t{UiManager.apiBuildTree}\nAPI
+      Commit Date:\t{UiManager.apiCommitDate}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 1799418030723072
+    m_Localized: "Imposs\xEDvel se conectar a {ApiManager.url}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 1887873809125376
+    m_Localized: Ocultar a lista de {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 1888215670067200
+    m_Localized: Mostrar lista de {DynamicButtonList.listName}
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 1898842950078464
+    m_Localized: Modo cor de temperatura
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135889463873536
+    m_Localized: "R\xF3tulos padr\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135950935592960
+    m_Localized: "R\xF3tulos flutuantes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135966748119040
+    m_Localized: "R\xF3tulos ocultos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2135991830056960
+    m_Localized: "R\xF3tulos sempre vis\xEDveis"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2145930501820416
+    m_Localized: grupos abertos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147545552130048
+    m_Localized: tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147066101239808
+    m_Localized: objetos ocultos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2147760040448000
+    m_Localized: camadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165461618135040
+    m_Localized: "O projeto OGrEE \xE9 um conjunto de projetos Open Source desenvolvidos
+      pela comunidade DitRit.\r\nLicen\xE7a: MPL 2.0\r\n\r\nEste \xE9 OGrEE-3D, um
+      visualizador de objetos salvos na base de dados OGrEE.\r\nLink do GitHub :
+      https://github.com/ditrit/OGREE-3D\r\n\r\nOs outros m\xF3dulos s\xE3o encontrados
+      em https://github.com/ditrit/OGREE-Core"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3669309859958784
+    m_Localized: "Limpar o cache excluir\xE1 a cena atual"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670325896548352
+    m_Localized: Continuar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3670405089202176
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3679797016662016
+    m_Localized: "Desenhar {str} ir\xE1 deletar a cena atual."
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 3701066881699840
+    m_Localized: Selecionar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701267306516480
+    m_Localized: "Adicionar \xE0 sele\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701452136910848
+    m_Localized: "Retirar da sele\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701756391723008
+    m_Localized: Abrir o grupo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3702691637628928
+    m_Localized: Foco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703642008195072
+    m_Localized: Modificar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703045297147904
+    m_Localized: Desfocar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3703678054043648
+    m_Localized: "Descartar modifica\xE7\xF5es"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704097278922752
+    m_Localized: "Descartar modifica\xE7\xF5es dos filhos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706658505494528
+    m_Localized: "Ocultar sele\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706955525132288
+    m_Localized: "Mostrar sele\xE7\xE3o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704557385682944
+    m_Localized: Nome dos ladrilhos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704654022447104
+    m_Localized: Cor dos ladrilhos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704751724564480
+    m_Localized: Paredes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704978032431104
+    m_Localized: Nome dos separadores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705280366252032
+    m_Localized: "Nome de gen\xE9rico"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705755677364224
+    m_Localized: Origem do objeto
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705948820869120
+    m_Localized: Origem dos filhos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706125078106112
+    m_Localized: Margem livre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969350671667200
+    m_Localized: 'Objeto selecionado:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701587097030656
+    m_Localized: Selecionar pai
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3969453092376576
+    m_Localized: 'Objeto focado: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3708234733326336
+    m_Localized: Sistema de coordenadas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706194376396800
+    m_Localized: "Gr\xE1fico de barras de temperaturas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706299091390464
+    m_Localized: "Gr\xE1fico de dispers\xE3o de temperaturas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3706574548111360
+    m_Localized: Mapa de calor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3705586839851008
+    m_Localized: U helpers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4049178569609216
+    m_Localized: "N\xEDvel de detalhes:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4051772406894592
+    m_Localized: "Objetos: {DebugText.ooCount}/{DebugText.goCount}\r\r\nIPS: {DebugText.averageFPS}"
+    m_Metadata:
+      m_Items:
+      - rid: 5456596301333921796
+  - m_Id: 4052776477134848
+    m_Localized: Contar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053450354987008
+    m_Localized: "Acionar evento de importa\xE7\xE3o concluida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4053921715064832
+    m_Localized: Comandos atrasados
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4054351920631808
+    m_Localized: Gravar logs
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 5456596301333921796
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 0010c60f905c06000010064fe0600600001086a88f6406000010c6df02b506000010467852b5060000100682c1120d00001006c710650e00

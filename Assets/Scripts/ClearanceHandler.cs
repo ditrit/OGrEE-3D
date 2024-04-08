@@ -77,7 +77,7 @@ public class ClearanceHandler
         //foreach (Clearance clearance in clearances)
         //    clearance.gameObject.SetActive(_toggle);
         clearanceWrapper.transform.GetChild(0).gameObject.SetActive(_toggle);
-        GameManager.instance.AppendLogLine($"{(_toggle ? "Display" : "Hide")} local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", $"{(_toggle ? "Display" : "Hide")} clearance for object", clearedObject.name), ELogTarget.logger, ELogtype.success);
     }
 
     /// <summary>
@@ -137,6 +137,6 @@ public class ClearanceHandler
             clearanceObject.localScale += clearance.length * Vector3.Scale(clearance.direction, clearance.direction);
         }
         isCreated = true;
-        GameManager.instance.AppendLogLine($"Display local Clearance for {clearedObject.name}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Display clearance for object", clearedObject.name), ELogTarget.logger, ELogtype.success);
     }
 }

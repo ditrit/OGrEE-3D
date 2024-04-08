@@ -90,7 +90,7 @@ public class Building : OgreeObject
 
         if (!GameManager.instance.allItems.Contains(base.domain))
         {
-            GameManager.instance.AppendLogLine($"Domain \"{base.domain}\" doesn't exist.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", base.domain), ELogTarget.both, ELogtype.error);
             return;
         }
 

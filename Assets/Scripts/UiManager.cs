@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 
@@ -1049,7 +1050,7 @@ public class UiManager : MonoBehaviour
         Room currentRoom = menuTarget.GetComponent<Room>();
         if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"There is no template for {currentRoom.name}", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "There is no template for", currentRoom.name), ELogTarget.logger, ELogtype.warning);
             return;
         }
         currentRoom.ToggleTilesColor();
@@ -1154,13 +1155,13 @@ public class UiManager : MonoBehaviour
         {
             GameManager.instance.editMode = false;
             EventManager.instance.Raise(new EditModeOutEvent(GameManager.instance.GetSelected()[0]));
-            GameManager.instance.AppendLogLine($"Edit out: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Edit out", GameManager.instance.GetSelected()[0].name), ELogTarget.logger, ELogtype.info);
         }
         else
         {
             GameManager.instance.editMode = true;
             EventManager.instance.Raise(new EditModeInEvent(GameManager.instance.GetSelected()[0]));
-            GameManager.instance.AppendLogLine($"Edit in: {GameManager.instance.GetSelected()[0]}", ELogTarget.logger, ELogtype.info);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Edit in", GameManager.instance.GetSelected()[0].name), ELogTarget.logger, ELogtype.info);
         }
     }
 
@@ -1214,11 +1215,11 @@ public class UiManager : MonoBehaviour
         if (_value)
         {
             GameManager.instance.writeLogs = true;
-            GameManager.instance.AppendLogLine("Enable CLI", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Enable CLI"), ELogTarget.logger, ELogtype.success);
         }
         else
         {
-            GameManager.instance.AppendLogLine("Disable CLI", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Disable CLI"), ELogTarget.logger, ELogtype.success);
             GameManager.instance.writeLogs = false;
         }
     }
@@ -1244,7 +1245,7 @@ public class UiManager : MonoBehaviour
             if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
         }
-        GameManager.instance.AppendLogLine($"Cache cleared at \"{GameManager.instance.configHandler.GetCacheDir()}\"", ELogTarget.both, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Cache cleared at", GameManager.instance.configHandler.GetCacheDir()), ELogTarget.both, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
 
@@ -1298,9 +1299,9 @@ public class UiManager : MonoBehaviour
         EventManager.instance.Raise(new GetCoordModeToggleEvent());
         Building bd = GameManager.instance.GetSelected()[0].GetComponent<Building>();
         if (GameManager.instance.getCoordsMode)
-            GameManager.instance.AppendLogLine($"Enable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Enable Get Coordinates", bd.id), ELogTarget.logger, ELogtype.success);
         else
-            GameManager.instance.AppendLogLine($"Disable Get Coordinates mode for {bd.id}", ELogTarget.logger, ELogtype.success);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Disable Get Coordinates", bd.id), ELogTarget.logger, ELogtype.success);
         bd.ToggleCS(GameManager.instance.getCoordsMode);
         coordSystem.SetActive(GameManager.instance.getCoordsMode);
         getCoordsBtn.Check();
@@ -1460,7 +1461,7 @@ public class UiManager : MonoBehaviour
         else if (GameManager.instance.GetTag(_value) is Tag tag)
             await tag.SelectLinkedObjects();
         else
-            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object doesn't exist", _value), ELogTarget.logger, ELogtype.warning);
         SetCurrentItemText();
     }
 
@@ -1478,10 +1479,10 @@ public class UiManager : MonoBehaviour
                 await GameManager.instance.FocusItem(obj);
             }
             else
-                GameManager.instance.AppendLogLine($"Cannot focus {_value}", ELogTarget.logger, ELogtype.warning);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Cannot focus", _value), ELogTarget.logger, ELogtype.warning);
         }
         else if (!string.IsNullOrEmpty(_value))
-            GameManager.instance.AppendLogLine($"Cannot find {_value}", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object doesn't exist", _value), ELogTarget.logger, ELogtype.warning);
         SetFocusItemText();
     }
 

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class GameManager : MonoBehaviour
 {
@@ -122,7 +123,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        AppendLogLine("--- Client closed ---\n\n", ELogTarget.cli, ELogtype.info);
+        AppendLogLine(new LocalizedString("Logs", "Client closed"), ELogTarget.cli, ELogtype.info);
     }
 
     #endregion
@@ -148,7 +149,7 @@ public class GameManager : MonoBehaviour
             //if we are selecting, we don't want to unload children in the same referent as the selected object
             if (_obj)
             {
-                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new ExtendedLocalizedString("Logs", "Select object", _obj.name), ELogTarget.both, ELogtype.success);
                 Item currentSelected = _obj.GetComponent<Item>();
                 //Checking all of the previously selected objects
                 foreach (GameObject previousObj in previousItemsTMP)
@@ -178,7 +179,7 @@ public class GameManager : MonoBehaviour
             }
             else // deselection => unload children if level of details is <=1
             {
-                AppendLogLine("Empty selection.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new LocalizedString("Logs", "Empty selection"), ELogTarget.both, ELogtype.success);
                 foreach (GameObject previousObj in previousItemsTMP)
                 {
                     //There could be missing references due to scene changes and other edge cases
@@ -216,12 +217,12 @@ public class GameManager : MonoBehaviour
             if (currentItems[0].GetComponent<OgreeObject>().category != _obj.GetComponent<OgreeObject>().category
                 || currentItems[0].transform.parent != _obj.transform.parent)
             {
-                AppendLogLine("Multiple selection should be same type of objects and belong to the same parent.", ELogTarget.both, ELogtype.warning);
+                AppendLogLine(new LocalizedString("Logs", "Multiple selection error"), ELogTarget.both, ELogtype.warning);
                 return;
             }
             if (currentItems.Contains(_obj))
             {
-                AppendLogLine($"Remove {_obj.name} from selection.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new ExtendedLocalizedString("Logs", "Remove object from selection", _obj.name), ELogTarget.both, ELogtype.success);
                 currentItems.Remove(_obj);
                 // _obj was the last item in selection
                 if (currentItems.Count == 0)
@@ -239,7 +240,7 @@ public class GameManager : MonoBehaviour
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
                 if (selectOgree is not Group && selectOgree is not Corridor && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
-                AppendLogLine($"Select {_obj.name}.", ELogTarget.both, ELogtype.success);
+                AppendLogLine(new ExtendedLocalizedString("Logs", "Add object to selection", _obj.name), ELogTarget.both, ELogtype.success);
             }
             selectMode = currentItems.Count != 0;
             EventManager.instance.Raise(new OnSelectItemEvent());
@@ -258,14 +259,14 @@ public class GameManager : MonoBehaviour
     {
         if (_obj && !(_obj.GetComponent<Rack>() || _obj.GetComponent<Device>()))
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id} should be a rack or a device.", ELogTarget.both, ELogtype.warning);
+            AppendLogLine(new ExtendedLocalizedString("Logs", "Focus warning type", _obj.GetComponent<OgreeObject>().id), ELogTarget.both, ELogtype.warning);
             return;
         }
 
         Item[] children = _obj.GetComponentsInChildren<Item>();
         if (children.Length == 1)
         {
-            AppendLogLine($"Unable to focus {_obj.GetComponent<OgreeObject>().id}: no children found.", ELogTarget.both, ELogtype.warning);
+            AppendLogLine(new ExtendedLocalizedString("Logs", "Focus warning children", _obj.GetComponent<OgreeObject>().id), ELogTarget.both, ELogtype.warning);
             return;
         }
 
@@ -279,7 +280,7 @@ public class GameManager : MonoBehaviour
         {
             _obj.SetActive(true);
             focus.Add(_obj);
-            AppendLogLine($"Focus {_obj.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
+            AppendLogLine(new ExtendedLocalizedString("Logs", "Focus object", _obj.GetComponent<OgreeObject>().id), ELogTarget.both, ELogtype.success);
 
             focusMode = focus.Count != 0;
             EventManager.instance.Raise(new OnFocusEvent(focus[^1]));
@@ -302,7 +303,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject lastFocus = focus[^1];
             EventManager.instance.Raise(new OnFocusEvent(lastFocus));
-            AppendLogLine($"Focus {lastFocus.GetComponent<OgreeObject>().id}", ELogTarget.both, ELogtype.success);
+            AppendLogLine(new ExtendedLocalizedString("Logs", "Focus object", lastFocus.GetComponent<OgreeObject>().id), ELogTarget.both, ELogtype.success);
             if (!currentItems.Contains(lastFocus))
                 await SetCurrentItem(lastFocus);
         }
@@ -310,7 +311,7 @@ public class GameManager : MonoBehaviour
         {
             if (!currentItems.Contains(obj))
                 await SetCurrentItem(obj);
-            AppendLogLine("No focus", ELogTarget.both, ELogtype.success);
+            AppendLogLine(new LocalizedString("Logs", "No focus"), ELogTarget.both, ELogtype.success);
         }
     }
 
@@ -445,6 +446,18 @@ public class GameManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    ///<summary>
+    /// Display a message in the CLI.
+    ///</summary>
+    ///<param name="_line">The text to display</param>
+    ///<param name="_writeInCli">Should the message be send to the CLI ?</param>
+    ///<param name="_type">The type of message. Default is info</param>
+    public void AppendLogLine(LocalizedString _line, ELogTarget _target, ELogtype _type = ELogtype.info)
+    {
+        string str = _line.GetLocalizedString();
+        AppendLogLine(str, _target, _type);
     }
 
     ///<summary>

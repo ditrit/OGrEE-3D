@@ -35,7 +35,7 @@ public class Room : Building
     {
         if (transform.GetComponentInChildren<Rack>())
         {
-            GameManager.instance.AppendLogLine($"[{id}] Can't modify areas if room has a rack drawn in it.", ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Can't modify areas", id), ELogTarget.both, ELogtype.error);
             return;
         }
         tilesGrid.gameObject.SetActive(true);
@@ -111,7 +111,7 @@ public class Room : Building
             if (_value && !root)
                 BuildTilesName();
             else if (!_value && root)
-                root.CleanDestroy($"Hide tiles name for {name}");
+                root.CleanDestroy("Logs", "Hide tiles name for", name);
         }
         else
         {
@@ -137,7 +137,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesNameRoot")?.gameObject;
             if (root)
-                root.CleanDestroy($"Hide tiles name for {name}");
+                root.CleanDestroy("Logs", "Hide tiles name for", name);
             else
                 BuildTilesName();
         }
@@ -166,7 +166,7 @@ public class Room : Building
         root.transform.localPosition += new Vector3(UnitValue.Tile, 0.003f, UnitValue.Tile) / 2;
         root.transform.localEulerAngles = Vector3.zero;
         LoopThroughTiles("name", root.transform);
-        GameManager.instance.AppendLogLine($"Display tiles name for {name}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Display tiles name for", name), ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>
@@ -177,7 +177,7 @@ public class Room : Building
     {
         if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
         {
-            GameManager.instance.AppendLogLine($"There is no template for {name}", ELogTarget.logger, ELogtype.warning);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "There is no template for", name), ELogTarget.logger, ELogtype.warning);
             return;
         }
 
@@ -188,7 +188,7 @@ public class Room : Building
             if (_value && !root)
                 BuildTilesColor();
             else if (!_value && root)
-                root.CleanDestroy($"Hide tiles color for {name}");
+                root.CleanDestroy("Logs", "Hide tiles color for", name);
         }
         else
         {
@@ -234,7 +234,7 @@ public class Room : Building
         {
             GameObject root = transform.Find("tilesColorRoot")?.gameObject;
             if (root)
-                root.CleanDestroy($"Hide tiles color for {name}");
+                root.CleanDestroy("Logs", "Hide tiles color for", name);
             else
                 BuildTilesColor();
         }
@@ -280,7 +280,7 @@ public class Room : Building
         root.transform.localPosition += new Vector3(UnitValue.Tile, 0.002f, UnitValue.Tile) / 2;
         root.transform.localEulerAngles = Vector3.zero;
         LoopThroughTiles("color", root.transform);
-        GameManager.instance.AppendLogLine($"Display tiles color for {name}", ELogTarget.logger, ELogtype.success);
+        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Display tiles color for", name), ELogTarget.logger, ELogtype.success);
     }
 
     ///<summary>
@@ -425,7 +425,7 @@ public class Room : Building
                         };
                     }
                     else
-                        GameManager.instance.AppendLogLine($"[{id}] Unknow tile texture: {tileData.texture}", ELogTarget.logger, ELogtype.warning);
+                        GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknow tile texture", new List<string>() { id, tileData.texture }), ELogTarget.logger, ELogtype.warning);
                 }
                 if (!string.IsNullOrEmpty(tileData.color))
                 {
