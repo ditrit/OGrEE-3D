@@ -192,13 +192,6 @@ public class ObjectGenerator
     ///<returns>The created rackGroup</returns>
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _gr.parentId);
-        if (!parent)
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _gr.name), ELogTarget.both, ELogtype.error);
-            return null;
-        }
-
         if (GameManager.instance.allItems.Contains(_gr.id))
         {
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _gr.id), ELogTarget.both, ELogtype.warning);
@@ -220,9 +213,9 @@ public class ObjectGenerator
 
         GameObject newGr = Object.Instantiate(GameManager.instance.labeledBoxModel);
         newGr.name = _gr.name;
-        newGr.transform.parent = parent;
+        newGr.transform.parent = _parent;
 
-        string parentCategory = parent.GetComponent<OgreeObject>().category;
+        string parentCategory = _parent.GetComponent<OgreeObject>().category;
         Group gr = newGr.AddComponent<Group>();
         Utils.ShapeGroup(content, gr, parentCategory);
         gr.UpdateFromSApiObject(_gr);

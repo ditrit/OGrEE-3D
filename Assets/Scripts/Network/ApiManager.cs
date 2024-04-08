@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.SocialPlatforms;
 
 public class ApiManager : MonoBehaviour
 {
