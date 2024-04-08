@@ -11,12 +11,6 @@ public class ObjectGenerator
     ///<returns>The created Rack</returns>
     public Rack CreateRack(SApiObject _rk, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_rk.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _rk.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newRack;
         if (!_rk.attributes.HasKeyAndValue("template"))
         {
@@ -111,13 +105,6 @@ public class ObjectGenerator
     ///<returns>The created Device</returns>
     public Device CreateDevice(SApiObject _deviceData, Transform _parent)
     {
-        // Check if unique hierarchyName
-        if (GameManager.instance.allItems.Contains(_deviceData.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _deviceData.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         // Check template
         if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_deviceData.attributes["template"]))
         {
@@ -192,12 +179,6 @@ public class ObjectGenerator
     ///<returns>The created rackGroup</returns>
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
-        if (GameManager.instance.allItems.Contains(_gr.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _gr.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         List<Transform> content = new();
         string[] contentNames = _gr.attributes["content"].Split(',');
         foreach (string cn in contentNames)
@@ -249,12 +230,6 @@ public class ObjectGenerator
     ///<returns>The created corridor</returns>
     public Corridor CreateCorridor(SApiObject _co, Transform _parent = null)
     {
-        if (GameManager.instance.allItems.Contains(_co.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _co.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newCo = Object.Instantiate(GameManager.instance.labeledBoxModel);
         newCo.name = _co.name;
         newCo.transform.parent = _parent;
@@ -308,13 +283,7 @@ public class ObjectGenerator
     ///<returns>The created sensor</returns>
     public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
     {
-        Transform parent = Utils.FindParent(_parent, _se.parentId);
-        if (!parent)
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _se.name), ELogTarget.both, ELogtype.error);
-            return null;
-        }
-        OgreeObject parentOgree = parent.GetComponent<OgreeObject>();
+        OgreeObject parentOgree = _parent.GetComponent<OgreeObject>();
         Vector3 parentSize = _parent.GetChild(0).localScale;
 
         GameObject newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);

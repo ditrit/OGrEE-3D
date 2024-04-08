@@ -9,12 +9,6 @@ public class CustomerGenerator
     ///<returns>The created domain</returns>
     public Domain CreateDomain(SApiObject _do)
     {
-        if (GameManager.instance.allItems.Contains(_do.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _do.id), ELogTarget.both, ELogtype.error);
-            return null;
-        }
-
         GameObject newDomain = new(_do.name);
         Domain domain = newDomain.AddComponent<Domain>();
         domain.UpdateFromSApiObject(_do);
@@ -31,12 +25,6 @@ public class CustomerGenerator
     ///<returns>The created Site</returns>
     public Site CreateSite(SApiObject _si)
     {
-        if (GameManager.instance.allItems.Contains(_si.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _si.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newSite = new(_si.name);
 
         Site site = newSite.AddComponent<Site>();

@@ -12,12 +12,6 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_bd.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _bd.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         SBuildingFromJson template = new();
         if (_bd.attributes.HasKeyAndValue("template"))
         {
@@ -100,12 +94,6 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_ro.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _ro.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         SRoomFromJson template = new();
         if (_ro.attributes.HasKeyAndValue("template"))
         {
