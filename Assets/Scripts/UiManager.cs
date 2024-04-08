@@ -537,7 +537,7 @@ public class UiManager : MonoBehaviour
         SnappingBtn = new(SnappingBtn.button, true)
         {
             interactCondition = () => GameManager.instance.positionMode,
-            toggledCondition = () => Rescaler.instance.snapping
+            toggledCondition = () => Positionner.instance.snapping
         };
         SnappingBtn.Check();
 
@@ -1171,7 +1171,7 @@ public class UiManager : MonoBehaviour
     public void ResetTransform()
     {
         GameManager.instance.GetSelected().ForEach(go => go.GetComponent<OgreeObject>().ResetTransform());
-        Rescaler.instance.realDisplacement.SetLocalPositionAndRotation(Rescaler.instance.initialPosition[0], Rescaler.instance.initialRotation[0]);
+        Positionner.instance.realDisplacement.SetLocalPositionAndRotation(Positionner.instance.initialPosition[0], Positionner.instance.initialRotation[0]);
     }
 
     ///<summary>
@@ -1592,14 +1592,17 @@ public class UiManager : MonoBehaviour
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }
 
+    ///<summary>
+    /// Called by GUI: toggle position mode for the selection.
+    ///</summary>
     public async void TogglePositionMode()
     {
-        await Rescaler.instance.TogglePositionMode();
+        await Positionner.instance.TogglePositionMode();
     }
 
     public void ToggleSnapping()
     {
-        Rescaler.instance.snapping ^= true;
+        Positionner.instance.snapping ^= true;
     }
     #endregion
 }

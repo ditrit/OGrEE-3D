@@ -4,17 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class Rescaler : MonoBehaviour
+public class Positionner : MonoBehaviour
 {
     public bool isSaving = false;
     public List<Vector3> initialPosition;
     public List<Quaternion> initialRotation;
-    public static Rescaler instance;
+    public static Positionner instance;
     public bool snapping = false;
     public Transform realDisplacement;
 
     [SerializeField] private float scale;
-    [SerializeField] private List<ObjectMover> objectMovers;
+    [SerializeField] private List<AxisMover> axisMovers;
 
     private List<string> position;
     private Room parentRoom;
@@ -30,6 +30,11 @@ public class Rescaler : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Handle position mode on/off
+    ///<br/> On exiting position mode, lock the application while <see cref="SavePosition"/> is running
+    /// </summary>
+    /// <returns>a Task tracking the progress of <see cref="SavePosition"/></returns>
     public async Task TogglePositionMode()
     {
         GameManager.instance.positionMode ^= true;
@@ -63,19 +68,22 @@ public class Rescaler : MonoBehaviour
             _ => UnitValue.Tile,
         }).ToList();
     }
+
+
+
     void Update()
     {
         transform.GetChild(0).localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * Vector3.one;
         bool alreadyActive = false;
-        foreach (ObjectMover objectMover in objectMovers)
-            if (objectMover.active)
+        foreach (AxisMover axisMover in axisMovers)
+            if (axisMover.active)
             {
-                objectMover.Move();
+                axisMover.Move();
                 alreadyActive = true;
                 break;
             }
         if (!alreadyActive)
-            foreach (ObjectMover objectMover in objectMovers)
+            foreach (AxisMover objectMover in axisMovers)
                 objectMover.Move();
         if (snapping)
         {
@@ -95,6 +103,10 @@ public class Rescaler : MonoBehaviour
             items[i].transform.SetPositionAndRotation(items[0].transform.position + positionOffsets[i], rotationOffsets[i] * items[0].transform.rotation);
     }
 
+    /// <summary>
+    /// Whenn called, if position mode is exiting, launch a <see cref="Prompt"/> and save or not the current position of the selection
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
     public async void OnPositionMode(PositionModeEvent _e)
     {
         if (_e.toggled)
@@ -119,6 +131,10 @@ public class Rescaler : MonoBehaviour
         EventManager.instance.PositionMode.Remove(OnPositionMode);
     }
 
+    /// <summary>
+    /// Save the position of the selection and send it to the API with <see cref="ApiManager.ModifyObject(string, Dictionary{string, object})"/>
+    ///<br/> Also update the GUI
+    /// </summary>
     public async void SavePosition()
     {
         Vector2 orient = parentRoom.attributes["axisOrientation"] switch

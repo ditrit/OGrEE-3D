@@ -441,7 +441,7 @@ public class ObjectDisplayController : MonoBehaviour
     }
 
     /// <summary>
-    /// When called, set <see cref="cube.col"/> according to <see cref="GameManager.getCoordsMode"/> 
+    /// When called, set <see cref="cube"/>.col according to <see cref="GameManager.getCoordsMode"/> 
     /// </summary>
     /// <param name="_e">The event's instance</param>
     private void OnGetCoordModeToggle(GetCoordModeToggleEvent _e)
@@ -475,6 +475,10 @@ public class ObjectDisplayController : MonoBehaviour
         HandleMaterial();
     }
 
+    /// <summary>
+    /// When called, set <see cref="cube"/>.col according to <see cref="GameManager.positionMode"/> 
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
     private void OnPositionMode(PositionModeEvent _e)
     {
         if (_e.toggled)

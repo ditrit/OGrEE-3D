@@ -47,6 +47,11 @@ public class Building : OgreeObject
             roof.gameObject.SetActive(false);
         }
     }
+    
+    /// <summary>
+    /// When called, set all children colliders according to <see cref="GameManager.positionMode"/> 
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
     private void OnPositionMode(PositionModeEvent _e)
     {
         foreach (Collider col in GetComponentsInChildren<Collider>())

@@ -42,23 +42,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1997511627258932884}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55d3a4bf1d232674a987b4280619dd69, type: 3}
+  m_Script: {fileID: 11500000, guid: 3d35ac6a2ace131448210da40bea52b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isSaving: 0
-  initialPosition:
-  - {x: 6.62901e+19, y: 9.88e-43, z: 0.000000041534978}
-  - {x: 0.00000017062919, y: -2.5017357, z: 9.88e-43}
-  - {x: 4.6e-44, y: 0.00017394271, z: 6.62901e+19}
-  initialRotation:
-  - {x: 0.00084808376, y: 9.9e-43, z: 0.000000041534978, w: 0.00000017062919}
-  - {x: -2.5017357, y: 9.88e-43, z: 4.6e-44, w: 0.00017394271}
-  - {x: 0.00084808376, y: 9.9e-43, z: 0.00084831845, w: 9.9e-43}
-  - {x: -2.5017433, y: 9.88e-43, z: 6.9e-44, w: 1.7582472e+22}
+  initialPosition: []
+  initialRotation: []
   snapping: 0
   realDisplacement: {fileID: 0}
   scale: 3
-  objectMovers:
+  axisMovers:
   - {fileID: 23630339068901860}
   - {fileID: 8685987075290616398}
   - {fileID: 3457722370732239880}
@@ -254,6 +247,7 @@ MonoBehaviour:
   axis: 0
   isRotation: 1
   collider: {fileID: 3479394156153175690}
+  active: 0
 --- !u!23 &1688452057324645715 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: bc3435d74a25cd846a186f3f443936f0,
@@ -412,6 +406,7 @@ MonoBehaviour:
   axis: 2
   isRotation: 1
   collider: {fileID: 3828784336346700561}
+  active: 0
 --- !u!23 &1570072796198991001 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: bc3435d74a25cd846a186f3f443936f0,
@@ -564,6 +559,7 @@ MonoBehaviour:
   axis: 1
   isRotation: 0
   collider: {fileID: 7814726927877565705}
+  active: 0
 --- !u!4 &1032636140369661907 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9b49bead8d186364f8f90a3cfb6388a3,
@@ -734,6 +730,7 @@ MonoBehaviour:
   axis: 0
   isRotation: 0
   collider: {fileID: 6868415383594938108}
+  active: 0
 --- !u!1001 &6370034608427281931
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -886,6 +883,7 @@ MonoBehaviour:
   axis: 1
   isRotation: 1
   collider: {fileID: 1518138359120506207}
+  active: 0
 --- !u!4 &6911989432593533408 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bc3435d74a25cd846a186f3f443936f0,
@@ -1044,6 +1042,7 @@ MonoBehaviour:
   axis: 2
   isRotation: 0
   collider: {fileID: 5461608259319309965}
+  active: 0
 --- !u!4 &6816735100340143628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9b49bead8d186364f8f90a3cfb6388a3,

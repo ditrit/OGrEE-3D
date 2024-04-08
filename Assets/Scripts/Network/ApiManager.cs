@@ -625,11 +625,10 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Avoid requestsToSend 
-    /// Get an Object from the api. Call a Task callback with the response.
+    /// Modify an object in the api.
     ///</summary>
-    ///<param name="_input">The path to add a base server for API GET request</param>
-    ///<param name="_callback">Function to call to use GET response</param>
+    ///<param name="_input">The path to add a base server for API PATCH request</param>
+    ///<param name="_data">New partial data of the object</param>
     public async Task ModifyObject(string _input, Dictionary<string,object> _data)
     {
         if (!isInit)
