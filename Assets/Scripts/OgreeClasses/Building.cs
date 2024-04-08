@@ -50,7 +50,10 @@ public class Building : OgreeObject
     private void OnPositionMode(PositionModeEvent _e)
     {
         foreach (Collider col in GetComponentsInChildren<Collider>())
-            col.enabled = !_e.toggled;
+            if (_e.toggled)
+                col.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+            else
+                col.gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     ///<summary>

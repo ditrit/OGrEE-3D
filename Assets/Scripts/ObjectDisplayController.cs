@@ -478,11 +478,9 @@ public class ObjectDisplayController : MonoBehaviour
     private void OnPositionMode(PositionModeEvent _e)
     {
         if (_e.toggled)
-            cube.col.enabled = false;
-        else if (!GameManager.instance.GetSelected().Contains(gameObject))
-        {
-            cube.col.enabled = cube.rend.enabled;
-        }
+            cube.col.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        else
+            cube.col.gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     /// <summary>

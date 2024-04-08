@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Components;
@@ -521,7 +522,11 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.focusMode
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<Rack>()
+            (
+                GameManager.instance.GetSelected()[0].GetComponent<Rack>()
+                ||
+                GameManager.instance.GetSelected()[0].GetComponent<GenericObject>()
+            )
             &&
             GameManager.instance.GetSelected()[0].transform.parent,
             toggledCondition = () => GameManager.instance.positionMode
@@ -1164,8 +1169,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        GameManager.instance.GetSelected()[0]?.GetComponent<OgreeObject>().ResetTransform();
-        Rescaler.instance.realDisplacement.SetLocalPositionAndRotation(Rescaler.instance.initialPosition, Rescaler.instance.initialRotation);
+        GameManager.instance.GetSelected().ForEach(go => go.GetComponent<OgreeObject>().ResetTransform());
+        Rescaler.instance.realDisplacement.SetLocalPositionAndRotation(Rescaler.instance.initialPosition[0], Rescaler.instance.initialRotation[0]);
     }
 
     ///<summary>
@@ -1586,16 +1591,9 @@ public class UiManager : MonoBehaviour
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
     }
 
-    public void TogglePositionMode()
+    public async void TogglePositionMode()
     {
-        GameManager.instance.positionMode ^= true;
-        EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
-        if (GameManager.instance.positionMode)
-        {
-            GameManager.instance.positionTransform.transform.parent = GameManager.instance.GetSelected()[0].transform;
-            GameManager.instance.positionTransform.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            GameManager.instance.positionTransform.SetActive(true);
-        }
+        await Rescaler.instance.TogglePositionMode();
     }
 
     public void ToggleSnapping()
