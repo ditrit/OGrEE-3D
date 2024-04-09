@@ -109,14 +109,15 @@ public class Positionner : MonoBehaviour
     /// Handle position mode on/off
     ///<br/> On exiting position mode, lock the application while <see cref="SavePosition"/> is running
     /// </summary>
-    /// <returns>a Task tracking the progress of <see cref="SavePosition"/></returns>
     public async Task TogglePositionMode()
     {
         GameManager.instance.positionMode ^= true;
         EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
         if (GameManager.instance.positionMode)
         {
+
             items = GameManager.instance.GetSelected().Select(go => go.GetComponent<Item>()).ToList();
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Enable Position Mode", string.Join(", ", items.Select(i => i.name))), ELogTarget.logger, ELogtype.success);
             positionOffsets = items.Select(i => i.transform.position - items[0].transform.position).ToList();
             rotationOffsets = items.Select(i => i.transform.rotation * Quaternion.Inverse(items[0].transform.rotation)).ToList();
             transform.parent = items[0].transform;
@@ -124,8 +125,11 @@ public class Positionner : MonoBehaviour
             gameObject.SetActive(true);
         }
         else
+        {
             while (isSaving)
                 await Task.Delay(10);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Disable Position Mode", string.Join(", ", items.Select(i => i.name))), ELogTarget.logger, ELogtype.success);
+        }
     }
 
     /// <summary>

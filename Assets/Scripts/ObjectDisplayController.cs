@@ -444,7 +444,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnGetCoordModeToggle(GetCoordModeToggleEvent _e)
     {
-        cube.col.gameObject.layer = GameManager.instance.getCoordsMode ? LayerMask.NameToLayer("Ignore Raycast") : LayerMask.NameToLayer("Default");
+        cube.col.gameObject.layer = LayerMask.NameToLayer(GameManager.instance.getCoordsMode ? "Ignore Raycast" : "Default");
     }
 
     ///<summary>

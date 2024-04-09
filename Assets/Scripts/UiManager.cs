@@ -1606,6 +1606,10 @@ public class UiManager : MonoBehaviour
     public void ToggleSnapping()
     {
         Positionner.instance.snapping ^= true;
+        if (Positionner.instance.snapping)
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Enable Snapping"), ELogTarget.logger, ELogtype.success);
+        else
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Disable Snapping"), ELogTarget.logger, ELogtype.success);
     }
     #endregion
 }
