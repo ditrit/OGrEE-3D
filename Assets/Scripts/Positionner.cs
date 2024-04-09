@@ -115,7 +115,6 @@ public class Positionner : MonoBehaviour
         EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
         if (GameManager.instance.positionMode)
         {
-
             items = GameManager.instance.GetSelected().Select(go => go.GetComponent<Item>()).ToList();
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Enable Position Mode", string.Join(", ", items.Select(i => i.name))), ELogTarget.logger, ELogtype.success);
             positionOffsets = items.Select(i => i.transform.position - items[0].transform.position).ToList();
