@@ -109,7 +109,6 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Add(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Add(OnTemperatureScatterPlot);
         EventManager.instance.GetCoordModeToggle.Add(OnGetCoordModeToggle);
-        EventManager.instance.PositionMode.Add(OnPositionMode);
     }
 
     ///<summary>
@@ -144,7 +143,6 @@ public class ObjectDisplayController : MonoBehaviour
         EventManager.instance.TemperatureDiagram.Remove(OnTemperatureDiagram);
         EventManager.instance.TemperatureScatterPlot.Remove(OnTemperatureScatterPlot);
         EventManager.instance.GetCoordModeToggle.Remove(OnGetCoordModeToggle);
-        EventManager.instance.PositionMode.Remove(OnPositionMode);
     }
 
     /// <summary>
@@ -446,11 +444,7 @@ public class ObjectDisplayController : MonoBehaviour
     /// <param name="_e">The event's instance</param>
     private void OnGetCoordModeToggle(GetCoordModeToggleEvent _e)
     {
-        //cube.col.enabled = !GameManager.instance.getCoordsMode;
-        if (GameManager.instance.getCoordsMode)
-            cube.col.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        else
-            cube.col.gameObject.layer = LayerMask.NameToLayer("Default");
+        cube.col.gameObject.layer = GameManager.instance.getCoordsMode ? LayerMask.NameToLayer("Ignore Raycast") : LayerMask.NameToLayer("Default");
     }
 
     ///<summary>
@@ -473,18 +467,6 @@ public class ObjectDisplayController : MonoBehaviour
         if (GameManager.instance.GetSelected().Contains(gameObject))
             return;
         HandleMaterial();
-    }
-
-    /// <summary>
-    /// When called, set <see cref="cube"/>.col according to <see cref="GameManager.positionMode"/> 
-    /// </summary>
-    /// <param name="_e">The event's instance</param>
-    private void OnPositionMode(PositionModeEvent _e)
-    {
-        if (_e.toggled)
-            cube.col.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        else
-            cube.col.gameObject.layer = LayerMask.NameToLayer("Default");
     }
 
     /// <summary>

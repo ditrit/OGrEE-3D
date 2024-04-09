@@ -1600,6 +1600,9 @@ public class UiManager : MonoBehaviour
         await Positionner.instance.TogglePositionMode();
     }
 
+    /// <summary>
+    /// Called by GUI: toggle snapping for the position mode.
+    /// </summary>
     public void ToggleSnapping()
     {
         Positionner.instance.snapping ^= true;

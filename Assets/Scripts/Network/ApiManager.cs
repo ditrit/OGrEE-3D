@@ -647,7 +647,7 @@ public class ApiManager : MonoBehaviour
                 Content = content
             };
             HttpResponseMessage response = await httpClient.SendAsync(request);
-            GameManager.instance.AppendLogLine($"{response}", ELogTarget.logger, ELogtype.infoApi);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", response.Content.ReadAsStringAsync().Result), ELogTarget.none, ELogtype.infoApi);
             EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         }
         catch (HttpRequestException e)

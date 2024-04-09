@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AxisMover : MonoBehaviour
 {
-    private enum WhichOne
+    private enum EAxis
     {
         X,
         Y,
@@ -12,7 +12,7 @@ public class AxisMover : MonoBehaviour
     }
     [SerializeField] Color baseColor;
     [SerializeField] new Renderer renderer;
-    [SerializeField] private WhichOne axis;
+    [SerializeField] private EAxis axis;
     [SerializeField] private bool isRotation;
     [SerializeField] private new MeshCollider collider;
     public bool active = false;
@@ -25,7 +25,6 @@ public class AxisMover : MonoBehaviour
     /// </summary>
     public void Move()
     {
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(Camera.main.transform.position, ray.direction, out RaycastHit hit);
 
@@ -45,8 +44,8 @@ public class AxisMover : MonoBehaviour
 
         Vector3 axisAlong = axis switch
         {
-            WhichOne.X => Positionner.instance.realDisplacement.right,
-            WhichOne.Y => Positionner.instance.realDisplacement.up,
+            EAxis.X => Positionner.instance.realDisplacement.right,
+            EAxis.Y => Positionner.instance.realDisplacement.up,
             _ => Positionner.instance.realDisplacement.forward,
         };
         if (isRotation)
@@ -58,8 +57,8 @@ public class AxisMover : MonoBehaviour
             }
             if (!active)
                 return;
-            Vector3 aaah = Camera.main.transform.InverseTransformVector(Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward));
-            float distance = Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(aaah, Input.mousePosition - previousMousePositionScreen, Camera.main.transform.forward)) * (Input.mousePosition - previousMousePositionScreen).magnitude;
+            Vector3 projected = Camera.main.transform.InverseTransformVector(Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward));
+            float distance = Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(projected, Input.mousePosition - previousMousePositionScreen, Camera.main.transform.forward)) * (Input.mousePosition - previousMousePositionScreen).magnitude;
             Positionner.instance.realDisplacement.Rotate(distance * Positionner.instance.realDisplacement.InverseTransformVector(axisAlong));
             previousMousePositionScreen = Input.mousePosition;
         }

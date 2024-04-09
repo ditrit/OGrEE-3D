@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,10 +5,10 @@ using UnityEngine;
 
 public class Positionner : MonoBehaviour
 {
+    public static Positionner instance;
     public bool isSaving = false;
     public List<Vector3> initialPosition;
     public List<Quaternion> initialRotation;
-    public static Positionner instance;
     public bool snapping = false;
     public Transform realDisplacement;
 
@@ -30,27 +29,9 @@ public class Positionner : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    /// <summary>
-    /// Handle position mode on/off
-    ///<br/> On exiting position mode, lock the application while <see cref="SavePosition"/> is running
-    /// </summary>
-    /// <returns>a Task tracking the progress of <see cref="SavePosition"/></returns>
-    public async Task TogglePositionMode()
+    public void OnDestroy()
     {
-        GameManager.instance.positionMode ^= true;
-        EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
-        if (GameManager.instance.positionMode)
-        {
-            items = GameManager.instance.GetSelected().Select(go => go.GetComponent<Item>()).ToList();
-            positionOffsets = items.Select(i => i.transform.position - items[0].transform.position).ToList();
-            rotationOffsets = items.Select(i => i.transform.rotation * Quaternion.Inverse(items[0].transform.rotation)).ToList();
-            transform.parent = items[0].transform;
-            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            gameObject.SetActive(true);
-        }
-        else
-            while (isSaving)
-                await Task.Delay(10);
+        EventManager.instance.PositionMode.Remove(OnPositionMode);
     }
 
     private void OnEnable()
@@ -69,9 +50,7 @@ public class Positionner : MonoBehaviour
         }).ToList();
     }
 
-
-
-    void Update()
+    private void Update()
     {
         transform.GetChild(0).localScale = scale * Vector3.Distance(transform.position, Camera.main.transform.position) * Vector3.one;
         bool alreadyActive = false;
@@ -126,9 +105,27 @@ public class Positionner : MonoBehaviour
         isSaving = false;
     }
 
-    public void OnDestroy()
+    /// <summary>
+    /// Handle position mode on/off
+    ///<br/> On exiting position mode, lock the application while <see cref="SavePosition"/> is running
+    /// </summary>
+    /// <returns>a Task tracking the progress of <see cref="SavePosition"/></returns>
+    public async Task TogglePositionMode()
     {
-        EventManager.instance.PositionMode.Remove(OnPositionMode);
+        GameManager.instance.positionMode ^= true;
+        EventManager.instance.Raise(new PositionModeEvent(GameManager.instance.positionMode));
+        if (GameManager.instance.positionMode)
+        {
+            items = GameManager.instance.GetSelected().Select(go => go.GetComponent<Item>()).ToList();
+            positionOffsets = items.Select(i => i.transform.position - items[0].transform.position).ToList();
+            rotationOffsets = items.Select(i => i.transform.rotation * Quaternion.Inverse(items[0].transform.rotation)).ToList();
+            transform.parent = items[0].transform;
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            gameObject.SetActive(true);
+        }
+        else
+            while (isSaving)
+                await Task.Delay(10);
     }
 
     /// <summary>
