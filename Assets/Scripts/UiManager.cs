@@ -519,42 +519,25 @@ public class UiManager : MonoBehaviour
 
         positionModeBtn = new(positionModeBtn.button, true)
         {
-            interactCondition = () =>
+            interactCondition = () => GameManager.instance.positionMode
+            ||
+            (
+                menuTarget
+                &&
+                !GameManager.instance.focusMode
+                &&
+                menuTarget.GetComponent<Item>() is Item item2
+                &&
                 (
-                    GameManager.instance.selectMode
-                    &&
-                    !GameManager.instance.focusMode
-                    &&
-                    GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
-                    &&
-                    (
-                        item is Corridor
-                        ||
-                        item is GenericObject
-                        ||
-                        item is Rack
-                    )
-                    &&
-                    GameManager.instance.GetSelected()[0].transform.parent
+                    item2 is Corridor
+                    ||
+                    item2 is GenericObject
+                    ||
+                    item2 is Rack
                 )
-                ||
-                (
-                    menuTarget
-                    &&
-                    !GameManager.instance.focusMode
-                    &&
-                    menuTarget.GetComponent<Item>() is Item item2
-                    &&
-                    (
-                        item2 is Corridor
-                        ||
-                        item2 is GenericObject
-                        ||
-                        item2 is Rack
-                    )
-                    &&
-                    menuTarget.transform.parent
-                ),
+                &&
+                menuTarget.transform.parent
+            ),
             toggledCondition = () => GameManager.instance.positionMode
         };
         positionModeBtn.Check();
