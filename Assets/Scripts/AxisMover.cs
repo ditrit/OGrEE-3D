@@ -17,7 +17,6 @@ public class AxisMover : MonoBehaviour
     [SerializeField] private new MeshCollider collider;
     public bool active = false;
     private Vector3 previousMousePos;
-    private Vector3 offset;
 
     /// <summary>
     /// Move <see cref="Positionner.realDisplacement"/> along <see cref="axis"/>  in rotation or translation
