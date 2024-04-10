@@ -526,14 +526,14 @@ public class UiManager : MonoBehaviour
                 &&
                 !GameManager.instance.focusMode
                 &&
-                menuTarget.GetComponent<Item>() is Item item2
+                menuTarget.GetComponent<Item>() is Item item
                 &&
                 (
-                    item2 is Corridor
+                    item is Corridor
                     ||
-                    item2 is GenericObject
+                    item is GenericObject
                     ||
-                    item2 is Rack
+                    item is Rack
                 )
                 &&
                 menuTarget.transform.parent
