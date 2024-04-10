@@ -7,17 +7,17 @@ public class Positionner : MonoBehaviour
 {
     public static Positionner instance;
     public bool isSaving = false;
-    public List<Vector3> initialPosition;
-    public List<Quaternion> initialRotation;
+    public List<Vector3> initialPositions;
+    public List<Quaternion> initialRotations;
     public bool snapping = false;
     public Transform realDisplacement;
 
     [SerializeField] private float scale;
     [SerializeField] private List<AxisMover> axisMovers;
 
-    private List<string> position;
-    private Room parentRoom;
-    private List<float> posXYUnit;
+    private List<string> originalPositions;
+    private Vector2 orient;
+    private List<float> posXYUnits;
     private List<Item> items;
     private List<Vector3> positionOffsets;
     private List<Quaternion> rotationOffsets;
@@ -36,13 +36,21 @@ public class Positionner : MonoBehaviour
 
     private void OnEnable()
     {
+        foreach (Transform child in transform.GetChild(0))
+            child.gameObject.layer = LayerMask.NameToLayer("UI");
         realDisplacement.parent = items[0].transform.parent;
-        initialPosition = items.Select(i => i.transform.localPosition).ToList();
-        initialRotation = items.Select(i => i.transform.localRotation).ToList();
-        realDisplacement.SetLocalPositionAndRotation(initialPosition[0], initialRotation[0]);
-        position = items.Select(i => i.attributes["posXYZ"]).ToList();
-        parentRoom = items[0].transform.parent.GetComponent<Room>();
-        posXYUnit = items.Select(i => i.attributes["posXYUnit"] switch
+        initialPositions = items.Select(i => i.transform.localPosition).ToList();
+        initialRotations = items.Select(i => i.transform.localRotation).ToList();
+        realDisplacement.SetLocalPositionAndRotation(initialPositions[0], initialRotations[0]);
+        originalPositions = items.Select(i => i.attributes["posXYZ"]).ToList();
+        orient = items[0].transform.parent.GetComponent<Room>().attributes["axisOrientation"] switch
+        {
+            AxisOrientation.XMinus => new(-1, 1),
+            AxisOrientation.YMinus => new(1, -1),
+            AxisOrientation.BothMinus => new(-1, -1),
+            _ => new(1, 1)
+        };
+        posXYUnits = items.Select(i => i.attributes["posXYUnit"] switch
         {
             LengthUnit.Meter => 1.0f,
             LengthUnit.Feet => UnitValue.Foot,
@@ -66,11 +74,11 @@ public class Positionner : MonoBehaviour
                 objectMover.Move();
         if (snapping)
         {
-            Vector3 move = (realDisplacement.localPosition - initialPosition[0]) / posXYUnit[0];
-            move.y = Mathf.Round(move.y * posXYUnit[0] / 0.01f) * 0.01f;
-            move.x = Mathf.Round(move.x) * posXYUnit[0];
-            move.z = Mathf.Round(move.z) * posXYUnit[0];
-            Vector3 snappedPos = initialPosition[0] + move;
+            Vector3 move = (realDisplacement.localPosition - initialPositions[0]) / posXYUnits[0];
+            move.y = Mathf.Round(move.y * posXYUnits[0] / 0.01f) * 0.01f;
+            move.x = Mathf.Round(move.x) * posXYUnits[0];
+            move.z = Mathf.Round(move.z) * posXYUnits[0];
+            Vector3 snappedPos = initialPositions[0] + move;
             Quaternion quaternion = realDisplacement.localRotation;
             Vector3 snappedRot = new(Mathf.Round(quaternion.eulerAngles.x / 45) * 45, Mathf.Round(quaternion.eulerAngles.y / 45) * 45, Mathf.Round(quaternion.eulerAngles.z / 45) * 45);
             items[0].transform.localPosition = snappedPos;
@@ -80,6 +88,11 @@ public class Positionner : MonoBehaviour
             items[0].transform.SetPositionAndRotation(realDisplacement.position, realDisplacement.rotation);
         for (int i = 1; i < items.Count; i++)
             items[i].transform.SetPositionAndRotation(items[0].transform.position + positionOffsets[i], rotationOffsets[i] * items[0].transform.rotation);
+        if (items.Count == 1)
+        {
+            ComputePosition(0);
+            UiManager.instance.UpdateGuiInfos();
+        }
     }
 
     /// <summary>
@@ -131,26 +144,24 @@ public class Positionner : MonoBehaviour
         }
     }
 
+    private void ComputePosition(int _i)
+    {
+        Vector3 displacement = (items[_i].transform.localPosition - initialPositions[_i]) / posXYUnits[_i];
+        displacement.y *= posXYUnits[_i] * 100;
+        Vector3 newPos = Utils.ParseVector3(originalPositions[_i], true) + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
+        items[_i].attributes["posXYZ"] = $"[{newPos.x:0.00},{newPos.z:0.00},{newPos.y:0.00}]";
+        items[_i].attributes["rotation"] = $"[{items[_i].transform.localEulerAngles.x:0.00},{items[_i].transform.localEulerAngles.z:0.00},{items[_i].transform.localEulerAngles.y:0.00}]";
+    }
+
     /// <summary>
     /// Save the position of the selection and send it to the API with <see cref="ApiManager.ModifyObject(string, Dictionary{string, object})"/>
     ///<br/> Also update the GUI
     /// </summary>
-    public async void SavePosition()
+    private async void SavePosition()
     {
-        Vector2 orient = parentRoom.attributes["axisOrientation"] switch
-        {
-            AxisOrientation.XMinus => new(-1, 1),
-            AxisOrientation.YMinus => new(1, -1),
-            AxisOrientation.BothMinus => new(-1, -1),
-            _ => new(1, 1)
-        };
         for (int i = 0; i < items.Count; i++)
         {
-            Vector3 displacement = (items[i].transform.localPosition - initialPosition[i]) / posXYUnit[i];
-            displacement.y *= posXYUnit[i] * 100;
-            Vector3 newPos = Utils.ParseVector3(position[i], true) + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
-            items[i].attributes["posXYZ"] = $"[{newPos.x:0.00},{newPos.z:0.00},{newPos.y:0.00}]";
-            items[i].attributes["rotation"] = $"[{items[i].transform.localEulerAngles.x:0.00},{items[i].transform.localEulerAngles.z:0.00},{items[i].transform.localEulerAngles.y:0.00}]";
+            ComputePosition(i);
             items[i].SetBaseTransform();
             await ApiManager.instance.ModifyObject($"{items[i].category}s/{items[i].id}", new() { { "attributes", items[i].attributes } });
             UiManager.instance.UpdateGuiInfos();

@@ -1171,7 +1171,7 @@ public class UiManager : MonoBehaviour
     public void ResetTransform()
     {
         GameManager.instance.GetSelected().ForEach(go => go.GetComponent<OgreeObject>().ResetTransform());
-        Positionner.instance.realDisplacement.SetLocalPositionAndRotation(Positionner.instance.initialPosition[0], Positionner.instance.initialRotation[0]);
+        Positionner.instance.realDisplacement.SetLocalPositionAndRotation(Positionner.instance.initialPositions[0], Positionner.instance.initialRotations[0]);
     }
 
     ///<summary>
@@ -1609,7 +1609,10 @@ public class UiManager : MonoBehaviour
         if (Positionner.instance.snapping)
             GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Enable Snapping"), ELogTarget.logger, ELogtype.success);
         else
+        {
+            Positionner.instance.realDisplacement.SetPositionAndRotation(Positionner.instance.transform.position, Positionner.instance.transform.rotation);
             GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Disable Snapping"), ELogTarget.logger, ELogtype.success);
+        }
     }
     #endregion
 }

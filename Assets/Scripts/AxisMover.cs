@@ -27,8 +27,14 @@ public class AxisMover : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(Camera.main.transform.position, ray.direction, out RaycastHit hit);
+        Vector3 axisAlong = axis switch
+        {
+            EAxis.X => Positionner.instance.realDisplacement.right,
+            EAxis.Y => Positionner.instance.realDisplacement.up,
+            _ => Positionner.instance.realDisplacement.forward,
+        };
 
-        if (hit.collider == collider)
+        if (hit.collider == collider && (isRotation || Vector3.Angle(Camera.main.transform.forward, axisAlong) == Mathf.Clamp(Vector3.Angle(Camera.main.transform.forward,axisAlong),5,175)))
             renderer.material.color = Color.white;
         else if (!active)
         {
@@ -42,12 +48,6 @@ public class AxisMover : MonoBehaviour
             return;
         }
 
-        Vector3 axisAlong = axis switch
-        {
-            EAxis.X => Positionner.instance.realDisplacement.right,
-            EAxis.Y => Positionner.instance.realDisplacement.up,
-            _ => Positionner.instance.realDisplacement.forward,
-        };
         if (isRotation)
         {
             if (Input.GetMouseButtonDown(0))
@@ -64,6 +64,33 @@ public class AxisMover : MonoBehaviour
         }
         else
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+                active = true;
+                previousMousePositionScreen = Input.mousePosition;
+            }
+            if (!active)
+                return;
+            Vector3 projected = Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward);
+            Vector3 displacement = Vector3.Project(Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward) - Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), projected);
+            Debug.DrawLine(Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), Color.red, 4);
+            Debug.DrawRay(Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), displacement, Color.blue, 4);
+            float angle = Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward);
+            if (Mathf.Abs(Mathf.Abs(angle) - 90) > 5)
+            {
+                float distance = displacement.magnitude / Mathf.Cos(Mathf.Deg2Rad * Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward));
+                Positionner.instance.realDisplacement.position += distance * axisAlong;
+                print(projected);
+                print(axisAlong);
+                print(displacement);
+                print(angle);
+                print(Mathf.Cos(Mathf.Deg2Rad * Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward)));
+            }
+            else
+                active = false;
+            previousMousePositionScreen = Input.mousePosition;
+
+            return;
             // https://fr.wikipedia.org/wiki/Plan_(math%C3%A9matiques)#Dans_un_cadre_affine
             // https://wolfreealpha.gitlab.io/input/?i=solve+m*x+%2B+n*y+%2B+o*z+%3D+0%2C++%28v*o+-+w*n%29*x+%2B+%28w*m+-+u*o%29*y+%2B+%28u*n+-+v*m%29*z+-+a*%28v*o+-+w*n%29+-+b*%28w*m+-+u*o%29+-+c*%28u*n+-+v*m%29+%3D+0%2Cx%2By%2Bz%3D1+for+x%2Cy%2Cz
             // with the camera forward vector as (u,v,w), the axis along which the object moves as (m,n,o), the position of the object as (a,b,c), we want a plane containing (m,n,o) facing the camera as much as possible. So we look for a vector orthogonal
