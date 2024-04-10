@@ -519,17 +519,42 @@ public class UiManager : MonoBehaviour
 
         positionModeBtn = new(positionModeBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
-            &&
-            !GameManager.instance.focusMode
-            &&
-            (
-                GameManager.instance.GetSelected()[0].GetComponent<Rack>()
+            interactCondition = () =>
+                (
+                    GameManager.instance.selectMode
+                    &&
+                    !GameManager.instance.focusMode
+                    &&
+                    GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+                    &&
+                    (
+                        item is Corridor
+                        ||
+                        item is GenericObject
+                        ||
+                        item is Rack
+                    )
+                    &&
+                    GameManager.instance.GetSelected()[0].transform.parent
+                )
                 ||
-                GameManager.instance.GetSelected()[0].GetComponent<GenericObject>()
-            )
-            &&
-            GameManager.instance.GetSelected()[0].transform.parent,
+                (
+                    menuTarget
+                    &&
+                    !GameManager.instance.focusMode
+                    &&
+                    menuTarget.GetComponent<Item>() is Item item2
+                    &&
+                    (
+                        item2 is Corridor
+                        ||
+                        item2 is GenericObject
+                        ||
+                        item2 is Rack
+                    )
+                    &&
+                    menuTarget.transform.parent
+                ),
             toggledCondition = () => GameManager.instance.positionMode
         };
         positionModeBtn.Check();
@@ -1597,6 +1622,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public async void TogglePositionMode()
     {
+        if (menuTarget && menuTarget.GetComponent<OgreeObject>() && !GameManager.instance.GetSelected().Contains(menuTarget))
+            await GameManager.instance.SetCurrentItem(menuTarget);
         await Positionner.instance.TogglePositionMode();
     }
 

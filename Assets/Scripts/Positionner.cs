@@ -144,13 +144,17 @@ public class Positionner : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Compute the position of the ith object in the selection and change its orientation and posXYZ attributes
+    /// </summary>
+    /// <param name="_i">index of the object in the selection</param>
     private void ComputePosition(int _i)
     {
         Vector3 displacement = (items[_i].transform.localPosition - initialPositions[_i]) / posXYUnits[_i];
         displacement.y *= posXYUnits[_i] * 100;
         Vector3 newPos = Utils.ParseVector3(originalPositions[_i], true) + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
-        items[_i].attributes["posXYZ"] = $"[{newPos.x:0.00},{newPos.z:0.00},{newPos.y:0.00}]";
-        items[_i].attributes["rotation"] = $"[{items[_i].transform.localEulerAngles.x:0.00},{items[_i].transform.localEulerAngles.z:0.00},{items[_i].transform.localEulerAngles.y:0.00}]";
+        items[_i].attributes["posXYZ"] = $"[{newPos.x:0.##},{newPos.z:0.##},{newPos.y:0.##}]";
+        items[_i].attributes["rotation"] = $"[{items[_i].transform.localEulerAngles.x:0.##},{items[_i].transform.localEulerAngles.z:0.##},{items[_i].transform.localEulerAngles.y:0.##}]";
     }
 
     /// <summary>

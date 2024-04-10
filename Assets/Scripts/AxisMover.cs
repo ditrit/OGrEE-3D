@@ -16,7 +16,7 @@ public class AxisMover : MonoBehaviour
     [SerializeField] private bool isRotation;
     [SerializeField] private new MeshCollider collider;
     public bool active = false;
-    private Vector3 previousMousePositionScreen;
+    private Vector3 previousMousePos;
     private Vector3 offset;
 
     /// <summary>
@@ -34,7 +34,7 @@ public class AxisMover : MonoBehaviour
             _ => Positionner.instance.realDisplacement.forward,
         };
 
-        if (hit.collider == collider && (isRotation || Vector3.Angle(Camera.main.transform.forward, axisAlong) == Mathf.Clamp(Vector3.Angle(Camera.main.transform.forward,axisAlong),5,175)))
+        if (hit.collider == collider && (isRotation || Vector3.Angle(Camera.main.transform.forward, axisAlong) == Mathf.Clamp(Vector3.Angle(Camera.main.transform.forward, axisAlong), 5, 175)))
             renderer.material.color = Color.white;
         else if (!active)
         {
@@ -47,80 +47,30 @@ public class AxisMover : MonoBehaviour
             active = false;
             return;
         }
+        if (Input.GetMouseButtonDown(0))
+        {
+            active = true;
+            previousMousePos = Input.mousePosition;
+        }
 
         if (isRotation)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                active = true;
-                previousMousePositionScreen = Input.mousePosition;
-            }
-            if (!active)
-                return;
             Vector3 projected = Camera.main.transform.InverseTransformVector(Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward));
-            float distance = Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(projected, Input.mousePosition - previousMousePositionScreen, Camera.main.transform.forward)) * (Input.mousePosition - previousMousePositionScreen).magnitude;
+            float distance = Mathf.Sin(Mathf.Deg2Rad * Vector3.SignedAngle(projected, Input.mousePosition - previousMousePos, Camera.main.transform.forward)) * (Input.mousePosition - previousMousePos).magnitude;
             Positionner.instance.realDisplacement.Rotate(distance * Positionner.instance.realDisplacement.InverseTransformVector(axisAlong));
-            previousMousePositionScreen = Input.mousePosition;
         }
         else
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                active = true;
-                previousMousePositionScreen = Input.mousePosition;
-            }
-            if (!active)
-                return;
             Vector3 projected = Vector3.ProjectOnPlane(axisAlong, Camera.main.transform.forward);
-            Vector3 displacement = Vector3.Project(Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward) - Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), projected);
-            Debug.DrawLine(Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), Color.red, 4);
-            Debug.DrawRay(Camera.main.ScreenToWorldPoint(previousMousePositionScreen + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward), displacement, Color.blue, 4);
+            Vector3 realMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward);
+            Vector3 realPreviousMousePos = Camera.main.ScreenToWorldPoint(previousMousePos + Vector3.Distance(Camera.main.transform.position, transform.position) * Vector3.forward);
+            Vector3 displacement = Vector3.Project(realMousePos - realPreviousMousePos, projected);
             float angle = Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward);
             if (Mathf.Abs(Mathf.Abs(angle) - 90) > 5)
-            {
-                float distance = displacement.magnitude / Mathf.Cos(Mathf.Deg2Rad * Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward));
-                Positionner.instance.realDisplacement.position += distance * axisAlong;
-                print(projected);
-                print(axisAlong);
-                print(displacement);
-                print(angle);
-                print(Mathf.Cos(Mathf.Deg2Rad * Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward)));
-            }
+                Positionner.instance.realDisplacement.position += displacement.magnitude / Mathf.Cos(Mathf.Deg2Rad * Vector3.SignedAngle(axisAlong, displacement, Camera.main.transform.forward)) * axisAlong;
             else
                 active = false;
-            previousMousePositionScreen = Input.mousePosition;
-
-            return;
-            // https://fr.wikipedia.org/wiki/Plan_(math%C3%A9matiques)#Dans_un_cadre_affine
-            // https://wolfreealpha.gitlab.io/input/?i=solve+m*x+%2B+n*y+%2B+o*z+%3D+0%2C++%28v*o+-+w*n%29*x+%2B+%28w*m+-+u*o%29*y+%2B+%28u*n+-+v*m%29*z+-+a*%28v*o+-+w*n%29+-+b*%28w*m+-+u*o%29+-+c*%28u*n+-+v*m%29+%3D+0%2Cx%2By%2Bz%3D1+for+x%2Cy%2Cz
-            // with the camera forward vector as (u,v,w), the axis along which the object moves as (m,n,o), the position of the object as (a,b,c), we want a plane containing (m,n,o) facing the camera as much as possible. So we look for a vector orthogonal
-            // to (m,n,o) in the plane P containing (m,n,o) and (u,v,w). First we compute the cartesian equation of P then we compute a vector of P orthogonal to (m,n,o). We also look for a normalised vector in order to have only one solution
-            // It's complicated
-            // But it works
-            float a = Positionner.instance.realDisplacement.position.x;
-            float b = Positionner.instance.realDisplacement.position.y;
-            float c = Positionner.instance.realDisplacement.position.z;
-            float u = Camera.main.transform.forward.x;
-            float v = Camera.main.transform.forward.y;
-            float w = Camera.main.transform.forward.z;
-            float m = axisAlong.x;
-            float n = axisAlong.y;
-            float o = axisAlong.z;
-            float x = -((n - o) * (-a * n * w + a * o * v + b * m * w - b * o * u - c * m * v + c * n * u + m * v - n * u) - o * (-m * v - m * w + n * u + o * u)) / ((n - o) * (-m * v + n * u + n * w - o * v) - (m - o) * (-m * v - m * w + n * u + o * u));
-            float y = -(a * m * n * w - a * m * o * v - a * n * o * w + a * o * o * v - b * m * m * w + b * m * o * u + b * m * o * w - b * o * o * u + c * m * m * v - c * m * n * u - c * m * o * v + c * n * o * u - m * m * v + m * n * u + n * o * w - o * o * v) / (m * m * v + m * m * w - m * n * u - m * n * v - m * o * u - m * o * w + n * n * u + n * n * w - n * o * v - n * o * w + o * o * u + o * o * v);
-            float z = -(-a * m * n * w + a * m * o * v + a * n * n * w - a * n * o * v + b * m * m * w - b * m * n * w - b * m * o * u + b * n * o * u - c * m * m * v + c * m * n * u + c * m * n * v - c * n * n * u - m * m * w + m * o * u - n * n * w + n * o * v) / (m * m * v + m * m * w - m * n * u - m * n * v - m * o * u - m * o * w + n * n * u + n * n * w - n * o * v - n * o * w + o * o * u + o * o * v);
-            Plane rightPlane = new(new Vector3(x, y, z), Positionner.instance.realDisplacement.position);
-            rightPlane.Raycast(ray, out float rightDistance);
-            Vector3 mousePosition = ray.GetPoint(rightDistance);
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                active = true;
-                offset = Vector3.Project(mousePosition - Positionner.instance.realDisplacement.position, axisAlong);
-            }
-            if (!active)
-                return;
-            Positionner.instance.realDisplacement.position += Vector3.Project(mousePosition - Positionner.instance.realDisplacement.position, axisAlong) - offset;
         }
+        previousMousePos = Input.mousePosition;
     }
 }
