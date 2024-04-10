@@ -20,18 +20,28 @@ public class Item : OgreeObject
 
     protected virtual void Start()
     {
-        EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Add(OnDomainColorUpdate);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Remove(OnDomainColorUpdate);
         if (GetComponent<ObjectDisplayController>().isHidden)
         {
             UiManager.instance.hiddenObjects.Remove(this);
             UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
         }
+    }
+    
+    ///<summary>
+    /// On an UpdateDomainEvent, update the object's color if its the right domain
+    ///</summary>
+    ///<param name="_event">The event to catch</param>
+    private void OnDomainColorUpdate(UpdateDomainEvent _event)
+    {
+        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
+            UpdateColorByDomain();
     }
 
     ///<summary>
@@ -89,16 +99,6 @@ public class Item : OgreeObject
             UpdateColorByDomain();
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown color to display", id), ELogTarget.both, ELogtype.warning);
         }
-    }
-
-    ///<summary>
-    /// On an UpdateDomainEvent, update the object's color if its the right domain
-    ///</summary>
-    ///<param name="_event">The event to catch</param>
-    private void UpdateColorByDomain(UpdateDomainEvent _event)
-    {
-        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
-            UpdateColorByDomain();
     }
 
     ///<summary>

@@ -10,8 +10,7 @@ public class Corridor : Item
             && transform.parent)
         {
             PlaceInRoom(_src);
-            if (group)
-                group.ShapeGroup();
+            group?.ShapeGroup();
         }
 
         if (HasAttributeChanged(_src, "temperature"))

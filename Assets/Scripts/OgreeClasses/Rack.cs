@@ -14,11 +14,10 @@ public class Rack : Item
             && transform.parent)
         {
             PlaceInRoom(_src);
-            if (group)
-                group.ShapeGroup();
+            group?.ShapeGroup();
         }
 
-        if (string.IsNullOrEmpty(domain) || (domain != _src.domain && color.Equals(((GameObject)GameManager.instance.allItems[domain]).GetComponent<Domain>().GetColor())))
+        if (domain != _src.domain)
         {
             domain = _src.domain;
             UpdateColorByDomain();

@@ -25,7 +25,7 @@ public class Group : Item
 
     public override void UpdateFromSApiObject(SApiObject _src)
     {
-        if (string.IsNullOrEmpty(domain) || (domain != _src.domain && color.Equals(((GameObject)GameManager.instance.allItems[domain]).GetComponent<Domain>().GetColor())))
+        if (domain != _src.domain)
         {
             domain = _src.domain;
             UpdateColorByDomain();
@@ -128,14 +128,14 @@ public class Group : Item
     {
         string _parentCategory = transform.parent.GetComponent<OgreeObject>().category;
         // According to group type, set pos, rot & scale
-        Vector3 pos = Vector3.zero;
-        Vector3 scale = Vector3.zero;
+        Vector3 pos;
+        Vector3 scale;
         if (_parentCategory == Category.Room)
         {
             RackGroupPosScale(content.Select(go => go.transform), out pos, out scale);
             transform.localEulerAngles += new Vector3(0, 180, 0);
         }
-        else if (_parentCategory == Category.Rack)
+        else // if (_parentCategory == Category.Rack)
         {
             DeviceGroupPosScale(content.Select(go => go.transform), out pos, out scale);
             transform.localEulerAngles = Vector3.zero;
