@@ -375,7 +375,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 15
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -9949,9 +9949,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2024-04-08
+  m_text: 'Build date: 2024-04-10
 
-    Commit #3f07f869'
+    Commit #0c7fdeb5'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -10524,7 +10524,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -20112,7 +20112,7 @@ MonoBehaviour:
   - {fileID: 7725763946866538253, guid: 52363750490bf8a46846f8bd9cf19897, type: 3}
   - {fileID: 8403092780092777390, guid: 1156cd74b2614c94c8ebb3b3c27265b2, type: 3}
   - {fileID: 5536829176168135659, guid: c2ec03a5c7363f944a958f9cfe6411df, type: 3}
-  positionTransform: {fileID: 1730465050}
+  positionTransform: {fileID: 0}
   templatePlaceholder: {fileID: 1332629501}
   tags: []
   writeLogs: 1
@@ -22459,12 +22459,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dbc3ffef67585484093db47b780e0574, type: 3}
---- !u!1 &1730465050 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1997511627258932884, guid: dbc3ffef67585484093db47b780e0574,
-    type: 3}
-  m_PrefabInstance: {fileID: 1730465049}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1731992676
 GameObject:
   m_ObjectHideFlags: 0
@@ -23785,7 +23779,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
+  m_fontSize: 15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -25701,7 +25695,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 741869393}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999998
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
