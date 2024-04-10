@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AxisMover : MonoBehaviour
@@ -9,7 +11,7 @@ public class AxisMover : MonoBehaviour
         Z
     }
     [SerializeField] Color baseColor;
-    [SerializeField] new Renderer renderer;
+    [SerializeField] private new Renderer renderer;
     [SerializeField] private EAxis axis;
     [SerializeField] private bool isRotation;
     [SerializeField] private new MeshCollider collider;
