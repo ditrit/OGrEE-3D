@@ -104,18 +104,20 @@ public class Item : OgreeObject
     ///<summary>
     /// Update object's color according to its domain.
     ///</summary>
-    public void UpdateColorByDomain()
+    ///<param name="_domain">An optionnal domain to use</param>
+    public void UpdateColorByDomain(string _domain = null)
     {
-        if (string.IsNullOrEmpty(domain) || attributes.ContainsKey("color"))
+        if (attributes.ContainsKey("color"))
             return;
 
-        if (!GameManager.instance.allItems.Contains(domain))
+        string domainToUse = string.IsNullOrEmpty(_domain) ? domain : _domain;
+        if (!GameManager.instance.allItems.Contains(domainToUse))
         {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", base.domain), ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", domainToUse), ELogTarget.both, ELogtype.error);
             return;
         }
 
-        Domain domainObject = ((GameObject)GameManager.instance.allItems[domain]).GetComponent<Domain>();
+        Domain domainObject = ((GameObject)GameManager.instance.allItems[domainToUse]).GetComponent<Domain>();
 
         color = Utils.ParseHtmlColor($"#{domainObject.attributes["color"]}");
         GetComponent<ObjectDisplayController>().ChangeColor(color);
@@ -279,23 +281,6 @@ public class Item : OgreeObject
 
         transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
         transform.transform.localEulerAngles = Utils.ParseVector3(_apiObj.attributes["rotation"], true);
-    }
-
-    ///<summary>
-    /// Get a posXYUnit regarding given object's attributes.
-    ///</summary>
-    ///<param name="_obj">The object to parse</param>
-    ///<returns>The posXYUnit, <see cref="UnitValue.Tile"/> by default</returns>
-    private float GetUnitFromAttributes(SApiObject _obj)
-    {
-        if (!_obj.attributes.ContainsKey("posXYUnit"))
-            return UnitValue.Tile;
-        return _obj.attributes["posXYUnit"] switch
-        {
-            LengthUnit.Meter => 1.0f,
-            LengthUnit.Feet => UnitValue.Foot,
-            _ => UnitValue.Tile,
-        };
     }
 
 }

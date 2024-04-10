@@ -26,10 +26,7 @@ public class Device : Item
         }
 
         if (domain != _src.domain)
-        {
-            domain = _src.domain;
-            UpdateColorByDomain();
-        }
+            UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
             SetColor(_src.attributes["color"]);

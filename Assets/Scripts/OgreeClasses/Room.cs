@@ -45,7 +45,7 @@ public class Room : Building
             foreach (KeyValuePair<string, SSeparator> sep in newSeparators)
                 if (!HasSeparator(sep.Key))
                     BuildSeparator(new SSeparator(sep.Key, sep.Value));
-            UpdateColorByDomain();
+            UpdateColorByDomain(_src.domain);
         }
 
         if (HasAttributeChanged(_src, "pillars"))
@@ -56,7 +56,7 @@ public class Room : Building
             Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(_src.attributes["pillars"]);
             foreach (KeyValuePair<string, SPillar> pillar in pillars)
                 BuildPillar(new SPillar(pillar.Key, pillar.Value));
-            UpdateColorByDomain();
+            UpdateColorByDomain(_src.domain);
         }
 
         if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))

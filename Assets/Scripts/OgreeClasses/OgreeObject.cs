@@ -291,4 +291,24 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     {
         return _newData.attributes.ContainsKey(_attrKey) && (!attributes.ContainsKey(_attrKey) || attributes[_attrKey] != _newData.attributes[_attrKey]);
     }
+
+    ///<summary>
+    /// Get a posXYUnit regarding given object's attributes.
+    ///</summary>
+    ///<param name="_obj">The object to parse</param>
+    ///<returns>The posXYUnit, 1 by default</returns>
+    protected float GetUnitFromAttributes(SApiObject _obj)
+    {
+        if (!_obj.attributes.ContainsKey("posXYUnit"))
+            return 1;
+        return _obj.attributes["posXYUnit"] switch
+        {
+            LengthUnit.Tile => UnitValue.Tile,
+            LengthUnit.Millimeter => 0.001f,
+            LengthUnit.Centimeter => 0.01f,
+            LengthUnit.Meter => 1.0f,
+            LengthUnit.Feet => UnitValue.Foot,
+            _ => 1,
+        };
+    }
 }
