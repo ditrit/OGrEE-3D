@@ -359,6 +359,22 @@ MonoBehaviour:
     m_Key: X objects created
     m_Metadata:
       m_Items: []
+  - m_Id: 6865214185123840
+    m_Key: Enable Snapping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6865323597737984
+    m_Key: Disable Snapping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6865779283701760
+    m_Key: Enable Position Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6865817036632064
+    m_Key: Disable Position Mode
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -180,3 +180,11 @@ public class CancelGenerateEvent : CustomEvent
 public class GetCoordModeToggleEvent : CustomEvent
 {
 }
+public class PositionModeEvent : CustomEvent
+{
+    public bool toggled;
+    public PositionModeEvent(bool _toggled)
+    {
+        toggled = _toggled;
+    }
+}

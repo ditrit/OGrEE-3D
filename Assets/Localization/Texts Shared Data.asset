@@ -291,6 +291,18 @@ MonoBehaviour:
     m_Key: Write logs
     m_Metadata:
       m_Items: []
+  - m_Id: 7212682039021568
+    m_Key: Position Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11550292005859328
+    m_Key: Snapping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12667766004756480
+    m_Key: Save Object Position
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

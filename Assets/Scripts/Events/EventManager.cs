@@ -57,6 +57,7 @@ public class EventManager
     public EventWrap<RightClickEvent> RightClick = new();
     public EventWrap<CancelGenerateEvent> CancelGenerate = new();
     public EventWrap<GetCoordModeToggleEvent> GetCoordModeToggle = new();
+    public EventWrap<PositionModeEvent> PositionMode = new();
 
     /// <summary>
     /// Raise the event to all the listeners
@@ -121,6 +122,9 @@ public class EventManager
                 break;
             case GetCoordModeToggleEvent e:
                 GetCoordModeToggle.Invoke(e);
+                break;
+            case PositionModeEvent e:
+                PositionMode.Invoke(e);
                 break;
             default:
                 Debug.LogError($"UNKNOWN EVENT :{typeof(T)}");

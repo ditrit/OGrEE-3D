@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -55,6 +56,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler heatMapBtn;
     [SerializeField] private ButtonHandler hideObjectBtn;
     [SerializeField] private ButtonHandler displayObjectBtn;
+    [SerializeField] private ButtonHandler positionModeBtn;
+    [SerializeField] private ButtonHandler SnappingBtn;
 
     [Header("Panel Top")]
     [SerializeField] private TMP_InputField selectionInputField;
@@ -171,6 +174,8 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.editMode
             &&
+            !GameManager.instance.positionMode
+            &&
             GameManager.instance.GetSelected().Contains(menuTarget)
             &&
             (
@@ -186,6 +191,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
             !GameManager.instance.editMode
+            &&
+            !GameManager.instance.positionMode
             &&
             menuTarget
             &&
@@ -214,6 +221,8 @@ public class UiManager : MonoBehaviour
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
             GameManager.instance.selectMode
+            &&
+            !GameManager.instance.positionMode
             &&
             GameManager.instance.GetSelected()[0] == menuTarget
             &&
@@ -252,9 +261,11 @@ public class UiManager : MonoBehaviour
 
         resetTransBtn = new(resetTransBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.editMode
+            interactCondition = () => (GameManager.instance.editMode
             &&
-            GameManager.instance.GetFocused()[^1] == menuTarget
+            GameManager.instance.GetFocused()[^1] == menuTarget)
+            ||
+            GameManager.instance.positionMode
         };
         resetTransBtn.Check();
 
@@ -488,6 +499,8 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => GameManager.instance.selectMode
             &&
+            !GameManager.instance.positionMode
+            &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
             !item.GetComponent<ObjectDisplayController>().isHidden
@@ -503,6 +516,38 @@ public class UiManager : MonoBehaviour
             item.GetComponent<ObjectDisplayController>().isHidden
         };
         displayObjectBtn.Check();
+
+        positionModeBtn = new(positionModeBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.positionMode
+            ||
+            (
+                menuTarget
+                &&
+                !GameManager.instance.focusMode
+                &&
+                menuTarget.GetComponent<Item>() is Item item
+                &&
+                (
+                    item is Corridor
+                    ||
+                    item is GenericObject
+                    ||
+                    item is Rack
+                )
+                &&
+                menuTarget.transform.parent
+            ),
+            toggledCondition = () => GameManager.instance.positionMode
+        };
+        positionModeBtn.Check();
+
+        SnappingBtn = new(SnappingBtn.button, true)
+        {
+            interactCondition = () => GameManager.instance.positionMode,
+            toggledCondition = () => Positionner.instance.snapping
+        };
+        SnappingBtn.Check();
 
         SetupColors();
         menuPanel.SetActive(false);
@@ -1133,7 +1178,8 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ResetTransform()
     {
-        GameManager.instance.GetSelected()[0]?.GetComponent<OgreeObject>().ResetTransform();
+        GameManager.instance.GetSelected().ForEach(go => go.GetComponent<OgreeObject>().ResetTransform());
+        Positionner.instance.realDisplacement.SetLocalPositionAndRotation(Positionner.instance.initialPositions[0], Positionner.instance.initialRotations[0]);
     }
 
     ///<summary>
@@ -1552,6 +1598,31 @@ public class UiManager : MonoBehaviour
         _obj.GetComponent<ObjectDisplayController>().DisplayObject();
         hiddenObjects.Remove(_obj.GetComponent<Item>());
         hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
+    }
+
+    ///<summary>
+    /// Called by GUI: toggle position mode for the selection.
+    ///</summary>
+    public async void TogglePositionMode()
+    {
+        if (menuTarget && menuTarget.GetComponent<OgreeObject>() && !GameManager.instance.GetSelected().Contains(menuTarget))
+            await GameManager.instance.SetCurrentItem(menuTarget);
+        await Positionner.instance.TogglePositionMode();
+    }
+
+    /// <summary>
+    /// Called by GUI: toggle snapping for the position mode.
+    /// </summary>
+    public void ToggleSnapping()
+    {
+        Positionner.instance.snapping ^= true;
+        if (Positionner.instance.snapping)
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Enable Snapping"), ELogTarget.logger, ELogtype.success);
+        else
+        {
+            Positionner.instance.realDisplacement.SetPositionAndRotation(Positionner.instance.transform.position, Positionner.instance.transform.rotation);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Disable Snapping"), ELogTarget.logger, ELogtype.success);
+        }
     }
     #endregion
 }

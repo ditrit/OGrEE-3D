@@ -15,6 +15,7 @@ public class Building : OgreeObject
         if (this is not Room)
             EventManager.instance.ImportFinished.Add(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
+        EventManager.instance.PositionMode.Add(OnPositionMode);
     }
 
     protected override void OnDestroy()
@@ -23,6 +24,7 @@ public class Building : OgreeObject
         if (this is not Room)
             EventManager.instance.ImportFinished.Remove(OnImportFinihsed);
         EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
+        EventManager.instance.PositionMode.Remove(OnPositionMode);
     }
 
     /// <summary>
@@ -44,6 +46,16 @@ public class Building : OgreeObject
             nameText.transform.localPosition = new(nameText.transform.localPosition.x, 0.005f, nameText.transform.localPosition.z);
             roof.gameObject.SetActive(false);
         }
+    }
+    
+    /// <summary>
+    /// When called, set all children colliders according to <see cref="GameManager.positionMode"/> 
+    /// </summary>
+    /// <param name="_e">The event's instance</param>
+    private void OnPositionMode(PositionModeEvent _e)
+    {
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+            col.gameObject.layer =LayerMask.NameToLayer(_e.toggled ? "Ignore Raycast" : "Default");
     }
 
     ///<summary>

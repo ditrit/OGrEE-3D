@@ -95,6 +95,8 @@ public class OgreeGenerator : MonoBehaviour
                 {
                     if (GameManager.instance.getCoordsMode)
                         UiManager.instance.ToggleGetCoordsMode();
+                    if (GameManager.instance.positionMode)
+                        await Positionner.instance.TogglePositionMode();
                     if (GameManager.instance.editMode)
                         UiManager.instance.EditFocused();
                     await GameManager.instance.UnfocusAll();
