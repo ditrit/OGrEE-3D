@@ -47,7 +47,7 @@ public class Building : OgreeObject
             roof.gameObject.SetActive(false);
         }
     }
-    
+
     /// <summary>
     /// When called, set all children colliders according to <see cref="GameManager.positionMode"/> 
     /// </summary>
@@ -55,7 +55,7 @@ public class Building : OgreeObject
     private void OnPositionMode(PositionModeEvent _e)
     {
         foreach (Collider col in GetComponentsInChildren<Collider>())
-            col.gameObject.layer =LayerMask.NameToLayer(_e.toggled ? "Ignore Raycast" : "Default");
+            col.gameObject.layer = LayerMask.NameToLayer(_e.toggled ? "Ignore Raycast" : "Default");
     }
 
     ///<summary>
@@ -75,34 +75,38 @@ public class Building : OgreeObject
     public override void UpdateFromSApiObject(SApiObject _src)
     {
         if (domain != _src.domain)
-        {
-            domain = _src.domain;
-            UpdateColorByDomain();
-        }
+            UpdateColorByDomain(_src.domain);
+
+        if ((HasAttributeChanged(_src, "posXY")
+            || HasAttributeChanged(_src, "posXYUnit")
+            || HasAttributeChanged(_src, "rotation"))
+            && transform.parent)
+            PlaceBuilding(_src);
+
         base.UpdateFromSApiObject(_src);
     }
 
     ///<summary>
     /// Update building's color according to its domain.
     ///</summary>
-    public void UpdateColorByDomain()
+    ///<param name="_domain">An optionnal domain to use</param>
+    public void UpdateColorByDomain(string _domain = null)
     {
-        if (string.IsNullOrEmpty(base.domain))
-            return;
-
-        if (!GameManager.instance.allItems.Contains(base.domain))
+        string domainToUse = string.IsNullOrEmpty(_domain) ? domain : _domain;
+        if (!GameManager.instance.allItems.Contains(domainToUse))
         {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", base.domain), ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", domainToUse), ELogTarget.both, ELogtype.error);
             return;
         }
 
-        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
+        Domain domainObject = ((GameObject)GameManager.instance.allItems[domainToUse]).GetComponent<Domain>();
 
-        Color color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
+        Color color = Utils.ParseHtmlColor($"#{domainObject.attributes["color"]}");
 
         foreach (Transform child in walls)
         {
-            if (child.TryGetComponent(out Renderer rend))
+            // walls & pillars || separators
+            if (child.TryGetComponent(out Renderer rend) || child.GetChild(0).TryGetComponent(out rend))
                 rend.material.color = color;
         }
         Transform roof = transform.Find("Roof");
@@ -121,5 +125,17 @@ public class Building : OgreeObject
             wall.GetComponentInChildren<Renderer>().enabled = displayWalls;
             wall.GetComponentInChildren<Collider>().enabled = displayWalls;
         }
+    }
+
+    /// <summary>
+    /// Move the given building/room to its position in a site/building according to the API data.
+    /// </summary>
+    /// <param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public void PlaceBuilding(SApiObject _apiObj)
+    {
+        Vector2 posXY = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+        posXY *= GetUnitFromAttributes(_apiObj);
+        transform.localPosition = new(posXY.x, 0, posXY.y);
+        transform.localEulerAngles = new(0, Utils.ParseDecFrac(_apiObj.attributes["rotation"]), 0);
     }
 }

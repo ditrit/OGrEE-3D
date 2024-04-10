@@ -20,18 +20,28 @@ public class Item : OgreeObject
 
     protected virtual void Start()
     {
-        EventManager.instance.UpdateDomain.Add(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Add(OnDomainColorUpdate);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.UpdateDomain.Remove(UpdateColorByDomain);
+        EventManager.instance.UpdateDomain.Remove(OnDomainColorUpdate);
         if (GetComponent<ObjectDisplayController>().isHidden)
         {
             UiManager.instance.hiddenObjects.Remove(this);
             UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
         }
+    }
+    
+    ///<summary>
+    /// On an UpdateDomainEvent, update the object's color if its the right domain
+    ///</summary>
+    ///<param name="_event">The event to catch</param>
+    private void OnDomainColorUpdate(UpdateDomainEvent _event)
+    {
+        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
+            UpdateColorByDomain();
     }
 
     ///<summary>
@@ -92,32 +102,24 @@ public class Item : OgreeObject
     }
 
     ///<summary>
-    /// On an UpdateDomainEvent, update the object's color if its the right domain
-    ///</summary>
-    ///<param name="_event">The event to catch</param>
-    private void UpdateColorByDomain(UpdateDomainEvent _event)
-    {
-        if (_event.name == domain && !hasSlotColor && !attributes.ContainsKey("color"))
-            UpdateColorByDomain();
-    }
-
-    ///<summary>
     /// Update object's color according to its domain.
     ///</summary>
-    public void UpdateColorByDomain()
+    ///<param name="_domain">An optionnal domain to use</param>
+    public void UpdateColorByDomain(string _domain = null)
     {
-        if (string.IsNullOrEmpty(base.domain))
+        if (attributes.ContainsKey("color"))
             return;
 
-        if (!GameManager.instance.allItems.Contains(base.domain))
+        string domainToUse = string.IsNullOrEmpty(_domain) ? domain : _domain;
+        if (!GameManager.instance.allItems.Contains(domainToUse))
         {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", base.domain), ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", domainToUse), ELogTarget.both, ELogtype.error);
             return;
         }
 
-        Domain domain = ((GameObject)GameManager.instance.allItems[base.domain]).GetComponent<Domain>();
+        Domain domainObject = ((GameObject)GameManager.instance.allItems[domainToUse]).GetComponent<Domain>();
 
-        color = Utils.ParseHtmlColor($"#{domain.attributes["color"]}");
+        color = Utils.ParseHtmlColor($"#{domainObject.attributes["color"]}");
         GetComponent<ObjectDisplayController>().ChangeColor(color);
     }
 
@@ -217,6 +219,68 @@ public class Item : OgreeObject
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
         return new(mean, std, min, max, hottestChild, temperatureUnit);
+    }
+
+    ///<summary>
+    /// Move this object to its position in a room according to the API data.
+    ///</summary>
+    ///<param name="_apiObj">The SApiObject containing relevant positionning data</param>
+    public void PlaceInRoom(SApiObject _apiObj)
+    {
+        Room parentRoom = transform.parent.GetComponent<Room>();
+        float posXYUnit = GetUnitFromAttributes(_apiObj);
+        Vector3 origin;
+        if (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) // technicalZone is null for a nonSquareRoom
+        {
+            transform.position = parentRoom.technicalZone.position;
+            origin = parentRoom.technicalZone.localScale / 0.2f;
+        }
+        else
+        {
+            transform.position = parentRoom.usableZone.position;
+            origin = parentRoom.usableZone.localScale / 0.2f;
+        }
+
+        Vector2 orient = parentRoom.attributes["axisOrientation"] switch
+        {
+            AxisOrientation.XMinus => new(-1, 1),
+            AxisOrientation.YMinus => new(1, -1),
+            AxisOrientation.BothMinus => new(-1, -1),
+            _ => new(1, 1)
+        };
+
+        Vector3 pos;
+        if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
+            pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
+        else
+        {
+            Vector2 tmp = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+            pos = new(tmp.x, 0, tmp.y);
+        }
+
+        Transform floor = transform.parent.Find("Floor");
+        if (!parentRoom.isSquare && posXYUnit == UnitValue.Tile && floor)
+        {
+            int trunkedX = (int)pos.x;
+            int trunkedZ = (int)pos.z;
+            foreach (Transform tileObj in floor)
+            {
+                Tile tile = tileObj.GetComponent<Tile>();
+                if (tile.coord.x == trunkedX && tile.coord.y == trunkedZ)
+                {
+                    transform.localPosition += new Vector3(tileObj.localPosition.x - 5 * tileObj.localScale.x, pos.y / 100, tileObj.localPosition.z - 5 * tileObj.localScale.z);
+                    transform.localPosition += UnitValue.Tile * new Vector3(orient.x * (pos.x - trunkedX), 0, orient.y * (pos.z - trunkedZ));
+                    return;
+                }
+            }
+        }
+
+        // Go to the right corner of the room & apply pos
+        if (parentRoom.isSquare)
+            transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
+
+        transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
+        transform.transform.localEulerAngles = Utils.ParseVector3(_apiObj.attributes["rotation"], true);
     }
 
 }

@@ -60,23 +60,10 @@ public class ObjectGenerator
         Rack rack = newRack.GetComponent<Rack>();
         rack.UpdateFromSApiObject(_rk);
 
-        if (_parent)
-            Utils.PlaceInRoom(newRack.transform, _rk);
-        else
-        {
-            newRack.transform.localPosition = Vector3.zero;
-            newRack.transform.localEulerAngles = Vector3.zero;
-        }
-
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(rack.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
-        if (rack.attributes.ContainsKey("color"))
-            rack.SetColor(rack.attributes["color"]);
-        else
-            rack.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(rack.id, newRack);
 
@@ -114,20 +101,14 @@ public class ObjectGenerator
 
         // Generate device
         GameObject newDevice = _deviceData.attributes.HasKeyAndValue("template") ? GenerateTemplatedDevice(_parent, _deviceData.attributes["template"]) : GenerateBasicDevice(_parent);
-        Device device = newDevice.GetComponent<Device>();
         newDevice.name = _deviceData.name;
-        Utils.PlaceDevice(_parent, device, _deviceData);
+
+        Device device = newDevice.GetComponent<Device>();
         device.UpdateFromSApiObject(_deviceData);
 
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
         dod.SetLabel(device.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
-        device.GetComponent<Device>().color = Color.white;
-        if (device.attributes.ContainsKey("color"))
-            device.SetColor(device.attributes["color"]);
-        else if (!device.hasSlotColor)
-            device.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(device.id, newDevice);
 
@@ -198,14 +179,7 @@ public class ObjectGenerator
 
         string parentCategory = _parent.GetComponent<OgreeObject>().category;
         Group gr = newGr.AddComponent<Group>();
-        Utils.ShapeGroup(content, gr, parentCategory);
         gr.UpdateFromSApiObject(_gr);
-
-        // Set Group component
-        if (gr.attributes.ContainsKey("color"))
-            gr.SetColor(gr.attributes["color"]);
-        else
-            gr.UpdateColorByDomain();
 
         // Setup labels
         DisplayObjectData dod = newGr.GetComponent<DisplayObjectData>();
@@ -243,26 +217,10 @@ public class ObjectGenerator
         foreach (Transform child in newCo.transform)
             child.localPosition += scale / 2;
 
+        newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
+
         Corridor co = newCo.AddComponent<Corridor>();
         co.UpdateFromSApiObject(_co);
-
-        // Apply position & rotation
-        if (_parent)
-            Utils.PlaceInRoom(newCo.transform, _co);
-        else
-        {
-            newCo.transform.localPosition = Vector3.zero;
-            newCo.transform.localEulerAngles = Vector3.zero;
-        }
-
-        // Set color according to attribute["temperature"]
-        newCo.transform.GetChild(0).GetComponent<Renderer>().material = GameManager.instance.alphaMat;
-        Material mat = newCo.transform.GetChild(0).GetComponent<Renderer>().material;
-        mat.color = new(mat.color.r, mat.color.g, mat.color.b, 0.5f);
-        if (_co.attributes["temperature"] == "cold")
-            co.SetColor("000099");
-        else
-            co.SetColor("990000");
 
         DisplayObjectData dod = newCo.GetComponent<DisplayObjectData>();
         dod.hasFloatingLabel = true;
@@ -362,23 +320,10 @@ public class ObjectGenerator
         GenericObject genericObject = newGeneric.GetComponent<GenericObject>();
         genericObject.UpdateFromSApiObject(_go);
 
-        if (_parent)
-            Utils.PlaceInRoom(newGeneric.transform, _go);
-        else
-        {
-            newGeneric.transform.localPosition = Vector3.zero;
-            newGeneric.transform.localEulerAngles = Vector3.zero;
-        }
-
         DisplayObjectData dod = newGeneric.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(genericObject.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
-        if (genericObject.attributes.ContainsKey("color"))
-            genericObject.SetColor(genericObject.attributes["color"]);
-        else
-            genericObject.UpdateColorByDomain();
 
         GameManager.instance.allItems.Add(genericObject.id, newGeneric);
         return genericObject;

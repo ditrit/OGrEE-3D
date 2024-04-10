@@ -115,6 +115,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
                 GameManager.instance.RemoveFromTag(oldTag, id);
         }
         tags = _src.tags;
+        UiManager.instance.UpdateGuiInfos();
     }
 
     ///<summary>
@@ -278,5 +279,36 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
                 return kvp.Key;
         }
         return null;
+    }
+
+    /// <summary>
+    /// Check if an attribute has changed between old object and new data
+    /// </summary>
+    /// <param name="_newData">The new data</param>
+    /// <param name="_attrKey">The name of the attribute</param>
+    /// <returns>True if the attribute has been added or has had its value modified</returns>
+    public bool HasAttributeChanged(SApiObject _newData, string _attrKey)
+    {
+        return _newData.attributes.ContainsKey(_attrKey) && (!attributes.ContainsKey(_attrKey) || attributes[_attrKey] != _newData.attributes[_attrKey]);
+    }
+
+    ///<summary>
+    /// Get a posXYUnit regarding given object's attributes.
+    ///</summary>
+    ///<param name="_obj">The object to parse</param>
+    ///<returns>The posXYUnit, 1 by default</returns>
+    protected float GetUnitFromAttributes(SApiObject _obj)
+    {
+        if (!_obj.attributes.ContainsKey("posXYUnit"))
+            return 1;
+        return _obj.attributes["posXYUnit"] switch
+        {
+            LengthUnit.Tile => UnitValue.Tile,
+            LengthUnit.Millimeter => 0.001f,
+            LengthUnit.Centimeter => 0.01f,
+            LengthUnit.Meter => 1.0f,
+            LengthUnit.Feet => UnitValue.Foot,
+            _ => 1,
+        };
     }
 }

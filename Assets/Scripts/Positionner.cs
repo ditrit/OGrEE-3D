@@ -170,7 +170,7 @@ public class Positionner : MonoBehaviour
             await ApiManager.instance.ModifyObject($"{items[i].category}s/{items[i].id}", new() { { "attributes", items[i].attributes } });
             UiManager.instance.UpdateGuiInfos();
             if (items[i].group)
-                Utils.ShapeGroup(items[i].group.GetContent().Select(go => go.transform), items[i].group, Category.Room);
+                items[i].group.ShapeGroup();
         }
     }
 }

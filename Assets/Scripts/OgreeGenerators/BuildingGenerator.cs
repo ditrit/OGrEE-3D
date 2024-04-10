@@ -65,20 +65,10 @@ public class BuildingGenerator
 
             BuildWalls(building.walls, new(floor.localScale.x * 10, height, floor.localScale.z * 10), 0);
         }
-        // Apply position
-        if (_parent)
-            Utils.PlaceBuilding(newBD.transform, _bd);
-        else
-        {
-            newBD.transform.localPosition = Vector3.zero;
-            newBD.transform.localEulerAngles = Vector3.zero;
-        }
 
         // Setup nameText
         building.nameText.text = _bd.name;
         building.nameText.gameObject.SetActive(!newBD.GetComponentInChildren<Room>());
-
-        building.UpdateColorByDomain();
 
         roof.localPosition = new(roof.localPosition.x, height, roof.localPosition.z);
 
@@ -120,8 +110,6 @@ public class BuildingGenerator
         newRoom.transform.parent = _parent;
 
         Room room = newRoom.GetComponent<Room>();
-        room.UpdateFromSApiObject(_ro);
-
 
         if (template.vertices != null)
         {
@@ -154,47 +142,13 @@ public class BuildingGenerator
 
             room.UpdateZonesColor();
         }
-        // Apply position
-        if (_parent)
-            Utils.PlaceBuilding(newRoom.transform, _ro);
-        else
-        {
-            newRoom.transform.localPosition = Vector3.zero;
-            newRoom.transform.localEulerAngles = Vector3.zero;
-        }
+        room.UpdateFromSApiObject(_ro);
+        room.ComputeChildrenOrigin();
 
         // Set UI room's name
         room.nameText.text = newRoom.name;
 
-        room.UpdateColorByDomain();
-
         GameManager.instance.allItems.Add(room.id, newRoom);
-
-        if (template.vertices == null)
-        {
-            if (_ro.attributes.ContainsKey("reserved") && _ro.attributes.ContainsKey("technical")
-                && !string.IsNullOrEmpty(_ro.attributes["reserved"]) && !string.IsNullOrEmpty(_ro.attributes["technical"]))
-            {
-                SMargin reserved = new(Utils.ParseVector4(_ro.attributes["reserved"]));
-                SMargin technical = new(Utils.ParseVector4(_ro.attributes["technical"]));
-                room.SetAreas(reserved, technical);
-            }
-        }
-
-        if (room.attributes.ContainsKey("separators"))
-        {
-            Dictionary<string, SSeparator> separators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(room.attributes["separators"]);
-            foreach (KeyValuePair<string, SSeparator> sep in separators)
-                room.BuildSeparator(new SSeparator(sep.Key, sep.Value));
-        }
-
-        if (room.attributes.ContainsKey("pillars"))
-        {
-            Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(room.attributes["pillars"]);
-            foreach (KeyValuePair<string, SPillar> pillar in pillars)
-                room.BuildPillar(new SPillar(pillar.Key, pillar.Value));
-        }
-        room.ComputeChildrenOrigin();
         return room;
     }
 
