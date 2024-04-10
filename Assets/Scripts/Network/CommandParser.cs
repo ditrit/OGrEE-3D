@@ -91,6 +91,9 @@ public class CommandParser
                 //Disable coord mode
                 if (GameManager.instance.getCoordsMode)
                     UiManager.instance.ToggleGetCoordsMode();
+                //Disable position mode
+                if (GameManager.instance.positionMode)
+                    await Positionner.instance.TogglePositionMode();
                 //Disable edit mode
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
@@ -126,6 +129,9 @@ public class CommandParser
                 {
                     if (GameManager.instance.editMode)
                         UiManager.instance.EditFocused();
+                    //Disable position mode
+                    if (GameManager.instance.positionMode)
+                        await Positionner.instance.TogglePositionMode();
                     await GameManager.instance.UnfocusAll();
                     await GameManager.instance.DeleteItem(GameManager.instance.objectRoot, false);
                     await GameManager.instance.PurgeDomains();
@@ -139,6 +145,11 @@ public class CommandParser
                 }
                 break;
             case CommandType.Focus:
+                //Disable coord mode
+                if (GameManager.instance.getCoordsMode)
+                    UiManager.instance.ToggleGetCoordsMode();
+                if (GameManager.instance.positionMode)
+                    await Positionner.instance.TogglePositionMode();
                 if (GameManager.instance.editMode)
                     UiManager.instance.EditFocused();
                 if (Utils.GetObjectById(command["data"].ToString()) is GameObject objToFocus)
@@ -317,6 +328,7 @@ public class CommandParser
             }
             if (obj is Item ogreeItem && ogreeItem.group)
                 Utils.ShapeGroup(ogreeItem.group.GetContent().Select(go => go.transform), ogreeItem.group, ogreeItem.group.transform.parent.GetComponent<OgreeObject>().category);
+            obj.SetBaseTransform();
         }
         // Case temperature for item and corridors
         if (obj is Item item)

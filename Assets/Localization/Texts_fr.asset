@@ -310,6 +310,18 @@ MonoBehaviour:
     m_Localized: Ecrire les journaux
     m_Metadata:
       m_Items: []
+  - m_Id: 7212682039021568
+    m_Localized: "Mode d\xE9placement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11550292005859328
+    m_Localized: "Accrochage du d\xE9placement"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12667766004756480
+    m_Localized: Sauvegarder la position de l'objet ?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

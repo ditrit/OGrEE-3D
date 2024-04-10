@@ -394,30 +394,15 @@ public static class Utils
             origin = parentRoom.usableZone.localScale / 0.2f;
         }
 
-        Vector2 orient = new();
+        Vector2 orient = new(1,1);
         if (parentRoom.attributes.ContainsKey("axisOrientation"))
-            switch (parentRoom.attributes["axisOrientation"])
+            orient = parentRoom.attributes["axisOrientation"] switch
             {
-                case AxisOrientation.Default:
-                    // Lower Left corner of the room
-                    orient = new(1, 1);
-                    break;
-
-                case AxisOrientation.XMinus:
-                    // Lower Right corner of the room
-                    orient = new(-1, 1);
-                    break;
-
-                case AxisOrientation.YMinus:
-                    // Upper Left corner of the room
-                    orient = new(1, -1);
-                    break;
-
-                case AxisOrientation.BothMinus:
-                    // Upper Right corner of the room
-                    orient = new(-1, -1);
-                    break;
-            }
+                AxisOrientation.XMinus => new(-1, 1),
+                AxisOrientation.YMinus => new(1, -1),
+                AxisOrientation.BothMinus => new(-1, -1),
+                _ => new(1, 1)
+            };
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))

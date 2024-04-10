@@ -309,6 +309,18 @@ MonoBehaviour:
     m_Localized: Write logs
     m_Metadata:
       m_Items: []
+  - m_Id: 7212682039021568
+    m_Localized: Position Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11550292005859328
+    m_Localized: Position snapping
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12667766004756480
+    m_Localized: Save object position ?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
