@@ -119,6 +119,9 @@ public class GameManager : MonoBehaviour
         server.StartServer();
         StartCoroutine(configHandler.LoadTextures());
         TempDiagram.instance.SetGradient(configHandler.config.customTemperatureGradient, configHandler.config.useCustomGradient);
+
+        // Add mandatory attribute in the placeholder for racks & generics
+        templatePlaceholder.GetComponent<Room>().attributes["axisOrientation"] = "+x+y";
     }
 
     private void OnDestroy()

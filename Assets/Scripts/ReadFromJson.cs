@@ -55,7 +55,8 @@ public class ReadFromJson
             name = _data.slug,
             id = _data.slug,
             category = _data.category,
-            description = _data.description
+            description = _data.description,
+            domain = ""
         };
         if (obj.category == Category.Rack)
         {

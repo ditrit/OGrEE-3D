@@ -33,7 +33,7 @@ public class Item : OgreeObject
             UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);
         }
     }
-    
+
     ///<summary>
     /// On an UpdateDomainEvent, update the object's color if its the right domain
     ///</summary>
@@ -107,10 +107,10 @@ public class Item : OgreeObject
     ///<param name="_domain">An optionnal domain to use</param>
     public void UpdateColorByDomain(string _domain = null)
     {
-        if (attributes.ContainsKey("color"))
+        if (attributes.ContainsKey("color") || _domain == "")
             return;
 
-        string domainToUse = string.IsNullOrEmpty(_domain) ? domain : _domain;
+        string domainToUse = _domain == null ? domain : _domain;
         if (!GameManager.instance.allItems.Contains(domainToUse))
         {
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Domain doesn't exist", domainToUse), ELogTarget.both, ELogtype.error);
