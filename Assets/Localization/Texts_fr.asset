@@ -48,7 +48,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 32671850172416
-    m_Localized: "Activation automatique des U helpers\r"
+    m_Localized: 'Activation automatique des U helpers
+
+'
     m_Metadata:
       m_Items: []
   - m_Id: 32929661456384
@@ -307,7 +309,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4054351920631808
-    m_Localized: Ecrire les log
+    m_Localized: Ecrire les logs
     m_Metadata:
       m_Items: []
   - m_Id: 7212682039021568
