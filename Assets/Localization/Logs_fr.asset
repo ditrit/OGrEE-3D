@@ -384,7 +384,7 @@ MonoBehaviour:
       m_Items:
       - rid: 5456596318824431624
   - m_Id: 1509428906299392
-    m_Localized: Aide aux U {str0} pour {str1}
+    m_Localized: U helpers {str0} pour {str1}
     m_Metadata:
       m_Items:
       - rid: 5456596318824431624

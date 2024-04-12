@@ -68,7 +68,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2147066101239808
-    m_Key: hidden objects
+    m_Key: Hidden objects
     m_Metadata:
       m_Items: []
   - m_Id: 1887873809125376
@@ -88,7 +88,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2147760040448000
-    m_Key: layers
+    m_Key: Layers
     m_Metadata:
       m_Items: []
   - m_Id: 33132305059840
@@ -100,7 +100,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2145930501820416
-    m_Key: opened groups
+    m_Key: Opened groups
     m_Metadata:
       m_Items: []
   - m_Id: 3669309859958784
@@ -140,7 +140,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2147545552130048
-    m_Key: tags
+    m_Key: Tags
     m_Metadata:
       m_Items: []
   - m_Id: 1898842950078464

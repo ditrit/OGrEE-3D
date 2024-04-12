@@ -52,7 +52,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 32929661456384
-    m_Localized: "D\xE9lais du double clic"
+    m_Localized: "D\xE9lai du double clic"
     m_Metadata:
       m_Items: []
   - m_Id: 33132305059840
@@ -139,7 +139,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2147545552130048
-    m_Localized: "\xE9tiquettes"
+    m_Localized: tags
     m_Metadata:
       m_Items: []
   - m_Id: 2147066101239808
@@ -159,7 +159,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3669309859958784
-    m_Localized: "Vider le cache va vider la sc\xE8ne actuelle"
+    m_Localized: "Vider le cache va effacer la sc\xE8ne actuelle"
     m_Metadata:
       m_Items: []
   - m_Id: 3670325896548352
@@ -280,7 +280,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3705586839851008
-    m_Localized: Aide aux U
+    m_Localized: U helpers
     m_Metadata:
       m_Items: []
   - m_Id: 4049178569609216
@@ -307,7 +307,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 4054351920631808
-    m_Localized: Ecrire les journaux
+    m_Localized: Ecrire les logs
     m_Metadata:
       m_Items: []
   - m_Id: 7212682039021568
