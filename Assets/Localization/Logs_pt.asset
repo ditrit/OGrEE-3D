@@ -346,7 +346,7 @@ MonoBehaviour:
       m_Items:
       - rid: 3691382812341436416
   - m_Id: 1509428906299392
-    m_Localized: Ajudas U {str0} para {str1}
+    m_Localized: U helpers {str0} para {str1}
     m_Metadata:
       m_Items:
       - rid: 3691382812341436416
@@ -428,15 +428,23 @@ MonoBehaviour:
       m_Items:
       - rid: 3691382812341436416
   - m_Id: 6865779283701760
-    m_Localized: 
+    m_Localized: "Modo deslocamento ativado para {str}\r"
     m_Metadata:
       m_Items:
       - rid: 3691382812341436416
   - m_Id: 6865817036632064
-    m_Localized: 
+    m_Localized: Modo deslocamento desativado para {str}
     m_Metadata:
       m_Items:
       - rid: 3691382812341436416
+  - m_Id: 6865214185123840
+    m_Localized: Ajuste de grade ativado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6865323597737984
+    m_Localized: "Ajuste de grade desativado\r"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
