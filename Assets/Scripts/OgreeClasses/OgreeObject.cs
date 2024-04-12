@@ -307,7 +307,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
             LengthUnit.Millimeter => 0.001f,
             LengthUnit.Centimeter => 0.01f,
             LengthUnit.Meter => 1.0f,
-            LengthUnit.Feet => UnitValue.Foot,
+            LengthUnit.Foot => UnitValue.Foot,
             _ => 1,
         };
     }

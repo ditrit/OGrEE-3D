@@ -53,7 +53,7 @@ public class Positionner : MonoBehaviour
         posXYUnits = items.Select(i => i.attributes["posXYUnit"] switch
         {
             LengthUnit.Meter => 1.0f,
-            LengthUnit.Feet => UnitValue.Foot,
+            LengthUnit.Foot => UnitValue.Foot,
             _ => UnitValue.Tile,
         }).ToList();
     }
