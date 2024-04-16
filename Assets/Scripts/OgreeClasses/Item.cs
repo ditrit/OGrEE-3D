@@ -130,10 +130,8 @@ public class Item : OgreeObject
     public void ToggleSlots(bool _value)
     {
         foreach (Slot slot in GetComponentsInChildren<Slot>())
-        {
             if (slot.transform.parent == transform && slot.used == false)
                 slot.GetComponent<ObjectDisplayController>().Display(_value, _value);
-        }
     }
 
     ///<summary>

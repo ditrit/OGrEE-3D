@@ -71,7 +71,6 @@ public class ObjectGenerator
         {
             Device[] components = rack.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)
-            {
                 if (comp.gameObject != rack.gameObject)
                 {
                     comp.id = $"{rack.id}.{comp.name}";
@@ -79,7 +78,6 @@ public class ObjectGenerator
                     GameManager.instance.allItems.Add(comp.id, comp.gameObject);
                     comp.referent = rack;
                 }
-            }
         }
         return rack;
     }

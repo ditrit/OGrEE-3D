@@ -105,15 +105,13 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         attributes = _src.attributes;
 
         foreach (string newTag in _src.tags)
-        {
             if (!tags.Contains(newTag))
                 GameManager.instance.AddToTag(newTag, id);
-        }
+
         foreach (string oldTag in tags)
-        {
             if (!_src.tags.Contains(oldTag))
                 GameManager.instance.RemoveFromTag(oldTag, id);
-        }
+
         tags = _src.tags;
         UiManager.instance.UpdateGuiInfos();
     }
@@ -171,13 +169,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Set details level to", new List<string>() { name, currentLod.ToString() }), ELogTarget.logger, ELogtype.success);
 
         if (_level != 0)
-        {
             foreach (Transform child in transform)
-            {
                 if (child.TryGetComponent(out OgreeObject obj))
                     obj.SetCurrentLod(currentLod - 1);
-            }
-        }
     }
 
     ///<summary>
@@ -188,24 +182,18 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     {
         List<OgreeObject> objsToDel = new();
         foreach (Transform child in transform)
-        {
             if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj is Device dv && !dv.isComponent)
                 objsToDel.Add(obj);
-        }
 
         if (_askedLevel == 0) // Delete all children
-        {
             foreach (OgreeObject obj in objsToDel)
             {
                 Debug.Log($"[Delete] {obj.id}");
                 await GameManager.instance.DeleteItem(obj.gameObject, false, false);
             }
-        }
         else
-        {
             foreach (OgreeObject go in objsToDel)
                 await go.GetComponent<OgreeObject>().DeleteChildren(_askedLevel - 1);
-        }
     }
 
     ///<summary>
@@ -274,10 +262,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public Layer GetLayer(string _slug)
     {
         foreach (KeyValuePair<Layer, bool> kvp in layers)
-        {
             if (kvp.Key.slug == _slug)
                 return kvp.Key;
-        }
         return null;
     }
 

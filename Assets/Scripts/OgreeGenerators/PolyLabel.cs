@@ -42,13 +42,11 @@ public class PolyLabel
         PriorityQueue cellQueue = new();
 
         for (float x = minX; x < maxX; x += cellSize)
-        {
             for (float y = minY; y < maxY; y += cellSize)
             {
                 Cell cell = new(x + h, y + h, h, _vertices);
                 cellQueue.Enqueue(cell, cell.maxDistance);
             }
-        }
 
         while (cellQueue.Count > 0)
         {

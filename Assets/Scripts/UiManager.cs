@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -89,7 +88,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField loggerText;
     [SerializeField] private Scrollbar loggerSB;
     private const int loggerSize = 100;
-    private Queue<string> loggerQueue = new(loggerSize);
+    private readonly Queue<string> loggerQueue = new(loggerSize);
 
     [Header("Groups")]
     public DynamicButtonList groupsList;
@@ -763,10 +762,8 @@ public class UiManager : MonoBehaviour
     {
         int displayedButtons = 0;
         foreach (Transform btn in rightClickMenu.transform)
-        {
             if (btn.gameObject.activeSelf)
                 displayedButtons++;
-        }
         if (displayedButtons > 0)
         {
             // Setup the menu
@@ -791,10 +788,8 @@ public class UiManager : MonoBehaviour
     {
         int displayedButtons = 0;
         foreach (Transform btn in rightClickMenu.transform)
-        {
             if (btn.gameObject.activeSelf)
                 displayedButtons++;
-        }
         return SetupRightClickMenu(displayedButtons);
     }
 
@@ -867,10 +862,8 @@ public class UiManager : MonoBehaviour
             {
                 // Disable all other tags' highlight
                 foreach (Tag t in GameManager.instance.tags)
-                {
                     if (t != tag)
                         t.HighlightObjects(false);
-                }
                 // Highlight this tag
                 tag.HighlightObjects(!tag.objHightlighted);
 
@@ -929,7 +922,6 @@ public class UiManager : MonoBehaviour
                     obj.layers[kvp.Key] ^= true;
                     List<GameObject> relatedObjects = layer is AutoLayer autoLayer ? await autoLayer.GetRelatedObjects() : await layer.GetRelatedObjects(obj.id);
                     foreach (GameObject go in relatedObjects)
-                    {
                         if (go.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
                         {
                             if (obj.layers[kvp.Key])
@@ -937,7 +929,6 @@ public class UiManager : MonoBehaviour
                             else
                                 odc.HideObject();
                         }
-                    }
                     btnText.color = obj.layers[kvp.Key] ? Color.green : Color.red;
                 });
             }
@@ -1180,10 +1171,8 @@ public class UiManager : MonoBehaviour
     public void ResetChildrenTransforms()
     {
         if (GameManager.instance.GetSelected()[0] is GameObject obj)
-        {
             foreach (Transform child in obj.transform)
                 child.GetComponent<OgreeObject>()?.ResetTransform();
-        }
     }
 
     ///<summary>
@@ -1241,10 +1230,8 @@ public class UiManager : MonoBehaviour
     {
         DirectoryInfo dir = new(GameManager.instance.configHandler.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
-        {
             if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
-        }
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Cache cleared at", GameManager.instance.configHandler.GetCacheDir()), ELogTarget.both, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
@@ -1495,10 +1482,8 @@ public class UiManager : MonoBehaviour
     {
         int depth = 0;
         foreach (Transform child in _ogreeObject.gameObject.transform)
-        {
             if (child.GetComponent<OgreeObject>() is OgreeObject childOgree)
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
-        }
         return depth;
     }
 

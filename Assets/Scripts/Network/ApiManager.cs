@@ -535,22 +535,16 @@ public class ApiManager : MonoBehaviour
         }
 
         foreach (SApiObject obj in physicalObjects)
-        {
             if (canDraw)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
-        }
 
         foreach (SApiObject obj in logicalObjects)
-        {
             if (canDraw)
                 await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
-        }
 
         foreach (string id in leafIds)
-        {
             if (Utils.GetObjectById(id) is GameObject leaf)
                 Utils.RebuildLods(leaf.transform);
-        }
 
         if (canDraw)
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "X objects created", physicalObjects.Count + logicalObjects.Count), ELogTarget.logger, ELogtype.successApi);
@@ -616,10 +610,9 @@ public class ApiManager : MonoBehaviour
         List<GameObject> list = new();
         SLayerContentResp resp = JsonConvert.DeserializeObject<SLayerContentResp>(_input);
         foreach (SApiObject obj in resp.data)
-        {
             if (Utils.GetObjectById(obj.id) is GameObject go)
                 list.Add(go);
-        }
+
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         return Task.FromResult(list);
     }
@@ -629,7 +622,7 @@ public class ApiManager : MonoBehaviour
     ///</summary>
     ///<param name="_input">The path to add a base server for API PATCH request</param>
     ///<param name="_data">New partial data of the object</param>
-    public async Task ModifyObject(string _input, Dictionary<string,object> _data)
+    public async Task ModifyObject(string _input, Dictionary<string, object> _data)
     {
         if (!isInit)
         {

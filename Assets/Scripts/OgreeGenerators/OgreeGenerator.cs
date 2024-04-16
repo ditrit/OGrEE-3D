@@ -63,13 +63,9 @@ public class OgreeGenerator : MonoBehaviour
 
         // Tags
         if (_obj.category != Category.Domain)
-        {
             foreach (string tagName in _obj.tags)
-            {
                 if (GameManager.instance.GetTag(tagName) == null)
                     await ApiManager.instance.GetObject($"tags/{tagName}", ApiManager.instance.CreateTag);
-            }
-        }
 
         // Find parent
         Transform parent = Utils.FindParent(_parent, _obj.parentId);

@@ -127,10 +127,8 @@ public static class Utils
     {
         List<GameObject> objects = new();
         foreach (string objId in _idList)
-        {
             if (GameManager.instance.allItems.Contains(objId))
                 objects.Add((GameObject)GameManager.instance.allItems[objId]);
-        }
         return objects;
     }
 
@@ -170,10 +168,8 @@ public static class Utils
         else
             _physicalList.Add(_src);
         if (_src.children != null)
-        {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_physicalList, _logicalList, obj, _leafIds);
-        }
         else
             _leafIds.Add(_src.id);
     }
@@ -188,10 +184,8 @@ public static class Utils
     {
         _list.Add(_src);
         if (_src.children != null)
-        {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_list, obj, _leafIds);
-        }
         else
             _leafIds.Add(_src.id);
     }

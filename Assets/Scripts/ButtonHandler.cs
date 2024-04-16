@@ -73,9 +73,7 @@ public class ButtonHandler
             cb.highlightedColor = toggledColor;
         }
         else
-        {
             cb = defaultCB;
-        }
         button.colors = cb;
     }
 

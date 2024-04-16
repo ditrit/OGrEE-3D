@@ -38,14 +38,12 @@ public class Tag : IComparable<Tag>
     public void UpdateFromSApiTag(SApiTag _src)
     {
         if (slug != _src.slug)
-        {
             foreach (GameObject go in GetLinkedObjects())
             {
                 OgreeObject obj = go.GetComponent<OgreeObject>();
                 obj.tags.Remove(slug);
                 obj.tags.Add(_src.slug);
             }
-        }
         slug = _src.slug;
         description = _src.description;
 
@@ -91,7 +89,6 @@ public class Tag : IComparable<Tag>
 
         List<GameObject> list = Utils.GetObjectsById(linkedObjects);
         foreach (GameObject obj in list)
-        {
             if (obj.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
             {
                 if (odc.isHighlighted)
@@ -99,6 +96,5 @@ public class Tag : IComparable<Tag>
                 if (objHightlighted)
                     EventManager.instance.Raise(new HighlightEvent(obj, color));
             }
-        }
     }
 }

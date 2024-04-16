@@ -8,7 +8,7 @@ public class Inputs : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
-    private float authorizedDrag = 100;
+    private readonly float authorizedDrag = 100;
     private CameraControl camControl;
     [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
@@ -165,10 +165,8 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                {
                     if (go.GetComponent<OgreeObject>() is Item && go.GetComponent<ObjectDisplayController>().Shown)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-                }
             }
         }
         else if (Input.GetMouseButtonUp(1))
@@ -183,10 +181,8 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                {
                     if (go.GetComponent<OgreeObject>() is Item)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                }
             }
         }
         else if (Input.GetMouseButtonUp(0))

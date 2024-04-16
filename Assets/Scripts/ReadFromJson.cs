@@ -89,10 +89,8 @@ public class ReadFromJson
         }
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
         if (_data.attributes != null)
-        {
             foreach (KeyValuePair<string, string> kvp in _data.attributes)
                 obj.attributes[kvp.Key] = kvp.Value;
-        }
 
         // Generate the 3D object
         Item newItem;
@@ -139,28 +137,20 @@ public class ReadFromJson
         // Retrieve custom colors
         Dictionary<string, string> customColors = new();
         if (_data.colors != null)
-        {
             foreach (SColor color in _data.colors)
                 customColors.Add(color.name, color.value);
-        }
 
         // Generate components & slots
         if (_data.components != null)
-        {
             foreach (STemplateChild compData in _data.components)
                 PopulateSlot(false, compData, newItem, customColors);
-        }
         if (_data.slots != null)
-        {
             foreach (STemplateChild slotData in _data.slots)
                 PopulateSlot(true, slotData, newItem, customColors);
-        }
 
         if (_data.sensors != null)
-        {
             foreach (STemplateSensor sensor in _data.sensors)
                 GenerateSensorTemplate(sensor, newItem.transform);
-        }
 
         // Toggle renderers & put newObj in GameManager.objectTemplates
 #if PROD
@@ -214,10 +204,8 @@ public class ReadFromJson
                 ["deviceType"] = _data.type
             };
             if (_data.attributes != null)
-            {
                 foreach (KeyValuePair<string, string> kvp in _data.attributes)
                     obj.attributes[kvp.Key] = kvp.Value;
-            }
             obj.isComponent = true;
             obj.SetBaseTransform();
         }

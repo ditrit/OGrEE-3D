@@ -46,10 +46,8 @@ public class ConfigHandler
     {
         string[] args = Environment.GetCommandLineArgs();
         for (int i = 0; i < args.Length; i++)
-        {
             if (args[i] == _name && args.Length > i + 1)
                 return args[i + 1];
-        }
         return null;
     }
 
@@ -135,20 +133,16 @@ public class ConfigHandler
         config.HumanHeight = Convert.ToSingle(table["humanHeight"]);
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["textures"])
-        {
             if (!string.IsNullOrEmpty((string)kvp.Value))
                 config.textures[kvp.Key] = (string)kvp.Value;
-        }
         // foreach (KeyValuePair<string, string> kvp in config.textures)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
         foreach (KeyValuePair<string, object> kvp in (TomlTable)table["colors"])
-        {
             if (!string.IsNullOrEmpty((string)kvp.Value) && ColorUtility.TryParseHtmlString((string)kvp.Value, out Color c))
                 config.colors[kvp.Key] = (string)kvp.Value;
             else
                 GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Value cannot be used as a color", kvp.Key), ELogTarget.logger, ELogtype.error);
-        }
         // foreach (KeyValuePair<string, string> kvp in config.colors)
         //     Debug.Log($"{kvp.Key}: {kvp.Value}");
 
@@ -206,10 +200,8 @@ public class ConfigHandler
         {
             string[] arrLine = File.ReadAllLines(savedConfigPath);
             for (int i = 0; i < arrLine.Length; i++)
-            {
                 if (arrLine[i].StartsWith(_key))
                     arrLine[i] = $"{_key} = {_value}";
-            }
             File.WriteAllLines(savedConfigPath, arrLine);
         }
     }
@@ -308,10 +300,8 @@ public class ConfigHandler
     public string GetColor(string _askedColor)
     {
         foreach (KeyValuePair<string, string> kvp in config.colors)
-        {
             if (kvp.Key == _askedColor)
                 return kvp.Value;
-        }
         return null;
     }
 

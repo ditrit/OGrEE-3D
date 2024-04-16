@@ -280,9 +280,7 @@ public static class NonSquareBuildingGenerator
     {
         float sum = 0;
         for (int i = 0; i < _points.Count; i++)
-        {
             sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).z + _points[i].z);
-        }
         return sum > 0;
     }
 

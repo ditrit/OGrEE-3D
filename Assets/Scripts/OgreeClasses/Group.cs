@@ -76,7 +76,6 @@ public class Group : Item
     private void DisplayContent(bool _value)
     {
         foreach (GameObject go in content)
-        {
             if (go && !go.GetComponent<OgreeObject>().isDoomed)
             {
                 ObjectDisplayController itemsOdc = go.GetComponent<ObjectDisplayController>();
@@ -88,7 +87,6 @@ public class Group : Item
                 else
                     itemsOdc.UnsubscribeEvents();
             }
-        }
     }
 
     ///<summary>
