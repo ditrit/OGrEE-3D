@@ -323,16 +323,6 @@ public static class Utils
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString(_localizationTable, _localizationKey, _strVariable), ELogTarget.logger, ELogtype.success);
     }
 
-    ///<summary>
-    /// Convert a float to a string with "0.##" format
-    ///</summary>
-    ///<param name="_input">The float to convert</param>
-    ///<returns>The converted float</returns>
-    public static string FloatToRefinedStr(float _input)
-    {
-        return _input.ToString("0.##", CultureInfo.InvariantCulture);
-    }
-
     /// <summary>
     /// Switch y and z value.
     /// </summary>

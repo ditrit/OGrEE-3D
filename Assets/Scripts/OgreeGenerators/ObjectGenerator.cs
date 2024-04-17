@@ -259,7 +259,7 @@ public class ObjectGenerator
         sensor.fromTemplate = false;
         DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(LabelPos.Front);
-        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
+        dod.SetLabel($"{sensor.temperature:0.##} {sensor.temperatureUnit}");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
         return sensor;

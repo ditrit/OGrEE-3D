@@ -1356,7 +1356,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveDoubleClickDelay()
     {
-        GameManager.instance.configHandler.WritePreference("doubleClickDelay", Utils.FloatToRefinedStr(doubleClickSlider.value));
+        GameManager.instance.configHandler.WritePreference("doubleClickDelay", doubleClickSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1381,7 +1381,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveMoveSpeed()
     {
-        GameManager.instance.configHandler.WritePreference("moveSpeed", Utils.FloatToRefinedStr(moveSpeedSlider.value));
+        GameManager.instance.configHandler.WritePreference("moveSpeed", moveSpeedSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1406,7 +1406,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveRotationSpeed()
     {
-        GameManager.instance.configHandler.WritePreference("rotationSpeed", Utils.FloatToRefinedStr(rotationSpeedSlider.value));
+        GameManager.instance.configHandler.WritePreference("rotationSpeed", rotationSpeedSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1432,7 +1432,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveHumanHeight()
     {
-        GameManager.instance.configHandler.WritePreference("humanHeight", Utils.FloatToRefinedStr(humanHeightSlider.value));
+        GameManager.instance.configHandler.WritePreference("humanHeight", humanHeightSlider.value.ToString("0.##"));
     }
 
     ///<summary>

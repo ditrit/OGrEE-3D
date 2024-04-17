@@ -325,7 +325,7 @@ public class ReadFromJson
         sensor.fromTemplate = true;
         DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
         dod.PlaceTexts(_sensor.elemPos[1]);
-        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
+        dod.SetLabel($"{sensor.temperature:0.##} {sensor.temperatureUnit}");
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
     }
 }
