@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -226,40 +226,6 @@ public class ObjectGenerator
         GameManager.instance.allItems.Add(co.id, newCo);
 
         return co;
-    }
-
-    ///<summary>
-    /// Generate a sensor (from GameManager.sensorExtModel/sensorIntModel) with defined temperature.
-    ///</summary>
-    ///<param name="_se">The sensor data to apply</param>
-    ///<param name="_parent">The parent of the created sensor. Leave null if _se contains the parendId</param>
-    ///<returns>The created sensor</returns>
-    public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
-    {
-        OgreeObject parentOgree = _parent.GetComponent<OgreeObject>();
-        Vector3 parentSize = _parent.GetChild(0).localScale;
-
-        GameObject newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
-        newSensor.name = "sensor";
-
-        Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
-        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
-        if (parentOgree is Rack)
-        {
-            float uXSize = UnitValue.OU;
-            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
-                uXSize = UnitValue.U;
-            newSensor.transform.localPosition += uXSize * Vector3.right;
-        }
-
-        Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.fromTemplate = false;
-        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
-        dod.PlaceTexts(LabelPos.Front);
-        dod.SetLabel($"{sensor.temperature:0.##} {sensor.temperatureUnit}");
-        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
-        return sensor;
     }
 
     ///<summary>

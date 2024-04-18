@@ -171,24 +171,6 @@ public class OgreeGenerator : MonoBehaviour
     }
 
     ///<summary>
-    /// Create a sensor in given object.
-    ///</summary>
-    ///<param name="_obj">The base object</param>
-    ///<param name="_parent"></param>
-    ///<returns>The created sensor</returns>
-    public Sensor CreateSensorFromSApiObject(SApiObject _obj, Transform _parent = null)
-    {
-        if (!Utils.FindParent(_parent, _obj.parentId))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Parent not found", _obj.name), ELogTarget.both, ELogtype.error);
-            ResetCoroutine();
-            return null;
-        }
-        ResetCoroutine();
-        return objectGenerator.CreateSensor(_obj, _parent);
-    }
-
-    ///<summary>
     /// If a waitCoroutine is running, stop it. Then, start a new one.
     ///</summary>
     private void ResetCoroutine()

@@ -153,24 +153,8 @@ public class Item : OgreeObject
             }
 
             sensorTransform = transform.Find("sensor");
-            if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
-            else
-            {
-                SApiObject se = new()
-                {
-                    attributes = new(),
-
-                    name = "sensor", // ?
-                    category = Category.Sensor,
-                    parentId = id,
-                    domain = domain
-                };
-                se.attributes["temperature"] = _value;
-
-                Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                sensor.SetTemperature(GetTemperatureInfos().mean);
-            }
+            Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
+            sensor.SetTemperature(GetTemperatureInfos().mean);
         }
         else
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Temperature must be a numerical value", id), ELogTarget.both, ELogtype.warning);
@@ -217,6 +201,36 @@ public class Item : OgreeObject
             hottestChild = tempsNoNaN.Where(v => v.temp >= max).First().childName;
         }
         return new(mean, std, min, max, hottestChild, temperatureUnit);
+    }
+
+    ///<summary>
+    /// Generate a sensor (from GameManager.sensorExtModel) and setup its <see cref="DisplayObjectData"/>.
+    ///</summary>
+    ///<returns>The created sensor</returns>
+    public Sensor CreateMeanSensor()
+    {
+        Vector3 parentSize = transform.GetChild(0).localScale;
+
+        GameObject newSensor = Instantiate(GameManager.instance.sensorExtModel, transform);
+        newSensor.name = "sensor";
+
+        Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
+        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
+        if (this is Rack)
+        {
+            float uXSize = attributes["heightUnit"] == LengthUnit.U ? UnitValue.U : UnitValue.OU;
+            newSensor.transform.localPosition += uXSize * Vector3.right;
+        }
+
+        Sensor sensor = newSensor.GetComponent<Sensor>();
+        sensor.fromTemplate = false;
+
+        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts(LabelPos.Front);
+        dod.SetLabel($"{sensor.temperature:0.##} {sensor.temperatureUnit}");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
+        return sensor;
     }
 
     ///<summary>
