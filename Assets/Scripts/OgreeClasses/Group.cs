@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Group : Item
 {
-    private List<GameObject> content = new();
+    private readonly List<GameObject> content = new();
     public bool isDisplayed = true;
 
     protected override void Start()

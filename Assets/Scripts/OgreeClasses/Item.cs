@@ -227,17 +227,11 @@ public class Item : OgreeObject
     {
         Room parentRoom = transform.parent.GetComponent<Room>();
         float posXYUnit = GetUnitFromAttributes(_apiObj);
-        Vector3 origin;
-        if (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) // technicalZone is null for a nonSquareRoom
-        {
-            transform.position = parentRoom.technicalZone.position;
-            origin = parentRoom.technicalZone.localScale / 0.2f;
-        }
-        else
-        {
-            transform.position = parentRoom.usableZone.position;
-            origin = parentRoom.usableZone.localScale / 0.2f;
-        }
+
+        // technicalZone is null for a nonSquareRoom
+        Transform zone = (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) ? parentRoom.technicalZone : parentRoom.usableZone;
+        transform.position = zone.position;
+        Vector3 origin = zone.localScale / 0.2f;
 
         Vector2 orient = parentRoom.attributes["axisOrientation"] switch
         {

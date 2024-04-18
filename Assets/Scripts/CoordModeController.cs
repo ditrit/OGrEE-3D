@@ -1,47 +1,6 @@
 using UnityEngine;
 using TMPro;
 
-//Leaving it there in case I think of a good way to use it
-public static class RectTransformExtensions
-{
-    /// <summary>
-    /// Check if two rect overlaps
-    /// </summary>
-    /// <param name="_a">first rect</param>
-    /// <param name="_b">second rect</param>
-    /// <returns></returns>
-    public static bool Overlaps(this RectTransform _a, RectTransform _b)
-    {
-        return _a.WorldRect().Overlaps(_b.WorldRect());
-    }
-
-    /// <summary>
-    /// Checks if two rect overlaps
-    /// </summary>
-    /// <param name="_a">first rect</param>
-    /// <param name="_b">second rect</param>
-    /// <param name="_allowInverse">Does the test allow the widths and heights of the Rects to be negative?</param>
-    /// <returns></returns>
-    public static bool Overlaps(this RectTransform _a, RectTransform _b, bool _allowInverse)
-    {
-        return _a.WorldRect().Overlaps(_b.WorldRect(), _allowInverse);
-    }
-
-    /// <summary>
-    /// Make a Rect with no parent (at root) at the same place and with the same dimensions
-    /// </summary>
-    /// <param name="_rectTransform">the rect to copy</param>
-    /// <returns></returns>
-    public static Rect WorldRect(this RectTransform _rectTransform)
-    {
-        Vector2 sizeDelta = _rectTransform.sizeDelta;
-        float rectTransformWidth = sizeDelta.x * _rectTransform.lossyScale.x;
-        float rectTransformHeight = sizeDelta.y * _rectTransform.lossyScale.y;
-
-        Vector3 position = _rectTransform.position;
-        return new Rect(position.x - rectTransformWidth / 2f, position.y - rectTransformHeight / 2f, rectTransformWidth, rectTransformHeight);
-    }
-}
 public class CoordModeController : MonoBehaviour
 {
     [SerializeField] private float scale;

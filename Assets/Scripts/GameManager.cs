@@ -234,7 +234,7 @@ public class GameManager : MonoBehaviour
                     if (item && item.currentLod <= 1)
                         await item.LoadChildren(0);
                     if (focusMode)
-                        currentItems.Add(focus[focus.Count - 1]);
+                        currentItems.Add(focus[^1]);
                 }
             }
             else
@@ -595,9 +595,7 @@ public class GameManager : MonoBehaviour
         if (currentItems.Count == 0)
             return false;
 
-        if (currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category))
-            return true;
-        return false;
+        return currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category);
     }
 
     /// <summary>
@@ -611,9 +609,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             return false;
 
-        if (focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
-            return true;
-        return false;
+        return focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category);
     }
 
     /// <summary>
@@ -631,9 +627,7 @@ public class GameManager : MonoBehaviour
     /// <returns>a copy of the list of currently selected objects</returns>
     public List<Item> GetSelectedReferents()
     {
-        if (selectMode)
-            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
-        return new List<Item>();
+        return selectMode ? currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList() : new List<Item>();
     }
 
     /// <summary>

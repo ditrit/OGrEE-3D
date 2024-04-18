@@ -5,26 +5,25 @@ using UnityEngine;
 public class ClearanceHandler
 {
     [System.Serializable]
-    private class Clearance
+    private struct SClearance
     {
         public float length;
-        //public GameObject gameObject;
         public Vector3 direction;
     }
 
-    [SerializeField] private Clearance front = new();
-    [SerializeField] private Clearance rear = new();
-    [SerializeField] private Clearance left = new();
-    [SerializeField] private Clearance right = new();
-    [SerializeField] private Clearance top = new();
-    [SerializeField] private Clearance bottom = new();
+    [SerializeField] private SClearance front = new();
+    [SerializeField] private SClearance rear = new();
+    [SerializeField] private SClearance left = new();
+    [SerializeField] private SClearance right = new();
+    [SerializeField] private SClearance top = new();
+    [SerializeField] private SClearance bottom = new();
     [SerializeField] private Transform clearedObject;
 
     private bool isCreated = false;
     public bool isToggled = false;
     public bool isInitialized = false;
     public GameObject clearanceWrapper;
-    [SerializeField] private List<Clearance> clearances;
+    [SerializeField] private List<SClearance> clearances;
 
     /// <summary>
     /// Initialize the clearance of the object
@@ -39,7 +38,7 @@ public class ClearanceHandler
     {
         if (_front == 0 && _rear == 0 && _left == 0 && _right == 0 && _top == 0 && _bottom == 0)
             return;
-        clearances = new List<Clearance>();
+        clearances = new List<SClearance>();
         Object.Destroy(clearanceWrapper);
         front.length = _front / 1000;
         front.direction = Vector3.forward;
@@ -74,8 +73,6 @@ public class ClearanceHandler
                 BuildClearance();
             return;
         }
-        //foreach (Clearance clearance in clearances)
-        //    clearance.gameObject.SetActive(_toggle);
         clearanceWrapper.transform.GetChild(0).gameObject.SetActive(_toggle);
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", $"{(_toggle ? "Display" : "Hide")} clearance for object", clearedObject.name), ELogTarget.logger, ELogtype.success);
     }
@@ -128,12 +125,9 @@ public class ClearanceHandler
         Transform clearanceObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform).transform;
         clearanceObject.transform.localScale = new Vector3(size.x / 100, height, size.y / 100);
         clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject;
-        foreach (Clearance clearance in clearances)
+        foreach (SClearance clearance in clearances)
         {
-            //clearance.gameObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform);
-            //clearance.gameObject.transform.localPosition = (1 + clearance.length) / 2 * clearance.direction;
-            //clearance.gameObject.transform.localScale = Vector3.one - (1 + clearance.length) * Vector3.Scale(clearance.direction, clearance.direction);
-            clearanceObject.localPosition += 0.5f * clearance.length * (clearance.direction);
+            clearanceObject.localPosition += 0.5f * clearance.length * clearance.direction;
             clearanceObject.localScale += clearance.length * Vector3.Scale(clearance.direction, clearance.direction);
         }
         isCreated = true;

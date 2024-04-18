@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,11 +28,7 @@ public class BuildingGenerator
         float height = Utils.ParseDecFrac(_bd.attributes["height"]);
 
         // Instantiate the good prefab and setup the Buiding component
-        GameObject newBD;
-        if (template.vertices != null)
-            newBD = Object.Instantiate(GameManager.instance.nonConvexBuildingModel);
-        else
-            newBD = Object.Instantiate(GameManager.instance.buildingModel);
+        GameObject newBD = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexBuildingModel : GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
 
@@ -101,11 +96,7 @@ public class BuildingGenerator
         float height = Utils.ParseDecFrac(_ro.attributes["height"]);
 
         // Instantiate the good prefab and setup the Room component
-        GameObject newRoom;
-        if (template.vertices != null)
-            newRoom = Object.Instantiate(GameManager.instance.nonConvexRoomModel);
-        else
-            newRoom = Object.Instantiate(GameManager.instance.roomModel);
+        GameObject newRoom = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexRoomModel : GameManager.instance.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = _parent;
 

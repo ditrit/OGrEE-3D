@@ -10,7 +10,6 @@ public class Inputs : MonoBehaviour
     private float clickTime;
     private readonly float authorizedDrag = 100;
     private CameraControl camControl;
-    [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
     [SerializeField] private CoordModeController coordModeController;
 
@@ -44,7 +43,7 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.selectMode)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
+        if (!EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
 
         if (!isDraggingObj && !isRotatingObj && !isScalingObj)
@@ -417,14 +416,5 @@ public class Inputs : MonoBehaviour
             }
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Distance from object tiles origin", valuesFromTilesOrigin), ELogTarget.logger, ELogtype.info);
         }
-    }
-
-    ///<summary>
-    /// Toggle value of <see cref="camControlAllowed"/>.
-    ///</summary>
-    ///<param name="_value">The value to assign</param>
-    public void ToggleCameraControls(bool _value)
-    {
-        camControlAllowed = _value;
     }
 }

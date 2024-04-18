@@ -2,43 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-/// <summary>
-/// Two List extensions methods to be able to treat them as circular
-/// </summary>
-public static class CircularListExtension
-{
-    /// <summary>
-    /// Returns the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in a circular list
-    /// </summary>
-    /// <typeparam name="T">type of variables in the list</typeparam>
-    /// <param name="_input">the list from which we call the funciton</param>
-    /// <param name="_elem">the element of the list we start the count from</param>
-    /// <param name="_offset">how many times we go to the next element before returning it</param>
-    /// <returns>the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in <paramref name="_input"/> or the default value of <typeparamref name="T"/> if <paramref name="_elem"/> is not in <paramref name="_input"/></returns>
-    public static T NextElem<T>(this List<T> _input, T _elem, int _offset = 1)
-    {
-        int index = _input.IndexOf(_elem);
-        if (index == -1)
-            return default;
-        return _input[(index + _offset) % _input.Count];
-    }
-
-    /// <summary>
-    /// Returns the item at index <paramref name="_offset"/> + <paramref name="_index"/> in a circular list
-    /// </summary>
-    /// <typeparam name="T">type of variables in the list</typeparam>
-    /// <param name="_input">the list from which we call the funciton</param>
-    /// <param name="_index">the index of the list we start the count from</param>
-    /// <param name="_offset">how many times we go to the next element before returning it</param>
-    /// <returns>the item at index <paramref name="_index"/> in <paramref name="_input"/></returns>
-    public static T NextIndex<T>(this List<T> _input, int _index, int _offset = 1)
-    {
-        return _input[(_index + _offset) % _input.Count];
-    }
-
-}
-
 public static class NonSquareBuildingGenerator
 {
     private struct SCommonTemplate

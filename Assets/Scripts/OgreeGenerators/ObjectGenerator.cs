@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -40,18 +40,15 @@ public class ObjectGenerator
             foreach (Transform child in newRack.transform)
                 child.localPosition += scale / 2;
         }
+        else if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
+        {
+            newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
+            newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
+        }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
-            {
-                newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
-                newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
-            }
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
-                return null;
-            }
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
+            return null;
         }
 
         newRack.name = _rk.name;
@@ -273,12 +270,6 @@ public class ObjectGenerator
     ///<returns>The created generic object</returns>
     public GenericObject CreateGeneric(SApiObject _go, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_go.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _go.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newGeneric;
         if (!_go.attributes.HasKeyAndValue("template"))
         {
@@ -298,18 +289,15 @@ public class ObjectGenerator
             foreach (Transform child in newGeneric.transform)
                 child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
         }
+        else if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+        {
+            newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+            newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
+        }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
-            {
-                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
-                newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
-            }
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
-                return null;
-            }
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
+            return null;
         }
 
         newGeneric.name = _go.name;
