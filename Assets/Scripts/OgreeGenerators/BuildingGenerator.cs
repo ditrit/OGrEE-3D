@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class BuildingGenerator
 {
+    private readonly NonSquareBuildingGenerator nsqGenerator = new();
+
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
@@ -40,7 +42,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             building.isSquare = false;
-            NonSquareBuildingGenerator.CreateShape(newBD.transform, template);
+            nsqGenerator.CreateShape(newBD.transform, template);
         }
         else
         {
@@ -105,7 +107,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             room.isSquare = false;
-            NonSquareBuildingGenerator.CreateShape(newRoom.transform, template);
+            nsqGenerator.CreateShape(newRoom.transform, template);
         }
         else
         {
