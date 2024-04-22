@@ -157,8 +157,6 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
             &&
-            GameManager.instance.selectMode
-            &&
             menuTarget.GetComponent<OgreeObject>()
             &&
             GameManager.instance.SelectIs<OgreeObject>(menuTarget.GetComponent<OgreeObject>().category)
@@ -168,8 +166,6 @@ public class UiManager : MonoBehaviour
         removeSelectBtn = new(removeSelectBtn.button, true)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
-            &&
-            menuTarget
             &&
             !GameManager.instance.editMode
             &&
@@ -197,13 +193,13 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<Item>() is Item item
             &&
-            item is not Corridor
-            &&
-            item is not GenericObject
+            (
+                item is Rack
+                ||
+                item is Device
+            )
             &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
-            &&
-            !menuTarget.GetComponent<Group>()
         };
         focusBtn.Check();
 
@@ -219,9 +215,9 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
-            GameManager.instance.selectMode
-            &&
             !GameManager.instance.positionMode
+            &&
+            GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0] == menuTarget
             &&
@@ -294,15 +290,15 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            !menuTarget.GetComponent<Group>()
-            &&
             (
                 (
                     menuTarget.GetComponent<Item>() is Item item
                     &&
-                    item is not Corridor
-                    &&
-                    item is not GenericObject
+                    (
+                        item is Rack
+                        ||
+                        item is Device
+                    )
                 )
                 ||
                 menuTarget.GetComponent<Room>()
@@ -453,8 +449,7 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>()
-            ,
+            menuTarget.GetComponent<Room>(),
 
             toggledCondition = () => menuTarget
             &&
@@ -711,10 +706,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     private void NameUnderMouse()
     {
-        if (Utils.RaycastFromCameraToMouse() is GameObject go && go.TryGetComponent(out OgreeObject obj))
-            mouseName.text = obj.id.Replace(".", "/");
-        else
-            mouseName.text = "";
+        mouseName.text = Utils.RaycastFromCameraToMouse() is GameObject go && go.TryGetComponent(out OgreeObject obj) ? obj.id.Replace(".", "/") : "";
     }
 
     ///<summary>
@@ -800,10 +792,7 @@ public class UiManager : MonoBehaviour
     /// <returns>Width and height of rightClickMenu's background</returns>
     public Vector2 SetupRightClickMenu(int _displayedButtons)
     {
-        if (GameManager.instance.selectMode)
-            rightClickMenu.GetComponent<Image>().color = selectColor;
-        else
-            rightClickMenu.GetComponent<Image>().color = defaultColor;
+        rightClickMenu.GetComponent<Image>().color = GameManager.instance.selectMode ? selectColor : defaultColor;
 
         float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
         float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;

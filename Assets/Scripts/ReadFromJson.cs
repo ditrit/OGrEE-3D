@@ -221,7 +221,7 @@ public class ReadFromJson
         Renderer rend = go.transform.GetChild(0).GetComponent<Renderer>();
         Color myColor;
         if (_data.color != null && _data.color.StartsWith("@"))
-            ColorUtility.TryParseHtmlString($"#{_customColors[_data.color.Substring(1)]}", out myColor);
+            ColorUtility.TryParseHtmlString($"#{_customColors[_data.color[1..]]}", out myColor);
         else
             ColorUtility.TryParseHtmlString($"#{_data.color}", out myColor);
         if (_isSlot)
