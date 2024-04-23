@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -41,21 +42,21 @@ public class OgreeGenerator : MonoBehaviour
 
         // Templates
         if (_obj.category == Category.Building && _obj.attributes.HasKeyAndValue("template")
-            && !GameManager.instance.buildingTemplates.ContainsKey(_obj.attributes["template"]))
+            && !GameManager.instance.buildingTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         if (_obj.category == Category.Room && _obj.attributes.HasKeyAndValue("template")
-            && !GameManager.instance.roomTemplates.ContainsKey(_obj.attributes["template"]))
+            && !GameManager.instance.roomTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
         }
 
         if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && _obj.attributes.HasKeyAndValue("template")
-            && !GameManager.instance.objectTemplates.ContainsKey(_obj.attributes["template"]))
+            && !GameManager.instance.objectTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
             await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
@@ -75,7 +76,7 @@ public class OgreeGenerator : MonoBehaviour
         Transform parent = Utils.FindParent(_parent, _obj.parentId);
         if (!parent)
         {
-            if (_obj.category == Category.Device && string.IsNullOrEmpty(_obj.attributes["template"]))
+            if (_obj.category == Category.Device && string.IsNullOrEmpty((string)_obj.attributes["template"]))
             {
                 GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unable to draw a basic device without its parent"), ELogTarget.both, ELogtype.errorCli);
                 return null;
@@ -112,6 +113,13 @@ public class OgreeGenerator : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log($"[{_obj.name}]");
+        foreach(var de in _obj.attributes)
+        {
+            Debug.Log($"- {de.Key} : {de.Value.GetType()}");
+        }
+
         // Call Create function
         switch (_obj.category)
         {

@@ -367,8 +367,28 @@ public static class Utils
     /// <param name="_dict">The dictionnary to look in</param>
     /// <param name="_key">The key to look for</param>
     /// <returns>True if the key is in the dictionnary and it has a non empty value, otherweise false</returns>
-    public static bool HasKeyAndValue(this Dictionary<string, string> _dict, string _key)
+    public static bool HasKeyAndValue(this Dictionary<string, object> _dict, string _key)
     {
-        return _dict.ContainsKey(_key) && !string.IsNullOrEmpty(_dict[_key]);
+        return _dict.ContainsKey(_key) && _dict[_key] != null && _dict[_key].ToString() != "";
+    }
+
+    public static bool HasKeyAndValue(this Hashtable _table, string _key)
+    {
+        return _table.ContainsKey(_key) && _table[_key] != null;
+    }
+
+    public static Vector2 ToVector2(this List<float> _list)
+    {
+        return new Vector2(_list[0], _list[1]);
+    }
+
+    public static Vector3 ToVector3(this List<float> _list)
+    {
+        return new Vector3(_list[0], _list[1], _list[2]);
+    }
+
+    public static Vector4 ToVector4(this List<float> _list)
+    {
+        return new Vector4(_list[0], _list[1], _list[2], _list[3]);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class ObjectGenerator
@@ -17,8 +18,8 @@ public class ObjectGenerator
             newRack = Object.Instantiate(GameManager.instance.rackModel);
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
-            Vector2 size = Utils.ParseVector2(_rk.attributes["size"]);
-            float height = Utils.ParseDecFrac(_rk.attributes["height"]);
+            Vector2 size = ((JArray)_rk.attributes["size"]).ToObject<List<float>>().ToVector2();
+            float height = (float)(double)_rk.attributes["height"];
             switch (_rk.attributes["heightUnit"])
             {
                 case LengthUnit.U:
@@ -31,7 +32,7 @@ public class ObjectGenerator
                     height /= 1000;
                     break;
                 default:
-                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, _rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, (string)_rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
                     return null;
             }
             Vector3 scale = new(size.x / 100, height, size.y / 100);
@@ -42,14 +43,14 @@ public class ObjectGenerator
         }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
+            if (GameManager.instance.objectTemplates.ContainsKey((string)_rk.attributes["template"]))
             {
-                newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
+                newRack = Object.Instantiate(GameManager.instance.objectTemplates[(string)_rk.attributes["template"]]);
                 newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
             }
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
@@ -93,14 +94,14 @@ public class ObjectGenerator
     public Device CreateDevice(SApiObject _deviceData, Transform _parent)
     {
         // Check template
-        if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey(_deviceData.attributes["template"]))
+        if (_deviceData.attributes.HasKeyAndValue("template") && !GameManager.instance.objectTemplates.ContainsKey((string)_deviceData.attributes["template"]))
         {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _deviceData.attributes["template"], _deviceData.name }), ELogTarget.both, ELogtype.error);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_deviceData.attributes["template"], _deviceData.name }), ELogTarget.both, ELogtype.error);
             return null;
         }
 
         // Generate device
-        GameObject newDevice = _deviceData.attributes.HasKeyAndValue("template") ? GenerateTemplatedDevice(_parent, _deviceData.attributes["template"]) : GenerateBasicDevice(_parent);
+        GameObject newDevice = _deviceData.attributes.HasKeyAndValue("template") ? GenerateTemplatedDevice(_parent, (string)_deviceData.attributes["template"]) : GenerateBasicDevice(_parent);
         newDevice.name = _deviceData.name;
 
         Device device = newDevice.GetComponent<Device>();
@@ -161,7 +162,7 @@ public class ObjectGenerator
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
         List<Transform> content = new();
-        string[] contentNames = _gr.attributes["content"].Split(',');
+        List<string> contentNames = (List<string>)_gr.attributes["content"];
         foreach (string cn in contentNames)
         {
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
@@ -209,8 +210,8 @@ public class ObjectGenerator
         newCo.transform.parent = _parent;
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = Utils.ParseVector2(_co.attributes["size"]);
-        float height = Utils.ParseDecFrac(_co.attributes["height"]);
+        Vector2 size = ((JArray)_co.attributes["size"]).ToObject<List<float>>().ToVector2();
+        float height = (float)(double)_co.attributes["height"];
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
         newCo.transform.GetChild(0).localScale = scale;
@@ -252,7 +253,7 @@ public class ObjectGenerator
         if (parentOgree is Rack)
         {
             float uXSize = UnitValue.OU;
-            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
+            if (parentOgree.attributes.ContainsKey("heightUnit") && (string)parentOgree.attributes["heightUnit"] == LengthUnit.U)
                 uXSize = UnitValue.U;
             newSensor.transform.localPosition += uXSize * Vector3.right;
         }
@@ -291,25 +292,25 @@ public class ObjectGenerator
                 "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
                 _ => null
             };
-            Vector2 size = Utils.ParseVector2(_go.attributes["size"]);
-            newGeneric.transform.GetChild(0).localScale = new(size.x, Utils.ParseDecFrac(_go.attributes["height"]), size.y);
+            Vector2 size = ((JArray)_go.attributes["size"]).ToObject<List<float>>().ToVector2();
+            newGeneric.transform.GetChild(0).localScale = new(size.x, (float)(double)_go.attributes["height"], size.y);
 
             newGeneric.transform.GetChild(0).localScale /= 100;
-            if (_go.attributes["sizeUnit"] == LengthUnit.Millimeter)
+            if ((string)_go.attributes["sizeUnit"] == LengthUnit.Millimeter)
                 newGeneric.transform.GetChild(0).localScale /= 10;
             foreach (Transform child in newGeneric.transform)
                 child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
         }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+            if (GameManager.instance.objectTemplates.ContainsKey((string)_go.attributes["template"]))
             {
-                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[(string)_go.attributes["template"]]);
                 newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
             }
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }

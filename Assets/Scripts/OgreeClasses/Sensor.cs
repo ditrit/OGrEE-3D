@@ -63,7 +63,7 @@ public class Sensor : MonoBehaviour
             if (!fromTemplate)
                 SetTemperature(parent.GetTemperatureInfos().mean);
             else if (parent.attributes.ContainsKey($"temperature_{name}"))
-                SetTemperature(Utils.ParseDecFrac(parent.attributes[$"temperature_{name}"]));
+                SetTemperature((float)parent.attributes[$"temperature_{name}"]);
             else
                 SetTemperature(float.NaN);
         }

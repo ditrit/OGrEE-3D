@@ -83,8 +83,8 @@ public class GUIObjectInfos : MonoBehaviour
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpDomainName.text = domain.name;
             tmpDomainAttrs.text = (domain.name == domain.id) ? "" : $"({domain.id})\n";
-            foreach (KeyValuePair<string, string> kvp in domain.attributes)
-                tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
+            foreach (KeyValuePair<string, object> kvp in domain.attributes)
+                tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n"; // Will break?
         }
         else
         {
@@ -119,7 +119,7 @@ public class GUIObjectInfos : MonoBehaviour
             }
 
             // Display all other attributes
-            foreach (KeyValuePair<string, string> kvp in _obj.attributes)
+            foreach (KeyValuePair<string, object> kvp in _obj.attributes)
             {
                 tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
                 textHeight++;

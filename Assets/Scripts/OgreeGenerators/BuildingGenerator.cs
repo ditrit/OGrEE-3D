@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,21 +12,23 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
+        try
+        {  
         SBuildingFromJson template = new();
         if (_bd.attributes.HasKeyAndValue("template"))
         {
-            if (GameManager.instance.buildingTemplates.ContainsKey(_bd.attributes["template"]))
-                template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
+            if (GameManager.instance.buildingTemplates.ContainsKey((string)_bd.attributes["template"]))
+                template = GameManager.instance.buildingTemplates[(string)_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
 
         // Get data from _bd.attributes
-        Vector2 size = Utils.ParseVector2(_bd.attributes["size"]);
-        float height = Utils.ParseDecFrac(_bd.attributes["height"]);
+        Vector2 size = ((JArray)_bd.attributes["size"]).ToObject<List<float>>().ToVector2();
+        float height = (float)(double)_bd.attributes["height"];
 
         // Instantiate the good prefab and setup the Buiding component
         GameObject newBD;
@@ -74,6 +76,12 @@ public class BuildingGenerator
 
         GameManager.instance.allItems.Add(building.id, newBD);
         return building;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
     }
 
     ///<summary>
@@ -84,21 +92,24 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
+        try
+        {
+            
         SRoomFromJson template = new();
         if (_ro.attributes.HasKeyAndValue("template"))
         {
-            if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
-                template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
+            if (GameManager.instance.roomTemplates.ContainsKey((string)_ro.attributes["template"]))
+                template = GameManager.instance.roomTemplates[(string)_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
 
         // Get data from _ro.attributes
-        Vector2 size = Utils.ParseVector2(_ro.attributes["size"]);
-        float height = Utils.ParseDecFrac(_ro.attributes["height"]);
+        Vector2 size = ((JArray)_ro.attributes["size"]).ToObject<List<float>>().ToVector2();
+        float height = (float)(double)_ro.attributes["height"];
 
         // Instantiate the good prefab and setup the Room component
         GameObject newRoom;
@@ -150,6 +161,12 @@ public class BuildingGenerator
 
         GameManager.instance.allItems.Add(room.id, newRoom);
         return room;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
     }
 
     ///<summary>

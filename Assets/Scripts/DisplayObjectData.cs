@@ -57,21 +57,32 @@ public class DisplayObjectData : MonoBehaviour
         lodGroup = GetComponent<LODGroup>();
         Transform shape = transform.GetChild(0);
 
-        if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
+        if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty((string)item.attributes["template"])) // HasKeyAndValue ?
         {
-            Vector2 size = Utils.ParseVector2(item.attributes["size"]);
-            if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
-                size /= 1000;
-            else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)
-                size /= 100;
+            Vector2 size = (Vector2)item.attributes["size"];
+            switch ((string)item.attributes["sizeUnit"])
+            {
+                case LengthUnit.Millimeter:
+                    size /= 1000;
+                    break;
+                case LengthUnit.Centimeter:
+                    size /= 100;
+                    break;
+            }
 
-            float height = Utils.ParseDecFrac(item.attributes["height"]);
-            if (item.attributes["heightUnit"] == LengthUnit.U)
-                height *= UnitValue.U;
-            else if (item.attributes["heightUnit"] == LengthUnit.Millimeter)
-                height /= 1000;
-            else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
-                height /= 100;
+            float height = (float)item.attributes["height"];
+            switch ((string)item.attributes["heightUnit"])
+            {
+                case LengthUnit.U:
+                    height *= UnitValue.U;
+                    break;
+                case LengthUnit.Millimeter:
+                    height /= 1000;
+                    break;
+                case LengthUnit.Centimeter:
+                    height /= 100;
+                    break;
+            }
             boxSize = new(size.x, height, size.y);
         }
         else

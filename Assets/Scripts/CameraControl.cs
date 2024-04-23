@@ -334,12 +334,12 @@ public class CameraControl : MonoBehaviour
         {
             case Category.Rack:
                 transform.position = _target.GetChild(0).position;
-                offset = Utils.ParseVector2(obj.attributes["size"]).y / 45;
+                offset = ((Vector2)obj.attributes["size"]).y / 45;
                 transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
                 break;
             case Category.Device:
                 transform.position = _target.GetChild(0).position;
-                offset = Utils.ParseVector2(obj.attributes["size"]).y / 450;
+                offset = ((Vector2)obj.attributes["size"]).y / 450;
                 transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
                 break;
             default:

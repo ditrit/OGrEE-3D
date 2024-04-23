@@ -15,7 +15,7 @@ public class Positionner : MonoBehaviour
     [SerializeField] private float scale;
     [SerializeField] private List<AxisMover> axisMovers;
 
-    private List<string> originalPositions;
+    private List<Vector3> originalPositions;
     private Vector2 orient;
     private List<float> posXYUnits;
     private List<Item> items;
@@ -42,7 +42,7 @@ public class Positionner : MonoBehaviour
         initialPositions = items.Select(i => i.transform.localPosition).ToList();
         initialRotations = items.Select(i => i.transform.localRotation).ToList();
         realDisplacement.SetLocalPositionAndRotation(initialPositions[0], initialRotations[0]);
-        originalPositions = items.Select(i => i.attributes["posXYZ"]).ToList();
+        originalPositions = items.Select(i => (Vector3)i.attributes["posXYZ"]).ToList();
         orient = items[0].transform.parent.GetComponent<Room>().attributes["axisOrientation"] switch
         {
             AxisOrientation.XMinus => new(-1, 1),
@@ -152,7 +152,7 @@ public class Positionner : MonoBehaviour
     {
         Vector3 displacement = (items[_i].transform.localPosition - initialPositions[_i]) / posXYUnits[_i];
         displacement.y *= posXYUnits[_i] * 100;
-        Vector3 newPos = Utils.ParseVector3(originalPositions[_i], true) + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
+        Vector3 newPos = originalPositions[_i].ZAxisUp() + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
         items[_i].attributes["posXYZ"] = $"[{newPos.x:0.##},{newPos.z:0.##},{newPos.y:0.##}]";
         items[_i].attributes["rotation"] = $"[{items[_i].transform.localEulerAngles.x:0.##},{items[_i].transform.localEulerAngles.z:0.##},{items[_i].transform.localEulerAngles.y:0.##}]";
     }

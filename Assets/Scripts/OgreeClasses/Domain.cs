@@ -1,3 +1,5 @@
+using System.Collections;
+
 public class Domain : OgreeObject
 {
     public override void UpdateFromSApiObject(SApiObject _src)
@@ -9,5 +11,8 @@ public class Domain : OgreeObject
         domain = _src.domain;
         description = _src.description;
         attributes = _src.attributes;
+        // attributes.Clear();
+        // foreach (DictionaryEntry de in _src.attributes)
+        //     attributes.Add((string)de.Key, de.Value);
     }
 }

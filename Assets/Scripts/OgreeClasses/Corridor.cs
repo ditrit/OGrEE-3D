@@ -14,7 +14,7 @@ public class Corridor : Item
         }
 
         if (HasAttributeChanged(_src, "temperature"))
-            SetColor(_src.attributes["temperature"] == "cold" ? "000099" : "990000");
+            SetColor((string)_src.attributes["temperature"] == "cold" ? "000099" : "990000");
         base.UpdateFromSApiObject(_src);
     }
 

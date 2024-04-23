@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -54,10 +55,10 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature(_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature((string)_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
-                List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
+                List<float> lengths = JsonConvert.DeserializeObject<List<float>>((string)_src.attributes[attribute]); // ??! A tester..
                 if (lengths == null)
                 {
                     GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Can't deserialize clearance attribute", _src.name), ELogTarget.both, ELogtype.error);
@@ -251,10 +252,10 @@ public class Item : OgreeObject
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
-            pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
+            pos = ((JArray)_apiObj.attributes["posXYZ"]).ToObject<List<float>>().ToVector3().ZAxisUp();
         else
         {
-            Vector2 tmp = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+            Vector2 tmp = ((JArray)_apiObj.attributes["posXY"]).ToObject<List<float>>().ToVector2();
             pos = new(tmp.x, 0, tmp.y);
         }
 
@@ -280,7 +281,7 @@ public class Item : OgreeObject
             transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
         transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
-        transform.transform.localEulerAngles = Utils.ParseVector3(_apiObj.attributes["rotation"], true);
+        transform.transform.localEulerAngles = ((JArray)_apiObj.attributes["rotation"]).ToObject<List<float>>().ToVector3().ZAxisUp();
     }
 
 }

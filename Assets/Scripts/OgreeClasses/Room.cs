@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -30,7 +31,7 @@ public class Room : Building
     {
         if (HasAttributeChanged(_src, "separators"))
         {
-            Dictionary<string, SSeparator> newSeparators = JsonConvert.DeserializeObject<Dictionary<string, SSeparator>>(_src.attributes["separators"]);
+            Dictionary<string, SSeparator> newSeparators = ((JObject)_src.attributes["separators"]).ToObject<Dictionary<string, SSeparator>>();
             // Delete old separators
             for (int i = 0; i < separators.Count; i++)
             {
@@ -53,17 +54,17 @@ public class Room : Building
             foreach (Transform wall in walls)
                 if (wall.name.Contains("Pillar"))
                     Destroy(wall.gameObject);
-            Dictionary<string, SPillar> pillars = JsonConvert.DeserializeObject<Dictionary<string, SPillar>>(_src.attributes["pillars"]);
+            Dictionary<string, SPillar> pillars = ((JObject)_src.attributes["pillars"]).ToObject<Dictionary<string, SPillar>>();
             foreach (KeyValuePair<string, SPillar> pillar in pillars)
                 BuildPillar(new SPillar(pillar.Key, pillar.Value));
             UpdateColorByDomain(_src.domain);
         }
 
-        if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))
+        if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[(string)_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))
             && HasAttributeChanged(_src, "reserved") && HasAttributeChanged(_src, "technical"))
         {
-            SMargin reserved = new(Utils.ParseVector4(_src.attributes["reserved"]));
-            SMargin technical = new(Utils.ParseVector4(_src.attributes["technical"]));
+            SMargin reserved = new(((JArray)_src.attributes["reserved"]).ToObject<List<float>>().ToVector4());
+            SMargin technical = new(((JArray)_src.attributes["technical"]).ToObject<List<float>>().ToVector4());
             SetAreas(reserved, technical);
         }
 
@@ -94,9 +95,9 @@ public class Room : Building
         reservedZone.localPosition = new(technicalZone.localPosition.x, reservedZone.localPosition.y, technicalZone.localPosition.z);
 
         // If tileOffset in template, apply it
-        if (attributes.HasKeyAndValue("template") && GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
+        if (attributes.HasKeyAndValue("template") && GameManager.instance.roomTemplates.ContainsKey((string)attributes["template"]))
         {
-            SRoomFromJson template = GameManager.instance.roomTemplates[attributes["template"]];
+            SRoomFromJson template = GameManager.instance.roomTemplates[(string)attributes["template"]];
             if (template.tileOffset != null && template.tileOffset.Count != 0)
             {
                 // Find the part to substract to land on a whole tile
@@ -219,7 +220,7 @@ public class Room : Building
     ///<param name="_value">True or false value</param>
     public void ToggleTilesColor(bool _value)
     {
-        if (!GameManager.instance.roomTemplates.ContainsKey(attributes["template"]))
+        if (!GameManager.instance.roomTemplates.ContainsKey((string)attributes["template"]))
         {
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "There is no template for", name), ELogTarget.logger, ELogtype.warning);
             return;
@@ -241,7 +242,7 @@ public class Room : Building
             {
                 List<SColor> customColors = new();
                 if (attributes.ContainsKey("colors"))
-                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
+                    customColors = (List<SColor>)attributes["colors"];
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
@@ -289,7 +290,7 @@ public class Room : Building
             {
                 List<SColor> customColors = new();
                 if (attributes.ContainsKey("colors"))
-                    customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
+                    customColors = (List<SColor>)attributes["colors"];
                 foreach (Transform tileObj in root)
                 {
                     Tile tile = tileObj.GetComponent<Tile>();
@@ -371,7 +372,7 @@ public class Room : Building
                 break;
         }
 
-        Vector2 size = Utils.ParseVector2(attributes["size"]);
+        Vector2 size = (Vector2)attributes["size"];
         float x = size.x / UnitValue.Tile - technical.right - technical.left + offsetX;
         float y = size.y / UnitValue.Tile - technical.front - technical.back + offsetY;
         Vector3 origin = usableZone.localScale / 0.2f;
@@ -405,7 +406,7 @@ public class Room : Building
         STile tileData = new();
         if (attributes.ContainsKey("tiles"))
         {
-            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            List<STile> tiles = (List<STile>)attributes["tiles"];
             foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
@@ -437,7 +438,7 @@ public class Room : Building
         STile tileData = new();
         if (attributes.ContainsKey("tiles"))
         {
-            List<STile> tiles = JsonConvert.DeserializeObject<List<STile>>(attributes["tiles"]);
+            List<STile> tiles = (List<STile>)attributes["tiles"];
             foreach (STile tile in tiles)
             {
                 if (tile.location.Trim() == _id)
@@ -447,7 +448,7 @@ public class Room : Building
 
         List<SColor> customColors = new();
         if (attributes.ContainsKey("colors"))
-            customColors = JsonConvert.DeserializeObject<List<SColor>>(attributes["colors"]);
+            customColors = (List<SColor>)attributes["colors"];
 
         if (!string.IsNullOrEmpty(tileData.location))
         {

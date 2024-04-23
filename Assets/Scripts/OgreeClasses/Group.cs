@@ -29,7 +29,7 @@ public class Group : Item
             UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
-            SetColor(_src.attributes["color"]);
+            SetColor((string)_src.attributes["color"]);
 
         if (HasAttributeChanged(_src, "content"))
         {
@@ -108,7 +108,7 @@ public class Group : Item
     {
         content.Clear();
 
-        string[] names = _src.attributes["content"].Split(',');
+        List<string> names = (List<string>)_src.attributes["content"];
         foreach (string rn in names)
             if (Utils.GetObjectById($"{_src.parentId}.{rn}") is GameObject go)
             {

@@ -1056,7 +1056,7 @@ public class UiManager : MonoBehaviour
     public void ToggleTilesColor()
     {
         Room currentRoom = menuTarget.GetComponent<Room>();
-        if (!GameManager.instance.roomTemplates.ContainsKey(currentRoom.attributes["template"]))
+        if (!GameManager.instance.roomTemplates.ContainsKey((string)currentRoom.attributes["template"]))
         {
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "There is no template for", currentRoom.name), ELogTarget.logger, ELogtype.warning);
             return;

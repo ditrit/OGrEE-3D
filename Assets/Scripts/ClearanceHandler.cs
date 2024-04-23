@@ -114,13 +114,13 @@ public class ClearanceHandler
 
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = Utils.ParseVector2(item.attributes["size"]);
-        float height = Utils.ParseDecFrac(item.attributes["height"]);
-        if (item.attributes["heightUnit"] == LengthUnit.U)
+        Vector2 size = (Vector2)item.attributes["size"];
+        float height = (float)item.attributes["height"];
+        if ((string)item.attributes["heightUnit"] == LengthUnit.U)
             height *= UnitValue.U;
-        else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
+        else if ((string)item.attributes["heightUnit"] == LengthUnit.Centimeter)
             height /= 100;
-        if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
+        if ((string)item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
 
         clearanceWrapper.transform.localPosition = clearedObject.GetChild(0).localPosition;

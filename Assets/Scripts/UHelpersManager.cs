@@ -246,7 +246,7 @@ public class UHelpersManager : MonoBehaviour
         UFrontRight.localEulerAngles = Vector3.zero;
 
         float scale = UnitValue.U;
-        if (_rack.attributes["heightUnit"] == LengthUnit.OU)
+        if ((string)_rack.attributes["heightUnit"] == LengthUnit.OU)
             scale = UnitValue.OU;
 
         //List<float> Uslotpositions = _rack.transform.Cast<Transform>().Where(t => t.GetComponent<Slot>() && t.GetComponent<Slot>().isU).Select(t => t.localPosition.y + 0.5f * (scale - t.GetChild(0).localScale.y)).Distinct().OrderBy(t => t).ToList();
@@ -269,15 +269,15 @@ public class UHelpersManager : MonoBehaviour
             BuildU(minY, maxY, scale, UFrontLeft, cornerFrontLeft, Color.blue);
             BuildU(minY, maxY, scale, UFrontRight, cornerFrontRight, Color.green);
         }
-        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || _rack.attributes["heightUnit"] == LengthUnit.U || _rack.attributes["heightUnit"] == LengthUnit.OU)
+        else if (_rack.attributes.ContainsKey("sizeWDHu") || _rack.attributes.ContainsKey("sizeWDHou") || (string)_rack.attributes["heightUnit"] == LengthUnit.U || (string)_rack.attributes["heightUnit"] == LengthUnit.OU)
         {
             float Unumber;
             if (_rack.attributes.ContainsKey("sizeWDHu"))
-                Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHu"])[2];
+                Unumber = JsonConvert.DeserializeObject<int[]>((string)_rack.attributes["sizeWDHu"])[2]; // ??!
             else if (_rack.attributes.ContainsKey("sizeWDHou"))
-                Unumber = JsonConvert.DeserializeObject<int[]>(_rack.attributes["sizeWDHou"])[2];
+                Unumber = JsonConvert.DeserializeObject<int[]>((string)_rack.attributes["sizeWDHou"])[2];
             else
-                Unumber = Utils.ParseDecFrac(_rack.attributes["height"]);
+                Unumber = (float)_rack.attributes["height"];
             bool exactHeight = Mathf.Approximately((int)Unumber, Unumber);
             float offset = scale / 2;
             BuildU(offset, offset + Unumber * scale, scale, URearLeft, cornerRearLeft, Color.red, exactHeight);
