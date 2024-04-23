@@ -17,8 +17,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     [Header("Specific attributes")]
     [SerializeField] private List<string> attributesKeys = new();
-    [SerializeField] private List<string> attributesValues = new();
-    public Dictionary<string, string> attributes = new();
+    [SerializeField] private List<dynamic> attributesValues = new();
+    public Dictionary<string, dynamic> attributes = new();
 
     [Header("LOD")]
     public int currentLod = 0;
@@ -41,7 +41,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     {
         attributesKeys.Clear();
         attributesValues.Clear();
-        foreach (KeyValuePair<string, string> kvp in attributes)
+        foreach (KeyValuePair<string, dynamic> kvp in attributes)
         {
             attributesKeys.Add(kvp.Key);
             attributesValues.Add(kvp.Value);
@@ -70,8 +70,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         foreach (string tag in tags)
             GameManager.instance.RemoveFromTag(tag, id);
 
-        if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
-            GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
+        if (attributes.ContainsKey("template") && !string.IsNullOrEmpty((string)attributes["template"]))
+            GameManager.instance.DeleteTemplateIfUnused(category, (string)attributes["template"]);
     }
 
     private void OnDisable()

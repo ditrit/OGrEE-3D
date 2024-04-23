@@ -10,7 +10,7 @@ public struct SApiObject
     public string description;
     public string domain;
     public List<string> tags;
-    public Dictionary<string, string> attributes;
+    public Dictionary<string, dynamic> attributes;
     public SApiObject[] children;
 
     public SApiObject(OgreeObject _src)
