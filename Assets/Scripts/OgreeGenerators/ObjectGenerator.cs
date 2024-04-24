@@ -19,6 +19,18 @@ public class ObjectGenerator
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
             Vector2 size = ((JArray)_rk.attributes["size"]).ToVector2();
+            switch (_rk.attributes["sizeUnit"])
+            {
+                case LengthUnit.Centimeter:
+                    size /= 100;
+                    break;
+                case LengthUnit.Millimeter:
+                    size /= 1000;
+                    break;
+                default:
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, (string)_rk.attributes["sizeUnit"] }), ELogTarget.both, ELogtype.error);
+                    return null;
+            }
             float height = (float)(double)_rk.attributes["height"];
             switch (_rk.attributes["heightUnit"])
             {
@@ -35,7 +47,7 @@ public class ObjectGenerator
                     GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, (string)_rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
                     return null;
             }
-            Vector3 scale = new(size.x / 100, height, size.y / 100);
+            Vector3 scale = new(size.x, height, size.y);
 
             newRack.transform.GetChild(0).localScale = scale;
             foreach (Transform child in newRack.transform)

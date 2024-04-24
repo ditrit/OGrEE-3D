@@ -50,7 +50,7 @@ public class Device : Item
         Vector3 slotsScale = new();
         if (transform.parent && _apiObj.attributes.HasKeyAndValue("slot"))
         {
-            List<string> slotsArray = (List<string>)_apiObj.attributes["slot"];
+            List<string> slotsArray = ((JArray)_apiObj.attributes["slot"]).ToObject<List<string>>();
 
             foreach (Transform child in transform.parent)
                 if (child.TryGetComponent(out Slot slot))
