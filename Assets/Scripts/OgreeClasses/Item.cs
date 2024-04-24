@@ -1,8 +1,6 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Item : OgreeObject
@@ -55,7 +53,7 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature((string)_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature((float)(double)_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
                 List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();
@@ -140,25 +138,20 @@ public class Item : OgreeObject
     ///</summary>
     ///<param name="_value">The temperature value</param>
     ///<param name="_sensorName">The sensor to modify</param>
-    public void SetTemperature(string _value, string _sensorName)
+    public void SetTemperature(float _value, string _sensorName)
     {
-        if (Regex.IsMatch(_value, "^[0-9.]+$"))
-        {
-            Transform sensorTransform = transform.Find(_sensorName);
-            if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(Utils.ParseDecFrac(_value));
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
-                return;
-            }
-
-            sensorTransform = transform.Find("sensor");
-            Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
-            sensor.SetTemperature(GetTemperatureInfos().mean);
-        }
+        Transform sensorTransform = transform.Find(_sensorName);
+        if (sensorTransform)
+            sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
         else
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Temperature must be a numerical value", id), ELogTarget.both, ELogtype.warning);
+        {
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
+            return;
+        }
+
+        sensorTransform = transform.Find("sensor");
+        Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
+        sensor.SetTemperature(GetTemperatureInfos().mean);
     }
 
     /// <summary>
