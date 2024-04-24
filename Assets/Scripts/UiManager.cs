@@ -227,7 +227,7 @@ public class UiManager : MonoBehaviour
                 GameManager.instance.GetFocused()[^1] != GameManager.instance.GetSelected()[0]
             )
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().category != "tempBar"
+            !GameManager.instance.SelectIs<OgreeObject>("tempBar")
         };
         selectParentBtn.Check();
 
