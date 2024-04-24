@@ -53,28 +53,22 @@ public class Device : Item
             string[] slotsArray = slots.Split(",");
 
             foreach (Transform child in transform.parent)
-            {
                 if (child.TryGetComponent(out Slot slot))
-                {
                     foreach (string slotName in slotsArray)
-                    {
                         if (child.name == slotName)
                         {
                             takenSlots.Add(slot);
                             slot.SlotTaken(true);
                         }
-                    }
-                }
-            }
+
             if (takenSlots.Count > 0)
             {
                 SlotsShape(out Vector3 slotsPivot, out slotsScale);
                 primarySlot = takenSlots[0].transform;
                 foreach (Slot slot in takenSlots)
-                {
                     if (Vector3.Distance(slotsPivot, slot.transform.position) < Vector3.Distance(slotsPivot, primarySlot.position))
                         primarySlot = slot.transform;
-                }
+
             }
             else
             {

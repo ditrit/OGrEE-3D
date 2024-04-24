@@ -30,7 +30,7 @@ public class Sensor : MonoBehaviour
         temperatureUnit = transform.parent.GetComponent<Item>().temperatureUnit;
         if (!string.IsNullOrEmpty(temperatureUnit))
             UpdateSensorColor();
-        GetComponent<DisplayObjectData>().UpdateLabels();
+        GetComponent<DisplayObjectData>().SetLabel($"{temperature:0.##} {temperatureUnit}");
     }
 
     ///<summary>

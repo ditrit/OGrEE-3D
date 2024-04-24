@@ -40,18 +40,15 @@ public class ObjectGenerator
             foreach (Transform child in newRack.transform)
                 child.localPosition += scale / 2;
         }
+        else if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
+        {
+            newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
+            newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
+        }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
-            {
-                newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
-                newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
-            }
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
-                return null;
-            }
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _rk.attributes["template"], _rk.name }), ELogTarget.both, ELogtype.error);
+            return null;
         }
 
         newRack.name = _rk.name;
@@ -71,7 +68,6 @@ public class ObjectGenerator
         {
             Device[] components = rack.transform.GetComponentsInChildren<Device>();
             foreach (Device comp in components)
-            {
                 if (comp.gameObject != rack.gameObject)
                 {
                     comp.id = $"{rack.id}.{comp.name}";
@@ -79,7 +75,6 @@ public class ObjectGenerator
                     GameManager.instance.allItems.Add(comp.id, comp.gameObject);
                     comp.referent = rack;
                 }
-            }
         }
         return rack;
     }
@@ -234,40 +229,6 @@ public class ObjectGenerator
     }
 
     ///<summary>
-    /// Generate a sensor (from GameManager.sensorExtModel/sensorIntModel) with defined temperature.
-    ///</summary>
-    ///<param name="_se">The sensor data to apply</param>
-    ///<param name="_parent">The parent of the created sensor. Leave null if _se contains the parendId</param>
-    ///<returns>The created sensor</returns>
-    public Sensor CreateSensor(SApiObject _se, Transform _parent = null)
-    {
-        OgreeObject parentOgree = _parent.GetComponent<OgreeObject>();
-        Vector3 parentSize = _parent.GetChild(0).localScale;
-
-        GameObject newSensor = Object.Instantiate(GameManager.instance.sensorExtModel, _parent);
-        newSensor.name = "sensor";
-
-        Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
-        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
-        if (parentOgree is Rack)
-        {
-            float uXSize = UnitValue.OU;
-            if (parentOgree.attributes.ContainsKey("heightUnit") && parentOgree.attributes["heightUnit"] == LengthUnit.U)
-                uXSize = UnitValue.U;
-            newSensor.transform.localPosition += uXSize * Vector3.right;
-        }
-
-        Sensor sensor = newSensor.GetComponent<Sensor>();
-        sensor.fromTemplate = false;
-        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
-        dod.PlaceTexts(LabelPos.Front);
-        dod.SetLabel($"{Utils.FloatToRefinedStr(sensor.temperature)} {sensor.temperatureUnit}");
-        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
-
-        return sensor;
-    }
-
-    ///<summary>
     /// Instantiate a genericCubeModel, a genericSphereModel, a genericCylinderModel or a rackTemplate (from GameManager) and apply the given data to it.
     ///</summary>
     ///<param name="_go">The generic object data to apply</param>
@@ -275,12 +236,6 @@ public class ObjectGenerator
     ///<returns>The created generic object</returns>
     public GenericObject CreateGeneric(SApiObject _go, Transform _parent)
     {
-        if (GameManager.instance.allItems.Contains(_go.id))
-        {
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Object already exists", _go.id), ELogTarget.both, ELogtype.warning);
-            return null;
-        }
-
         GameObject newGeneric;
         if (!_go.attributes.HasKeyAndValue("template"))
         {
@@ -300,18 +255,15 @@ public class ObjectGenerator
             foreach (Transform child in newGeneric.transform)
                 child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
         }
+        else if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+        {
+            newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+            newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
+        }
         else
         {
-            if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
-            {
-                newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
-                newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
-            }
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
-                return null;
-            }
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _go.attributes["template"], _go.name }), ELogTarget.both, ELogtype.error);
+            return null;
         }
 
         newGeneric.name = _go.name;

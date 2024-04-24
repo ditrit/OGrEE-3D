@@ -8,9 +8,8 @@ public class Inputs : MonoBehaviour
     private bool coroutineAllowed = true;
     private int clickCount = 0;
     private float clickTime;
-    private float authorizedDrag = 100;
+    private readonly float authorizedDrag = 100;
     private CameraControl camControl;
-    [SerializeField] private bool camControlAllowed = true;
     [SerializeField] private Transform target;
     [SerializeField] private CoordModeController coordModeController;
 
@@ -44,7 +43,7 @@ public class Inputs : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Insert) && GameManager.instance.selectMode)
             Debug.Log(Newtonsoft.Json.JsonConvert.SerializeObject(new SApiObject(GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>())));
 #endif
-        if (camControlAllowed && !EventSystem.current.IsPointerOverGameObject())
+        if (!EventSystem.current.IsPointerOverGameObject())
             camControl.InputControls();
 
         if (!isDraggingObj && !isRotatingObj && !isScalingObj)
@@ -165,10 +164,8 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                {
                     if (go.GetComponent<OgreeObject>() is Item && go.GetComponent<ObjectDisplayController>().Shown)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = true;
-                }
             }
         }
         else if (Input.GetMouseButtonUp(1))
@@ -183,10 +180,8 @@ public class Inputs : MonoBehaviour
             if (!GameManager.instance.editMode)
             {
                 foreach (GameObject go in GameManager.instance.GetSelected())
-                {
                     if (go.GetComponent<OgreeObject>() is Item)
                         go.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-                }
             }
         }
         else if (Input.GetMouseButtonUp(0))
@@ -365,16 +360,16 @@ public class Inputs : MonoBehaviour
         {
             targetRoom.name,
             // meters values
-            Utils.FloatToRefinedStr(localPos.x),
-            Utils.FloatToRefinedStr(localPos.z),
+            localPos.x.ToString("0.##"),
+            localPos.z.ToString("0.##"),
             // tiles values
-            Utils.FloatToRefinedStr(localPos.x / UnitValue.Tile),
-            Utils.FloatToRefinedStr(localPos.z / UnitValue.Tile)
+            (localPos.x / UnitValue.Tile).ToString("0.##"),
+            (localPos.z / UnitValue.Tile).ToString("0.##")
         };
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Distance from object origin", valuesFromLocalCS), ELogTarget.logger, ELogtype.info);
 
         if (UiManager.instance.previousClick)
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Distance between last two clicks", Utils.FloatToRefinedStr(Vector3.Distance(localPos, previousClic))), ELogTarget.logger, ELogtype.info);
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Distance between last two clicks", Vector3.Distance(localPos, previousClic).ToString("0.##")), ELogTarget.logger, ELogtype.info);
         UiManager.instance.previousClick = true;
         previousClic = localPos;
 
@@ -393,42 +388,33 @@ public class Inputs : MonoBehaviour
                 case AxisOrientation.XMinus:
                     minusX = targetRoom.technicalZone.localScale.x * 10 - localPos.x;
                     // meters values
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusX));
+                    valuesFromTilesOrigin.Add(minusX.ToString("0.##"));
                     valuesFromTilesOrigin.Add(valuesFromLocalCS[2]);
                     // tiles values
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusX / UnitValue.Tile));
+                    valuesFromTilesOrigin.Add((minusX / UnitValue.Tile).ToString("0.##"));
                     valuesFromTilesOrigin.Add(valuesFromLocalCS[4]);
                     break;
                 case AxisOrientation.YMinus:
                     minusY = targetRoom.technicalZone.localScale.z * 10 - localPos.z;
                     // meters values
                     valuesFromTilesOrigin.Add(valuesFromLocalCS[1]);
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusY));
+                    valuesFromTilesOrigin.Add((minusY).ToString("0.##"));
                     // tiles values
                     valuesFromTilesOrigin.Add(valuesFromLocalCS[3]);
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
+                    valuesFromTilesOrigin.Add((minusY / UnitValue.Tile).ToString("0.##"));
                     break;
                 case AxisOrientation.BothMinus:
                     minusX = targetRoom.technicalZone.localScale.x * 10 - localPos.x;
                     minusY = targetRoom.technicalZone.localScale.z * 10 - localPos.z;
                     // meters values
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusX));
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusY));
+                    valuesFromTilesOrigin.Add(minusX.ToString("0.##"));
+                    valuesFromTilesOrigin.Add(minusY.ToString("0.##"));
                     // tiles values
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusX / UnitValue.Tile));
-                    valuesFromTilesOrigin.Add(Utils.FloatToRefinedStr(minusY / UnitValue.Tile));
+                    valuesFromTilesOrigin.Add((minusX / UnitValue.Tile).ToString("0.##"));
+                    valuesFromTilesOrigin.Add((minusY / UnitValue.Tile).ToString("0.##"));
                     break;
             }
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Distance from object tiles origin", valuesFromTilesOrigin), ELogTarget.logger, ELogtype.info);
         }
-    }
-
-    ///<summary>
-    /// Toggle value of <see cref="camControlAllowed"/>.
-    ///</summary>
-    ///<param name="_value">The value to assign</param>
-    public void ToggleCameraControls(bool _value)
-    {
-        camControlAllowed = _value;
     }
 }

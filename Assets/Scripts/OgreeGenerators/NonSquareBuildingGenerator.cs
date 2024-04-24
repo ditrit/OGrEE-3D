@@ -2,44 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
-/// <summary>
-/// Two List extensions methods to be able to treat them as circular
-/// </summary>
-public static class CircularListExtension
-{
-    /// <summary>
-    /// Returns the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in a circular list
-    /// </summary>
-    /// <typeparam name="T">type of variables in the list</typeparam>
-    /// <param name="_input">the list from which we call the funciton</param>
-    /// <param name="_elem">the element of the list we start the count from</param>
-    /// <param name="_offset">how many times we go to the next element before returning it</param>
-    /// <returns>the item <paramref name="_offset"/> elements after <paramref name="_elem"/> in <paramref name="_input"/> or the default value of <typeparamref name="T"/> if <paramref name="_elem"/> is not in <paramref name="_input"/></returns>
-    public static T NextElem<T>(this List<T> _input, T _elem, int _offset = 1)
-    {
-        int index = _input.IndexOf(_elem);
-        if (index == -1)
-            return default;
-        return _input[(index + _offset) % _input.Count];
-    }
-
-    /// <summary>
-    /// Returns the item at index <paramref name="_offset"/> + <paramref name="_index"/> in a circular list
-    /// </summary>
-    /// <typeparam name="T">type of variables in the list</typeparam>
-    /// <param name="_input">the list from which we call the funciton</param>
-    /// <param name="_index">the index of the list we start the count from</param>
-    /// <param name="_offset">how many times we go to the next element before returning it</param>
-    /// <returns>the item at index <paramref name="_index"/> in <paramref name="_input"/></returns>
-    public static T NextIndex<T>(this List<T> _input, int _index, int _offset = 1)
-    {
-        return _input[(_index + _offset) % _input.Count];
-    }
-
-}
-
-public static class NonSquareBuildingGenerator
+public class NonSquareBuildingGenerator
 {
     private struct SCommonTemplate
     {
@@ -88,7 +51,7 @@ public static class NonSquareBuildingGenerator
     /// </summary>
     /// <param name="_building">The transform of the building's floor</param>
     /// <param name="_template">The template of the non convex building</param>
-    public static void CreateShape(Transform _building, SBuildingFromJson _template)
+    public void CreateShape(Transform _building, SBuildingFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new(_template);
@@ -106,7 +69,7 @@ public static class NonSquareBuildingGenerator
     /// </summary>
     /// <param name="_room">The transform of the room's floor</param>
     /// <param name="_template">The template of the non convex room</param>
-    public static void CreateShape(Transform _room, SRoomFromJson _template)
+    public void CreateShape(Transform _room, SRoomFromJson _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new(_template);
@@ -124,7 +87,7 @@ public static class NonSquareBuildingGenerator
     /// </summary>
     /// <param name="_root">the transform of the building's / room's floor</param>
     /// <param name="_template">the template of the non convex room</param>
-    private static void BuildWalls(Transform _root, SCommonTemplate _template)
+    private void BuildWalls(Transform _root, SCommonTemplate _template)
     {
         float height = _template.sizeWDHm[2];
         int vCount = _template.vertices.Count;
@@ -179,7 +142,7 @@ public static class NonSquareBuildingGenerator
     /// <param name="_template">the template of the non convex room</param>
     /// <param name="_tiles">if true, build the tiles from the template's tiles field</param>
     /// <param name="_offset">Position of the first vertice</param>
-    private static void BuildFloor(Transform _root, SCommonTemplate _template, Vector2 _offset, bool _tiles)
+    private void BuildFloor(Transform _root, SCommonTemplate _template, Vector2 _offset, bool _tiles)
     {
         List<int> trianglesRoom = new();
 
@@ -280,9 +243,7 @@ public static class NonSquareBuildingGenerator
     {
         float sum = 0;
         for (int i = 0; i < _points.Count; i++)
-        {
             sum += (_points.NextIndex(i).x - _points[i].x) * (_points.NextIndex(i).z + _points[i].z);
-        }
         return sum > 0;
     }
 
@@ -295,7 +256,7 @@ public static class NonSquareBuildingGenerator
     /// <param name="_b">the second point</param>
     /// <param name="_c">the third point</param>
     /// <returns>true if <paramref name="_a"/>, <paramref name="_b"/> and <paramref name="_c"/> are in a clockwise order</returns>
-    private static bool ClockWise(Vector3 _a, Vector3 _b, Vector3 _c)
+    private bool ClockWise(Vector3 _a, Vector3 _b, Vector3 _c)
     {
         return (_c.z - _a.z) * (_b.x - _a.x) < (_b.z - _a.z) * (_c.x - _a.x);
     }
@@ -309,7 +270,7 @@ public static class NonSquareBuildingGenerator
     /// <param name="_c">first end of the seoncd segment</param>
     /// <param name="_d">second end of the second segment</param>
     /// <returns>true if the two segments intersect</returns>
-    private static bool Intersect(Vector3 _a, Vector3 _b, Vector3 _c, Vector3 _d)
+    private bool Intersect(Vector3 _a, Vector3 _b, Vector3 _c, Vector3 _d)
     {
         return ClockWise(_a, _c, _d) != ClockWise(_b, _c, _d) && ClockWise(_a, _b, _c) != ClockWise(_a, _b, _d);
     }
@@ -322,7 +283,7 @@ public static class NonSquareBuildingGenerator
     /// <param name="_corner3">Third corner of the triangle</param>
     /// <param name="_walls">List of walls</param>
     /// <returns>True if at least one wall intersect with a side of the triangle</returns>
-    private static bool TriangleIntersectWalls(Vector3 _corner1, Vector3 _corner2, Vector3 _corner3, List<Vector3> _walls)
+    private bool TriangleIntersectWalls(Vector3 _corner1, Vector3 _corner2, Vector3 _corner3, List<Vector3> _walls)
     {
         for (int i = 0; i < _walls.Count - 1; i++)
         {

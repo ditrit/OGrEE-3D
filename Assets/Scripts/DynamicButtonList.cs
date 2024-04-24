@@ -43,10 +43,8 @@ public class DynamicButtonList : MonoBehaviour
     {
         List<Transform> list = new();
         foreach (Transform btn in transform)
-        {
             if (btn.GetSiblingIndex() != 0)
                 list.Add(btn);
-        }
         return list;
     }
 

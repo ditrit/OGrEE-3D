@@ -53,7 +53,7 @@ public class Positionner : MonoBehaviour
         posXYUnits = items.Select(i => i.attributes["posXYUnit"] switch
         {
             LengthUnit.Meter => 1.0f,
-            LengthUnit.Feet => UnitValue.Foot,
+            LengthUnit.Foot => UnitValue.Foot,
             _ => UnitValue.Tile,
         }).ToList();
     }
@@ -81,8 +81,7 @@ public class Positionner : MonoBehaviour
             Vector3 snappedPos = initialPositions[0] + move;
             Quaternion quaternion = realDisplacement.localRotation;
             Vector3 snappedRot = new(Mathf.Round(quaternion.eulerAngles.x / 45) * 45, Mathf.Round(quaternion.eulerAngles.y / 45) * 45, Mathf.Round(quaternion.eulerAngles.z / 45) * 45);
-            items[0].transform.localPosition = snappedPos;
-            items[0].transform.localRotation = Quaternion.Euler(snappedRot);
+            items[0].transform.SetLocalPositionAndRotation(snappedPos, Quaternion.Euler(snappedRot));
         }
         else
             items[0].transform.SetPositionAndRotation(realDisplacement.position, realDisplacement.rotation);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -89,7 +88,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private TMP_InputField loggerText;
     [SerializeField] private Scrollbar loggerSB;
     private const int loggerSize = 100;
-    private Queue<string> loggerQueue = new(loggerSize);
+    private readonly Queue<string> loggerQueue = new(loggerSize);
 
     [Header("Groups")]
     public DynamicButtonList groupsList;
@@ -158,8 +157,6 @@ public class UiManager : MonoBehaviour
             &&
             !GameManager.instance.GetSelected().Contains(menuTarget)
             &&
-            GameManager.instance.selectMode
-            &&
             menuTarget.GetComponent<OgreeObject>()
             &&
             GameManager.instance.SelectIs<OgreeObject>(menuTarget.GetComponent<OgreeObject>().category)
@@ -169,8 +166,6 @@ public class UiManager : MonoBehaviour
         removeSelectBtn = new(removeSelectBtn.button, true)
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
-            &&
-            menuTarget
             &&
             !GameManager.instance.editMode
             &&
@@ -198,13 +193,13 @@ public class UiManager : MonoBehaviour
             &&
             menuTarget.GetComponent<Item>() is Item item
             &&
-            item is not Corridor
-            &&
-            item is not GenericObject
+            (
+                item is Rack
+                ||
+                item is Device
+            )
             &&
             !GameManager.instance.GetFocused().Contains(menuTarget)
-            &&
-            !menuTarget.GetComponent<Group>()
         };
         focusBtn.Check();
 
@@ -220,9 +215,9 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => !GameManager.instance.getCoordsMode
             &&
-            GameManager.instance.selectMode
-            &&
             !GameManager.instance.positionMode
+            &&
+            GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0] == menuTarget
             &&
@@ -232,7 +227,7 @@ public class UiManager : MonoBehaviour
                 GameManager.instance.GetFocused()[^1] != GameManager.instance.GetSelected()[0]
             )
             &&
-            GameManager.instance.GetSelected()[0].GetComponent<OgreeObject>().category != "tempBar"
+            !GameManager.instance.SelectIs<OgreeObject>("tempBar")
         };
         selectParentBtn.Check();
 
@@ -295,15 +290,15 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            !menuTarget.GetComponent<Group>()
-            &&
             (
                 (
                     menuTarget.GetComponent<Item>() is Item item
                     &&
-                    item is not Corridor
-                    &&
-                    item is not GenericObject
+                    (
+                        item is Rack
+                        ||
+                        item is Device
+                    )
                 )
                 ||
                 menuTarget.GetComponent<Room>()
@@ -454,8 +449,7 @@ public class UiManager : MonoBehaviour
         {
             interactCondition = () => menuTarget
             &&
-            menuTarget.GetComponent<Room>()
-            ,
+            menuTarget.GetComponent<Room>(),
 
             toggledCondition = () => menuTarget
             &&
@@ -712,10 +706,7 @@ public class UiManager : MonoBehaviour
     ///</summary>
     private void NameUnderMouse()
     {
-        if (Utils.RaycastFromCameraToMouse() is GameObject go && go.TryGetComponent(out OgreeObject obj))
-            mouseName.text = obj.id.Replace(".", "/");
-        else
-            mouseName.text = "";
+        mouseName.text = Utils.RaycastFromCameraToMouse() is GameObject go && go.TryGetComponent(out OgreeObject obj) ? obj.id.Replace(".", "/") : "";
     }
 
     ///<summary>
@@ -763,10 +754,8 @@ public class UiManager : MonoBehaviour
     {
         int displayedButtons = 0;
         foreach (Transform btn in rightClickMenu.transform)
-        {
             if (btn.gameObject.activeSelf)
                 displayedButtons++;
-        }
         if (displayedButtons > 0)
         {
             // Setup the menu
@@ -791,10 +780,8 @@ public class UiManager : MonoBehaviour
     {
         int displayedButtons = 0;
         foreach (Transform btn in rightClickMenu.transform)
-        {
             if (btn.gameObject.activeSelf)
                 displayedButtons++;
-        }
         return SetupRightClickMenu(displayedButtons);
     }
 
@@ -805,10 +792,7 @@ public class UiManager : MonoBehaviour
     /// <returns>Width and height of rightClickMenu's background</returns>
     public Vector2 SetupRightClickMenu(int _displayedButtons)
     {
-        if (GameManager.instance.selectMode)
-            rightClickMenu.GetComponent<Image>().color = selectColor;
-        else
-            rightClickMenu.GetComponent<Image>().color = defaultColor;
+        rightClickMenu.GetComponent<Image>().color = GameManager.instance.selectMode ? selectColor : defaultColor;
 
         float btnHeight = rightClickMenu.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta.y;
         float padding = rightClickMenu.GetComponent<VerticalLayoutGroup>().padding.top;
@@ -867,10 +851,8 @@ public class UiManager : MonoBehaviour
             {
                 // Disable all other tags' highlight
                 foreach (Tag t in GameManager.instance.tags)
-                {
                     if (t != tag)
                         t.HighlightObjects(false);
-                }
                 // Highlight this tag
                 tag.HighlightObjects(!tag.objHightlighted);
 
@@ -929,7 +911,6 @@ public class UiManager : MonoBehaviour
                     obj.layers[kvp.Key] ^= true;
                     List<GameObject> relatedObjects = layer is AutoLayer autoLayer ? await autoLayer.GetRelatedObjects() : await layer.GetRelatedObjects(obj.id);
                     foreach (GameObject go in relatedObjects)
-                    {
                         if (go.GetComponent<ObjectDisplayController>() is ObjectDisplayController odc)
                         {
                             if (obj.layers[kvp.Key])
@@ -937,7 +918,6 @@ public class UiManager : MonoBehaviour
                             else
                                 odc.HideObject();
                         }
-                    }
                     btnText.color = obj.layers[kvp.Key] ? Color.green : Color.red;
                 });
             }
@@ -1098,14 +1078,6 @@ public class UiManager : MonoBehaviour
     ///</summary>
     public void ToggleUHelpers()
     {
-        if (GameManager.instance.GetSelected().Contains(menuTarget))
-        {
-            UHelpersManager.instance.ToggleU(GameManager.instance.GetSelected());
-            return;
-        }
-        if (!Utils.GetRackReferent(menuTarget.GetComponent<Item>()))
-            return;
-
         UHelpersManager.instance.ToggleU(menuTarget);
         toggleUHelpersBtn.Check();
     }
@@ -1188,10 +1160,8 @@ public class UiManager : MonoBehaviour
     public void ResetChildrenTransforms()
     {
         if (GameManager.instance.GetSelected()[0] is GameObject obj)
-        {
             foreach (Transform child in obj.transform)
                 child.GetComponent<OgreeObject>()?.ResetTransform();
-        }
     }
 
     ///<summary>
@@ -1249,10 +1219,8 @@ public class UiManager : MonoBehaviour
     {
         DirectoryInfo dir = new(GameManager.instance.configHandler.GetCacheDir());
         foreach (FileInfo file in dir.GetFiles())
-        {
             if (!file.Name.EndsWith("log.txt"))
                 file.Delete();
-        }
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Cache cleared at", GameManager.instance.configHandler.GetCacheDir()), ELogTarget.both, ELogtype.success);
         GameManager.instance.PurgeTemplates();
     }
@@ -1377,7 +1345,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveDoubleClickDelay()
     {
-        GameManager.instance.configHandler.WritePreference("doubleClickDelay", Utils.FloatToRefinedStr(doubleClickSlider.value));
+        GameManager.instance.configHandler.WritePreference("doubleClickDelay", doubleClickSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1402,7 +1370,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveMoveSpeed()
     {
-        GameManager.instance.configHandler.WritePreference("moveSpeed", Utils.FloatToRefinedStr(moveSpeedSlider.value));
+        GameManager.instance.configHandler.WritePreference("moveSpeed", moveSpeedSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1427,7 +1395,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveRotationSpeed()
     {
-        GameManager.instance.configHandler.WritePreference("rotationSpeed", Utils.FloatToRefinedStr(rotationSpeedSlider.value));
+        GameManager.instance.configHandler.WritePreference("rotationSpeed", rotationSpeedSlider.value.ToString("0.##"));
     }
 
     /// <summary>
@@ -1453,7 +1421,7 @@ public class UiManager : MonoBehaviour
     /// </summary>
     public void SaveHumanHeight()
     {
-        GameManager.instance.configHandler.WritePreference("humanHeight", Utils.FloatToRefinedStr(humanHeightSlider.value));
+        GameManager.instance.configHandler.WritePreference("humanHeight", humanHeightSlider.value.ToString("0.##"));
     }
 
     ///<summary>
@@ -1503,10 +1471,8 @@ public class UiManager : MonoBehaviour
     {
         int depth = 0;
         foreach (Transform child in _ogreeObject.gameObject.transform)
-        {
             if (child.GetComponent<OgreeObject>() is OgreeObject childOgree)
                 depth = Mathf.Max(depth, DepthCheck(childOgree) + 1);
-        }
         return depth;
     }
 

@@ -88,9 +88,7 @@ public class TcpConnection : AConnection
         byte[] buffer = new byte[n];
         int offset = 0;
         while (offset < n)
-        {
             offset += await netStream.ReadAsync(buffer, offset, n - offset);
-        }
         return buffer;
     }
 

@@ -18,7 +18,7 @@ public class Rack : Item
         }
 
         if (domain != _src.domain)
-            UpdateColorByDomain( _src.domain);
+            UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
             SetColor(_src.attributes["color"]);

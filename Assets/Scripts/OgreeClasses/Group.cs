@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Group : Item
 {
-    private List<GameObject> content = new();
+    private readonly List<GameObject> content = new();
     public bool isDisplayed = true;
 
     protected override void Start()
@@ -76,7 +76,6 @@ public class Group : Item
     private void DisplayContent(bool _value)
     {
         foreach (GameObject go in content)
-        {
             if (go && !go.GetComponent<OgreeObject>().isDoomed)
             {
                 ObjectDisplayController itemsOdc = go.GetComponent<ObjectDisplayController>();
@@ -88,7 +87,6 @@ public class Group : Item
                 else
                     itemsOdc.UnsubscribeEvents();
             }
-        }
     }
 
     ///<summary>

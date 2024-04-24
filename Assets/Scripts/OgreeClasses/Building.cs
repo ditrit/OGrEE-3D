@@ -104,11 +104,10 @@ public class Building : OgreeObject
         Color color = Utils.ParseHtmlColor($"#{domainObject.attributes["color"]}");
 
         foreach (Transform child in walls)
-        {
             // walls & pillars || separators
             if (child.TryGetComponent(out Renderer rend) || child.GetChild(0).TryGetComponent(out rend))
                 rend.material.color = color;
-        }
+
         Transform roof = transform.Find("Roof");
         if (roof)
             roof.GetComponent<Renderer>().material.color = color;

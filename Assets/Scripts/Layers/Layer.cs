@@ -59,10 +59,8 @@ public class Layer
     public void ClearObjects()
     {
         foreach (GameObject go in targetObjects)
-        {
             if (go)
                 go.GetComponent<OgreeObject>().layers.Remove(this);
-        }
         targetObjects.Clear();
     }
 
@@ -79,10 +77,8 @@ public class Layer
             // Remove ".**" from applicability
             string pattern = applicability.Remove(applicability.Length - 3);
             foreach (DictionaryEntry de in GameManager.instance.allItems)
-            {
                 if (((string)de.Key).StartsWith(pattern))
                     targetObjects.Add((GameObject)de.Value);
-            }
         }
         else if (applicability.EndsWith(".*"))
         {
@@ -95,11 +91,8 @@ public class Layer
                     targetObjects.Add((GameObject)de.Value);
             }
         }
-        else
-        {
-            if (Utils.GetObjectById(applicability) is GameObject go)
-                targetObjects.Add(go);
-        }
+        else if (Utils.GetObjectById(applicability) is GameObject go)
+            targetObjects.Add(go);
 
         // Register the layer in each OgreeObject
         foreach (GameObject go in targetObjects)

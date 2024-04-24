@@ -23,7 +23,7 @@ public class ClearanceCollisionHandler : MonoBehaviour
         trigger.collisionHandler = this;
         collisionCount++;
         foreach (Renderer renderer in renderers)
-        renderer.material.color = Color.red;
+            renderer.material.color = Color.red;
     }
 
     /// <summary>

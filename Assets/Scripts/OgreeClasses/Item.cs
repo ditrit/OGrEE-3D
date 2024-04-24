@@ -130,10 +130,8 @@ public class Item : OgreeObject
     public void ToggleSlots(bool _value)
     {
         foreach (Slot slot in GetComponentsInChildren<Slot>())
-        {
             if (slot.transform.parent == transform && slot.used == false)
                 slot.GetComponent<ObjectDisplayController>().Display(_value, _value);
-        }
     }
 
     ///<summary>
@@ -155,24 +153,8 @@ public class Item : OgreeObject
             }
 
             sensorTransform = transform.Find("sensor");
-            if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(GetTemperatureInfos().mean);
-            else
-            {
-                SApiObject se = new()
-                {
-                    attributes = new(),
-
-                    name = "sensor", // ?
-                    category = Category.Sensor,
-                    parentId = id,
-                    domain = domain
-                };
-                se.attributes["temperature"] = _value;
-
-                Sensor sensor = OgreeGenerator.instance.CreateSensorFromSApiObject(se, transform);
-                sensor.SetTemperature(GetTemperatureInfos().mean);
-            }
+            Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
+            sensor.SetTemperature(GetTemperatureInfos().mean);
         }
         else
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Temperature must be a numerical value", id), ELogTarget.both, ELogtype.warning);
@@ -222,6 +204,36 @@ public class Item : OgreeObject
     }
 
     ///<summary>
+    /// Generate a sensor (from GameManager.sensorExtModel) and setup its <see cref="DisplayObjectData"/>.
+    ///</summary>
+    ///<returns>The created sensor</returns>
+    public Sensor CreateMeanSensor()
+    {
+        Vector3 parentSize = transform.GetChild(0).localScale;
+
+        GameObject newSensor = Instantiate(GameManager.instance.sensorExtModel, transform);
+        newSensor.name = "sensor";
+
+        Vector3 shapeSize = newSensor.transform.GetChild(0).localScale;
+        newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
+        if (this is Rack)
+        {
+            float uXSize = attributes["heightUnit"] == LengthUnit.U ? UnitValue.U : UnitValue.OU;
+            newSensor.transform.localPosition += uXSize * Vector3.right;
+        }
+
+        Sensor sensor = newSensor.GetComponent<Sensor>();
+        sensor.fromTemplate = false;
+
+        DisplayObjectData dod = newSensor.GetComponent<DisplayObjectData>();
+        dod.PlaceTexts(LabelPos.Front);
+        dod.SetLabel($"{sensor.temperature:0.##} {sensor.temperatureUnit}");
+        dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
+
+        return sensor;
+    }
+
+    ///<summary>
     /// Move this object to its position in a room according to the API data.
     ///</summary>
     ///<param name="_apiObj">The SApiObject containing relevant positionning data</param>
@@ -229,17 +241,11 @@ public class Item : OgreeObject
     {
         Room parentRoom = transform.parent.GetComponent<Room>();
         float posXYUnit = GetUnitFromAttributes(_apiObj);
-        Vector3 origin;
-        if (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) // technicalZone is null for a nonSquareRoom
-        {
-            transform.position = parentRoom.technicalZone.position;
-            origin = parentRoom.technicalZone.localScale / 0.2f;
-        }
-        else
-        {
-            transform.position = parentRoom.usableZone.position;
-            origin = parentRoom.usableZone.localScale / 0.2f;
-        }
+
+        // technicalZone is null for a nonSquareRoom
+        Transform zone = (posXYUnit != UnitValue.Tile && parentRoom.technicalZone) ? parentRoom.technicalZone : parentRoom.usableZone;
+        transform.position = zone.position;
+        Vector3 origin = zone.localScale / 0.2f;
 
         Vector2 orient = parentRoom.attributes["axisOrientation"] switch
         {
