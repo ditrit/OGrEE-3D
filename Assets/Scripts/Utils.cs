@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public static class Utils
@@ -372,23 +373,21 @@ public static class Utils
         return _dict.ContainsKey(_key) && _dict[_key] != null && _dict[_key].ToString() != "";
     }
 
-    public static bool HasKeyAndValue(this Hashtable _table, string _key)
+    public static Vector2 ToVector2(this JArray _array)
     {
-        return _table.ContainsKey(_key) && _table[_key] != null;
+        List<float> list = _array.ToObject<List<float>>();
+        return new Vector2(list[0], list[1]);
     }
 
-    public static Vector2 ToVector2(this List<float> _list)
+    public static Vector3 ToVector3(this JArray _array)
     {
-        return new Vector2(_list[0], _list[1]);
+        List<float> list = _array.ToObject<List<float>>();
+        return new Vector3(list[0], list[1], list[2]);
     }
 
-    public static Vector3 ToVector3(this List<float> _list)
+    public static Vector4 ToVector4(this JArray _array)
     {
-        return new Vector3(_list[0], _list[1], _list[2]);
-    }
-
-    public static Vector4 ToVector4(this List<float> _list)
-    {
-        return new Vector4(_list[0], _list[1], _list[2], _list[3]);
+        List<float> list = _array.ToObject<List<float>>();
+        return new Vector4(list[0], list[1], list[2], list[3]);
     }
 }

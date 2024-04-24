@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -114,12 +115,17 @@ public class ClearanceHandler
 
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = (Vector2)item.attributes["size"];
-        float height = (float)item.attributes["height"];
-        if ((string)item.attributes["heightUnit"] == LengthUnit.U)
-            height *= UnitValue.U;
-        else if ((string)item.attributes["heightUnit"] == LengthUnit.Centimeter)
-            height /= 100;
+        Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
+        float height = (float)(double)item.attributes["height"];
+        switch ((string)item.attributes["heightUnit"])
+        {
+            case LengthUnit.U:
+                height *= UnitValue.U;
+                break;
+            case LengthUnit.Centimeter:
+                height /= 100;
+                break;
+        }
         if ((string)item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
 

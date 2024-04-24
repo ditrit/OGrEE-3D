@@ -27,7 +27,7 @@ public class BuildingGenerator
         }
 
         // Get data from _bd.attributes
-        Vector2 size = ((JArray)_bd.attributes["size"]).ToObject<List<float>>().ToVector2();
+        Vector2 size = ((JArray)_bd.attributes["size"]).ToVector2();
         float height = (float)(double)_bd.attributes["height"];
 
         // Instantiate the good prefab and setup the Buiding component
@@ -108,7 +108,7 @@ public class BuildingGenerator
         }
 
         // Get data from _ro.attributes
-        Vector2 size = ((JArray)_ro.attributes["size"]).ToObject<List<float>>().ToVector2();
+        Vector2 size = ((JArray)_ro.attributes["size"]).ToVector2();
         float height = (float)(double)_ro.attributes["height"];
 
         // Instantiate the good prefab and setup the Room component

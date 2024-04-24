@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -59,7 +59,7 @@ public class DisplayObjectData : MonoBehaviour
 
         if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty((string)item.attributes["template"])) // HasKeyAndValue ?
         {
-            Vector2 size = (Vector2)item.attributes["size"];
+            Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
             switch ((string)item.attributes["sizeUnit"])
             {
                 case LengthUnit.Millimeter:
@@ -70,7 +70,7 @@ public class DisplayObjectData : MonoBehaviour
                     break;
             }
 
-            float height = (float)item.attributes["height"];
+            float height = (float)(double)item.attributes["height"];
             switch ((string)item.attributes["heightUnit"])
             {
                 case LengthUnit.U:

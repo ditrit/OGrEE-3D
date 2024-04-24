@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class Positionner : MonoBehaviour
@@ -42,7 +43,7 @@ public class Positionner : MonoBehaviour
         initialPositions = items.Select(i => i.transform.localPosition).ToList();
         initialRotations = items.Select(i => i.transform.localRotation).ToList();
         realDisplacement.SetLocalPositionAndRotation(initialPositions[0], initialRotations[0]);
-        originalPositions = items.Select(i => (Vector3)i.attributes["posXYZ"]).ToList();
+        originalPositions = items.Select(i => ((JArray)i.attributes["posXYZ"]).ToVector3()).ToList();
         orient = items[0].transform.parent.GetComponent<Room>().attributes["axisOrientation"] switch
         {
             AxisOrientation.XMinus => new(-1, 1),

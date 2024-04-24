@@ -18,7 +18,7 @@ public class ObjectGenerator
             newRack = Object.Instantiate(GameManager.instance.rackModel);
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
-            Vector2 size = ((JArray)_rk.attributes["size"]).ToObject<List<float>>().ToVector2();
+            Vector2 size = ((JArray)_rk.attributes["size"]).ToVector2();
             float height = (float)(double)_rk.attributes["height"];
             switch (_rk.attributes["heightUnit"])
             {
@@ -162,7 +162,7 @@ public class ObjectGenerator
     public Group CreateGroup(SApiObject _gr, Transform _parent = null)
     {
         List<Transform> content = new();
-        List<string> contentNames = (List<string>)_gr.attributes["content"];
+        List<string> contentNames = ((JArray)_gr.attributes["content"]).ToObject<List<string>>();
         foreach (string cn in contentNames)
         {
             GameObject go = Utils.GetObjectById($"{_gr.parentId}.{cn}");
@@ -210,7 +210,7 @@ public class ObjectGenerator
         newCo.transform.parent = _parent;
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = ((JArray)_co.attributes["size"]).ToObject<List<float>>().ToVector2();
+        Vector2 size = ((JArray)_co.attributes["size"]).ToVector2();
         float height = (float)(double)_co.attributes["height"];
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
@@ -292,7 +292,7 @@ public class ObjectGenerator
                 "cylinder" => Object.Instantiate(GameManager.instance.genericCylinderModel),
                 _ => null
             };
-            Vector2 size = ((JArray)_go.attributes["size"]).ToObject<List<float>>().ToVector2();
+            Vector2 size = ((JArray)_go.attributes["size"]).ToVector2();
             newGeneric.transform.GetChild(0).localScale = new(size.x, (float)(double)_go.attributes["height"], size.y);
 
             newGeneric.transform.GetChild(0).localScale /= 100;

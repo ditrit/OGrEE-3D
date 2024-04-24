@@ -54,7 +54,7 @@ public class TempDiagram : MonoBehaviour
     {
         if (_room.scatterPlot)
             HandleScatterPlot(_room);
-        float roomHeight = (float)_room.attributes["height"];
+        float roomHeight = (float)(double)_room.attributes["height"];
 
         switch (_room.attributes["heightUnit"])
         {

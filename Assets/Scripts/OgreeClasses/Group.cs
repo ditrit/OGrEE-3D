@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class Group : Item
@@ -108,7 +109,7 @@ public class Group : Item
     {
         content.Clear();
 
-        List<string> names = (List<string>)_src.attributes["content"];
+        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>();;
         foreach (string rn in names)
             if (Utils.GetObjectById($"{_src.parentId}.{rn}") is GameObject go)
             {

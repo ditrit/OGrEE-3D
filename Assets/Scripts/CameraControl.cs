@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -334,12 +335,12 @@ public class CameraControl : MonoBehaviour
         {
             case Category.Rack:
                 transform.position = _target.GetChild(0).position;
-                offset = ((Vector2)obj.attributes["size"]).y / 45;
+                offset = ((JArray)obj.attributes["size"]).ToVector2().y / 45;
                 transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
                 break;
             case Category.Device:
                 transform.position = _target.GetChild(0).position;
-                offset = ((Vector2)obj.attributes["size"]).y / 450;
+                offset = ((JArray)obj.attributes["size"]).ToVector2().y / 450;
                 transform.eulerAngles = _target.eulerAngles + new Vector3(0, 180, 0);
                 break;
             default:

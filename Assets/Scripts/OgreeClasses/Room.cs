@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -63,8 +62,8 @@ public class Room : Building
         if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[(string)_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))
             && HasAttributeChanged(_src, "reserved") && HasAttributeChanged(_src, "technical"))
         {
-            SMargin reserved = new(((JArray)_src.attributes["reserved"]).ToObject<List<float>>().ToVector4());
-            SMargin technical = new(((JArray)_src.attributes["technical"]).ToObject<List<float>>().ToVector4());
+            SMargin reserved = new(((JArray)_src.attributes["reserved"]).ToVector4());
+            SMargin technical = new(((JArray)_src.attributes["technical"]).ToVector4());
             SetAreas(reserved, technical);
         }
 
@@ -372,7 +371,7 @@ public class Room : Building
                 break;
         }
 
-        Vector2 size = (Vector2)attributes["size"];
+        Vector2 size = ((JArray)attributes["size"]).ToVector2();
         float x = size.x / UnitValue.Tile - technical.right - technical.left + offsetX;
         float y = size.y / UnitValue.Tile - technical.front - technical.back + offsetY;
         Vector3 origin = usableZone.localScale / 0.2f;

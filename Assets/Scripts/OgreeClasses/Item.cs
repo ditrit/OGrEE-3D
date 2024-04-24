@@ -58,7 +58,7 @@ public class Item : OgreeObject
                 SetTemperature((string)_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
-                List<float> lengths = JsonConvert.DeserializeObject<List<float>>((string)_src.attributes[attribute]); // ??! A tester..
+                List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();
                 if (lengths == null)
                 {
                     GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Can't deserialize clearance attribute", _src.name), ELogTarget.both, ELogtype.error);
@@ -252,10 +252,10 @@ public class Item : OgreeObject
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
-            pos = ((JArray)_apiObj.attributes["posXYZ"]).ToObject<List<float>>().ToVector3().ZAxisUp();
+            pos = ((JArray)_apiObj.attributes["posXYZ"]).ToVector3().ZAxisUp();
         else
         {
-            Vector2 tmp = ((JArray)_apiObj.attributes["posXY"]).ToObject<List<float>>().ToVector2();
+            Vector2 tmp = ((JArray)_apiObj.attributes["posXY"]).ToVector2();
             pos = new(tmp.x, 0, tmp.y);
         }
 
@@ -281,7 +281,7 @@ public class Item : OgreeObject
             transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
         transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
-        transform.transform.localEulerAngles = ((JArray)_apiObj.attributes["rotation"]).ToObject<List<float>>().ToVector3().ZAxisUp();
+        transform.transform.localEulerAngles = ((JArray)_apiObj.attributes["rotation"]).ToVector3().ZAxisUp();
     }
 
 }
