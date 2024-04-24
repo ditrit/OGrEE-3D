@@ -128,10 +128,8 @@ public static class Utils
     {
         List<GameObject> objects = new();
         foreach (string objId in _idList)
-        {
             if (GameManager.instance.allItems.Contains(objId))
                 objects.Add((GameObject)GameManager.instance.allItems[objId]);
-        }
         return objects;
     }
 
@@ -171,10 +169,8 @@ public static class Utils
         else
             _physicalList.Add(_src);
         if (_src.children != null)
-        {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_physicalList, _logicalList, obj, _leafIds);
-        }
         else
             _leafIds.Add(_src.id);
     }
@@ -189,10 +185,8 @@ public static class Utils
     {
         _list.Add(_src);
         if (_src.children != null)
-        {
             foreach (SApiObject obj in _src.children)
                 ParseNestedObjects(_list, obj, _leafIds);
-        }
         else
             _leafIds.Add(_src.id);
     }
@@ -330,16 +324,6 @@ public static class Utils
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString(_localizationTable, _localizationKey, _strVariable), ELogTarget.logger, ELogtype.success);
     }
 
-    ///<summary>
-    /// Convert a float to a string with "0.##" format
-    ///</summary>
-    ///<param name="_input">The float to convert</param>
-    ///<returns>The converted float</returns>
-    public static string FloatToRefinedStr(float _input)
-    {
-        return _input.ToString("0.##", CultureInfo.InvariantCulture);
-    }
-
     /// <summary>
     /// Switch y and z value.
     /// </summary>
@@ -389,5 +373,18 @@ public static class Utils
     {
         List<float> list = _array.ToObject<List<float>>();
         return new Vector4(list[0], list[1], list[2], list[3]);
+    }
+
+    /// <summary>
+    /// Returns the item at index <paramref name="_offset"/> + <paramref name="_index"/> in a circular list
+    /// </summary>
+    /// <typeparam name="T">type of variables in the list</typeparam>
+    /// <param name="_input">the list from which we call the funciton</param>
+    /// <param name="_index">the index of the list we start the count from</param>
+    /// <param name="_offset">how many times we go to the next element before returning it</param>
+    /// <returns>the item at index <paramref name="_index"/> in <paramref name="_input"/></returns>
+    public static T NextIndex<T>(this List<T> _input, int _index, int _offset = 1)
+    {
+        return _input[(_index + _offset) % _input.Count];
     }
 }

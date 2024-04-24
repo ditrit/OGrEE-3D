@@ -48,7 +48,7 @@ public class Heatmap : MonoBehaviour
     /// <returns>the modified point</returns>
     private Vector4 HandleTransform(Vector4 _point)
     {
-        Vector3 pointTemp = new Vector3(_point.x, _point.y, _point.z);
+        Vector3 pointTemp = new(_point.x, _point.y, _point.z);
         pointTemp.Scale(transform.lossyScale);
         pointTemp = transform.rotation * pointTemp;
         pointTemp += transform.position;

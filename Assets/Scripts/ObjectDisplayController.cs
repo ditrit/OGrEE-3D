@@ -285,14 +285,11 @@ public class ObjectDisplayController : MonoBehaviour
         bool rendAndColAndLabels = !isHidden && ((isReferent && !selectionrefs.Contains(item) && !GameManager.instance.focusMode) || selection.Contains(transform.parent?.gameObject));
         Display(rendAndColAndLabels, rendAndColAndLabels, rendAndColAndLabels);
         foreach (string tagName in item.tags)
-        {
             if (GameManager.instance.GetTag(tagName) is Tag tag && tag.objHightlighted)
             {
                 isHighlighted = true;
                 highlightColor = tag.color;
             }
-        }
-
         HandleMaterial();
     }
 
@@ -479,9 +476,7 @@ public class ObjectDisplayController : MonoBehaviour
         if (!listening)
             return;
         if (_scatterPlot)
-        {
             Display(false, false, false);
-        }
         else if (GameManager.instance.GetSelected().Contains(gameObject))
         {
             if (item && item.referent)

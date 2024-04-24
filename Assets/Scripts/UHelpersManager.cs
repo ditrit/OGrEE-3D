@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +12,7 @@ public class UHelpersManager : MonoBehaviour
     private readonly string cornerFrontLeft = "frontLeft";
     private readonly string cornerFrontRight = "frontRight";
     private bool wasEdited = false;
-    private List<Item> lastSelectedReferent = new List<Item>();
+    private List<Item> lastSelectedReferent = new();
 
     private void Awake()
     {
@@ -63,78 +62,69 @@ public class UHelpersManager : MonoBehaviour
     ///<param name="_e">Event raised when selecting something</param>
     private void OnSelect(OnSelectItemEvent _e)
     {
-        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>()
-            && (GameManager.instance.configHandler.config.autoUHelpers
-                || (GameManager.instance.GetSelected()[0].GetComponent<Item>().referent is Rack selectedRack && selectedRack.areUHelpersToggled)))
+        if (GameManager.instance.selectMode && GameManager.instance.SelectIs<Item>())
         {
-            ToggleU(GameManager.instance.GetSelected(), true);
-            HighlightULocation(GameManager.instance.GetSelected());
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+            {
+                if (GameManager.instance.configHandler.config.autoUHelpers && !GameManager.instance.GetPrevious().Contains(obj))
+                    ToggleU(obj, true);
+                if (obj.GetComponent<Item>().referent is Rack selectedRef && selectedRef.areUHelpersToggled)
+                    HighlightULocation(obj.GetComponent<Item>());
+            }
         }
         foreach (Item item in lastSelectedReferent)
-        {
             if (!GameManager.instance.GetSelectedReferents().Contains(item) && item is Rack rack && rack.areUHelpersToggled)
             {
                 for (int i = 0; i < rack.uRoot.transform.GetChild(0).childCount; i++)
                     ChangeUColor(rack.uRoot, i, true);
                 ToggleU(item.referent.gameObject, false);
             }
-        }
         lastSelectedReferent = GameManager.instance.GetSelectedReferents();
     }
 
     ///<summary>
-    /// Highlight the ULocation at the same height than the selected objects.
+    /// Highlight the ULocation at the same height than the given object.
     ///</summary>
-    ///<param name="_selection">The selected objects</param>
-    private void HighlightULocation(List<GameObject> _selection)
+    ///<param name="_item">The object to highlight its U location</param>
+    private void HighlightULocation(Item _item)
     {
-        if (_selection.Count == 0)
+        Rack rackRef = Utils.GetRackReferent(_item);
+        if (!rackRef || !rackRef.areUHelpersToggled)
             return;
-        bool first = true;
-        Rack rackRef = Utils.GetRackReferent(_selection[0].GetComponent<Item>());
-        foreach (Item item in _selection.Select(go => go.GetComponent<Item>()))
+
+        if (_item is Rack rack)
         {
-            if (item is Rack rack)
-            {
-                rack.uRoot.gameObject.SetActive(true);
-                for (int i = 0; i < rack.uRoot.GetChild(0).childCount; i++)
-                    ChangeUColor(rack.uRoot, i, true);
-                wasEdited = false;
-            }
-            else
-            {
-                if (wasEdited)
-                    return;
-                if (!rackRef)
-                    return;
-                if (first)
-                {
-                    rackRef.uRoot.gameObject.SetActive(true);
-                    for (int i = 0; i < rackRef.uRoot.GetChild(0).childCount; i++)
-                        ChangeUColor(rackRef.uRoot, i, false);
-                    first = false;
-                }
-                float difference;
-                Transform t = item.transform.GetChild(0);
-                float center = t.position.y;
+            for (int i = 0; i < rack.uRoot.GetChild(0).childCount; i++)
+                ChangeUColor(rack.uRoot, i, true);
+            wasEdited = false;
+        }
+        else
+        {
+            if (wasEdited)
+                return;
 
-                BoxCollider boxCollider = t.GetComponent<BoxCollider>();
-                bool isEnabled = boxCollider.enabled;
-                boxCollider.enabled = true;
-                difference = boxCollider.bounds.extents.y;
-                boxCollider.enabled = isEnabled;
-
-                t = item.transform;
-                float delta = t.localPosition.y - t.GetComponent<OgreeObject>().originalLocalPosition.y;
-                float lowerBound = center - difference - delta;
-                float upperBound = center + difference - delta;
-
+            if (_item.gameObject == GameManager.instance.GetSelected()[0])
                 for (int i = 0; i < rackRef.uRoot.GetChild(0).childCount; i++)
-                {
-                    Transform u = rackRef.uRoot.GetChild(0).GetChild(i);
-                    if (lowerBound < u.position.y && u.position.y < upperBound)
-                        ChangeUColor(rackRef.uRoot, i, true);
-                }
+                    ChangeUColor(rackRef.uRoot, i, false);
+
+            Transform childTransform = _item.transform.GetChild(0);
+            float center = childTransform.position.y;
+
+            BoxCollider boxCollider = childTransform.GetComponent<BoxCollider>();
+            bool isEnabled = boxCollider.enabled;
+            boxCollider.enabled = true;
+            float difference = boxCollider.bounds.extents.y;
+            boxCollider.enabled = isEnabled;
+
+            float delta = _item.transform.localPosition.y - _item.originalLocalPosition.y;
+            float lowerBound = center - difference - delta;
+            float upperBound = center + difference - delta;
+
+            for (int i = 0; i < rackRef.uRoot.GetChild(0).childCount; i++)
+            {
+                Transform u = rackRef.uRoot.GetChild(0).GetChild(i);
+                if (lowerBound < u.position.y && u.position.y < upperBound)
+                    ChangeUColor(rackRef.uRoot, i, true);
             }
         }
     }
@@ -171,7 +161,9 @@ public class UHelpersManager : MonoBehaviour
         if (_active && !rack.uRoot)
             GenerateUHelpers(rack);
         rack.areUHelpersToggled = _active;
-        rack.uRoot?.gameObject.SetActive(rack.areUHelpersToggled);
+        rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
+        if (rack.areUHelpersToggled)
+            HighlightULocation(_target.GetComponent<Item>());
     }
 
     ///<summary>
@@ -195,10 +187,7 @@ public class UHelpersManager : MonoBehaviour
         if (!rack)
             return;
 
-        if (!rack.areUHelpersToggled && !rack.uRoot)
-            GenerateUHelpers(rack);
-        rack.areUHelpersToggled = !rack.areUHelpersToggled;
-        rack.uRoot.gameObject.SetActive(rack.areUHelpersToggled);
+        ToggleU(_target, rack.areUHelpersToggled ^= true);
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "U helpers Toggled", new List<string>() { rack.areUHelpersToggled ? "ON" : "OFF", _target.name }), ELogTarget.logger, ELogtype.info);
     }
 
@@ -254,13 +243,11 @@ public class UHelpersManager : MonoBehaviour
         float maxY = float.NegativeInfinity;
 
         foreach (Transform child in _rack.transform)
-        {
             if (child.GetComponent<Slot>() is Slot slot && slot.isU)
             {
                 minY = Mathf.Min(child.localPosition.y + 0.5f * scale, minY);
                 maxY = Mathf.Max(child.localPosition.y + child.GetChild(0).localScale.y - 0.5f * scale, maxY);
             }
-        }
 
         if (minY < float.PositiveInfinity)
         {

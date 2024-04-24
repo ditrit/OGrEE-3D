@@ -78,16 +78,12 @@ public class LayerManager : MonoBehaviour
     {
         List<string> deviceTypes = new();
         foreach (Transform child in _item.transform)
-        {
             if (child.GetComponent<Device>() is Device dv && dv.attributes.ContainsKey("type") && !deviceTypes.Contains((string)dv.attributes["type"]))
                 deviceTypes.Add((string)dv.attributes["type"]);
-        }
 
         foreach (string type in deviceTypes)
-        {
             if (_item.GetLayer(type.EndsWith("s") ? type : $"{type}s") == null)
                 layers.Add(AutoLayerByDeviceType(type, _item));
-        }
     }
 
     /// <summary>
@@ -136,10 +132,8 @@ public class LayerManager : MonoBehaviour
     public Layer GetLayer(string _slug)
     {
         foreach (Layer l in layers)
-        {
             if (l.slug == _slug)
                 return l;
-        }
         return null;
     }
 }

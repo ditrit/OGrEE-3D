@@ -1,49 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-//Leaving it there in case I think of a good way to use it
-public static class RectTransformExtensions
-{
-    /// <summary>
-    /// Check if two rect overlaps
-    /// </summary>
-    /// <param name="_a">first rect</param>
-    /// <param name="_b">second rect</param>
-    /// <returns></returns>
-    public static bool Overlaps(this RectTransform _a, RectTransform _b)
-    {
-        return _a.WorldRect().Overlaps(_b.WorldRect());
-    }
-
-    /// <summary>
-    /// Checks if two rect overlaps
-    /// </summary>
-    /// <param name="_a">first rect</param>
-    /// <param name="_b">second rect</param>
-    /// <param name="_allowInverse">Does the test allow the widths and heights of the Rects to be negative?</param>
-    /// <returns></returns>
-    public static bool Overlaps(this RectTransform _a, RectTransform _b, bool _allowInverse)
-    {
-        return _a.WorldRect().Overlaps(_b.WorldRect(), _allowInverse);
-    }
-
-    /// <summary>
-    /// Make a Rect with no parent (at root) at the same place and with the same dimensions
-    /// </summary>
-    /// <param name="_rectTransform">the rect to copy</param>
-    /// <returns></returns>
-    public static Rect WorldRect(this RectTransform _rectTransform)
-    {
-        Vector2 sizeDelta = _rectTransform.sizeDelta;
-        float rectTransformWidth = sizeDelta.x * _rectTransform.lossyScale.x;
-        float rectTransformHeight = sizeDelta.y * _rectTransform.lossyScale.y;
-
-        Vector3 position = _rectTransform.position;
-        return new Rect(position.x - rectTransformWidth / 2f, position.y - rectTransformHeight / 2f, rectTransformWidth, rectTransformHeight);
-    }
-}
 public class CoordModeController : MonoBehaviour
 {
     [SerializeField] private float scale;
@@ -108,7 +65,7 @@ public class CoordModeController : MonoBehaviour
         {
             length = _hit.distance;
             _text.transform.parent.localPosition = 0.5f * _hit.distance * _rayDirection + 0.002f * Vector3.up;
-            _text.text = $"<color=\"{_color}\">{Utils.FloatToRefinedStr(_hit.distance)}";
+            _text.text = $"<color=\"{_color}\">{_hit.distance:0.##}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             _text.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * _cameraDirection).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
@@ -140,7 +97,7 @@ public class CoordModeController : MonoBehaviour
         if (raycastHit.collider && raycastHit2.collider)
         {
             textXTotal.gameObject.SetActive(true);
-            textXTotal.text = $"<color=\"green\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
+            textXTotal.text = $"<color=\"green\">{raycastHit.distance + raycastHit2.distance:0.##}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textXTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.right * -1).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
@@ -156,7 +113,7 @@ public class CoordModeController : MonoBehaviour
         if (raycastHit.collider && raycastHit2.collider)
         {
             textZTotal.gameObject.SetActive(true);
-            textZTotal.text = $"<color=\"red\">{Utils.FloatToRefinedStr(raycastHit.distance + raycastHit2.distance)}";
+            textZTotal.text = $"<color=\"red\">{raycastHit.distance + raycastHit2.distance:0.##}";
             //The text is always aligned with the axis, so it rotate in 180 degrees steps (else the Round(x/180) * 180)
             textZTotal.transform.parent.eulerAngles = (Mathf.Round(Quaternion.LookRotation(transform.rotation * GameManager.instance.cameraControl.transform.up).eulerAngles.y / 180f) * 180 - transform.eulerAngles.y) * Vector3.up;
         }
@@ -171,7 +128,7 @@ public class CoordModeController : MonoBehaviour
     {
         PlaceDiagonalWithText(diagonal, diagonalText);
         if (hasNonDefaultOrientation)
-            PlaceDiagonalWithText(diagonalForNonDefaultOrientations, diagonalForNonDefaultOrientationsText,true);
+            PlaceDiagonalWithText(diagonalForNonDefaultOrientations, diagonalForNonDefaultOrientationsText, true);
     }
 
     /// <summary>
@@ -184,7 +141,7 @@ public class CoordModeController : MonoBehaviour
         _diagonal.localScale = Vector3.Scale(transform.localPosition - _diagonal.localPosition, Vector3.one - 2 * Vector3.forward);
         _text.transform.parent.localPosition = _diagonal.transform.GetChild(0).position;
         _text.transform.parent.eulerAngles = Mathf.Rad2Deg * Mathf.Atan2(_diagonal.localScale.z, _diagonal.localScale.x) * Vector3.up;
-        _text.text = $"<color={(cym ? "yellow" : "red")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.x))}</color>|<color={(cym ? "#ff00ff" : "green")}>{Utils.FloatToRefinedStr(Mathf.Abs(_diagonal.transform.localScale.z))}</color>";
+        _text.text = $"<color={(cym ? "yellow" : "red")}>{Mathf.Abs(_diagonal.transform.localScale.x):0.##}</color>|<color={(cym ? "#ff00ff" : "green")}>{Mathf.Abs(_diagonal.transform.localScale.z):0.##}</color>";
     }
 
     ///<summary>

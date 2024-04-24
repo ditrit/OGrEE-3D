@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BuildingGenerator
 {
+    private readonly NonSquareBuildingGenerator nsqGenerator = new();
+
     ///<summary>
     /// Instantiate a buildingModel (from GameManager) and apply the given data to it.
     ///</summary>
@@ -31,11 +33,7 @@ public class BuildingGenerator
         float height = (float)(double)_bd.attributes["height"];
 
         // Instantiate the good prefab and setup the Buiding component
-        GameObject newBD;
-        if (template.vertices != null)
-            newBD = Object.Instantiate(GameManager.instance.nonConvexBuildingModel);
-        else
-            newBD = Object.Instantiate(GameManager.instance.buildingModel);
+        GameObject newBD = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexBuildingModel : GameManager.instance.buildingModel);
         newBD.name = _bd.name;
         newBD.transform.parent = _parent;
 
@@ -47,7 +45,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             building.isSquare = false;
-            NonSquareBuildingGenerator.CreateShape(newBD.transform, template);
+            nsqGenerator.CreateShape(newBD.transform, template);
         }
         else
         {
@@ -112,11 +110,7 @@ public class BuildingGenerator
         float height = (float)(double)_ro.attributes["height"];
 
         // Instantiate the good prefab and setup the Room component
-        GameObject newRoom;
-        if (template.vertices != null)
-            newRoom = Object.Instantiate(GameManager.instance.nonConvexRoomModel);
-        else
-            newRoom = Object.Instantiate(GameManager.instance.roomModel);
+        GameObject newRoom = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexRoomModel : GameManager.instance.roomModel);
         newRoom.name = _ro.name;
         newRoom.transform.parent = _parent;
 
@@ -125,7 +119,7 @@ public class BuildingGenerator
         if (template.vertices != null)
         {
             room.isSquare = false;
-            NonSquareBuildingGenerator.CreateShape(newRoom.transform, template);
+            nsqGenerator.CreateShape(newRoom.transform, template);
         }
         else
         {

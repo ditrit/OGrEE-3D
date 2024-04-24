@@ -20,10 +20,8 @@ public class Tile : MonoBehaviour
         if (color.StartsWith("@"))
         {
             foreach (SColor custColor in _customColors)
-            {
                 if (custColor.name == color.Substring(1))
                     ColorUtility.TryParseHtmlString($"#{custColor.value}", out customColor);
-            }
         }
         else
             ColorUtility.TryParseHtmlString($"#{color}", out customColor);

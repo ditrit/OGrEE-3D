@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class GenericObject : Item
 {
     public override void UpdateFromSApiObject(SApiObject _src)

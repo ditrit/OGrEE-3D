@@ -97,10 +97,10 @@ public class GUIObjectInfos : MonoBehaviour
         if (GameManager.instance.tempColorMode && _obj is Item item)
         {
             STemp tempInfos = item.GetTemperatureInfos();
-            tmpAttributes.text += $"<b>average:</b> {Utils.FloatToRefinedStr(tempInfos.mean)} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>standard deviation:</b> {Utils.FloatToRefinedStr(tempInfos.std)} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>minimum:</b> {Utils.FloatToRefinedStr(tempInfos.min)} {tempInfos.unit}\n";
-            tmpAttributes.text += $"<b>maximum:</b> {Utils.FloatToRefinedStr(tempInfos.max)} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>average:</b> {tempInfos.mean:0.##} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>standard deviation:</b> {tempInfos.std:0.##} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>minimum:</b> {tempInfos.min:0.##} {tempInfos.unit}\n";
+            tmpAttributes.text += $"<b>maximum:</b> {tempInfos.max:0.##} {tempInfos.unit}\n";
             textHeight += 4;
             if (!string.IsNullOrEmpty(tempInfos.hottestChild))
             {

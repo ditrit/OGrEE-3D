@@ -148,7 +148,7 @@ public class LengthUnit
     public const string Millimeter = "mm";
     public const string Centimeter = "cm";
     public const string Meter = "m";
-    public const string Feet = "f";
+    public const string Foot = "f";
     public const string OU = "OU";
 }
 

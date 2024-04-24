@@ -243,22 +243,16 @@ public class CommandParser
             Utils.ParseNestedObjects(physicalObjects, logicalObjects, src, leafIds);
 
             foreach (SApiObject obj in physicalObjects)
-            {
                 if (canDraw)
                     await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
-            }
 
             foreach (SApiObject obj in logicalObjects)
-            {
                 if (canDraw)
                     await OgreeGenerator.instance.CreateItemFromSApiObject(obj);
-            }
 
             foreach (string id in leafIds)
-            {
                 if (Utils.GetObjectById(id) is GameObject leaf)
                     Utils.RebuildLods(leaf.transform);
-            }
 
             if (canDraw)
                 GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "X objects created", physicalObjects.Count + logicalObjects.Count), ELogTarget.logger, ELogtype.successApi);

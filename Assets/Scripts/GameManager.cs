@@ -234,7 +234,7 @@ public class GameManager : MonoBehaviour
                     if (item && item.currentLod <= 1)
                         await item.LoadChildren(0);
                     if (focusMode)
-                        currentItems.Add(focus[focus.Count - 1]);
+                        currentItems.Add(focus[^1]);
                 }
             }
             else
@@ -341,10 +341,8 @@ public class GameManager : MonoBehaviour
         if (root.GetComponent<Group>())
         {
             foreach (GameObject go in root.GetComponent<Group>().GetContent())
-            {
                 if (go == _obj)
                     return true;
-            }
         }
         else if (_obj.GetComponent<OgreeObject>().id.Contains(root.GetComponent<OgreeObject>().id))
             return true;
@@ -369,10 +367,8 @@ public class GameManager : MonoBehaviour
         {
             ApiManager.instance.CreateDeleteRequest(_toDel.GetComponent<OgreeObject>());
             foreach (Transform child in _toDel.transform)
-            {
                 if (child.GetComponent<OgreeObject>())
                     ApiManager.instance.CreateDeleteRequest(child.GetComponent<OgreeObject>());
-            }
         }
         Destroy(_toDel);
         StartCoroutine(Utils.ImportFinished());
@@ -599,9 +595,7 @@ public class GameManager : MonoBehaviour
         if (currentItems.Count == 0)
             return false;
 
-        if (currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category))
-            return true;
-        return false;
+        return currentItems[0].GetComponent<T>() && (_category == "" || _category == currentItems[0].GetComponent<OgreeObject>().category);
     }
 
     /// <summary>
@@ -615,9 +609,7 @@ public class GameManager : MonoBehaviour
         if (focus.Count == 0)
             return false;
 
-        if (focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category))
-            return true;
-        return false;
+        return focus[^1].GetComponent<T>() && (_category == "" || _category == focus[^1].GetComponent<OgreeObject>().category);
     }
 
     /// <summary>
@@ -635,9 +627,7 @@ public class GameManager : MonoBehaviour
     /// <returns>a copy of the list of currently selected objects</returns>
     public List<Item> GetSelectedReferents()
     {
-        if (selectMode)
-            return currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList();
-        return new List<Item>();
+        return selectMode ? currentItems.GetRange(0, currentItems.Count).Select(go => go.GetComponent<Item>()?.referent).Where(item => item).ToList() : new List<Item>();
     }
 
     /// <summary>
@@ -676,10 +666,8 @@ public class GameManager : MonoBehaviour
     public Tag GetTag(string _tagName)
     {
         foreach (Tag tag in tags)
-        {
             if (tag.slug == _tagName)
                 return tag;
-        }
         return null;
     }
 

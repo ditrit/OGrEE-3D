@@ -378,19 +378,15 @@ public class Room : Building
         _root.transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
         for (int j = offsetY; j < y; j++)
-        {
             for (int i = offsetX; i < x; i++)
             {
                 Vector2 pos = new Vector2(i, j) * orient * UnitValue.Tile;
-
                 string tileID = $"{i}/{j}";
                 if (_mode == "name")
                     GenerateTileName(_root, pos, tileID);
                 else if (_mode == "color")
                     GenerateTileColor(_root, pos, tileID);
             }
-        }
-
     }
 
     ///<summary>
@@ -407,10 +403,8 @@ public class Room : Building
         {
             List<STile> tiles = (List<STile>)attributes["tiles"];
             foreach (STile tile in tiles)
-            {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
-            }
         }
 
         GameObject tileText = Instantiate(GameManager.instance.tileNameModel);
@@ -439,10 +433,8 @@ public class Room : Building
         {
             List<STile> tiles = (List<STile>)attributes["tiles"];
             foreach (STile tile in tiles)
-            {
                 if (tile.location.Trim() == _id)
                     tileData = tile;
-            }
         }
 
         List<SColor> customColors = new();
@@ -478,10 +470,8 @@ public class Room : Building
                     if (tileData.color.StartsWith("@"))
                     {
                         foreach (SColor color in customColors)
-                        {
                             if (color.name == tileData.color.Substring(1))
                                 ColorUtility.TryParseHtmlString($"#{color.value}", out customColor);
-                        }
                     }
                     else
                         ColorUtility.TryParseHtmlString($"#{tileData.color}", out customColor);
@@ -641,10 +631,8 @@ public class Room : Building
     public bool HasSeparator(string _name)
     {
         foreach (Separator sep in separators)
-        {
             if (sep.name == _name)
                 return true;
-        }
         return false;
     }
 

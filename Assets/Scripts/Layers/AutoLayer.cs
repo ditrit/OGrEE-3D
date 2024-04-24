@@ -33,19 +33,15 @@ public class AutoLayer : Layer
         if (filters.ContainsKey("type"))
         {
             foreach (Transform child in targetObjects[0].transform)
-            {
                 if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"] && obj.attributes.ContainsKey("type") && (string)obj.attributes["type"] == filters["type"])
                     objects.Add(child.gameObject);
-            }
         }
         // Case for Racks, Corridors or Groups
         else
         {
             foreach (Transform child in targetObjects[0].transform)
-            {
                 if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj.category == filters["category"])
                     objects.Add(child.gameObject);
-            }
         }
         return Task.FromResult(objects);
     }
