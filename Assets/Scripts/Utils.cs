@@ -7,46 +7,6 @@ using UnityEngine;
 public static class Utils
 {
     ///<summary>
-    /// Parse a string with format "[x,y]" into a Vector2.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y]"</param>
-    ///<returns>The parsed Vector2</returns>
-    public static Vector2 ParseVector2(string _input)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]));
-    }
-
-    ///<summary>
-    /// Parse a string with format "[x,y,z]" into a Vector3. The vector can be given in Y axis or Z axis up.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y,z]"</param>
-    ///<param name="_ZUp">Is the coordinates given are in Z axis up or Y axis up ? </param>
-    ///<returns>The parsed Vector3</returns>
-    public static Vector3 ParseVector3(string _input, bool _ZUp = true)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        if (_ZUp)
-            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[2]), ParseDecFrac(parts[1]));
-        else
-            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]));
-    }
-
-    ///<summary>
-    /// Parse a string with format "[x,y,z,w]" into a Vector4.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y,z,w]"</param>
-    ///<returns>The parsed Vector4</returns>
-    public static Vector4 ParseVector4(string _input)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]), ParseDecFrac(parts[3]));
-    }
-
-    ///<summary>
     /// Parse a string into a float. Can be decimal, a fraction and/or negative.
     ///</summary>
     ///<param name="_input">The string which contains the float</param>
@@ -359,20 +319,17 @@ public static class Utils
 
     public static Vector2 ToVector2(this JArray _array)
     {
-        List<float> list = _array.ToObject<List<float>>();
-        return new Vector2(list[0], list[1]);
+        return new Vector2((float)_array[0], (float)_array[1]);
     }
 
     public static Vector3 ToVector3(this JArray _array)
     {
-        List<float> list = _array.ToObject<List<float>>();
-        return new Vector3(list[0], list[1], list[2]);
+        return new Vector3((float)_array[0], (float)_array[1], (float)_array[2]);
     }
 
     public static Vector4 ToVector4(this JArray _array)
     {
-        List<float> list = _array.ToObject<List<float>>();
-        return new Vector4(list[0], list[1], list[2], list[3]);
+        return new Vector4((float)_array[0], (float)_array[1], (float)_array[2], (float)_array[3]);
     }
 
     /// <summary>

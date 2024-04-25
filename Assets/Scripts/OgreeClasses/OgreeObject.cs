@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, IComparable<OgreeObject>
+public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
 {
     [Header("Standard attributes")]
     public new string name;
@@ -14,10 +14,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string description;
     public string domain;
     public List<string> tags = new();
-
-    [Header("Specific attributes")]
-    [SerializeField] private List<string> attributesKeys = new();
-    [SerializeField] private List<dynamic> attributesValues = new();
     public Dictionary<string, dynamic> attributes = new();
 
     [Header("LOD")]
@@ -36,24 +32,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
 
     [Header("Layers")]
     public Dictionary<Layer, bool> layers = new();
-
-    public void OnBeforeSerialize()
-    {
-        attributesKeys.Clear();
-        attributesValues.Clear();
-        foreach (KeyValuePair<string, dynamic> kvp in attributes)
-        {
-            attributesKeys.Add(kvp.Key);
-            attributesValues.Add(kvp.Value);
-        }
-    }
-
-    public void OnAfterDeserialize()
-    {
-        attributes = new();
-        for (int i = 0; i < attributesKeys.Count; i++)
-            attributes.Add(attributesKeys[i], attributesValues[i]);
-    }
 
     public int CompareTo(OgreeObject _other)
     {

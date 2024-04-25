@@ -29,7 +29,7 @@ public class Inputs : MonoBehaviour
     private Vector3 savedMousePos;
     public bool lockMouseInteract = false;
     private Vector3 previousClic;
-    public bool twoClics = false;
+
     private void Start()
     {
         camControl = Camera.main.transform.parent.GetComponent<CameraControl>();
