@@ -34,15 +34,17 @@ public class Group : Item
 
         if (HasAttributeChanged(_src, "content"))
         {
+            DisplayContent(true);
             RegisterContent(_src);
             ShapeGroup();
+            DisplayContent(!isDisplayed);
         }
 
         base.UpdateFromSApiObject(_src);
     }
 
     ///<summary>
-    /// Display or hide the rackGroup and its content.
+    /// Display or hide the Group and its content.
     ///</summary>
     ///<param name="_value">true or false value</param>
     public void ToggleContent(bool _value)
