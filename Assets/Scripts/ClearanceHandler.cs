@@ -120,7 +120,7 @@ public class ClearanceHandler
             LengthUnit.OU => UnitValue.OU,
             LengthUnit.Centimeter => 0.01f,
             LengthUnit.Millimeter => 0.001f,
-            _ => height
+            _ => 1
         };
         if ((string)item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
