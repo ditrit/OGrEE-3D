@@ -28,7 +28,7 @@ public class BuildingGenerator
 
         // Get data from _bd.attributes
         Vector2 size = ((JArray)_bd.attributes["size"]).ToVector2();
-        float height = (float)(double)_bd.attributes["height"];
+        float height = (float)_bd.attributes["height"];
 
         // Instantiate the good prefab and setup the Buiding component
         GameObject newBD = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexBuildingModel : GameManager.instance.buildingModel);
@@ -96,7 +96,7 @@ public class BuildingGenerator
 
         // Get data from _ro.attributes
         Vector2 size = ((JArray)_ro.attributes["size"]).ToVector2();
-        float height = (float)(double)_ro.attributes["height"];
+        float height = (float)_ro.attributes["height"];
 
         // Instantiate the good prefab and setup the Room component
         GameObject newRoom = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexRoomModel : GameManager.instance.roomModel);

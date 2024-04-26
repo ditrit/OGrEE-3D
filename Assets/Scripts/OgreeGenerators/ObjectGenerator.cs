@@ -19,20 +19,20 @@ public class ObjectGenerator
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
             Vector2 size = ((JArray)_rk.attributes["size"]).ToVector2();
-            size = _rk.attributes["sizeUnit"] switch
+            size *= _rk.attributes["sizeUnit"] switch
             {
-                LengthUnit.Centimeter => size / 100,
-                LengthUnit.Millimeter => size / 1000,
-                _ => size
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
             };
-            float height = (float)(double)_rk.attributes["height"];
-            height = _rk.attributes["heightUnit"] switch
+            float height = (float)_rk.attributes["height"];
+            height *= _rk.attributes["heightUnit"] switch
             {
-                LengthUnit.U => height * UnitValue.U,
-                LengthUnit.OU => height * UnitValue.OU,
-                LengthUnit.Centimeter => height / 100,
-                LengthUnit.Millimeter => height / 1000,
-                _ => height
+                LengthUnit.U => UnitValue.U,
+                LengthUnit.OU => UnitValue.OU,
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
             };
             Vector3 scale = new(size.x, height, size.y);
 
@@ -205,7 +205,7 @@ public class ObjectGenerator
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
         Vector2 size = ((JArray)_co.attributes["size"]).ToVector2();
-        float height = (float)(double)_co.attributes["height"];
+        float height = (float)_co.attributes["height"];
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
         newCo.transform.GetChild(0).localScale = scale;
@@ -247,7 +247,7 @@ public class ObjectGenerator
                 _ => null
             };
             Vector2 size = ((JArray)_go.attributes["size"]).ToVector2();
-            newGeneric.transform.GetChild(0).localScale = new(size.x, (float)(double)_go.attributes["height"], size.y);
+            newGeneric.transform.GetChild(0).localScale = new(size.x, (float)_go.attributes["height"], size.y);
 
             newGeneric.transform.GetChild(0).localScale /= 100;
             if ((string)_go.attributes["sizeUnit"] == LengthUnit.Millimeter)

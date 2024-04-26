@@ -53,7 +53,7 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature((float)(double)_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature((float)_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
                 List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();

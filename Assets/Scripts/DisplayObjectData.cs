@@ -60,21 +60,21 @@ public class DisplayObjectData : MonoBehaviour
         if (item && item.attributes.HasKeyAndValue("template"))
         {
             Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
-            size = item.attributes["sizeUnit"] switch
+            size *= item.attributes["sizeUnit"] switch
             {
-                LengthUnit.Centimeter => size / 100,
-                LengthUnit.Millimeter => size / 1000,
-                _ => size
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
             };
 
-            float height = (float)(double)item.attributes["height"];
-            height = item.attributes["heightUnit"] switch
+            float height = (float)item.attributes["height"];
+            height *= item.attributes["heightUnit"] switch
             {
-                LengthUnit.U => height * UnitValue.U,
-                LengthUnit.OU => height * UnitValue.OU,
-                LengthUnit.Centimeter => height /= 100,
-                LengthUnit.Millimeter => height /= 1000,
-                _ => height
+                LengthUnit.U => UnitValue.U,
+                LengthUnit.OU => UnitValue.OU,
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
             };
             boxSize = new(size.x, height, size.y);
         }

@@ -264,7 +264,7 @@ public class UHelpersManager : MonoBehaviour
             else if (_rack.attributes.ContainsKey("sizeWDHou"))
                 Unumber = JsonConvert.DeserializeObject<int[]>((string)_rack.attributes["sizeWDHou"])[2];
             else
-                Unumber = (float)(double)_rack.attributes["height"];
+                Unumber = (float)_rack.attributes["height"];
             bool exactHeight = Mathf.Approximately((int)Unumber, Unumber);
             float offset = scale / 2;
             BuildU(offset, offset + Unumber * scale, scale, URearLeft, cornerRearLeft, Color.red, exactHeight);

@@ -143,6 +143,9 @@ public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
     ///<param name="_level">The value to set at currentLod</param>
     protected void SetCurrentLod(int _level)
     {
+        if (this is Device dv && dv.isComponent)
+            return;
+
         currentLod = _level;
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Set details level to", new List<string>() { name, currentLod.ToString() }), ELogTarget.logger, ELogtype.success);
 

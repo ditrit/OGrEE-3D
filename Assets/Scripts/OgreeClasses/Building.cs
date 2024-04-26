@@ -136,6 +136,6 @@ public class Building : OgreeObject
         Vector2 posXY = ((JArray)_apiObj.attributes["posXY"]).ToVector2();
         posXY *= GetUnitFromAttributes(_apiObj);
         transform.localPosition = new(posXY.x, 0, posXY.y);
-        transform.localEulerAngles = new(0, (float)(double)_apiObj.attributes["rotation"], 0);
+        transform.localEulerAngles = new(0, (float)_apiObj.attributes["rotation"], 0);
     }
 }
