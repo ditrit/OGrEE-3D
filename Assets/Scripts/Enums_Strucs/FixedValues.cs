@@ -85,7 +85,7 @@ public class CommandParameter
     public const string LabelBackground = "labelBackground";
     public const string Alpha = "alpha";
     public const string Slots = "slots";
-    public const string Content = "content";
+    public const string DisplayContent = "displayContent";
     public const string U = "U";
 }
 

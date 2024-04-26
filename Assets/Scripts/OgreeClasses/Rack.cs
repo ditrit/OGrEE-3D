@@ -21,7 +21,7 @@ public class Rack : Item
             UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
-            SetColor(_src.attributes["color"]);
+            SetColor((string)_src.attributes["color"]);
 
         base.UpdateFromSApiObject(_src);
     }

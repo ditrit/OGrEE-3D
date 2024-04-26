@@ -30,7 +30,7 @@ public class CoordModeController : MonoBehaviour
         diagonalText.transform.parent.gameObject.SetActive(true);
         diagonal.localPosition = bd.transform.position;
         Room ro = (Room)bd;
-        hasNonDefaultOrientation = ro && ro.attributes["axisOrientation"] != AxisOrientation.Default;
+        hasNonDefaultOrientation = ro && (string)ro.attributes["axisOrientation"] != AxisOrientation.Default;
         if (hasNonDefaultOrientation && ro.isSquare)
         {
             diagonalForNonDefaultOrientations.gameObject.SetActive(true);

@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,18 +17,18 @@ public class BuildingGenerator
         SBuildingFromJson template = new();
         if (_bd.attributes.HasKeyAndValue("template"))
         {
-            if (GameManager.instance.buildingTemplates.ContainsKey(_bd.attributes["template"]))
-                template = GameManager.instance.buildingTemplates[_bd.attributes["template"]];
+            if (GameManager.instance.buildingTemplates.ContainsKey((string)_bd.attributes["template"]))
+                template = GameManager.instance.buildingTemplates[(string)_bd.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_bd.attributes["template"], _bd.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
 
         // Get data from _bd.attributes
-        Vector2 size = Utils.ParseVector2(_bd.attributes["size"]);
-        float height = Utils.ParseDecFrac(_bd.attributes["height"]);
+        Vector2 size = ((JArray)_bd.attributes["size"]).ToVector2();
+        float height = (float)_bd.attributes["height"];
 
         // Instantiate the good prefab and setup the Buiding component
         GameObject newBD = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexBuildingModel : GameManager.instance.buildingModel);
@@ -84,18 +85,18 @@ public class BuildingGenerator
         SRoomFromJson template = new();
         if (_ro.attributes.HasKeyAndValue("template"))
         {
-            if (GameManager.instance.roomTemplates.ContainsKey(_ro.attributes["template"]))
-                template = GameManager.instance.roomTemplates[_ro.attributes["template"]];
+            if (GameManager.instance.roomTemplates.ContainsKey((string)_ro.attributes["template"]))
+                template = GameManager.instance.roomTemplates[(string)_ro.attributes["template"]];
             else
             {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { _ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown template", new List<string>() { (string)_ro.attributes["template"], _ro.name }), ELogTarget.both, ELogtype.error);
                 return null;
             }
         }
 
         // Get data from _ro.attributes
-        Vector2 size = Utils.ParseVector2(_ro.attributes["size"]);
-        float height = Utils.ParseDecFrac(_ro.attributes["height"]);
+        Vector2 size = ((JArray)_ro.attributes["size"]).ToVector2();
+        float height = (float)_ro.attributes["height"];
 
         // Instantiate the good prefab and setup the Room component
         GameObject newRoom = Object.Instantiate(template.vertices != null ? GameManager.instance.nonConvexRoomModel : GameManager.instance.roomModel);

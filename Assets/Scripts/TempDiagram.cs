@@ -54,7 +54,7 @@ public class TempDiagram : MonoBehaviour
     {
         if (_room.scatterPlot)
             HandleScatterPlot(_room);
-        float roomHeight = Utils.ParseDecFrac(_room.attributes["height"]);
+        float roomHeight = (float)_room.attributes["height"];
 
         switch (_room.attributes["heightUnit"])
         {
@@ -67,7 +67,7 @@ public class TempDiagram : MonoBehaviour
                 roomHeight /= 1000;
                 break;
             default:
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Room height unit not supported", _room.attributes["heightUnit"]), ELogTarget.both, ELogtype.warning);
+                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Room height unit not supported", (string)_room.attributes["heightUnit"]), ELogTarget.both, ELogtype.warning);
                 break;
         }
 

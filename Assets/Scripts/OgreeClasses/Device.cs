@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class Device : Item
@@ -29,7 +30,7 @@ public class Device : Item
             UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
-            SetColor(_src.attributes["color"]);
+            SetColor((string)_src.attributes["color"]);
 
         base.UpdateFromSApiObject(_src);
     }
@@ -49,8 +50,7 @@ public class Device : Item
         Vector3 slotsScale = new();
         if (transform.parent && _apiObj.attributes.HasKeyAndValue("slot"))
         {
-            string slots = _apiObj.attributes["slot"].Trim('[', ']');
-            string[] slotsArray = slots.Split(",");
+            List<string> slotsArray = ((JArray)_apiObj.attributes["slot"]).ToObject<List<string>>();
 
             foreach (Transform child in transform.parent)
                 if (child.TryGetComponent(out Slot slot))
@@ -86,9 +86,9 @@ public class Device : Item
         {
             Vector3 scale;
             if (takenSlots.Count > 0)
-                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, Utils.ParseDecFrac(_apiObj.attributes["height"]) / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
+                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, (float)_apiObj.attributes["height"] / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
             else
-                scale = new(transform.parent.GetChild(0).localScale.x, Utils.ParseDecFrac(_apiObj.attributes["height"]) / 1000, transform.parent.GetChild(0).localScale.z);
+                scale = new(transform.parent.GetChild(0).localScale.x, (float)_apiObj.attributes["height"] / 1000, transform.parent.GetChild(0).localScale.z);
             transform.GetChild(0).localScale = scale;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
@@ -99,8 +99,8 @@ public class Device : Item
         }
         else
         {
-            size = Utils.ParseVector2(_apiObj.attributes["size"]) / 1000;
-            height = Utils.ParseDecFrac(_apiObj.attributes["height"]) / 1000;
+            size = ((JArray)_apiObj.attributes["size"]).ToVector2() / 1000;
+            height = (float)_apiObj.attributes["height"] / 1000;
         }
 
         // Place the device
@@ -132,7 +132,7 @@ public class Device : Item
                     break;
             }
             // align device to right side of the slot if invertOffset == true
-            if (_apiObj.attributes.ContainsKey("invertOffset") && _apiObj.attributes["invertOffset"] == "true")
+            if (_apiObj.attributes.ContainsKey("invertOffset") && (bool)_apiObj.attributes["invertOffset"])
                 transform.localPosition += new Vector3(slotsScale.x - size.x, 0, 0);
             // parent back to _parent for good hierarchy 
             transform.parent = savedParent;
@@ -152,7 +152,7 @@ public class Device : Item
             transform.localEulerAngles = Vector3.zero;
             transform.localPosition = Vector3.zero;
             if (_apiObj.attributes.ContainsKey("posU"))
-                transform.localPosition += new Vector3(0, (Utils.ParseDecFrac(_apiObj.attributes["posU"]) - 1) * UnitValue.U, 0);
+                transform.localPosition += new Vector3(0, ((float)_apiObj.attributes["posU"] - 1) * UnitValue.U, 0);
 
             float deltaX = parentShape.x - size.x;
             float deltaZ = parentShape.z - size.y;

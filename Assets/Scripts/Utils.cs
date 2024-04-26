@@ -1,50 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public static class Utils
 {
-    ///<summary>
-    /// Parse a string with format "[x,y]" into a Vector2.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y]"</param>
-    ///<returns>The parsed Vector2</returns>
-    public static Vector2 ParseVector2(string _input)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]));
-    }
-
-    ///<summary>
-    /// Parse a string with format "[x,y,z]" into a Vector3. The vector can be given in Y axis or Z axis up.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y,z]"</param>
-    ///<param name="_ZUp">Is the coordinates given are in Z axis up or Y axis up ? </param>
-    ///<returns>The parsed Vector3</returns>
-    public static Vector3 ParseVector3(string _input, bool _ZUp = true)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        if (_ZUp)
-            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[2]), ParseDecFrac(parts[1]));
-        else
-            return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]));
-    }
-
-    ///<summary>
-    /// Parse a string with format "[x,y,z,w]" into a Vector4.
-    ///</summary>
-    ///<param name="_input">String with format "[x,y,z,w]"</param>
-    ///<returns>The parsed Vector4</returns>
-    public static Vector4 ParseVector4(string _input)
-    {
-        _input = _input.Trim('[', ']');
-        string[] parts = _input.Split(',');
-        return new(ParseDecFrac(parts[0]), ParseDecFrac(parts[1]), ParseDecFrac(parts[2]), ParseDecFrac(parts[3]));
-    }
-
     ///<summary>
     /// Parse a string into a float. Can be decimal, a fraction and/or negative.
     ///</summary>
@@ -351,9 +312,50 @@ public static class Utils
     /// <param name="_dict">The dictionnary to look in</param>
     /// <param name="_key">The key to look for</param>
     /// <returns>True if the key is in the dictionnary and it has a non empty value, otherweise false</returns>
-    public static bool HasKeyAndValue(this Dictionary<string, string> _dict, string _key)
+    public static bool HasKeyAndValue(this Dictionary<string, object> _dict, string _key)
     {
-        return _dict.ContainsKey(_key) && !string.IsNullOrEmpty(_dict[_key]);
+        return _dict.ContainsKey(_key) && _dict[_key] != null && _dict[_key].ToString() != "";
+    }
+
+    /// <summary>
+    /// Create a Vector2 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector2 corresponding to the array</returns>
+    public static Vector2 ToVector2(this JArray _array)
+    {
+        return new Vector2((float)_array[0], (float)_array[1]);
+    }
+
+    /// <summary>
+    /// Create a Vector3 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector3 corresponding to the array</returns>
+    public static Vector3 ToVector3(this JArray _array)
+    {
+        return new Vector3((float)_array[0], (float)_array[1], (float)_array[2]);
+    }
+
+    /// <summary>
+    /// Create a Vector4 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector4 corresponding to the array</returns>
+    public static Vector4 ToVector4(this JArray _array)
+    {
+        return new Vector4((float)_array[0], (float)_array[1], (float)_array[2], (float)_array[3]);
+    }
+
+    /// <summary>
+    /// Round this float with asked decimals
+    /// </summary>
+    /// <param name="_value">The float to round</param>
+    /// <param name="_decimal">The number of decimals to keep</param>
+    /// <returns>Rounded float</returns>
+    public static float Round(this float _value, int _decimal)
+    {
+        return (float)System.Math.Round(_value, _decimal);
     }
 
     /// <summary>

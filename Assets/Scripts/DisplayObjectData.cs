@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -56,21 +57,25 @@ public class DisplayObjectData : MonoBehaviour
         lodGroup = GetComponent<LODGroup>();
         Transform shape = transform.GetChild(0);
 
-        if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty(item.attributes["template"]))
+        if (item && item.attributes.HasKeyAndValue("template"))
         {
-            Vector2 size = Utils.ParseVector2(item.attributes["size"]);
-            if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
-                size /= 1000;
-            else if (item.attributes["sizeUnit"] == LengthUnit.Centimeter)
-                size /= 100;
+            Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
+            size *= item.attributes["sizeUnit"] switch
+            {
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
+            };
 
-            float height = Utils.ParseDecFrac(item.attributes["height"]);
-            if (item.attributes["heightUnit"] == LengthUnit.U)
-                height *= UnitValue.U;
-            else if (item.attributes["heightUnit"] == LengthUnit.Millimeter)
-                height /= 1000;
-            else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
-                height /= 100;
+            float height = (float)item.attributes["height"];
+            height *= item.attributes["heightUnit"] switch
+            {
+                LengthUnit.U => UnitValue.U,
+                LengthUnit.OU => UnitValue.OU,
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Millimeter => 0.001f,
+                _ => 1
+            };
             boxSize = new(size.x, height, size.y);
         }
         else

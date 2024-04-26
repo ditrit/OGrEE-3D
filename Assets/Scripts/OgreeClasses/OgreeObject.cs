@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, IComparable<OgreeObject>
+public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
 {
     [Header("Standard attributes")]
     public new string name;
@@ -14,11 +14,7 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     public string description;
     public string domain;
     public List<string> tags = new();
-
-    [Header("Specific attributes")]
-    [SerializeField] private List<string> attributesKeys = new();
-    [SerializeField] private List<string> attributesValues = new();
-    public Dictionary<string, string> attributes = new();
+    public Dictionary<string, dynamic> attributes = new();
 
     [Header("LOD")]
     public int currentLod = 0;
@@ -37,24 +33,6 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     [Header("Layers")]
     public Dictionary<Layer, bool> layers = new();
 
-    public void OnBeforeSerialize()
-    {
-        attributesKeys.Clear();
-        attributesValues.Clear();
-        foreach (KeyValuePair<string, string> kvp in attributes)
-        {
-            attributesKeys.Add(kvp.Key);
-            attributesValues.Add(kvp.Value);
-        }
-    }
-
-    public void OnAfterDeserialize()
-    {
-        attributes = new();
-        for (int i = 0; i < attributesKeys.Count; i++)
-            attributes.Add(attributesKeys[i], attributesValues[i]);
-    }
-
     public int CompareTo(OgreeObject _other)
     {
         // A null value means that this object is greater.
@@ -70,8 +48,8 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
         foreach (string tag in tags)
             GameManager.instance.RemoveFromTag(tag, id);
 
-        if (attributes.ContainsKey("template") && !string.IsNullOrEmpty(attributes["template"]))
-            GameManager.instance.DeleteTemplateIfUnused(category, attributes["template"]);
+        if (attributes.ContainsKey("template") && !string.IsNullOrEmpty((string)attributes["template"]))
+            GameManager.instance.DeleteTemplateIfUnused(category, (string)attributes["template"]);
     }
 
     private void OnDisable()
@@ -165,6 +143,9 @@ public class OgreeObject : MonoBehaviour, ISerializationCallbackReceiver, ICompa
     ///<param name="_level">The value to set at currentLod</param>
     protected void SetCurrentLod(int _level)
     {
+        if (this is Device dv && dv.isComponent)
+            return;
+
         currentLod = _level;
         GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Set details level to", new List<string>() { name, currentLod.ToString() }), ELogTarget.logger, ELogtype.success);
 

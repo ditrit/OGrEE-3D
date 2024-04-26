@@ -418,7 +418,7 @@ public class GameManager : MonoBehaviour
         foreach (DictionaryEntry de in allItems)
         {
             OgreeObject obj = ((GameObject)de.Value).GetComponent<OgreeObject>();
-            if (obj && obj.attributes.ContainsKey("template") && obj.attributes["template"] == _template)
+            if (obj && obj.attributes.ContainsKey("template") && (string)obj.attributes["template"] == _template)
                 count++;
         }
 

@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Newtonsoft.Json.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Building : OgreeObject
@@ -132,9 +133,9 @@ public class Building : OgreeObject
     /// <param name="_apiObj">The SApiObject containing relevant positionning data</param>
     public void PlaceBuilding(SApiObject _apiObj)
     {
-        Vector2 posXY = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+        Vector2 posXY = ((JArray)_apiObj.attributes["posXY"]).ToVector2();
         posXY *= GetUnitFromAttributes(_apiObj);
         transform.localPosition = new(posXY.x, 0, posXY.y);
-        transform.localEulerAngles = new(0, Utils.ParseDecFrac(_apiObj.attributes["rotation"]), 0);
+        transform.localEulerAngles = new(0, (float)_apiObj.attributes["rotation"], 0);
     }
 }

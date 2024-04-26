@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class ReadFromJson
@@ -60,31 +61,30 @@ public class ReadFromJson
         };
         if (obj.category == Category.Rack)
         {
-            Vector3 tmp = new Vector3(_data.sizeWDHmm[0], _data.sizeWDHmm[1], _data.sizeWDHmm[2]) / 10;
-            obj.attributes["posXYZ"] = "[0,0,0]";
+            obj.attributes["posXYZ"] = new JArray(new List<float>() { 0, 0, 0 });
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
-            obj.attributes["rotation"] = "[0,0,0]";
-            obj.attributes["size"] = $"[{tmp.x},{tmp.y}]";
-            obj.attributes["sizeUnit"] = LengthUnit.Centimeter;
-            obj.attributes["height"] = tmp.z.ToString();
-            obj.attributes["heightUnit"] = LengthUnit.Centimeter;
+            obj.attributes["rotation"] = new JArray(new List<float>() { 0, 0, 0 });
+            obj.attributes["size"] = new JArray(new List<float>() { _data.sizeWDHmm[0], _data.sizeWDHmm[1] });
+            obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
+            obj.attributes["height"] = _data.sizeWDHmm[2];
+            obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         else if (obj.category == Category.Device)
         {
-            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
+            obj.attributes["size"] = new JArray(new List<float>() { _data.sizeWDHmm[0], _data.sizeWDHmm[1] });
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
+            obj.attributes["height"] = _data.sizeWDHmm[2];
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         else if (obj.category == Category.Generic)
         {
-            obj.attributes["posXYZ"] = "[0,0,0]";
+            obj.attributes["posXYZ"] = new JArray(new List<float>() { 0, 0, 0 });
             obj.attributes["posXYUnit"] = LengthUnit.Tile;
-            obj.attributes["rotation"] = "[0,0,0]";
+            obj.attributes["rotation"] = new JArray(new List<float>() { 0, 0, 0 });
             obj.attributes["shape"] = _data.shape;
-            obj.attributes["size"] = $"[{_data.sizeWDHmm[0]},{_data.sizeWDHmm[1]}]";
+            obj.attributes["size"] = new JArray(new List<float>() { _data.sizeWDHmm[0], _data.sizeWDHmm[1] });
             obj.attributes["sizeUnit"] = LengthUnit.Millimeter;
-            obj.attributes["height"] = _data.sizeWDHmm[2].ToString();
+            obj.attributes["height"] = _data.sizeWDHmm[2];
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
         obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();

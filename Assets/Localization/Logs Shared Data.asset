@@ -283,10 +283,6 @@ MonoBehaviour:
     m_Key: Tcp server will listen
     m_Metadata:
       m_Items: []
-  - m_Id: 371025540157440
-    m_Key: Temperature must be a numerical value
-    m_Metadata:
-      m_Items: []
   - m_Id: 404037640261632
     m_Key: There is no template for
     m_Metadata:
@@ -333,10 +329,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 351843675148288
     m_Key: Unknown ui command
-    m_Metadata:
-      m_Items: []
-  - m_Id: 444654990790656
-    m_Key: Unknown unit at creation
     m_Metadata:
       m_Items: []
   - m_Id: 53240142368768

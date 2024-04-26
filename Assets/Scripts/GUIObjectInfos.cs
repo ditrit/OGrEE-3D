@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +84,7 @@ public class GUIObjectInfos : MonoBehaviour
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpDomainName.text = domain.name;
             tmpDomainAttrs.text = (domain.name == domain.id) ? "" : $"({domain.id})\n";
-            foreach (KeyValuePair<string, string> kvp in domain.attributes)
+            foreach (KeyValuePair<string, dynamic> kvp in domain.attributes)
                 tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
         }
         else
@@ -115,24 +116,31 @@ public class GUIObjectInfos : MonoBehaviour
             {
                 tmpAttributes.text += "<b>description:</b>\n";
                 tmpAttributes.text += $"{_obj.description}\n";
-                textHeight += _obj.description.Count(c => c == '\n') + 1;
             }
 
             // Display all other attributes
-            foreach (KeyValuePair<string, string> kvp in _obj.attributes)
+            foreach (KeyValuePair<string, dynamic> kvp in _obj.attributes)
             {
-                tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
-                textHeight++;
+                if (kvp.Value is JArray)
+                {
+                    string refinedStr = $"<b>{kvp.Key}:</b> [";
+                    foreach (dynamic dyn in kvp.Value)
+                        refinedStr += $"{dyn}, ";
+                    refinedStr = refinedStr[..^2] + "]\n";
+                    tmpAttributes.text += refinedStr;
+                }
+                else
+                    tmpAttributes.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
             }
 
             // Display tags using their color
             if (_obj.tags.Count > 0)
             {
                 tmpAttributes.text += "<b>tags: </b>";
-                textHeight++;
                 foreach (string tagName in _obj.tags)
                     tmpAttributes.text += $"<b><color=#{GameManager.instance.GetTag(tagName).colorCode}>{tagName}</b></color> ";
             }
+            textHeight += tmpAttributes.text.Count(c => c == '\n');
         }
         // Set correct height for scroll view
         RectTransform rt = tmpAttributes.transform.parent.GetComponent<RectTransform>();

@@ -68,7 +68,7 @@ public class GridCell : MonoBehaviour
         grid.name = "GridForULocation";
 
         Vector3 newPosition = transform.GetChild(0).localScale / 2;
-        if (GetComponent<Rack>().attributes["heightUnit"] == LengthUnit.OU)
+        if ((string)GetComponent<Rack>().attributes["heightUnit"] == LengthUnit.OU)
             newPosition.y = _height - UnitValue.OU / 2;
         else
             newPosition.y = _height - UnitValue.U / 2;

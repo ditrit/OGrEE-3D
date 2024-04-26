@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -111,17 +112,20 @@ public class ClearanceHandler
 
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
-        Vector2 size = Utils.ParseVector2(item.attributes["size"]);
-        float height = Utils.ParseDecFrac(item.attributes["height"]);
-        if (item.attributes["heightUnit"] == LengthUnit.U)
-            height *= UnitValue.U;
-        else if (item.attributes["heightUnit"] == LengthUnit.Centimeter)
-            height /= 100;
-        if (item.attributes["sizeUnit"] == LengthUnit.Millimeter)
+        Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
+        float height = (float)item.attributes["height"];
+        height *= item.attributes["heightUnit"] switch
+        {
+            LengthUnit.U => UnitValue.U,
+            LengthUnit.OU => UnitValue.OU,
+            LengthUnit.Centimeter => 0.01f,
+            LengthUnit.Millimeter => 0.001f,
+            _ => 1
+        };
+        if ((string)item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
 
-        clearanceWrapper.transform.localPosition = clearedObject.GetChild(0).localPosition;
-        clearanceWrapper.transform.localRotation = Quaternion.identity;
+        clearanceWrapper.transform.SetLocalPositionAndRotation(clearedObject.GetChild(0).localPosition, Quaternion.identity);
         Transform clearanceObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform).transform;
         clearanceObject.transform.localScale = new Vector3(size.x / 100, height, size.y / 100);
         clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject;

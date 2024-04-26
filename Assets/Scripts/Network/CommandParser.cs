@@ -403,7 +403,7 @@ public class CommandParser
                     case CommandParameter.LabelBackground:
                         group.GetComponent<DisplayObjectData>().SetLabelBackgroundColor(command.value);
                         break;
-                    case CommandParameter.Content:
+                    case CommandParameter.DisplayContent:
                         group.ToggleContent(command.value == "true");
                         break;
                     default:

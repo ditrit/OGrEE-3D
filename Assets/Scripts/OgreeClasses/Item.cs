@@ -1,7 +1,6 @@
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Item : OgreeObject
@@ -54,10 +53,10 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature(_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature((float)_src.attributes[attribute], attribute.Substring(12));
             if (attribute == "clearance")
             {
-                List<float> lengths = JsonConvert.DeserializeObject<List<float>>(_src.attributes[attribute]);
+                List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();
                 if (lengths == null)
                 {
                     GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Can't deserialize clearance attribute", _src.name), ELogTarget.both, ELogtype.error);
@@ -139,25 +138,20 @@ public class Item : OgreeObject
     ///</summary>
     ///<param name="_value">The temperature value</param>
     ///<param name="_sensorName">The sensor to modify</param>
-    public void SetTemperature(string _value, string _sensorName)
+    public void SetTemperature(float _value, string _sensorName)
     {
-        if (Regex.IsMatch(_value, "^[0-9.]+$"))
-        {
-            Transform sensorTransform = transform.Find(_sensorName);
-            if (sensorTransform)
-                sensorTransform.GetComponent<Sensor>().SetTemperature(Utils.ParseDecFrac(_value));
-            else
-            {
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
-                return;
-            }
-
-            sensorTransform = transform.Find("sensor");
-            Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
-            sensor.SetTemperature(GetTemperatureInfos().mean);
-        }
+        Transform sensorTransform = transform.Find(_sensorName);
+        if (sensorTransform)
+            sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
         else
-            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Temperature must be a numerical value", id), ELogTarget.both, ELogtype.warning);
+        {
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
+            return;
+        }
+
+        sensorTransform = transform.Find("sensor");
+        Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
+        sensor.SetTemperature(GetTemperatureInfos().mean);
     }
 
     /// <summary>
@@ -257,10 +251,10 @@ public class Item : OgreeObject
 
         Vector3 pos;
         if ((_apiObj.category == Category.Rack || _apiObj.category == Category.Corridor || _apiObj.category == Category.Generic) && _apiObj.attributes.ContainsKey("posXYZ"))
-            pos = Utils.ParseVector3(_apiObj.attributes["posXYZ"], true);
+            pos = ((JArray)_apiObj.attributes["posXYZ"]).ToVector3().ZAxisUp();
         else
         {
-            Vector2 tmp = Utils.ParseVector2(_apiObj.attributes["posXY"]);
+            Vector2 tmp = ((JArray)_apiObj.attributes["posXY"]).ToVector2();
             pos = new(tmp.x, 0, tmp.y);
         }
 
@@ -286,7 +280,7 @@ public class Item : OgreeObject
             transform.localPosition += new Vector3(origin.x * -orient.x, 0, origin.z * -orient.y);
 
         transform.localPosition += new Vector3(pos.x * orient.x * posXYUnit, pos.y / 100, pos.z * orient.y * posXYUnit);
-        transform.transform.localEulerAngles = Utils.ParseVector3(_apiObj.attributes["rotation"], true);
+        transform.transform.localEulerAngles = ((JArray)_apiObj.attributes["rotation"]).ToVector3().ZAxisUp();
     }
 
 }

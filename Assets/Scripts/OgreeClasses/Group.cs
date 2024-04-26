@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class Group : Item
@@ -29,19 +30,21 @@ public class Group : Item
             UpdateColorByDomain(_src.domain);
 
         if (HasAttributeChanged(_src, "color"))
-            SetColor(_src.attributes["color"]);
+            SetColor((string)_src.attributes["color"]);
 
         if (HasAttributeChanged(_src, "content"))
         {
+            DisplayContent(true);
             RegisterContent(_src);
             ShapeGroup();
+            DisplayContent(!isDisplayed);
         }
 
         base.UpdateFromSApiObject(_src);
     }
 
     ///<summary>
-    /// Display or hide the rackGroup and its content.
+    /// Display or hide the Group and its content.
     ///</summary>
     ///<param name="_value">true or false value</param>
     public void ToggleContent(bool _value)
@@ -106,7 +109,7 @@ public class Group : Item
     {
         content.Clear();
 
-        string[] names = _src.attributes["content"].Split(',');
+        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>();;
         foreach (string rn in names)
             if (Utils.GetObjectById($"{_src.parentId}.{rn}") is GameObject go)
             {
