@@ -317,24 +317,45 @@ public static class Utils
         return _dict.ContainsKey(_key) && _dict[_key] != null && _dict[_key].ToString() != "";
     }
 
+    /// <summary>
+    /// Create a Vector2 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector2 corresponding to the array</returns>
     public static Vector2 ToVector2(this JArray _array)
     {
         return new Vector2((float)_array[0], (float)_array[1]);
     }
 
+    /// <summary>
+    /// Create a Vector3 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector3 corresponding to the array</returns>
     public static Vector3 ToVector3(this JArray _array)
     {
         return new Vector3((float)_array[0], (float)_array[1], (float)_array[2]);
     }
 
+    /// <summary>
+    /// Create a Vector4 from this JArray
+    /// </summary>
+    /// <param name="_array">The array to transform</param>
+    /// <returns>A Vector4 corresponding to the array</returns>
     public static Vector4 ToVector4(this JArray _array)
     {
         return new Vector4((float)_array[0], (float)_array[1], (float)_array[2], (float)_array[3]);
     }
 
+    /// <summary>
+    /// Round this float with asked decimals
+    /// </summary>
+    /// <param name="_value">The float to round</param>
+    /// <param name="_decimal">The number of decimals to keep</param>
+    /// <returns>Rounded float</returns>
     public static float Round(this float _value, int _decimal)
     {
-        return (float)System.Math.Round(_value, 2);
+        return (float)System.Math.Round(_value, _decimal);
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -108,12 +107,6 @@ public class OgreeGenerator : MonoBehaviour
                     return null;
                 }
             }
-        }
-
-        Debug.Log($"[{_obj.name}]");
-        foreach(var de in _obj.attributes)
-        {
-            Debug.Log($"- {de.Key} : {de.Value.GetType()}");
         }
 
         // Call Create function

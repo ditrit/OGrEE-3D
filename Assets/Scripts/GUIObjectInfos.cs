@@ -84,8 +84,8 @@ public class GUIObjectInfos : MonoBehaviour
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpDomainName.text = domain.name;
             tmpDomainAttrs.text = (domain.name == domain.id) ? "" : $"({domain.id})\n";
-            foreach (KeyValuePair<string, object> kvp in domain.attributes)
-                tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n"; // Will break?
+            foreach (KeyValuePair<string, dynamic> kvp in domain.attributes)
+                tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
         }
         else
         {

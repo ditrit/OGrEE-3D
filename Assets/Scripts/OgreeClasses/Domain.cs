@@ -1,5 +1,3 @@
-using System.Collections;
-
 public class Domain : OgreeObject
 {
     public override void UpdateFromSApiObject(SApiObject _src)

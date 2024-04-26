@@ -57,7 +57,7 @@ public class DisplayObjectData : MonoBehaviour
         lodGroup = GetComponent<LODGroup>();
         Transform shape = transform.GetChild(0);
 
-        if (item && item.attributes.ContainsKey("template") && !string.IsNullOrEmpty((string)item.attributes["template"])) // HasKeyAndValue ?
+        if (item && item.attributes.HasKeyAndValue("template"))
         {
             Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
             switch ((string)item.attributes["sizeUnit"])

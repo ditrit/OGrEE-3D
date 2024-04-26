@@ -14,8 +14,6 @@ public class BuildingGenerator
     ///<returns>The created Building</returns>
     public Building CreateBuilding(SApiObject _bd, Transform _parent)
     {
-        try
-        {  
         SBuildingFromJson template = new();
         if (_bd.attributes.HasKeyAndValue("template"))
         {
@@ -74,12 +72,6 @@ public class BuildingGenerator
 
         GameManager.instance.allItems.Add(building.id, newBD);
         return building;
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError(e);
-            return null;
-        }
     }
 
     ///<summary>
@@ -90,9 +82,6 @@ public class BuildingGenerator
     ///<returns>The created Room</returns>
     public Room CreateRoom(SApiObject _ro, Transform _parent)
     {
-        try
-        {
-            
         SRoomFromJson template = new();
         if (_ro.attributes.HasKeyAndValue("template"))
         {
@@ -155,12 +144,6 @@ public class BuildingGenerator
 
         GameManager.instance.allItems.Add(room.id, newRoom);
         return room;
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError(e);
-            return null;
-        }
     }
 
     ///<summary>
