@@ -331,10 +331,6 @@ MonoBehaviour:
     m_Key: Unknown ui command
     m_Metadata:
       m_Items: []
-  - m_Id: 444654990790656
-    m_Key: Unknown unit at creation
-    m_Metadata:
-      m_Items: []
   - m_Id: 53240142368768
     m_Key: Unrecognised temperature unit
     m_Metadata:

@@ -19,34 +19,21 @@ public class ObjectGenerator
 
             // Apply scale and move all components to have the rack's pivot at the lower left corner
             Vector2 size = ((JArray)_rk.attributes["size"]).ToVector2();
-            switch (_rk.attributes["sizeUnit"])
+            size = _rk.attributes["sizeUnit"] switch
             {
-                case LengthUnit.Centimeter:
-                    size /= 100;
-                    break;
-                case LengthUnit.Millimeter:
-                    size /= 1000;
-                    break;
-                default:
-                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, (string)_rk.attributes["sizeUnit"] }), ELogTarget.both, ELogtype.error);
-                    return null;
-            }
+                LengthUnit.Centimeter => size / 100,
+                LengthUnit.Millimeter => size / 1000,
+                _ => size
+            };
             float height = (float)(double)_rk.attributes["height"];
-            switch (_rk.attributes["heightUnit"])
+            height = _rk.attributes["heightUnit"] switch
             {
-                case LengthUnit.U:
-                    height *= UnitValue.U;
-                    break;
-                case LengthUnit.Centimeter:
-                    height /= 100;
-                    break;
-                case LengthUnit.Millimeter:
-                    height /= 1000;
-                    break;
-                default:
-                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown unit at creation", new List<string>() { _rk.name, (string)_rk.attributes["heightUnit"] }), ELogTarget.both, ELogtype.error);
-                    return null;
-            }
+                LengthUnit.U => height * UnitValue.U,
+                LengthUnit.OU => height * UnitValue.OU,
+                LengthUnit.Centimeter => height / 100,
+                LengthUnit.Millimeter => height / 1000,
+                _ => height
+            };
             Vector3 scale = new(size.x, height, size.y);
 
             newRack.transform.GetChild(0).localScale = scale;

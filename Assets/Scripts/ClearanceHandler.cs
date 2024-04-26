@@ -114,20 +114,18 @@ public class ClearanceHandler
         // Apply scale and move all components to have the rack's pivot at the lower left corner
         Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
         float height = (float)(double)item.attributes["height"];
-        switch ((string)item.attributes["heightUnit"])
+        height = item.attributes["heightUnit"] switch
         {
-            case LengthUnit.U:
-                height *= UnitValue.U;
-                break;
-            case LengthUnit.Centimeter:
-                height /= 100;
-                break;
-        }
+            LengthUnit.U => height * UnitValue.U,
+            LengthUnit.OU => height * UnitValue.OU,
+            LengthUnit.Centimeter => height / 100,
+            LengthUnit.Millimeter => height / 1000,
+            _ => height
+        };
         if ((string)item.attributes["sizeUnit"] == LengthUnit.Millimeter)
             size /= 10;
 
-        clearanceWrapper.transform.localPosition = clearedObject.GetChild(0).localPosition;
-        clearanceWrapper.transform.localRotation = Quaternion.identity;
+        clearanceWrapper.transform.SetLocalPositionAndRotation(clearedObject.GetChild(0).localPosition, Quaternion.identity);
         Transform clearanceObject = Object.Instantiate(GameManager.instance.clearanceModel, clearanceWrapper.transform).transform;
         clearanceObject.transform.localScale = new Vector3(size.x / 100, height, size.y / 100);
         clearanceObject.GetChild(0).GetComponent<ClearanceCollisionHandler>().ownObject = clearedObject;
