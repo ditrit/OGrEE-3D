@@ -153,8 +153,8 @@ public class Positionner : MonoBehaviour
         Vector3 displacement = (items[_i].transform.localPosition - initialPositions[_i]) / posXYUnits[_i];
         displacement.y *= posXYUnits[_i] * 100;
         Vector3 newPos = originalPositions[_i].ZAxisUp() + new Vector3(displacement.x * orient.x, displacement.y, displacement.z * orient.y);
-        items[_i].attributes["posXYZ"] = $"[{newPos.x:0.##},{newPos.z:0.##},{newPos.y:0.##}]";
-        items[_i].attributes["rotation"] = $"[{items[_i].transform.localEulerAngles.x:0.##},{items[_i].transform.localEulerAngles.z:0.##},{items[_i].transform.localEulerAngles.y:0.##}]";
+        items[_i].attributes["posXYZ"] = new JArray(new List<float>() { newPos.x.Round(2), newPos.z.Round(2), newPos.y.Round(2) });
+        items[_i].attributes["rotation"] = new JArray(new List<float>() { items[_i].transform.localEulerAngles.x.Round(2), items[_i].transform.localEulerAngles.z.Round(2), items[_i].transform.localEulerAngles.y.Round(2) });
     }
 
     /// <summary>

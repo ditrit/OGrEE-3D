@@ -332,6 +332,11 @@ public static class Utils
         return new Vector4((float)_array[0], (float)_array[1], (float)_array[2], (float)_array[3]);
     }
 
+    public static float Round(this float _value, int _decimal)
+    {
+        return (float)System.Math.Round(_value, 2);
+    }
+
     /// <summary>
     /// Returns the item at index <paramref name="_offset"/> + <paramref name="_index"/> in a circular list
     /// </summary>
