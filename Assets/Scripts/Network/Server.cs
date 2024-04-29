@@ -80,8 +80,11 @@ public class Server : MonoBehaviour
             connection = new UdpConnection();
         else if (protocol == EConnectionType.tcp)
             connection = new TcpConnection();
-
+#if SERVER
         connection.StartConnection(cliPort);
+#elif WEB_DEMO
+        StartCoroutine(LoadDemo());
+#endif
     }
 
     ///<summary>
@@ -100,6 +103,19 @@ public class Server : MonoBehaviour
     {
         connection.Stop();
         StartServer();
+    }
+
+    private IEnumerator LoadDemo()
+    {
+        Debug.Log("Connecting to API...");
+        TextAsset apiConnectCmd = Resources.Load<TextAsset>("Demo_ConnectApi");
+        Task parseLogin = parser.DeserializeInput(apiConnectCmd.ToString());
+        yield return new WaitUntil(() => parseLogin.IsCompleted);
+
+        Debug.Log("Drawing objects...");
+        TextAsset loadObjectCmd = Resources.Load<TextAsset>("Demo_LoadObjects");
+        Task parseDraw = parser.DeserializeInput(loadObjectCmd.ToString());
+        yield return new WaitUntil(() => parseDraw.IsCompleted);
     }
 
 }
