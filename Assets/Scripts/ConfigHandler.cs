@@ -179,7 +179,9 @@ public class ConfigHandler
     private void ApplyConfig()
     {
         GameManager.instance.server.SetupPorts(config.cliPort);
+#if CACHE_DIR
         CreateCacheDir();
+#endif
         FullScreenMode(config.fullscreen);
         SetMaterialColor("selection", GameManager.instance.selectMat);
         SetMaterialColor("focus", GameManager.instance.focusMat);

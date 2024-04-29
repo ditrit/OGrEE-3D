@@ -39,7 +39,7 @@ public class ModelLoader : MonoBehaviour
         assetLoaderOptions.GenerateColliders = false;
         assetLoaderOptions.ConvexColliders = false;
         assetLoaderOptions.AlphaMaterialMode = TriLibCore.General.AlphaMaterialMode.None;
-
+#if CACHE_DIR
         if (File.Exists(filePath.AbsolutePath))
         {
             Debug.Log($"From file: {filePath.AbsolutePath}");
@@ -48,11 +48,14 @@ public class ModelLoader : MonoBehaviour
         }
         else
         {
+#endif
             Debug.Log($"From url: {_modelPath}");
             UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
             AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                                 _object, assetLoaderOptions, null, "fbx");
+#if CACHE_DIR
         }
+#endif
         while (isLocked)
         {
             EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));

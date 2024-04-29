@@ -493,8 +493,9 @@ public class GameManager : MonoBehaviour
                 Debug.LogError(e.Message);
             }
         }
-
+#if CACHE_DIR
         WriteLogFile(_line, _type);
+#endif
         switch (_type)
         {
             case ELogtype.warning:
