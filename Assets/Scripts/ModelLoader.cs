@@ -30,9 +30,10 @@ public class ModelLoader : MonoBehaviour
     {
         isLocked = true;
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
+#if CACHE_DIR
         Uri filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
         await DownloadFile(_modelPath, filePath.AbsolutePath);
-
+#endif
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions(false, true);
 
         // BoxCollider added later
