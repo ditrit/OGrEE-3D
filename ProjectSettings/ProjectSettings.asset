@@ -638,7 +638,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Standalone: PROD;TRILIB;TRILIB_DISABLE_VALIDATIONS;WEB_DEMO
-    WebGL: PROD;TRILIB;TRILIB_DISABLE_VALIDATIONS
+    WebGL: PROD;TRILIB;TRILIB_DISABLE_VALIDATIONS;WEB_DEMO
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -790,7 +790,7 @@ PlayerSettings:
   embeddedLinuxEnableGamepadInput: 1
   hmiLogStartupTiming: 0
   hmiCpuConfiguration: 
-  apiCompatibilityLevel: 6
+  apiCompatibilityLevel: 3
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
   cloudProjectId: 
