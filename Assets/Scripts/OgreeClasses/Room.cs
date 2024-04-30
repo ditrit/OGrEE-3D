@@ -495,6 +495,7 @@ public class Room : Building
     ///<summary>
     /// Set usable/reserved/technical zones color according to parented Site
     ///</summary>
+    ///<param name="_id">The id to use in the API request</param>
     public async void UpdateZonesColor(string _id)
     {
         Dictionary<string, string> colors = await ApiManager.instance.GetObject($"sitecolors/{_id}", ApiManager.instance.SiteColorsFromAPI);
