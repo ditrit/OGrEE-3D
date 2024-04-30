@@ -159,6 +159,31 @@ public class ApiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Call /api/login of given <paramref name="_url"/> using <paramref name="_email"/> and <paramref name="_password"/>. Then save API url & given auth token
+    /// </summary>
+    /// <param name="_url">The url of the API</param>
+    /// <param name="_email">The email to use for login</param>
+    /// <param name="_password">The password to use for login</param>
+    public async Task RegisterApi(string _url, string _email, string _password)
+    {
+        Dictionary<string, string> data = new()
+        {
+            ["email"] = _email,
+            ["password"] = _password
+        };
+        string fullPath = $"{_url}/api/login";
+        StringContent content = new(JsonConvert.SerializeObject(data), System.Text.Encoding.UTF8, "application/json");
+        HttpResponseMessage resp = await httpClient.PostAsync(fullPath, content);
+        
+        string responseStr =  resp.Content.ReadAsStringAsync().Result;
+        Hashtable receivedData = JsonConvert.DeserializeObject<Hashtable>(responseStr);
+        Hashtable account = JsonConvert.DeserializeObject<Hashtable>(receivedData["account"].ToString());
+
+        url = _url;
+        token = account["token"].ToString();
+    }
+
+    /// <summary>
     /// Unregister <see cref="url"/>, <see cref="token"/>  & <see cref="server"/> and set <see cref="isInit"/> to false.
     /// </summary>
     public void ResetApi()

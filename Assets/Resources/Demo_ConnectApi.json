@@ -1,7 +1,0 @@
-{
-    "data": {
-        "api_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiX2lkIjoiNjYyMTM5YmE1M2RkOTI2Y2ZkZWIxMTczIiwiZXhwIjoxNzE0NjYzMDc0fQ.xjjth-Yg_kBwdIiAkl5dH-1RW6kC93tv2sjraaYHUHU",
-        "api_url": "http://192.168.1.41:3005"
-    },
-    "type": "login"
-}

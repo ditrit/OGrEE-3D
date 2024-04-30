@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class Server : MonoBehaviour
@@ -105,12 +107,20 @@ public class Server : MonoBehaviour
         StartServer();
     }
 
+    /// <summary>
+    /// Using Demo_Credentials to login into given API. Then, use Demo_LoadObjects for loading objects
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator LoadDemo()
     {
         Debug.Log("Connecting to API...");
-        TextAsset apiConnectCmd = Resources.Load<TextAsset>("Demo_ConnectApi");
-        Task parseLogin = parser.DeserializeInput(apiConnectCmd.ToString());
-        yield return new WaitUntil(() => parseLogin.IsCompleted);
+        TextAsset credentials = Resources.Load<TextAsset>("Demo_Credentials");
+        Dictionary<string, string> creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(credentials.ToString());
+
+        Task register = ApiManager.instance.RegisterApi(creds["url"], creds["email"], creds["password"]);
+        yield return new WaitUntil(() => register.IsCompleted);
+        Task login = ApiManager.instance.Initialize();
+        yield return new WaitUntil(() => login.IsCompleted);
 
         Debug.Log("Drawing objects...");
         TextAsset loadObjectCmd = Resources.Load<TextAsset>("Demo_LoadObjects");
