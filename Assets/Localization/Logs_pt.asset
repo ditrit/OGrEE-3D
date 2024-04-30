@@ -435,6 +435,10 @@ MonoBehaviour:
     m_Localized: "Ajuste de grade desativado\r"
     m_Metadata:
       m_Items: []
+  - m_Id: 14533186025820160
+    m_Localized: Objeto desconhecido recebido ao obter cores do site pai
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -134,7 +134,7 @@ public class BuildingGenerator
 
             BuildWalls(room.walls, new Vector3(room.usableZone.localScale.x * 10, height, room.usableZone.localScale.z * 10), -0.001f);
 
-            room.UpdateZonesColor();
+            room.UpdateZonesColor(_ro.id);
         }
         room.UpdateFromSApiObject(_ro);
         room.ComputeChildrenOrigin();

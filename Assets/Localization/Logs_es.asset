@@ -435,6 +435,10 @@ MonoBehaviour:
     m_Localized: "Ajuste de cuadr\xEDcula activado\r"
     m_Metadata:
       m_Items: []
+  - m_Id: 14533186025820160
+    m_Localized: Objeto desconocido recibido al obtener colores del site padre
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
