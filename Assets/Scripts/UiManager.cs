@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 public class UiManager : MonoBehaviour
@@ -128,8 +130,9 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Set up all UI buttons via ButtonHandler and add events' listeners
     /// </summary>
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return LocalizationSettings.InitializationOperation;
 #if !TRILIB
         buildDate.text += "\n<color=\"red\">Build without TriLib plugin</color>";
 #endif

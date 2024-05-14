@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -18,8 +19,10 @@ public class DynamicButtonList : MonoBehaviour
     [SerializeField] private TMP_Text buttonToggleText;
     private bool isExpanded;
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return LocalizationSettings.InitializationOperation;
+
         buttonToggleText.GetComponent<LocalizeStringEvent>().StringReference.TableEntryReference = "Display Dynamic Button List";
         LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
         OnLocaleChanged(LocalizationSettings.SelectedLocale);

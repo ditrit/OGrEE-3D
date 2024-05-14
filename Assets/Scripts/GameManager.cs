@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class GameManager : MonoBehaviour
 {
@@ -112,8 +113,10 @@ public class GameManager : MonoBehaviour
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return LocalizationSettings.InitializationOperation;
+
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         configHandler.LoadConfig();
         server.StartServer();

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,8 +13,10 @@ public class LocalizeDropdown : MonoBehaviour
     [SerializeField] private List<LocalizedString> dropdownOptions;
     private TMP_Dropdown tmpDropdown;
 
-    private void Awake()
+    private IEnumerator Start()
     {
+        yield return LocalizationSettings.InitializationOperation;
+        
         if (!tmpDropdown)
             tmpDropdown = GetComponent<TMP_Dropdown>();
 

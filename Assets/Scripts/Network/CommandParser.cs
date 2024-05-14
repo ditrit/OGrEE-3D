@@ -203,7 +203,8 @@ public class CommandParser
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         ApiManager.instance.RegisterApi(logData.api_url, logData.api_token);
-        await ApiManager.instance.Initialize();
+        // StartCoroutine(ApiManager.instance.Initialize());
+        // await ApiManager.instance.Initialize();
     }
 
     /// <summary>

@@ -22,6 +22,7 @@ public class ConfigHandler
         // Load default config file
         config = DefaultValues.Config.Clone();
 
+#if !WEB_DEMO
         // Load toml config from given path
         string configPath = GetArg(LaunchArgs.ConfigPathShort);
         if (string.IsNullOrEmpty(configPath))
@@ -31,7 +32,7 @@ public class ConfigHandler
 
         // Override with args
         OverrideConfig();
-
+#endif
         // Do things with completed config
         ApplyConfig();
     }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class ApiManager : MonoBehaviour
 {
@@ -114,8 +115,9 @@ public class ApiManager : MonoBehaviour
             Destroy(this);
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return LocalizationSettings.InitializationOperation;
         EventManager.instance.CancelGenerate.Add(OnCancelGenenerate);
     }
 
