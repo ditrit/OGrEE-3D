@@ -84,7 +84,7 @@ public class GUIObjectInfos : MonoBehaviour
             OgreeObject domain = ((GameObject)GameManager.instance.allItems[_obj.domain]).GetComponent<OgreeObject>();
             tmpDomainName.text = domain.name;
             tmpDomainAttrs.text = (domain.name == domain.id) ? "" : $"({domain.id})\n";
-            foreach (KeyValuePair<string, dynamic> kvp in domain.attributes)
+            foreach (KeyValuePair<string, object> kvp in domain.attributes)
                 tmpDomainAttrs.text += $"<b>{kvp.Key}:</b> {kvp.Value}\n";
         }
         else
@@ -119,13 +119,13 @@ public class GUIObjectInfos : MonoBehaviour
             }
 
             // Display all other attributes
-            foreach (KeyValuePair<string, dynamic> kvp in _obj.attributes)
+            foreach (KeyValuePair<string, object> kvp in _obj.attributes)
             {
                 if (kvp.Value is JArray)
                 {
                     string refinedStr = $"<b>{kvp.Key}:</b> [";
-                    foreach (dynamic dyn in kvp.Value)
-                        refinedStr += $"{dyn}, ";
+                    foreach (string str in ((JArray)kvp.Value).ToListStr())
+                        refinedStr += $"{str}, ";
                     refinedStr = refinedStr[..^2] + "]\n";
                     tmpAttributes.text += refinedStr;
                 }

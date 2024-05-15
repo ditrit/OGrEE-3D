@@ -33,6 +33,9 @@ public class Layer
 
     ~Layer()
     {
+        if (targetObjects == null)
+            return;
+
         foreach (GameObject go in targetObjects)
         {
             OgreeObject obj = go.GetComponent<OgreeObject>();

@@ -53,7 +53,7 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature((float)_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature(float.Parse(_src.attributes[attribute].ToString()), attribute.Substring(12));
             if (attribute == "clearance")
             {
                 List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();
@@ -212,7 +212,7 @@ public class Item : OgreeObject
         newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
         if (this is Rack)
         {
-            float uXSize = attributes["heightUnit"] == LengthUnit.U ? UnitValue.U : UnitValue.OU;
+            float uXSize = (string)attributes["heightUnit"] == LengthUnit.U ? UnitValue.U : UnitValue.OU;
             newSensor.transform.localPosition += uXSize * Vector3.right;
         }
 

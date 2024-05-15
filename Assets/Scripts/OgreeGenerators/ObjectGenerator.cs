@@ -25,7 +25,7 @@ public class ObjectGenerator
                 LengthUnit.Millimeter => 0.001f,
                 _ => 1
             };
-            float height = (float)_rk.attributes["height"];
+            float height = float.Parse(_rk.attributes["height"].ToString());
             height *= _rk.attributes["heightUnit"] switch
             {
                 LengthUnit.U => UnitValue.U,
@@ -40,9 +40,9 @@ public class ObjectGenerator
             foreach (Transform child in newRack.transform)
                 child.localPosition += scale / 2;
         }
-        else if (GameManager.instance.objectTemplates.ContainsKey(_rk.attributes["template"]))
+        else if (GameManager.instance.objectTemplates.ContainsKey((string)_rk.attributes["template"]))
         {
-            newRack = Object.Instantiate(GameManager.instance.objectTemplates[_rk.attributes["template"]]);
+            newRack = Object.Instantiate(GameManager.instance.objectTemplates[(string)_rk.attributes["template"]]);
             newRack.GetComponent<ObjectDisplayController>().isTemplate = false;
         }
         else
@@ -205,7 +205,7 @@ public class ObjectGenerator
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
         Vector2 size = ((JArray)_co.attributes["size"]).ToVector2();
-        float height = (float)_co.attributes["height"];
+        float height = float.Parse(_co.attributes["height"].ToString());
         Vector3 scale = 0.01f * new Vector3(size.x, height, size.y);
 
         newCo.transform.GetChild(0).localScale = scale;
@@ -247,7 +247,7 @@ public class ObjectGenerator
                 _ => null
             };
             Vector2 size = ((JArray)_go.attributes["size"]).ToVector2();
-            newGeneric.transform.GetChild(0).localScale = new(size.x, (float)_go.attributes["height"], size.y);
+            newGeneric.transform.GetChild(0).localScale = new(size.x, float.Parse(_go.attributes["height"].ToString()), size.y);
 
             newGeneric.transform.GetChild(0).localScale /= 100;
             if ((string)_go.attributes["sizeUnit"] == LengthUnit.Millimeter)
@@ -255,9 +255,9 @@ public class ObjectGenerator
             foreach (Transform child in newGeneric.transform)
                 child.localPosition += newGeneric.transform.GetChild(0).localScale / 2;
         }
-        else if (GameManager.instance.objectTemplates.ContainsKey(_go.attributes["template"]))
+        else if (GameManager.instance.objectTemplates.ContainsKey((string)_go.attributes["template"]))
         {
-            newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[_go.attributes["template"]]);
+            newGeneric = Object.Instantiate(GameManager.instance.objectTemplates[(string)_go.attributes["template"]]);
             newGeneric.GetComponent<ObjectDisplayController>().isTemplate = false;
         }
         else

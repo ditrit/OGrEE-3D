@@ -347,6 +347,14 @@ public static class Utils
         return new Vector4((float)_array[0], (float)_array[1], (float)_array[2], (float)_array[3]);
     }
 
+    public static List<string> ToListStr(this JArray _array)
+    {
+        List<string> list = new();
+        foreach (var item in _array)
+            list.Add(item.ToString());
+        return list;
+    }
+
     /// <summary>
     /// Round this float with asked decimals
     /// </summary>

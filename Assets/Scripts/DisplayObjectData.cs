@@ -67,7 +67,7 @@ public class DisplayObjectData : MonoBehaviour
                 _ => 1
             };
 
-            float height = (float)item.attributes["height"];
+            float height = float.Parse(item.attributes["height"].ToString());
             height *= item.attributes["heightUnit"] switch
             {
                 LengthUnit.U => UnitValue.U,

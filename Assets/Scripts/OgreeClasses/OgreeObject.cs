@@ -14,7 +14,7 @@ public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
     public string description;
     public string domain;
     public List<string> tags = new();
-    public Dictionary<string, dynamic> attributes = new();
+    public Dictionary<string, object> attributes = new();
 
     [Header("LOD")]
     public int currentLod = 0;

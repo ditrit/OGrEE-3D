@@ -294,8 +294,8 @@ public class DefaultValues
             new List<int>() { 255, 255, 0, 50 }
         },
         DoubleClickDelay = 0.25f,
-        MoveSpeed = 15,
-        RotationSpeed = 50,
+        MoveSpeed = 5,
+        RotationSpeed = 25,
         HumanHeight = 1.62f
     };
 }

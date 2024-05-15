@@ -113,7 +113,7 @@ public class ClearanceHandler
 
         // Apply scale and move all components to have the rack's pivot at the lower left corner
         Vector2 size = ((JArray)item.attributes["size"]).ToVector2();
-        float height = (float)item.attributes["height"];
+        float height = float.Parse(item.attributes["height"].ToString());
         height *= item.attributes["heightUnit"] switch
         {
             LengthUnit.U => UnitValue.U,

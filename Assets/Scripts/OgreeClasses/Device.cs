@@ -86,9 +86,9 @@ public class Device : Item
         {
             Vector3 scale;
             if (takenSlots.Count > 0)
-                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, (float)_apiObj.attributes["height"] / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
+                scale = new(takenSlots[0].transform.GetChild(0).localScale.x, float.Parse(_apiObj.attributes["height"].ToString()) / 1000, takenSlots[0].transform.GetChild(0).localScale.z);
             else
-                scale = new(transform.parent.GetChild(0).localScale.x, (float)_apiObj.attributes["height"] / 1000, transform.parent.GetChild(0).localScale.z);
+                scale = new(transform.parent.GetChild(0).localScale.x, float.Parse(_apiObj.attributes["height"].ToString()) / 1000, transform.parent.GetChild(0).localScale.z);
             transform.GetChild(0).localScale = scale;
             transform.GetChild(0).GetComponent<Collider>().enabled = true;
 
@@ -100,7 +100,7 @@ public class Device : Item
         else
         {
             size = ((JArray)_apiObj.attributes["size"]).ToVector2() / 1000;
-            height = (float)_apiObj.attributes["height"] / 1000;
+            height = float.Parse(_apiObj.attributes["height"].ToString()) / 1000;
         }
 
         // Place the device
@@ -152,7 +152,7 @@ public class Device : Item
             transform.localEulerAngles = Vector3.zero;
             transform.localPosition = Vector3.zero;
             if (_apiObj.attributes.ContainsKey("posU"))
-                transform.localPosition += new Vector3(0, ((float)_apiObj.attributes["posU"] - 1) * UnitValue.U, 0);
+                transform.localPosition += new Vector3(0, (float.Parse(_apiObj.attributes["posU"].ToString()) - 1) * UnitValue.U, 0);
 
             float deltaX = parentShape.x - size.x;
             float deltaZ = parentShape.z - size.y;
