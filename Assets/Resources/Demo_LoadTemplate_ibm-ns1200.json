@@ -1,0 +1,672 @@
+{
+    "data": {
+        "attributes": {
+            "model": "5456-HC1",
+            "type": "chassis",
+            "vendor": "IBM"
+        },
+        "category": "device",
+        "colors": [],
+        "components": [
+            {
+                "attributes": {},
+                "color": "FFFFFF",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    230,
+                    0
+                ],
+                "elemSize": [
+                    450,
+                    30,
+                    270
+                ],
+                "labelPos": "top",
+                "location": "midplane",
+                "type": "chassis"
+            },
+            {
+                "color": "FF1493",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    180,
+                    0,
+                    90
+                ],
+                "elemSize": [
+                    40,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fpc",
+                "type": "mgmt"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    45,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu01",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    360,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan01",
+                "type": "fan"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    44,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu06",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    46,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    88,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan10",
+                "type": "fan"
+            },
+            {
+                "color": "00ffAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    135,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    88,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan09",
+                "type": "fan"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    44,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu05",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    270,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    88,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan08",
+                "type": "fan"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    360,
+                    0,
+                    180
+                ],
+                "elemSize": [
+                    88,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan07",
+                "type": "fan"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    0,
+                    90
+                ],
+                "elemSize": [
+                    45,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu04",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    45,
+                    0,
+                    90
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan06",
+                "type": "fan"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    0,
+                    90
+                ],
+                "elemSize": [
+                    45,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu03",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    270,
+                    0,
+                    90
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan05",
+                "type": "fan"
+            },
+            {
+                "color": "EE82EE",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    45,
+                    230,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "psu02",
+                "type": "power"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    45,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan04",
+                "type": "fan"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    135,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan03",
+                "type": "fan"
+            },
+            {
+                "color": "66CDAA",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    270,
+                    0,
+                    0
+                ],
+                "elemSize": [
+                    90,
+                    115,
+                    90
+                ],
+                "labelPos": "rear",
+                "location": "fan02",
+                "type": "fan"
+            }
+        ],
+        "createdDate": "2024-05-06T13:33:04.164Z",
+        "description": "NeXtScale ns1200",
+        "fbxModel": "",
+        "lastUpdated": "2024-05-06T13:33:04.164Z",
+        "sensors": [
+            {
+                "elemPos": [
+                    "center",
+                    "center",
+                    "center"
+                ],
+                "elemSize": [
+                    20,
+                    20,
+                    20
+                ],
+                "location": "sensor01"
+            }
+        ],
+        "sizeWDHmm": [
+            447,
+            914.5,
+            263.3
+        ],
+        "slots": [
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    0
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade01",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    0
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade02",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    45
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade03",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    45
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade04",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    90
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade05",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    90
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade06",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    135
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade07",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    135
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade08",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    180
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade09",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    180
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade10",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    225,
+                    260,
+                    225
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade11",
+                "type": "blade"
+            },
+            {
+                "color": "",
+                "elemOrient": [
+                    0,
+                    0,
+                    0
+                ],
+                "elemPos": [
+                    0,
+                    260,
+                    225
+                ],
+                "elemSize": [
+                    225,
+                    660,
+                    45
+                ],
+                "labelPos": "front",
+                "location": "blade12",
+                "type": "blade"
+            }
+        ],
+        "slug": "ibm-ns1200"
+    },
+    "type": "load-obj-template"
+}

@@ -82,9 +82,13 @@ public class CommandParser
                 GameManager.instance.server.ResetConnection();
                 ApiManager.instance.ResetApi();
                 break;
-            case CommandType.LoadTemplate:
-                STemplate data = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
-                await rfJson.CreateObjectTemplate(data);
+            case CommandType.LoadRoomTemplate:
+                SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(command["data"].ToString());
+                rfJson.CreateRoomTemplate(roomData);
+                break;
+            case CommandType.LoadObjTemplate:
+                STemplate objData = JsonConvert.DeserializeObject<STemplate>(command["data"].ToString());
+                await rfJson.CreateObjectTemplate(objData);
                 break;
             case CommandType.Select:
                 //Disable coord mode
@@ -203,8 +207,7 @@ public class CommandParser
     {
         SLogin logData = JsonConvert.DeserializeObject<SLogin>(_input);
         ApiManager.instance.RegisterApi(logData.api_url, logData.api_token);
-        // StartCoroutine(ApiManager.instance.Initialize());
-        // await ApiManager.instance.Initialize();
+        await ApiManager.instance.Initialize();
     }
 
     /// <summary>

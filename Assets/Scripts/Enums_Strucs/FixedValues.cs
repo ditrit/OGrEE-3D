@@ -59,7 +59,8 @@ public class CommandType
 {
     public const string Login = "login";
     public const string Logout = "logout";
-    public const string LoadTemplate = "load template";
+    public const string LoadRoomTemplate = "load-room-template";
+    public const string LoadObjTemplate = "load-obj-template";
     public const string Select = "select";
     public const string Delete = "delete";
     public const string Focus = "focus";

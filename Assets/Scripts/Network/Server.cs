@@ -113,14 +113,33 @@ public class Server : MonoBehaviour
     /// <returns></returns>
     private IEnumerator LoadDemo()
     {
-        Debug.Log("Connecting to API...");
-        TextAsset credentials = Resources.Load<TextAsset>("Demo_Credentials");
-        Dictionary<string, string> creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(credentials.ToString());
+        // Debug.Log("Connecting to API...");
+        // TextAsset credentials = Resources.Load<TextAsset>("Demo_Credentials");
+        // Dictionary<string, string> creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(credentials.ToString());
 
-        Task register = ApiManager.instance.RegisterApi(creds["url"], creds["email"], creds["password"]);
-        yield return new WaitUntil(() => register.IsCompleted);
-        Task login = ApiManager.instance.Initialize();
-        yield return new WaitUntil(() => login.IsCompleted);
+        // Task register = ApiManager.instance.RegisterApi(creds["url"], creds["email"], creds["password"]);
+        // yield return new WaitUntil(() => register.IsCompleted);
+        // Task login = ApiManager.instance.Initialize();
+        // yield return new WaitUntil(() => login.IsCompleted);
+
+        Debug.Log("Loading templates...");
+        TextAsset loadTemplateR2 = Resources.Load<TextAsset>("Demo_LoadTemplate_small-room");
+        Task parseR2 = parser.DeserializeInput(loadTemplateR2.ToString());
+        yield return new WaitUntil(() => parseR2.IsCompleted);
+        TextAsset loadTemplateR3 = Resources.Load<TextAsset>("Demo_LoadTemplate_non-convex-room2");
+        Task parseR3 = parser.DeserializeInput(loadTemplateR3.ToString());
+        yield return new WaitUntil(() => parseR3.IsCompleted);
+        TextAsset loadTemplateChassis = Resources.Load<TextAsset>("Demo_LoadTemplate_ibm-ns1200");
+        Task parseChassis = parser.DeserializeInput(loadTemplateChassis.ToString());
+        yield return new WaitUntil(() => parseChassis.IsCompleted);
+        TextAsset loadTemplateBlade = Resources.Load<TextAsset>("Demo_LoadTemplate_ibm-nx360m5");
+        Task parseBlade = parser.DeserializeInput(loadTemplateBlade.ToString());
+        yield return new WaitUntil(() => parseBlade.IsCompleted);
+
+        Debug.Log("Drawing domain...");
+        TextAsset loadDomainCmd = Resources.Load<TextAsset>("Demo_LoadDomain");
+        Task parseDomain = parser.DeserializeInput(loadDomainCmd.ToString());
+        yield return new WaitUntil(() => parseDomain.IsCompleted);
 
         Debug.Log("Drawing objects...");
         TextAsset loadObjectCmd = Resources.Load<TextAsset>("Demo_LoadObjects");

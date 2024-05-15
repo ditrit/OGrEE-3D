@@ -161,11 +161,11 @@ public class OgreeGenerator : MonoBehaviour
                     if (string.IsNullOrEmpty(item.temperatureUnit))
                         item.temperatureUnit = parent.GetComponent<Item>()?.temperatureUnit;
                 }
-                else
-                    item.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
+                // else
+                //     item.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
             }
-            if (newObject is Room newItemRoom)
-                newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
+            // if (newObject is Room newItemRoom)
+            //     newItemRoom.temperatureUnit = await ApiManager.instance.GetObject($"tempunits/{newObject.id}", ApiManager.instance.TempUnitFromAPI);
         }
         ResetCoroutine();
         return newObject;
