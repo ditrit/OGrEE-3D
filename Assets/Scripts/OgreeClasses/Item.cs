@@ -26,7 +26,7 @@ public class Item : OgreeObject
     {
         base.OnDestroy();
         EventManager.instance.UpdateDomain.Remove(OnDomainColorUpdate);
-        if (GetComponent<ObjectDisplayController>().isHidden)
+        if (GetComponent<ObjectDisplayController>() is ObjectDisplayController odc && odc.isHidden)
         {
             UiManager.instance.hiddenObjects.Remove(this);
             UiManager.instance.hiddenObjList.RebuildMenu(UiManager.instance.BuildHiddenObjButtons);

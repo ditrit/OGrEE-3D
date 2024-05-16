@@ -568,6 +568,22 @@ public class ApiManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Use response from API to get zone colors from API
+    /// </summary>
+    /// <param name="_input">The API response</param>
+    /// <returns>A dictionary containing "usableColor", "reservedColor" and "technicalColor"</returns>
+    public Task<Dictionary<string, string>> SiteColorsFromAPI(string _input)
+    {
+        if (_input.Contains("successfully got attribute from object's parent site"))
+        {
+            Hashtable resp = JsonConvert.DeserializeObject<Hashtable>(_input);
+            return Task.FromResult(JsonConvert.DeserializeObject<Dictionary<string, string>>(resp["data"].ToString()));
+        }
+        GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving colors error"), ELogTarget.both, ELogtype.errorApi);
+        return Task.FromResult(new Dictionary<string, string>());
+    }
+
+    /// <summary>
     /// Deserialize API response to <see cref="STagResp"/> and call <see cref="GameManager.CreateTag(SApiTag)"/>
     /// </summary>
     /// <param name="_input">The API response</param>

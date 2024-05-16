@@ -9951,7 +9951,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Build date: 2024-05-16
 
-    Commit #66f9c77'
+    Commit #4a579e92'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -28862,7 +28862,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1513977460}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.5658
+  m_Size: 0.56579995
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -495,26 +495,23 @@ public class Room : Building
     ///<summary>
     /// Set usable/reserved/technical zones color according to parented Site
     ///</summary>
-    public void UpdateZonesColor()
+    ///<param name="_id">The id to use in the API request</param>
+    public async void UpdateZonesColor(string _id)
     {
-        OgreeObject site = null;
-        if (transform.parent && transform.parent.parent)
-            site = transform.parent.parent.GetComponentInParent<OgreeObject>();
+        List<Transform> zones = new() { usableZone, reservedZone, technicalZone };
+        List<string> zoneNames = new() { "usableZone", "reservedZone", "technicalZone" };
+        List<string> colorNames = new() { "usableColor", "reservedColor", "technicalColor" };
 
-        if (site && site.attributes.ContainsKey("usableColor"))
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["usableColor"]}");
+        Dictionary<string, string> colors = new();
+        Site parentSite = transform.GetComponentInParent<Site>();
+        if (parentSite)
+            foreach (string name in colorNames)
+                colors[name] = parentSite.attributes.HasKeyAndValue(name) ? parentSite.attributes[name] : "";
         else
-            usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("usableZone"));
+            colors = await ApiManager.instance.GetObject($"sitecolors/{_id}", ApiManager.instance.SiteColorsFromAPI);
 
-        if (site && site.attributes.ContainsKey("reservedColor"))
-            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["reservedColor"]}");
-        else
-            reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("reservedZone"));
-
-        if (site && site.attributes.ContainsKey("technicalColor"))
-            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor($"#{site.attributes["technicalColor"]}");
-        else
-            technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(GameManager.instance.configHandler.GetColor("technicalZone"));
+        for (int i = 0; i < zones.Count; i++)
+            zones[i].GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(colors.HasKeyAndValue(colorNames[i]) ? $"#{colors[colorNames[i]]}" : GameManager.instance.configHandler.GetColor(zoneNames[i]));
     }
 
     ///<summary>
