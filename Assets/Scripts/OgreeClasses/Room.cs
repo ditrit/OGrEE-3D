@@ -510,7 +510,7 @@ public class Room : Building
         else
             colors = await ApiManager.instance.GetObject($"sitecolors/{_id}", ApiManager.instance.SiteColorsFromAPI);
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < zones.Count; i++)
             zones[i].GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(colors.HasKeyAndValue(colorNames[i]) ? $"#{colors[colorNames[i]]}" : GameManager.instance.configHandler.GetColor(zoneNames[i]));
     }
 
