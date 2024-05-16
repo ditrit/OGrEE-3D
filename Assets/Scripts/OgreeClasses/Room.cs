@@ -498,16 +498,20 @@ public class Room : Building
     ///<param name="_id">The id to use in the API request</param>
     public async void UpdateZonesColor(string _id)
     {
-        Dictionary<string, string> colors = await ApiManager.instance.GetObject($"sitecolors/{_id}", ApiManager.instance.SiteColorsFromAPI);
+        List<Transform> zones = new() { usableZone, reservedZone, technicalZone };
+        List<string> zoneNames = new() { "usableZone", "reservedZone", "technicalZone" };
+        List<string> colorNames = new() { "usableColor", "reservedColor", "technicalColor" };
 
-        string usableColor = colors.HasKeyAndValue("usableColor") ? $"#{colors["usableColor"]}" : GameManager.instance.configHandler.GetColor("usableZone");
-        usableZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(usableColor);
+        Dictionary<string, string> colors = new();
+        Site parentSite = transform.GetComponentInParent<Site>();
+        if (parentSite)
+            foreach (string name in colorNames)
+                colors[name] = parentSite.attributes.HasKeyAndValue(name) ? parentSite.attributes[name] : "";
+        else
+            colors = await ApiManager.instance.GetObject($"sitecolors/{_id}", ApiManager.instance.SiteColorsFromAPI);
 
-        string reservedColor = colors.HasKeyAndValue("reservedColor") ? $"#{colors["reservedColor"]}" : GameManager.instance.configHandler.GetColor("reservedZone");
-        reservedZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(reservedColor);
-
-        string technicalColor = colors.HasKeyAndValue("technicalColor") ? $"#{colors["technicalColor"]}" : GameManager.instance.configHandler.GetColor("technicalZone");
-        technicalZone.GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(technicalColor);
+        for (int i = 0; i < 3; i++)
+            zones[i].GetComponent<Renderer>().material.color = Utils.ParseHtmlColor(colors.HasKeyAndValue(colorNames[i]) ? $"#{colors[colorNames[i]]}" : GameManager.instance.configHandler.GetColor(zoneNames[i]));
     }
 
     ///<summary>

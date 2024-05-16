@@ -571,7 +571,7 @@ public class ApiManager : MonoBehaviour
     /// Use response from API to get zone colors from API
     /// </summary>
     /// <param name="_input">The API response</param>
-    /// <returns></returns>
+    /// <returns>A dictionary containing "usableColor", "reservedColor" and "technicalColor"</returns>
     public Task<Dictionary<string, string>> SiteColorsFromAPI(string _input)
     {
         if (_input.Contains("successfully got attribute from object's parent site"))
