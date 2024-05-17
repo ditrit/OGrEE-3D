@@ -255,7 +255,7 @@ public class ConfigHandler
     }
 
     ///<summary>
-    /// Get the path of the cache directory from config.
+    /// Get the path of the cache directory from <see cref="config"/>.
     ///</summary>
     ///<returns>The path of the cache directory</returns>
     public string GetCacheDir()
@@ -263,6 +263,10 @@ public class ConfigHandler
         return config.cachePath + DefaultValues.CacheDirName;
     }
 
+    /// <summary>
+    /// Get the fbx path root from <see cref="config"/>
+    /// </summary>
+    /// <returns>The fbx path root</returns>
     public string GetFbxRoot()
     {
         return config.FbxRoot;
