@@ -5,6 +5,8 @@ cachePath = "C:/"
 cacheLimitMo = 100
 # Port used to receive messages from OGrEE-CLI. 5500 by default
 cliPort = 5500
+# Root of the path to get fbx models. Can be url or uri
+fbxRoot = "https://github.com/ditrit/OGrEE-3dModels/raw/master/"
 # Value clamped from 0 to 100
 alphaOnInteract = 50
 # Value clamped from 0.01 to 1, 0.25 by default

@@ -371,6 +371,10 @@ MonoBehaviour:
     m_Key: X objects created
     m_Metadata:
       m_Items: []
+  - m_Id: 20649838907887616
+    m_Key: file doesn't exist at
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
