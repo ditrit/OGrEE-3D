@@ -11,6 +11,8 @@ public class OgreeGenerator : MonoBehaviour
     private readonly ObjectGenerator objectGenerator = new();
     private Coroutine waitCoroutine = null;
 
+    public bool isDrawing = false;
+
     private void Awake()
     {
         if (!instance)
@@ -31,6 +33,8 @@ public class OgreeGenerator : MonoBehaviour
             ResetCoroutine();
             return null;
         }
+
+        isDrawing = true;
 
         OgreeObject newObject;
         // Get dependencies from API:
@@ -74,11 +78,13 @@ public class OgreeGenerator : MonoBehaviour
             if (_obj.category == Category.Device && string.IsNullOrEmpty((string)_obj.attributes["template"]))
             {
                 GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Unable to draw a basic device without its parent"), ELogTarget.both, ELogtype.errorCli);
+                isDrawing = false;
                 return null;
             }
             if (_obj.category == Category.Corridor || _obj.category == Category.Group)
             {
                 GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unable to draw a category without its parent.", _obj.category), ELogTarget.both, ELogtype.errorCli);
+                isDrawing = false;
                 return null;
             }
 
@@ -104,6 +110,7 @@ public class OgreeGenerator : MonoBehaviour
                 {
                     EventManager.instance.Raise(new CancelGenerateEvent());
                     UiManager.instance.DeletePrompt(prompt);
+                    isDrawing = false;
                     return null;
                 }
             }
@@ -171,6 +178,20 @@ public class OgreeGenerator : MonoBehaviour
         return newObject;
     }
 
+    /// <summary>
+    /// Create <paramref name="_obj"/>'s parent if not already in the scene, then create given <paramref name="_obj"/>
+    /// </summary>
+    /// <param name="_obj">The object to create</param>
+    public async Task CreateOrGetParent(SApiObject _obj)
+    {
+        if (!(string.IsNullOrEmpty(_obj.parentId) || Utils.GetObjectById(_obj.parentId)))
+        {
+            SApiObject parent = await ApiManager.instance.GetObject($"objects?id={_obj.parentId}", ApiManager.instance.GetSApiObject);
+            await CreateOrGetParent(parent);
+        }
+        await CreateItemFromSApiObject(_obj);
+    }
+
     ///<summary>
     /// If a waitCoroutine is running, stop it. Then, start a new one.
     ///</summary>
@@ -178,17 +199,18 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (waitCoroutine != null)
             StopCoroutine(waitCoroutine);
-        waitCoroutine = StartCoroutine(WaitAndRaiseEvent());
+        waitCoroutine = StartCoroutine(WaitAndRaiseEvents());
     }
 
     ///<summary>
     /// Wait 1 second and raise ImportFinished et ChangeCursor envents
     ///</summary>
-    private IEnumerator WaitAndRaiseEvent()
+    private IEnumerator WaitAndRaiseEvents()
     {
         yield return new WaitForSeconds(1f);
         EventManager.instance.Raise(new ImportFinishedEvent());
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
+        isDrawing = false;
         // Debug.Log("[] event raised !");
     }
 }

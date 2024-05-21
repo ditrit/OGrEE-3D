@@ -425,7 +425,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", responseStr), ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                await CreateItemFromJson(responseStr);
+                await CreateObjectFromJson(responseStr);
             else
                 GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Fail to post on server"), ELogTarget.logger, ELogtype.errorApi);
         }
@@ -503,7 +503,7 @@ public class ApiManager : MonoBehaviour
                 EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
             }
             else
-                await CreateItemFromJson(_input);
+                await CreateObjectFromJson(_input);
         }
         catch (Exception e)
         {
@@ -511,12 +511,35 @@ public class ApiManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Attemps to draw an object or it's parent if not already drawn. <b>Given "data" must be an array</b>
+    /// </summary>
+    /// <param name="_input"></param>
+    public async Task DrawObjectAndParents(string _input)
+    {
+        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
+        await OgreeGenerator.instance.CreateOrGetParent(objects[0]);
+    }
+
+    /// <summary>
+    /// Give a <see cref="SApiObject"/> from received data. <b>Given "data" must be an array</b>
+    /// </summary>
+    /// <param name="_input"></param>
+    /// <returns>The first SApiObject received</returns>
+    public Task<SApiObject> GetSApiObject(string _input)
+    {
+        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
+        return Task.Run(() => objects[0]);
+    }
+
     ///<summary>
-    /// Create an Ogree item from Json.
+    /// Create an Ogree object from Json.
     /// Look in request path to the type of object to create
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private async Task CreateItemFromJson(string _json)
+    private async Task CreateObjectFromJson(string _json)
     {
         List<SApiObject> physicalObjects = new();
         List<SApiObject> logicalObjects = new();

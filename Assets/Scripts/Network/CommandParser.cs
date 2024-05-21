@@ -436,10 +436,11 @@ public class CommandParser
                 break;
             case Command.Highlight:
                 GameObject obj = Utils.GetObjectById(manip.data);
-                if (obj)
-                    EventManager.instance.Raise(new HighlightEvent(obj));
-                else
-                    GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Error on highlight"), ELogTarget.both, ELogtype.errorCli);
+                if (!obj)
+                    await ApiManager.instance.GetObject($"objects?id={manip.data}", ApiManager.instance.DrawObjectAndParents);
+                while (OgreeGenerator.instance.isDrawing)
+                    await Task.Delay(10);
+                EventManager.instance.Raise(new HighlightEvent(Utils.GetObjectById(manip.data)));
                 break;
             case Command.ClearCache:
                 if (GameManager.instance.objectRoot)
