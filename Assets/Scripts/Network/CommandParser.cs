@@ -273,7 +273,7 @@ public class CommandParser
 
         // Get domain from API if new domain isn't loaded
         if (!string.IsNullOrEmpty(newData.domain) && !GameManager.instance.allItems.Contains(newData.domain))
-            await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"domains/{newData.domain}", ApiManager.instance.CreateObjectFromJson);
 
         // Case domain for all OgreeObjects
         bool domainColorChanged = newData.category == Category.Domain && obj.attributes["color"] != newData.attributes["color"];
@@ -436,10 +436,11 @@ public class CommandParser
                 break;
             case Command.Highlight:
                 GameObject obj = Utils.GetObjectById(manip.data);
-                if (obj)
-                    EventManager.instance.Raise(new HighlightEvent(obj));
-                else
-                    GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Error on highlight"), ELogTarget.both, ELogtype.errorCli);
+                if (!obj)
+                    await ApiManager.instance.GetObject($"objects?id={manip.data}", ApiManager.instance.CreateObjectAndParents);
+                while (OgreeGenerator.instance.isDrawing)
+                    await Task.Delay(10);
+                EventManager.instance.Raise(new HighlightEvent(Utils.GetObjectById(manip.data)));
                 break;
             case Command.ClearCache:
                 if (GameManager.instance.objectRoot)

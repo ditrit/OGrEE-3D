@@ -132,7 +132,7 @@ public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
         if (currentLod > _level)
             await DeleteChildren(_level);
         else if (_level != currentLod)
-            await ApiManager.instance.GetObject($"{category}s/{id}/all?limit={_level}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"{category}s/{id}/all?limit={_level}", ApiManager.instance.CreateObjectFromJson);
 
         SetCurrentLod(_level);
     }
