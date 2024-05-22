@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -20,37 +19,10 @@ public class ApiManager : MonoBehaviour
         public string json;
     }
 
-    private struct SObjRespSingle
+    private struct SObjectResp
     {
         public string message;
         public SApiObject data;
-    }
-    private struct SObjRespArray
-    {
-        public string message;
-        public SObjectArray data;
-    }
-    private struct SObjectArray
-    {
-        public SApiObject[] objects;
-    }
-
-    private struct STemplateResp
-    {
-        public string message;
-        public STemplate data;
-    }
-
-    private struct SBuildingResp
-    {
-        public string message;
-        public SBuildingFromJson data;
-    }
-
-    private struct SRoomResp
-    {
-        public string message;
-        public SRoomFromJson data;
     }
 
     private struct STempUnitResp
@@ -459,7 +431,7 @@ public class ApiManager : MonoBehaviour
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "From API", responseStr), ELogTarget.none, ELogtype.infoApi);
 
             if (responseStr.Contains("success"))
-                await DrawObject(responseStr);
+                await CreateTemplateFromJson(responseStr);
             else
                 GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Fail to post on server"), ELogTarget.logger, ELogtype.errorApi);
         }
@@ -470,92 +442,17 @@ public class ApiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Call the CreateXFromJson() method corresponding to the given API response.
-    ///</summary>
-    ///<param name="_input">The API response to use</param>
-    public async Task DrawObject(string _input)
-    {
-        try
-        {
-            string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
-            // Hashtable data = (Hashtable)apiResp["data"];
-            Hashtable data = JsonConvert.DeserializeObject<Hashtable>(dataStr);
-
-            if (data.ContainsKey("slug"))
-            {
-                switch (data["category"])
-                {
-                    case Category.Building:
-                        SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(dataStr);
-                        rfJson.CreateBuildingTemplate(buildingData);
-                        break;
-                    case Category.Room:
-                        SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(dataStr);
-                        rfJson.CreateRoomTemplate(roomData);
-                        break;
-                    case Category.Rack:
-                    case Category.Device:
-                    case Category.Generic:
-                        STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
-                        await rfJson.CreateObjectTemplate(deviceData);
-                        break;
-                }
-                EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
-            }
-            else
-                await CreateObjectFromJson(_input);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-        }
-    }
-
-    /// <summary>
-    /// Attemps to draw an object or it's parent if not already drawn. <b>Given "data" must be an array</b>
-    /// </summary>
-    /// <param name="_input"></param>
-    public async Task DrawObjectAndParents(string _input)
-    {
-        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
-        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
-        await OgreeGenerator.instance.CreateOrGetParent(objects[0]);
-    }
-
-    /// <summary>
-    /// Give a <see cref="SApiObject"/> from received data. <b>Given "data" must be an array</b>
-    /// </summary>
-    /// <param name="_input"></param>
-    /// <returns>The first SApiObject received</returns>
-    public Task<SApiObject> GetSApiObject(string _input)
-    {
-        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
-        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
-        return Task.Run(() => objects[0]);
-    }
-
-    ///<summary>
-    /// Create an Ogree object from Json.
-    /// Look in request path to the type of object to create
+    /// Create an Ogree object and its children from given Json
     ///</summary>
     ///<param name="_json">The API response to use</param>
-    private async Task CreateObjectFromJson(string _json)
+    public async Task CreateObjectFromJson(string _json)
     {
         List<SApiObject> physicalObjects = new();
         List<SApiObject> logicalObjects = new();
         List<string> leafIds = new();
 
-        if (Regex.IsMatch(_json, "\"data\":{\"objects\":\\["))
-        {
-            SObjRespArray resp = JsonConvert.DeserializeObject<SObjRespArray>(_json);
-            foreach (SApiObject obj in resp.data.objects)
-                physicalObjects.Add(obj);
-        }
-        else
-        {
-            SObjRespSingle resp = JsonConvert.DeserializeObject<SObjRespSingle>(_json);
-            Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data, leafIds);
-        }
+        SObjectResp resp = JsonConvert.DeserializeObject<SObjectResp>(_json);
+        Utils.ParseNestedObjects(physicalObjects, logicalObjects, resp.data, leafIds);
 
         foreach (SApiObject obj in physicalObjects)
             if (canDraw)
@@ -572,6 +469,58 @@ public class ApiManager : MonoBehaviour
         if (canDraw)
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "X objects created", physicalObjects.Count + logicalObjects.Count), ELogTarget.logger, ELogtype.successApi);
         canDraw = true;
+    }
+
+    ///<summary>
+    /// Call the CreateXTemplate method of <see cref="rfJson"/> corresponding to given slug in <paramref name="_input"/>
+    ///</summary>
+    ///<param name="_input">The API response to use</param>
+    public async Task CreateTemplateFromJson(string _input)
+    {
+        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+        Hashtable data = JsonConvert.DeserializeObject<Hashtable>(dataStr);
+
+        switch (data["category"])
+        {
+            case Category.Building:
+                SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(dataStr);
+                rfJson.CreateBuildingTemplate(buildingData);
+                break;
+            case Category.Room:
+                SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(dataStr);
+                rfJson.CreateRoomTemplate(roomData);
+                break;
+            case Category.Rack:
+            case Category.Device:
+            case Category.Generic:
+                STemplate deviceData = JsonConvert.DeserializeObject<STemplate>(dataStr);
+                await rfJson.CreateObjectTemplate(deviceData);
+                break;
+        }
+        EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
+    }
+
+    /// <summary>
+    /// Attemps to draw an object or it's parent if not already drawn. <b>Given "data" must be an array</b>
+    /// </summary>
+    /// <param name="_input"></param>
+    public async Task CreateObjectAndParents(string _input)
+    {
+        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
+        await OgreeGenerator.instance.CreateOrGetParent(objects[0]);
+    }
+
+    /// <summary>
+    /// Give a list of <see cref="SApiObject"/> from received data. <b>Given "data" must be an array</b>
+    /// </summary>
+    /// <param name="_input"></param>
+    /// <returns>The first SApiObject received</returns>
+    public Task<List<SApiObject>> GetSApiObjects(string _input)
+    {
+        string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
+        List<SApiObject> objects = JsonConvert.DeserializeObject<List<SApiObject>>(dataStr);
+        return Task.Run(() => objects);
     }
 
     /// <summary>

@@ -41,28 +41,28 @@ public class OgreeGenerator : MonoBehaviour
         // Domains
         if (_obj.category != Category.Domain && !string.IsNullOrEmpty(_obj.domain)
             && !GameManager.instance.allItems.Contains(_obj.domain))
-            await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"domains/{_obj.domain}", ApiManager.instance.CreateObjectFromJson);
 
         // Templates
         if (_obj.category == Category.Building && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.buildingTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         if (_obj.category == Category.Room && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.roomTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.objectTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.DrawObject);
+            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         // Tags
@@ -186,7 +186,7 @@ public class OgreeGenerator : MonoBehaviour
     {
         if (!(string.IsNullOrEmpty(_obj.parentId) || Utils.GetObjectById(_obj.parentId)))
         {
-            SApiObject parent = await ApiManager.instance.GetObject($"objects?id={_obj.parentId}", ApiManager.instance.GetSApiObject);
+            SApiObject parent = (await ApiManager.instance.GetObject($"objects?id={_obj.parentId}", ApiManager.instance.GetSApiObjects))[0];
             await CreateOrGetParent(parent);
         }
         await CreateItemFromSApiObject(_obj);
