@@ -34,8 +34,8 @@ public class ModelLoader : MonoBehaviour
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
         Uri filePath;
 
-        bool fromUri = _modelPath.StartsWith("file://");
-        if (fromUri)
+        bool fromLocalFile = _modelPath.StartsWith("file://");
+        if (fromLocalFile)
             filePath = new(_modelPath);
         else
         {
@@ -56,7 +56,7 @@ public class ModelLoader : MonoBehaviour
             AssetLoader.LoadModelFromFile(filePath.AbsolutePath, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                             _object, assetLoaderOptions);
         }
-        else if (!fromUri)
+        else if (!fromLocalFile)
         {
             Debug.Log($"From url: {_modelPath}");
             UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
