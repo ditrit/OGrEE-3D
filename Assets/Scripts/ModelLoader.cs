@@ -28,10 +28,20 @@ public class ModelLoader : MonoBehaviour
     ///<param name="_modelPath">The path of the 3D model to load with TriLib</param>
     public async Task ReplaceBox(GameObject _object, string _modelPath)
     {
+        _modelPath = GameManager.instance.configHandler.GetFbxRoot() + _modelPath;
+
         isLocked = true;
         EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));
-        Uri filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
-        await DownloadFile(_modelPath, filePath.AbsolutePath);
+        Uri filePath;
+
+        bool fromLocalFile = _modelPath.StartsWith("file://");
+        if (fromLocalFile)
+            filePath = new(_modelPath);
+        else
+        {
+            filePath = new($"{GameManager.instance.configHandler.GetCacheDir()}/{_object.name}.fbx");
+            await DownloadFile(_modelPath, filePath.AbsolutePath);
+        }
 
         AssetLoaderOptions assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions(false, true);
 
@@ -46,13 +56,19 @@ public class ModelLoader : MonoBehaviour
             AssetLoader.LoadModelFromFile(filePath.AbsolutePath, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                             _object, assetLoaderOptions);
         }
-        else
+        else if (!fromLocalFile)
         {
             Debug.Log($"From url: {_modelPath}");
             UnityWebRequest webRequest = AssetDownloader.CreateWebRequest(_modelPath);
             AssetDownloader.LoadModelFromUri(webRequest, OnLoad, OnMaterialsLoad, OnProgress, OnError,
                                                 _object, assetLoaderOptions, null, "fbx");
         }
+        else
+        {
+            GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "file doesn't exist at", _modelPath), ELogTarget.both, ELogtype.error);
+            isLocked = false;
+        }
+
         while (isLocked)
         {
             EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Loading));

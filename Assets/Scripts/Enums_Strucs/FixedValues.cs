@@ -188,12 +188,18 @@ public struct SConfig
     private float moveSpeed;
     private float rotationSpeed;
     private float humanHeight;
+    private string fbxRoot;
 
     public bool verbose;
     public bool fullscreen;
     public string cachePath;
     public int cacheLimitMo;
     public int cliPort;
+    public string FbxRoot
+    {
+        readonly get => fbxRoot;
+        set => fbxRoot = value.EndsWith("/") ? value : value + "/";
+    }
     public float AlphaOnInteract
     {
         readonly get => alphaOnInteract;
@@ -264,6 +270,7 @@ public class DefaultValues
         cachePath = $"{Application.dataPath}/",
         cacheLimitMo = 100,
         cliPort = 5500,
+        FbxRoot = "https://github.com/ditrit/OGrEE-3dModels/raw/master/",
         AlphaOnInteract = 50,
         autoUHelpers = true,
         textures = new()
