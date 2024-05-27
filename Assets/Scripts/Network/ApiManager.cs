@@ -43,11 +43,6 @@ public class ApiManager : MonoBehaviour
         public SApiTag data;
     }
 
-    private struct SLayerResp
-    {
-        public List<SApiLayer> objects;
-    }
-
     private struct SLayerContentResp
     {
         public string message;
@@ -576,8 +571,8 @@ public class ApiManager : MonoBehaviour
         try
         {
             string dataStr = JsonConvert.DeserializeObject<Hashtable>(_input)["data"].ToString();
-            SLayerResp resp = JsonConvert.DeserializeObject<SLayerResp>(dataStr);
-            foreach (SApiLayer al in resp.objects)
+            List<SApiLayer> resp = JsonConvert.DeserializeObject<List<SApiLayer>>(dataStr);
+            foreach (SApiLayer al in resp)
                 LayerManager.instance.CreateLayerFromSApiLayer(al);
             EventManager.instance.Raise(new ChangeCursorEvent(CursorChanger.CursorType.Idle));
         }
