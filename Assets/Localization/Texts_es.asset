@@ -225,10 +225,6 @@ MonoBehaviour:
     m_Localized: Ocultar
     m_Metadata:
       m_Items: []
-  - m_Id: 3706955525132288
-    m_Localized: "Mostrar la selecci\xF3n"
-    m_Metadata:
-      m_Items: []
   - m_Id: 3704557385682944
     m_Localized: Nombre de los mosaicos
     m_Metadata:

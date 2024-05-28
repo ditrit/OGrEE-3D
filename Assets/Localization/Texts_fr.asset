@@ -215,10 +215,6 @@ MonoBehaviour:
     m_Localized: Cacher
     m_Metadata:
       m_Items: []
-  - m_Id: 3706955525132288
-    m_Localized: "Afficher la s\xE9lection"
-    m_Metadata:
-      m_Items: []
   - m_Id: 3703045297147904
     m_Localized: "R\xE9unir"
     m_Metadata:

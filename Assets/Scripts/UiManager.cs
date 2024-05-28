@@ -54,7 +54,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
     [SerializeField] private ButtonHandler hideObjectBtn;
-    [SerializeField] private ButtonHandler displayObjectBtn;
     [SerializeField] private ButtonHandler positionModeBtn;
     [SerializeField] private ButtonHandler SnappingBtn;
 
@@ -500,18 +499,6 @@ public class UiManager : MonoBehaviour
             !GameManager.instance.positionMode
         };
         hideObjectBtn.Check();
-
-        displayObjectBtn = new(displayObjectBtn.button, true)
-        {
-            interactCondition = () => !menuTarget
-            &&
-            GameManager.instance.selectMode
-            &&
-            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
-            &&
-            item.GetComponent<ObjectDisplayController>().isHidden
-        };
-        displayObjectBtn.Check();
 
         positionModeBtn = new(positionModeBtn.button, true)
         {
@@ -1548,15 +1535,6 @@ public class UiManager : MonoBehaviour
             hiddenObjects.Sort();
             hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
         }
-    }
-
-    /// <summary>
-    /// Called by GUI: Display all selected objects
-    /// </summary>
-    public void DisplaySelectedObjects()
-    {
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            DisplayObject(obj);
     }
 
     /// <summary>

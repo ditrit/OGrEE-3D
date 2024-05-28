@@ -251,10 +251,6 @@ MonoBehaviour:
     m_Key: Hide object
     m_Metadata:
       m_Items: []
-  - m_Id: 3706955525132288
-    m_Key: Display selection
-    m_Metadata:
-      m_Items: []
   - m_Id: 3708234733326336
     m_Key: Get Coordinates
     m_Metadata:

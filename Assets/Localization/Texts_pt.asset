@@ -215,10 +215,6 @@ MonoBehaviour:
     m_Localized: Ocultar
     m_Metadata:
       m_Items: []
-  - m_Id: 3706955525132288
-    m_Localized: "Mostrar sele\xE7\xE3o"
-    m_Metadata:
-      m_Items: []
   - m_Id: 3704557385682944
     m_Localized: Nome dos ladrilhos
     m_Metadata:
