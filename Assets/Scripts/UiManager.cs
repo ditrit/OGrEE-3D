@@ -491,19 +491,21 @@ public class UiManager : MonoBehaviour
 
         hideObjectBtn = new(hideObjectBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => menuTarget
             &&
-            !GameManager.instance.positionMode
-            &&
-            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            menuTarget.GetComponent<Item>() is Item item
             &&
             !item.GetComponent<ObjectDisplayController>().isHidden
+            &&
+            !GameManager.instance.positionMode
         };
         hideObjectBtn.Check();
 
         displayObjectBtn = new(displayObjectBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => !menuTarget
+            &&
+            GameManager.instance.selectMode
             &&
             GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
             &&
@@ -1523,11 +1525,13 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Called by GUI: Hide all selected objects
     /// </summary>
-    public async void HideSelectedObjects()
+    public void HideTargetedObjects()
     {
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            HideObject(obj);
-        await GameManager.instance.SetCurrentItem(null);
+        if (GameManager.instance.GetSelected().Contains(menuTarget))
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+                HideObject(obj);
+        else
+            HideObject(menuTarget);
     }
 
     /// <summary>
