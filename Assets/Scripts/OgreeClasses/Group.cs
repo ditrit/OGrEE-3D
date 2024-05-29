@@ -112,7 +112,7 @@ public class Group : Item
     {
         content.Clear();
 
-        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>(); ;
+        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>();
         foreach (string rn in names)
             if (Utils.GetObjectById($"{_src.parentId}.{rn}") is GameObject go)
             {
