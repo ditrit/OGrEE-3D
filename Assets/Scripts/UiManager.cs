@@ -1512,11 +1512,14 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Called by GUI: Hide all selected objects
     /// </summary>
-    public void HideTargetedObjects()
+    public async void HideTargetedObjects()
     {
         if (GameManager.instance.GetSelected().Contains(menuTarget))
+        {
             foreach (GameObject obj in GameManager.instance.GetSelected())
                 HideObject(obj);
+            await GameManager.instance.SetCurrentItem(null);
+        }
         else
             HideObject(menuTarget);
     }
