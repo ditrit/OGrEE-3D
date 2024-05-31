@@ -54,7 +54,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler scatterPlotBtn;
     [SerializeField] private ButtonHandler heatMapBtn;
     [SerializeField] private ButtonHandler hideObjectBtn;
-    [SerializeField] private ButtonHandler displayObjectBtn;
     [SerializeField] private ButtonHandler positionModeBtn;
     [SerializeField] private ButtonHandler SnappingBtn;
 
@@ -491,25 +490,15 @@ public class UiManager : MonoBehaviour
 
         hideObjectBtn = new(hideObjectBtn.button, true)
         {
-            interactCondition = () => GameManager.instance.selectMode
+            interactCondition = () => menuTarget
             &&
-            !GameManager.instance.positionMode
-            &&
-            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
+            menuTarget.GetComponent<Item>() is Item item
             &&
             !item.GetComponent<ObjectDisplayController>().isHidden
+            &&
+            !GameManager.instance.positionMode
         };
         hideObjectBtn.Check();
-
-        displayObjectBtn = new(displayObjectBtn.button, true)
-        {
-            interactCondition = () => GameManager.instance.selectMode
-            &&
-            GameManager.instance.GetSelected()[0].GetComponent<Item>() is Item item
-            &&
-            item.GetComponent<ObjectDisplayController>().isHidden
-        };
-        displayObjectBtn.Check();
 
         positionModeBtn = new(positionModeBtn.button, true)
         {
@@ -1523,11 +1512,16 @@ public class UiManager : MonoBehaviour
     /// <summary>
     /// Called by GUI: Hide all selected objects
     /// </summary>
-    public async void HideSelectedObjects()
+    public async void HideTargetedObjects()
     {
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            HideObject(obj);
-        await GameManager.instance.SetCurrentItem(null);
+        if (GameManager.instance.GetSelected().Contains(menuTarget))
+        {
+            foreach (GameObject obj in GameManager.instance.GetSelected())
+                HideObject(obj);
+            await GameManager.instance.SetCurrentItem(null);
+        }
+        else
+            HideObject(menuTarget);
     }
 
     /// <summary>
@@ -1544,15 +1538,6 @@ public class UiManager : MonoBehaviour
             hiddenObjects.Sort();
             hiddenObjList.RebuildMenu(BuildHiddenObjButtons);
         }
-    }
-
-    /// <summary>
-    /// Called by GUI: Display all selected objects
-    /// </summary>
-    public void DisplaySelectedObjects()
-    {
-        foreach (GameObject obj in GameManager.instance.GetSelected())
-            DisplayObject(obj);
     }
 
     /// <summary>

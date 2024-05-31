@@ -82,13 +82,16 @@ public class Group : Item
             if (go && !go.GetComponent<OgreeObject>().isDoomed)
             {
                 ObjectDisplayController itemsOdc = go.GetComponent<ObjectDisplayController>();
-                itemsOdc.Display(_value, _value, _value);
-                itemsOdc.isHiddenInGroup = !_value;
-                itemsOdc.ForceHighlightCube();
-                if (_value)
-                    itemsOdc.SubscribeEvents();
-                else
-                    itemsOdc.UnsubscribeEvents();
+                if (!itemsOdc.isHidden)
+                {
+                    itemsOdc.Display(_value, _value, _value);
+                    itemsOdc.isHiddenInGroup = !_value;
+                    itemsOdc.ForceHighlightCube();
+                    if (_value)
+                        itemsOdc.SubscribeEvents();
+                    else
+                        itemsOdc.UnsubscribeEvents();
+                }
             }
     }
 
@@ -109,7 +112,7 @@ public class Group : Item
     {
         content.Clear();
 
-        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>();;
+        List<string> names = ((JArray)_src.attributes["content"]).ToObject<List<string>>();
         foreach (string rn in names)
             if (Utils.GetObjectById($"{_src.parentId}.{rn}") is GameObject go)
             {

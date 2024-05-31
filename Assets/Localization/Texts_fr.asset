@@ -212,11 +212,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3706658505494528
-    m_Localized: "Cacher la s\xE9lection"
-    m_Metadata:
-      m_Items: []
-  - m_Id: 3706955525132288
-    m_Localized: "Afficher la s\xE9lection"
+    m_Localized: Cacher
     m_Metadata:
       m_Items: []
   - m_Id: 3703045297147904

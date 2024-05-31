@@ -766,16 +766,19 @@ public class ObjectDisplayController : MonoBehaviour
     /// </summary>
     public async void DisplayObject()
     {
-        if ((group && !group.isDisplayed) || isHiddenInGroup)
+        if (group && !group.isDisplayed)
             return;
-        if (GameManager.instance.GetSelected().Contains(gameObject))
+        if (!isHiddenInGroup)
         {
-            Display(true, false, false);
-            if (item && item.currentLod == 0)
-                await item.LoadChildren(1);
+            if (GameManager.instance.GetSelected().Contains(gameObject))
+            {
+                Display(true, false, false);
+                if (item && item.currentLod == 0)
+                    await item.LoadChildren(1);
+            }
+            else
+                Display(true, true, true);
         }
-        else
-            Display(true, true, true);
         isHidden = false;
     }
 }
