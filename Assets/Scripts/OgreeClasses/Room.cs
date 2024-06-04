@@ -59,7 +59,7 @@ public class Room : Building
             UpdateColorByDomain(_src.domain);
         }
 
-        if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[(string)_src.attributes["template"]] is SRoomFromJson template && template.vertices == null))
+        if ((!Utils.HasKeyAndValue(_src.attributes, "template") || (Utils.HasKeyAndValue(_src.attributes, "template") && GameManager.instance.roomTemplates[(string)_src.attributes["template"]] is SRoomTemplate template && template.vertices == null))
             && HasAttributeChanged(_src, "reserved") && HasAttributeChanged(_src, "technical"))
         {
             SMargin reserved = new(((JArray)_src.attributes["reserved"]).ToVector4());
@@ -96,7 +96,7 @@ public class Room : Building
         // If tileOffset in template, apply it
         if (attributes.HasKeyAndValue("template") && GameManager.instance.roomTemplates.ContainsKey((string)attributes["template"]))
         {
-            SRoomFromJson template = GameManager.instance.roomTemplates[(string)attributes["template"]];
+            SRoomTemplate template = GameManager.instance.roomTemplates[(string)attributes["template"]];
             if (template.tileOffset != null && template.tileOffset.Count != 0)
             {
                 // Find the part to substract to land on a whole tile
@@ -397,11 +397,16 @@ public class Room : Building
     ///<param name="_id">The id of the current tile</param>
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
-        // Select the right tile from attributes["tiles"]
+        if (!attributes.HasKeyAndValue("template"))
+            return;
+
+        SRoomTemplate template = GameManager.instance.roomTemplates[attributes["template"]];
+
+        // Select the right tile from template.tiles
         STile tileData = new();
-        if (attributes.ContainsKey("tiles"))
+        if (template.tiles != null)
         {
-            List<STile> tiles = (List<STile>)attributes["tiles"];
+            List<STile> tiles = template.tiles;
             foreach (STile tile in tiles)
                 if (tile.location.Trim() == _id)
                     tileData = tile;
@@ -427,11 +432,16 @@ public class Room : Building
     ///<param name="_id">The id of the current tile</param>
     private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
-        // Select the right tile from attributes["tiles"]
+        if (!attributes.HasKeyAndValue("template"))
+            return;
+
+        SRoomTemplate template = GameManager.instance.roomTemplates[attributes["template"]];
+
+        // Select the right tile from template.tiles
         STile tileData = new();
-        if (attributes.ContainsKey("tiles"))
+        if (template.tiles != null)
         {
-            List<STile> tiles = (List<STile>)attributes["tiles"];
+            List<STile> tiles = template.tiles;
             foreach (STile tile in tiles)
                 if (tile.location.Trim() == _id)
                     tileData = tile;
@@ -439,7 +449,7 @@ public class Room : Building
 
         List<SColor> customColors = new();
         if (attributes.ContainsKey("colors"))
-            customColors = (List<SColor>)attributes["colors"];
+            customColors = template.colors;
 
         if (!string.IsNullOrEmpty(tileData.location))
         {

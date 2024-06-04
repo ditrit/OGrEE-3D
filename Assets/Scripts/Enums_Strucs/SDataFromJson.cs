@@ -28,7 +28,7 @@ public struct SApiObject
 }
 
 [System.Serializable]
-public struct SBuildingFromJson
+public struct SBuildingTemplate
 {
     public string slug;
     public string category;
@@ -38,7 +38,7 @@ public struct SBuildingFromJson
 
 #region Room
 [System.Serializable]
-public struct SRoomFromJson
+public struct SRoomTemplate
 {
     public string slug;
     public string axisOrientation;

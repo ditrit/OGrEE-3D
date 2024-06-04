@@ -61,8 +61,8 @@ public class GameManager : MonoBehaviour
     private List<GameObject> previousItems = new();
     public Hashtable allItems = new();
     public List<Tag> tags = new();
-    public Dictionary<string, SBuildingFromJson> buildingTemplates = new();
-    public Dictionary<string, SRoomFromJson> roomTemplates = new();
+    public Dictionary<string, SBuildingTemplate> buildingTemplates = new();
+    public Dictionary<string, SRoomTemplate> roomTemplates = new();
     public Dictionary<string, GameObject> objectTemplates = new();
     private readonly List<GameObject> focus = new();
     public bool writeLogs = true;
