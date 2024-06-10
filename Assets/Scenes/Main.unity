@@ -9949,7 +9949,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2024-05-29
+  m_text: 'Build date: 2024-06-10
 
     Commit #433a0445'
   m_isRightToLeft: 0

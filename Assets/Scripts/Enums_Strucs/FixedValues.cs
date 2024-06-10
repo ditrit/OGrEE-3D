@@ -53,6 +53,7 @@ public class Category
     public const string Corridor = "corridor";
     public const string Sensor = "sensor";
     public const string Generic = "generic";
+    public const string VirtualObject = "virtual_obj";
 }
 
 public class CommandType

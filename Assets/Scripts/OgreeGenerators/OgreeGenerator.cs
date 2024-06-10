@@ -48,21 +48,21 @@ public class OgreeGenerator : MonoBehaviour
             && !GameManager.instance.buildingTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"bldg-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
+            await ApiManager.instance.GetObject($"bldg_templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         if (_obj.category == Category.Room && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.roomTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"room-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
+            await ApiManager.instance.GetObject($"room_templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         if ((_obj.category == Category.Rack || _obj.category == Category.Device || _obj.category == Category.Generic) && _obj.attributes.HasKeyAndValue("template")
             && !GameManager.instance.objectTemplates.ContainsKey((string)_obj.attributes["template"]))
         {
             Debug.Log($"Get template \"{_obj.attributes["template"]}\" from API");
-            await ApiManager.instance.GetObject($"obj-templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
+            await ApiManager.instance.GetObject($"obj_templates/{_obj.attributes["template"]}", ApiManager.instance.CreateTemplateFromJson);
         }
 
         // Tags
