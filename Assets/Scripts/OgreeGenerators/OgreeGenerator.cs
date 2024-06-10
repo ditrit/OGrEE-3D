@@ -146,6 +146,9 @@ public class OgreeGenerator : MonoBehaviour
             case Category.Generic:
                 newObject = objectGenerator.CreateGeneric(_obj, parent);
                 break;
+            case Category.VirtualObject:
+                newObject = null;
+                break;
             default:
                 newObject = null;
                 GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown object category", _obj.category), ELogTarget.both, ELogtype.error);
