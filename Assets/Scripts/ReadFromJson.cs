@@ -10,7 +10,7 @@ public class ReadFromJson
     /// Store <paramref name="_data"/> in <see cref="GameManager.buildingTemplates"/>.
     ///</summary>
     ///<param name="_data">Building data to store</param>
-    public void CreateBuildingTemplate(SBuildingFromJson _data)
+    public void CreateBuildingTemplate(SBuildingTemplate _data)
     {
         if (GameManager.instance.buildingTemplates.ContainsKey(_data.slug))
             return;
@@ -22,7 +22,7 @@ public class ReadFromJson
     /// Store <paramref name="_data"/> in <see cref="GameManager.roomTemplates"/>.
     ///</summary>
     ///<param name="_data">Room data to store</param>
-    public void CreateRoomTemplate(SRoomFromJson _data)
+    public void CreateRoomTemplate(SRoomTemplate _data)
     {
         if (GameManager.instance.roomTemplates.ContainsKey(_data.slug))
             return;

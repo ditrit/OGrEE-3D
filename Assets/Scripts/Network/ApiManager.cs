@@ -478,11 +478,11 @@ public class ApiManager : MonoBehaviour
         switch (data["category"])
         {
             case Category.Building:
-                SBuildingFromJson buildingData = JsonConvert.DeserializeObject<SBuildingFromJson>(dataStr);
+                SBuildingTemplate buildingData = JsonConvert.DeserializeObject<SBuildingTemplate>(dataStr);
                 rfJson.CreateBuildingTemplate(buildingData);
                 break;
             case Category.Room:
-                SRoomFromJson roomData = JsonConvert.DeserializeObject<SRoomFromJson>(dataStr);
+                SRoomTemplate roomData = JsonConvert.DeserializeObject<SRoomTemplate>(dataStr);
                 rfJson.CreateRoomTemplate(roomData);
                 break;
             case Category.Rack:

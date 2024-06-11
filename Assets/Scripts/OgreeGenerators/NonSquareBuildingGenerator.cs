@@ -15,7 +15,7 @@ public class NonSquareBuildingGenerator
         public float tileAngle;
         public Vector2 offset;
 
-        public SCommonTemplate(SBuildingFromJson _src)
+        public SCommonTemplate(SBuildingTemplate _src)
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
@@ -28,7 +28,7 @@ public class NonSquareBuildingGenerator
             tileAngle = float.NaN;
         }
 
-        public SCommonTemplate(SRoomFromJson _src)
+        public SCommonTemplate(SRoomTemplate _src)
         {
             slug = _src.slug;
             sizeWDHm = _src.sizeWDHm;
@@ -51,7 +51,7 @@ public class NonSquareBuildingGenerator
     /// </summary>
     /// <param name="_building">The transform of the building's floor</param>
     /// <param name="_template">The template of the non convex building</param>
-    public void CreateShape(Transform _building, SBuildingFromJson _template)
+    public void CreateShape(Transform _building, SBuildingTemplate _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new(_template);
@@ -69,7 +69,7 @@ public class NonSquareBuildingGenerator
     /// </summary>
     /// <param name="_room">The transform of the room's floor</param>
     /// <param name="_template">The template of the non convex room</param>
-    public void CreateShape(Transform _room, SRoomFromJson _template)
+    public void CreateShape(Transform _room, SRoomTemplate _template)
     {
         Debug.Log($"Create shape of {_template.slug}");
         SCommonTemplate data = new(_template);
