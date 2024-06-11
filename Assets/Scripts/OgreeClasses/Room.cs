@@ -397,20 +397,14 @@ public class Room : Building
     ///<param name="_id">The id of the current tile</param>
     private void GenerateTileName(Transform _root, Vector2 _pos, string _id)
     {
-        if (!attributes.HasKeyAndValue("template"))
-            return;
-
-        SRoomTemplate template = GameManager.instance.roomTemplates[attributes["template"]];
+        STile tileData = new();
+        SRoomTemplate template = attributes.HasKeyAndValue("template") ? GameManager.instance.roomTemplates[attributes["template"]] : new SRoomTemplate();
 
         // Select the right tile from template.tiles
-        STile tileData = new();
         if (template.tiles != null)
-        {
-            List<STile> tiles = template.tiles;
-            foreach (STile tile in tiles)
+            foreach (STile tile in template.tiles)
                 if (tile.location.Trim() == _id)
                     tileData = tile;
-        }
 
         GameObject tileText = Instantiate(GameManager.instance.tileNameModel);
         tileText.name = $"Text_{_id}";
@@ -432,20 +426,14 @@ public class Room : Building
     ///<param name="_id">The id of the current tile</param>
     private void GenerateTileColor(Transform _root, Vector2 _pos, string _id)
     {
-        if (!attributes.HasKeyAndValue("template"))
-            return;
-
-        SRoomTemplate template = GameManager.instance.roomTemplates[attributes["template"]];
+        STile tileData = new();
+        SRoomTemplate template = attributes.HasKeyAndValue("template") ? GameManager.instance.roomTemplates[attributes["template"]] : new SRoomTemplate();
 
         // Select the right tile from template.tiles
-        STile tileData = new();
         if (template.tiles != null)
-        {
-            List<STile> tiles = template.tiles;
-            foreach (STile tile in tiles)
+            foreach (STile tile in template.tiles)
                 if (tile.location.Trim() == _id)
                     tileData = tile;
-        }
 
         List<SColor> customColors = new();
         if (attributes.ContainsKey("colors"))
