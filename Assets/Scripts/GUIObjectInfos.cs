@@ -147,18 +147,4 @@ public class GUIObjectInfos : MonoBehaviour
         rt.sizeDelta = new(0, textHeight * 30);
         verticalScrollbar.value = 1;
     }
-
-    ///<summary>
-    /// Return the asked value if it exists in the dictionary
-    ///</summary>
-    ///<param name="_dictionary">The dictionary to search in</param>
-    ///<param name="_key">The key to search</param>
-    ///<returns>The asked value if the key exists in the dictionary, the default value of the Dictionary's values' type otherwise</returns>
-    private T IfInDictionary<T>(Dictionary<string, T> _dictionary, string _key)
-    {
-        if (_dictionary.ContainsKey(_key))
-            return _dictionary[_key];
-        else
-            return default;
-    }
 }
