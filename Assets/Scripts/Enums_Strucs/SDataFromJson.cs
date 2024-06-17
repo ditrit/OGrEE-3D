@@ -163,13 +163,6 @@ public struct SColor
     public string name;
     public string value;
 }
-
-[System.Serializable]
-public struct STempUnit
-{
-    public string temperatureUnit;
-}
-
 #endregion
 
 public struct SApiTag
