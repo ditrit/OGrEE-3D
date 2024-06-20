@@ -410,7 +410,7 @@ public class ApiManager : MonoBehaviour
             return;
         }
         // Debug.Log(_json);
-        string fullPath = $"{server}/{_type}-templates";
+        string fullPath = $"{server}/{_type}_templates";
 
         StringContent content = new(_json, System.Text.Encoding.UTF8, "application/json");
         try
