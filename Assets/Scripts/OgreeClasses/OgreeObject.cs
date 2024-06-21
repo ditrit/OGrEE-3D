@@ -163,7 +163,7 @@ public class OgreeObject : MonoBehaviour, IComparable<OgreeObject>
     {
         List<OgreeObject> objsToDel = new();
         foreach (Transform child in transform)
-            if (child.GetComponent<OgreeObject>() is OgreeObject obj && obj is Device dv && !dv.isComponent)
+            if (child.GetComponent<OgreeObject>() is OgreeObject obj && (obj is not Device || obj is Device dv && !dv.isComponent))
                 objsToDel.Add(obj);
 
         if (_askedLevel == 0) // Delete all children

@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 OgreeObject selectOgree = _obj.GetComponent<OgreeObject>();
-                if (!(selectOgree is Group || selectOgree is Corridor) && selectOgree.currentLod == 0)
+                if (!(selectOgree is Group || selectOgree is Corridor || selectOgree.category == "tempBar") && selectOgree.currentLod == 0)
                     await selectOgree.LoadChildren(1);
             }
             else // deselection => unload children if level of details is <=1
