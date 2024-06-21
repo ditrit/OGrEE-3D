@@ -25,12 +25,6 @@ public class ApiManager : MonoBehaviour
         public SApiObject data;
     }
 
-    private struct STempUnitResp
-    {
-        public string message;
-        public STempUnit data;
-    }
-
     private struct SVersionResp
     {
         public Dictionary<string, string> data;
@@ -525,13 +519,17 @@ public class ApiManager : MonoBehaviour
     /// <returns>A temperature unit if correct response from API or an empty string</returns>
     public Task<string> TempUnitFromAPI(string _input)
     {
-        if (_input.Contains("successfully got temperatureUnit from object's parent site"))
+        try
         {
-            STempUnitResp resp = JsonConvert.DeserializeObject<STempUnitResp>(_input);
-            return Task.FromResult(resp.data.temperatureUnit);
+            Hashtable resp = JsonConvert.DeserializeObject<Hashtable>(_input);
+            return Task.FromResult(JsonConvert.DeserializeObject<Dictionary<string, string>>(resp["data"].ToString())["temperatureUnit"]);
         }
-        GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving temperature unit error"), ELogTarget.both, ELogtype.errorApi);
-        return Task.FromResult("");
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving temperature unit error"), ELogTarget.both, ELogtype.errorApi);
+            return Task.FromResult("");
+        }
     }
 
     /// <summary>
@@ -541,13 +539,17 @@ public class ApiManager : MonoBehaviour
     /// <returns>A dictionary containing "usableColor", "reservedColor" and "technicalColor"</returns>
     public Task<Dictionary<string, string>> SiteColorsFromAPI(string _input)
     {
-        if (_input.Contains("successfully got attribute from object's parent site"))
+        try
         {
             Hashtable resp = JsonConvert.DeserializeObject<Hashtable>(_input);
             return Task.FromResult(JsonConvert.DeserializeObject<Dictionary<string, string>>(resp["data"].ToString()));
         }
-        GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving colors error"), ELogTarget.both, ELogtype.errorApi);
-        return Task.FromResult(new Dictionary<string, string>());
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            GameManager.instance.AppendLogLine(new LocalizedString("Logs", "Retrieving colors error"), ELogTarget.both, ELogtype.errorApi);
+            return Task.FromResult(new Dictionary<string, string>());
+        }
     }
 
     /// <summary>

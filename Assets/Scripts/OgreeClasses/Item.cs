@@ -140,17 +140,15 @@ public class Item : OgreeObject
     ///<param name="_sensorName">The sensor to modify</param>
     public void SetTemperature(float _value, string _sensorName)
     {
-        Transform sensorTransform = transform.Find(_sensorName);
-        if (sensorTransform)
-            sensorTransform.GetComponent<Sensor>().SetTemperature(_value);
+        if (transform.Find(_sensorName) is Transform t)
+            t.GetComponent<Sensor>().SetTemperature(_value);
         else
         {
             GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Sensor doesn't exist", new List<string>() { id, _sensorName }), ELogTarget.both, ELogtype.warning);
             return;
         }
 
-        sensorTransform = transform.Find("sensor");
-        Sensor sensor = sensorTransform ? sensorTransform.GetComponent<Sensor>() : CreateMeanSensor();
+        Sensor sensor = transform.Find("sensor") is Transform meanSensor ? meanSensor.GetComponent<Sensor>() : CreateMeanSensor();
         sensor.SetTemperature(GetTemperatureInfos().mean);
     }
 
