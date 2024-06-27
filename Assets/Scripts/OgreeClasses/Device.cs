@@ -5,6 +5,7 @@ using UnityEngine;
 public class Device : Item
 {
     public bool isComponent = false;
+    public Transform primarySlot = null;
     public List<Slot> takenSlots = new();
 
     protected override void OnDestroy()
@@ -46,7 +47,7 @@ public class Device : Item
         takenSlots.Clear();
 
         // Check slot
-        Transform primarySlot = null;
+        primarySlot = null;
         Vector3 slotsScale = new();
         if (transform.parent && _apiObj.attributes.HasKeyAndValue("slot"))
         {

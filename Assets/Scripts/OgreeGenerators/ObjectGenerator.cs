@@ -102,6 +102,10 @@ public class ObjectGenerator
         device.UpdateFromSApiObject(_deviceData);
 
         DisplayObjectData dod = newDevice.GetComponent<DisplayObjectData>();
+        if (device.primarySlot)
+            dod.PlaceTexts(device.primarySlot.GetComponent<Slot>().labelPos);
+        else
+            dod.PlaceTexts(LabelPos.FrontRear);
         dod.SetLabel(device.name);
         dod.SwitchLabel((ELabelMode)UiManager.instance.labelsDropdown.value);
 
@@ -127,9 +131,8 @@ public class ObjectGenerator
     ///<returns>The generated device</returns>
     private GameObject GenerateBasicDevice(Transform _parent)
     {
-        GameObject go = Object.Instantiate(GameManager.instance.labeledBoxModel);
+        GameObject go = Object.Instantiate(GameManager.instance.labeledBoxModel, _parent);
         go.AddComponent<Device>();
-        go.transform.parent = _parent;
         return go;
     }
 
@@ -141,8 +144,7 @@ public class ObjectGenerator
     ///<returns>The generated device</returns>
     private GameObject GenerateTemplatedDevice(Transform _parent, string _template)
     {
-        GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template]);
-        go.transform.parent = _parent;
+        GameObject go = Object.Instantiate(GameManager.instance.objectTemplates[_template], _parent);
         go.GetComponent<ObjectDisplayController>().isTemplate = false;
         return go;
     }
