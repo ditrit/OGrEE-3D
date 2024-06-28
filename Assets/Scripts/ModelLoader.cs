@@ -12,6 +12,7 @@ public class ModelLoader : MonoBehaviour
 {
     public static ModelLoader instance;
     private bool isLocked = false;
+    private Transform lastLoadedModel = null;
 
     private void Awake()
     {
@@ -128,6 +129,12 @@ public class ModelLoader : MonoBehaviour
     private void OnError(IContextualizedError contextualizedError)
     {
         Debug.LogError("TriLib Error: " + contextualizedError);
+        string errorMsg = $"TriLib Error ({contextualizedError.GetInnerException().Source}): {contextualizedError.GetInnerException().Message}\nAbort fbx model loading";
+        GameManager.instance.AppendLogLine(errorMsg, ELogTarget.both, ELogtype.error);
+
+        if (lastLoadedModel)
+            Destroy(lastLoadedModel.gameObject);
+        lastLoadedModel = null;
         isLocked = false;
     }
 
@@ -153,6 +160,8 @@ public class ModelLoader : MonoBehaviour
 
         triLibObj.gameObject.AddComponent<BoxCollider>();
         triLibObj.tag = "Selectable";
+
+        lastLoadedModel = triLibObj;
     }
 
     // This event is called after OnLoad when all Materials and Textures have been loaded.
@@ -161,6 +170,7 @@ public class ModelLoader : MonoBehaviour
     {
         // Destroy basic box
         Destroy(assetLoaderContext.WrapperGameObject.transform.GetChild(1).gameObject);
+        lastLoadedModel = null;
         isLocked = false;
     }
 }

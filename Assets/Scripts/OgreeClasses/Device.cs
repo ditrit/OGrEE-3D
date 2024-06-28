@@ -5,6 +5,7 @@ using UnityEngine;
 public class Device : Item
 {
     public bool isComponent = false;
+    public Transform primarySlot = null;
     public List<Slot> takenSlots = new();
 
     protected override void OnDestroy()
@@ -46,7 +47,7 @@ public class Device : Item
         takenSlots.Clear();
 
         // Check slot
-        Transform primarySlot = null;
+        primarySlot = null;
         Vector3 slotsScale = new();
         if (transform.parent && _apiObj.attributes.HasKeyAndValue("slot"))
         {
@@ -82,7 +83,7 @@ public class Device : Item
 
         Vector2 size;
         float height;
-        if (!_apiObj.attributes.HasKeyAndValue("template"))//Rescale according to slot or parent if basic object
+        if (!_apiObj.attributes.HasKeyAndValue("template")) // For basic device, rescale according to slot or parent if basic object
         {
             Vector3 scale;
             if (takenSlots.Count > 0)

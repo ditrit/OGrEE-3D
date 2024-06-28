@@ -53,7 +53,7 @@ public class Item : OgreeObject
         {
             if (attribute.StartsWith("temperature_")
                 && (!attributes.ContainsKey(attribute) || attributes[attribute] != _src.attributes[attribute]))
-                SetTemperature((float)_src.attributes[attribute], attribute.Substring(12));
+                SetTemperature((float)_src.attributes[attribute], attribute.Substring(12), _src.attributes["heightUnit"]);
             if (attribute == "clearance")
             {
                 List<float> lengths = ((JArray)_src.attributes[attribute]).ToObject<List<float>>();
@@ -138,7 +138,7 @@ public class Item : OgreeObject
     ///</summary>
     ///<param name="_value">The temperature value</param>
     ///<param name="_sensorName">The sensor to modify</param>
-    public void SetTemperature(float _value, string _sensorName)
+    public void SetTemperature(float _value, string _sensorName, string _srcHeightUnit)
     {
         if (transform.Find(_sensorName) is Transform t)
             t.GetComponent<Sensor>().SetTemperature(_value);
@@ -148,7 +148,7 @@ public class Item : OgreeObject
             return;
         }
 
-        Sensor sensor = transform.Find("sensor") is Transform meanSensor ? meanSensor.GetComponent<Sensor>() : CreateMeanSensor();
+        Sensor sensor = transform.Find("sensor") is Transform meanSensor ? meanSensor.GetComponent<Sensor>() : CreateMeanSensor(_srcHeightUnit);
         sensor.SetTemperature(GetTemperatureInfos().mean);
     }
 
@@ -199,7 +199,7 @@ public class Item : OgreeObject
     /// Generate a sensor (from GameManager.sensorExtModel) and setup its <see cref="DisplayObjectData"/>.
     ///</summary>
     ///<returns>The created sensor</returns>
-    public Sensor CreateMeanSensor()
+    public Sensor CreateMeanSensor(string _srcHeightUnit)
     {
         Vector3 parentSize = transform.GetChild(0).localScale;
 
@@ -210,7 +210,15 @@ public class Item : OgreeObject
         newSensor.transform.localPosition = new(shapeSize.x / 2, parentSize.y - shapeSize.y / 2, parentSize.z);
         if (this is Rack)
         {
-            float uXSize = attributes["heightUnit"] == LengthUnit.U ? UnitValue.U : UnitValue.OU;
+            float uXSize = _srcHeightUnit switch
+            {
+                LengthUnit.U => UnitValue.U,
+                LengthUnit.OU => UnitValue.OU,
+                LengthUnit.Millimeter => 0.001f,
+                LengthUnit.Centimeter => 0.01f,
+                LengthUnit.Meter => 1.0f,
+                _ => 1
+            };
             newSensor.transform.localPosition += uXSize * Vector3.right;
         }
 

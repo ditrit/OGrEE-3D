@@ -115,44 +115,51 @@ public class OgreeGenerator : MonoBehaviour
                 }
             }
         }
-
-        // Call Create function
-        switch (_obj.category)
+        try
         {
-            case Category.Domain:
-                newObject = customerGenerator.CreateDomain(_obj);
-                break;
-            case Category.Site:
-                newObject = customerGenerator.CreateSite(_obj);
-                break;
-            case Category.Building:
-                newObject = buildingGenerator.CreateBuilding(_obj, parent);
-                break;
-            case Category.Room:
-                newObject = buildingGenerator.CreateRoom(_obj, parent);
-                break;
-            case Category.Rack:
-                newObject = objectGenerator.CreateRack(_obj, parent);
-                break;
-            case Category.Device:
-                newObject = objectGenerator.CreateDevice(_obj, parent);
-                break;
-            case Category.Corridor:
-                newObject = objectGenerator.CreateCorridor(_obj, parent);
-                break;
-            case Category.Group:
-                newObject = objectGenerator.CreateGroup(_obj, parent);
-                break;
-            case Category.Generic:
-                newObject = objectGenerator.CreateGeneric(_obj, parent);
-                break;
-            case Category.VirtualObject:
-                newObject = null;
-                break;
-            default:
-                newObject = null;
-                GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown object category", _obj.category), ELogTarget.both, ELogtype.error);
-                break;
+            // Call Create function
+            switch (_obj.category)
+            {
+                case Category.Domain:
+                    newObject = customerGenerator.CreateDomain(_obj);
+                    break;
+                case Category.Site:
+                    newObject = customerGenerator.CreateSite(_obj);
+                    break;
+                case Category.Building:
+                    newObject = buildingGenerator.CreateBuilding(_obj, parent);
+                    break;
+                case Category.Room:
+                    newObject = buildingGenerator.CreateRoom(_obj, parent);
+                    break;
+                case Category.Rack:
+                    newObject = objectGenerator.CreateRack(_obj, parent);
+                    break;
+                case Category.Device:
+                    newObject = objectGenerator.CreateDevice(_obj, parent);
+                    break;
+                case Category.Corridor:
+                    newObject = objectGenerator.CreateCorridor(_obj, parent);
+                    break;
+                case Category.Group:
+                    newObject = objectGenerator.CreateGroup(_obj, parent);
+                    break;
+                case Category.Generic:
+                    newObject = objectGenerator.CreateGeneric(_obj, parent);
+                    break;
+                case Category.VirtualObject:
+                    newObject = null;
+                    break;
+                default:
+                    newObject = null;
+                    GameManager.instance.AppendLogLine(new ExtendedLocalizedString("Logs", "Unknown object category", _obj.category), ELogTarget.both, ELogtype.error);
+                    break;
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(e);
+            newObject = null;
         }
         if (newObject)
         {

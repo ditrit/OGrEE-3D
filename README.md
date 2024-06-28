@@ -7,18 +7,20 @@ OGREE 3D is a data-center viewer, using Unity 3D
 
 ## Work on OGrEE-3D
 - Install Unity version **2022.3.12f1**
-- For loading fbx models at runtime, we are using a third party plugin: [**TriLib 2**](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548). You'll have to purchase it.
+- For loading fbx models at runtime, we are using a third party plugin: [**TriLib 2**](https://assetstore.unity.com/packages/tools/modeling/trilib-2-model-loading-package-157548) **v2.3.6**. You'll have to purchase it.
 - Open the project in Unity Editor. A warning message will ask you to enter into safe mode. Deny it and continue to open the project.
-- Import your TriLib2 package in the *Assets* folder.
+- Import your TriLib2 package in the *Assets* folder. Then, add *TRILIB* in the scripting define symbols to enable related code if needed.
 
 # Table of Contents
-- [Getting started](#Getting-Started)
-- [Command line arguments](#Command-line-arguments)
-- [Build in CLI](#Build-in-CLI)
-- [Templates definition](#Templates-definition)
-- [Controls](#Controls)
-    - [Free mode movement](#Free-mode-movement)
-    - [Human mode movement](#Human-mode-movement)
+- [OGREE-3D](#ogree-3d)
+  - [Work on OGrEE-3D](#work-on-ogree-3d)
+- [Table of Contents](#table-of-contents)
+- [Getting started](#getting-started)
+- [Command line arguments](#command-line-arguments)
+- [Draw objects](#draw-objects)
+- [Controls](#controls)
+  - [Free mode movement](#free-mode-movement)
+  - [Human mode movement](#human-mode-movement)
 
 # Getting started
 Object hierarchy, each level is mandatory
@@ -47,13 +49,9 @@ You can override the config file parameters with command line arguments
 --file [path to ocli file to load]
 ```  
 
-# Build in CLI
-CLI langage documentation and example are available [on the wiki](https://github.com/ditrit/OGREE-Core/wiki/CLI-langage).
+# Draw objects
 
-
-# Templates definition
-Templates are json files describing an object.  
-JSON template definitions are available [on the wiki](https://github.com/ditrit/OGREE-Core/wiki/JSON-template-definitions).
+For drawing objects in OGrEE-3D, we need to use the [CLI](https://github.com/ditrit/OGrEE-Core/tree/main/CLI) from the [OGrEE-Core](https://github.com/ditrit/OGrEE-Core) repository.
 
 # Controls  
 - Left click: select an object (Room or Rack)

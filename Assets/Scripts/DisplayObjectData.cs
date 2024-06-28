@@ -52,6 +52,8 @@ public class DisplayObjectData : MonoBehaviour
     ///<param name="_labelPos">Labels to display</param>
     public void PlaceTexts(string _labelPos)
     {
+        foreach (TextMeshPro label in usedLabels)
+            label.gameObject.SetActive(false);
         usedLabels.Clear();
         item = GetComponent<Item>();
         lodGroup = GetComponent<LODGroup>();
