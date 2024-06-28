@@ -87,7 +87,6 @@ public class ReadFromJson
             obj.attributes["height"] = _data.sizeWDHmm[2];
             obj.attributes["heightUnit"] = LengthUnit.Millimeter;
         }
-        obj.attributes["fbxModel"] = (!string.IsNullOrEmpty(_data.fbxModel)).ToString();
         if (_data.attributes != null)
             foreach (KeyValuePair<string, string> kvp in _data.attributes)
                 obj.attributes[kvp.Key] = kvp.Value;

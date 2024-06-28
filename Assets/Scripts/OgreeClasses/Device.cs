@@ -83,7 +83,7 @@ public class Device : Item
 
         Vector2 size;
         float height;
-        if (!_apiObj.attributes.HasKeyAndValue("template"))//Rescale according to slot or parent if basic object
+        if (!_apiObj.attributes.HasKeyAndValue("template")) // For basic device, rescale according to slot or parent if basic object
         {
             Vector3 scale;
             if (takenSlots.Count > 0)
