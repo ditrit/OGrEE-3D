@@ -8,7 +8,7 @@ public class Rack : Item
     public GameObject gridForULocation;
     public bool areUHelpersToggled = false;
     public List<GameObject> breakersBoxes = new();
-    public bool areBreakersToggled = true;
+    public bool areBreakersToggled = false;
 
     public override void UpdateFromSApiObject(SApiObject _src)
     {
@@ -47,6 +47,7 @@ public class Rack : Item
         int index = 0;
         foreach (var breaker in breakers)
             breakersBoxes.Add(CreateBreakerBox(_src, index++, breaker.Key, breaker.Value));
+        ToggleBreakers(areBreakersToggled);
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ public class Rack : Item
     /// Set <see cref="areBreakersToggled"/> and hide or display regarding its new value
     /// </summary>
     /// <param name="_value">The value to set <see cref="areBreakersToggled"/></param>
-    public void ToggleBreakersBoxes(bool _value)
+    public void ToggleBreakers(bool _value)
     {
         areBreakersToggled = _value;
         foreach (GameObject breaker in breakersBoxes)

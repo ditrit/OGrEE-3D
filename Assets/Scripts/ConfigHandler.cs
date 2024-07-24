@@ -129,6 +129,7 @@ public class ConfigHandler
         config.AlphaOnInteract = Convert.ToInt32(table["alphaOnInteract"]);
         config.DoubleClickDelay = Convert.ToSingle(table["doubleClickDelay"]);
         config.autoUHelpers = (bool)table["autoUHelpers"];
+        config.autoBreakers = (bool)table["autoBreakers"];
 
         config.MoveSpeed = Convert.ToInt32(table["moveSpeed"]);
         config.RotationSpeed = Convert.ToInt32(table["rotationSpeed"]);

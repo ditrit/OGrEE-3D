@@ -107,6 +107,8 @@ public class UiManager : MonoBehaviour
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
     [SerializeField] private bool defaultAutoUHelpers;
+    [SerializeField] private Toggle autoBreakersToggle;
+    [SerializeField] private bool defaultAutoBreakers;
     [SerializeField] private Slider doubleClickSlider;
     [SerializeField] private float defaultDoubleClickDelay;
     [SerializeField] private Slider moveSpeedSlider;
@@ -671,6 +673,9 @@ public class UiManager : MonoBehaviour
     {
         defaultAutoUHelpers = GameManager.instance.configHandler.config.autoUHelpers;
         autoUHelpersToggle.isOn = defaultAutoUHelpers;
+        
+        defaultAutoBreakers = GameManager.instance.configHandler.config.autoBreakers;
+        autoBreakersToggle.isOn = defaultAutoBreakers;
 
         defaultDoubleClickDelay = GameManager.instance.configHandler.config.DoubleClickDelay;
         doubleClickSlider.value = defaultDoubleClickDelay;
@@ -1336,6 +1341,31 @@ public class UiManager : MonoBehaviour
     public void SaveAutoUHelpers()
     {
         GameManager.instance.configHandler.WritePreference("autoUHelpers", autoUHelpersToggle.isOn ? "true" : "false");
+    }
+
+    /// <summary>
+    /// Attached to GUI Toggle. Change value of <see cref="GameManager.configHandler.config.autoBreakers"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateAutoBreakers(bool _value)
+    {
+        GameManager.instance.configHandler.config.autoBreakers = _value;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="autoBreakersToggle"/> using what was given by config.toml
+    /// </summary>
+    public void ResetAutoBreakers()
+    {
+        autoBreakersToggle.isOn = defaultAutoBreakers;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Write the value of <see cref="autoBreakersToggle"/> in used config.toml file
+    /// </summary>
+    public void SaveAutoBreakers()
+    {
+        GameManager.instance.configHandler.WritePreference("autoBreakers", autoBreakersToggle.isOn ? "true" : "false");
     }
 
     /// <summary>
