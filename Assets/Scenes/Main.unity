@@ -9949,9 +9949,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Build date: 2024-06-28
+  m_text: 'Build date: 2024-07-24
 
-    Commit #96a72e3'
+    Commit #207ecf9'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -19470,6 +19470,7 @@ MonoBehaviour:
   uRoot: {fileID: 0}
   gridForULocation: {fileID: 0}
   areUHelpersToggled: 0
+  breakersBoxes: []
 --- !u!1 &1585158489
 GameObject:
   m_ObjectHideFlags: 0
@@ -19748,6 +19749,8 @@ MonoBehaviour:
   clearanceModel: {fileID: 7797544327846721278, guid: cfc30ef0ad946fb41baf1de28111066e,
     type: 3}
   highlightCubeModel: {fileID: 8173383261354772020, guid: 386c434238619d14081f4b2b8821aae3,
+    type: 3}
+  breakerModel: {fileID: 6010235731161253863, guid: ebc81c5329e56b244b02e7d4885acad9,
     type: 3}
   genericCubeModel: {fileID: 6010235731161253863, guid: b617279059cb07f4b9a7b2b0749e8cf4,
     type: 3}

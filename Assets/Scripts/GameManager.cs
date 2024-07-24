@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     public GameObject floatingLabelModel;
     public GameObject clearanceModel;
     public GameObject highlightCubeModel;
+    public GameObject breakerModel;
     public GameObject genericCubeModel;
     public GameObject genericSphereModel;
     public GameObject genericCylinderModel;
