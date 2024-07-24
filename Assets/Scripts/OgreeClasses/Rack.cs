@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -8,6 +8,7 @@ public class Rack : Item
     public GameObject gridForULocation;
     public bool areUHelpersToggled = false;
     public List<GameObject> breakersBoxes = new();
+    public bool areBreakersToggled = true;
 
     public override void UpdateFromSApiObject(SApiObject _src)
     {
@@ -81,4 +82,26 @@ public class Rack : Item
 
         return newBreaker;
     }
+
+    /// <summary>
+    /// Toggle <see cref="areBreakersToggled"/> and hide or display regarding its new value
+    /// </summary>
+    public void ToggleBreakers()
+    {
+        areBreakersToggled ^= true;
+        foreach (GameObject breaker in breakersBoxes)
+            breaker.SetActive(areBreakersToggled);
+    }
+
+    /// <summary>
+    /// Set <see cref="areBreakersToggled"/> and hide or display regarding its new value
+    /// </summary>
+    /// <param name="_value">The value to set <see cref="areBreakersToggled"/></param>
+    public void ToggleBreakersBoxes(bool _value)
+    {
+        areBreakersToggled = _value;
+        foreach (GameObject breaker in breakersBoxes)
+            breaker.SetActive(_value);
+    }
 }
+

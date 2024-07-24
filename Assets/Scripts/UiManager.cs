@@ -47,6 +47,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleSepNamesBtn;
     [SerializeField] private ButtonHandler toggleGenNamesBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
+    [SerializeField] private ButtonHandler toggleBreakersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
     [SerializeField] private ButtonHandler toggleChildrenOriginBtn;
     [SerializeField] private ButtonHandler toggleClearanceBtn;
@@ -421,6 +422,22 @@ public class UiManager : MonoBehaviour
             rack.uRoot.gameObject.activeSelf
         };
         toggleUHelpersBtn.Check();
+
+        toggleBreakersBtn = new(toggleBreakersBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Rack>() is Rack rack
+            &&
+            rack.breakersBoxes.Count > 0,
+
+            toggledCondition = () => menuTarget
+            && 
+            menuTarget.GetComponent<Rack>() is Rack rack
+            &&
+            rack.areBreakersToggled
+        };
+        toggleBreakersBtn.Check();
 
         toggleLocalCSBtn = new(toggleLocalCSBtn.button, true)
         {
@@ -1063,12 +1080,21 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: if currentItem is a rack, toggle U helpers.
+    /// Called by GUI button: toggle U helpers of targeted Rack.
     ///</summary>
     public void ToggleUHelpers()
     {
         UHelpersManager.instance.ToggleU(menuTarget);
         toggleUHelpersBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI button: toggle breakers of targeted Rack
+    /// </summary>
+    public void ToggleBreakers()
+    {
+        menuTarget.GetComponent<Rack>().ToggleBreakers();
+        toggleBreakersBtn.Check();
     }
 
     ///<summary>
