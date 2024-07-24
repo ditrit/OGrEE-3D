@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -38,10 +38,14 @@ public class Rack : Item
     /// <param name="_src">New data of the rack</param>
     private void GenerateBreakersBoxes(SApiObject _src)
     {
+        for (int i = 0; i < breakersBoxes.Count; i++)
+            Destroy(breakersBoxes[i]);
+        breakersBoxes.Clear();
+
         Dictionary<string, Dictionary<string, dynamic>> breakers = ((JObject)_src.attributes["breakers"]).ToObject<Dictionary<string, Dictionary<string, dynamic>>>();
-        int i = 0;
+        int index = 0;
         foreach (var breaker in breakers)
-            breakersBoxes.Add(CreateBreakerBox(_src, i++, breaker.Key, breaker.Value));
+            breakersBoxes.Add(CreateBreakerBox(_src, index++, breaker.Key, breaker.Value));
     }
 
     /// <summary>
@@ -51,7 +55,7 @@ public class Rack : Item
     /// <param name="_index">Index of the breaker to create, used for placement</param>
     /// <param name="_name">Name of the breaker to create</param>
     /// <param name="_attrs">Attributes of the breaker to create</param>
-    /// <returns></returns>
+    /// <returns>The breakerBox GameObject</returns>
     private GameObject CreateBreakerBox(SApiObject _src, int _index, string _name, Dictionary<string, dynamic> _attrs)
     {
         Debug.Log($"{_index}: {_name}");
