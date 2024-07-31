@@ -243,7 +243,7 @@ MonoBehaviour:
   localCS: {fileID: 0}
   isDoomed: 0
   isLodLocked: 0
-  color: {r: 0, g: 0, b: 0, a: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
   referent: {fileID: 0}
   tempBar: {fileID: 0}
   temperatureUnit: 
