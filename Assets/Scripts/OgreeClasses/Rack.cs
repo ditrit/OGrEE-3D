@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ public class Rack : Item
     /// Cast breakers dictionary and fill <see cref="breakersBoxes"/>
     /// </summary>
     /// <param name="_src">New data of the rack</param>
-    private void GenerateBreakersBoxes(SApiObject _src)
+    private async void GenerateBreakersBoxes(SApiObject _src)
     {
         for (int i = 0; i < breakersBoxes.Count; i++)
             Destroy(breakersBoxes[i]);
@@ -46,7 +47,7 @@ public class Rack : Item
         Dictionary<string, Dictionary<string, dynamic>> breakers = ((JObject)_src.attributes["breakers"]).ToObject<Dictionary<string, Dictionary<string, dynamic>>>();
         int index = 0;
         foreach (var breaker in breakers)
-            breakersBoxes.Add(CreateBreakerBox(_src, index++, breaker.Key, breaker.Value));
+            breakersBoxes.Add(await CreateBreakerBox(_src, index++, breaker.Key, breaker.Value));
         ToggleBreakers(areBreakersToggled);
     }
 
@@ -58,7 +59,7 @@ public class Rack : Item
     /// <param name="_name">Name of the breaker to create</param>
     /// <param name="_attrs">Attributes of the breaker to create</param>
     /// <returns>The breakerBox GameObject</returns>
-    private GameObject CreateBreakerBox(SApiObject _src, int _index, string _name, Dictionary<string, dynamic> _attrs)
+    private async Task<GameObject> CreateBreakerBox(SApiObject _src, int _index, string _name, Dictionary<string, dynamic> _attrs)
     {
         Debug.Log($"{_index}: {_name}");
         Vector3 parentSize = transform.GetChild(0).localScale;
@@ -76,10 +77,23 @@ public class Rack : Item
         breakerOO.parentId = _src.id;
         breakerOO.attributes = _attrs;
 
+        GameManager.instance.allItems.Add(breakerOO.id, newBreaker);
+
         DisplayObjectData breakerDoD = newBreaker.GetComponent<DisplayObjectData>();
         breakerDoD.PlaceTexts(LabelPos.Front);
         breakerDoD.SetLabel(breakerOO.name);
         breakerDoD.SwitchLabel(ELabelMode.Default);
+
+        if (_attrs.HasKeyAndValue("tag"))
+        {
+            string tagName = _attrs["tag"];
+            if (GameManager.instance.GetTag(tagName) == null)
+                await ApiManager.instance.GetObject($"tags/{tagName}", ApiManager.instance.CreateTag);
+            Tag tag = GameManager.instance.GetTag(tagName);
+            breakerOO.SetColor(tag.colorCode);
+
+            GameManager.instance.AddToTag(tagName, breakerOO.id);
+        }
 
         return newBreaker;
     }

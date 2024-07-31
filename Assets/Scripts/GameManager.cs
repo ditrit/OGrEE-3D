@@ -660,7 +660,7 @@ public class GameManager : MonoBehaviour
 
     #region Tags
     /// <summary>
-    /// Get a tag in <see cref="tags"/> by it's slug.
+    /// Get a tag in <see cref="tags"/> by its slug.
     /// </summary>
     /// <param name="_tagName">The slug of the tag to search</param>
     /// <returns>The asked tag or null otherwise</returns>
