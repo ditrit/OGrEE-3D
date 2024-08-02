@@ -61,7 +61,6 @@ public class Rack : Item
     /// <returns>The breakerBox GameObject</returns>
     private async Task<GameObject> CreateBreakerBox(SApiObject _src, int _index, string _name, Dictionary<string, dynamic> _attrs)
     {
-        Debug.Log($"{_index}: {_name}");
         Vector3 parentSize = transform.GetChild(0).localScale;
 
         GameObject newBreaker = Instantiate(GameManager.instance.breakerModel, transform);
