@@ -316,6 +316,14 @@ MonoBehaviour:
     m_Localized: "Salvar a posi\xE7\xE3o do objeto?\r"
     m_Metadata:
       m_Items: []
+  - m_Id: 52524171569664000
+    m_Localized: Disjuntores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52574482053206016
+    m_Localized: "Ativa\xE7\xE3o autom\xE1tica de disjuntores"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

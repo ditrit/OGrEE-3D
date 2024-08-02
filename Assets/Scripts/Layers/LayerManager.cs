@@ -78,7 +78,7 @@ public class LayerManager : MonoBehaviour
     {
         List<string> deviceTypes = new();
         foreach (Transform child in _item.transform)
-            if (child.GetComponent<Device>() is Device dv && dv.attributes.ContainsKey("type") && !deviceTypes.Contains((string)dv.attributes["type"]))
+            if (child.GetComponent<Device>() is Device dv && dv.category == "device" && dv.attributes.ContainsKey("type") && !deviceTypes.Contains((string)dv.attributes["type"]))
                 deviceTypes.Add((string)dv.attributes["type"]);
 
         foreach (string type in deviceTypes)

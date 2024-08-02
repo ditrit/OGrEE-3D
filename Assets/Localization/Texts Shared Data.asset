@@ -299,6 +299,14 @@ MonoBehaviour:
     m_Key: Save Object Position
     m_Metadata:
       m_Items: []
+  - m_Id: 52524171569664000
+    m_Key: Toggle breakers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52574482053206016
+    m_Key: Automatically enable Breakers
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

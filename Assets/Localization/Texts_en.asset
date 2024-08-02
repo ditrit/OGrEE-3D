@@ -317,6 +317,14 @@ MonoBehaviour:
     m_Localized: Save object position ?
     m_Metadata:
       m_Items: []
+  - m_Id: 52524171569664000
+    m_Localized: Breakers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52574482053206016
+    m_Localized: Automatically enable breakers
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

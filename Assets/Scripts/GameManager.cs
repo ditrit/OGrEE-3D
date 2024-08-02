@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     public GameObject floatingLabelModel;
     public GameObject clearanceModel;
     public GameObject highlightCubeModel;
+    public GameObject breakerModel;
     public GameObject genericCubeModel;
     public GameObject genericSphereModel;
     public GameObject genericCylinderModel;
@@ -659,7 +660,7 @@ public class GameManager : MonoBehaviour
 
     #region Tags
     /// <summary>
-    /// Get a tag in <see cref="tags"/> by it's slug.
+    /// Get a tag in <see cref="tags"/> by its slug.
     /// </summary>
     /// <param name="_tagName">The slug of the tag to search</param>
     /// <returns>The asked tag or null otherwise</returns>

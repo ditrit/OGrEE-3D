@@ -207,6 +207,7 @@ public struct SConfig
         set => alphaOnInteract = Mathf.Clamp(value, 0, 100);
     }
     public bool autoUHelpers;
+    public bool autoBreakers;
     public Dictionary<string, string> textures;
     public Dictionary<string, string> colors;
     public int temperatureMinC;
@@ -274,6 +275,7 @@ public class DefaultValues
         FbxRoot = "https://github.com/ditrit/OGrEE-3dModels/raw/master/",
         AlphaOnInteract = 50,
         autoUHelpers = true,
+        autoBreakers = true,
         textures = new()
         {
             { "perf22", "https://raw.githubusercontent.com/ditrit/OGREE-3D/master/Assets/Resources/Textures/TilePerf22.png" },

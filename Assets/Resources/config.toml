@@ -13,6 +13,8 @@ alphaOnInteract = 50
 doubleClickDelay = 0.25
 # Enable or disable automatic U Helpers generation
 autoUHelpers = true
+# Enable or disable automatic Breakers generation
+autoBreakers = true
 
 # Camera settings
 # Value clamped from 1 to 50, 15 by default

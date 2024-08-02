@@ -317,6 +317,14 @@ MonoBehaviour:
     m_Localized: "Guardar la posici\xF3n del objeto?"
     m_Metadata:
       m_Items: []
+  - m_Id: 52524171569664000
+    m_Localized: Disyuntores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52574482053206016
+    m_Localized: "Activaci\xF3n autom\xE1tica de disyuntores"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

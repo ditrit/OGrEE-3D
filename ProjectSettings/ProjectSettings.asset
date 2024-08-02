@@ -136,7 +136,7 @@ PlayerSettings:
   vulkanEnableLateAcquireNextImage: 0
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
-  bundleVersion: 3.6.1
+  bundleVersion: 3.7.0
   preloadedAssets:
   - {fileID: 11400000, guid: 7426e59eb941c184caf24353ca48ff74, type: 2}
   metroInputSource: 0
@@ -161,7 +161,7 @@ PlayerSettings:
   applicationIdentifier:
     Standalone: com.Orness.OGrEE3D
   buildNumber:
-    Standalone: 3.6.1
+    Standalone: 3.7.0
     VisionOS: 0
     iPhone: 0
     tvOS: 0
@@ -728,10 +728,10 @@ PlayerSettings:
       PointOfService: False
       RecordedCallsFolder: False
       Contacts: False
-      Proximity: False
       InternetClient: False
       CodeGeneration: False
       BackgroundMediaPlayback: False
+      Proximity: False
   metroTargetDeviceFamilies:
     Desktop: False
     Holographic: False

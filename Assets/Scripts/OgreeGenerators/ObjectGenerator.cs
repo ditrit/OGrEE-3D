@@ -55,6 +55,7 @@ public class ObjectGenerator
         newRack.transform.parent = _parent;
 
         Rack rack = newRack.GetComponent<Rack>();
+        rack.areBreakersToggled = GameManager.instance.configHandler.config.autoBreakers;
         rack.UpdateFromSApiObject(_rk);
 
         DisplayObjectData dod = newRack.GetComponent<DisplayObjectData>();

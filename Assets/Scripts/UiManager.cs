@@ -47,6 +47,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private ButtonHandler toggleSepNamesBtn;
     [SerializeField] private ButtonHandler toggleGenNamesBtn;
     [SerializeField] private ButtonHandler toggleUHelpersBtn;
+    [SerializeField] private ButtonHandler toggleBreakersBtn;
     [SerializeField] private ButtonHandler toggleLocalCSBtn;
     [SerializeField] private ButtonHandler toggleChildrenOriginBtn;
     [SerializeField] private ButtonHandler toggleClearanceBtn;
@@ -106,6 +107,8 @@ public class UiManager : MonoBehaviour
     [Header("Settings Panel")]
     [SerializeField] private Toggle autoUHelpersToggle;
     [SerializeField] private bool defaultAutoUHelpers;
+    [SerializeField] private Toggle autoBreakersToggle;
+    [SerializeField] private bool defaultAutoBreakers;
     [SerializeField] private Slider doubleClickSlider;
     [SerializeField] private float defaultDoubleClickDelay;
     [SerializeField] private Slider moveSpeedSlider;
@@ -422,6 +425,22 @@ public class UiManager : MonoBehaviour
         };
         toggleUHelpersBtn.Check();
 
+        toggleBreakersBtn = new(toggleBreakersBtn.button, true)
+        {
+            interactCondition = () => menuTarget
+            &&
+            menuTarget.GetComponent<Rack>() is Rack rack
+            &&
+            rack.breakersBoxes.Count > 0,
+
+            toggledCondition = () => menuTarget
+            && 
+            menuTarget.GetComponent<Rack>() is Rack rack
+            &&
+            rack.areBreakersToggled
+        };
+        toggleBreakersBtn.Check();
+
         toggleLocalCSBtn = new(toggleLocalCSBtn.button, true)
         {
             interactCondition = () => menuTarget
@@ -654,6 +673,9 @@ public class UiManager : MonoBehaviour
     {
         defaultAutoUHelpers = GameManager.instance.configHandler.config.autoUHelpers;
         autoUHelpersToggle.isOn = defaultAutoUHelpers;
+        
+        defaultAutoBreakers = GameManager.instance.configHandler.config.autoBreakers;
+        autoBreakersToggle.isOn = defaultAutoBreakers;
 
         defaultDoubleClickDelay = GameManager.instance.configHandler.config.DoubleClickDelay;
         doubleClickSlider.value = defaultDoubleClickDelay;
@@ -1063,12 +1085,21 @@ public class UiManager : MonoBehaviour
     }
 
     ///<summary>
-    /// Called by GUI button: if currentItem is a rack, toggle U helpers.
+    /// Called by GUI button: toggle U helpers of targeted Rack.
     ///</summary>
     public void ToggleUHelpers()
     {
         UHelpersManager.instance.ToggleU(menuTarget);
         toggleUHelpersBtn.Check();
+    }
+
+    /// <summary>
+    /// Called by GUI button: toggle breakers of targeted Rack
+    /// </summary>
+    public void ToggleBreakers()
+    {
+        menuTarget.GetComponent<Rack>().ToggleBreakers();
+        toggleBreakersBtn.Check();
     }
 
     ///<summary>
@@ -1310,6 +1341,31 @@ public class UiManager : MonoBehaviour
     public void SaveAutoUHelpers()
     {
         GameManager.instance.configHandler.WritePreference("autoUHelpers", autoUHelpersToggle.isOn ? "true" : "false");
+    }
+
+    /// <summary>
+    /// Attached to GUI Toggle. Change value of <see cref="GameManager.configHandler.config.autoBreakers"/>
+    /// </summary>
+    /// <param name="_value"></param>
+    public void UpdateAutoBreakers(bool _value)
+    {
+        GameManager.instance.configHandler.config.autoBreakers = _value;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Reset value of <see cref="autoBreakersToggle"/> using what was given by config.toml
+    /// </summary>
+    public void ResetAutoBreakers()
+    {
+        autoBreakersToggle.isOn = defaultAutoBreakers;
+    }
+
+    /// <summary>
+    /// Called by GUI button. Write the value of <see cref="autoBreakersToggle"/> in used config.toml file
+    /// </summary>
+    public void SaveAutoBreakers()
+    {
+        GameManager.instance.configHandler.WritePreference("autoBreakers", autoBreakersToggle.isOn ? "true" : "false");
     }
 
     /// <summary>
